@@ -1,6 +1,48 @@
 import React from "react";
 import Link from "next/link";
 
+const links: Array<{ href: string; label: string }> = [
+  { href: "/examples/button", label: "Button" },
+  { href: "/examples/button-as-div", label: "Button as div" },
+  { href: "/examples/button-as-link", label: "Button as link" },
+  { href: "/examples/checkbox", label: "Checkbox" },
+  { href: "/examples/checkbox-controlled", label: "Checkbox controlled" },
+  { href: "/examples/checkbox-as-button", label: "Checkbox as button" },
+  { href: "/examples/checkbox-custom", label: "Checkbox custom" },
+  { href: "/examples/checkbox-state", label: "Checkbox state" },
+  { href: "/examples/checkbox-group", label: "Checkbox group" },
+  { href: "/examples/collection", label: "Collection" },
+  { href: "/examples/combobox", label: "Combobox" },
+  { href: "/examples/combobox-matches", label: "Combobox matches" },
+  { href: "/examples/combobox-multiple", label: "Combobox multiple" },
+  { href: "/examples/command", label: "Command" },
+  { href: "/examples/dialog", label: "Dialog" },
+  { href: "/examples/disclosure", label: "Disclosure" },
+  { href: "/examples/focus-trap", label: "Focus trap" },
+  { href: "/examples/form", label: "Form" },
+  { href: "/examples/group", label: "Group" },
+  { href: "/examples/heading", label: "Heading" },
+  { href: "/examples/hovercard", label: "Hovercard" },
+  { href: "/examples/menu", label: "Menu" },
+  { href: "/examples/menu-bar", label: "Menu bar" },
+  { href: "/examples/menu-combobox", label: "Menu combobox" },
+  { href: "/examples/menu-item-checkbox", label: "Menu item checkbox" },
+  { href: "/examples/menu-nested", label: "Menu nested" },
+  { href: "/examples/popover", label: "Popover" },
+  { href: "/examples/popover-responsive", label: "Popover responsive" },
+  { href: "/examples/radio", label: "Radio" },
+  { href: "/examples/select", label: "Select" },
+  { href: "/examples/select-combobox", label: "Select combobox" },
+  { href: "/examples/select-grid", label: "Select grid" },
+  { href: "/examples/select-item-custom", label: "Select item custom" },
+  { href: "/examples/select-multiple", label: "Select multiple" },
+  { href: "/examples/tab", label: "Tab" },
+  { href: "/examples/tab-react-router", label: "Tab react-router" },
+  { href: "/examples/tooltip", label: "Tooltip" },
+  { href: "/examples/tooltip-placement", label: "Tooltip placement" },
+  { href: "/examples/tooltip-timeout", label: "Tooltip timeout" },
+].sort((a, b) => a.label.localeCompare(b.label));
+
 export default function Home() {
   return (
     <div className="flex flex-col gap-4 p-5">
@@ -17,123 +59,11 @@ export default function Home() {
       </p>
       <h2 className="text-2xl">Examples</h2>
       <ul>
-        <li>
-          <Link href="/examples/button">Button</Link>
-        </li>
-        <li>
-          <Link href="/examples/button-as-div">Button as div</Link>
-        </li>
-        <li>
-          <Link href="/examples/button-as-link">Button as link</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox">Checkbox</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox-controlled">Checkbox controlled</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox-as-button">Checkbox as button</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox-custom">Checkbox custom</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox-state">Checkbox state</Link>
-        </li>
-        <li>
-          <Link href="/examples/checkbox-group">Checkbox group</Link>
-        </li>
-        <li>
-          <Link href="/examples/collection">Collection</Link>
-        </li>
-        <li>
-          <Link href="/examples/combobox">Combobox</Link>
-        </li>
-        <li>
-          <Link href="/examples/combobox-matches">Combobox matches</Link>
-        </li>
-        <li>
-          <Link href="/examples/combobox-multiple">Combobox multiple</Link>
-        </li>
-        <li>
-          <Link href="/examples/command">Command</Link>
-        </li>
-        <li>
-          <Link href="/examples/dialog">Dialog</Link>
-        </li>
-        <li>
-          <Link href="/examples/disclosure">Disclosure</Link>
-        </li>
-        <li>
-          <Link href="/examples/focus-trap">Focus trap</Link>
-        </li>
-        <li>
-          <Link href="/examples/form">Form</Link>
-        </li>
-        <li>
-          <Link href="/examples/group">Group</Link>
-        </li>
-        <li>
-          <Link href="/examples/heading">Heading</Link>
-        </li>
-        <li>
-          <Link href="/examples/hovercard">Hovercard</Link>
-        </li>
-        <li>
-          <Link href="/examples/menu">Menu</Link>
-        </li>
-        <li>
-          <Link href="/examples/menu-bar">Menu bar</Link>
-        </li>
-        <li>
-          <Link href="/examples/menu-combobox">Menu combobox</Link>
-        </li>
-        <li>
-          <Link href="/examples/menu-item-checkbox">Menu item checkbox</Link>
-        </li>
-        <li>
-          <Link href="/examples/menu-nested">Menu nested</Link>
-        </li>
-        <li>
-          <Link href="/examples/popover">Popover</Link>
-        </li>
-        <li>
-          <Link href="/examples/popover-responsive">Popover responsive</Link>
-        </li>
-        <li>
-          <Link href="/examples/radio">Radio</Link>
-        </li>
-        <li>
-          <Link href="/examples/select">Select</Link>
-        </li>
-        <li>
-          <Link href="/examples/select-combobox">Select combobox</Link>
-        </li>
-        <li>
-          <Link href="/examples/select-grid">Select grid</Link>
-        </li>
-        <li>
-          <Link href="/examples/select-item-custom">Select item custom</Link>
-        </li>
-        <li>
-          <Link href="/examples/select-multiple">Select multiple</Link>
-        </li>
-        <li>
-          <Link href="/examples/tab">Tab</Link>
-        </li>
-        <li>
-          <Link href="/examples/tab-react-router">Tab react-router</Link>
-        </li>
-        <li>
-          <Link href="/examples/tooltip">Tooltip</Link>
-        </li>
-        <li>
-          <Link href="/examples/tooltip-placement">Tooltip placement</Link>
-        </li>
-        <li>
-          <Link href="/examples/tooltip-timeout">Tooltip timeout</Link>
-        </li>
+        {links.map(({ href, label }) => (
+          <li key={href}>
+            <Link href={href}>{label}</Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
