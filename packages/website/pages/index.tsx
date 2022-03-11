@@ -60,6 +60,9 @@ export default function Home() {
           <Link href="/examples/command">Command</Link>
         </li>
         <li>
+          <Link href="/examples/command">Command with enter disabled</Link>
+        </li>
+        <li>
           <Link href="/examples/dialog">Dialog</Link>
         </li>
         <li>
