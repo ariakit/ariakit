@@ -57,6 +57,9 @@ export default function Home() {
           <Link href="/examples/combobox-multiple">Combobox multiple</Link>
         </li>
         <li>
+          <Link href="/examples/command">Command</Link>
+        </li>
+        <li>
           <Link href="/examples/dialog">Dialog</Link>
         </li>
         <li>
