@@ -45,7 +45,7 @@ test("space", async () => {
   render(<Example />);
   await press.Tab();
   expect(getByText("Accessible button")).toHaveFocus();
-  await press.Enter();
+  await press.Space();
   expect(alertMock).toHaveBeenCalledTimes(1);
 
   alertMock.mockRestore();
