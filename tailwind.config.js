@@ -234,13 +234,13 @@ module.exports = {
 
     dropShadow: {
       DEFAULT: "0 4px 6px rgba(0, 0, 0, 15%)",
-      dark: "0 4px 6px rgba(0, 0, 0, 30%)",
+      dark: "0 4px 6px rgba(0, 0, 0, 40%)",
       sm: "0 2px 3px rgba(0, 0, 0, 15%)",
-      "sm-dark": "0 2px 3px rgba(0, 0, 0, 30%)",
+      "sm-dark": "0 2px 3px rgba(0, 0, 0, 40%)",
       md: "0 8px 12px rgba(0, 0, 0, 15%)",
-      "md-dark": "0 8px 12px rgba(0, 0, 0, 30%)",
+      "md-dark": "0 8px 12px rgba(0, 0, 0, 40%)",
       lg: "0 16px 24px rgba(0, 0, 0, 15%)",
-      "lg-dark": "0 16px 24px rgba(0, 0, 0, 30%)",
+      "lg-dark": "0 16px 24px rgba(0, 0, 0, 40%)",
     },
   },
   corePlugins: {

@@ -19,7 +19,8 @@ import {
 } from "ariakit/composite";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
-import useOverflowList from "packages/website/utils/use-overflow-list";
+import useMedia from "../../utils/use-media";
+import useOverflowList from "../../utils/use-overflow-list";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
@@ -56,6 +57,7 @@ const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
 );
 
 const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"));
+const FileSelect = dynamic(() => import("./file-select"));
 
 type PlaygroundProps = {
   defaultValues: Record<string, string>;
@@ -67,6 +69,7 @@ function getTabId(name: string, prefix?: string) {
 }
 
 export default function Playground(props: PlaygroundProps) {
+  const isLarge = useMedia("(min-width: 640px)", true);
   const playground = usePlaygroundState({ defaultValues: props.defaultValues });
   const [firstFile = ""] = Object.keys(playground.values);
   const baseId = useId();
@@ -111,7 +114,7 @@ export default function Playground(props: PlaygroundProps) {
         }
         return [nextVisible, nextHidden] as [string[], string[]];
       },
-      [tab.selectedId, baseId, tab.move]
+      [tab.selectedId, baseId, tab.move, isLarge]
     ),
   });
   const beenSelected = useLazyRef(() => new Set<string>());
@@ -177,34 +180,47 @@ export default function Playground(props: PlaygroundProps) {
             p-3 pb-1 text-sm
             dark:bg-canvas-1-dark"
           >
-            <TabList
-              state={tab}
-              className="flex w-full flex-row gap-2 overflow-x-auto p-1"
-            >
-              {visibleTabs.map((file) => renderTab(file))}
-              {!!hiddenTabs.length && (
-                <>
-                  <CompositeOverflowDisclosure
-                    state={overflow}
-                    className="h-10 rounded bg-alpha-2 px-4 text-base text-black-fade hover:bg-alpha-2-hover
-                    focus-visible:ariakit-outline aria-expanded:bg-alpha-1 dark:text-white-fade
-                    dark:hover:bg-alpha-2-dark-hover dark:aria-expanded:bg-alpha-1-dark
-                    sm:h-8 sm:px-3
-                    sm:text-sm"
-                  >
-                    +{hiddenTabs.length}
-                  </CompositeOverflowDisclosure>
-                  <CompositeOverflow
-                    state={overflow}
-                    as={Popup}
-                    className="flex flex-col gap-2 p-2"
-                    elevation={2}
-                  >
-                    {hiddenTabs.map((file) => renderTab(file, true))}
-                  </CompositeOverflow>
-                </>
-              )}
-            </TabList>
+            {isLarge ? (
+              <TabList
+                state={tab}
+                className="flex w-full flex-row gap-2 overflow-x-auto p-1"
+              >
+                {visibleTabs.map((file) => renderTab(file))}
+                {!!hiddenTabs.length && (
+                  <>
+                    <CompositeOverflowDisclosure
+                      state={overflow}
+                      className="h-10 rounded bg-alpha-2 px-4 text-base text-black-fade hover:bg-alpha-2-hover
+                      focus-visible:ariakit-outline aria-expanded:bg-alpha-1 dark:text-white-fade
+                      dark:hover:bg-alpha-2-dark-hover dark:aria-expanded:bg-alpha-1-dark
+                      sm:h-8 sm:px-3
+                      sm:text-sm"
+                    >
+                      +{hiddenTabs.length}
+                    </CompositeOverflowDisclosure>
+                    <CompositeOverflow
+                      state={overflow}
+                      as={Popup}
+                      className="flex flex-col gap-2 p-2"
+                      elevation={2}
+                    >
+                      {hiddenTabs.map((file) => renderTab(file, true))}
+                    </CompositeOverflow>
+                  </>
+                )}
+              </TabList>
+            ) : (
+              <div className="relative p-1">
+                <FileSelect
+                  values={files}
+                  defaultValue={firstFile}
+                  onChange={(file) => {
+                    tab.select(getTabId(file, baseId));
+                    setExpanded(true);
+                  }}
+                />
+              </div>
+            )}
             <div className="flex gap-2 p-1">
               <OpenInCodeSandbox />
             </div>

@@ -83,6 +83,7 @@
     "react-dom": "18.0.0-rc.0",
     "react-icons": "4.3.1",
     "react-router-dom": "6.2.2",
+    "react-swipeable": "6.2.0",
     "rehype-parse": "8.0.4",
     "rimraf": "3.0.2",
     "rollup": "2.69.2",
