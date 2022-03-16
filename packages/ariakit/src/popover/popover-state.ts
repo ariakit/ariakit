@@ -140,7 +140,8 @@ export function usePopoverState({
           {
             // https://popper.js.org/docs/v2/modifiers/flip/
             name: "flip",
-            enabled: flip && dialog.mounted,
+            // See https://github.com/ariakit/ariakit/issues/1117
+            enabled: placement?.startsWith("auto") ?? (flip && dialog.mounted),
             options: { padding },
           },
           {
