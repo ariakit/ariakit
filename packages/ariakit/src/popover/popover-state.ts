@@ -140,7 +140,7 @@ export function usePopoverState({
           {
             // https://popper.js.org/docs/v2/modifiers/flip/
             name: "flip",
-            enabled: flip && dialog.mounted,
+            enabled: placement?.startsWith("auto") ?? (flip && dialog.mounted),
             options: { padding },
           },
           {
