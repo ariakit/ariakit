@@ -9,6 +9,7 @@ import {
   useEventCallback,
   useId,
   useLazyRef,
+  useLiveRef,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
 import { cx, hasOwnProperty } from "ariakit-utils/misc";
@@ -80,10 +81,9 @@ export default function Playground(props: PlaygroundProps) {
     selectOnMove: false,
   });
   const [expanded, setExpanded] = useState(false);
-  const files = useMemo(
-    () => Object.keys(playground.values),
-    [playground.values]
-  );
+  const expandedRef = useLiveRef(expanded);
+  const filesString = Object.keys(playground.values).join(", ");
+  const files = useMemo(() => Object.keys(playground.values), [filesString]);
   const overflow = useCompositeOverflowState({
     placement: "bottom-end",
     flip: false,
@@ -110,6 +110,8 @@ export default function Playground(props: PlaygroundProps) {
             nextHidden.unshift(lastVisibleFile);
           }
           nextVisible.push(nextHiddenFile);
+        }
+        if (expandedRef.current) {
           tab.move(tab.selectedId);
         }
         return [nextVisible, nextHidden] as [string[], string[]];
@@ -117,6 +119,7 @@ export default function Playground(props: PlaygroundProps) {
       [tab.selectedId, baseId, tab.move, isLarge]
     ),
   });
+
   const beenSelected = useLazyRef(() => new Set<string>());
 
   useEffect(() => {
