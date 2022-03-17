@@ -13,7 +13,7 @@ import {
   isTextField,
   isVisible,
   matches,
-  // scrollIntoViewIfNeeded,
+  scrollIntoViewIfNeeded,
 } from "../dom";
 
 test("getDocument", () => {
@@ -381,13 +381,75 @@ test("getTextboxSelection", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
-// test("scrollIntoViewIfNeeded", () => {
-// TODO: Figure out how to test this
-// Seems like JSDOM doesn't support scroll stuff because it doesn't really do the layout
-// https://github.com/jsdom/jsdom/issues/1695
-// It seems like maybe we could fake a bunch of functions but it might not have a lot of value anyways
-// });
+test("scrollIntoViewIfNeeded", () => {
+  // TODO: Figure out how to test this
+  // Seems like JSDOM doesn't support scroll stuff because it doesn't really do the layout
+  // https://github.com/jsdom/jsdom/issues/1695
+  // It seems like maybe we could fake a bunch of functions but it might not have a lot of value anyways
+  const initialInnerHTML = document.body.innerHTML;
+  document.body.innerHTML = `
+  <div id="testNode">
+    <div id="testNode2" >
+      <div id="testNode3" />
+    </div>
+  </div>
+`;
+  const div = document.getElementById("testNode") as HTMLElement;
+  const div2 = document.getElementById("testNode2") as HTMLElement;
+  const div3 = document.getElementById("testNode3") as HTMLElement;
+
+  const scrollIntoViewMock = jest.fn();
+  const originalScrollIntoView =
+    Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollIntoView") ??
+    {};
+  Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+    configurable: true,
+    value: scrollIntoViewMock,
+  });
+  scrollIntoViewIfNeeded(div);
+  expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+  const divGetBoundingClientRectSpy = jest.spyOn(div, "getBoundingClientRect");
+  const div2GetBoundingClientRectSpy = jest.spyOn(
+    div2,
+    "getBoundingClientRect"
+  );
+  divGetBoundingClientRectSpy.mockReturnValue({
+    height: 0,
+    width: 0,
+    x: 100,
+    y: 100,
+    top: 0,
+    left: 0,
+    right: 100,
+    bottom: 100,
+  } as DOMRect);
+  div2GetBoundingClientRectSpy.mockReturnValue({
+    height: 0,
+    width: 0,
+    x: 50,
+    y: 50,
+    top: 0,
+    left: 0,
+    right: 50,
+    bottom: 50,
+  } as DOMRect);
+
+  scrollIntoViewIfNeeded(div2);
+  expect(scrollIntoViewMock).toBeCalledTimes(1);
+  scrollIntoViewIfNeeded(div3);
+  expect(scrollIntoViewMock).toBeCalledTimes(1);
+
+  // Reset
+  document.body.innerHTML = initialInnerHTML;
+  Object.defineProperty(
+    HTMLElement.prototype,
+    "offsetWidth",
+    originalScrollIntoView
+  );
+});
 test("getScrollingElement", () => {
+  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode">
       <div id="testNode2" >
@@ -446,7 +508,7 @@ test("getScrollingElement", () => {
   expect(getScrollingElement(div3)).toEqual(div2);
 
   // Reset
-  document.body.innerHTML = "";
+  document.body.innerHTML = initialInnerHTML;
   div2ClientHeightSpy.mockRestore();
   div2ScrollHeightSpy.mockRestore();
 });
