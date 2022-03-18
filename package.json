@@ -66,7 +66,7 @@
     "jest-axe": "6.0.0",
     "jest-matcher-utils": "27.5.1",
     "lerna": "4.0.0",
-    "lint-staged": "12.3.6",
+    "lint-staged": "12.3.7",
     "lodash": "4.17.21",
     "marked": "4.0.12",
     "open-cli": "7.0.1",
