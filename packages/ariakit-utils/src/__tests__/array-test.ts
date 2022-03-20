@@ -13,6 +13,7 @@ test("toArray", () => {
   expect(toArray({})).toEqual([{}]);
   expect(toArray([])).toEqual([]);
 });
+
 test("addItemToArray", () => {
   const arr = ["a", "b", "d"];
   expect(addItemToArray(arr, "c", 2)).toEqual(["a", "b", "c", "d"]);
@@ -25,6 +26,7 @@ test("addItemToArray", () => {
   // Immunitibility
   expect(addItemToArray(arr, "c", 2)).not.toEqual(arr);
 });
+
 test("flatten2DArray", () => {
   const arr = [["a"], ["b"], ["d"]];
   expect(flatten2DArray(arr)).toEqual(["a", "b", "d"]);
@@ -33,6 +35,7 @@ test("flatten2DArray", () => {
   // Immunitibility
   expect(flatten2DArray(arr)).not.toEqual(arr);
 });
+
 test("reverseArray", () => {
   const arr = ["a", "b", "d"];
   expect(reverseArray(arr)).toEqual(["d", "b", "a"]);

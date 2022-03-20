@@ -28,6 +28,7 @@ test("getDocument", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("getWindow", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = '<div id="testNode"></div>';
@@ -40,6 +41,7 @@ test("getWindow", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("getActiveElement", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `<div id="testNode">
@@ -101,6 +103,7 @@ test("getActiveElement", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("contains", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
@@ -120,6 +123,7 @@ test("contains", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("isFrame", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
@@ -133,6 +137,7 @@ test("isFrame", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("isButton", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
@@ -187,6 +192,7 @@ test("isButton", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("matches", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = '<div id="testNode" />';
@@ -217,6 +223,7 @@ test("matches", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("isVisible", () => {
   // Have to fake the offset* properties because they are not supported in jsdom
   const originalOffsetHeight =
@@ -272,6 +279,7 @@ test("isVisible", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("closest", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
@@ -295,6 +303,7 @@ test("closest", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("isTextField", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
@@ -328,6 +337,7 @@ test("isTextField", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("getPopupRole", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
@@ -361,6 +371,7 @@ test("getPopupRole", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("getTextboxSelection", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
@@ -381,6 +392,7 @@ test("getTextboxSelection", () => {
   // Reset
   document.body.innerHTML = initialInnerHTML;
 });
+
 test("scrollIntoViewIfNeeded", () => {
   // TODO: Figure out how to test this
   // Seems like JSDOM doesn't support scroll stuff because it doesn't really do the layout
@@ -448,6 +460,7 @@ test("scrollIntoViewIfNeeded", () => {
     originalScrollIntoView
   );
 });
+
 test("getScrollingElement", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
@@ -512,6 +525,7 @@ test("getScrollingElement", () => {
   div2ClientHeightSpy.mockRestore();
   div2ScrollHeightSpy.mockRestore();
 });
+
 test("isPartiallyHidden", () => {
   document.body.innerHTML = `
     <div id="testNode">
