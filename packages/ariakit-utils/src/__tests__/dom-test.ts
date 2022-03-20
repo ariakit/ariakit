@@ -44,19 +44,21 @@ test("getWindow", () => {
 
 test("getActiveElement", () => {
   const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = `<div id="testNode">
-    <input id="testInput" />
-    <input type="text" aria-activedescendant="cb1-opt6" aria-readonly="true" aria-owns="cb1-list" aria-autocomplete="list" role="combobox" id="cb1-edit"/>
-    <ul aria-expanded="true" role="listbox" id="cb1-list">
-      <li role="option" id="cb1-opt1">Alabama</li>
-      <li role="option" id="cb1-opt2">Alaska</li>
-      <li role="option" id="cb1-opt3">American Samoa</li>
-      <li role="option" id="cb1-opt4">Arizona</li>
-      <li role="option" id="cb1-opt5">Arkansas</li>
-      <li role="option" id="cb1-opt6">California</li>
-      <li role="option" id="cb1-opt7">Colorado</li>
-    </ul>
-  </div>`;
+  document.body.innerHTML = `
+    <div id="testNode">
+      <input id="testInput" />
+      <input type="text" aria-activedescendant="cb1-opt6" aria-readonly="true" aria-owns="cb1-list" aria-autocomplete="list" role="combobox" id="cb1-edit"/>
+      <ul aria-expanded="true" role="listbox" id="cb1-list">
+        <li role="option" id="cb1-opt1">Alabama</li>
+        <li role="option" id="cb1-opt2">Alaska</li>
+        <li role="option" id="cb1-opt3">American Samoa</li>
+        <li role="option" id="cb1-opt4">Arizona</li>
+        <li role="option" id="cb1-opt5">Arkansas</li>
+        <li role="option" id="cb1-opt6">California</li>
+        <li role="option" id="cb1-opt7">Colorado</li>
+      </ul>
+    </div>
+  `;
   const node = document.getElementById("testNode");
 
   // Test before any elemeted is focused
@@ -201,8 +203,7 @@ test("matches", () => {
   expect(matches(element, "div")).toEqual(true);
 
   // Unsure of a better way to test this
-  // My current method is to create fake element with specific properties
-  // matches
+  // Current method is to create fake element with specific properties matches
   const matchesFunc = jest.fn(() => true);
   const fakeElement = { matches: matchesFunc } as any;
   expect(matches(fakeElement, "div")).toEqual(true);
@@ -225,16 +226,17 @@ test("matches", () => {
 });
 
 test("isVisible", () => {
+  const initialInnerHTML = document.body.innerHTML;
+  document.body.innerHTML = '<div id="testNode" />';
+  const element = document.getElementById("testNode") as HTMLElement;
+
   // Have to fake the offset* properties because they are not supported in jsdom
+  // Store the original values
   const originalOffsetHeight =
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetHeight") ??
     {};
   const originalOffsetWidth =
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetWidth") ?? {};
-
-  const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = '<div id="testNode" />';
-  const element = document.getElementById("testNode") as HTMLElement;
 
   // Tests the case with no offset* properties or getClientRects
   expect(isVisible(element)).toEqual(false);
