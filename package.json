@@ -64,7 +64,7 @@
     "husky": "7.0.4",
     "jest": "27.5.1",
     "jest-axe": "6.0.0",
-    "jest-fail-on-console": "2.2.3",
+    "jest-fail-on-console": "2.3.0",
     "jest-matcher-utils": "27.5.1",
     "lerna": "4.0.0",
     "lint-staged": "12.3.7",
