@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
+  SelectHTMLAttributes,
   useCallback,
   useEffect,
   useMemo,
@@ -77,6 +78,8 @@ export const useSelect = createHook<SelectOptions>(
   ({
     state,
     name,
+    form,
+    required,
     showOnKeyDown = true,
     moveOnKeyDown = true,
     toggleOnClick = false,
@@ -194,7 +197,9 @@ export const useSelect = createHook<SelectOptions>(
     const labelledBy = props["aria-labelledby"] || labelId;
     const values = useMemo(
       // Filter out items without value and duplicate values.
-      () => [...new Set(state.items.map((i) => i.value!).filter(Boolean))],
+      () => [
+        ...new Set(state.items.map((i) => i.value!).filter((i) => i != null)),
+      ],
       [state.items]
     );
 
@@ -212,6 +217,8 @@ export const useSelect = createHook<SelectOptions>(
             aria-label={label}
             aria-labelledby={labelledBy}
             name={name}
+            form={form}
+            required={required}
             value={state.value}
             multiple={multiSelectable}
             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
@@ -237,6 +244,8 @@ export const useSelect = createHook<SelectOptions>(
         label,
         labelledBy,
         name,
+        form,
+        required,
         state.value,
         multiSelectable,
         state.setValue,
@@ -293,6 +302,7 @@ export type SelectOptions<T extends As = "button"> = Omit<
   PopoverDisclosureOptions<T>,
   "state" | "toggleOnClick"
 > &
+  Pick<SelectHTMLAttributes<HTMLSelectElement>, "name" | "form" | "required"> &
   Omit<CompositeTypeaheadOptions<T>, "state"> & {
     /**
      * Object returned by the `useSelectState` hook.

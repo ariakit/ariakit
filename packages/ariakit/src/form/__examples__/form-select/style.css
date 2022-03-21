@@ -1,0 +1,11 @@
+@import url("../form/style.css");
+@import url("../../../select/__examples__/select/style.css");
+
+:root {
+  min-height: 580px !important;
+  @apply pt-[100px] pb-[100px];
+}
+
+.select {
+  @apply w-full;
+}

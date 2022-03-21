@@ -10,6 +10,7 @@ import { isTextField } from "ariakit-utils/dom";
 import {
   useEventCallback,
   useForkRef,
+  useInitialValue,
   useTagName,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
@@ -59,6 +60,7 @@ export const useForm = createHook<FormOptions>(
     ...props
   }) => {
     const ref = useRef<HTMLFormElement>(null);
+    const defaultValues = useInitialValue(state.values);
 
     useEffect(
       () => (resetOnUnmount ? state.reset : undefined),
@@ -66,10 +68,10 @@ export const useForm = createHook<FormOptions>(
     );
 
     useUpdateEffect(() => {
-      if (validateOnChange) {
-        state.validate();
-      }
-    }, [state.values, validateOnChange, state.validate]);
+      if (!validateOnChange) return;
+      if (state.values === defaultValues) return;
+      state.validate();
+    }, [validateOnChange, state.values, defaultValues, state.validate]);
 
     useEffect(() => {
       if (!resetOnSubmit) return;
