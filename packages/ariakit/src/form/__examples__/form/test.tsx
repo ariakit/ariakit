@@ -37,15 +37,15 @@ test("markup", () => {
           class="field"
         >
           <label
-            for="r:1"
-            id="r:0"
+            for=":r1:"
+            id=":r0:"
           >
             Name
           </label>
           <input
-            aria-describedby="r:2"
-            aria-labelledby="r:0"
-            id="r:1"
+            aria-describedby=":r2:"
+            aria-labelledby=":r0:"
+            id=":r1:"
             name="name"
             placeholder="John Doe"
             required=""
@@ -53,7 +53,7 @@ test("markup", () => {
           />
           <div
             class="error"
-            id="r:2"
+            id=":r2:"
             role="alert"
           />
         </div>

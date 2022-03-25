@@ -24,7 +24,7 @@ test("markup", () => {
           role="tablist"
         >
           <a
-            aria-controls="r:6"
+            aria-controls=":r6:"
             aria-selected="true"
             class="tab"
             data-active-item=""
@@ -60,7 +60,7 @@ test("markup", () => {
         </div>
         <div
           aria-labelledby="/fruits"
-          id="r:6"
+          id=":r6:"
           role="tabpanel"
           tabindex="0"
         >
