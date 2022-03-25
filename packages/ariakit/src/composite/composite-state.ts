@@ -406,13 +406,6 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *     itself will have focus and users will be able to navigate to it using
    *     arrow keys.
    * @default undefined
-   * @example
-   * // First enabled item has initial focus
-   * useCompositeState();
-   * // Base composite element has initial focus
-   * useCompositeState({ activeId: null });
-   * // Specific composite item element has initial focus
-   * useCompositeState({ activeId: "item-id" });
    */
   activeId?: Item["id"];
   /**
