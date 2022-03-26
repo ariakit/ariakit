@@ -13,7 +13,7 @@ test("markup", () => {
         class="wrapper"
       >
         <button
-          aria-controls="r:0"
+          aria-controls=":r0:"
           aria-expanded="false"
           class="button"
           data-command=""
@@ -24,7 +24,7 @@ test("markup", () => {
         </button>
         <div
           hidden=""
-          id="r:0"
+          id=":r0:"
           style="display: none;"
         >
           <p>

@@ -7,7 +7,7 @@ test("render tooltip", () => {
     <body>
       <div>
         <button
-          aria-labelledby="r:0"
+          aria-labelledby=":r0:"
           class="button"
           data-command=""
           tabindex="0"
@@ -17,7 +17,7 @@ test("render tooltip", () => {
         </button>
       </div>
       <div
-        id="r:0-portal"
+        id=":r0:-portal"
       >
         <div
           role="presentation"
@@ -26,7 +26,7 @@ test("render tooltip", () => {
           <div
             class="tooltip"
             hidden=""
-            id="r:0"
+            id=":r0:"
             role="tooltip"
             style="display: none;"
           >
