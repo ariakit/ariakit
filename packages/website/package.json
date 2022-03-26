@@ -11,7 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "12.1.0",
+    "next": "12.1.1",
     "rehype-react": "7.0.4"
   },
   "devDependencies": {
