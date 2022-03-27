@@ -41,7 +41,7 @@
     "@codemirror/search": "0.19.9",
     "@codemirror/state": "0.19.9",
     "@codemirror/view": "0.19.47",
-    "@codesandbox/sandpack-client": "0.15.2",
+    "@codesandbox/sandpack-client": "0.16.0",
     "@emotion/react": "^11.7.1",
     "ariakit-utils": "file:../ariakit-utils",
     "codesandbox-import-utils": "^2.2.3",
