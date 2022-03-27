@@ -39,7 +39,7 @@ import {
 import { TreeState } from "./tree-state";
 
 export const useTreeItem = createHook<TreeItemOptions>(
-  ({ state, shouldRegisterItem, getItem: getItemProp, groupId, ...props }) => {
+  ({ state, getItem: getItemProp, groupId, ...props }) => {
     const ref = useRef<HTMLElement>(null);
     const id = useId(props.id);
     const parentTreeItemId = useContext(TreeItemIdContext) || groupId;
@@ -51,8 +51,8 @@ export const useTreeItem = createHook<TreeItemOptions>(
     const parentLevel = useContext(TreeItemLevelContext);
 
     const childTreeItems = useMemo(
-      () => state?.treeItems.items?.filter((item) => item.groupId === id),
-      [state?.treeItems.items, id]
+      () => state?.items?.filter((item) => item.groupId === id),
+      [state?.items, id]
     );
 
     const hasChildTreeItems = !!childTreeItems?.length;
@@ -131,19 +131,19 @@ export const useTreeItem = createHook<TreeItemOptions>(
 
     const setSize = useMemo(() => {
       return (
-        state?.treeItems.items
+        state?.items
           .filter((treeItem) => treeItem.groupId === parentTreeItemId)
           .reduce((acc) => acc + 1, 0) || undefined
       );
-    }, [state?.treeItems]);
+    }, [state?.items]);
 
     const posInSet = useMemo(() => {
       return (
-        (state?.treeItems.items
+        (state?.items
           .filter((treeItem) => treeItem.groupId === parentTreeItemId)
           .findIndex((treeItem) => treeItem.id === id) || 0) + 1 || undefined
       );
-    }, [state?.treeItems]);
+    }, [state?.items]);
 
     props = useWrapElement(
       props,
@@ -180,13 +180,9 @@ export const useTreeItem = createHook<TreeItemOptions>(
     props = useCompositeItem({
       state,
       ...props,
-      shouldRegisterItem: shouldRegisterItem || visible,
-    });
-    props = useCollectionItem({
-      state: state?.treeItems,
-      ...props,
       getItem,
-      shouldRegisterItem,
+      id,
+      disabled: !visible,
     });
 
     return props;

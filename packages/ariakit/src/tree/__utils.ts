@@ -27,6 +27,6 @@ export const TreeItemVisibleContext = createContext<boolean | undefined>(
 
 export function useTreeItemFromCollection(state?: TreeState, id?: string) {
   return useMemo(() => {
-    return state?.treeItems.items.find((t) => t.id === id);
-  }, [state]);
+    return state?.items.find((t) => t.id === id);
+  }, [state?.items]);
 }

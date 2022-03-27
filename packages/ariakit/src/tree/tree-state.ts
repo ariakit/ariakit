@@ -56,7 +56,6 @@ export function useTreeState({
     orientation,
     ...props,
   });
-  const treeItems = useCollectionState<CollectionTreeItem>();
 
   const expand = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
@@ -86,20 +85,11 @@ export function useTreeState({
       ...composite,
       expandedIds,
       setExpandedIds,
-      treeItems,
       expand,
       collapse,
       toggleExpand,
     }),
-    [
-      composite,
-      expandedIds,
-      setExpandedIds,
-      treeItems,
-      expand,
-      collapse,
-      toggleExpand,
-    ]
+    [composite, expandedIds, setExpandedIds, expand, collapse, toggleExpand]
   );
 
   return useStorePublisher(state);
@@ -108,7 +98,6 @@ export function useTreeState({
 export type TreeState = CompositeState<CollectionTreeItem> & {
   expandedIds?: string[];
   setExpandedIds: SetState<TreeState["expandedIds"]>;
-  treeItems: CollectionState<CollectionTreeItem>;
   expand: TreeState["move"];
   collapse: TreeState["move"];
   toggleExpand: TreeState["move"];
