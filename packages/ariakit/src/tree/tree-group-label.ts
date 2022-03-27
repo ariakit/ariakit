@@ -76,7 +76,7 @@ export const TreeGroupLabel = createComponent<TreeGroupLabelOptions>(
 export type TreeGroupLabelOptions = Omit<CollectionItemOptions, "state"> & {
   /**
    * Object returned by the `useTreeState` hook. If not provided, the parent
-   * `Tree` component' context will be used.
+   * `Tree` component context will be used.
    */
   state?: TreeState;
 };

@@ -3,7 +3,6 @@ import {
   MouseEvent,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
 } from "react";
@@ -31,8 +30,10 @@ import {
 } from "../composite/composite-item";
 import {
   TreeContext,
+  TreeItemExpandedContext,
   TreeItemIdContext,
-  TreeItemsSyncContext,
+  TreeItemLevelContext,
+  TreeItemVisibleContext,
   useTreeItemFromCollection,
 } from "./__utils";
 import { TreeState } from "./tree-state";
@@ -42,11 +43,12 @@ export const useTreeItem = createHook<TreeItemOptions>(
     const ref = useRef<HTMLElement>(null);
     const id = useId(props.id);
     const parentTreeItemId = useContext(TreeItemIdContext) || groupId;
-    const { items: syncTreeItems, registerItem } =
-      useContext(TreeItemsSyncContext) || {};
     state = useStore(state || TreeContext);
 
     const parentTreeItem = useTreeItemFromCollection(state, parentTreeItemId);
+    const parentExpanded = useContext(TreeItemExpandedContext);
+    const parentVisible = useContext(TreeItemVisibleContext);
+    const parentLevel = useContext(TreeItemLevelContext);
 
     const childTreeItems = useMemo(
       () => state?.treeItems.items?.filter((item) => item.groupId === id),
@@ -54,13 +56,16 @@ export const useTreeItem = createHook<TreeItemOptions>(
     );
 
     const hasChildTreeItems = !!childTreeItems?.length;
+    const level = (parentLevel ?? (parentTreeItem?.level || 0)) + 1;
     const expanded = useMemo(
       () => !!id && state?.expandedIds?.includes(id),
       [id, state?.expandedIds]
     );
-    const level = (parentTreeItem?.level || 0) + 1;
 
-    const visible = parentTreeItem?.expanded ?? true;
+    const visible =
+      ((parentVisible ?? true) &&
+        (parentExpanded ?? parentTreeItem?.expanded)) ??
+      true;
 
     const onClickProp = useEventCallback(props.onClick);
     const onClick = useCallback(
@@ -124,16 +129,6 @@ export const useTreeItem = createHook<TreeItemOptions>(
       [id, getItemProp, groupId, parentTreeItemId, level, expanded, visible]
     );
 
-    // intentionally run this on rendering to make it SSR-friendly
-    let unregisterItem: (() => void) | undefined;
-    if (id && !syncTreeItems?.[id]) {
-      unregisterItem = registerItem?.(getItem({ ref }));
-    }
-
-    useEffect(() => {
-      return unregisterItem;
-    }, []);
-
     const setSize = useMemo(() => {
       return (
         state?.treeItems.items
@@ -154,10 +149,16 @@ export const useTreeItem = createHook<TreeItemOptions>(
       props,
       (element) => (
         <TreeItemIdContext.Provider value={id}>
-          {element}
+          <TreeItemLevelContext.Provider value={level}>
+            <TreeItemExpandedContext.Provider value={expanded}>
+              <TreeItemVisibleContext.Provider value={visible}>
+                {element}
+              </TreeItemVisibleContext.Provider>
+            </TreeItemExpandedContext.Provider>
+          </TreeItemLevelContext.Provider>
         </TreeItemIdContext.Provider>
       ),
-      [id]
+      [id, level, expanded, visible]
     );
 
     props = {
