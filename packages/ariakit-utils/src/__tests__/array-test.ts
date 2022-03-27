@@ -24,7 +24,7 @@ test("addItemToArray", () => {
   // Index > length
   expect(addItemToArray(arr, "c", 99)).toEqual(["a", "b", "d", "c"]);
   // Immunitibility
-  expect(addItemToArray(arr, "c", 2)).not.toEqual(arr);
+  expect(addItemToArray(arr, "c", 2)).not.toBe(arr);
 });
 
 test("flatten2DArray", () => {
@@ -33,7 +33,7 @@ test("flatten2DArray", () => {
   // Empty Array
   expect(flatten2DArray([])).toEqual([]);
   // Immunitibility
-  expect(flatten2DArray(arr)).not.toEqual(arr);
+  expect(flatten2DArray(arr)).not.toBe(arr);
 });
 
 test("reverseArray", () => {
@@ -42,5 +42,5 @@ test("reverseArray", () => {
   // Empty Array
   expect(reverseArray([])).toEqual([]);
   // Immunitibility
-  expect(reverseArray(arr)).not.toEqual(arr);
+  expect(reverseArray(arr)).not.toBe(arr);
 });
