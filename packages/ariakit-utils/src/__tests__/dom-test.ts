@@ -16,34 +16,39 @@ import {
   scrollIntoViewIfNeeded,
 } from "../dom";
 
-test("getDocument", () => {
-  const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = '<div id="testNode"></div>';
-  const node = document.getElementById("testNode");
+function getById<T extends HTMLElement = HTMLElement>(id: string) {
+  return document.getElementById(id) as T;
+}
 
-  expect(getDocument(undefined)).toEqual(document);
-  expect(getDocument(null)).toEqual(document);
-  expect(getDocument(node)).toEqual(document);
+let initialInnerHTML = "";
 
-  // Reset
+beforeEach(() => {
+  initialInnerHTML = document.body.innerHTML;
+});
+
+afterEach(() => {
   document.body.innerHTML = initialInnerHTML;
+});
+
+test("getDocument", () => {
+  document.body.innerHTML = '<div id="testNode" />';
+  const node = getById("testNode");
+
+  expect(getDocument(undefined)).toBe(document);
+  expect(getDocument(null)).toBe(document);
+  expect(getDocument(node)).toBe(document);
 });
 
 test("getWindow", () => {
-  const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = '<div id="testNode"></div>';
-  const node = document.getElementById("testNode");
+  document.body.innerHTML = '<div id="testNode" />';
+  const node = getById("testNode");
 
-  expect(getWindow(undefined)).toEqual(window);
-  expect(getWindow(null)).toEqual(window);
-  expect(getWindow(node)).toEqual(window);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(getWindow(undefined)).toBe(window);
+  expect(getWindow(null)).toBe(window);
+  expect(getWindow(node)).toBe(window);
 });
 
 test("getActiveElement", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode">
       <input id="testInput" />
@@ -59,89 +64,74 @@ test("getActiveElement", () => {
       </ul>
     </div>
   `;
-  const node = document.getElementById("testNode");
+  const node = getById("testNode");
 
   // Test before any elemeted is focused
-  expect(getActiveElement(undefined)).toEqual(document.body);
-  expect(getActiveElement(null)).toEqual(document.body);
-  expect(getActiveElement(node)).toEqual(document.body);
+  expect(getActiveElement(undefined)).toBe(document.body);
+  expect(getActiveElement(null)).toBe(document.body);
+  expect(getActiveElement(node)).toBe(document.body);
 
   // Test with an element focused
-  const input = document.getElementById("testInput");
+  const input = getById("testInput");
   input?.focus();
 
-  expect(getActiveElement(undefined)).toEqual(input);
-  expect(getActiveElement(null)).toEqual(input);
-  expect(getActiveElement(node)).toEqual(input);
-  expect(getActiveElement(input)).toEqual(input);
+  expect(getActiveElement(undefined)).toBe(input);
+  expect(getActiveElement(null)).toBe(input);
+  expect(getActiveElement(node)).toBe(input);
+  expect(getActiveElement(input)).toBe(input);
 
   // Test IE11 Case
   const activeElementMock = jest
     .spyOn(document, "activeElement", "get")
     .mockReturnValue(null);
 
-  expect(getActiveElement(undefined)).toEqual(null);
-  expect(getActiveElement(null)).toEqual(null);
-  expect(getActiveElement(node)).toEqual(null);
-  expect(getActiveElement(input)).toEqual(null);
+  expect(getActiveElement(undefined)).toBe(null);
+  expect(getActiveElement(null)).toBe(null);
+  expect(getActiveElement(node)).toBe(null);
+  expect(getActiveElement(input)).toBe(null);
 
   activeElementMock.mockRestore();
 
-  // TODO: Not sure how to test the iframe case
-  //  One option might be mocking isFrame and activeElement
-
   // activeDecendant = true
-  const input2 = document.getElementById("cb1-edit");
+  const input2 = getById("cb1-edit");
   input2?.focus();
 
-  const focusedLi = document.getElementById("cb1-opt6");
+  const focusedLi = getById("cb1-opt6");
 
-  expect(getActiveElement(undefined, true)).toEqual(focusedLi);
-  expect(getActiveElement(null, true)).toEqual(focusedLi);
-  expect(getActiveElement(node, true)).toEqual(focusedLi);
-  expect(getActiveElement(input, true)).toEqual(focusedLi);
-  expect(getActiveElement(input2, true)).toEqual(focusedLi);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(getActiveElement(undefined, true)).toBe(focusedLi);
+  expect(getActiveElement(null, true)).toBe(focusedLi);
+  expect(getActiveElement(node, true)).toBe(focusedLi);
+  expect(getActiveElement(input, true)).toBe(focusedLi);
+  expect(getActiveElement(input2, true)).toBe(focusedLi);
 });
 
 test("contains", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
     '<div id="testNode"><div id="innerTestNode" /></div>';
-  const node = document.getElementById("testNode") as HTMLElement;
-  const innerNode = document.getElementById("innerTestNode") as HTMLElement;
+  const node = getById("testNode");
+  const innerNode = getById("innerTestNode");
 
-  expect(contains(node, node)).toEqual(true);
-  expect(contains(node, innerNode)).toEqual(true);
-  expect(contains(innerNode, node)).toEqual(false);
+  expect(contains(node, node)).toBe(true);
+  expect(contains(node, innerNode)).toBe(true);
+  expect(contains(innerNode, node)).toBe(false);
 
   // Operates the same as default `conatins`
-  expect(contains(node, node)).toEqual(node.contains(node));
-  expect(contains(node, innerNode)).toEqual(node.contains(innerNode));
-  expect(contains(innerNode, node)).toEqual(innerNode.contains(node));
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(contains(node, node)).toBe(node.contains(node));
+  expect(contains(node, innerNode)).toBe(node.contains(innerNode));
+  expect(contains(innerNode, node)).toBe(innerNode.contains(node));
 });
 
 test("isFrame", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
     '<div id="testNode"><iframe id="testIframe"/></div>';
-  const node = document.getElementById("testNode") as HTMLElement;
-  const iframe = document.getElementById("testIframe") as HTMLIFrameElement;
+  const node = getById("testNode");
+  const iframe = getById("testIframe");
 
-  expect(isFrame(node)).toEqual(false);
-  expect(isFrame(iframe)).toEqual(true);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(isFrame(node)).toBe(false);
+  expect(isFrame(iframe)).toBe(true);
 });
 
 test("isButton", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode">
       <button id="testButton"/>
@@ -155,80 +145,51 @@ test("isButton", () => {
       <div role="button" id="testDivButton"/>
     </div>
   `;
-  const node = document.getElementById("testNode") as HTMLElement;
-  const button = document.getElementById("testButton") as HTMLButtonElement;
-  const inputButton = document.getElementById(
-    "testInputButton"
-  ) as HTMLInputElement;
-  const inputSubmit = document.getElementById(
-    "testInputSubmit"
-  ) as HTMLInputElement;
-  const inputReset = document.getElementById(
-    "testInputReset"
-  ) as HTMLInputElement;
-  const inputImage = document.getElementById(
-    "testInputImage"
-  ) as HTMLInputElement;
-  const inputFile = document.getElementById(
-    "testInputFile"
-  ) as HTMLInputElement;
-  const inputColor = document.getElementById(
-    "testInputColor"
-  ) as HTMLInputElement;
-  const input = document.getElementById("testInput") as HTMLInputElement;
-  const divButton = document.getElementById(
-    "testDivButton"
-  ) as HTMLButtonElement;
+  const node = getById("testNode");
+  const button = getById("testButton");
+  const inputButton = getById("testInputButton");
+  const inputSubmit = getById("testInputSubmit");
+  const inputReset = getById("testInputReset");
+  const inputImage = getById("testInputImage");
+  const inputFile = getById("testInputFile");
+  const inputColor = getById("testInputColor");
+  const input = getById("testInput");
+  const divButton = getById("testDivButton");
 
-  expect(isButton(node)).toEqual(false);
-  expect(isButton(button)).toEqual(true);
-  expect(isButton(inputButton)).toEqual(true);
-  expect(isButton(inputSubmit)).toEqual(true);
-  expect(isButton(inputReset)).toEqual(true);
-  expect(isButton(inputImage)).toEqual(true);
-  expect(isButton(inputFile)).toEqual(true);
-  expect(isButton(inputColor)).toEqual(true);
-  expect(isButton(input)).toEqual(false);
-  expect(isButton(divButton)).toEqual(false);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(isButton(node)).toBe(false);
+  expect(isButton(button)).toBe(true);
+  expect(isButton(inputButton)).toBe(true);
+  expect(isButton(inputSubmit)).toBe(true);
+  expect(isButton(inputReset)).toBe(true);
+  expect(isButton(inputImage)).toBe(true);
+  expect(isButton(inputFile)).toBe(true);
+  expect(isButton(inputColor)).toBe(true);
+  expect(isButton(input)).toBe(false);
+  expect(isButton(divButton)).toBe(false);
 });
 
 test("matches", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = '<div id="testNode" />';
-  const element = document.getElementById("testNode") as HTMLElement;
+  const element = getById("testNode");
 
-  expect(matches(element, "div")).toEqual(true);
-
-  // Unsure of a better way to test this
-  // Current method is to create fake element with specific properties matches
-  const matchesFunc = jest.fn(() => true);
-  const fakeElement = { matches: matchesFunc } as any;
-  expect(matches(fakeElement, "div")).toEqual(true);
-  expect(matchesFunc).toHaveBeenCalled();
+  expect(matches(element, "div")).toBe(true);
 
   // msMatchesSelector
   const msMatchesSelector = jest.fn(() => true);
   const fakeElement2 = { msMatchesSelector } as any;
-  expect(matches(fakeElement2, "div")).toEqual(true);
+  expect(matches(fakeElement2, "div")).toBe(true);
   expect(msMatchesSelector).toHaveBeenCalled();
 
   // webkitMatchesSelector
   const webkitMatchesSelector = jest.fn(() => true);
   const fakeElement3 = { webkitMatchesSelector } as any;
-  expect(matches(fakeElement3, "div")).toEqual(true);
+  expect(matches(fakeElement3, "div")).toBe(true);
   expect(webkitMatchesSelector).toHaveBeenCalled();
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
 });
 
 test("isVisible", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = '<div id="testNode" />';
-  const element = document.getElementById("testNode") as HTMLElement;
+  const element = getById("testNode");
 
   // Have to fake the offset* properties because they are not supported in jsdom
   // Store the original values
@@ -239,14 +200,14 @@ test("isVisible", () => {
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetWidth") ?? {};
 
   // Tests the case with no offset* properties or getClientRects
-  expect(isVisible(element)).toEqual(false);
+  expect(isVisible(element)).toBe(false);
 
   // Tests the case with offsetHeight
   Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
     configurable: true,
     value: 200,
   });
-  expect(isVisible(element)).toEqual(true);
+  expect(isVisible(element)).toBe(true);
   Object.defineProperty(
     HTMLElement.prototype,
     "offsetHeight",
@@ -258,7 +219,7 @@ test("isVisible", () => {
     configurable: true,
     value: 200,
   });
-  expect(isVisible(element)).toEqual(true);
+  expect(isVisible(element)).toBe(true);
   Object.defineProperty(
     HTMLElement.prototype,
     "offsetWidth",
@@ -272,27 +233,23 @@ test("isVisible", () => {
     //  getClientRects is suppose to return a DOMRectList but there is no way to construct one
     //  So we just return an array with > 0 lengh
     ["some", "fake", "DOMRectList"];
-  expect(isVisible(element)).toEqual(true);
+  expect(isVisible(element)).toBe(true);
   element.getClientRects = originalGetClientRects;
 
   // Check that things were reset correctly
-  expect(isVisible(element)).toEqual(false);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(isVisible(element)).toBe(false);
 });
 
 test("closest", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML =
-    '<div id="testNode"><div id="testNode2" /><input /></div>';
-  const element = document.getElementById("testNode") as HTMLElement;
-  const element2 = document.getElementById("testNode2") as HTMLElement;
-  const input = document.getElementsByTagName("input")[0] as HTMLInputElement;
+    '<div id="testNode"><div id="testNode2" /><input id="input" /></div>';
+  const element = getById("testNode");
+  const element2 = getById("testNode2");
+  const input = getById("input");
 
-  expect(closest(element, "div")).toEqual(element);
-  expect(closest(input, "div")).toEqual(element2);
-  expect(closest(element2, "#testNode")).toEqual(element);
+  expect(closest(element, "div")).toBe(element);
+  expect(closest(input, "div")).toBe(element2);
+  expect(closest(element2, "#testNode")).toBe(element);
 
   // Fake object with no matches
   const fakeElement = {
@@ -300,31 +257,25 @@ test("closest", () => {
     parentElement: null,
     parentNode: null,
   } as any;
-  expect(closest(fakeElement, "div")).toEqual(null);
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(closest(fakeElement, "div")).toBe(null);
 });
 
 test("isTextField", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode"/>
     <input id="testInput" type="text" />
     <input id="testInput2" type="button" />
     <textarea id="testTextarea" />
   `;
-  const div = document.getElementById("testNode") as HTMLElement;
-  const input = document.getElementById("testInput") as HTMLInputElement;
-  const input2 = document.getElementById("testInput2") as HTMLInputElement;
-  const textarea = document.getElementById(
-    "testTextarea"
-  ) as HTMLTextAreaElement;
+  const div = getById("testNode");
+  const input = getById<HTMLInputElement>("testInput");
+  const input2 = getById("testInput2");
+  const textarea = getById("testTextarea");
 
-  expect(isTextField(div)).toEqual(false);
-  expect(isTextField(input)).toEqual(true);
-  expect(isTextField(input2)).toEqual(false);
-  expect(isTextField(textarea)).toEqual(true);
+  expect(isTextField(div)).toBe(false);
+  expect(isTextField(input)).toBe(true);
+  expect(isTextField(input2)).toBe(false);
+  expect(isTextField(textarea)).toBe(true);
 
   const selectionStartSpy = jest
     .spyOn(input, "selectionStart", "get")
@@ -332,16 +283,12 @@ test("isTextField", () => {
       throw new Error();
     });
 
-  expect(isTextField(input)).toEqual(false);
+  expect(isTextField(input)).toBe(false);
 
   selectionStartSpy.mockRestore();
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
 });
 
 test("getPopupRole", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode" role="dialog" />
     <div id="testNode2" role="menu" />
@@ -351,66 +298,50 @@ test("getPopupRole", () => {
     <div id="testNode6" role="unsupported" />
     <div id="testNode7" />
   `;
-  const div = document.getElementById("testNode") as HTMLElement;
-  const div2 = document.getElementById("testNode2") as HTMLElement;
-  const div3 = document.getElementById("testNode3") as HTMLElement;
-  const div4 = document.getElementById("testNode4") as HTMLElement;
-  const div5 = document.getElementById("testNode5") as HTMLElement;
-  const div6 = document.getElementById("testNode6") as HTMLElement;
-  const div7 = document.getElementById("testNode7") as HTMLElement;
+  const div = getById("testNode");
+  const div2 = getById("testNode2");
+  const div3 = getById("testNode3");
+  const div4 = getById("testNode4");
+  const div5 = getById("testNode5");
+  const div6 = getById("testNode6");
+  const div7 = getById("testNode7");
 
-  expect(getPopupRole(div)).toEqual("dialog");
-  expect(getPopupRole(div2)).toEqual("menu");
-  expect(getPopupRole(div3)).toEqual("listbox");
-  expect(getPopupRole(div4)).toEqual("tree");
-  expect(getPopupRole(div5)).toEqual("grid");
-  expect(getPopupRole(div6)).toEqual(undefined);
-  expect(getPopupRole(div6, "dialog")).toEqual("dialog");
-  expect(getPopupRole(div6, true)).toEqual(true);
-  expect(getPopupRole(div7)).toEqual(undefined);
-  expect(getPopupRole(div7, "dialog")).toEqual("dialog");
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
+  expect(getPopupRole(div)).toBe("dialog");
+  expect(getPopupRole(div2)).toBe("menu");
+  expect(getPopupRole(div3)).toBe("listbox");
+  expect(getPopupRole(div4)).toBe("tree");
+  expect(getPopupRole(div5)).toBe("grid");
+  expect(getPopupRole(div6)).toBe(undefined);
+  expect(getPopupRole(div6, "dialog")).toBe("dialog");
+  expect(getPopupRole(div6, true)).toBe(true);
+  expect(getPopupRole(div7)).toBe(undefined);
+  expect(getPopupRole(div7, "dialog")).toBe("dialog");
 });
 
 test("getTextboxSelection", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <input id="testInput" type="text" value="some text" />
     <div contenteditable="true" id="testContentEditable" />
   `;
-  const input = document.getElementById("testInput") as HTMLInputElement;
+  const input = getById<HTMLInputElement>("testInput");
   input.setSelectionRange(2, 5);
   expect(getTextboxSelection(input)).toEqual({
     start: 2,
     end: 5,
   });
-
-  // TODO: Figure out how to test the contenteditable case
-  // This https://github.com/jsdom/jsdom/issues/1670#issuecomment-267843544
-  //  implies that maybe content editiable isn't well supported in jsdom
-
-  // Reset
-  document.body.innerHTML = initialInnerHTML;
 });
 
 test("scrollIntoViewIfNeeded", () => {
-  // TODO: Figure out how to test this
-  // Seems like JSDOM doesn't support scroll stuff because it doesn't really do the layout
-  // https://github.com/jsdom/jsdom/issues/1695
-  // It seems like maybe we could fake a bunch of functions but it might not have a lot of value anyways
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-  <div id="testNode">
-    <div id="testNode2" >
-      <div id="testNode3" />
+    <div id="testNode">
+      <div id="testNode2" >
+        <div id="testNode3" />
+      </div>
     </div>
-  </div>
-`;
-  const div = document.getElementById("testNode") as HTMLElement;
-  const div2 = document.getElementById("testNode2") as HTMLElement;
-  const div3 = document.getElementById("testNode3") as HTMLElement;
+  `;
+  const div = getById("testNode");
+  const div2 = getById("testNode2");
+  const div3 = getById("testNode3");
 
   const scrollIntoViewMock = jest.fn();
   const originalScrollIntoView =
@@ -455,7 +386,6 @@ test("scrollIntoViewIfNeeded", () => {
   expect(scrollIntoViewMock).toBeCalledTimes(1);
 
   // Reset
-  document.body.innerHTML = initialInnerHTML;
   Object.defineProperty(
     HTMLElement.prototype,
     "offsetWidth",
@@ -464,7 +394,6 @@ test("scrollIntoViewIfNeeded", () => {
 });
 
 test("getScrollingElement", () => {
-  const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode">
       <div id="testNode2" >
@@ -472,19 +401,19 @@ test("getScrollingElement", () => {
       </div>
     </div>
   `;
-  const div = document.getElementById("testNode") as HTMLElement;
-  const div2 = document.getElementById("testNode2") as HTMLElement;
-  const div3 = document.getElementById("testNode3") as HTMLElement;
+  const div = getById("testNode");
+  const div2 = getById("testNode2");
+  const div3 = getById("testNode3");
 
   // Undefined element case
-  expect(getScrollingElement()).toEqual(null);
-  expect(getScrollingElement(undefined)).toEqual(null);
-  expect(getScrollingElement(null)).toEqual(null);
+  expect(getScrollingElement()).toBe(null);
+  expect(getScrollingElement(undefined)).toBe(null);
+  expect(getScrollingElement(null)).toBe(null);
 
   //
   // Falls back to body cases
   //
-  expect(getScrollingElement(div)).toEqual(document.body);
+  expect(getScrollingElement(div)).toBe(document.body);
 
   // Fake properties because jsdon doesn't support layout stuff
   const div2ClientHeightSpy = jest.spyOn(div2, "clientHeight", "get");
@@ -492,20 +421,20 @@ test("getScrollingElement", () => {
 
   // clientHeight is 0
   div2ClientHeightSpy.mockReturnValue(0);
-  expect(getScrollingElement(div2)).toEqual(document.body);
+  expect(getScrollingElement(div2)).toBe(document.body);
 
   // clientHeight is > scrollHeight
   div2ClientHeightSpy.mockReturnValue(100);
   div2ScrollHeightSpy.mockReturnValue(50);
-  expect(getScrollingElement(div2)).toEqual(document.body);
+  expect(getScrollingElement(div2)).toBe(document.body);
 
   // overflow is hidden or visible
   div2ClientHeightSpy.mockReturnValue(20);
   div2ScrollHeightSpy.mockReturnValue(50);
   div2.style.overflowY = "hidden";
-  expect(getScrollingElement(div2)).toEqual(document.body);
+  expect(getScrollingElement(div2)).toBe(document.body);
   div2.style.overflowY = "visible";
-  expect(getScrollingElement(div2)).toEqual(document.body);
+  expect(getScrollingElement(div2)).toBe(document.body);
 
   //
   // None body cases
@@ -514,16 +443,15 @@ test("getScrollingElement", () => {
   div2ScrollHeightSpy.mockReturnValue(50);
   // overflow is scroll
   div2.style.overflowY = "scroll";
-  expect(getScrollingElement(div2)).toEqual(div2);
-  expect(getScrollingElement(div3)).toEqual(div2);
+  expect(getScrollingElement(div2)).toBe(div2);
+  expect(getScrollingElement(div3)).toBe(div2);
 
   // overflow is auto
   div2.style.overflowY = "auto";
-  expect(getScrollingElement(div2)).toEqual(div2);
-  expect(getScrollingElement(div3)).toEqual(div2);
+  expect(getScrollingElement(div2)).toBe(div2);
+  expect(getScrollingElement(div3)).toBe(div2);
 
   // Reset
-  document.body.innerHTML = initialInnerHTML;
   div2ClientHeightSpy.mockRestore();
   div2ScrollHeightSpy.mockRestore();
 });
@@ -536,12 +464,12 @@ test("isPartiallyHidden", () => {
       </div>
     </div>
   `;
-  const div = document.getElementById("testNode") as HTMLElement;
-  const div2 = document.getElementById("testNode2") as HTMLElement;
-  const div3 = document.getElementById("testNode3") as HTMLElement;
+  const div = getById("testNode");
+  const div2 = getById("testNode2");
+  const div3 = getById("testNode3");
 
   // Falls back to body cases
-  expect(isPartiallyHidden(div)).toEqual(false);
+  expect(isPartiallyHidden(div)).toBe(false);
 
   // Is visible case
   const divGetBoundingClientRectSpy = jest.spyOn(div, "getBoundingClientRect");
@@ -569,8 +497,8 @@ test("isPartiallyHidden", () => {
     right: 50,
     bottom: 50,
   } as DOMRect);
-  expect(isPartiallyHidden(div2)).toEqual(true);
-  expect(isPartiallyHidden(div3)).toEqual(false);
+  expect(isPartiallyHidden(div2)).toBe(true);
+  expect(isPartiallyHidden(div3)).toBe(false);
 
   // Is hidden case
   divGetBoundingClientRectSpy.mockReturnValue({
@@ -593,9 +521,6 @@ test("isPartiallyHidden", () => {
     right: 200,
     bottom: 200,
   } as DOMRect);
-  expect(isPartiallyHidden(div2)).toEqual(true);
-  expect(isPartiallyHidden(div3)).toEqual(false);
-
-  // Reset
-  document.body.innerHTML = "";
+  expect(isPartiallyHidden(div2)).toBe(true);
+  expect(isPartiallyHidden(div3)).toBe(false);
 });
