@@ -7,7 +7,6 @@ on:
 
 jobs:
   prepare-npm-cache:
-    name: Prepare npm cache
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +30,6 @@ jobs:
         run: npm ci --no-audit --ignore-scripts
 
   build:
-    name: Build
     needs: prepare-npm-cache
     runs-on: ubuntu-latest
 
@@ -43,14 +41,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
@@ -68,7 +58,7 @@ jobs:
         run: npm run build
 
   test:
-    name: Test (${{ matrix.shard }})
+    name: test (${{ matrix.shard }})
     needs: prepare-npm-cache
     runs-on: ubuntu-latest
     strategy:
@@ -83,14 +73,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
