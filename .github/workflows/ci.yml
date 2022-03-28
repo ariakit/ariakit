@@ -8,6 +8,7 @@ on:
 jobs:
   prepare-npm-cache:
     name: Prepare npm cache
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
