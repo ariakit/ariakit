@@ -405,7 +405,6 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   - If `activeId` is initially set to `null`, the base composite element
    *     itself will have focus and users will be able to navigate to it using
    *     arrow keys.
-   * @default undefined
    */
   activeId?: Item["id"];
   /**
