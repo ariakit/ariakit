@@ -10,6 +10,7 @@ module.exports = {
   ],
   collectCoverageFrom: [
     "packages/ariakit/src/**/*.{js,ts,tsx}",
+    "packages/ariakit-utils/src/**/*.{js,ts,tsx}",
     "!**/*test.{js,ts,tsx}",
   ],
   moduleNameMapper: {
