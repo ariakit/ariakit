@@ -6,7 +6,32 @@ on:
   pull_request:
 
 jobs:
+  prepare-npm-cache:
+    name: Prepare npm cache
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+
   build:
+    name: Build
+    needs: prepare-npm-cache
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +67,12 @@ jobs:
         run: npm run build
 
   test:
+    name: Test (${{ matrix.shard }})
+    needs: prepare-npm-cache
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
       - name: Checkout repository
@@ -64,8 +94,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
 
+      - name: Get number of CPU cores
+        id: cpu-cores
+        uses: SimenB/github-actions-cpu-cores@v1
+
       - name: Test
-        run: npm test -- --coverage
+        run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }} --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
