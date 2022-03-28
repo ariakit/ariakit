@@ -8,7 +8,7 @@ import {
   isPortalEvent,
   isSelfTarget,
   queueBeforeEvent,
-} from "ariakit-utils/events";
+} from "../events";
 
 test("isPortalEvent", () => {
   const initialInnerHTML = document.body.innerHTML;
