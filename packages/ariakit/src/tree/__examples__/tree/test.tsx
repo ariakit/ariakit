@@ -1,5 +1,6 @@
 import { ByRoleOptions } from "@testing-library/dom";
 import {
+  act,
   click,
   getByRole,
   press,
@@ -7,7 +8,6 @@ import {
   render,
 } from "ariakit-test-utils";
 import { axe } from "jest-axe";
-import { act } from "react-dom/test-utils";
 import Example from ".";
 
 const getTree = () => getByRole("tree");

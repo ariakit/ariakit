@@ -166,8 +166,8 @@ export const useTreeItem = createHook<TreeItemOptions>(
       "aria-setsize": setSize,
       onClick,
       onKeyDown,
-      ref: useForkRef(ref, props.ref),
       ...props,
+      ref: useForkRef(ref, props.ref),
     };
 
     props = useGroup(props);
