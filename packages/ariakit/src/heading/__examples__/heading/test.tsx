@@ -1,7 +1,7 @@
 import { render } from "ariakit-test-utils";
 import Example from ".";
 
-test("render heading", () => {
+test("markup", () => {
   const { container } = render(<Example />);
   expect(container).toMatchInlineSnapshot(`
   <div>

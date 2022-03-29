@@ -25,57 +25,6 @@ afterEach(() => {
   alert.mockClear();
 });
 
-test("markup", () => {
-  const { container } = render(<Example />);
-  expect(container).toMatchInlineSnapshot(`
-    <div>
-      <form
-        class="form"
-        novalidate=""
-      >
-        <div
-          class="field"
-        >
-          <label
-            for=":r1:"
-            id=":r0:"
-          >
-            Name
-          </label>
-          <input
-            aria-describedby=":r2:"
-            aria-labelledby=":r0:"
-            id=":r1:"
-            name="name"
-            placeholder="John Doe"
-            required=""
-            value=""
-          />
-          <div
-            class="error"
-            id=":r2:"
-            role="alert"
-          />
-        </div>
-        <button
-          class="button"
-          data-command=""
-          type="submit"
-        >
-          Submit
-        </button>
-        <button
-          class="button secondary"
-          data-command=""
-          type="reset"
-        >
-          Reset
-        </button>
-      </form>
-    </div>
-  `);
-});
-
 test("a11y", async () => {
   const { container } = render(<Example />);
   expect(await axe(container)).toHaveNoViolations();
