@@ -69,6 +69,11 @@ function isBackdrop(dialog: HTMLElement, element: Element) {
   return element.getAttribute("data-backdrop") === id;
 }
 
+function isInDialog(element: Node) {
+  return (dialogRef: RefObject<Node>) =>
+    dialogRef.current && contains(dialogRef.current, element);
+}
+
 function isAlreadyFocusingAnotherElement(
   dialog: HTMLElement,
   nestedDialogs?: Array<RefObject<HTMLElement>>
@@ -80,11 +85,6 @@ function isAlreadyFocusingAnotherElement(
   if (nestedDialogs?.some(isInDialog(activeElement))) return false;
   if (isFocusable(activeElement)) return true;
   return false;
-}
-
-function isInDialog(element: Node) {
-  return (dialogRef: RefObject<Node>) =>
-    dialogRef.current && contains(dialogRef.current, element);
 }
 
 /**
