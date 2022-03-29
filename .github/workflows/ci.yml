@@ -14,7 +14,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-
       - name: Cache
         uses: actions/cache@v3
         with:
@@ -22,7 +21,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
 
@@ -41,14 +39,11 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-        run: npm ci --no-audit --ignore-scripts
-
+      - run: npm ci --no-audit --ignore-scripts
       - name: Lint
         run: npm run lint
-
       - name: Lint CSS
         run: npm run lint:css
-
       - name: Type check
         run: npm run type-check
 
@@ -67,8 +62,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-        run: npm ci --no-audit --ignore-scripts
-
+      - run: npm ci --no-audit --ignore-scripts
       - name: Build
         run: npm run build
 
@@ -91,14 +85,11 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-        run: npm ci --no-audit --ignore-scripts
-
+      - run: npm ci --no-audit --ignore-scripts
       - name: Get number of CPU cores
         id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v1
-
       - name: Test
         run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }} --coverage
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
