@@ -21,6 +21,7 @@ export type ComboboxMultipleProps = Omit<
   ComboboxProps,
   "state" | "onChange"
 > & {
+  label?: string;
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -37,6 +38,7 @@ export const ComboboxMultiple = forwardRef<
   ComboboxMultipleProps
 >((props, ref) => {
   const {
+    label,
     defaultValue,
     value,
     onChange,
@@ -77,14 +79,25 @@ export const ComboboxMultiple = forwardRef<
     combobox.setValue("");
   }, [checkbox.value, combobox.setValue]);
 
+  const element = (
+    <Combobox
+      ref={ref}
+      state={combobox}
+      className="combobox"
+      {...comboboxProps}
+    />
+  );
+
   return (
     <>
-      <Combobox
-        ref={ref}
-        state={combobox}
-        className="combobox"
-        {...comboboxProps}
-      />
+      {label ? (
+        <label className="label">
+          {label}
+          {element}
+        </label>
+      ) : (
+        element
+      )}
       <ComboboxPopover
         state={combobox}
         aria-multiselectable

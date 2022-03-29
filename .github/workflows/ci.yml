@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
       - name: Cache node_modules
         uses: actions/cache@v3
@@ -42,7 +42,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
       - name: Cache node_modules
         uses: actions/cache@v3
@@ -77,7 +77,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
       - name: Cache node_modules
         uses: actions/cache@v3
@@ -100,7 +100,8 @@ jobs:
     # name: test (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
-    # strategy:
+    strategy:
+      fail-fast: false
     #   matrix:
     #     shard: ["1/4", "2/4", "3/4", "4/4"]
 
@@ -111,7 +112,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
       - name: Cache node_modules
         uses: actions/cache@v3
@@ -138,3 +139,48 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
+
+  react:
+    name: react-${{ matrix.react-version }}
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react-version: [17, 16]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit --ignore-scripts
+
+      - name: Install React ${{ matrix.react-version }}
+        run: >
+          npm i --no-save
+          react@${{ matrix.react-version }}
+          react-dom@${{ matrix.react-version }}
+          @testing-library/react@12
+
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Test
+        run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
