@@ -50,7 +50,7 @@
   },
   "peerDependencies": {
     "ariakit": "^2.0.0 || ^2.0.0-alpha",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^18.0.0-beta"
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.4",
