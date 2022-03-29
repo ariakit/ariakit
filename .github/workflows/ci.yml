@@ -99,7 +99,7 @@ jobs:
     # TODO: Add on Jest 28
     # name: test (${{ matrix.shard }})
     needs: install
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     #   matrix:
@@ -143,7 +143,7 @@ jobs:
   react:
     name: react-${{ matrix.react-version }}
     needs: install
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
