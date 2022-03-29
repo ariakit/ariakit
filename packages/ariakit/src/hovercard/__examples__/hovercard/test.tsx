@@ -56,11 +56,11 @@ test("keep hovercard visible when hovering out and in quickly", async () => {
   await hover(getAnchor());
   await waitForHovercardToShow();
   await hover(baseElement);
-  await sleep(400);
+  await sleep(200);
   await hover(getAnchor());
   await expect(getHovercard()).toBeVisible();
   await hover(baseElement);
-  await sleep(400);
+  await sleep(200);
   await hover(getHovercard());
   await sleep(600);
   await expect(getHovercard()).toBeVisible();
