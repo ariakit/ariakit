@@ -3,7 +3,6 @@
 module.exports = {
   rootDir: __dirname,
   testEnvironment: "jsdom",
-  cacheDirectory: "<rootDir>/.jest-cache",
   projects: [
     "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",

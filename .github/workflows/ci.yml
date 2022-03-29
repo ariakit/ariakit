@@ -126,12 +126,6 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
-      - name: Cache Jest
-        uses: actions/cache@v3
-        with:
-          path: .jest-cache
-          key: jest
-
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
         id: cpu-cores
