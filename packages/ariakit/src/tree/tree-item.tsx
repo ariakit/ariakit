@@ -20,10 +20,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item";
+import { CollectionItemOptions } from "../collection/collection-item";
 import {
   CompositeItemOptions,
   useCompositeItem,

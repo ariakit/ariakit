@@ -3,10 +3,6 @@ import { useControlledState } from "ariakit-utils/hooks";
 import { useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
-  CollectionState,
-  useCollectionState,
-} from "../collection/collection-state";
-import {
   CompositeState,
   CompositeStateProps,
   useCompositeState,
