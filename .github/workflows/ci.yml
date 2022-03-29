@@ -1,4 +1,4 @@
-name: ci
+name: ci2
 
 on:
   push:
@@ -6,7 +6,33 @@ on:
   pull_request:
 
 jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit --ignore-scripts
+
   lint:
+    needs: install
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +67,7 @@ jobs:
         run: npm run type-check
 
   build:
+    needs: install
     runs-on: ubuntu-latest
 
     steps:
@@ -71,6 +98,7 @@ jobs:
   test:
     # TODO: Add on Jest 28
     # name: test (${{ matrix.shard }})
+    needs: install
     runs-on: ubuntu-latest
     # strategy:
     #   matrix:
@@ -114,6 +142,7 @@ jobs:
   test-react-17:
     # TODO: Add on Jest 28
     # name: test (${{ matrix.shard }})
+    needs: install
     runs-on: ubuntu-latest
     # strategy:
     #   matrix:
