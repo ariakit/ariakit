@@ -5,8 +5,10 @@ import {
   press,
   queryByRole,
   render,
+  waitFor,
 } from "ariakit-test-utils";
 import { axe } from "jest-axe";
+import { act } from "react-dom/test-utils";
 import Example from ".";
 
 const getTree = () => getByRole("tree");
@@ -17,7 +19,9 @@ const queryTreeItem = (name: ByRoleOptions["name"]) =>
 
 test("a11y", async () => {
   const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
+  await act(async () => {
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
 
 test("tree is showing correct items when default is set", async () => {
