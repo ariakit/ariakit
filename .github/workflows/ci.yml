@@ -18,9 +18,9 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -28,7 +28,7 @@ jobs:
           key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
   lint:
@@ -44,9 +44,9 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -54,7 +54,7 @@ jobs:
           key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Lint
@@ -79,9 +79,9 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -89,7 +89,7 @@ jobs:
           key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Build
@@ -113,9 +113,9 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -123,8 +123,14 @@ jobs:
           key: npm-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
+
+      - name: Cache Jest
+        uses: actions/cache@v3
+        with:
+          path: .jest-cache
+          key: jest
 
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1

@@ -2,6 +2,7 @@
 
 packages/website/public
 .cache
+.jest-cache
 
 # dependencies
 node_modules
