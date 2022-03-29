@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  prepare-npm-cache:
+  npm:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +30,7 @@ jobs:
         run: npm ci --no-audit --ignore-scripts
 
   build:
-    needs: prepare-npm-cache
+    needs: npm
     runs-on: ubuntu-latest
 
     steps:
@@ -67,7 +67,7 @@ jobs:
 
   test:
     name: test (${{ matrix.shard }})
-    needs: prepare-npm-cache
+    needs: npm
     runs-on: ubuntu-latest
     strategy:
       matrix:
