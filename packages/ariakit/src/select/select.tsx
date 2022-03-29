@@ -170,7 +170,7 @@ export const useSelect = createHook<SelectOptions>(
         if (!toggleOnPressProp(event)) return;
         const element = event.currentTarget;
         queueBeforeEvent(element, "focusin", () => {
-          state.disclosureRef.current = event.currentTarget;
+          state.disclosureRef.current = element;
           state.toggle();
         });
       },
