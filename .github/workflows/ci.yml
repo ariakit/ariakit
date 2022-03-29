@@ -22,7 +22,9 @@ jobs:
         uses: actions/cache@v3
         id: cache-node-modules
         with:
-          path: ~/.npm
+          path: |
+            node_modules
+            packages/*/node_modules
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
@@ -46,7 +48,9 @@ jobs:
         uses: actions/cache@v3
         id: cache-node-modules
         with:
-          path: ~/.npm
+          path: |
+            node_modules
+            packages/*/node_modules
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
@@ -75,9 +79,13 @@ jobs:
         with:
           node-version: 16
 
-      - uses: actions/cache@v3
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: cache-node-modules
         with:
-          path: ~/.npm
+          path: |
+            node_modules
+            packages/*/node_modules
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
