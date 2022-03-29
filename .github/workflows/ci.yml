@@ -10,17 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16
+
       - name: Cache
         uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          restore-keys: ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci --no-audit --ignore-scripts
 
@@ -29,21 +33,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-      - uses: actions/cache@v3
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm ci --no-audit --ignore-scripts
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+
       - name: Lint
         run: npm run lint
+
       - name: Lint CSS
         run: npm run lint:css
+
       - name: Type check
         run: npm run type-check
 
@@ -52,17 +65,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16
+
       - uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm ci --no-audit --ignore-scripts
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+
       - name: Build
         run: npm run build
 
@@ -75,21 +94,34 @@ jobs:
         shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-      - uses: actions/cache@v3
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm ci --no-audit --ignore-scripts
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+
       - name: Get number of CPU cores
         id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v1
+
       - name: Test
-        run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }} --coverage
+        run: >
+          npm test --
+          --max-workers ${{ steps.cpu-cores.outputs.count }}
+          --shard=${{ matrix.shard }}
+          --coverage
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
