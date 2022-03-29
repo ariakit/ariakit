@@ -18,15 +18,15 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
   lint:
@@ -42,15 +42,15 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Lint
@@ -81,7 +81,7 @@ jobs:
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Build
@@ -104,15 +104,17 @@ jobs:
         with:
           node-version: 16
 
-      - name: Cache
+      - name: Cache node modules
         uses: actions/cache@v3
-        id: cache
+        id: cache-node-modules
         with:
-          path: ~/.npm
+          path: |
+            node_modules
+            packages/*/node_modules
           key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Get number of CPU cores
