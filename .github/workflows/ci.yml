@@ -180,4 +180,5 @@ jobs:
       - name: Test
         run: >
           npm test --
+          --testPathIgnorePatterns \(combobox-multiple playground\)
           --max-workers ${{ steps.cpu-cores.outputs.count }}
