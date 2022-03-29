@@ -20,12 +20,13 @@ jobs:
 
       - name: Cache
         uses: actions/cache@v3
+        id: cache
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
   lint:
@@ -43,12 +44,13 @@ jobs:
 
       - name: Cache
         uses: actions/cache@v3
+        id: cache
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Lint
@@ -76,10 +78,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Build
@@ -104,17 +106,18 @@ jobs:
 
       - name: Cache
         uses: actions/cache@v3
+        id: cache
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --no-audit --ignore-scripts
 
       - name: Get number of CPU cores
-        id: cpu-cores
         uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
 
       - name: Test
         run: >
