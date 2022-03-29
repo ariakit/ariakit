@@ -8,7 +8,7 @@ const withTranspileModules = transpileModules(["ariakit"]);
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
-    // reactRoot: true,
+    reactRoot: true,
   },
   typescript: {
     ignoreBuildErrors: true,
