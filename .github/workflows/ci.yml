@@ -171,7 +171,7 @@ jobs:
         run: npm ci --no-audit --ignore-scripts
 
       - name: Install React 17
-        run: npm i react@17 react-dom@17 --no-save
+        run: npm i react@17 react-dom@17 @testing-library/react@12 --no-save
 
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
