@@ -73,7 +73,7 @@ test("getActiveElement", () => {
 
   // Test with an element focused
   const input = getById("testInput");
-  input?.focus();
+  input.focus();
 
   expect(getActiveElement(undefined)).toBe(input);
   expect(getActiveElement(null)).toBe(input);
@@ -94,7 +94,7 @@ test("getActiveElement", () => {
 
   // activeDecendant = true
   const input2 = getById("cb1-edit");
-  input2?.focus();
+  input2.focus();
 
   const focusedLi = getById("cb1-opt6");
 
