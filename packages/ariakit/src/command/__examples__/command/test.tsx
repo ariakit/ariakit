@@ -7,7 +7,7 @@ test("a11y", async () => {
   expect(await axe(getByText("Accessible button"))).toHaveNoViolations();
 });
 
-test("render command as div", () => {
+test("markup", () => {
   render(<Example />);
   expect(getByText("Accessible button")).toMatchInlineSnapshot(`
     <div

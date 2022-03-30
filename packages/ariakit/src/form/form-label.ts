@@ -102,6 +102,16 @@ export const useFormLabel = createHook<FormLabelOptions>(
       onClick,
     };
 
+    if (!isNativeLabel) {
+      props = {
+        ...props,
+        style: {
+          cursor: "default",
+          ...props.style,
+        },
+      };
+    }
+
     props = useCollectionItem({ state, ...props, getItem });
 
     return props;

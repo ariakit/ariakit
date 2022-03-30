@@ -7,7 +7,7 @@ import {
 } from "ariakit-test-utils";
 import Example from ".";
 
-test("render checkbox", async () => {
+test("markup", async () => {
   const { container } = render(<Example />);
   expect(container).toMatchInlineSnapshot(`
     <div>

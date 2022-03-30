@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useEffect, useRef } from "react";
+import { KeyboardEvent, useCallback, useMemo } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -13,9 +13,9 @@ import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuListOptions, useMenuList } from "./menu-list";
 import { MenuState } from "./menu-state";
 
-function getItemElementById(items: MenuState["items"], id?: null | string) {
+function getItemRefById(items: MenuState["items"], id?: null | string) {
   if (!id) return;
-  return items.find((item) => item.id === id)?.ref.current;
+  return items.find((item) => item.id === id)?.ref;
 }
 
 /**
@@ -76,25 +76,15 @@ export const useMenu = createHook<MenuOptions>(
       ...props,
     });
 
-    const initialFocusRef = useRef<HTMLElement | null>(null);
-
-    useEffect(() => {
-      const element =
+    const initialFocusRef = useMemo(
+      () =>
         state.initialFocus === "first"
-          ? getItemElementById(state.items, state.first())
+          ? getItemRefById(state.items, state.first())
           : state.initialFocus === "last"
-          ? getItemElementById(state.items, state.last())
-          : state.baseRef.current;
-      if (element) {
-        initialFocusRef.current = element;
-      }
-    }, [
-      state.initialFocus,
-      state.first,
-      state.last,
-      state.items,
-      state.baseRef,
-    ]);
+          ? getItemRefById(state.items, state.last())
+          : state.baseRef,
+      [state.initialFocus, state.items, state.first, state.last, state.baseRef]
+    );
 
     props = useHovercard({
       state,

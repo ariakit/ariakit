@@ -7,7 +7,7 @@ test("a11y", async () => {
   expect(await axe(getByRole("checkbox"))).toHaveNoViolations();
 });
 
-test("render checkbox as button", async () => {
+test("markup", async () => {
   const { container } = render(<Example />);
   expect(container).toMatchInlineSnapshot(`
     <div>

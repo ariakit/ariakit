@@ -1,7 +1,9 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .form {
-  @apply flex flex-col gap-4;
+  width: 280px;
+  min-height: 320px;
+  @apply flex flex-col gap-4 py-10;
 }
 
 .field {
@@ -10,8 +12,8 @@
 
 .field input {
   @apply
+    w-full
     h-10
-    w-[250px]
     rounded-lg
     border-none
     px-4

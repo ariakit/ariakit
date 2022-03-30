@@ -9,7 +9,7 @@ test("markup", () => {
         class="playground"
       >
         <div
-          aria-describedby="r:0"
+          aria-describedby=":r0:"
           aria-label="index.js"
           class="css-r36kf1 code-jsx has-line-numbers editor"
           data-command=""

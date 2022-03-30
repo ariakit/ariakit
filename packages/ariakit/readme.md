@@ -38,7 +38,7 @@ yarn add ariakit
 ## Usage
 
 ```jsx
-import { createRoot } from "react-dom";
+import { createRoot } from "react-dom/client";
 import {
   Button,
   Dialog,

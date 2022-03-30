@@ -69,18 +69,22 @@ function isBackdrop(dialog: HTMLElement, element: Element) {
   return element.getAttribute("data-backdrop") === id;
 }
 
-function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
+function isInDialog(element: Node) {
+  return (dialogRef: RefObject<Node>) =>
+    dialogRef.current && contains(dialogRef.current, element);
+}
+
+function isAlreadyFocusingAnotherElement(
+  dialog: HTMLElement,
+  nestedDialogs?: Array<RefObject<HTMLElement>>
+) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (contains(dialog, activeElement)) return false;
   if (isBackdrop(dialog, activeElement)) return false;
+  if (nestedDialogs?.some(isInDialog(activeElement))) return false;
   if (isFocusable(activeElement)) return true;
   return false;
-}
-
-function isInDialog(element: Node) {
-  return (dialogRef: RefObject<Node>) =>
-    dialogRef.current && contains(dialogRef.current, element);
 }
 
 /**
@@ -281,9 +285,10 @@ export const useDialog = createHook<DialogOptions>(
       if (!dialog) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
+        const dialogs = nestedDialogsRef.current;
         // Hide was triggered by a click/focus on a tabbable element outside
         // the dialog or on another dialog. We won't change focus then.
-        if (isAlreadyFocusingAnotherElement(dialog)) return;
+        if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
         const element = finalFocusRef?.current || state.disclosureRef.current;
         if (element) {
           if (element.id) {
@@ -332,10 +337,11 @@ export const useDialog = createHook<DialogOptions>(
         // dialogs.
         const isValidTarget = () => {
           if (contains(dialog, target)) {
+            const dialogs = nestedDialogsRef.current;
             // Since this is a native DOM event, it won't be triggered by
             // keystrokes on nested dialogs inside portals. But we still need to
             // check if the target is inside a nested non-portal dialog.
-            const inNestedDialog = nestedDialogs.some(isInDialog(target));
+            const inNestedDialog = dialogs.some(isInDialog(target));
             if (inNestedDialog) return false;
             return true;
           }
@@ -355,7 +361,6 @@ export const useDialog = createHook<DialogOptions>(
       domReady,
       state.mounted,
       state.disclosureRef,
-      nestedDialogs,
       hideOnEscapeProp,
       state.hide,
     ]);
