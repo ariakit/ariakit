@@ -19,6 +19,7 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
+import { isSafari } from "ariakit-utils/platform";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -94,7 +95,13 @@ function useScheduleFocus(activeItem?: Item) {
     const activeElement = activeItem?.ref.current;
     if (scheduled && activeElement) {
       setScheduled(false);
-      activeElement.focus();
+      if (isSafari()) activeElement.focus();
+      else {
+        // Scroll on focus is buggy in some browsers, so we disable it and do it
+        // ourselves, except for Safari which does not support disabling scroll.
+        activeElement.focus({ preventScroll: true });
+        activeElement.scrollIntoView({ block: "nearest" });
+      }
     }
   }, [activeItem, scheduled]);
   return schedule;
