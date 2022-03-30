@@ -41,6 +41,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/popover-responsive", label: "Popover responsive" },
   { href: "/examples/radio", label: "Radio" },
   { href: "/examples/select", label: "Select" },
+  { href: "/examples/select-autofill", label: "Select autofill" },
   { href: "/examples/select-combobox", label: "Select combobox" },
   { href: "/examples/select-grid", label: "Select grid" },
   { href: "/examples/select-item-custom", label: "Select item custom" },

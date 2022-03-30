@@ -1,0 +1,26 @@
+@import url("../select/style.css");
+
+.input {
+  width: 200px;
+  @apply
+    h-10
+    rounded-lg
+    border-none
+    px-4
+    text-base
+    focus-visible:ariakit-outline-input
+    bg-canvas-1
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}
+
+.select[data-autofill] {
+  background-color: rgb(219 237 255);
+}
+
+.dark .select[data-autofill] {
+  background-color: rgb(36 107 179);
+}
