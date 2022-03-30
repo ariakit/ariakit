@@ -15,7 +15,7 @@
     "build:fast": "npm run build -- -- --no-umd",
     "clean": "npm run clean -ws --if-present",
     "release": "lerna publish --pre-dist-tag latest",
-    "release:alpha": "npm run release -- --no-changelog --conventional-prerelease --preid alpha",
+    "release:alpha": "npm run release -- --conventional-prerelease --preid alpha",
     "release:beta": "npm run release:alpha -- --preid beta",
     "release:graduate": "npm run release -- --conventional-graduate",
     "preversion": "npm run lint && npm run build && npm run test",
