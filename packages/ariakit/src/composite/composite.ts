@@ -95,7 +95,7 @@ function useScheduleFocus(activeItem?: Item) {
     const activeElement = activeItem?.ref.current;
     if (scheduled && activeElement) {
       setScheduled(false);
-      if (isSafari()) activeElement.focus();
+      if (isSafari() || !activeElement.scrollIntoView) activeElement.focus();
       else {
         // Scroll on focus is buggy in some browsers, so we disable it and do it
         // ourselves, except for Safari which does not support disabling scroll.
