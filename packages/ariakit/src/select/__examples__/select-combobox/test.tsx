@@ -88,3 +88,11 @@ test("type on combobox", async () => {
   await type("o");
   expect(getOption("Onion")).toHaveFocus();
 });
+
+test("select value after filtering", async () => {
+  render(<Example />);
+  await click(getSelect());
+  await type("ba");
+  await click(getOption("Banana"));
+  expect(getSelect()).toHaveTextContent("Banana");
+});

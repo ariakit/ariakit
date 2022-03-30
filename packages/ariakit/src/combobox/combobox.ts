@@ -15,6 +15,7 @@ import {
   useEventCallback,
   useForceUpdate,
   useForkRef,
+  useSafeLayoutEffect,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
@@ -146,6 +147,13 @@ export const useCombobox = createHook<ComboboxOptions>(
       autoSelect,
       state.value,
     ]);
+
+    // Resets the inserted text flag when the popover is not visible so we don't
+    // try to auto select an item after the popover closes.
+    useSafeLayoutEffect(() => {
+      if (state.visible) return;
+      hasInsertedTextRef.current = false;
+    }, [state.visible]);
 
     // Auto select the first item on type.
     useUpdateEffect(() => {
