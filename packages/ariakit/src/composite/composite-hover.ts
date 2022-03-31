@@ -71,6 +71,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       // may lose some events if this component is unmounted, but others are
       // still mounted.
       addGlobalEventListener("mousemove", setMouseMoving, true);
+      // See https://github.com/ariakit/ariakit/issues/1137
+      addGlobalEventListener("mousedown", resetMouseMoving, true);
+      addGlobalEventListener("mouseup", resetMouseMoving, true);
       addGlobalEventListener("keydown", resetMouseMoving, true);
       addGlobalEventListener("scroll", resetMouseMoving, true);
     }, []);
