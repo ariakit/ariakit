@@ -35,6 +35,7 @@ function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   pairs.sort(([indexA, a], [indexB, b]) => {
     const elementA = a.ref.current;
     const elementB = b.ref.current;
+    if (elementA === elementB) return 0;
     if (!elementA || !elementB) return 0;
     // a before b
     if (isElementPreceding(elementA, elementB)) {
