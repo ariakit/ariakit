@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "npm start -w website",
-    "dev": "npm run dev -w website",
+    "dev": "npm run -w website dev",
     "test": "jest",
     "test-watch": "npm test -- --watch",
     "test-all": "npm run test && npm run lint && npm run lint-css && npm run type-check && npm run build && npm run build-website && npm run clean",
@@ -11,7 +11,7 @@
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "type-check": "tsc --noEmit",
     "build": "lerna exec --scope ariakit* -- npm run build",
-    "build-website": "npm run build -w website",
+    "build-website": "npm run -w website build",
     "clean": "npm run clean -ws --if-present",
     "release": "lerna publish --pre-dist-tag latest",
     "release-alpha": "npm run release -- --conventional-prerelease --preid alpha",
