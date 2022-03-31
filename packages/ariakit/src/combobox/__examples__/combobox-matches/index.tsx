@@ -8,7 +8,7 @@ import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, list });
+  const combobox = useComboboxState({ gutter: 8, sameWidth: true, list });
   return (
     <div>
       <label className="label">
@@ -22,7 +22,7 @@ export default function Example() {
       <ComboboxPopover state={combobox} className="popover">
         {combobox.matches.length ? (
           combobox.matches.map((value) => (
-            <ComboboxItem key={value} value={value} />
+            <ComboboxItem key={value} value={value} className="combobox-item" />
           ))
         ) : (
           <div>No results found</div>
