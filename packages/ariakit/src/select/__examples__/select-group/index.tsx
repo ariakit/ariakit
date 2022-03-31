@@ -26,9 +26,11 @@ export default function Example() {
             Fruits &amp; Vegetables
           </SelectGroupLabel>
           <SelectItem
+            // Enables scroll on key down so pressing ArrowUp will scroll up and
+            // reveals the group label.
+            preventScrollOnKeyDown={false}
             className="select-item"
             value="Apple"
-            preventScrollOnKeyDown={false}
           />
           <SelectItem className="select-item" value="Banana" />
           <SelectItem className="select-item" value="Grape" />
