@@ -7,5 +7,6 @@ export * from "./select-label";
 export * from "./select-list";
 export * from "./select-popover";
 export * from "./select-row";
+export * from "./select-separator";
 export * from "./select-state";
 export * from "./select";

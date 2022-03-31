@@ -44,6 +44,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/select-autofill", label: "Select autofill" },
   { href: "/examples/select-combobox", label: "Select combobox" },
   { href: "/examples/select-grid", label: "Select grid" },
+  { href: "/examples/select-group", label: "Select group" },
   { href: "/examples/select-item-custom", label: "Select item custom" },
   { href: "/examples/select-multiple", label: "Select multiple" },
   { href: "/examples/tab", label: "Tab" },

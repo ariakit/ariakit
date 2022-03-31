@@ -1,0 +1,20 @@
+@import url("../select/style.css");
+
+.popover {
+  @apply overflow-auto;
+}
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default;
+}
+
+.separator {
+  border-width: 1px 0 0;
+  border-color: currentcolor;
+  @apply my-2 h-0 opacity-25;
+}
