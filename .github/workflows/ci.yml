@@ -95,6 +95,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bundle size
+        run: npx bundlewatch packages/ariakit/umd/ariakit.min.js
+
   test:
     # TODO: Add on Jest 28
     # name: test (${{ matrix.shard }})
@@ -184,14 +187,3 @@ jobs:
 
       - name: Test
         run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
-
-  bundlecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: carlesnunez/bundlephobia-checker@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          strict: true
-          threshold: 500
-          ignore-dev-dependencies: true
