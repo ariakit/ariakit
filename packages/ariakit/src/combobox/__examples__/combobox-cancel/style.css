@@ -1,0 +1,7 @@
+@import url("../combobox/style.css");
+
+.combobox-wrapper {
+  @apply relative; }
+
+.combobox-cancel {
+  @apply h-10 absolute right-3; }
