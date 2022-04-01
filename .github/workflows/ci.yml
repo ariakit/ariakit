@@ -184,3 +184,14 @@ jobs:
 
       - name: Test
         run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+
+  bundlecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: carlesnunez/check-my-bundlephobia@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          strict: true
+          threshold: 500
+          ignore-dev-dependencies: true
