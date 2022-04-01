@@ -4,12 +4,16 @@
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
-  "repository": "https://github.com/ariakit/ariakit/tree/main/packages/ariakit-test-utils",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "unpkg": "umd/ariakit-test-utils.min.js",
   "types": "ts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-test-utils"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",

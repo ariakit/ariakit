@@ -4,11 +4,15 @@
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
-  "repository": "https://github.com/ariakit/ariakit/tree/main/packages/ariakit-playground",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "ts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-playground"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
