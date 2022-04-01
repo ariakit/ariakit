@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.17.2",
-    "@codemirror/closebrackets": "0.19.1",
+    "@codemirror/closebrackets": "0.19.2",
     "@codemirror/commands": "0.19.8",
     "@codemirror/comment": "0.19.1",
     "@codemirror/gutter": "0.19.9",
