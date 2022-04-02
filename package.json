@@ -78,7 +78,7 @@
     "postcss-merge-selectors": "0.0.6",
     "postcss-prettify": "0.3.4",
     "postcss-value-parser": "4.2.0",
-    "prettier": "2.6.1",
+    "prettier": "2.6.2",
     "raw-loader": "4.0.2",
     "react": "18.0.0",
     "react-dom": "18.0.0",
