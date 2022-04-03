@@ -56,7 +56,12 @@ export function useMenuState<V extends Values = Values>({
     (contextOrientation === "vertical" ? "right-start" : "bottom-start");
 
   timeout = timeout ?? parentIsMenuBar ? 0 : 150;
-  const composite = useCompositeState({ orientation, ...props });
+  const composite = useCompositeState({
+    orientation,
+    // TODO: Nope! It loops when moving up.
+    defaultActiveId: null,
+    ...props,
+  });
   const hovercard = useHovercardState({
     timeout,
     hideTimeout,

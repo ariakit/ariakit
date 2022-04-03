@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useControlledState } from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 import {
   PopoverState,
@@ -22,7 +23,11 @@ export function useHovercardState({
   hideTimeout = timeout,
   ...props
 }: HovercardStateProps = {}): HovercardState {
-  const [autoFocusOnShow, setAutoFocusOnShow] = useState(false);
+  const [autoFocusOnShow, setAutoFocusOnShow] = useControlledState(
+    false,
+    props.autoFocusOnShow,
+    props.setAutoFocusOnShow
+  );
   const popover = usePopoverState({ placement, ...props });
 
   const state = useMemo(
@@ -77,4 +82,13 @@ export type HovercardState = PopoverState & {
 };
 
 export type HovercardStateProps = PopoverStateProps &
-  Partial<Pick<HovercardState, "timeout" | "showTimeout" | "hideTimeout">>;
+  Partial<
+    Pick<
+      HovercardState,
+      | "timeout"
+      | "showTimeout"
+      | "hideTimeout"
+      | "autoFocusOnShow"
+      | "setAutoFocusOnShow"
+    >
+  >;

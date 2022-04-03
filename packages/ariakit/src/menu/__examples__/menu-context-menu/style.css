@@ -1,0 +1,9 @@
+@import url("../menu/style.css");
+
+.menu-arrow svg {
+  @apply
+    fill-canvas-4
+    stroke-canvas-4
+    dark:fill-canvas-4-dark
+    dark:stroke-canvas-4-dark;
+}
