@@ -97,8 +97,8 @@ export const useMenu = createHook<MenuOptions>(
     }, [hasItems, state.mounted, state.initialFocus, state.baseRef]);
 
     const autoFocusOnShow =
-      props.autoFocusOnShow === false
-        ? false
+      props.autoFocusOnShow != null
+        ? props.autoFocusOnShow
         : state.autoFocusOnShow || !!props.modal;
 
     props = useHovercard({

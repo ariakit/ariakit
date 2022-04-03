@@ -1,9 +1,15 @@
 @import url("../menu/style.css");
 
-.menu-arrow svg {
+.wrapper {
   @apply
-    fill-canvas-4
-    stroke-canvas-4
-    dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark;
+    flex
+    items-center
+    justify-center
+    py-10
+    px-16
+    rounded-lg
+    border-2
+    border-dashed
+    border-canvas-5
+    dark:border-canvas-5-dark;
 }
