@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useControlledState } from "ariakit-utils/hooks";
 import { applyState } from "ariakit-utils/misc";
 import { useStore, useStorePublisher } from "ariakit-utils/store";
@@ -63,6 +63,12 @@ export function useMenuState<V extends Values = Values>({
     ...props,
     placement,
   });
+
+  // Resets the initial focus state when the menu is closed.
+  useEffect(() => {
+    if (hovercard.mounted) return;
+    composite.setActiveId(null);
+  }, [hovercard.mounted, composite.setActiveId]);
 
   const setValue = useCallback(
     (name: string, value: SetStateAction<V[string]>) => {
