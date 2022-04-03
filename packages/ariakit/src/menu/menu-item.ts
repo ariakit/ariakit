@@ -90,6 +90,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
           }
           return true;
         }
+        // TODO: Check MenuItem as MenuButton with showOnHover.
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if there's another expanded menu button inside the menu
         // bar. Without this, the visible menus in the menu bar wouldn't close.

@@ -88,6 +88,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         state.setAutoFocusOnShow(false);
         // We need to unset the active menu item so no menu item appears active
         // while the menu button is focused.
+        // TODO: We should do this reset independently from menu button focus.
+        // For example, try MenuButton with showOnHover
         state.setActiveId(null);
         // When the menu button is focused, we'll only show its menu if it's in
         // a menu bar
