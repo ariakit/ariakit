@@ -10,9 +10,15 @@ import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let mouseMoving = false;
+let previousScreenX = 0;
+let previousScreenY = 0;
 
 function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
-  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
+  const movementX = event.movementX ?? event.screenX - previousScreenX;
+  const movementY = event.movementY ?? event.screenY - previousScreenY;
+  previousScreenX = event.screenX;
+  previousScreenY = event.screenY;
+  return movementX || movementY || process.env.NODE_ENV === "test";
 }
 
 function setMouseMoving(event: MouseEvent) {
