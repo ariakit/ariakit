@@ -1,4 +1,11 @@
-import { KeyboardEvent, useCallback, useMemo } from "react";
+import {
+  KeyboardEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -34,13 +41,7 @@ function getItemRefById(items: MenuState["items"], id?: null | string) {
  * ```
  */
 export const useMenu = createHook<MenuOptions>(
-  ({
-    state,
-    hideOnEscape = true,
-    autoFocusOnShow = true,
-    hideOnHoverOutside,
-    ...props
-  }) => {
+  ({ state, hideOnEscape = true, hideOnHoverOutside, ...props }) => {
     const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, []);
     const hasParentMenu = !!parentMenu;
@@ -86,11 +87,33 @@ export const useMenu = createHook<MenuOptions>(
       [state.initialFocus, state.items, state.first, state.last, state.baseRef]
     );
 
+    // const hasItems = !!state.items.length;
+    // const [initialFocusRef, setInitialFocusRef] =
+    //   useState<RefObject<HTMLElement>>();
+
+    // useEffect(() => {
+    //   if (!state.mounted) return;
+    //   if (!hasItems) return;
+    //   state.initialFocus === "first";
+    //   setInitialFocusRef(
+    //     state.initialFocus === "first"
+    //       ? getItemRefById(state.items, state.first())
+    //       : state.initialFocus === "last"
+    //       ? getItemRefById(state.items, state.last())
+    //       : state.baseRef
+    //   );
+    // }, [state.mounted, state.initialFocus, hasItems, state.baseRef]);
+
+    const autoFocusOnShow =
+      props.autoFocusOnShow === false
+        ? false
+        : state.autoFocusOnShow || !!props.modal;
+
     props = useHovercard({
       state,
-      autoFocusOnShow: state.autoFocusOnShow && autoFocusOnShow,
       initialFocusRef,
       ...props,
+      autoFocusOnShow,
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {
           return hideOnHoverOutside(event);
