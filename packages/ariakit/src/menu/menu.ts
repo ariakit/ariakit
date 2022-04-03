@@ -3,7 +3,6 @@ import {
   RefObject,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
@@ -77,32 +76,25 @@ export const useMenu = createHook<MenuOptions>(
       ...props,
     });
 
-    const initialFocusRef = useMemo(
-      () =>
+    const hasItems = !!state.items.length;
+    const [initialFocusRef, setInitialFocusRef] =
+      useState<RefObject<HTMLElement>>();
+
+    useEffect(() => {
+      if (!hasItems) return;
+      if (!state.mounted) return;
+      setInitialFocusRef(
         state.initialFocus === "first"
           ? getItemRefById(state.items, state.first())
           : state.initialFocus === "last"
           ? getItemRefById(state.items, state.last())
-          : state.baseRef,
-      [state.initialFocus, state.items, state.first, state.last, state.baseRef]
-    );
-
-    // const hasItems = !!state.items.length;
-    // const [initialFocusRef, setInitialFocusRef] =
-    //   useState<RefObject<HTMLElement>>();
-
-    // useEffect(() => {
-    //   if (!state.mounted) return;
-    //   if (!hasItems) return;
-    //   state.initialFocus === "first";
-    //   setInitialFocusRef(
-    //     state.initialFocus === "first"
-    //       ? getItemRefById(state.items, state.first())
-    //       : state.initialFocus === "last"
-    //       ? getItemRefById(state.items, state.last())
-    //       : state.baseRef
-    //   );
-    // }, [state.mounted, state.initialFocus, hasItems, state.baseRef]);
+          : state.baseRef
+      );
+      // We're intentionally only listening to hasItems here and not to
+      // state.items, state.first and state.last, because we don't want to set
+      // the initial focus ref again whenever the items change, but only when
+      // the menu and the items have been mounted.
+    }, [hasItems, state.mounted, state.initialFocus, state.baseRef]);
 
     const autoFocusOnShow =
       props.autoFocusOnShow === false
