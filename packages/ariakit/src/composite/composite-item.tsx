@@ -228,7 +228,9 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         // treegrid elements. In this case, we just ignore the focus event on
         // this parent item.
         if (state?.items && targetIsAnotherItem(event, state.items)) return;
-        state?.setActiveId(id);
+        if (state?.activeId !== id) {
+          state?.setActiveId(id);
+        }
         // When using aria-activedescendant, we want to make sure that the
         // composite container receives focus, not the composite item.
         if (!state?.virtualFocus) return;
@@ -257,6 +259,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         onFocusProp,
         id,
         state?.items,
+        state?.activeId,
         state?.setActiveId,
         state?.virtualFocus,
         state?.baseRef,
