@@ -2,71 +2,75 @@ name: e2e
 
 on:
   issue_comment:
-    action: [created, edited]
+    types: [created, edited]
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit --ignore-scripts
-
   test:
-    # TODO: Add on Jest 28
-    # name: test (${{ matrix.shard }})
-    needs: install
+    if: github.event
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    #   matrix:
-    #     shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Echo
+        run: echo debug(github.event)
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: .nvmrc
+  # install:
+  #   runs-on: ubuntu-latest
 
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit --ignore-scripts
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version-file: .nvmrc
 
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v3
+  #       id: cache-node-modules
+  #       with:
+  #         path: |
+  #           node_modules
+  #           packages/*/node_modules
+  #         key: npm-${{ hashFiles('package-lock.json') }}
 
-      - name: Test
-        run: >
-          npm test-e2e --
-          --max-workers ${{ steps.cpu-cores.outputs.count }}
+  #     - name: Install dependencies
+  #       if: steps.cache-node-modules.outputs.cache-hit != 'true'
+  #       run: npm ci --no-audit --ignore-scripts
+
+  # test:
+  #   needs: install
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version-file: .nvmrc
+
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v3
+  #       id: cache-node-modules
+  #       with:
+  #         path: |
+  #           node_modules
+  #           packages/*/node_modules
+  #         key: npm-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Install dependencies
+  #       if: steps.cache-node-modules.outputs.cache-hit != 'true'
+  #       run: npm ci --no-audit --ignore-scripts
+
+  #     - name: Get number of CPU cores
+  #       uses: SimenB/github-actions-cpu-cores@v1
+  #       id: cpu-cores
+
+  #     - name: Test
+  #       run: >
+  #         npm test-e2e --
+  #         --max-workers ${{ steps.cpu-cores.outputs.count }}
