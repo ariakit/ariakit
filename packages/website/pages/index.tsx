@@ -50,6 +50,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/select-multiple", label: "Select multiple" },
   { href: "/examples/tab", label: "Tab" },
   { href: "/examples/tab-react-router", label: "Tab react-router" },
+  { href: "/examples/toolbar", label: "Toolbar" },
   { href: "/examples/tooltip", label: "Tooltip" },
   { href: "/examples/tooltip-placement", label: "Tooltip placement" },
   { href: "/examples/tooltip-timeout", label: "Tooltip timeout" },
