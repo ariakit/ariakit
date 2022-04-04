@@ -211,6 +211,14 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
+      - name: Cache Next.js
+        uses: actions/cache@v3
+        id: cache-next-js
+        with:
+          path: |
+            packages/website/.next/cache
+          key: website-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
+
       - name: Build website
         run: npm run build-website
 
