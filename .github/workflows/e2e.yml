@@ -1,5 +1,7 @@
 name: e2e
-on: deployment
+on:
+  deployment_status:
+    types: [success]
 
 jobs:
   test:
