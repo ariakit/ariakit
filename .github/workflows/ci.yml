@@ -184,3 +184,32 @@ jobs:
 
       - name: Test
         run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+
+  # e2e:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version-file: .nvmrc
+
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v3
+  #       id: cache-node-modules
+  #       with:
+  #         path: |
+  #           node_modules
+  #           packages/*/node_modules
+  #         key: npm-${{ hashFiles('package-lock.json') }}
+
+  #     - name: Install dependencies
+  #       if: steps.cache-node-modules.outputs.cache-hit != 'true'
+  #       run: npm ci --no-audit --ignore-scripts
+
+  #     - name: Build
+  #       run: npm run build
