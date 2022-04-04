@@ -25,7 +25,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -51,11 +51,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Lint
         run: npm run lint
@@ -86,11 +82,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Build
         run: npm run build
@@ -121,21 +113,10 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Test
-        run: >
-          npm test --
-          --max-workers ${{ steps.cpu-cores.outputs.count }}
-          --coverage
+        run: npm test -- --max-workers 2 --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -165,11 +146,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install React ${{ matrix.react-version }}
         run: >
@@ -178,12 +155,8 @@ jobs:
           react-dom@${{ matrix.react-version }}
           @testing-library/react@12
 
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: npm test -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+        run: npm test -- --max-workers 2
 
   website:
     needs: install
@@ -205,26 +178,46 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm2-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Cache Next.js
         uses: actions/cache@v3
-        id: cache-next-js
+        id: cache-nextjs
         with:
-          path: |
-            packages/website/.next/cache
-          key: website-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
+          path: packages/website/.next
+          key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
 
       - name: Build website
         run: npm run build-website
 
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
+  e2e:
+    needs: website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache Next.js
+        uses: actions/cache@v3
+        id: cache-nextjs
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
 
       - name: Test
-        run: npm run test-e2e -- --max-workers ${{ steps.cpu-cores.outputs.count }}
+        run: npm run test-e2e -- --max-workers 2
