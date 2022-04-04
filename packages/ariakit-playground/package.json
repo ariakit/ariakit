@@ -42,7 +42,7 @@
     "@codemirror/lang-css": "0.19.3",
     "@codemirror/lang-javascript": "0.19.7",
     "@codemirror/matchbrackets": "0.19.4",
-    "@codemirror/search": "0.19.9",
+    "@codemirror/search": "0.19.10",
     "@codemirror/state": "0.19.9",
     "@codemirror/view": "0.19.48",
     "@codesandbox/sandpack-client": "0.18.0",
