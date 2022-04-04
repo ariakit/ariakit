@@ -22,6 +22,6 @@ test("edit playground", async () => {
 
   await expect(page).toMatchElement(".playground .preview div", {
     text: "Hey World",
-    timeout: 5000,
+    timeout: 7000,
   });
-});
+}, 10000);
