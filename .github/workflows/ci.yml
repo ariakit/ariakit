@@ -25,7 +25,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -51,7 +51,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -86,7 +86,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -121,7 +121,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -165,7 +165,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -205,7 +205,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm2-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
