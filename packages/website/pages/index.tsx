@@ -24,6 +24,7 @@ const links: Array<{ href: string; label: string }> = [
     href: "/examples/command-space-disabled",
     label: "Command with space disabled",
   },
+  { href: "/examples/menu-context-menu", label: "Context menu" },
   { href: "/examples/dialog", label: "Dialog" },
   { href: "/examples/disclosure", label: "Disclosure" },
   { href: "/examples/focus-trap", label: "Focus trap" },
