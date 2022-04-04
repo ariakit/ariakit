@@ -6,7 +6,6 @@ on:
 
 jobs:
   test:
-    if: github.event
     runs-on: ubuntu-latest
 
     steps:
