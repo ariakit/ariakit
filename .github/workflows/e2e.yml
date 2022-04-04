@@ -21,4 +21,4 @@ jobs:
       - name: Test
         run: npm run test-e2e
         env:
-          URL: github.event.deployment_status.target_url
+          URL: ${{ github.event.deployment_status.target_url }}
