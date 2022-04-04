@@ -44,10 +44,27 @@ type AnchorRect = {
   height?: number;
 };
 
+function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
+  if (typeof DOMRect === "function") {
+    return new DOMRect(x, y, width, height);
+  }
+  const rect = {
+    x,
+    y,
+    width,
+    height,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+    left: x,
+  };
+  return { ...rect, toJSON: () => rect };
+}
+
 function getDOMRect(anchorRect: AnchorRect | null) {
-  if (!anchorRect) return new DOMRect();
+  if (!anchorRect) return createDOMRect();
   const { x, y, width, height } = anchorRect;
-  return new DOMRect(x, y, width, height);
+  return createDOMRect(x, y, width, height);
 }
 
 function getAnchorElement(
@@ -141,7 +158,7 @@ export function usePopoverState({
             // https://popper.js.org/docs/v2/modifiers/flip/
             name: "flip",
             // See https://github.com/ariakit/ariakit/issues/1117
-            enabled: placement?.startsWith("auto") ?? (flip && dialog.mounted),
+            enabled: placement?.startsWith("auto") || (flip && dialog.mounted),
             options: { padding },
           },
           {

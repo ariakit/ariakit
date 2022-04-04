@@ -61,7 +61,7 @@ jobs:
         run: npm run lint
 
       - name: Lint CSS
-        run: npm run lint:css
+        run: npm run lint-css
 
       - name: Type check
         run: npm run type-check
