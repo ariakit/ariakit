@@ -8,6 +8,11 @@ test("edit playground", async () => {
     "[role=group][aria-label='index.js'] [contenteditable=true]",
     { delay: 100 }
   );
+
+  await expect(page).toMatchElement(".playground .preview div", {
+    text: "Hello World",
+  });
+
   await page.keyboard.press("ArrowUp", { delay: 100 });
   await page.keyboard.press("ArrowUp", { delay: 100 });
   await page.keyboard.down("Alt");
