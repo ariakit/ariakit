@@ -2,6 +2,7 @@
 import { Fragment, createElement, useMemo } from "react";
 import { PlaygroundCode } from "ariakit-playground/playground-code";
 import theme from "ariakit-playground/themes/vscode-dark";
+import { cx } from "ariakit-utils/misc";
 import Link from "next/link";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
@@ -63,9 +64,12 @@ export default function MarkdownPage(props) {
   return (
     <div className="flex flex-col items-center">
       <div
-        className="layer-2 fixed top-0 left-0 z-40 flex justify-between h-16 w-full items-center
-      border-b border-canvas-4 bg-canvas-4 p-4 dark:border-canvas-4-dark
-      dark:bg-canvas-4-dark"
+        className={cx(
+          styles["header"],
+          "layer-2 fixed top-0 left-0 z-40 flex justify-between h-16 w-full items-center",
+          "border-b border-canvas-4 bg-canvas-4 p-4 dark:border-canvas-4-dark",
+          "dark:bg-canvas-4-dark"
+        )}
       >
         <Link href="/">
           <a>{"<"} Return Home</a>
