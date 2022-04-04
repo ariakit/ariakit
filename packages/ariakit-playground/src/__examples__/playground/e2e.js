@@ -1,5 +1,9 @@
+import "expect-puppeteer";
+
+const URL = `${process.env.URL || "http://localhost:3000"}/examples/playground`;
+
 beforeAll(async () => {
-  await page.goto("http://localhost:3000/examples/playground");
+  await page.goto(URL);
 });
 
 test('should be titled "Google"', async () => {
