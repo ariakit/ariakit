@@ -16,7 +16,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm ci --no-audit --ignore-scripts
+        run: npm ci --no-audit
 
       - name: Test
         run: npm run test-e2e
