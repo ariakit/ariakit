@@ -7,6 +7,7 @@ on:
 
 jobs:
   install:
+    name: Install node_modules
     runs-on: ubuntu-latest
 
     steps:
@@ -39,6 +40,7 @@ jobs:
         run: npm ci --no-audit
 
   lint:
+    name: Lint & type check
     needs: install
     runs-on: ubuntu-latest
 
@@ -69,6 +71,7 @@ jobs:
         run: npm run type-check
 
   build:
+    name: Build packages
     needs: install
     runs-on: ubuntu-latest
 
@@ -93,6 +96,7 @@ jobs:
         run: npm run build
 
   test:
+    name: Test
     # TODO: Add on Jest 28
     # name: test (${{ matrix.shard }})
     needs: install
@@ -126,7 +130,7 @@ jobs:
         uses: codecov/codecov-action@v2
 
   react:
-    name: react-${{ matrix.react-version }}
+    name: Test with React ${{ matrix.react-version }}
     needs: install
     runs-on: ubuntu-latest
     strategy:
@@ -162,6 +166,7 @@ jobs:
         run: npm test -- --max-workers 2
 
   website:
+    name: Build website
     needs: install
     runs-on: ubuntu-latest
 
@@ -193,6 +198,7 @@ jobs:
         run: npm run build-website
 
   e2e:
+    name: End-to-end test
     needs: website
     runs-on: ubuntu-latest
 
