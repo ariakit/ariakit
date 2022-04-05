@@ -123,8 +123,12 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Set test CLI args
+        if: ${{ github.event.pull_request }}
+        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+
       - name: Test
-        run: npm test -- --max-workers 2 --coverage
+        run: npm test -- --max-workers 2 --coverage ${{ env.CLI_ARGS }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
@@ -162,8 +166,12 @@ jobs:
           react-dom@${{ matrix.react-version }}
           @testing-library/react@12
 
+      - name: Set test CLI args
+        if: ${{ github.event.pull_request }}
+        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+
       - name: Test
-        run: npm test -- --max-workers 2
+        run: npm test -- --max-workers 2 ${{ env.CLI_ARGS }}
 
   website:
     name: Build website
