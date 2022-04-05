@@ -1,10 +1,10 @@
+const server = process.env.START
+  ? { command: "npm run start", port: 3000 }
+  : undefined;
+
 module.exports = {
   launch: {
-    headless: true,
+    headless: process.env.BROWSER ? false : true,
   },
-  server: {
-    command: "npm run start",
-    port: 3000,
-  },
-  browserContext: "default",
+  server,
 };

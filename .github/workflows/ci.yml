@@ -46,7 +46,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -77,7 +76,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -108,7 +106,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -141,7 +138,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -173,7 +169,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -182,7 +177,6 @@ jobs:
 
       - name: Cache Next.js
         uses: actions/cache@v3
-        id: cache-nextjs
         with:
           path: packages/website/.next
           key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
@@ -205,7 +199,6 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
-        id: cache-node-modules
         with:
           path: |
             node_modules
@@ -214,10 +207,9 @@ jobs:
 
       - name: Cache Next.js
         uses: actions/cache@v3
-        id: cache-nextjs
         with:
           path: packages/website/.next
           key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
 
       - name: Test
-        run: npm run test-e2e -- --max-workers 2
+        run: npm run test-e2e-start -- --max-workers 2
