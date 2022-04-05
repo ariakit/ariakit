@@ -127,7 +127,7 @@ jobs:
         run: npm test -- --max-workers 2 --coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
 
   react:
     name: Test with React ${{ matrix.react-version }}
