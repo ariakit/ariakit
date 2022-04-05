@@ -130,7 +130,7 @@ jobs:
 
       - name: Set test CLI args
         if: ${{ github.event.pull_request }}
-        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+        run: echo "CLI_ARGS=--changed-since=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
 
       - name: Test
         run: npm test -- --max-workers 2 --coverage ${{ env.CLI_ARGS }}
