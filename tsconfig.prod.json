@@ -9,6 +9,9 @@
       "node",
       "jest",
       "jest-axe",
+      "jest-environment-puppeteer",
+      "puppeteer",
+      "expect-puppeteer",
       "@testing-library/jest-dom",
       "react/experimental"
     ],
