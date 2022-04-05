@@ -18,6 +18,13 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
       - name: Cache node_modules
         uses: actions/cache@v3
         id: cache-node-modules
@@ -180,6 +187,7 @@ jobs:
         with:
           path: packages/website/.next
           key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
+          restore-keys: nextjs-
 
       - name: Build website
         run: npm run build-website
