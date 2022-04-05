@@ -20,7 +20,6 @@
   },
   "scripts": {
     "test": "jest",
-    "test:e2e": "jest -c jest-e2e.config.js",
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
