@@ -7,7 +7,7 @@ on:
 
 jobs:
   install:
-    name: Install node_modules
+    name: Install node modules
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
         run: npm ci --no-audit
 
   lint:
-    name: Lint & type check
+    name: Lint and type check
     needs: install
     runs-on: ubuntu-latest
 
