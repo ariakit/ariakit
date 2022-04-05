@@ -109,11 +109,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - run: |
-          git fetch --no-tags origin +refs/heads/*:refs/remotes/origin/*
-          git checkout -b ${{ github.event.pull_request.base.ref }}
-          git checkout ${{ github.event.pull_request.head.sha }}
+      # - run: |
+      #     git fetch --no-tags origin +refs/heads/*:refs/remotes/origin/*
+      #     git checkout -b ${{ github.event.pull_request.base.ref }}
+      #     git checkout ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -130,7 +132,7 @@ jobs:
 
       - name: Set test CLI args
         if: ${{ github.event.pull_request }}
-        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+        run: echo "CLI_ARGS=--changed-since origin/${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
 
       - name: Test
         run: npm test -- --max-workers 2 --coverage ${{ env.CLI_ARGS }}
