@@ -230,6 +230,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: website
+          path: packages/website/.next
 
       - name: Test
         run: npm run test-e2e-start -- --max-workers 2
