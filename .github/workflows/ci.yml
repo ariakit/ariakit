@@ -191,7 +191,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages/website/.next
-          key: nextjs-${GITHUB_RUN_ID}
+          key: nextjs-${{ github.run_id }}
           restore-keys: nextjs-
 
       - name: Build website
@@ -223,7 +223,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages/website/.next
-          key: nextjs-${GITHUB_RUN_ID}
+          key: nextjs-${{ github.run_id }}
 
       - name: Test
         run: npm run test-e2e-start -- --max-workers 2
