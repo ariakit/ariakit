@@ -111,8 +111,8 @@ jobs:
         uses: actions/checkout@v3
 
       - run: |
-          git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }}
-          git checkout -b ${{ github.event.pull_request.base.sha }}
+          git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.ref }}
+          git checkout -b ${{ github.event.pull_request.base.ref }}
           git checkout ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
@@ -130,7 +130,7 @@ jobs:
 
       - name: Set test CLI args
         if: ${{ github.event.pull_request }}
-        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
 
       - name: Test
         run: npm test -- --max-workers 2 --coverage ${{ env.CLI_ARGS }}
@@ -152,8 +152,8 @@ jobs:
         uses: actions/checkout@v3
 
       - run: |
-          git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }}
-          git checkout -b ${{ github.event.pull_request.base.sha }}
+          git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.ref }}
+          git checkout -b ${{ github.event.pull_request.base.ref }}
           git checkout ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
@@ -178,7 +178,7 @@ jobs:
 
       - name: Set test CLI args
         if: ${{ github.event.pull_request }}
-        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.sha }}" >> $GITHUB_ENV
+        run: echo "CLI_ARGS=--changed-since ${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
 
       - name: Test
         run: npm test -- --max-workers 2 ${{ env.CLI_ARGS }}
