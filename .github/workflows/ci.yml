@@ -191,7 +191,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages/website/.next
-          key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
+          key: nextjs-${{ github.run_id }}
           restore-keys: nextjs-
 
       - name: Build website
@@ -219,11 +219,11 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache Next.js
+      - name: Restore website
         uses: actions/cache@v3
         with:
           path: packages/website/.next
-          key: nextjs-${{ hashFiles('package-lock.json', 'packages/**/*.[jt]tx?') }}
+          key: nextjs-${{ github.run_id }}
 
       - name: Test
         run: npm run test-e2e-start -- --max-workers 2
