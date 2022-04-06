@@ -10,6 +10,8 @@
     "test-e2e": "npm test -- -c jest-e2e.config.js",
     "test-e2e-start": "cross-env START=true npm run test-e2e",
     "test-e2e-browser": "cross-env BROWSER=true npm run test-e2e",
+    "coverage": "npm test -- --coverage",
+    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "type-check": "tsc --noEmit",
