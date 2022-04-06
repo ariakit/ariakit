@@ -12,6 +12,7 @@
       "jest-environment-puppeteer",
       "puppeteer",
       "expect-puppeteer",
+      "pptr-testing-library/extend",
       "@testing-library/jest-dom",
       "react/experimental"
     ],

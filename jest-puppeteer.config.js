@@ -5,6 +5,7 @@ const server = process.env.START
 module.exports = {
   launch: {
     headless: process.env.BROWSER ? false : true,
+    slowMo: process.env.BROWSER ? 100 : 0,
   },
   server,
 };
