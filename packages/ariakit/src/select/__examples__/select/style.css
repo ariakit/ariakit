@@ -14,6 +14,7 @@
     rounded-lg
     px-4
     text-base
+    whitespace-nowrap
     bg-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
@@ -40,7 +41,7 @@
     dark:text-canvas-4-dark
     drop-shadow
     dark:drop-shadow-dark
-    focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline-input;
 }
 
 .select-item {

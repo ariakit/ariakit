@@ -8,13 +8,14 @@
     gap-1
     rounded-lg
     border-none
-    bg-primary-2
     px-4
     text-base
-    text-primary-2
-    hover:bg-primary-2-hover
+    whitespace-nowrap
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
+    bg-primary-2
+    text-primary-2
+    hover:bg-primary-2-hover
     dark:bg-primary-2-dark
     dark:text-primary-2-dark
     dark:hover:bg-primary-2-dark-hover;
