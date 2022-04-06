@@ -20,7 +20,6 @@ import { FocusableOptions, useFocusable } from "../focusable";
 import { HovercardState } from "./hovercard-state";
 
 function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
-  console.log(event.movementX, event.movementY);
   return event.movementX || event.movementY || process.env.NODE_ENV === "test";
 }
 
