@@ -5,17 +5,6 @@ import Example from ".";
 const getCombobox = () => getByRole("combobox");
 const getCancelButton = () => getByRole("button", { name: "Clear input" });
 const getOption = (name: string) => getByRole("option", { name });
-const expectComboboxClearedAndFocused = () => {
-  expect(getCombobox()).toHaveValue("");
-  expect(getCombobox()).toHaveFocus();
-};
-const selectAnOption = async () => {
-  await click(getCombobox());
-  expect(getCombobox()).toHaveValue("");
-  await click(getOption("Apple"));
-  expect(getCombobox()).toHaveFocus();
-  expect(getCombobox()).toHaveValue("Apple");
-};
 
 test("a11y", async () => {
   const { container } = render(<Example />);
@@ -24,23 +13,38 @@ test("a11y", async () => {
 
 test("clear input with mouse", async () => {
   render(<Example />);
-  await selectAnOption();
+  await click(getCombobox());
+  expect(getCombobox()).toHaveValue("");
+  await click(getOption("Apple"));
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue("Apple");
   await click(getCancelButton());
-  expectComboboxClearedAndFocused();
+  expect(getCombobox()).toHaveValue("");
+  expect(getCombobox()).toHaveFocus();
 });
 
 test("clear input with keyboard (tab + enter)", async () => {
   render(<Example />);
-  await selectAnOption();
+  await click(getCombobox());
+  expect(getCombobox()).toHaveValue("");
+  await click(getOption("Apple"));
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue("Apple");
   await press.Tab();
   await press.Enter();
-  expectComboboxClearedAndFocused();
+  expect(getCombobox()).toHaveValue("");
+  expect(getCombobox()).toHaveFocus();
 });
 
 test("clear input with keyboard (tab + space)", async () => {
   render(<Example />);
-  await selectAnOption();
+  await click(getCombobox());
+  expect(getCombobox()).toHaveValue("");
+  await click(getOption("Apple"));
+  expect(getCombobox()).toHaveFocus();
+  expect(getCombobox()).toHaveValue("Apple");
   await press.Tab();
   await press.Space();
-  expectComboboxClearedAndFocused();
+  expect(getCombobox()).toHaveValue("");
+  expect(getCombobox()).toHaveFocus();
 });
