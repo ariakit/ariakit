@@ -1,9 +1,14 @@
 @import url("../combobox/style.css");
+@import url("../../../button/__examples__/button/style.css");
 
 .combobox-wrapper {
   @apply relative;
 }
 
+.combobox {
+  @apply pr-10;
+}
+
 .combobox-cancel {
-  @apply h-10 absolute right-3;
+  @apply absolute h-8 w-8 p-0 top-1 right-1;
 }
