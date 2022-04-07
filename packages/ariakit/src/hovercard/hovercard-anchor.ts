@@ -19,6 +19,10 @@ import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable";
 import { HovercardState } from "./hovercard-state";
 
+function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
+  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render an anchor element that will open a popover
@@ -69,6 +73,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         if (disabled) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
+        if (!hasMouseMovement(event)) return;
         if (!showOnHoverProp(event)) return;
         showTimeoutRef.current = window.setTimeout(() => {
           showTimeoutRef.current = 0;

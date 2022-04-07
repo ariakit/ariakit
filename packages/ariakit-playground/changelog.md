@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0-alpha.21](https://github.com/ariakit/ariakit/compare/ariakit-playground@0.17.0-alpha.20...ariakit-playground@0.17.0-alpha.21) (2022-04-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @codemirror/closebrackets to v0.19.2 ([#1174](https://github.com/ariakit/ariakit/issues/1174)) ([01973a7](https://github.com/ariakit/ariakit/commit/01973a799477d4a9a75a316b0b6c2f7296a8aa18))
+* **deps:** update dependency @codemirror/search to v0.19.10 ([#1183](https://github.com/ariakit/ariakit/issues/1183)) ([fae4af3](https://github.com/ariakit/ariakit/commit/fae4af3852036bdb0af135dd9c86ffd39289d8cd))
+* Update repository data on package.json ([2a14f98](https://github.com/ariakit/ariakit/commit/2a14f98bf19d713dd145d4dfa2e5775f5469ce9c))
+
+
+
+
+
 # [0.17.0-alpha.20](https://github.com/ariakit/ariakit/compare/ariakit-playground@0.17.0-alpha.19...ariakit-playground@0.17.0-alpha.20) (2022-03-31)
 
 

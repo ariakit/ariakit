@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.21](https://github.com/ariakit/ariakit/compare/ariakit@2.0.0-alpha.20...ariakit@2.0.0-alpha.21) (2022-04-05)
+
+
+### Bug Fixes
+
+* Fix `autoFocusOnShow` prop not working on `Menu` ([60a66c5](https://github.com/ariakit/ariakit/commit/60a66c5ed940fcaab3b1772b9b89f6858bdb20b0))
+* Fix `Menu` not reacting to mouse leave on iPad with mouse ([a4d0aca](https://github.com/ariakit/ariakit/commit/a4d0acad8c45449349184b777107760810ca276a))
+* Fix `MenuBar` on mobile ([#1176](https://github.com/ariakit/ariakit/issues/1176)) ([1561a8c](https://github.com/ariakit/ariakit/commit/1561a8c80667820dcd26929316a95065bbbe5aac)), closes [#1091](https://github.com/ariakit/ariakit/issues/1091)
+* Fix `Popover` not flipping ([96792a6](https://github.com/ariakit/ariakit/commit/96792a6094a716a4a6f5c16139e116509e7f2e30))
+* Fix conflict on `Menu` and `Combobox` that auto selects item on backspace ([#1181](https://github.com/ariakit/ariakit/issues/1181)) ([abf8fed](https://github.com/ariakit/ariakit/commit/abf8fed2005e8b5d2745f02644c5c8a94f2e5b5e))
+* Reset `activeId` when `Menu` is hidden ([fbf5a42](https://github.com/ariakit/ariakit/commit/fbf5a42546f7cca23441442582f51b71a40250da))
+* Update repository data on package.json ([2a14f98](https://github.com/ariakit/ariakit/commit/2a14f98bf19d713dd145d4dfa2e5775f5469ce9c))
+
+
+### Features
+
+* Add `--scrollbar-width` CSS variable when modal dialog is visible ([#1184](https://github.com/ariakit/ariakit/issues/1184)) ([0bcda26](https://github.com/ariakit/ariakit/commit/0bcda261fb55d86cb382ff8a299d7765555846e7))
+
+
+
+
+
 # [2.0.0-alpha.20](https://github.com/ariakit/ariakit/compare/ariakit@2.0.0-alpha.19...ariakit@2.0.0-alpha.20) (2022-03-31)
 
 
