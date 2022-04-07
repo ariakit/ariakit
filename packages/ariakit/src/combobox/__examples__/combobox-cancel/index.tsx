@@ -5,8 +5,17 @@ import {
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
-import list from "./list";
 import "./style.css";
+
+const list = [
+  "Apple",
+  "Bacon",
+  "Banana",
+  "Broccoli",
+  "Burger",
+  "Cake",
+  "Candy",
+];
 
 export default function Example() {
   const combobox = useComboboxState({ gutter: 8, sameWidth: true });
