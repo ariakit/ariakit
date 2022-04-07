@@ -21,7 +21,6 @@ export default function Example() {
             className="combobox"
           />
           <ComboboxCancel
-            role="button"
             state={combobox}
             className="button secondary combobox-cancel"
           />
