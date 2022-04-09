@@ -59,7 +59,7 @@
     "@typescript-eslint/eslint-plugin": "5.18.0",
     "@typescript-eslint/parser": "5.18.0",
     "babel-plugin-module-resolver": "4.1.0",
-    "chalk": "4.1.2",
+    "chalk": "5.0.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "eslint": "8.13.0",
