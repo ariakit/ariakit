@@ -5,16 +5,17 @@
     {
       "matchPackageNames": ["prettier", "typescript"],
       "matchPackagePatterns": [
-        "^eslint",
         "^@babel/",
         "^@rollup/",
         "^@testing-library/",
         "^@types/",
         "^@typescript-eslint/",
+        "^eslint",
         "^jest",
         "^rollup"
       ],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr"
     }
   ]
 }
