@@ -204,7 +204,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const trulyDisabled = props.disabled && !props.accessibleWhenDisabled;
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, rowId, disabled: !!trulyDisabled };
         if (getItemProp) {
           return getItemProp(nextItem);

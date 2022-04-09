@@ -11,6 +11,7 @@ import styles from "./style.module.css";
 
 // @ts-ignore
 const { Compiler: renderAst } = new RehypeReact({
+  // @ts-ignore
   createElement,
   Fragment: Fragment,
   components: {
