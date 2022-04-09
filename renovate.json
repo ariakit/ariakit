@@ -1,5 +1,19 @@
 {
-  "extends": [
-    "config:base"
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["prettier", "typescript"],
+      "matchPackagePatterns": [
+        "^eslint",
+        "^@babel/",
+        "^@rollup/",
+        "^@testing-library/",
+        "^@types/",
+        "^@typescript-eslint/",
+        "^jest",
+        "^rollup"
+      ],
+      "automerge": true
+    }
   ]
 }
