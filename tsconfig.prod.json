@@ -12,9 +12,8 @@
       "jest-environment-puppeteer",
       "puppeteer",
       "expect-puppeteer",
-      "pptr-testing-library/extend",
       "@testing-library/jest-dom",
-      "react/experimental"
+      "pptr-testing-library/extend"
     ],
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,

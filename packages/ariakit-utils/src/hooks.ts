@@ -4,7 +4,9 @@ import {
   EffectCallback,
   Ref,
   RefObject,
+  // @ts-ignore
   useDeferredValue as _useReactDeferredValue,
+  // @ts-ignore
   useId as _useReactId,
   useCallback,
   useEffect,
@@ -130,7 +132,7 @@ export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
 /**
  * Generates a unique ID. Uses React's useId if available.
  */
-export function useId(defaultId?: string) {
+export function useId(defaultId?: string): string | undefined {
   if (useReactId) {
     const reactId = useReactId();
     if (defaultId) return defaultId;
@@ -148,7 +150,7 @@ export function useId(defaultId?: string) {
 /**
  * Uses React's useDeferredValue if available.
  */
-export function useDeferredValue<T>(value: T) {
+export function useDeferredValue<T>(value: T): T {
   if (useReactDeferredValue) {
     return useReactDeferredValue(value);
   }
