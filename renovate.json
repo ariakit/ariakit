@@ -15,7 +15,8 @@
         "^rollup"
       ],
       "automerge": true,
-      "automergeType": "pr"
+      "automergeType": "pr",
+      "platformAutomerge": true
     }
   ]
 }
