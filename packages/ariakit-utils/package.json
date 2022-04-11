@@ -1,15 +1,19 @@
 {
   "name": "ariakit-utils",
-  "version": "0.17.0-alpha.12",
+  "version": "0.17.0-alpha.14",
   "description": "Ariakit utils",
   "sideEffects": false,
   "license": "MIT",
-  "repository": "https://github.com/ariakit/ariakit/tree/main/packages/ariakit-utils",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "unpkg": "umd/ariakit-utils.min.js",
   "types": "ts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-utils"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
@@ -17,8 +21,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"

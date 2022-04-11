@@ -95,6 +95,26 @@ test("type on combobox", async () => {
   expect(getCombobox()).toHaveValue("");
 });
 
+test("backspace on combobox", async () => {
+  render(<Example />);
+  await press.Tab();
+  await press.Enter();
+  expect(getOption("Paragraph")).toHaveFocus();
+  await type("g");
+  expect(getOption("Gallery")).toHaveFocus();
+  await type("r");
+  expect(getOption("Group")).toHaveFocus();
+  await type("\b");
+  expect(getCombobox()).toHaveValue("g");
+  expect(getOption("Gallery")).not.toHaveFocus();
+  expect(getOption("Group")).not.toHaveFocus();
+  await type("\b");
+  expect(getCombobox()).toHaveValue("");
+  expect(getOption("Paragraph")).not.toHaveFocus();
+  expect(getOption("Gallery")).not.toHaveFocus();
+  expect(getOption("Group")).not.toHaveFocus();
+});
+
 test("move through items with keyboard", async () => {
   render(<Example />);
   await press.Tab();

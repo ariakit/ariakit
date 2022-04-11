@@ -10,9 +10,15 @@ import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let mouseMoving = false;
+let previousScreenX = 0;
+let previousScreenY = 0;
 
 function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
-  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
+  const movementX = event.movementX ?? event.screenX - previousScreenX;
+  const movementY = event.movementY ?? event.screenY - previousScreenY;
+  previousScreenX = event.screenX;
+  previousScreenY = event.screenY;
+  return movementX || movementY || process.env.NODE_ENV === "test";
 }
 
 function setMouseMoving(event: MouseEvent) {
@@ -71,6 +77,9 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       // may lose some events if this component is unmounted, but others are
       // still mounted.
       addGlobalEventListener("mousemove", setMouseMoving, true);
+      // See https://github.com/ariakit/ariakit/issues/1137
+      addGlobalEventListener("mousedown", resetMouseMoving, true);
+      addGlobalEventListener("mouseup", resetMouseMoving, true);
       addGlobalEventListener("keydown", resetMouseMoving, true);
       addGlobalEventListener("scroll", resetMouseMoving, true);
     }, []);

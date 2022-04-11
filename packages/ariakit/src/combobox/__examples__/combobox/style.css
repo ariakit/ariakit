@@ -20,7 +20,6 @@
 }
 
 .popover {
-  width: 250px;
   max-height: 300px;
   @apply
     relative
@@ -42,7 +41,7 @@
     dark:drop-shadow-dark;
 }
 
-.popover > * {
+.combobox-item {
   outline: none;
   @apply
     flex
@@ -53,13 +52,9 @@
     rounded
     p-2
     hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover;
-}
-
-.popover > *[data-active-item] {
-  @apply
-    bg-primary-2
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark;
+    dark:hover:bg-primary-1-dark-hover
+    active-item:bg-primary-2
+    active-item:text-primary-2
+    active-item:dark:bg-primary-2-dark
+    active-item:dark:text-primary-2-dark;
 }

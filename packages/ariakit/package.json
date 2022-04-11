@@ -1,15 +1,19 @@
 {
   "name": "ariakit",
-  "version": "2.0.0-alpha.19",
+  "version": "2.0.0-alpha.21",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
-  "repository": "https://github.com/ariakit/ariakit",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "unpkg": "umd/ariakit.min.js",
   "types": "ts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
@@ -21,8 +25,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"

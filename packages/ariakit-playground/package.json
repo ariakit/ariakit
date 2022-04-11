@@ -1,14 +1,18 @@
 {
   "name": "ariakit-playground",
-  "version": "0.17.0-alpha.19",
+  "version": "0.17.0-alpha.21",
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
-  "repository": "https://github.com/ariakit/ariakit/tree/main/packages/ariakit-playground",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "ts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-playground"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
@@ -16,8 +20,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"
@@ -29,7 +31,7 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.17.2",
-    "@codemirror/closebrackets": "0.19.1",
+    "@codemirror/closebrackets": "0.19.2",
     "@codemirror/commands": "0.19.8",
     "@codemirror/comment": "0.19.1",
     "@codemirror/gutter": "0.19.9",
@@ -38,10 +40,10 @@
     "@codemirror/lang-css": "0.19.3",
     "@codemirror/lang-javascript": "0.19.7",
     "@codemirror/matchbrackets": "0.19.4",
-    "@codemirror/search": "0.19.9",
+    "@codemirror/search": "0.19.10",
     "@codemirror/state": "0.19.9",
     "@codemirror/view": "0.19.48",
-    "@codesandbox/sandpack-client": "0.17.0",
+    "@codesandbox/sandpack-client": "0.18.0",
     "@emotion/react": "^11.7.1",
     "ariakit-utils": "file:../ariakit-utils",
     "codesandbox-import-utils": "^2.2.3",
