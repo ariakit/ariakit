@@ -40,7 +40,7 @@ jobs:
         run: npm ci --no-audit
 
   lint:
-    name: Lint and type check
+    name: Lint
     needs: install
     runs-on: ubuntu-latest
 
@@ -66,6 +66,28 @@ jobs:
 
       - name: Lint CSS
         run: npm run lint-css
+
+  typescript:
+    name: Type check
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Type check
         run: npm run type-check
