@@ -219,7 +219,7 @@ test("My component", () => {
 Now you can run the following command in your terminal to watch the test results:
 
 ```bash
-npm run test:watch
+npm run test-watch
 ```
 
 ## Writing the component documentation
