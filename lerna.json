@@ -5,7 +5,7 @@
   "command": {
     "publish": {
       "conventionalCommits": true,
-      "allowBranch": ["master", "next", "v*"],
+      "allowBranch": ["main", "next", "v*"],
       "message": "chore(release): Publish"
     }
   }

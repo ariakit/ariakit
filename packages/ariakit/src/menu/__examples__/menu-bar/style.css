@@ -1,0 +1,42 @@
+@import url("../menu/style.css");
+
+.menu-bar {
+  @apply flex gap-2;
+}
+
+.menu-bar:not(:focus-within) > .menu-item {
+  background-color: transparent;
+  color: inherit;
+}
+
+.menu-bar > .menu-item {
+  @apply
+    px-6
+    h-10
+    rounded-lg
+    hover:bg-primary-1-hover
+    dark:hover:bg-primary-1-dark-hover
+    active:bg-primary-2-hover
+    dark:active:bg-primary-2-dark-hover;
+}
+
+.menu-bar:focus-within > .menu-item {
+  @apply
+    active-item:bg-primary-2
+    active-item:text-primary-2
+    dark:active-item:bg-primary-2-dark
+    dark:active-item:text-primary-2-dark;
+}
+
+.menu-bar:not(:focus) .menu-item:not(:focus)[aria-expanded="true"],
+.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
+  @apply
+    bg-alpha-3-border
+    text-alpha-3
+    dark:bg-alpha-3-dark-hover
+    dark:text-alpha-3-dark;
+}
+
+.menu .menu-item .label {
+  @apply flex-1 pr-8;
+}

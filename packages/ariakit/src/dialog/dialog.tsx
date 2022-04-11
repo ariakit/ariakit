@@ -1,7 +1,9 @@
 import {
   ComponentPropsWithRef,
   ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
   RefObject,
+  SyntheticEvent,
   useEffect,
   useRef,
   useState,
@@ -12,22 +14,23 @@ import {
   getDocument,
   isButton,
 } from "ariakit-utils/dom";
-import { addGlobalEventListener } from "ariakit-utils/events";
+import { addGlobalEventListener, queueBeforeEvent } from "ariakit-utils/events";
 import {
   ensureFocus,
+  focusIfNeeded,
   getFirstTabbableIn,
   getLastTabbableIn,
-  hasFocusWithin,
   isFocusable,
 } from "ariakit-utils/focus";
 import {
+  useBooleanEventCallback,
   useForkRef,
+  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
-import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -60,17 +63,28 @@ import { DialogState } from "./dialog-state";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 
-function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
-  const activeElement = getActiveElement();
-  if (!activeElement) return false;
-  if (contains(dialog, activeElement)) return false;
-  if (isFocusable(activeElement)) return true;
-  return false;
+function isBackdrop(dialog: HTMLElement, element: Element) {
+  const id = dialog.id;
+  if (!id) return;
+  return element.getAttribute("data-backdrop") === id;
 }
 
 function isInDialog(element: Node) {
   return (dialogRef: RefObject<Node>) =>
     dialogRef.current && contains(dialogRef.current, element);
+}
+
+function isAlreadyFocusingAnotherElement(
+  dialog: HTMLElement,
+  nestedDialogs?: Array<RefObject<HTMLElement>>
+) {
+  const activeElement = getActiveElement();
+  if (!activeElement) return false;
+  if (contains(dialog, activeElement)) return false;
+  if (isBackdrop(dialog, activeElement)) return false;
+  if (nestedDialogs?.some(isInDialog(activeElement))) return false;
+  if (isFocusable(activeElement)) return true;
+  return false;
 }
 
 /**
@@ -113,8 +127,20 @@ export const useDialog = createHook<DialogOptions>(
     // visible.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
 
+    // Sets disclosure ref. It needs to be a layout effect so we get the focused
+    // element right before the dialog is mounted.
+    useSafeLayoutEffect(() => {
+      if (!state.mounted) return;
+      const dialog = ref.current;
+      const activeElement = getActiveElement(dialog, true);
+      if (activeElement && activeElement.tagName !== "BODY") {
+        state.disclosureRef.current = activeElement;
+      }
+    }, [state.mounted]);
+
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, visibleModals, wrapElement } = nested;
+    const nestedDialogsRef = useLiveRef(nestedDialogs);
 
     usePreventBodyScroll(preventBodyScroll && state.mounted);
     // When the dialog is unmounted, we make sure to update the state.
@@ -140,9 +166,10 @@ export const useDialog = createHook<DialogOptions>(
         const disclosure = state.disclosureRef.current;
         if (!disclosure) return;
         if (!isButton(disclosure)) return;
-        const onMouseDown = (event: MouseEvent) => {
-          event.preventDefault();
-          disclosure.focus();
+        const onMouseDown = () => {
+          queueBeforeEvent(disclosure, "mouseup", () =>
+            focusIfNeeded(disclosure)
+          );
         };
         disclosure.addEventListener("mousedown", onMouseDown);
         return () => {
@@ -220,32 +247,31 @@ export const useDialog = createHook<DialogOptions>(
       // focus. This is useful for when the Dialog component is unmounted
       // when hidden.
       if (!domReady) return;
-
       // If there are open nested dialogs, let them handle the focus.
-      const isNestedDialogVisible = nestedDialogs.some(
+      const isNestedDialogVisible = nestedDialogsRef.current?.some(
         (child) => child.current && !child.current.hidden
       );
       if (isNestedDialogVisible) return;
       const dialog = ref.current;
       if (!dialog) return;
-      // If there's already a focused element within the dialog, we'll not move
-      // the focus to another element. This will be true when the user manually
-      // moves the focus to an element inside the dialog when the dialog gets
-      // visible.
-      const isActive = () => hasFocusWithin(dialog);
       const initialFocus = initialFocusRef?.current;
       const element =
-        initialFocus || getFirstTabbableIn(dialog, true) || dialog;
-      // If we don't prevent scroll, there will be a scroll jump when opening
-      // popovers.
-      ensureFocus(element, { preventScroll: true, isActive });
+        initialFocus ||
+        // We have to fallback to the first focusable element otherwise portaled
+        // dialogs with preserveTabOrder set to true will not receive focus
+        // properly because the elements aren't tabbable until the dialog
+        // receives focus.
+        getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
+        dialog;
+      ensureFocus(element);
     }, [
       state.animating,
       state.visible,
       autoFocusOnShow,
       domReady,
-      nestedDialogs,
       initialFocusRef,
+      portal,
+      preserveTabOrder,
     ]);
 
     // Auto focus on hide.
@@ -259,9 +285,10 @@ export const useDialog = createHook<DialogOptions>(
       if (!dialog) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
+        const dialogs = nestedDialogsRef.current;
         // Hide was triggered by a click/focus on a tabbable element outside
         // the dialog or on another dialog. We won't change focus then.
-        if (isAlreadyFocusingAnotherElement(dialog)) return;
+        if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
         const element = finalFocusRef?.current || state.disclosureRef.current;
         if (element) {
           if (element.id) {
@@ -291,11 +318,12 @@ export const useDialog = createHook<DialogOptions>(
       return focusOnHide;
     }, [autoFocusOnHide, state.visible, finalFocusRef, state.disclosureRef]);
 
+    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+
     // Hide on Escape.
     useEffect(() => {
       const dialog = ref.current;
       if (!dialog) return;
-      if (!hideOnEscape) return;
       if (!domReady) return;
       if (!state.mounted) return;
       const onKeyDown = (event: KeyboardEvent) => {
@@ -309,17 +337,18 @@ export const useDialog = createHook<DialogOptions>(
         // dialogs.
         const isValidTarget = () => {
           if (contains(dialog, target)) {
+            const dialogs = nestedDialogsRef.current;
             // Since this is a native DOM event, it won't be triggered by
             // keystrokes on nested dialogs inside portals. But we still need to
             // check if the target is inside a nested non-portal dialog.
-            const inNestedDialog = nestedDialogs.some(isInDialog(target));
+            const inNestedDialog = dialogs.some(isInDialog(target));
             if (inNestedDialog) return false;
             return true;
           }
           if (disclosure && contains(disclosure, target)) return true;
           return false;
         };
-        if (isValidTarget()) {
+        if (isValidTarget() && hideOnEscapeProp(event)) {
           state.hide();
         }
       };
@@ -328,7 +357,13 @@ export const useDialog = createHook<DialogOptions>(
       // We can't do this on a onKeyDown prop on the disclosure element because
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
-    }, [hideOnEscape, domReady, state.mounted, nestedDialogs, state.hide]);
+    }, [
+      domReady,
+      state.mounted,
+      state.disclosureRef,
+      hideOnEscapeProp,
+      state.hide,
+    ]);
 
     // Wraps the element with the nested dialog context.
     props = useWrapElement(props, wrapElement, [wrapElement]);
@@ -387,7 +422,6 @@ export const useDialog = createHook<DialogOptions>(
       (element) => {
         if (backdrop) {
           return (
-            // TODO: Use the same z-index as the dialog.
             <DialogBackdrop
               state={state}
               backdrop={backdrop}
@@ -410,16 +444,16 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <DialogHeadingContext.Provider value={setHeadingId}>
-          <DialogDescriptionContext.Provider value={setDescriptionId}>
-            {element}
-          </DialogDescriptionContext.Provider>
-        </DialogHeadingContext.Provider>
+        <DialogContext.Provider value={state}>
+          <DialogHeadingContext.Provider value={setHeadingId}>
+            <DialogDescriptionContext.Provider value={setDescriptionId}>
+              {element}
+            </DialogDescriptionContext.Provider>
+          </DialogHeadingContext.Provider>
+        </DialogContext.Provider>
       ),
-      []
+      [state]
     );
-
-    props = useStoreProvider({ state, ...props }, DialogContext);
 
     props = {
       "data-dialog": "",
@@ -445,7 +479,7 @@ export const useDialog = createHook<DialogOptions>(
  * @example
  * ```jsx
  * const dialog = useDialogState();
- * <DialogDisclosure state={dialog}>Disclosure</DialogDisclosure>
+ * <button onClick={dialog.toggle}>Open dialog</button>
  * <Dialog state={dialog}>Dialog</Dialog>
  * ```
  */
@@ -498,13 +532,13 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * Escape key.
      * @default true
      */
-    hideOnEscape?: boolean;
+    hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
     /**
      * Determines whether the dialog will be hidden when the user clicks or
      * focus on an element outside of the dialog.
      * @default true
      */
-    hideOnInteractOutside?: BooleanOrCallback<Event>;
+    hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
     /**
      * Determines whether the body scrolling will be prevented when the dialog
      * is shown.

@@ -67,14 +67,8 @@ export function useCompositeState<T extends Item = Item>({
   const move = useCallback((id?: Item["id"]) => {
     // move() does nothing
     if (id === undefined) return;
-    // move(null) will focus the composite element itself, not an item
-    if (id === null) {
-      setMoves((prevMoves) => prevMoves + 1);
-      setActiveId(id);
-    } else {
-      setMoves((prevMoves) => prevMoves + 1);
-      setActiveId(id);
-    }
+    setMoves((prevMoves) => prevMoves + 1);
+    setActiveId(id);
   }, []);
 
   const first = useCallback(() => {
@@ -411,14 +405,6 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   - If `activeId` is initially set to `null`, the base composite element
    *     itself will have focus and users will be able to navigate to it using
    *     arrow keys.
-   * @default undefined
-   * @example
-   * // First enabled item has initial focus
-   * useCompositeState();
-   * // Base composite element has initial focus
-   * useCompositeState({ activeId: null });
-   * // Specific composite item element has initial focus
-   * useCompositeState({ activeId: "item-id" });
    */
   activeId?: Item["id"];
   /**

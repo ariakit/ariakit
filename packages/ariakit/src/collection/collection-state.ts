@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { addItemToArray } from "ariakit-utils/array";
 import { getDocument } from "ariakit-utils/dom";
 import { useControlledState } from "ariakit-utils/hooks";
-import { SetState } from "ariakit-utils/types";
+import { BivariantCallback, SetState } from "ariakit-utils/types";
 import { Item } from "./__utils";
 
 function isElementPreceding(a: Element, b: Element) {
@@ -29,12 +29,13 @@ function findDOMIndex(items: Item[], item: Item) {
   return -1;
 }
 
-function sortBasedOnDOMPosition(items: Item[]) {
+function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
     const elementA = a.ref.current;
     const elementB = b.ref.current;
+    if (elementA === elementB) return 0;
     if (!elementA || !elementB) return 0;
     // a before b
     if (isElementPreceding(elementA, elementB)) {
@@ -55,9 +56,9 @@ function sortBasedOnDOMPosition(items: Item[]) {
   return items;
 }
 
-function setItemsBasedOnDOMPosition(
-  items: Item[],
-  setItems: (items: Item[]) => any
+function setItemsBasedOnDOMPosition<T extends Item>(
+  items: T[],
+  setItems: (items: T[]) => any
 ) {
   const sortedItems = sortBasedOnDOMPosition(items);
   if (items !== sortedItems) {
@@ -79,13 +80,27 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
+function useTimeoutObserver<T extends Item = Item>(
+  items: T[],
+  setItems: (items: T[]) => any
+) {
+  useEffect(() => {
+    const callback = () => setItemsBasedOnDOMPosition(items, setItems);
+    const timeout = setTimeout(callback);
+    return () => clearTimeout(timeout);
+  });
+}
+
 function useSortBasedOnDOMPosition<T extends Item = Item>(
   items: T[],
   setItems: (items: T[]) => any
 ) {
   // istanbul ignore else: JSDOM doesn't support IntersectionObverser
   // See https://github.com/jsdom/jsdom/issues/2032
-  if (typeof IntersectionObserver !== "function") return;
+  if (typeof IntersectionObserver !== "function") {
+    useTimeoutObserver(items, setItems);
+    return;
+  }
   const previousItems = useRef<typeof items>([]);
   useEffect(() => {
     const callback = () => {
@@ -188,7 +203,7 @@ export type CollectionState<T extends Item = Item> = {
    *   return unregisterItem;
    * }, [registerItem]);
    */
-  registerItem: (item: T) => () => void;
+  registerItem: BivariantCallback<(item: T) => () => void>;
 };
 
 export type CollectionStateProps<T extends Item = Item> = Partial<

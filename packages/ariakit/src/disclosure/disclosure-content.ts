@@ -45,7 +45,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // Double RAF is needed so the browser has enough time to paint the
       // default styles before processing the `data-enter` attribute. Otherwise
       // it wouldn't be considered a transition.
-      // See https://github.com/reakit/reakit/issues/643
+      // See https://github.com/ariakit/ariakit/issues/643
       raf.current = requestAnimationFrame(() => {
         raf.current = requestAnimationFrame(() => {
           if (state.visible) {

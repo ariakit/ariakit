@@ -1,6 +1,6 @@
-dist
-es
-lib
+cjs
+esm
+umd
 ts
 coverage
 node_modules

@@ -7,6 +7,7 @@ const getMenuItem = (name: string) => getByRole("menuitemcheckbox", { name });
 
 test("a11y", async () => {
   const { container } = render(<Example />);
+  await click(getMenuButton("Unwatch"));
   expect(await axe(container)).toHaveNoViolations();
 });
 

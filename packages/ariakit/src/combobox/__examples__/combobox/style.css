@@ -5,59 +5,56 @@
 .combobox {
   width: 250px;
   @apply
-    border-none
-    px-4
     h-10
     rounded-lg
+    border-none
+    px-4
     text-base
+    focus-visible:ariakit-outline-input
     bg-canvas-1
     text-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    ariakit-focus-visible:ariakit-outline;
+    dark:hover:bg-canvas-1-dark-hover;
 }
 
 .popover {
-  width: 250px;
   max-height: 300px;
   @apply
     relative
+    z-50
     flex
     flex-col
-    z-50
-    p-2
     overflow-auto
     rounded-lg
-    drop-shadow
-    dark:drop-shadow-dark
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
+    p-2
     text-canvas-4
-    dark:text-canvas-4-dark;
+    drop-shadow
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-dark;
 }
 
-.popover > * {
+.combobox-item {
+  outline: none;
   @apply
-    scroll-m-2
-    outline-none
+    flex
     cursor-default
+    scroll-m-2
+    items-center
+    gap-2
     rounded
     p-2
     hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover;
-}
-
-.popover > *[aria-selected="true"],
-.popover > *:focus {
-  @apply
-    bg-primary-2
-    text-primary-2
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark;
+    dark:hover:bg-primary-1-dark-hover
+    active-item:bg-primary-2
+    active-item:text-primary-2
+    active-item:dark:bg-primary-2-dark
+    active-item:dark:text-primary-2-dark;
 }

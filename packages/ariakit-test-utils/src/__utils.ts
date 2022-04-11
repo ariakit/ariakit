@@ -8,6 +8,12 @@ export function queuedMicrotasks(): Promise<void> {
   return act(() => Promise.resolve());
 }
 
+export function nextFrame(): Promise<void> {
+  return act(
+    () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+  );
+}
+
 // JSDOM doesn't keep selection range when we delete a selection. We're adding
 // a custom property called `selectionRange` to the element so we have control over
 // it.
@@ -46,5 +52,8 @@ export function setSelectionRange(
 ) {
   const textField = element as TextFieldWithSelectionRange;
   textField.selectionRange = [start, end];
-  textField.addEventListener("select", setSelectionRangeOnSelect);
+  textField.addEventListener(
+    "select",
+    setSelectionRangeOnSelect as EventListenerOrEventListenerObject
+  );
 }

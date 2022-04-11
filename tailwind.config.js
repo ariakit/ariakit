@@ -31,6 +31,12 @@ module.exports = {
         DEFAULT: whiteFade,
         text: whiteFade,
       },
+      link: {
+        text: "hsl(204, 100%, 38%)",
+        dark: {
+          text: "hsl(204, 100%, 62%)",
+        },
+      },
       "canvas-1": {
         DEFAULT: "hsl(204, 20%, 94%)",
         hover: "hsl(204, 20%, 91%)",
@@ -228,13 +234,13 @@ module.exports = {
 
     dropShadow: {
       DEFAULT: "0 4px 6px rgba(0, 0, 0, 15%)",
-      dark: "0 4px 6px rgba(0, 0, 0, 30%)",
+      dark: "0 4px 6px rgba(0, 0, 0, 40%)",
       sm: "0 2px 3px rgba(0, 0, 0, 15%)",
-      "sm-dark": "0 2px 3px rgba(0, 0, 0, 30%)",
+      "sm-dark": "0 2px 3px rgba(0, 0, 0, 40%)",
       md: "0 8px 12px rgba(0, 0, 0, 15%)",
-      "md-dark": "0 8px 12px rgba(0, 0, 0, 30%)",
+      "md-dark": "0 8px 12px rgba(0, 0, 0, 40%)",
       lg: "0 16px 24px rgba(0, 0, 0, 15%)",
-      "lg-dark": "0 16px 24px rgba(0, 0, 0, 30%)",
+      "lg-dark": "0 16px 24px rgba(0, 0, 0, 40%)",
     },
   },
   corePlugins: {
@@ -262,16 +268,26 @@ module.exports = {
         ".ariakit-outline": {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
           outlineOffset: "2px",
-          ".dark &": {
-            outlineColor: theme("colors.primary-2.dark.DEFAULT"),
-          },
         },
       });
 
-      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
+      addUtilities({
+        ".ariakit-outline-input": {
+          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+        },
+      });
+
+      addVariant("enter", "&[data-enter]");
+      addVariant("leave", "&[data-leave]");
+      addVariant("active-item", "&[data-active-item]");
+
+      addVariant("active", ["&:active", "&[data-active]"]);
+      addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
       addVariant("aria-invalid", '&[aria-invalid="true"]');
       addVariant("aria-disabled", '&[aria-disabled="true"]');
       addVariant("aria-selected", '&[aria-selected="true"]');
+      addVariant("aria-expanded", '&[aria-expanded="true"]');
+      addVariant("aria-checked", '&[aria-checked="true"]');
     }),
   ],
 };

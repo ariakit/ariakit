@@ -1,0 +1,5 @@
+@import url("../combobox/style.css");
+
+.combobox-item:hover {
+  background-color: initial;
+}

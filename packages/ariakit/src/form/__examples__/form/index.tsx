@@ -3,6 +3,7 @@ import {
   FormError,
   FormInput,
   FormLabel,
+  FormReset,
   FormSubmit,
   useFormState,
 } from "ariakit/form";
@@ -23,6 +24,7 @@ export default function Example() {
         <FormError name={form.names.name} className="error" />
       </div>
       <FormSubmit className="button">Submit</FormSubmit>
+      <FormReset className="button secondary">Reset</FormReset>
     </Form>
   );
 }

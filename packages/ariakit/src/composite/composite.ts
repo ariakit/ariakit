@@ -13,7 +13,12 @@ import {
   fireKeyboardEvent,
   isSelfTarget,
 } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useLiveRef } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useForkRef,
+  useLiveRef,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -44,7 +49,6 @@ function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
 }
 
 function useKeyboardEventProxy(
-  virtualFocus?: boolean,
   activeItem?: Item,
   onKeyboardEventProp?: KeyboardEventHandler
 ) {
@@ -53,7 +57,7 @@ function useKeyboardEventProxy(
     (event: ReactKeyboardEvent) => {
       onKeyboardEvent(event);
       if (event.defaultPrevented) return;
-      if (virtualFocus && canProxyKeyboardEvent(event)) {
+      if (canProxyKeyboardEvent(event)) {
         const activeElement = activeItem?.ref.current;
         if (!activeElement) return;
         const { view, ...eventInit } = event;
@@ -68,7 +72,7 @@ function useKeyboardEventProxy(
         }
       }
     },
-    [onKeyboardEvent, virtualFocus, activeItem]
+    [onKeyboardEvent, activeItem]
   );
 }
 
@@ -111,40 +115,54 @@ function useScheduleFocus(activeItem?: Item) {
  * ```
  */
 export const useComposite = createHook<CompositeOptions>(
-  ({ state, composite = true, ...props }) => {
+  ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const activeItem = findEnabledItemById(state.items, state.activeId);
-    const previousElementRef = useRef<HTMLElement | null>(null);
     const virtualFocus = composite && state.virtualFocus;
+    const activeItem = findEnabledItemById(state.items, state.activeId);
+    const activeItemRef = useLiveRef(activeItem);
+    const previousElementRef = useRef<HTMLElement | null>(null);
+    const isSelfActive = state.activeId === null;
+    const isSelfAciveRef = useLiveRef(isSelfActive);
+    const scheduleFocus = useScheduleFocus(activeItem);
+
+    // Focus on the active item element.
+    useSafeLayoutEffect(() => {
+      if (!focusOnMove) return;
+      if (!state.moves) return;
+      const itemElement = activeItemRef.current?.ref.current;
+      if (!itemElement) return;
+      // We're scheduling the focus on the next tick to avoid the `onFocus`
+      // event on each item to be triggered before the state changes can
+      // propagate to them.
+      scheduleFocus();
+    }, [focusOnMove, state.moves]);
 
     useEffect(() => {
       if (!composite) return;
+      if (!state.moves) return;
+      if (!isSelfAciveRef.current) return;
       const element = ref.current;
-      if (state.moves && !activeItem) {
-        // When virtualFocus is enabled, calling composite.move(null) will not
-        // fire a blur event on the active item. So we need to do it manually.
-        const previousElement = previousElementRef.current;
-        if (previousElement) {
-          fireBlurEvent(previousElement, { relatedTarget: element });
-        }
-        // If composite.move(null) has been called, the composite container
-        // (this element) should receive focus.
-        element?.focus();
-        // And we have to clean up the previous element ref so an additional
-        // blur event is not fired on it, for example, when looping through
-        // items while includesBaseElement is true.
-        previousElementRef.current = null;
+      // When virtualFocus is enabled, calling composite.move(null) will not
+      // fire a blur event on the active item. So we need to do it manually.
+      const previousElement = previousElementRef.current;
+      if (previousElement) {
+        fireBlurEvent(previousElement, { relatedTarget: element });
       }
-    }, [composite, state.moves, activeItem]);
+      // If composite.move(null) has been called, the composite container (this
+      // element) should receive focus.
+      element?.focus();
+      // And we have to clean up the previous element ref so an additional blur
+      // event is not fired on it, for example, when looping through items while
+      // includesBaseElement is true.
+      previousElementRef.current = null;
+    }, [composite, state.moves]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
-      virtualFocus,
       activeItem,
       props.onKeyDownCapture
     );
 
     const onKeyUpCapture = useKeyboardEventProxy(
-      virtualFocus,
       activeItem,
       props.onKeyUpCapture
     );
@@ -177,8 +195,6 @@ export const useComposite = createHook<CompositeOptions>(
     );
 
     const onFocusProp = useEventCallback(props.onFocus);
-    const scheduleFocus = useScheduleFocus(activeItem);
-    const activeItemRef = useLiveRef(activeItem);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -290,6 +306,7 @@ export const useComposite = createHook<CompositeOptions>(
         onKeyDownProp(event);
         if (event.defaultPrevented) return;
         if (!isSelfTarget(event)) return;
+        if (activeItemRef.current) return;
         const isVertical = state.orientation !== "horizontal";
         const isHorizontal = state.orientation !== "vertical";
         const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
@@ -324,7 +341,6 @@ export const useComposite = createHook<CompositeOptions>(
         onKeyDownProp,
         state.orientation,
         state.items,
-        state.moves,
         state.last,
         state.first,
         state.move,
@@ -390,8 +406,8 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * const menu = useMenuState(combobox);
    * <MenuButton state={menu}>Open Menu</MenuButton>
    * <Menu state={menu} composite={false}>
-   *   <Combobox state={combobox} />å
-   *   <ComboboxList state={comboobx}>
+   *   <Combobox state={combobox} />
+   *   <ComboboxList state={combobox}>
    *     <ComboboxItem as={MenuItem}>Item 1</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 2</ComboboxItem>
    *     <ComboboxItem as={MenuItem}>Item 3</ComboboxItem>
@@ -400,6 +416,12 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * ```
    */
   composite?: boolean;
+  /**
+   * Whether the active composite item should receive focus when
+   * `composite.move` is called.
+   * @default true
+   */
+  focusOnMove?: boolean;
 };
 
 export type CompositeProps<T extends As = "div"> = Props<CompositeOptions<T>>;

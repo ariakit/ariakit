@@ -1,7 +1,9 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .form {
-  @apply flex flex-col gap-4;
+  width: 280px;
+  min-height: 320px;
+  @apply flex flex-col gap-4 py-10;
 }
 
 .field {
@@ -10,20 +12,19 @@
 
 .field input {
   @apply
-    border-none
-    w-[250px]
-    px-4
+    w-full
     h-10
     rounded-lg
+    border-none
+    px-4
     text-base
-    outline-none
+    focus-visible:ariakit-outline-input
     bg-canvas-1
     text-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    ariakit-focus-visible:ariakit-outline;
+    dark:hover:bg-canvas-1-dark-hover;
 }
 
 .error:empty {
@@ -32,13 +33,13 @@
 
 .error:not(:empty) {
   @apply
-    py-2
-    px-4
-    border
     rounded-lg
-    text-danger-1
+    border
     border-danger-1
     bg-danger-1
+    py-2
+    px-4
+    text-danger-1
     dark:border-danger-1-dark
     dark:bg-danger-1-dark
     dark:text-danger-1-dark;

@@ -71,7 +71,6 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
       value,
       checked,
       onChange,
-      clickOnEnter: true,
       ...props,
     });
 
@@ -123,7 +122,7 @@ export type MenuItemRadioOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item radio is clicked.
      * @default false
      */
-    hideOnClick?: boolean;
+    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
   };
 
 export type MenuItemRadioProps<T extends As = "div"> = Props<

@@ -51,7 +51,6 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     props = useCheckbox({
       state: checkboxState,
       checked,
-      clickOnEnter: true,
       ...props,
     });
 
@@ -98,7 +97,7 @@ export type MenuItemCheckboxOptions<T extends As = "div"> = Omit<
      * Whether to hide the menu when the menu item checkbox is clicked.
      * @default false
      */
-    hideOnClick?: boolean;
+    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
   };
 
 export type MenuItemCheckboxProps<T extends As = "div"> = Props<

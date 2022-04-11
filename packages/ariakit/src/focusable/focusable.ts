@@ -17,7 +17,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { hasFocusWithin, isFocusable } from "ariakit-utils/focus";
+import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
 import {
   useEventCallback,
   useForkRef,
@@ -31,7 +31,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
 
 const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
 
@@ -54,16 +54,14 @@ const alwaysFocusVisibleInputTypes = [
 function isAlwaysFocusVisible(element: HTMLElement) {
   const { tagName, readOnly, type } = element as HTMLInputElement;
   if (tagName === "TEXTAREA" && !readOnly) return true;
+  if (tagName === "SELECT" && !readOnly) return true;
   if (tagName === "INPUT" && !readOnly) {
     return alwaysFocusVisibleInputTypes.includes(type);
   }
-  return element.isContentEditable;
-}
-
-function focusIfNeeded(element: HTMLElement) {
-  if (!hasFocusWithin(element) && isFocusable(element)) {
-    element.focus();
-  }
+  if (element.isContentEditable) return true;
+  const role = element.getAttribute("role");
+  if (role === "combobox") return true;
+  return false;
 }
 
 function getLabels(element: HTMLElement | HTMLInputElement) {
@@ -165,7 +163,6 @@ function onGlobalMouseDown(event: MouseEvent) {
 
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
-  if (event.altKey) return;
   if (event.ctrlKey) return;
   isKeyboardModality = true;
 }
@@ -197,21 +194,6 @@ export const useFocusable = createHook<FocusableOptions>(
       addGlobalEventListener("mousedown", onGlobalMouseDown, true);
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
     }, [focusable]);
-
-    // The native autoFocus prop is problematic in many ways. For example, when
-    // an element has the native autofocus attribute, the focus event will be
-    // triggered before React effects (even layout effects) and before refs are
-    // assigned. This means we won't have access to the element's ref or
-    // anything else that's set up by React effects on the onFocus event. So we
-    // don't pass the autoFocus prop to the element and instead manually focus
-    // the element when it's mounted. See
-    // https://twitter.com/diegohaz/status/1408180632933388289
-    useSafeLayoutEffect(() => {
-      if (!focusable) return;
-      if (autoFocus) {
-        ref.current?.focus();
-      }
-    }, [focusable, autoFocus]);
 
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
     // buttons when their labels are clicked. This effect will make sure the
@@ -286,8 +268,8 @@ export const useFocusable = createHook<FocusableOptions>(
         if (event.defaultPrevented) return;
         if (!focusable) return;
         const element = event.currentTarget;
-        // Safari and Firefox on MacOS don't focus on buttons on mouse down
-        // like other browsers/platforms. Instead, they focus on the closest
+        // Safari and Firefox on MacOS don't focus on buttons on mouse down like
+        // other browsers/platforms. Instead, they focus on the closest
         // focusable ancestor element, which is ultimately the body element. So
         // we make sure to give focus to the tabbable element on mouse down so
         // it works consistently across browsers.
@@ -370,6 +352,23 @@ export const useFocusable = createHook<FocusableOptions>(
       [onBlurProp, focusable]
     );
 
+    // The native autoFocus prop is problematic in many ways. For example, when
+    // an element has the native autofocus attribute, the focus event will be
+    // triggered before React effects (even layout effects) and before refs are
+    // assigned. This means we won't have access to the element's ref or
+    // anything else that's set up by React effects on the onFocus event. So we
+    // don't pass the autoFocus prop to the element and instead manually focus
+    // the element when it's mounted. The order in which this effect runs also
+    // matters. It must be declared here after all the event callbacks above so
+    // the event callback effects run before this one. See
+    // https://twitter.com/diegohaz/status/1408180632933388289
+    useSafeLayoutEffect(() => {
+      if (!focusable) return;
+      if (autoFocus) {
+        ref.current?.focus();
+      }
+    }, [focusable, autoFocus]);
+
     const tagName = useTagName(ref, props.as);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
@@ -390,7 +389,7 @@ export const useFocusable = createHook<FocusableOptions>(
         supportsDisabled,
         props.tabIndex
       ),
-      disabled: trulyDisabled ? true : undefined,
+      disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // TODO: Test Focusable contentEditable.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,
@@ -459,7 +458,7 @@ export type FocusableOptions<T extends As = "div"> = Options<T> & {
    * Custom event handler that is called when the element is focused via the
    * keyboard or when a key is pressed while the element is focused.
    */
-  onFocusVisible?: (event: SyntheticEvent) => void;
+  onFocusVisible?: BivariantCallback<(event: SyntheticEvent) => void>;
 };
 
 export type FocusableProps<T extends As = "div"> = Props<FocusableOptions<T>>;

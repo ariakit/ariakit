@@ -6,7 +6,7 @@ test("markup", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
-        class="css-g19o06 code-jsx has-line-numbers"
+        class="css-r36kf1 code-jsx has-line-numbers"
       >
         <div
           class="cm-editor"
@@ -16,6 +16,7 @@ test("markup", () => {
             style="overflow: auto;"
           >
             <div
+              aria-hidden="true"
               class="cm-gutters"
             >
               <div
@@ -43,7 +44,9 @@ test("markup", () => {
                 </div>
               </div>
             </div>
-            <code>
+            <code
+              class="cm-content"
+            >
               <span
                 class="token keyword"
               >

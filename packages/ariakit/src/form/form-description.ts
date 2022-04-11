@@ -26,7 +26,7 @@ import { FormState } from "./form-state";
  * ```
  */
 export const useFormDescription = createHook<FormDescriptionOptions>(
-  ({ state, name: nameProp, ...props }) => {
+  ({ state, name: nameProp, getItem: getItemProp, ...props }) => {
     state = useStore(state || FormContext, []);
     const ref = useRef<HTMLInputElement>(null);
 
@@ -36,12 +36,12 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, name, type: "description" };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, name, props.getItem]
+      [id, name, getItemProp]
     );
 
     props = {

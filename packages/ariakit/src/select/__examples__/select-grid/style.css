@@ -1,0 +1,32 @@
+@import url("../select/style.css");
+
+.row {
+  @apply flex;
+}
+
+.select-item {
+  @apply p-4;
+}
+
+.select-item::after {
+  content: "";
+  background-color: currentcolor;
+  @apply w-2 h-2 rounded-sm;
+}
+
+.icon {
+  @apply flex flex-col;
+}
+
+.icon-row {
+  @apply flex;
+}
+
+.icon-item {
+  background-color: currentcolor;
+  @apply w-0.5 h-0.5 m-0.5 opacity-50;
+}
+
+.icon-item[data-active="true"] {
+  @apply w-1 h-1 m-px opacity-100;
+}

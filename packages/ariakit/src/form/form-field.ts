@@ -1,5 +1,7 @@
-import { FocusEvent, useCallback, useMemo, useRef } from "react";
+import { FocusEvent, RefObject, useCallback, useMemo, useRef } from "react";
+import { getDocument } from "ariakit-utils/dom";
 import {
+  useBooleanEventCallback,
   useEventCallback,
   useForkRef,
   useId,
@@ -8,7 +10,7 @@ import {
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,
@@ -17,6 +19,20 @@ import { FormContext, StringLike } from "./__utils";
 import { FormState } from "./form-state";
 
 type ItemType = "label" | "error" | "description";
+
+function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
+  const element = ref.current;
+  if (!element) return null;
+  if (element.name !== name) {
+    if (element.form) {
+      return element.form.elements.namedItem(name) as HTMLInputElement | null;
+    } else {
+      const document = getDocument(element);
+      return document.getElementsByName(name)[0] as HTMLInputElement | null;
+    }
+  }
+  return element;
+}
 
 function acceptsNameAttribute(tagName?: string) {
   return (
@@ -71,7 +87,13 @@ function useItem(state: FormState | undefined, name: string, type: ItemType) {
  * ```
  */
 export const useFormField = createHook<FormFieldOptions>(
-  ({ state, name: nameProp, ...props }) => {
+  ({
+    state,
+    name: nameProp,
+    getItem: getItemProp,
+    touchOnBlur = true,
+    ...props
+  }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       "setFieldTouched",
@@ -91,7 +113,7 @@ export const useFormField = createHook<FormFieldOptions>(
     const id = useId(props.id);
 
     state?.useValidate(() => {
-      const element = ref.current;
+      const element = getNamedElement(ref, name);
       if (!element) return;
       if ("validity" in element && !element.validity.valid) {
         state?.setError(name, element.validationMessage);
@@ -101,23 +123,25 @@ export const useFormField = createHook<FormFieldOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, id, name, type: "field" };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, name, props.getItem]
+      [id, name, getItemProp]
     );
 
     const onBlurProp = useEventCallback(props.onBlur);
+    const touchOnBlurProp = useBooleanEventCallback(touchOnBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {
         onBlurProp(event);
         if (event.defaultPrevented) return;
+        if (!touchOnBlurProp(event)) return;
         state?.setFieldTouched(name, true);
       },
-      [onBlurProp, state?.setFieldTouched, name]
+      [onBlurProp, touchOnBlurProp, state?.setFieldTouched, name]
     );
 
     const tagName = useTagName(ref, props.as || "input");
@@ -195,6 +219,11 @@ export type FormFieldOptions<T extends As = "input"> = Omit<
    * Name of the field.
    */
   name: StringLike;
+  /**
+   * Whether the field should be marked touched on blur.
+   * @default true
+   */
+  touchOnBlur?: BooleanOrCallback<FocusEvent>;
 };
 
 export type FormFieldProps<T extends As = "input"> = Props<FormFieldOptions<T>>;
