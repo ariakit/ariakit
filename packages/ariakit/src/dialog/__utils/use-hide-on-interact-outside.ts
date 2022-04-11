@@ -166,7 +166,7 @@ export function useHideOnInteractOutside(
         event.stopPropagation();
         return;
       }
-      // Fix for https://github.com/reakit/reakit/issues/619
+      // Fix for https://github.com/ariakit/ariakit/issues/619
       if (event.target === getDocument(dialog)) return;
       state.hide();
     },

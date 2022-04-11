@@ -77,10 +77,12 @@ export const useOpenInCodeSandbox = createHook<OpenInCodeSandboxOptions>(
   }
 );
 
-export const OpenInCodeSandbox = createComponent((props) => {
-  const htmlProps = useOpenInCodeSandbox(props);
-  return createElement("button", htmlProps);
-});
+export const OpenInCodeSandbox = createComponent<OpenInCodeSandboxOptions>(
+  (props) => {
+    const htmlProps = useOpenInCodeSandbox(props);
+    return createElement("button", htmlProps);
+  }
+);
 
 export type OpenInCodeSandboxOptions<T extends As = "button"> =
   ButtonOptions<T> & {

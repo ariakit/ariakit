@@ -59,7 +59,14 @@ function getFirstFieldsByName(
  * ```
  */
 export const useFormPush = createHook<FormPushOptions>(
-  ({ state, name: nameProp, value, autoFocusOnClick = true, ...props }) => {
+  ({
+    state,
+    value,
+    name: nameProp,
+    getItem: getItemProp,
+    autoFocusOnClick = true,
+    ...props
+  }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, ["pushValue", "items"]);
 
@@ -77,12 +84,12 @@ export const useFormPush = createHook<FormPushOptions>(
     const getItem = useCallback(
       (item) => {
         const nextItem = { ...item, type: "button", name };
-        if (props.getItem) {
-          return props.getItem(nextItem);
+        if (getItemProp) {
+          return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [name, props.getItem]
+      [name, getItemProp]
     );
 
     const onClickProp = useEventCallback(props.onClick);

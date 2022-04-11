@@ -7,7 +7,7 @@ test("a11y", async () => {
   expect(await axe(getByRole("button"))).toHaveNoViolations();
 });
 
-test("render button", () => {
+test("markup", () => {
   render(<Example />);
   expect(getByRole("button")).toMatchInlineSnapshot(`
     <button

@@ -5,34 +5,40 @@
 }
 
 .anchor {
-  @apply font-semibold hover:underline text-primary-1 dark:text-primary-1-dark;
+  text-decoration-skip-ink: none;
+  @apply
+    underline
+    font-medium
+    hover:decoration-[3px]
+    text-link
+    dark:text-link-dark;
 }
 
 .hovercard {
   @apply
     relative
-    flex
-    flex-col
-    w-[300px]
-    gap-2
     z-50
-    p-4
+    flex
+    w-[300px]
+    flex-col
+    gap-2
     rounded-lg
+    p-4
     drop-shadow
-    dark:drop-shadow-dark
+    focus-visible:ariakit-outline
     border
     border-solid
     border-canvas-4
-    dark:border-canvas-4-dark
     bg-canvas-4
-    dark:bg-canvas-4-dark
     text-canvas-4
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    ariakit-focus-visible:ariakit-outline;
+    dark:drop-shadow-dark;
 }
 
 .avatar {
-  @apply rounded-full w-16;
+  @apply w-16 rounded-full;
 }
 
 .username {

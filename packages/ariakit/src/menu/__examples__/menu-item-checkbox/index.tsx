@@ -12,16 +12,13 @@ import "./style.css";
 
 export default function Example() {
   const menu = useMenuState({
-    defaultValues: {
-      watching: ["issues"],
-    },
+    defaultValues: { watching: ["issues"] },
   });
-  const watching = menu.values.watching as string[];
   return (
     <>
       <MenuButton state={menu} className="button">
         <HiOutlineEye />
-        {!!watching.length ? "Unwatch" : "Watch"}
+        {!!menu.values.watching.length ? "Unwatch" : "Watch"}
         <MenuButtonArrow />
       </MenuButton>
       <Menu state={menu} className="menu">

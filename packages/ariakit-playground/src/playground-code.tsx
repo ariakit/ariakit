@@ -3,6 +3,7 @@ import {
   MouseEvent,
   cloneElement,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +13,6 @@ import {
   useControlledState,
   useEventCallback,
   useForkRef,
-  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
@@ -52,6 +52,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     ]);
     const ref = useRef<HTMLDivElement>(null);
     const value = valueProp ?? getValue(state, file);
+
     const [collapsible, setCollapsible] = useState(false);
 
     const [expanded, setExpanded] = useControlledState(
@@ -64,14 +65,18 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       language = "jsx";
     }
 
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       if (!maxHeight) return;
       const element = ref.current;
       if (!element) return;
       const scrollerElement = element.querySelector(".cm-scroller");
       if (!scrollerElement) return;
-      setCollapsible(scrollerElement.scrollHeight > maxHeight);
-    }, [maxHeight]);
+      const observer = new ResizeObserver(() => {
+        setCollapsible(scrollerElement.scrollHeight > maxHeight);
+      });
+      observer.observe(scrollerElement);
+      return () => observer.disconnect();
+    }, [maxHeight, props.children]);
 
     const code = useMemo(() => {
       if (!shouldHighlight) return;
@@ -88,7 +93,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     const numbers = useMemo(
       () =>
         lineNumbers && (
-          <div className="cm-gutters">
+          <div className="cm-gutters" aria-hidden>
             <div className="cm-lineNumbers">
               {lines.map((line) => (
                 <div key={line} className="cm-gutterElement">
@@ -163,9 +168,12 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
           >
             {numbers}
             {code ? (
-              <code dangerouslySetInnerHTML={{ __html: code }} />
+              <code
+                className="cm-content"
+                dangerouslySetInnerHTML={{ __html: code }}
+              />
             ) : (
-              <code>{value}</code>
+              <code className="cm-content">{value}</code>
             )}
           </pre>
         </div>

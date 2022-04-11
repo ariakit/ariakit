@@ -1,4 +1,3 @@
-export * from "./combobox-arrow";
 export * from "./combobox-cancel";
 export * from "./combobox-disclosure";
 export * from "./combobox-group-label";

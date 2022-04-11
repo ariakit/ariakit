@@ -72,9 +72,7 @@ class PagesWebpackPlugin {
     const entry = EntryPlugin.createDependency(this.entryPath, entryOptions);
 
     compiler.hooks.make.tapAsync("PagesWebpackPlugin", (compilation, cb) => {
-      compilation.addEntry(this.buildDir, entry, this.name, (error) =>
-        cb(error)
-      );
+      compilation.addEntry(this.buildDir, entry, this.name, () => cb());
     });
   }
 }

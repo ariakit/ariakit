@@ -1,8 +1,8 @@
-import { SetStateAction, useCallback, useMemo, useState } from "react";
-import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useControlledState } from "ariakit-utils/hooks";
 import { applyState } from "ariakit-utils/misc";
 import { useStore, useStorePublisher } from "ariakit-utils/store";
-import { SetState } from "ariakit-utils/types";
+import { SetState, SetStateAction } from "ariakit-utils/types";
 import {
   CompositeState,
   CompositeStateProps,
@@ -13,15 +13,12 @@ import {
   HovercardStateProps,
   useHovercardState,
 } from "../hovercard/hovercard-state";
-import { MenuBarContext, useParentMenu } from "./__utils";
+import { MenuBarContext, MenuContext } from "./__utils";
 
-function useParentOrientation(parentMenu?: MenuState) {
-  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
-  if (parentMenu) {
-    return parentMenu.orientation;
-  }
-  return parentMenuBar?.orientation;
-}
+type Values = Record<
+  string,
+  string | boolean | number | Array<string | number>
+>;
 
 /**
  * Provides state for the `Menu` components.
@@ -35,45 +32,46 @@ function useParentOrientation(parentMenu?: MenuState) {
  * </Menu>
  * ```
  */
-export function useMenuState({
+export function useMenuState<V extends Values = Values>({
   orientation = "vertical",
-  timeout = 150,
+  timeout,
   hideTimeout = 0,
   ...props
-}: MenuStateProps = {}): MenuState {
+}: MenuStateProps<V> = {}): MenuState<V> {
   const [initialFocus, setInitialFocus] =
     useState<MenuState["initialFocus"]>("container");
   const [values, setValues] = useControlledState(
-    props.defaultValues || {},
+    props.defaultValues || ({} as V),
     props.values,
     props.setValues
   );
-  const parentMenu = useParentMenu(["orientation", "hideAll"]);
-  const contextOrientation = useParentOrientation(parentMenu);
+  const parentMenu = useStore(MenuContext, ["orientation", "hideAll"]);
+  const parentMenuBar = useStore(MenuBarContext, ["orientation"]);
+  const contextOrientation =
+    parentMenu?.orientation || parentMenuBar?.orientation;
+  const parentIsMenuBar = !!parentMenuBar && !parentMenu;
   // Defines the placement of the menu popover based on the parent orientation.
   const placement =
     props.placement ||
     (contextOrientation === "vertical" ? "right-start" : "bottom-start");
 
+  timeout = timeout ?? parentIsMenuBar ? 0 : 150;
   const composite = useCompositeState({ orientation, ...props });
-  const hoverCard = useHovercardState({
+  const hovercard = useHovercardState({
     timeout,
     hideTimeout,
     ...props,
     placement,
   });
 
-  // TODO: Comment. Sometimes re-opening the menu in a menu bar will move focus.
-  // Maybe should reset activeId as well. Needs to be layout effect because of
-  // context menu subsequent clicks.
-  useSafeLayoutEffect(() => {
-    if (!hoverCard.visible) {
-      composite.setMoves(0);
-    }
-  }, [hoverCard.visible, composite.setMoves]);
+  // Resets the initial focus state when the menu is closed.
+  useEffect(() => {
+    if (hovercard.mounted) return;
+    composite.setActiveId(null);
+  }, [hovercard.mounted, composite.setActiveId]);
 
   const setValue = useCallback(
-    (name: string, value: SetStateAction<typeof values[string]>) => {
+    (name: string, value: SetStateAction<V[string]>) => {
       // Preventing prototype pollution.
       if (name === "__proto__" || name === "constructor") return;
       setValues((prevValues) => {
@@ -92,14 +90,14 @@ export function useMenuState({
   );
 
   const hideAll = useCallback(() => {
-    hoverCard.hide();
+    hovercard.hide();
     parentMenu?.hideAll();
-  }, [hoverCard.hide, parentMenu?.hideAll]);
+  }, [hovercard.hide, parentMenu?.hideAll]);
 
   const state = useMemo(
     () => ({
       ...composite,
-      ...hoverCard,
+      ...hovercard,
       initialFocus,
       setInitialFocus,
       values,
@@ -109,7 +107,7 @@ export function useMenuState({
     }),
     [
       composite,
-      hoverCard,
+      hovercard,
       initialFocus,
       setInitialFocus,
       values,
@@ -122,7 +120,7 @@ export function useMenuState({
   return useStorePublisher(state);
 }
 
-export type MenuState = CompositeState &
+export type MenuState<V extends Values = Values> = CompositeState &
   HovercardState & {
     /**
      * Determines the element that should be focused when the menu is opened.
@@ -136,17 +134,17 @@ export type MenuState = CompositeState &
      * A map of names and values that will be used by the `MenuItemCheckbox` and
      * `MenuItemRadio` components.
      */
-    values: Record<string, string | boolean | number | Array<string | number>>;
+    values: V;
     /**
      * Sets the `values` state.
      */
-    setValues: SetState<MenuState["values"]>;
+    setValues: SetState<MenuState<V>["values"]>;
     /**
      * Sets a specific value.
      */
     setValue: (
       name: string,
-      value: SetStateAction<MenuState["values"][string]>
+      value: SetStateAction<MenuState<V>["values"][string]>
     ) => void;
     /**
      * Hides the menu and all the parent menus.
@@ -154,14 +152,14 @@ export type MenuState = CompositeState &
     hideAll: () => void;
   };
 
-export type MenuStateProps = CompositeStateProps &
+export type MenuStateProps<V extends Values = Values> = CompositeStateProps &
   HovercardStateProps &
-  Partial<Pick<MenuState, "values">> & {
+  Partial<Pick<MenuState<V>, "values">> & {
     /**
      * A default map of names and values that will be used by the
      * `MenuItemCheckbox` and `MenuItemRadio` components.
      */
-    defaultValues?: MenuState["values"];
+    defaultValues?: MenuState<V>["values"];
     /**
      * Function that will be called when setting the menu `values` state.
      * @example
@@ -170,5 +168,5 @@ export type MenuStateProps = CompositeStateProps &
      * const menu = useMenuState({ values, setValues });
      * const submenu = useMenuState({ values, setValues });
      */
-    setValues?: (values: MenuState["values"]) => void;
+    setValues?: (values: MenuState<V>["values"]) => void;
   };

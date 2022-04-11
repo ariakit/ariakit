@@ -9,9 +9,9 @@ test("markup", () => {
         class="playground"
       >
         <div
-          aria-describedby="r:0"
+          aria-describedby=":r0:"
           aria-label="index.js"
-          class="css-g19o06 code-jsx has-line-numbers editor"
+          class="css-r36kf1 code-jsx has-line-numbers editor"
           data-command=""
           role="group"
           tabindex="0"
@@ -76,7 +76,7 @@ test("markup", () => {
                 contenteditable="true"
                 role="textbox"
                 spellcheck="false"
-                style="tab-size: 4"
+                style="tab-size: 4;padding-bottom: -14px"
                 tabindex="-1"
                 translate="no"
               >
@@ -205,10 +205,7 @@ test("markup", () => {
           </div>
         </div>
         <div
-          role="alert"
-        />
-        <div
-          role="alert"
+          role="status"
         />
       </div>
     </div>

@@ -1,11 +1,14 @@
 // @ts-check
 const jestDOMMatchers = require("@testing-library/jest-dom/matchers");
 const { toHaveNoViolations: axeMatchers } = require("jest-axe");
+const failOnConsole = require("jest-fail-on-console");
 const {
   matcherHint,
   printReceived,
   printExpected,
 } = require("jest-matcher-utils");
+
+failOnConsole();
 
 /**
  * Consider [aria-activedescendant="${id}"] #${id} as the focused element.

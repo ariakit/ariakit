@@ -2,70 +2,228 @@ name: ci
 
 on:
   push:
-    branches: [master, next, v*]
+    branches: [main, next, v*]
   pull_request:
 
 jobs:
-  build:
+  install:
+    name: Install node modules
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
-      - name: Cache
-        uses: actions/cache@v2
+      - name: Cache npm
+        uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        run: npm ci --no-audit --ignore-scripts
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+  lint:
+    name: Lint and type check
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Lint
         run: npm run lint
 
       - name: Lint CSS
-        run: npm run lint:css
+        run: npm run lint-css
 
       - name: Type check
         run: npm run type-check
+
+  build:
+    name: Build packages
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Build
         run: npm run build
 
   test:
+    name: Test
+    # TODO: Add on Jest 28
+    # name: test (${{ matrix.shard }})
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    #   matrix:
+    #     shard: ["1/4", "2/4", "3/4", "4/4"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Test
+        run: npm test -- --max-workers 2 --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+  react:
+    name: Test with React ${{ matrix.react-version }}
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react-version: [17, 16]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install React ${{ matrix.react-version }}
+        run: >
+          npm i --no-save
+          react@${{ matrix.react-version }}
+          react-dom@${{ matrix.react-version }}
+          @testing-library/react@12
+
+      - name: Test
+        run: npm test -- --max-workers 2
+
+  website:
+    name: Build website
+    needs: install
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version-file: .nvmrc
 
-      - name: Cache
-        uses: actions/cache@v2
+      - name: Cache node_modules
+        uses: actions/cache@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm ci --no-audit --ignore-scripts
+      - name: Cache Next.js
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+          restore-keys: nextjs-
+
+      - name: Build website
+        run: npm run build-website
+
+  e2e:
+    name: End-to-end test
+    needs: website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
 
       - name: Test
-        run: npm test -- --coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        run: npm run test-e2e-start -- --max-workers 2

@@ -30,7 +30,10 @@ export function getWindow(node?: Node | null): Window {
 /**
  * Returns `element.ownerDocument.activeElement`.
  */
-export function getActiveElement(node?: Node | null): Element | null {
+export function getActiveElement(
+  node?: Node | null,
+  activeDescendant = false
+): HTMLElement | null {
   const { activeElement } = getDocument(node);
   if (!activeElement?.nodeName) {
     // In IE11, activeElement might be an empty object if we're interacting
@@ -38,9 +41,21 @@ export function getActiveElement(node?: Node | null): Element | null {
     return null;
   }
   if (isFrame(activeElement) && activeElement.contentDocument) {
-    return getActiveElement(activeElement.contentDocument.body);
+    return getActiveElement(
+      activeElement.contentDocument.body,
+      activeDescendant
+    );
   }
-  return activeElement;
+  if (activeDescendant) {
+    const id = activeElement.getAttribute("aria-activedescendant");
+    if (id) {
+      const element = getDocument(activeElement).getElementById(id);
+      if (element) {
+        return element;
+      }
+    }
+  }
+  return activeElement as HTMLElement | null;
 }
 
 /**
@@ -216,4 +231,63 @@ export function getTextboxSelection(element: HTMLElement) {
     }
   }
   return { start, end };
+}
+
+/**
+ * Calls `element.scrollIntoView()` if the element is hidden or partly hidden in
+ * the viewport.
+ */
+export function scrollIntoViewIfNeeded(
+  element: Element,
+  arg?: boolean | ScrollIntoViewOptions
+) {
+  if (isPartiallyHidden(element) && "scrollIntoView" in element) {
+    element.scrollIntoView(arg);
+  }
+}
+
+/**
+ * Returns the scrolling container element of a given element.
+ */
+export function getScrollingElement(
+  element?: Element | null
+): HTMLElement | Element | null {
+  if (!element) return null;
+  if (element.clientHeight && element.scrollHeight > element.clientHeight) {
+    const { overflowY } = getComputedStyle(element);
+    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
+    if (isScrollable) return element;
+  }
+  return (
+    getScrollingElement(element.parentElement) ||
+    document.scrollingElement ||
+    document.body
+  );
+}
+
+/**
+ * Determines whether an element is hidden or partially hidden in the viewport.
+ */
+export function isPartiallyHidden(element: Element) {
+  const elementRect = element.getBoundingClientRect();
+  const scroller = getScrollingElement(element);
+  if (!scroller) return false;
+  const scrollerRect = scroller.getBoundingClientRect();
+
+  const isHTML = scroller.tagName === "HTML";
+  const scrollerTop = isHTML
+    ? scrollerRect.top + scroller.scrollTop
+    : scrollerRect.top;
+  const scrollerBottom = isHTML ? scroller.clientHeight : scrollerRect.bottom;
+  const scrollerLeft = isHTML
+    ? scrollerRect.left + scroller.scrollLeft
+    : scrollerRect.left;
+  const scrollerRight = isHTML ? scroller.clientWidth : scrollerRect.right;
+
+  const top = elementRect.top < scrollerTop;
+  const left = elementRect.left < scrollerLeft;
+  const bottom = elementRect.bottom > scrollerBottom;
+  const right = elementRect.right > scrollerRight;
+
+  return top || left || bottom || right;
 }

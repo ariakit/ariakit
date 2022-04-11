@@ -41,7 +41,7 @@ function isNativeClick(event: KeyboardEvent) {
 export const useCommand = createHook<CommandOptions>(
   ({ clickOnEnter = true, clickOnSpace = true, ...props }) => {
     const ref = useRef<HTMLButtonElement>(null);
-    const tagName = useTagName(ref, props.as || "button");
+    const tagName = useTagName(ref, props.as);
     const [isNativeButton, setIsNativeButton] = useState(
       () => !!tagName && isButton({ tagName, type: props.type })
     );

@@ -1,3 +1,7 @@
+.header {
+  padding-right: calc(16px + var(--scrollbar-width, 0px));
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -5,7 +9,7 @@
 }
 
 .wrapper > * {
-  @apply max-w-3xl w-full;
+  @apply w-full max-w-3xl;
 }
 
 .wrapper h1 {

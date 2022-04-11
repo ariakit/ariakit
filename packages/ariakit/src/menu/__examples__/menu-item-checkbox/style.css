@@ -1,49 +1,9 @@
-@import url("../../../button/__examples__/button/style.css");
-
-.menu {
-  @apply
-    w-[250px]
-    relative
-    flex
-    flex-col
-    z-50
-    p-2
-    rounded-lg
-    outline-none
-    drop-shadow
-    dark:drop-shadow-dark
-    border
-    border-solid
-    border-canvas-4
-    dark:border-canvas-4-dark
-    bg-canvas-4
-    dark:bg-canvas-4-dark
-    text-canvas-4
-    dark:text-canvas-4-dark;
-}
+@import url("../menu/style.css");
 
 .menu-arrow svg {
   @apply
     fill-canvas-4
-    dark:fill-canvas-4-dark
     stroke-canvas-4
+    dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
-}
-
-.menu-item {
-  @apply
-    flex
-    gap-2
-    items-center
-    scroll-m-2
-    outline-none
-    cursor-default
-    rounded
-    p-2
-    hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover
-    focus:bg-primary-2
-    focus:text-primary-2
-    dark:focus:bg-primary-2-dark
-    dark:focus:text-primary-2-dark;
 }

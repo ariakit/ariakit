@@ -24,6 +24,7 @@ import {
   drawSelection,
   highlightActiveLine,
   keymap,
+  scrollPastEnd,
 } from "@codemirror/view";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
@@ -161,6 +162,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
         updateListener,
         getLanguage(file),
         showLineNumbers && lineNumbers(),
+        expanded && scrollPastEnd(),
       ].filter(Boolean) as Extension[];
     }, [expanded, state?.setValue, file, showLineNumbers]);
 
@@ -269,7 +271,8 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       children: editorDOM ? null : undefined,
     };
 
-    props = useCommand(props);
+    // as="div" is necessary to avoid styling issues on iOS
+    props = useCommand({ as: "div", ...props });
 
     props = usePlaygroundCode({
       state,

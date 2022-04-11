@@ -4,16 +4,15 @@ import { useUpdateEffect } from "ariakit-utils/hooks";
 import { PlaygroundState } from "../playground-state";
 
 const DEFAULT_DEPENDENCIES = {
-  // TODO: Use latest on react when v18 gets released.
-  react: "experimental",
-  "react-dom": "experimental",
+  react: "latest",
+  "react-dom": "latest",
   "react-scripts": "latest",
   typescript: "latest",
 };
 
 // TODO: This should be configurable.
 export function getCodeSandboxEntryContent(filename: string) {
-  return `import { createRoot } from "react-dom";
+  return `import { createRoot } from "react-dom/client";
 import "./style.css";
 import App from "./src/${filename}";
 createRoot(document.getElementById("root")).render(<App />);

@@ -20,10 +20,7 @@ function hasNegativeTabIndex(element: Element) {
 
 /**
  * Checks whether `element` is focusable or not.
- *
  * @example
- * import { isFocusable } from "reakit-utils";
- *
  * isFocusable(document.querySelector("input")); // true
  * isFocusable(document.querySelector("input[tabindex='-1']")); // true
  * isFocusable(document.querySelector("input[hidden]")); // false
@@ -35,10 +32,7 @@ export function isFocusable(element: Element): element is HTMLElement {
 
 /**
  * Checks whether `element` is tabbable or not.
- *
  * @example
- * import { isTabbable } from "reakit-utils";
- *
  * isTabbable(document.querySelector("input")); // true
  * isTabbable(document.querySelector("input[tabindex='-1']")); // false
  * isTabbable(document.querySelector("input[hidden]")); // false
@@ -276,10 +270,7 @@ export function getClosestFocusable(element?: HTMLElement | null) {
 /**
  * Checks if `element` has focus. Elements that are referenced by
  * `aria-activedescendant` are also considered.
- *
  * @example
- * import { hasFocus } from "reakit-utils";
- *
  * hasFocus(document.getElementById("id"));
  */
 export function hasFocus(element: Element) {
@@ -294,10 +285,7 @@ export function hasFocus(element: Element) {
 /**
  * Checks if `element` has focus within. Elements that are referenced by
  * `aria-activedescendant` are also considered.
- *
  * @example
- * import { hasFocusWithin } from "reakit-utils";
- *
  * hasFocusWithin(document.getElementById("id"));
  */
 export function hasFocusWithin(element: Node | Element) {
@@ -309,6 +297,15 @@ export function hasFocusWithin(element: Node | Element) {
   if (!("id" in element)) return false;
   if (activeDescendant === element.id) return true;
   return !!element.querySelector(`#${CSS.escape(activeDescendant)}`);
+}
+
+/**
+ * Focus on an element only if it's not already focused.
+ */
+export function focusIfNeeded(element: HTMLElement) {
+  if (!hasFocusWithin(element) && isFocusable(element)) {
+    element.focus();
+  }
 }
 
 /**
@@ -337,17 +334,10 @@ export function disableFocusIn(
  */
 export function restoreFocusIn(container: HTMLElement) {
   const elements = container.querySelectorAll<HTMLElement>("[data-tabindex]");
-  // TODO: This is a workaround for: open portaled menu with enter, press
-  // shift+tab to focus the menu button, then press arrow up to focus the last
-  // item, then press shift+tab to focus the menu button again. Without this,
-  // the previously focused menu item will receive focus on shift+tab. We need
-  // to make this more generic.
-  const hasTabbableElement = !!getFirstTabbableIn(container, true);
   const restoreTabIndex = (element: HTMLElement) => {
     const tabindex = element.getAttribute("data-tabindex");
-    const isFocusTrap = element.hasAttribute("data-focus-trap");
     element.removeAttribute("data-tabindex");
-    if (tabindex && (!hasTabbableElement || isFocusTrap)) {
+    if (tabindex) {
       element.setAttribute("tabindex", tabindex);
     } else {
       element.removeAttribute("tabindex");
@@ -361,10 +351,7 @@ export function restoreFocusIn(container: HTMLElement) {
 
 /**
  * Ensures `element` will receive focus if it's not already.
- *
  * @example
- * import { ensureFocus } from "reakit-utils";
- *
  * ensureFocus(document.activeElement); // does nothing
  *
  * const element = document.querySelector("input");
@@ -393,6 +380,7 @@ export function ensureFocus(
   if (isActive(element)) return -1;
 
   return requestAnimationFrame(() => {
+    if (isActive(element)) return;
     element.focus({ preventScroll });
   });
 }

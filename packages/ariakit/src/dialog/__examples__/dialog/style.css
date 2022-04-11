@@ -1,0 +1,56 @@
+@import url("../../../button/__examples__/button/style.css");
+
+[data-backdrop] {
+  background-color: rgb(0 0 0 / 10%);
+}
+
+.dialog {
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 32px);
+  transform: translate(-50%, -50%);
+  @apply
+    fixed
+    w-full
+    sm:w-[480px]
+    z-50
+    top-1/2
+    left-1/2
+    overflow-auto
+    flex
+    flex-col
+    gap-4
+    p-4
+    rounded-lg
+    border
+    border-solid
+    border-canvas-4
+    bg-canvas-4
+    text-canvas-4
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    drop-shadow-lg
+    dark:drop-shadow-lg-dark
+    focus-visible:ariakit-outline;
+}
+
+.header {
+  @apply flex items-center justify-between;
+}
+
+.heading {
+  @apply m-0 text-2xl font-medium;
+}
+
+.button.dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+    bg-alpha-2
+    text-alpha-2
+    hover:bg-alpha-2-hover
+    dark:bg-alpha-2-dark
+    dark:text-alpha-2-dark
+    dark:hover:bg-alpha-2-dark-hover;
+}

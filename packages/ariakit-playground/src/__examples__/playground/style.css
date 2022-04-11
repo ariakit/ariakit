@@ -1,8 +1,8 @@
 .playground {
   @apply
     grid
-    grid-cols-2
     w-full
+    grid-cols-2
     rounded-lg
     border
     border-canvas-3
@@ -10,9 +10,13 @@
 }
 
 .editor {
-  @apply border-r border-canvas-3 dark:border-canvas-3-dark;
+  @apply
+    max-h-96
+    border-r
+    border-canvas-3
+    dark:border-canvas-3-dark;
 }
 
 .preview {
-  @apply flex items-center justify-center w-full p-4;
+  @apply flex w-full items-center justify-center p-4;
 }

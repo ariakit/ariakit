@@ -9,8 +9,10 @@
       "node",
       "jest",
       "jest-axe",
-      "@testing-library/jest-dom",
-      "react/experimental"
+      "jest-environment-puppeteer",
+      "puppeteer",
+      "expect-puppeteer",
+      "@testing-library/jest-dom"
     ],
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
@@ -20,7 +22,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "strictFunctionTypes": false,
     "declaration": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,

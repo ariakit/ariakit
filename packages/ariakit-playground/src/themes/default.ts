@@ -37,8 +37,12 @@ const theme = css`
 
   pre {
     display: flex;
+    position: relative;
+    align-items: flex-start;
     overflow: auto;
+    height: 100%;
     margin: 0;
+    z-index: 0;
   }
 
   .cm-scroller {
@@ -55,7 +59,11 @@ const theme = css`
     padding: 16px;
   }
 
-  code {
+  .cm-content {
+    padding: 0;
+  }
+
+  code.cm-content {
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
@@ -63,7 +71,7 @@ const theme = css`
     height: max-content;
   }
 
-  code,
+  code.cm-content,
   .cm-line {
     padding: 0 1px;
   }
@@ -82,6 +90,7 @@ const theme = css`
   .cm-lineNumbers {
     position: sticky;
     flex-direction: column;
+    flex-shrink: 0;
   }
 
   .cm-lineNumbers .cm-gutterElement {
@@ -89,10 +98,6 @@ const theme = css`
     padding: 0 16px 0 8px;
     box-sizing: border-box;
     line-height: 21px;
-  }
-
-  .cm-content {
-    padding: 0;
   }
 
   .cm-cursor {
