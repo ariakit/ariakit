@@ -1,6 +1,6 @@
 {
   "name": "ariakit",
-  "version": "2.0.0-alpha.21",
+  "version": "2.0.0-next.22",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -42,7 +42,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.11.2",
-    "ariakit-utils": "0.17.0-alpha.14"
+    "ariakit-utils": "0.17.0-next.15"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",

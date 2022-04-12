@@ -1,6 +1,6 @@
 {
   "name": "ariakit-playground",
-  "version": "0.17.0-alpha.21",
+  "version": "0.17.0-next.22",
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
@@ -48,8 +48,8 @@
     "@codemirror/view": "0.19.48",
     "@codesandbox/sandpack-client": "0.18.0",
     "@emotion/react": "^11.7.1",
-    "ariakit": "2.0.0-alpha.21",
-    "ariakit-utils": "0.17.0-alpha.14",
+    "ariakit": "2.0.0-next.22",
+    "ariakit-utils": "0.17.0-next.15",
     "codesandbox-import-utils": "^2.2.3",
     "prismjs": "^1.26.0"
   },

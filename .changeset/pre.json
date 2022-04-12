@@ -5,7 +5,10 @@
     "ariakit": "2.0.0-alpha.21",
     "ariakit-playground": "0.17.0-alpha.21",
     "ariakit-test-utils": "0.17.0-alpha.16",
-    "ariakit-utils": "0.17.0-alpha.14"
+    "ariakit-utils": "0.17.0-alpha.14",
+    "website": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "thick-rats-walk"
+  ]
 }
