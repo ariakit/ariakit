@@ -30,7 +30,7 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "file:../ariakit-utils"
+    "ariakit-utils": "0.17.0-alpha.14"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",
