@@ -18,13 +18,6 @@
     "build": "lerna exec --scope ariakit* -- npm run build",
     "build-website": "lerna exec --scope website -- npm run build",
     "clean": "npm run clean -ws --if-present",
-    "release": "lerna publish --pre-dist-tag latest",
-    "release-alpha": "npm run release -- --conventional-prerelease --preid alpha",
-    "release-beta": "npm run release-alpha -- --preid beta",
-    "release-graduate": "npm run release -- --conventional-graduate",
-    "preversion": "npm run lint && npm run build && npm run test",
-    "version": "npm i --package-lock-only && git stage package-lock.json",
-    "postpublish": "npm run clean",
     "prepare": "husky install"
   },
   "workspaces": [
