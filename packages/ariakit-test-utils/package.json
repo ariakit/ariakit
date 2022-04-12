@@ -9,6 +9,9 @@
   "module": "esm/index.js",
   "unpkg": "umd/ariakit-test-utils.min.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -30,7 +33,7 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "file:../ariakit-utils"
+    "ariakit-utils": "0.17.0-alpha.14"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",

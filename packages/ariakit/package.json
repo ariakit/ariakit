@@ -9,6 +9,9 @@
   "module": "esm/index.js",
   "unpkg": "umd/ariakit.min.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -39,7 +42,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.11.2",
-    "ariakit-utils": "file:../ariakit-utils"
+    "ariakit-utils": "0.17.0-alpha.14"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",

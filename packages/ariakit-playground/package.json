@@ -8,6 +8,9 @@
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -45,17 +48,16 @@
     "@codemirror/view": "0.19.48",
     "@codesandbox/sandpack-client": "0.18.0",
     "@emotion/react": "^11.7.1",
-    "ariakit-utils": "file:../ariakit-utils",
+    "ariakit": "2.0.0-alpha.21",
+    "ariakit-utils": "0.17.0-alpha.14",
     "codesandbox-import-utils": "^2.2.3",
     "prismjs": "^1.26.0"
   },
   "peerDependencies": {
-    "ariakit": "^2.0.0 || ^2.0.0-alpha",
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.4",
-    "@types/prismjs": "1.26.0",
-    "ariakit": "file:../ariakit"
+    "@types/prismjs": "1.26.0"
   }
 }
