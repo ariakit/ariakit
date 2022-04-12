@@ -43,6 +43,7 @@ jobs:
         uses: changesets/action@v1
         with:
           title: Publish
+          commit: Publish
           version: node scripts/release/version.js
           publish: node scripts/release/publish.js
         env:
