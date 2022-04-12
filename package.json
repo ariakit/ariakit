@@ -69,7 +69,7 @@
     "jest": "27.5.1",
     "jest-axe": "6.0.0",
     "jest-environment-jsdom": "27.5.1",
-    "jest-fail-on-console": "2.4.0",
+    "jest-fail-on-console": "2.4.1",
     "jest-matcher-utils": "27.5.1",
     "jest-puppeteer": "6.1.0",
     "lerna": "4.0.0",
