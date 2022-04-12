@@ -5,4 +5,4 @@
 "ariakit-utils": minor
 ---
 
-Publish packages with the `next` tag using [changesets](https://github.com/changesets/changesets)
+Publish packages with the `next` tag. ([#1213](https://github.com/ariakit/ariakit/pull/1213))
