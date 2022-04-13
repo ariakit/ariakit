@@ -27,7 +27,6 @@ import {
   restoreFocusIn,
 } from "../focus";
 
-// Abstract back and share?
 function getById<T extends HTMLElement = HTMLElement>(id: string) {
   return document.getElementById(id) as T;
 }
