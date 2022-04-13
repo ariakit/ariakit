@@ -1,5 +1,6 @@
 import {
   Context,
+  ReactElement,
   createContext,
   memo,
   useCallback,
@@ -133,7 +134,7 @@ export function createStoreContext<T>() {
  * <Component as="button" state={{ customProp: true }} />
  */
 export function createMemoComponent<O extends Options & { state?: unknown }>(
-  render: (props: Props<O>) => JSX.Element | null,
+  render: (props: Props<O>) => ReactElement,
   propsAreEqual: (prev: Props<O>, next: Props<O>) => boolean = shallowEqual
 ) {
   const Role = createComponent(render);

@@ -34,7 +34,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
     const name = `${nameProp}`;
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, name, type: "description" };
         if (getItemProp) {
           return getItemProp(nextItem);

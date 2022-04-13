@@ -53,7 +53,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     }, []);
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, tabId: tabIdProp };
         if (getItemProp) {
           return getItemProp(nextItem);
