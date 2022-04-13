@@ -1,7 +1,6 @@
 import {
   click,
   getByRole,
-  getByText,
   hover,
   press,
   render,
