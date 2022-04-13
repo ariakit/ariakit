@@ -47,10 +47,10 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * Returns a value that is lazily initiated and never changes.
  * @example
  * function Component() {
- *   const set = useLazyRef(() => new Set());
+ *   const set = useLazyValue(() => new Set());
  * }
  */
-export function useLazyRef<T>(init: () => T) {
+export function useLazyValue<T>(init: () => T) {
   const ref = useRef<T>();
   if (ref.current === undefined) {
     ref.current = init();

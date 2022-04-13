@@ -11,7 +11,7 @@ import {
 import { toArray } from "./array";
 import {
   useInitialValue,
-  useLazyRef,
+  useLazyValue,
   useSafeLayoutEffect,
   useWrapElement,
 } from "./hooks";
@@ -206,7 +206,7 @@ export function useStoreProvider<P, S>(
  * }
  */
 export function useStorePublisher<T>(state: T) {
-  const listeners = useLazyRef(() => new Set<Listener<T>>());
+  const listeners = useLazyValue(() => new Set<Listener<T>>());
 
   useSafeLayoutEffect(() => {
     patchState(state);
