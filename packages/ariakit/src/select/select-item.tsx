@@ -74,7 +74,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     const disabled = props.disabled;
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         // When the item is disabled, we don't register its value.
         const nextItem = { ...item, value: disabled ? undefined : value };
         if (getItemProp) {

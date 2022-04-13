@@ -65,7 +65,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     ]);
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, value };
         if (getItemProp) {
           return getItemProp(nextItem);
