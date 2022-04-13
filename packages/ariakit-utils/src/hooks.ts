@@ -75,6 +75,17 @@ export function useLiveRef<T>(value: T) {
 }
 
 /**
+ * Keeps the reference of the previous value to be used in the render phase.
+ */
+export function usePreviousValue<T>(value: T) {
+  const [previousValue, setPreviousValue] = useState(value);
+  if (value !== previousValue) {
+    setPreviousValue(value);
+  }
+  return previousValue;
+}
+
+/**
  * Creates a memoized callback function that is constantly updated with the
  * incoming callback.
  * @example
