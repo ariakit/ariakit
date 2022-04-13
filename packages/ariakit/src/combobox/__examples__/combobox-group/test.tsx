@@ -1,4 +1,11 @@
-import { getByRole, getByText, press, render, type } from "ariakit-test-utils";
+import {
+  click,
+  getByRole,
+  getByText,
+  press,
+  render,
+  type,
+} from "ariakit-test-utils";
 import { axe } from "jest-axe";
 import Example from ".";
 
@@ -16,7 +23,7 @@ test("a11y", async () => {
   expect(await axe(container)).toHaveNoViolations();
 });
 
-test("inline autocomplete", async () => {
+test("selection", async () => {
   render(<Example />);
   await press.Tab();
   await type("a");
@@ -31,5 +38,16 @@ test("inline autocomplete", async () => {
   await type("e");
   expect(getCombobox()).toHaveValue("ae");
   expect(getSelectionValue(getCombobox())).toBe("");
-  expect(getByText("No results found")).toBeInTheDocument();
+});
+
+test("blur input after autocomplete", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("a");
+  expect(getCombobox()).toHaveValue("apple");
+  await press.ArrowDown();
+  expect(getCombobox()).toHaveValue("Avocado");
+  await click(document.body);
+  await click(document.body);
+  expect(getCombobox()).toHaveValue("Avocado");
 });
