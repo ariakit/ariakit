@@ -8,4 +8,4 @@
 
 ### Patch Changes
 
-- Updated dependencies: `ariakit@2.0.0-next.22`, `ariakit-utils@0.17.0-next.15`.
+- Update dependencies: `ariakit@2.0.0-next.22`, `ariakit-utils@0.17.0-next.15`.

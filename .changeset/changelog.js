@@ -6,7 +6,7 @@ const changelogFunctions = {
     const updatedDepenenciesList = dependenciesUpdated.map(
       (dependency) => `\`${dependency.name}@${dependency.newVersion}\``
     );
-    return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}.`;
+    return `- Update dependencies: ${updatedDepenenciesList.join(", ")}.`;
   },
   getReleaseLine: async (changeset) => {
     const [firstLine, ...nextLines] = changeset.summary
