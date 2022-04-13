@@ -158,7 +158,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        react-version: [17, 16]
+        react-version: [17]
 
     steps:
       - name: Checkout repository
