@@ -2,6 +2,7 @@ import {
   click,
   getByRole,
   getByText,
+  hover,
   press,
   render,
   type,
@@ -10,6 +11,7 @@ import { axe } from "jest-axe";
 import Example from ".";
 
 const getCombobox = () => getByRole("combobox");
+const getOption = (name: string) => getByRole("option", { name });
 
 function getSelectionValue(element: Element) {
   const input = element as HTMLInputElement;
@@ -23,7 +25,7 @@ test("a11y", async () => {
   expect(await axe(container)).toHaveNoViolations();
 });
 
-test("selection", async () => {
+test("auto select with inline autocomplete on typing", async () => {
   render(<Example />);
   await press.Tab();
   await type("a");
@@ -38,6 +40,23 @@ test("selection", async () => {
   await type("e");
   expect(getCombobox()).toHaveValue("ae");
   expect(getSelectionValue(getCombobox())).toBe("");
+  await type("\b\bv");
+  expect(getCombobox()).toHaveValue("vodka");
+  expect(getSelectionValue(getCombobox())).toBe("odka");
+});
+
+test("auto select with inline autocomplete on arrow down", async () => {
+  render(<Example />);
+  await press.Tab();
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(getCombobox()).toHaveValue("Apple");
+  expect(getSelectionValue(getCombobox())).toBe("Apple");
+  await press.ArrowDown();
+  expect(getCombobox()).toHaveValue("Avocado");
+  expect(getSelectionValue(getCombobox())).toBe("");
+  await press.ArrowUp();
+  expect(getCombobox()).toHaveValue("Apple");
 });
 
 test("blur input after autocomplete", async () => {
@@ -50,4 +69,13 @@ test("blur input after autocomplete", async () => {
   await click(document.body);
   await click(document.body);
   expect(getCombobox()).toHaveValue("Avocado");
+});
+
+test("autocomplete on focus on hover", async () => {
+  render(<Example />);
+  await click(getCombobox());
+  await type("g");
+  expect(getCombobox()).toHaveValue("grape");
+  await hover(getOption("Gelato"));
+  expect(getCombobox()).toHaveValue("g");
 });
