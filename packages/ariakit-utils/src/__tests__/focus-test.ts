@@ -1,4 +1,5 @@
-import * as dom from "../dom";
+import "ariakit-test-utils/__mock-get-client-rects";
+
 import {
   disableFocus,
   disableFocusIn,
@@ -26,42 +27,33 @@ import {
   restoreFocusIn,
 } from "../focus";
 
-jest.mock("../dom");
-
 // Abstract back and share?
 function getById<T extends HTMLElement = HTMLElement>(id: string) {
   return document.getElementById(id) as T;
 }
 
-const mockDom = dom as jest.Mocked<typeof dom>;
-
 test("isFocusable", () => {
-  const element = document.createElement("div");
+  const initialInnerHTML = document.body.innerHTML;
+  document.body.innerHTML = `
+      <div id='div' />
+      <input id="input" />
+      <input id="inputNegativeTabIndex" tabindex="-1" />
+      <input id="inputHidden" hidden />
+      <input id="inputDisabled" disabled />
+    `;
+  const div = getById("div");
+  const input = getById("input");
+  const inputNegativeTabIndex = getById("inputNegativeTabIndex");
+  const inputHidden = getById("inputHidden");
+  const inputDisabled = getById("inputDisabled");
 
-  // Mock matches and isVisible because those functions are tested elsewhere.
+  expect(isFocusable(div)).toBe(false);
+  expect(isFocusable(input)).toBe(true);
+  expect(isFocusable(inputNegativeTabIndex)).toBe(true);
+  expect(isFocusable(inputHidden)).toBe(false);
+  expect(isFocusable(inputDisabled)).toBe(false);
 
-  // Both true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-  expect(isFocusable(element)).toBe(true);
-
-  // Matches false
-  mockDom.matches.mockReturnValue(false);
-  expect(isFocusable(element)).toBe(false);
-  mockDom.matches.mockReturnValue(true);
-
-  // Visible false
-  mockDom.isVisible.mockReturnValue(false);
-  expect(isFocusable(element)).toBe(false);
-  mockDom.isVisible.mockReturnValue(false);
-
-  // Matches and visible false
-  mockDom.matches.mockReturnValue(false);
-  mockDom.isVisible.mockReturnValue(false);
-  expect(isFocusable(element)).toBe(false);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
+  document.body.innerHTML = initialInnerHTML;
 });
 
 test("isTabbable", () => {
@@ -77,54 +69,32 @@ test("isTabbable", () => {
   const inputZeroTabIndex = getById("inputZeroTabIndex");
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // This test also test hasNegativeTabIndex because it's called by isTabbable.
-
-  // Mock matches and isVisible to mock isFocusable.
-
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(isTabbable(input)).toBe(true);
   expect(isTabbable(inputNegativeTabIndex)).toBe(false);
   expect(isTabbable(inputZeroTabIndex)).toBe(true);
   expect(isTabbable(inputPositiveTabIndex)).toBe(true);
 
-  // isFocusable false
-  // Really only one of these needs to be false but 🤷‍♂️
-  mockDom.matches.mockReturnValue(false);
-  mockDom.isVisible.mockReturnValue(false);
-
-  expect(isTabbable(input)).toBe(false);
-  expect(isTabbable(inputNegativeTabIndex)).toBe(false);
-  expect(isTabbable(inputZeroTabIndex)).toBe(false);
-  expect(isTabbable(inputPositiveTabIndex)).toBe(false);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getAllFocusableIn", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
-      <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
+    <div id="container" tabindex="0">
+      <div id='subContainer'>
+        <input id="input" />
+        <input id="inputNegativeTabIndex" tabindex="-1" />
+        <input id="inputZeroTabIndex" tabindex="0" />
+        <input id="inputPositiveTabIndex" tabindex="1" />
+      </div>
     </div>
   `;
   const container = getById("container");
+  const subContainer = getById("subContainer");
   const input = getById("input");
   const inputNegativeTabIndex = getById("inputNegativeTabIndex");
   const inputZeroTabIndex = getById("inputZeroTabIndex");
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
-
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
 
   expect(getAllFocusableIn(container)).toEqual([
     input,
@@ -139,99 +109,90 @@ test("getAllFocusableIn", () => {
     inputZeroTabIndex,
     inputPositiveTabIndex,
   ]);
+  expect(getAllFocusableIn(subContainer, true)).toEqual([
+    input,
+    inputNegativeTabIndex,
+    inputZeroTabIndex,
+    inputPositiveTabIndex,
+  ]);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getAllFocusable", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
-      <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
+    <div id="container" tabindex="0">
+      <div id='subContainer'>
+        <input id="input" />
+        <input id="inputNegativeTabIndex" tabindex="-1" />
+        <input id="inputZeroTabIndex" tabindex="0" />
+        <input id="inputPositiveTabIndex" tabindex="1" />
+      </div>
     </div>
   `;
+  const container = getById("container");
   const input = getById("input");
   const inputNegativeTabIndex = getById("inputNegativeTabIndex");
   const inputZeroTabIndex = getById("inputZeroTabIndex");
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getAllFocusable()).toEqual([
+    container,
     input,
     inputNegativeTabIndex,
     inputZeroTabIndex,
     inputPositiveTabIndex,
   ]);
   expect(getAllFocusable(true)).toEqual([
-    document.body,
+    container,
     input,
     inputNegativeTabIndex,
     inputZeroTabIndex,
     inputPositiveTabIndex,
   ]);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getFirstFocusableIn", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
-      <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
+    <div id="container" tabindex="0">
+      <div id='subContainer'>
+        <input id="input" />
+        <input id="inputNegativeTabIndex" tabindex="-1" />
+        <input id="inputZeroTabIndex" tabindex="0" />
+        <input id="inputPositiveTabIndex" tabindex="1" />
+      </div>
     </div>
   `;
   const container = getById("container");
   const input = getById("input");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getFirstFocusableIn(container)).toBe(input);
   expect(getFirstFocusableIn(container, true)).toBe(container);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getFirstFocusable", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
-      <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
+    <div id="container" tabindex="0">
+      <div id='subContainer'>
+        <input id="input" />
+        <input id="inputNegativeTabIndex" tabindex="-1" />
+        <input id="inputZeroTabIndex" tabindex="0" />
+        <input id="inputPositiveTabIndex" tabindex="1" />
+      </div>
     </div>
   `;
-  const input = getById("input");
+  const container = getById("container");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
+  expect(getFirstFocusable()).toBe(container);
+  expect(getFirstFocusable(true)).toBe(container);
 
-  expect(getFirstFocusable()).toBe(input);
-  expect(getFirstFocusable(true)).toBe(document.body);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
@@ -244,7 +205,7 @@ test("getAllTabbableIn", () => {
       <input id="inputZeroTabIndex" tabindex="0" />
       <input id="inputPositiveTabIndex" tabindex="1" />
     </div>
-    <div id="container2" />
+    <div id="container2" tabindex="0" />
   `;
   const container = getById("container");
   const input = getById("input");
@@ -252,24 +213,17 @@ test("getAllTabbableIn", () => {
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
   const container2 = getById("container2");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getAllTabbableIn(container)).toEqual([
     input,
     inputZeroTabIndex,
     inputPositiveTabIndex,
   ]);
   expect(getAllTabbableIn(container, true)).toEqual([
-    container,
     input,
     inputZeroTabIndex,
     inputPositiveTabIndex,
   ]);
   expect(getAllTabbableIn(container, true, true)).toEqual([
-    container,
     input,
     inputZeroTabIndex,
     inputPositiveTabIndex,
@@ -279,50 +233,13 @@ test("getAllTabbableIn", () => {
   expect(getAllTabbableIn(container2, true)).toEqual([container2]);
   expect(getAllTabbableIn(container2, false, true)).toEqual([]);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getAllTabbable", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
-      <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
-    </div>
-  `;
-  const input = getById("input");
-  const inputZeroTabIndex = getById("inputZeroTabIndex");
-  const inputPositiveTabIndex = getById("inputPositiveTabIndex");
-
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
-  expect(getAllTabbable()).toEqual([
-    input,
-    inputZeroTabIndex,
-    inputPositiveTabIndex,
-  ]);
-  expect(getAllTabbable(true)).toEqual([
-    input,
-    inputZeroTabIndex,
-    inputPositiveTabIndex,
-  ]);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
-  document.body.innerHTML = initialInnerHTML;
-});
-
-test("getFirstTabbableIn", () => {
-  const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = `
-    <div id="container">
+    <div id="container" tabindex="0">
       <input id="input" />
       <input id="inputNegativeTabIndex" tabindex="-1" />
       <input id="inputZeroTabIndex" tabindex="0" />
@@ -331,11 +248,37 @@ test("getFirstTabbableIn", () => {
   `;
   const container = getById("container");
   const input = getById("input");
+  const inputZeroTabIndex = getById("inputZeroTabIndex");
+  const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
+  expect(getAllTabbable()).toEqual([
+    container,
+    input,
+    inputZeroTabIndex,
+    inputPositiveTabIndex,
+  ]);
+  expect(getAllTabbable(true)).toEqual([
+    container,
+    input,
+    inputZeroTabIndex,
+    inputPositiveTabIndex,
+  ]);
+
+  document.body.innerHTML = initialInnerHTML;
+});
+
+test("getFirstTabbableIn", () => {
+  const initialInnerHTML = document.body.innerHTML;
+  document.body.innerHTML = `
+    <div id="container" tabindex="0">
+      <input id="input" />
+      <input id="inputNegativeTabIndex" tabindex="-1" />
+      <input id="inputZeroTabIndex" tabindex="0" />
+      <input id="inputPositiveTabIndex" tabindex="1" />
+    </div>
+  `;
+  const container = getById("container");
+  const input = getById("input");
 
   expect(getFirstTabbableIn(container)).toBe(input);
   expect(getFirstTabbableIn(container, true)).toBe(container);
@@ -343,40 +286,31 @@ test("getFirstTabbableIn", () => {
   expect(getFirstTabbableIn(container, true, true)).toBe(container);
   expect(getFirstTabbableIn(container, false, true)).toBe(input);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getFirstTabbable", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
+    <div id="container" tabindex="0">
       <input id="input" />
       <input id="inputNegativeTabIndex" tabindex="-1" />
       <input id="inputZeroTabIndex" tabindex="0" />
       <input id="inputPositiveTabIndex" tabindex="1" />
     </div>
   `;
-  const input = getById("input");
+  const container = getById("container");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
+  expect(getFirstTabbable()).toBe(container);
+  expect(getFirstTabbable(true)).toBe(container);
 
-  expect(getFirstTabbable()).toBe(input);
-  expect(getFirstTabbable(true)).toBe(input);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getLastTabbableIn", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
+    <div id="container" tabindex="0">
       <input id="input" />
       <input id="inputNegativeTabIndex" tabindex="-1" />
       <input id="inputZeroTabIndex" tabindex="0" />
@@ -386,19 +320,12 @@ test("getLastTabbableIn", () => {
   const container = getById("container");
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getLastTabbableIn(container)).toBe(inputPositiveTabIndex);
   expect(getLastTabbableIn(container, true)).toBe(inputPositiveTabIndex);
   expect(getLastTabbableIn(container, true, true)).toBe(inputPositiveTabIndex);
   expect(getLastTabbableIn(container, false, true)).toBe(inputPositiveTabIndex);
   expect(getLastTabbableIn(container, true, false)).toBe(inputPositiveTabIndex);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
@@ -414,23 +341,16 @@ test("getLastTabbable", () => {
   `;
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getLastTabbable()).toBe(inputPositiveTabIndex);
   expect(getLastTabbable(true)).toBe(inputPositiveTabIndex);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getNextTabbableIn", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
+    <div id="container" tabindex="0">
       <input id="input" />
       <input id="inputNegativeTabIndex" tabindex="-1" />
       <input id="inputZeroTabIndex" tabindex="0" />
@@ -440,11 +360,6 @@ test("getNextTabbableIn", () => {
   const container = getById("container");
   const input = getById("input");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getNextTabbableIn(container)).toBe(input);
   expect(getNextTabbableIn(container, true)).toBe(container);
   expect(getNextTabbableIn(container, true, true)).toBe(container);
@@ -453,8 +368,6 @@ test("getNextTabbableIn", () => {
   expect(getNextTabbableIn(container, false, true, true)).toBe(input);
   expect(getNextTabbableIn(input)).toBe(null);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
@@ -470,16 +383,9 @@ test("getNextTabbable", () => {
   `;
   const input = getById("input");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getNextTabbable()).toBe(input);
   expect(getNextTabbable(true)).toBe(input);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
@@ -496,11 +402,6 @@ test("getPreviousTabbableIn", () => {
   const container = getById("container");
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getPreviousTabbableIn(container)).toBe(inputPositiveTabIndex);
   expect(getPreviousTabbableIn(container, true)).toBe(inputPositiveTabIndex);
   expect(getPreviousTabbableIn(container, true, true)).toBe(
@@ -516,8 +417,6 @@ test("getPreviousTabbableIn", () => {
     inputPositiveTabIndex
   );
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
@@ -533,56 +432,32 @@ test("getPreviousTabbable", () => {
   `;
   const inputPositiveTabIndex = getById("inputPositiveTabIndex");
 
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(getPreviousTabbable()).toBe(inputPositiveTabIndex);
   expect(getPreviousTabbable(true)).toBe(inputPositiveTabIndex);
 
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("getClosestFocusable", () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
-    <div id="container">
+    <div id="container" tabindex="0">
       <input id="input" />
-      <input id="inputNegativeTabIndex" tabindex="-1" />
-      <input id="inputZeroTabIndex" tabindex="0" />
-      <input id="inputPositiveTabIndex" tabindex="1" />
+      <input id="inputDisabled" disabled />
     </div>
   `;
   const container = getById("container");
   const input = getById("input");
-
-  // Mock matches and isVisible to mock isFocusable.
-  // isFocusable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
+  const inputDisabled = getById("inputDisabled");
 
   expect(getClosestFocusable(container)).toBe(container);
   expect(getClosestFocusable(input)).toBe(input);
+  expect(getClosestFocusable(inputDisabled)).toBe(container);
 
-  // isFocusable false
-  mockDom.matches.mockReturnValue(false);
-  mockDom.isVisible.mockReturnValue(false);
-  expect(getClosestFocusable(container)).toBe(null);
-  expect(getClosestFocusable(input)).toBe(null);
-
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
   document.body.innerHTML = initialInnerHTML;
 });
 
 test("hasFocus", () => {
-  // In this test, we are mocking getActiveElement because it is a
-  // mocked by our jest.mock("../dom"); at the top of this file.
-  // This results in the function always returning undefined if it isn't mocked.
-
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div id="testNode">
@@ -602,39 +477,28 @@ test("hasFocus", () => {
   const node = getById("testNode");
 
   // Test before any elemeted is focused
-  mockDom.getActiveElement.mockReturnValue(null);
   expect(hasFocus(node)).toBe(false);
 
   // Test with an element focused
   const input = getById("testInput");
-  mockDom.getActiveElement.mockReturnValue(input);
+  input.focus();
 
   expect(hasFocus(node)).toBe(false);
   expect(hasFocus(input)).toBe(true);
 
   const input2 = getById("cb1-edit");
-  mockDom.getActiveElement.mockReturnValue(input2);
+  const focusedLi = getById("cb1-opt6");
+  input2.focus();
 
   expect(hasFocus(node)).toBe(false);
   expect(hasFocus(input)).toBe(false);
   expect(hasFocus(input2)).toBe(true);
-
-  const focusedLi = getById("cb1-opt6");
-  mockDom.getActiveElement.mockReturnValue(focusedLi);
-  expect(hasFocus(node)).toBe(false);
-  expect(hasFocus(input)).toBe(false);
-  expect(hasFocus(input2)).toBe(false);
   expect(hasFocus(focusedLi)).toBe(true);
 
   document.body.innerHTML = initialInnerHTML;
-  mockDom.getActiveElement.mockRestore();
 });
 
 test("hasFocusWithin", () => {
-  // In this test, we are mocking getActiveElement because it is a
-  // mocked by our jest.mock("../dom"); at the top of this file.
-  // This results in the function always returning undefined if it isn't mocked.
-
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <div class="testDivClass">
@@ -651,36 +515,31 @@ test("hasFocusWithin", () => {
           <li role="option" id="cb1-opt7">Colorado</li>
         </ul>
       </div>
+      <div id="testNode2" />
     </div>
   `;
   const node = getById("testNode");
 
   // No active element
-  mockDom.getActiveElement.mockReturnValue(null);
   expect(hasFocusWithin(node)).toBe(false);
 
   // Input as active element and node containing the input
   const input = getById("testInput");
-  mockDom.getActiveElement.mockReturnValue(input);
-  mockDom.contains.mockReturnValue(true);
+  input.focus();
   expect(hasFocusWithin(node)).toBe(true);
 
   // Input without aria-activedescendant as active element and node not containing the input
-  mockDom.contains.mockReturnValue(false);
-  expect(hasFocusWithin(node)).toBe(false);
+  const input2 = getById("cb1-edit");
+  input2.focus();
+  const node2 = getById("testNode2");
+  expect(hasFocusWithin(node2)).toBe(false);
 
   // Input with aria-activedescendant as active element and node not containing the input
   //  and element doens't have an id
   const divWithTestId = document.getElementsByClassName("testDivClass")[0]!;
-
-  const input2 = getById("cb1-edit");
-  mockDom.getActiveElement.mockReturnValue(input2);
-  mockDom.contains.mockReturnValue(false);
   expect(hasFocusWithin(divWithTestId)).toBe(true);
 
   document.body.innerHTML = initialInnerHTML;
-  mockDom.getActiveElement.mockRestore();
-  mockDom.contains.mockRestore();
 });
 
 test("focusIfNeeded", () => {
@@ -692,18 +551,10 @@ test("focusIfNeeded", () => {
 
   // Test with no element focused
   expect(document.activeElement === input).toBe(false);
-
-  // Test with an element focused
-  // Mock to have isFocusable return true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   focusIfNeeded(input);
   expect(document.activeElement === input).toBe(true);
 
   document.body.innerHTML = initialInnerHTML;
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
 });
 
 test("disableFocus", () => {
@@ -732,10 +583,6 @@ test("disableFocusIn", () => {
   const div = getById("testDiv");
   const input = getById("testInput");
 
-  // Mock to make isTabbable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
-
   expect(input.getAttribute("data-tabindex")).toBe(null);
   expect(input.getAttribute("tabindex")).toBe("1");
   disableFocusIn(div);
@@ -743,8 +590,6 @@ test("disableFocusIn", () => {
   expect(input.getAttribute("tabindex")).toBe("-1");
 
   document.body.innerHTML = initialInnerHTML;
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
 });
 
 test("restoreFocusIn", () => {
@@ -758,10 +603,6 @@ test("restoreFocusIn", () => {
   const div = getById("testDiv");
   const input = getById("testInput");
   const input2 = getById("testInput2");
-
-  // Mock to make isTabbable true
-  mockDom.matches.mockReturnValue(true);
-  mockDom.isVisible.mockReturnValue(true);
 
   // No container data tab index
   expect(input.getAttribute("data-tabindex")).toBe(null);
@@ -786,8 +627,6 @@ test("restoreFocusIn", () => {
   expect(div.getAttribute("tabindex")).toBe("2");
 
   document.body.innerHTML = initialInnerHTML;
-  mockDom.matches.mockRestore();
-  mockDom.isVisible.mockRestore();
 });
 
 test("ensureFocus", () => {
