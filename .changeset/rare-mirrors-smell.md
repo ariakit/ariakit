@@ -1,5 +1,5 @@
 ---
-"ariakit-utils": major
+"ariakit-utils": minor
 ---
 
 Rename `useLazyRef` function to `useLazyValue`.
