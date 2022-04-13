@@ -54,7 +54,7 @@
     "prismjs": "^1.26.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.4",

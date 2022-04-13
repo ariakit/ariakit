@@ -151,14 +151,10 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 
-  react:
-    name: Test with React ${{ matrix.react-version }}
+  react17:
+    name: Test with React 17
     needs: install
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        react-version: [17, 16]
 
     steps:
       - name: Checkout repository
@@ -177,12 +173,8 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install React ${{ matrix.react-version }}
-        run: >
-          npm i --no-save
-          react@${{ matrix.react-version }}
-          react-dom@${{ matrix.react-version }}
-          @testing-library/react@12
+      - name: Install React 17
+        run: npm run react17
 
       - name: Test
         run: npm test -- --max-workers 2
