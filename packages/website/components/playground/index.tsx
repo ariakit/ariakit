@@ -8,7 +8,7 @@ import darkTheme from "ariakit-playground/themes/vscode-dark";
 import {
   useEventCallback,
   useId,
-  useLazyRef,
+  useLazyValue,
   useLiveRef,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
@@ -117,7 +117,7 @@ export default function Playground(props: PlaygroundProps) {
     ),
   });
 
-  const beenSelected = useLazyRef(() => new Set<string>());
+  const beenSelected = useLazyValue(() => new Set<string>());
 
   useEffect(() => {
     if (tab.selectedId) {

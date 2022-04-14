@@ -1,4 +1,10 @@
-import { KeyboardEvent, MouseEvent, useCallback, useRef } from "react";
+import {
+  KeyboardEvent,
+  MouseEvent,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
 import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
@@ -17,10 +23,11 @@ type DialogBackdropProps = Pick<
   | "state"
   | "backdrop"
   | "backdropProps"
-  | "children"
   | "hideOnInteractOutside"
   | "hideOnEscape"
->;
+> & {
+  children?: ReactNode;
+};
 
 export function DialogBackdrop({
   state,

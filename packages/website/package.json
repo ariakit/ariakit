@@ -1,5 +1,6 @@
 {
   "name": "website",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "pages": "node ../../scripts/pages",
@@ -11,8 +12,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "12.1.4",
-    "rehype-react": "7.0.4"
+    "next": "12.1.5",
+    "rehype-react": "7.1.0"
   },
   "devDependencies": {
     "autoprefixer": "10.4.4",

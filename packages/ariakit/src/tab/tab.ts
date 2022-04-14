@@ -49,7 +49,7 @@ export const useTab = createHook<TabOptions>(
     const dimmed = props.disabled;
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, dimmed };
         if (getItemProp) {
           return getItemProp(nextItem);

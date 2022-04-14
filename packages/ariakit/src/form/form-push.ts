@@ -82,7 +82,7 @@ export const useFormPush = createHook<FormPushOptions>(
     }, [shouldFocus, state?.items, name]);
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, type: "button", name };
         if (getItemProp) {
           return getItemProp(nextItem);

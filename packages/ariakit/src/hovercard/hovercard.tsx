@@ -291,7 +291,7 @@ export const useHovercard = createHook<HovercardOptions>(
     }, [modal, portal, state.mounted, domReady]);
 
     const registerNestedHovercard = useCallback(
-      (element) => {
+      (element: any) => {
         setNestedHovercards((prevElements) => [...prevElements, element]);
         const parentUnregister = registerOnParent?.(element);
         return () => {

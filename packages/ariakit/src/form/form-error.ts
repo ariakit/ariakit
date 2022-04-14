@@ -46,7 +46,7 @@ export const useFormError = createHook<FormErrorOptions>(
     const id = useId(props.id);
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, name, type: "error" };
         if (getItemProp) {
           return getItemProp(nextItem);

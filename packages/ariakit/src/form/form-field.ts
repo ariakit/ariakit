@@ -121,7 +121,7 @@ export const useFormField = createHook<FormFieldOptions>(
     });
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, name, type: "field" };
         if (getItemProp) {
           return getItemProp(nextItem);
