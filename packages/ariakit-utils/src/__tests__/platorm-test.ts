@@ -6,95 +6,97 @@ import {
   isTouchDevice,
 } from "../platform";
 
-const getNavigatorPropertyDescriptor = (propertyName: string) =>
-  Object.getOwnPropertyDescriptor(navigator, propertyName) ?? {};
-const setNavigatorProperty = (propertyName: string, value: any) =>
-  Object.defineProperty(navigator, propertyName, {
-    value,
-    writable: true,
-  });
-const resetNavigatorProperty = (propertyName: string, descriptor: any) =>
-  Object.defineProperty(navigator, propertyName, descriptor);
+function navigatorProperty<T extends keyof Navigator>(propertyName: T) {
+  const originalDescriptor =
+    Object.getOwnPropertyDescriptor(navigator, propertyName) ?? {};
+  return {
+    set: (value: Navigator[T]) =>
+      Object.defineProperty(navigator, propertyName, { value, writable: true }),
+    reset: () =>
+      Object.defineProperty(navigator, propertyName, originalDescriptor),
+  };
+}
 
 test("isTouchDevice", () => {
+  const maxTouchPoints = navigatorProperty("maxTouchPoints");
+
   // Fake touch device
-  const originalNavigatorMaxTouchPoints =
-    getNavigatorPropertyDescriptor("maxTouchPoints");
-  setNavigatorProperty("maxTouchPoints", true);
+  maxTouchPoints.set(1);
   expect(isTouchDevice()).toBe(true);
 
   // Fake non-touch device
-  setNavigatorProperty("maxTouchPoints", false);
+  maxTouchPoints.set(0);
   expect(isTouchDevice()).toBe(false);
 
-  resetNavigatorProperty("maxTouchPoints", originalNavigatorMaxTouchPoints);
+  maxTouchPoints.reset();
 });
 
 test("isApple", () => {
+  const platform = navigatorProperty("platform");
+
   // Fake Apple device
-  const originalNavigatorPlatform = getNavigatorPropertyDescriptor("platform");
-  setNavigatorProperty("platform", "Macintosh");
+  platform.set("Macintosh");
   expect(isApple()).toBe(true);
-  setNavigatorProperty("platform", "iPhone");
+  platform.set("iPhone");
   expect(isApple()).toBe(true);
-  setNavigatorProperty("platform", "iPad");
+  platform.set("iPad");
   expect(isApple()).toBe(true);
-  setNavigatorProperty("platform", "iPod");
+  platform.set("iPod");
   expect(isApple()).toBe(true);
 
   // Fake non-Apple device
-  setNavigatorProperty("platform", "Something Else");
+  platform.set("Something Else");
   expect(isApple()).toBe(false);
 
-  resetNavigatorProperty("platform", originalNavigatorPlatform);
+  platform.reset();
 });
 
 test("isSafari", () => {
-  // Fake Safari browser
-  const originalNavigatorPlatform = getNavigatorPropertyDescriptor("platform");
-  setNavigatorProperty("platform", "Macintosh");
+  const platform = navigatorProperty("platform");
+  const vendor = navigatorProperty("vendor");
 
-  const originalNavigatorVendor = getNavigatorPropertyDescriptor("vendor");
-  setNavigatorProperty("vendor", "Apple Computer, Inc.");
+  // Fake Safari browser
+  platform.set("Macintosh");
+
+  vendor.set("Apple Computer, Inc.");
   expect(isSafari()).toBe(true);
 
   // Fake Chrome browser
-  setNavigatorProperty("vendor", "Google Inc.");
+  vendor.set("Google Inc.");
   expect(isSafari()).toBe(false);
 
-  resetNavigatorProperty("platform", originalNavigatorPlatform);
-  resetNavigatorProperty("vendor", originalNavigatorVendor);
+  platform.reset();
+  vendor.reset();
 });
 
 test("isFirefox", () => {
+  const userAgent = navigatorProperty("userAgent");
+
   // Fake Firefox browser
-  const originalNavigatorUserAgent =
-    getNavigatorPropertyDescriptor("userAgent");
-  setNavigatorProperty(
-    "userAgent",
+  userAgent.set(
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Firefox/77.0"
   );
   expect(isFirefox()).toBe(true);
 
   // Fake Chrome browser
-  setNavigatorProperty(
-    "userAgent",
+  userAgent.set(
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Chrome/77.0"
   );
   expect(isFirefox()).toBe(false);
 
-  resetNavigatorProperty("userAgent", originalNavigatorUserAgent);
+  userAgent.reset();
 });
 
 test("isMac", () => {
+  const platform = navigatorProperty("platform");
+
   // Fake Mac computer
-  const originalNavigatorPlatform = getNavigatorPropertyDescriptor("platform");
-  setNavigatorProperty("platform", "Macintosh");
+  platform.set("Macintosh");
   expect(isMac()).toBe(true);
 
   // Fake Windows computer
-  setNavigatorProperty("platform", "Win32");
+  platform.set("Win32");
   expect(isMac()).toBe(false);
 
-  resetNavigatorProperty("platform", originalNavigatorPlatform);
+  platform.reset();
 });
