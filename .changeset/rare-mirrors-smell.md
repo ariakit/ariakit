@@ -2,4 +2,4 @@
 "ariakit-utils": minor
 ---
 
-Rename `useLazyRef` function to `useLazyValue`.
+Renamed `useLazyRef` function to `useLazyValue`.
