@@ -1,4 +1,4 @@
-import "./__mock-get-client-rects";
+import "./mock-get-client-rects";
 
 import { getActiveElement } from "ariakit-utils/dom";
 import { isFocusable } from "ariakit-utils/focus";

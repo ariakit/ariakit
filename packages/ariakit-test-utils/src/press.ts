@@ -1,4 +1,4 @@
-import "./__mock-get-client-rects";
+import "./mock-get-client-rects";
 
 import { isTextField } from "ariakit-utils/dom";
 import {
