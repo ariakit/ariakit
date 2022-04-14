@@ -130,6 +130,12 @@ export function usePopoverState({
 
         const middleware: Middleware[] = [
           middlewares.offset(({ placement }) => {
+            // Makes sure the shift value is applied to the popover element
+            // consistently no matter the placement. That is, a negative shift
+            // should move down a popover with a "right-end" placement, but move
+            // it up when the placement is "right-start". A good example is a
+            // sub menu that must have a small negative shift so the first menu
+            // item is aligned with its menu button.
             const start = placement.split("-")[1] === "start";
             return {
               crossAxis: start ? shift : -shift,
@@ -175,13 +181,14 @@ export function usePopoverState({
 
         setCurrentPlacement(pos.placement);
 
+        const x = Math.round(pos.x);
+        const y = Math.round(pos.y);
+
         Object.assign(popover.style, {
-          position: "absolute",
+          position: fixed ? "fixed" : "absolute",
           top: "0",
           left: "0",
-          transform: `translate3d(${Math.round(pos.x)}px,${Math.round(
-            pos.y
-          )}px,0)`,
+          transform: `translate3d(${x}px, ${y}px, 0)`,
         });
 
         if (arrow && pos.middlewareData.arrow) {
