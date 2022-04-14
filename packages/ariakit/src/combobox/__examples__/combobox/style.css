@@ -20,7 +20,7 @@
 }
 
 .popover {
-  max-height: inherit;
+  max-height: 300px;
   @apply
     relative
     z-50
