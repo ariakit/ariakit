@@ -1,4 +1,4 @@
-import "./__mock-get-client-rects";
+import "./mock-get-client-rects";
 
 import { closest } from "ariakit-utils/dom";
 import { getClosestFocusable, isFocusable } from "ariakit-utils/focus";
