@@ -41,7 +41,7 @@
     "components"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.11.2",
+    "@floating-ui/dom": "0.4.4",
     "ariakit-utils": "0.17.0-next.15"
   },
   "peerDependencies": {

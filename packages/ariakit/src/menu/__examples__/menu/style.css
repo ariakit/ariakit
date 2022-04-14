@@ -1,6 +1,7 @@
 @import url("../../../button/__examples__/button/style.css");
 
 .menu {
+  max-height: inherit;
   min-width: 180px;
   outline: none;
   @apply
@@ -10,6 +11,7 @@
     flex
     flex-col
     rounded-lg
+    overflow-auto
     border
     border-solid
     border-canvas-4
