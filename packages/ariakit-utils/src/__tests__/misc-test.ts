@@ -1,5 +1,4 @@
 import { sleep } from "ariakit-test-utils";
-
 import {
   applyState,
   chain,
@@ -158,18 +157,12 @@ test("normalizeString", () => {
 
 test("queueMicrotask", async () => {
   let value = 0;
-  jest.useFakeTimers();
-
   queueMicrotask(() => {
     value = 1;
   });
-
-  // Advance time enough to make sure the settimout has fired
-  jest.advanceTimersByTime(1000);
-
+  expect(value).toBe(0);
+  await sleep();
   expect(value).toBe(1);
-
-  jest.useRealTimers();
 
   // test when window doesn't have queueMicrotask
   const originalQueueMicrotask =
@@ -179,9 +172,11 @@ test("queueMicrotask", async () => {
     configurable: true,
   });
 
+  value = 0;
   queueMicrotask(() => {
     value = 2;
   });
+  expect(value).toBe(0);
   await sleep();
   expect(value).toBe(2);
 
