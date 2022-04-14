@@ -1,5 +1,5 @@
 import "ariakit-test-utils/__mock-get-client-rects";
-
+import { sleep } from "ariakit-test-utils";
 import {
   disableFocus,
   disableFocusIn,
@@ -628,7 +628,7 @@ test("restoreFocusIn", () => {
   document.body.innerHTML = initialInnerHTML;
 });
 
-test("ensureFocus", () => {
+test("ensureFocus", async () => {
   const initialInnerHTML = document.body.innerHTML;
   document.body.innerHTML = `
     <input id="testInput" />
@@ -648,16 +648,13 @@ test("ensureFocus", () => {
   // isActive -> false
   const focusSpy = jest.spyOn(input, "focus");
 
-  jest.useFakeTimers();
   expect(document.activeElement === input).toBe(false);
   ensureFocus(input, { isActive: () => false });
   expect(document.activeElement === input).toBe(true);
 
-  jest.advanceTimersByTime(1000);
-
+  expect(focusSpy).toHaveBeenCalledTimes(1);
+  await sleep();
   expect(focusSpy).toHaveBeenCalledTimes(2);
-
-  jest.useRealTimers();
 
   document.body.innerHTML = initialInnerHTML;
   rafSpy.mockRestore();
