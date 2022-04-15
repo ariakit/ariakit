@@ -6,7 +6,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
 import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -30,6 +29,8 @@ import {
 } from "../popover/popover-disclosure";
 import { MenuBarContext, MenuContext, hasExpandedMenuButton } from "./__utils";
 import { MenuState } from "./menu-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
   const keyMap = {

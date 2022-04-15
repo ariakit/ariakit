@@ -14,6 +14,7 @@ import {
   useBooleanEventCallback,
   useEventCallback,
   useForkRef,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
@@ -278,9 +279,13 @@ export const useHovercard = createHook<HovercardOptions>(
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
     // if it's not a modal, is portal and is mounted. We don't need to register
-    // non-portal hovercards because they will be captured by contains in the
-    // isMovingOnHovercard function above.
-    useEffect(() => {
+    // non-portal hovercards because they will be captured by the contains
+    // function in the isMovingOnHovercard function above. This must be a layout
+    // effect so we don't lose mouse move events right after the nested
+    // hovercard has been mounted (for example, a submenu that's overlapping its
+    // menu button and we keep moving the mouse while the submenu is due to
+    // open).
+    useSafeLayoutEffect(() => {
       if (modal) return;
       if (!portal) return;
       if (!state.mounted) return;

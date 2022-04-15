@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
 import { queueBeforeEvent } from "ariakit-utils/events";
 import {
@@ -38,6 +37,8 @@ import { VisuallyHidden } from "../visually-hidden";
 import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
 import { SelectArrow } from "./select-arrow";
 import { SelectState } from "./select-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);

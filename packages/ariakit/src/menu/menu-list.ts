@@ -1,5 +1,4 @@
 import { KeyboardEvent, useCallback, useEffect, useState } from "react";
-import { BasePlacement } from "@popperjs/core";
 import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
 import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
@@ -16,6 +15,8 @@ import {
 } from "../composite/composite-typeahead";
 import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuState } from "./menu-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const isSafariOnMac = isMac() && isSafari();
 
