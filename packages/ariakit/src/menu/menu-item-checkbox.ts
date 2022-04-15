@@ -12,6 +12,12 @@ import { MenuContext } from "./__utils";
 import { MenuItemOptions, useMenuItem } from "./menu-item";
 import { MenuState } from "./menu-state";
 
+function stringIfBoolean<T>(value: T) {
+  return typeof value === "boolean"
+    ? value.toString()
+    : (value as Exclude<T, boolean>);
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a menu item checkbox inside a menu.
@@ -30,7 +36,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
   ({ state, name, checked, defaultChecked, hideOnClick = false, ...props }) => {
     state = useStore(state || MenuContext, [
       "setValue",
-      useCallback((s: MenuState) => s.values[name], [name]),
+      useCallback((s: MenuState) => stringIfBoolean(s.values[name]), [name]),
     ]);
 
     const setValue: CheckboxState["setValue"] = useCallback(
