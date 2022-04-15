@@ -38,6 +38,7 @@ function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
     return new DOMRect(x, y, width, height);
   }
+  // JSDOM doesn't support DOMRect constructor.
   const rect = {
     x,
     y,
@@ -61,6 +62,7 @@ function getAnchorElement(
   anchorRef: RefObject<HTMLElement | null>,
   anchorRect: AnchorRect | null
 ) {
+  // https://floating-ui.com/docs/virtual-elements
   const contextElement = anchorRef.current || undefined;
   return {
     contextElement,
@@ -122,6 +124,7 @@ export function usePopoverState({
         if (!dialog.mounted) return;
 
         const middleware: Middleware[] = [
+          // https://floating-ui.com/docs/offset
           middlewares.offset(({ placement }) => {
             // If there's no placement alignment (*-start or *-end), we'll
             // fallback to the crossAxis offset as it also works for
@@ -136,14 +139,17 @@ export function usePopoverState({
         ];
 
         if (flip) {
+          // https://floating-ui.com/docs/flip
           middleware.push(middlewares.flip({ padding: overflowPadding }));
         }
 
         if (slide) {
+          // https://floating-ui.com/docs/shift
           middleware.push(middlewares.shift({ padding: overflowPadding }));
         }
 
         if (sameWidth || fitViewport) {
+          // https://floating-ui.com/docs/size
           middleware.push(
             middlewares.size({
               padding: overflowPadding,
@@ -160,11 +166,13 @@ export function usePopoverState({
         }
 
         if (arrow) {
+          // https://floating-ui.com/docs/arrow
           middleware.push(
             middlewares.arrow({ element: arrow, padding: arrowPadding })
           );
         }
 
+        // https://floating-ui.com/docs/computePosition
         const pos = await computePosition(anchor, popover, {
           placement,
           strategy: fixed ? "fixed" : "absolute",
@@ -176,6 +184,7 @@ export function usePopoverState({
         const x = Math.round(pos.x);
         const y = Math.round(pos.y);
 
+        // https://floating-ui.com/docs/misc#subpixel-and-accelerated-positioning
         Object.assign(popover.style, {
           position: fixed ? "fixed" : "absolute",
           top: "0",
@@ -183,6 +192,7 @@ export function usePopoverState({
           transform: `translate3d(${x}px, ${y}px, 0)`,
         });
 
+        // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
 
@@ -196,9 +206,13 @@ export function usePopoverState({
         }
       };
 
+      // autoUpdate does not call update immediately, so for the first update,
+      // we should call the update function ourselves.
       update();
 
+      // https://floating-ui.com/docs/autoUpdate
       return autoUpdate(anchor, popover, update, {
+        // JSDOM doesn't support ResizeObserver
         elementResize: typeof ResizeObserver === "function",
       });
     };
