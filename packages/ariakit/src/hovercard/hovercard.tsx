@@ -141,7 +141,7 @@ export const useHovercard = createHook<HovercardOptions>(
   }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
-    const timeoutRef = useRef(0);
+    const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
@@ -195,13 +195,13 @@ export const useHovercard = createHook<HovercardOptions>(
             target && anchor && contains(anchor, target)
               ? getEventPoint(event)
               : null;
-          window.clearTimeout(timeoutRef.current);
-          timeoutRef.current = 0;
+          window.clearTimeout(hideTimeoutRef.current);
+          hideTimeoutRef.current = 0;
           return;
         }
         // If there's already a scheduled timeout to hide the hovercard, we do
         // nothing.
-        if (timeoutRef.current) return;
+        if (hideTimeoutRef.current) return;
         // Enter point will be null when the user hovers over the hovercard
         // element.
         if (enterPoint) {
@@ -214,6 +214,8 @@ export const useHovercard = createHook<HovercardOptions>(
           // so we disable this event. This is necessary because the mousemove
           // event may trigger focus on other elements and close the hovercard.
           if (isPointInPolygon(currentPoint, polygon)) {
+            // Refreshes the enter point.
+            enterPointRef.current = currentPoint;
             if (!disablePointerEventsProp(event)) return;
             event.preventDefault();
             event.stopPropagation();
@@ -222,7 +224,10 @@ export const useHovercard = createHook<HovercardOptions>(
         }
         if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
-        timeoutRef.current = window.setTimeout(state.hide, state.hideTimeout);
+        hideTimeoutRef.current = window.setTimeout(
+          state.hide,
+          state.hideTimeout
+        );
       };
       return addGlobalEventListener("mousemove", onMouseMove, true);
     }, [
