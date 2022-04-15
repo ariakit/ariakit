@@ -19,7 +19,9 @@
     <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg"></a>
 </p>
 
-> If you're looking for v1, check out [v1](https://github.com/ariakit/ariakit/tree/v1) branch.
+> **Note**: This is the Ariakit (v2) branch <sup>[<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>]</sup>, which is still in alpha.
+> 
+> If you're looking for Reakit (v1), check out the [v1](https://github.com/ariakit/ariakit/tree/v1) branch.
 
 ## Installation
 
