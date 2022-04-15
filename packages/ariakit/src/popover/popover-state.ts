@@ -96,6 +96,7 @@ export function usePopoverState({
   flip = true,
   shift = 0,
   slide = true,
+  overlap = false,
   sameWidth = false,
   fitViewport = false,
   arrowPadding = 4,
@@ -127,6 +128,11 @@ export function usePopoverState({
     const finalGutter =
       typeof gutter === "number" ? gutter + arrowOffset : gutter ?? arrowOffset;
 
+    popover.style.setProperty(
+      "--popover-overflow-padding",
+      `${overflowPadding}px`
+    );
+
     const defaultRenderCallback = () => {
       const update = async () => {
         if (!dialog.mounted) return;
@@ -151,27 +157,44 @@ export function usePopoverState({
           middleware.push(middlewares.flip({ padding: overflowPadding }));
         }
 
-        if (slide) {
+        if (slide || overlap) {
           // https://floating-ui.com/docs/shift
-          middleware.push(middlewares.shift({ padding: overflowPadding }));
-        }
-
-        if (sameWidth || fitViewport) {
-          // https://floating-ui.com/docs/size
           middleware.push(
-            middlewares.size({
+            middlewares.shift({
+              mainAxis: slide,
+              crossAxis: overlap,
               padding: overflowPadding,
-              apply({ height, reference }) {
-                if (sameWidth) {
-                  popover.style.width = `${reference.width}px`;
-                }
-                if (fitViewport) {
-                  popover.style.maxHeight = `${height}px`;
-                }
-              },
             })
           );
         }
+
+        // https://floating-ui.com/docs/size
+        middleware.push(
+          middlewares.size({
+            padding: overflowPadding,
+            apply({ width, height, reference }) {
+              popover.style.setProperty(
+                "--popover-anchor-width",
+                `${reference.width}px`
+              );
+              popover.style.setProperty(
+                "--popover-available-width",
+                `${width}px`
+              );
+              popover.style.setProperty(
+                "--popover-available-height",
+                `${height}px`
+              );
+              if (sameWidth) {
+                popover.style.width = `${reference.width}px`;
+              }
+              if (fitViewport) {
+                popover.style.maxWidth = `${width}px`;
+                popover.style.maxHeight = `${height}px`;
+              }
+            },
+          })
+        );
 
         if (arrow) {
           // https://floating-ui.com/docs/arrow
@@ -232,6 +255,7 @@ export function usePopoverState({
         fixed,
         gutter: finalGutter,
         shift,
+        overlap,
         flip,
         sameWidth,
         fitViewport,
@@ -253,6 +277,7 @@ export function usePopoverState({
     gutter,
     dialog.mounted,
     shift,
+    overlap,
     flip,
     overflowPadding,
     slide,
@@ -279,6 +304,7 @@ export function usePopoverState({
       shift,
       flip,
       slide,
+      overlap,
       sameWidth,
       fitViewport,
       arrowPadding,
@@ -297,6 +323,7 @@ export function usePopoverState({
       shift,
       flip,
       slide,
+      overlap,
       sameWidth,
       fitViewport,
       arrowPadding,
@@ -316,6 +343,7 @@ export type PopoverStateRenderCallbackProps = Pick<
   | "fixed"
   | "gutter"
   | "shift"
+  | "overlap"
   | "flip"
   | "sameWidth"
   | "fitViewport"
@@ -406,14 +434,21 @@ export type PopoverState = DialogState & {
    */
   slide: boolean;
   /**
-   * Whether the popover should have the same width as the anchor element.
+   * Whether the popover can overlap the anchor element when it overflows.
+   * @default false
+   */
+  overlap: boolean;
+  /**
+   * Whether the popover should have the same width as the anchor element. This
+   * will be exposed to CSS as `--popover-anchor-width`.
    * @default false
    */
   sameWidth: boolean;
   /**
    * Whether the popover should fit the viewport. If this is set to true, the
-   * popover wrapper will have `maxHeight` and `maxWidth` set to the viewport
-   * size.
+   * popover wrapper will have `maxWidth` and `maxHeight` set to the viewport
+   * size. This will be exposed to CSS as `--popover-available-width` and
+   * `--popover-available-height`.
    * @default false
    */
   fitViewport: boolean;
@@ -423,7 +458,8 @@ export type PopoverState = DialogState & {
    */
   arrowPadding: number;
   /**
-   * The minimum padding between the popover and the viewport edge.
+   * The minimum padding between the popover and the viewport edge. This will be
+   * exposed to CSS as `--popover-overflow-padding`.
    * @default 8
    */
   overflowPadding: number;
@@ -452,6 +488,7 @@ export type PopoverStateProps = DialogStateProps &
       | "shift"
       | "flip"
       | "slide"
+      | "overlap"
       | "sameWidth"
       | "fitViewport"
       | "arrowPadding"
