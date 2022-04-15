@@ -9,10 +9,10 @@
     h-10
     rounded
     border-none
-    bg-canvas-1
     px-4
     m-2
     text-base
+    bg-canvas-1
     text-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark

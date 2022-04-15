@@ -1,11 +1,4 @@
-import {
-  MutableRefObject,
-  RefObject,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
 import {
   Middleware,
   VirtualElement,
@@ -90,13 +83,14 @@ function getAnchorElement(
 export function usePopoverState({
   placement = "bottom",
   fixed = false,
-  padding = 8,
-  arrowPadding = 4,
-  flip = true,
   gutter,
+  flip = true,
   shift = 0,
-  preventOverflow = true,
+  slide = true,
   sameWidth = false,
+  fitViewport = false,
+  arrowPadding = 4,
+  overflowPadding = 8,
   renderCallback,
   ...props
 }: PopoverStateProps = {}): PopoverState {
@@ -113,7 +107,6 @@ export function usePopoverState({
   const arrowRef = useRef<HTMLElement>(null);
 
   const [currentPlacement, setCurrentPlacement] = useState(placement);
-  const [rendered, render] = useReducer(() => ({}), {});
 
   useSafeLayoutEffect(() => {
     const popover = popoverRef.current;
@@ -130,42 +123,41 @@ export function usePopoverState({
 
         const middleware: Middleware[] = [
           middlewares.offset(({ placement }) => {
-            // Makes sure the shift value is applied to the popover element
-            // consistently no matter the placement. That is, a negative shift
-            // should move down a popover with a "right-end" placement, but move
-            // it up when the placement is "right-start". A good example is a
-            // sub menu that must have a small negative shift so the first menu
-            // item is aligned with its menu button.
-            const start = placement.split("-")[1] === "start";
+            // If there's no placement alignment (*-start or *-end), we'll
+            // fallback to the crossAxis offset as it also works for
+            // center-aligned placements.
+            const hasAlignment = !!placement.split("-")[1];
             return {
-              crossAxis: start ? shift : -shift,
+              crossAxis: !hasAlignment ? shift : undefined,
               mainAxis: finalGutter,
+              alignmentAxis: shift,
             };
           }),
         ];
 
-        if (preventOverflow) {
-          middleware.push(middlewares.shift({ padding }));
-        }
-
         if (flip) {
-          middleware.push(middlewares.flip({ padding }));
+          middleware.push(middlewares.flip({ padding: overflowPadding }));
         }
 
-        middleware.push(
-          middlewares.size({
-            padding,
-            apply({ /*height,*/ reference }) {
-              if (sameWidth) {
-                popover.style.width = `${reference.width}px`;
-              }
-              // TODO: Add support for `maxSize` or something
-              // Object.assign(popover.style, {
-              //   maxHeight: `${height}px`,
-              // });
-            },
-          })
-        );
+        if (slide) {
+          middleware.push(middlewares.shift({ padding: overflowPadding }));
+        }
+
+        if (sameWidth || fitViewport) {
+          middleware.push(
+            middlewares.size({
+              padding: overflowPadding,
+              apply({ height, reference }) {
+                if (sameWidth) {
+                  popover.style.width = `${reference.width}px`;
+                }
+                if (fitViewport) {
+                  popover.style.maxHeight = `${height}px`;
+                }
+              },
+            })
+          );
+        }
 
         if (arrow) {
           middleware.push(
@@ -213,40 +205,40 @@ export function usePopoverState({
 
     if (renderCallback) {
       return renderCallback({
-        defaultRenderCallback,
-        setPlacement: setCurrentPlacement,
         mounted: dialog.mounted,
-        gutter: finalGutter,
         placement,
         fixed,
-        flip,
-        padding,
-        arrowPadding,
-        preventOverflow,
-        sameWidth,
+        gutter: finalGutter,
         shift,
+        flip,
+        sameWidth,
+        fitViewport,
+        arrowPadding,
+        overflowPadding,
         popover,
         anchor,
         arrow,
+        setPlacement: setCurrentPlacement,
+        defaultRenderCallback,
       });
     }
 
     return defaultRenderCallback();
   }, [
-    rendered,
     dialog.contentElement,
     anchorRect,
-    shift,
     gutter,
-    renderCallback,
+    dialog.mounted,
+    shift,
+    flip,
+    overflowPadding,
+    slide,
+    sameWidth,
+    fitViewport,
+    arrowPadding,
     placement,
     fixed,
-    dialog.mounted,
-    flip,
-    padding,
-    arrowPadding,
-    preventOverflow,
-    sameWidth,
+    renderCallback,
   ]);
 
   const state = useMemo(
@@ -260,14 +252,14 @@ export function usePopoverState({
       currentPlacement,
       placement,
       fixed,
-      padding,
-      arrowPadding,
-      flip,
       gutter,
       shift,
-      preventOverflow,
+      flip,
+      slide,
       sameWidth,
-      render,
+      fitViewport,
+      arrowPadding,
+      overflowPadding,
       renderCallback,
     }),
     [
@@ -277,14 +269,14 @@ export function usePopoverState({
       currentPlacement,
       placement,
       fixed,
-      padding,
-      arrowPadding,
-      flip,
       gutter,
       shift,
-      preventOverflow,
+      flip,
+      slide,
       sameWidth,
-      render,
+      fitViewport,
+      arrowPadding,
+      overflowPadding,
       renderCallback,
     ]
   );
@@ -294,16 +286,16 @@ export function usePopoverState({
 
 export type PopoverStateRenderCallbackProps = Pick<
   PopoverState,
-  | "fixed"
-  | "flip"
   | "mounted"
-  | "padding"
-  | "arrowPadding"
   | "placement"
-  | "preventOverflow"
-  | "sameWidth"
+  | "fixed"
   | "gutter"
   | "shift"
+  | "flip"
+  | "sameWidth"
+  | "fitViewport"
+  | "arrowPadding"
+  | "overflowPadding"
 > & {
   /**
    * The popover element.
@@ -367,22 +359,6 @@ export type PopoverState = DialogState & {
    */
   fixed: boolean;
   /**
-   * The minimum padding between the popover and the viewport edge.
-   * @default 8
-   */
-  padding: number;
-  /**
-   * The minimum padding between the arrow and the popover corner.
-   * @default 4
-   */
-  arrowPadding: number;
-  /**
-   * Whether the popover should flip to the opposite side of the viewport
-   * when it overflows.
-   * @default true
-   */
-  flip: boolean;
-  /**
    * The distance between the popover and the anchor element. By default, it's 0
    * plus half of the arrow offset, if it exists.
    * @default 0
@@ -394,21 +370,38 @@ export type PopoverState = DialogState & {
    */
   shift: number;
   /**
-   * Whether the popover should prevent overflowing its clipping container.
+   * Whether the popover should flip to the opposite side of the viewport
+   * when it overflows.
    * @default true
    */
-  preventOverflow: boolean;
+  flip: boolean;
+  /**
+   * Whether the popover should slide when it overflows.
+   * @default true
+   */
+  slide: boolean;
   /**
    * Whether the popover should have the same width as the anchor element.
    * @default false
    */
   sameWidth: boolean;
   /**
-   * A function that can be used to recompute the popover styles. This is useful
-   * when the popover contents change in a way that affects its position or
+   * Whether the popover should fit the viewport. If this is set to true, the
+   * popover wrapper will have `maxHeight` and `maxWidth` set to the viewport
    * size.
+   * @default false
    */
-  render: () => void;
+  fitViewport: boolean;
+  /**
+   * The minimum padding between the arrow and the popover corner.
+   * @default 4
+   */
+  arrowPadding: number;
+  /**
+   * The minimum padding between the popover and the viewport edge.
+   * @default 8
+   */
+  overflowPadding: number;
   /**
    * A function that will be called when the popover needs to calculate its
    * styles. It will override the internal behavior.
@@ -425,13 +418,14 @@ export type PopoverStateProps = DialogStateProps &
       | "anchorRect"
       | "placement"
       | "fixed"
-      | "padding"
-      | "arrowPadding"
-      | "flip"
       | "gutter"
       | "shift"
-      | "preventOverflow"
+      | "flip"
+      | "slide"
       | "sameWidth"
+      | "fitViewport"
+      | "arrowPadding"
+      | "overflowPadding"
       | "renderCallback"
     >
   > & {
