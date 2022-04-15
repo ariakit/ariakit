@@ -1,4 +1,11 @@
-import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  RefObject,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import {
   Middleware,
   VirtualElement,
@@ -109,6 +116,7 @@ export function usePopoverState({
   const arrowRef = useRef<HTMLElement>(null);
 
   const [currentPlacement, setCurrentPlacement] = useState(placement);
+  const [rendered, render] = useReducer(() => ({}), {});
 
   useSafeLayoutEffect(() => {
     const popover = popoverRef.current;
@@ -239,6 +247,7 @@ export function usePopoverState({
 
     return defaultRenderCallback();
   }, [
+    rendered,
     dialog.contentElement,
     anchorRect,
     gutter,
@@ -274,6 +283,7 @@ export function usePopoverState({
       fitViewport,
       arrowPadding,
       overflowPadding,
+      render,
       renderCallback,
     }),
     [
@@ -291,6 +301,7 @@ export function usePopoverState({
       fitViewport,
       arrowPadding,
       overflowPadding,
+      render,
       renderCallback,
     ]
   );
@@ -416,6 +427,11 @@ export type PopoverState = DialogState & {
    * @default 8
    */
   overflowPadding: number;
+  /**
+   * A function that can be used to recompute the popover styles. This is useful
+   * when the popover anchor changes in a way that affects the popover position.
+   */
+  render: () => void;
   /**
    * A function that will be called when the popover needs to calculate its
    * styles. It will override the internal behavior.
