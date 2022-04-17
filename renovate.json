@@ -3,7 +3,18 @@
   "semanticCommits": false,
   "packageRules": [
     {
-      "matchPackageNames": ["prettier", "typescript"],
+      "matchPackageNames": [
+        "babel-plugin-module-resolver",
+        "cross-env",
+        "cross-spawn",
+        "fs-extra",
+        "lodash",
+        "prettier",
+        "typescript",
+        "react",
+        "react-dom",
+        "webpack"
+      ],
       "matchPackagePatterns": [
         "^@babel/",
         "^@rollup/",
@@ -12,7 +23,8 @@
         "^@typescript-eslint/",
         "^eslint",
         "^jest",
-        "^rollup"
+        "^rollup",
+        "^stylelint"
       ],
       "automerge": true,
       "automergeType": "pr",
