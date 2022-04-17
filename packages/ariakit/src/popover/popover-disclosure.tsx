@@ -33,10 +33,9 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
         state.anchorRef.current = event.currentTarget;
-        state.setAnchorRect(null);
         onClickProp(event);
       },
-      [state.anchorRef, state.setAnchorRect, onClickProp]
+      [state.anchorRef, onClickProp]
     );
 
     props = useWrapElement(

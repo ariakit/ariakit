@@ -1,0 +1,17 @@
+@import url("../combobox/style.css");
+@import url("../../../button/__examples__/button/style.css");
+
+.combobox {
+  width: 380px;
+  @apply h-auto p-2;
+}
+
+.popover {
+  min-width: 180px;
+  max-height: min(var(--popover-available-height), 234px);
+  @apply p-1 rounded-md;
+}
+
+.combobox-item {
+  @apply py-1 scroll-m-1;
+}

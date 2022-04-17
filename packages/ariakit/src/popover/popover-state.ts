@@ -17,7 +17,7 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
-import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useEventCallback, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 import {
   DialogState,
@@ -59,7 +59,7 @@ function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   return { ...rect, toJSON: () => rect };
 }
 
-function getDOMRect(anchorRect: AnchorRect | null) {
+function getDOMRect(anchorRect?: AnchorRect | null) {
   if (!anchorRect) return createDOMRect();
   const { x, y, width, height } = anchorRect;
   return createDOMRect(x, y, width, height);
@@ -67,16 +67,20 @@ function getDOMRect(anchorRect: AnchorRect | null) {
 
 function getAnchorElement(
   anchorRef: RefObject<HTMLElement | null>,
-  anchorRect: AnchorRect | null
+  getAnchorRect: (anchor: HTMLElement | null) => AnchorRect | null
 ) {
   // https://floating-ui.com/docs/virtual-elements
   const contextElement = anchorRef.current || undefined;
   return {
     contextElement,
-    getBoundingClientRect: () =>
-      anchorRect || !contextElement
-        ? getDOMRect(anchorRect)
-        : contextElement.getBoundingClientRect(),
+    getBoundingClientRect: () => {
+      const anchor = anchorRef.current;
+      const anchorRect = getAnchorRect(anchor);
+      if (anchorRect || !anchor) {
+        return getDOMRect(anchorRect);
+      }
+      return anchor.getBoundingClientRect();
+    },
   };
 }
 
@@ -106,10 +110,11 @@ export function usePopoverState({
 }: PopoverStateProps = {}): PopoverState {
   const dialog = useDialogState(props);
 
-  const [anchorRect, setAnchorRect] = useControlledState(
-    props.defaultAnchorRect || null,
-    props.anchorRect,
-    props.setAnchorRect
+  const defaultGetAnchorRect = (anchor?: HTMLElement | null) =>
+    anchor?.getBoundingClientRect() || null;
+
+  const getAnchorRect = useEventCallback(
+    props.getAnchorRect || defaultGetAnchorRect
   );
 
   const anchorRef = useRef<HTMLElement | null>(null);
@@ -122,7 +127,7 @@ export function usePopoverState({
   useSafeLayoutEffect(() => {
     const popover = popoverRef.current;
     if (!popover) return;
-    const anchor = getAnchorElement(anchorRef, anchorRect);
+    const anchor = getAnchorElement(anchorRef, getAnchorRect);
     const arrow = arrowRef.current;
     const arrowOffset = (arrow?.clientHeight || 0) / 2;
     const finalGutter =
@@ -273,7 +278,7 @@ export function usePopoverState({
   }, [
     rendered,
     dialog.contentElement,
-    anchorRect,
+    getAnchorRect,
     gutter,
     dialog.mounted,
     shift,
@@ -292,8 +297,7 @@ export function usePopoverState({
   const state = useMemo(
     () => ({
       ...dialog,
-      anchorRect,
-      setAnchorRect,
+      getAnchorRect,
       anchorRef,
       popoverRef,
       arrowRef,
@@ -314,8 +318,7 @@ export function usePopoverState({
     }),
     [
       dialog,
-      anchorRect,
-      setAnchorRect,
+      getAnchorRect,
       currentPlacement,
       placement,
       fixed,
@@ -375,14 +378,10 @@ export type PopoverStateRenderCallbackProps = Pick<
 
 export type PopoverState = DialogState & {
   /**
-   * The coordinates that will be used to position the popover. When defined,
-   * this will override the `anchorRef` prop.
+   * Function that returns the anchor element's DOMRect. If this is explicitly
+   * passed, it will override the anchor `getBoundingClientRect` method.
    */
-  anchorRect: AnchorRect | null;
-  /**
-   * Sets the `anchorRect` state.
-   */
-  setAnchorRect: SetState<PopoverState["anchorRect"]>;
+  getAnchorRect: (anchor: HTMLElement | null) => AnchorRect | null;
   /**
    * The anchor element.
    */
@@ -481,7 +480,7 @@ export type PopoverStateProps = DialogStateProps &
   Partial<
     Pick<
       PopoverState,
-      | "anchorRect"
+      | "getAnchorRect"
       | "placement"
       | "fixed"
       | "gutter"
@@ -495,23 +494,4 @@ export type PopoverStateProps = DialogStateProps &
       | "overflowPadding"
       | "renderCallback"
     >
-  > & {
-    /**
-     * The coordinates that will be used to position the popover. When defined,
-     * this will override the `anchorRef` property.
-     * @example
-     * const popover = usePopoverState({
-     *   defaultAnchorRect: { x: 10, y: 10, width: 100, height: 100 },
-     * });
-     */
-    defaultAnchorRect?: PopoverState["anchorRect"];
-    /**
-     * Function that will be called when setting the popover `anchorRect` state.
-     * @example
-     * const [anchorRect, setAnchorRect] = useState(
-     *   { x: 10, y: 10, width: 100, height: 100 }
-     * );
-     * usePopoverState({ anchorRect, setAnchorRect });
-     */
-    setAnchorRect?: (anchor: PopoverState["anchorRect"]) => void;
-  };
+  >;

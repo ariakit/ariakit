@@ -28,16 +28,16 @@
     flex-col
     overflow-auto
     rounded-lg
+    p-2
     border
     border-solid
     border-canvas-4
     bg-canvas-4
-    p-2
     text-canvas-4
-    drop-shadow
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
+    drop-shadow
     dark:drop-shadow-dark;
 }
 

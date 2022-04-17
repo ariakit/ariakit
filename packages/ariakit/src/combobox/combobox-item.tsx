@@ -76,13 +76,14 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     const onClickProp = useEventCallback(props.onClick);
+    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
         onClickProp(event);
         if (event.defaultPrevented) return;
-        if (setValueOnClick && value != null) {
+        if (value != null && setValueOnClickProp(event)) {
           state?.setValue(value);
         }
         if (hideOnClickProp(event)) {
@@ -95,6 +96,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       },
       [
         onClickProp,
+        setValueOnClickProp,
         hideOnClickProp,
         value,
         setValueOnClick,
@@ -222,7 +224,7 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      * clicked.
      * @default true
      */
-    setValueOnClick?: boolean;
+    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Whether to focus the combobox item on hover.
      * @default false
