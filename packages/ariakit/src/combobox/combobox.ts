@@ -420,10 +420,6 @@ export const Combobox = createComponent<ComboboxOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
-type Lol = Parameters<
-  NonNullable<JSX.IntrinsicElements["input"]["onChange"]>
->[0];
-
 export type ComboboxOptions<T extends As = "input"> = Omit<
   CompositeOptions<T>,
   "state"
@@ -473,14 +469,14 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * <Combobox showOnChange={(event) => event.target.value.length > 1} />
      * ```
      */
-    showOnChange?: BooleanOrCallback<ChangeEvent<HTMLInputElement>>;
+    showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
     /**
      * Determines whether the combobox state value will be updated when the
      * input value changes. This can be a boolean or a function that receives
      * a ChangeEvent and returns a boolean.
      * @default true
      */
-    setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLInputElement>>;
+    setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
     /**
      * Determines whether the combobox list/popover should be shown when the
      * input is clicked. This can be a boolean or a function that receives a
@@ -492,7 +488,7 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * <Combobox state={combobox} showOnMouseDown={combobox.value.length > 1} />
      * ```
      */
-    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLInputElement>>;
+    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
      * Determines whether the combobox list/popover should be shown when the
      * user presses the arrow up or down keys while focusing on the combobox
@@ -505,14 +501,14 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * <Combobox state={combobox} showOnKeyDown={combobox.value.length > 1} />
      * ```
      */
-    showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLInputElement>>;
+    showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
     /**
      * Determines whether the combobox state value will be updated when the
      * combobox input element gets clicked. This can be a boolean or a function
      * that receives a MouseEvent and returns a boolean.
      * @default true
      */
-    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLInputElement>>;
+    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   };
 
 export type ComboboxProps<T extends As = "input"> = Props<ComboboxOptions<T>>;

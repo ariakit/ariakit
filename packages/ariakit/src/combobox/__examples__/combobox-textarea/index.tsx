@@ -62,6 +62,25 @@ export default function Example() {
 
   const changedRef = useRef(false);
 
+  useEffect(() => {
+    const element = combobox.baseRef.current;
+    if (!element) return;
+    const doc = element.ownerDocument;
+    const onSelect = () => {
+      if (doc.activeElement === element) {
+        const changed = changedRef.current;
+        changedRef.current = false;
+        if (!changed) {
+          combobox.hide();
+        }
+      }
+    };
+    doc.addEventListener("selectionchange", onSelect);
+    return () => {
+      doc.removeEventListener("selectionchange", onSelect);
+    };
+  }, []);
+
   return (
     <div>
       <label className="label">
@@ -77,10 +96,8 @@ export default function Example() {
           showOnChange={false}
           showOnKeyDown={false}
           showOnMouseDown={false}
-          setValueOnClick={false}
-          setValueOnChange={(event) => {
-            const { value, selectionEnd, selectionStart } =
-              event.target as unknown as HTMLTextAreaElement;
+          setValueOnChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+            const { value, selectionEnd, selectionStart } = event.target;
             changedRef.current = true;
             setValue(value);
             const previousChar = value[selectionStart - 1];
@@ -113,23 +130,6 @@ export default function Example() {
             }
 
             return false;
-          }}
-          // TODO: Use normal select change event
-          onSelect={(event: SyntheticEvent<HTMLTextAreaElement>) => {
-            const changed = changedRef.current;
-            changedRef.current = false;
-            console.log(changed);
-            if (!changed) {
-              combobox.hide();
-            }
-            // const { value, selectionEnd } = event.currentTarget;
-            // const val = value
-            //   .slice(0, selectionEnd)
-            //   .split(/[^\p{Letter}\p{Number}@#]/u);
-            // const lastWord = val[val.length - 1];
-            // if (!lastWord?.startsWith("@")) {
-            //   combobox.hide();
-            // }
           }}
         />
       </label>
