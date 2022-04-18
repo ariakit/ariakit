@@ -92,6 +92,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     showOnChange = true,
     setValueOnChange = true,
     showOnMouseDown = true,
+    setValueOnClick = true,
     showOnKeyDown = true,
     setValueOnClick = true,
     autoComplete = state.list.length ? "list" : "none",
@@ -252,10 +253,11 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onChangeProp,
-        state.setValue,
         showOnChangeProp,
         setValueOnChangeProp,
         state.show,
+        setValueOnChangeProp,
+        state.setValue,
         inline,
         autoSelect,
         state.setActiveId,
@@ -430,9 +432,9 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     state: ComboboxState;
     /**
-     * Determines whether the first item will be automatically selected when the
-     * combobox input value changes. When it's set to `true`, the exact behavior
-     * will depend on the value of `autoComplete` prop:
+     * Whether the first item will be automatically selected when the combobox
+     * input value changes. When it's set to `true`, the exact behavior will
+     * depend on the value of `autoComplete` prop:
      *   - If `autoComplete` is `both` or `inline`, the first item is
      *     automatically focused when the popup opens, and the input value
      *     changes to reflect this. The inline completion string will be
@@ -444,10 +446,10 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     autoSelect?: boolean;
     /**
-     * Determines whether the items will be filtered based on `value` and
-     * whether the input value will temporarily change based on the active item.
-     * If `defaultList` or `list` are provided, this will be set to `list` by
-     * default, otherwise it'll default to `none`.
+     * Whether the items will be filtered based on `value` and whether the input
+     * value will temporarily change based on the active item. If `defaultList`
+     * or `list` are provided, this will be set to `list` by default, otherwise
+     * it'll default to `none`.
      *   - `both`: the items will be filtered based on `value` and the input
      *     value will temporarily change based on the active item.
      *   - `list`: the items will be filtered based on `value` and the input
@@ -460,9 +462,8 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     autoComplete?: "both" | "inline" | "list" | "none";
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * input value is changed. This can be a boolean or a function that receives
-     * a ChangeEvent and returns a boolean.
+     * Whether the combobox list/popover should be shown when the input value is
+     * changed.
      * @default true
      * @example
      * ```jsx
@@ -471,16 +472,15 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox state value will be updated when the
-     * input value changes. This can be a boolean or a function that receives
-     * a ChangeEvent and returns a boolean.
+     * Whether the combobox state value will be updated when the input value
+     * changes. This is useful if you want to customize how the state value is
+     * updated based on the input value.
      * @default true
      */
     setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * input is clicked. This can be a boolean or a function that receives a
-     * MouseEvent and returns a boolean.
+     * Whether the combobox list/popover should be shown when the input is
+     * clicked.
      * @default true
      * @example
      * ```jsx
@@ -490,10 +490,8 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * user presses the arrow up or down keys while focusing on the combobox
-     * input element. This can be a boolean or a function that receives a
-     * KeyboardEvent and returns a boolean.
+     * Whether the combobox list/popover should be shown when the user presses
+     * the arrow up or down keys while focusing on the combobox input element.
      * @default true
      * @example
      * ```jsx
@@ -503,9 +501,11 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox state value will be updated when the
-     * combobox input element gets clicked. This can be a boolean or a function
-     * that receives a MouseEvent and returns a boolean.
+     * Whether the combobox state value will be updated when the combobox input
+     * element gets clicked. This usually only applies when `autoComplete` is
+     * `both` or `inline`, because the input value will temporarily change based
+     * on the active item and the state value will not be updated until the user
+     * confirms the selection.
      * @default true
      */
     setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

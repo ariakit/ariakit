@@ -6,9 +6,9 @@
   width: 250px;
   @apply
     h-10
+    px-4
     rounded-lg
     border-none
-    px-4
     text-base
     focus-visible:ariakit-outline-input
     bg-canvas-1
@@ -23,9 +23,10 @@
   max-height: 300px;
   @apply
     relative
-    z-50
     flex
     flex-col
+    p-2
+    z-50
     overflow-auto
     rounded-lg
     p-2
@@ -45,12 +46,12 @@
   outline: none;
   @apply
     flex
-    cursor-default
-    scroll-m-2
-    items-center
     gap-2
-    rounded
     p-2
+    scroll-m-2
+    cursor-default
+    items-center
+    rounded
     hover:bg-primary-1-hover
     dark:hover:bg-primary-1-dark-hover
     active-item:bg-primary-2

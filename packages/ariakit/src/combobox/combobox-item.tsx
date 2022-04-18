@@ -78,6 +78,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const onClickProp = useEventCallback(props.onClick);
     const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
+    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -98,8 +99,8 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
         onClickProp,
         setValueOnClickProp,
         hideOnClickProp,
+        setValueOnClickProp,
         value,
-        setValueOnClick,
         state?.setValue,
         hideOnClick,
         state?.move,
