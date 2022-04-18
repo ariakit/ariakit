@@ -253,7 +253,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       [
         onChangeProp,
         showOnChangeProp,
-        setValueOnChangeProp,
         state.show,
         setValueOnChangeProp,
         state.setValue,
