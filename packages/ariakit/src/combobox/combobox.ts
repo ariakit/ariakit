@@ -94,7 +94,6 @@ export const useCombobox = createHook<ComboboxOptions>(
     showOnMouseDown = true,
     setValueOnClick = true,
     showOnKeyDown = true,
-    setValueOnClick = true,
     autoComplete = state.list.length ? "list" : "none",
     ...props
   }) => {
