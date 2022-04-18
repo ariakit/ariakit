@@ -8,5 +8,26 @@
     "ariakit-utils": "0.17.0-alpha.14",
     "website": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "combobox-auto-select",
+    "combobox-item-set-value-on-click",
+    "combobox-set-value-on-change",
+    "combobox-set-value-on-click",
+    "disclosure-state-reading-mutating-ref",
+    "drop-react-16",
+    "form-extra-re-renders",
+    "hovercard-nested-hide-bug",
+    "hovercard-polygon-shape",
+    "popover-state-auto-placements",
+    "popover-state-fit-viewport",
+    "popover-state-get-anchor-rect",
+    "popover-state-overflow-padding",
+    "popover-state-overlap",
+    "popover-state-shift-gutter",
+    "popover-state-slide",
+    "react-18-types",
+    "test-utils-mock-get-client-rects",
+    "utils-use-lazy-value",
+    "utils-use-previous-value"
+  ]
 }
