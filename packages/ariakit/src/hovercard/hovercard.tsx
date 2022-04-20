@@ -251,9 +251,9 @@ export const useHovercard = createHook<HovercardOptions>(
       if (!domReady) return;
       if (!state.mounted) return;
       if (!mayDisablePointerEvents) return;
-      const element = ref.current;
-      if (!element) return;
       const disableEvent = (event: MouseEvent) => {
+        const element = ref.current;
+        if (!element) return;
         const enterPoint = enterPointRef.current;
         if (!enterPoint) return;
         const placement = state.currentPlacement;
