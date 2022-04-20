@@ -175,7 +175,7 @@ export const useSelect = createHook<SelectOptions>(
           state.toggle();
         });
       },
-      [onMouseDownProp, toggleOnPressProp, state.toggle]
+      [onMouseDownProp, toggleOnPressProp, state.disclosureRef, state.toggle]
     );
 
     props = useStoreProvider({ state, ...props }, SelectContext);
