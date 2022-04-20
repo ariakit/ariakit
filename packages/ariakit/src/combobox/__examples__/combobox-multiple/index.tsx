@@ -17,8 +17,8 @@ export default function Example() {
         onValuesChange={setValues}
       >
         {matches.length ? (
-          matches.map((value, i) => (
-            <ComboboxMultipleItem key={value + i} value={value} />
+          matches.map((value) => (
+            <ComboboxMultipleItem key={value} value={value} />
           ))
         ) : (
           <div>No results found</div>
