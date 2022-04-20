@@ -25,20 +25,12 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
-import { unstable_batchedUpdates } from "react-dom";
 import { CompositeOptions, useComposite } from "../composite/composite";
 import {
   PopoverAnchorOptions,
   usePopoverAnchor,
 } from "../popover/popover-anchor";
 import { ComboboxState } from "./combobox-state";
-
-function batchUpdates(fn: () => void) {
-  if (unstable_batchedUpdates) {
-    return unstable_batchedUpdates(fn);
-  }
-  return fn();
-}
 
 function isFirstItemAutoSelected(
   items: ComboboxState["items"],
@@ -165,23 +157,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       hasInsertedTextRef.current = false;
     }, [state.visible]);
 
-    // Auto select the first item on type.
+    // Auto select the first item on type. If autoSelect is true and the last
+    // change was a text insertion, we automatically focus on the first
+    // suggestion. This effect runs both when the value changes and when the
+    // items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
       if (!hasInsertedTextRef.current) return;
-      // If autoSelect is set to true and the last change was a text insertion,
-      // we want to automatically focus on the first suggestion. This effect
-      // will run both when value changes and when items change so we can also
-      // catch async items. We need to defer the focus to avoid scroll jumps.
-      const timeout = setTimeout(() => {
-        // Since we're updating the state inside the timeout, we need to
-        // manually batch the updates so they happen at the same time.
-        // Otherwise, state.moves and state.activeId may be out of sync. This
-        // only applies to React 17 and below.
-        batchUpdates(() => state.move(state.first()));
-      }, 16);
-      return () => clearTimeout(timeout);
+      state.move(state.first());
     }, [
       valueUpdated,
       state.value,
