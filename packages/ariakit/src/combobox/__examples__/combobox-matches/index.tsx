@@ -21,8 +21,12 @@ export default function Example() {
       </label>
       <ComboboxPopover state={combobox} className="popover">
         {combobox.matches.length ? (
-          combobox.matches.map((value) => (
-            <ComboboxItem key={value} value={value} className="combobox-item" />
+          combobox.matches.map((value, index) => (
+            <ComboboxItem
+              key={value + index}
+              value={value}
+              className="combobox-item"
+            />
           ))
         ) : (
           <div className="no-results">No results found</div>

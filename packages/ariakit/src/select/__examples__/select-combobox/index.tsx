@@ -38,8 +38,8 @@ export default function Example() {
           className="combobox"
         />
         <ComboboxList state={combobox} className="combobox-list">
-          {combobox.matches.map((value) => (
-            <ComboboxItem key={value} focusOnHover className="select-item">
+          {combobox.matches.map((value, i) => (
+            <ComboboxItem key={value + i} focusOnHover className="select-item">
               {(props) => <SelectItem {...props} value={value} />}
             </ComboboxItem>
           ))}

@@ -38,9 +38,9 @@ export default function Example() {
           className="combobox"
         />
         <ComboboxList state={combobox} className="combobox-list">
-          {combobox.matches.map((value) => (
+          {combobox.matches.map((value, i) => (
             <ComboboxItem
-              key={value}
+              key={value + i}
               value={value}
               focusOnHover
               setValueOnClick={false}
