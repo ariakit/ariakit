@@ -7,12 +7,14 @@
         "babel-plugin-module-resolver",
         "cross-env",
         "cross-spawn",
+        "expect-puppeteer",
         "fs-extra",
         "lodash",
         "prettier",
-        "typescript",
-        "react",
+        "puppeteer",
         "react-dom",
+        "react",
+        "typescript",
         "webpack"
       ],
       "matchPackagePatterns": [
