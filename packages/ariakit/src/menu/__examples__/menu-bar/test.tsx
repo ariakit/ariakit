@@ -85,6 +85,10 @@ test("show/hide on key down", async () => {
   expect(getMenuItem("Edit")).toHaveFocus();
   await press.ArrowUp();
   expect(getMenuItem("Emoji & Symbols")).toHaveFocus();
+  await press.ArrowLeft();
+  await press.ArrowRight();
+  await press.ArrowUp();
+  expect(getMenuItem("Emoji & Symbols")).toHaveFocus();
   await type("f");
   expect(getMenuItem("Find")).toHaveFocus();
   expect(getMenu("Find")).not.toBeInTheDocument();
