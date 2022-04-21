@@ -59,6 +59,11 @@ function isAlwaysFocusVisible(element: HTMLElement) {
     return alwaysFocusVisibleInputTypes.includes(type);
   }
   if (element.isContentEditable) return true;
+  return false;
+}
+
+// See https://github.com/ariakit/ariakit/issues/1257
+function isAlwaysFocusVisibleDelayed(element: HTMLElement) {
   const role = element.getAttribute("role");
   if (role === "combobox") return true;
   return false;
@@ -330,6 +335,12 @@ export const useFocusable = createHook<FocusableOptions>(
         }
         if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
           onFocusVisibleEvent(event);
+        }
+        // See https://github.com/ariakit/ariakit/issues/1257
+        else if (isAlwaysFocusVisibleDelayed(event.target)) {
+          queueBeforeEvent(event.target, "focusout", () =>
+            onFocusVisibleEvent(event)
+          );
         } else {
           setFocusVisible(false);
         }
