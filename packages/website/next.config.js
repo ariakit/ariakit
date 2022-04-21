@@ -17,6 +17,7 @@ const nextConfig = {
   webpack: (config) => {
     const plugins = pages.map((page) => new PagesWebpackPlugin(page));
     config.plugins.unshift(...plugins);
+    config.module.exprContextCritical = false;
     return config;
   },
 };
