@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -13,11 +6,9 @@ import {
   useComboboxState,
 } from "ariakit/combobox";
 import getCaretCoordinates from "textarea-caret";
+import useLayoutEffect from "use-isomorphic-layout-effect";
 import { defaultTriggers, getList, getValue } from "./list";
 import "./style.css";
-
-const useSafeLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export default function Example() {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -37,15 +28,15 @@ export default function Example() {
 
   const hasMatches = !!combobox.matches.length;
 
-  useSafeLayoutEffect(() => {
+  useLayoutEffect(() => {
     combobox.setVisible(hasMatches);
   }, [combobox.setVisible, hasMatches]);
 
-  useSafeLayoutEffect(() => {
+  useLayoutEffect(() => {
     combobox.setList(getList(trigger));
   }, [combobox.setList, trigger]);
 
-  useSafeLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (caretOffset != null) {
       ref.current?.setSelectionRange(caretOffset, caretOffset);
     }
