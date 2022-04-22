@@ -11,7 +11,7 @@ const getTextarea = () => getByRole("combobox");
 const getPopover = () => queryByRole("listbox", { hidden: true });
 const getOption = (name: string | RegExp) => getByRole("option", { name });
 
-test("show mention popover when typing @ at the beginning", async () => {
+test("@ at the beginning", async () => {
   render(<Example />);
   await press.Tab();
   expect(getPopover()).not.toBeInTheDocument();
@@ -20,48 +20,42 @@ test("show mention popover when typing @ at the beginning", async () => {
   expect(getTextarea()).toHaveFocus();
   expect(getPopover()).toBeVisible();
   expect(getOption("diegohaz")).toHaveFocus();
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("@diegohaz ");
 });
 
-test("show issue popover when typing # at the beginning", async () => {
+test("# at the beginning", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getPopover()).not.toBeInTheDocument();
   await type("#");
-  expect(getTextarea()).toHaveValue("#");
-  expect(getTextarea()).toHaveFocus();
-  expect(getPopover()).toBeVisible();
-  expect(getOption(/^#1253/)).toHaveFocus();
+  expect(getOption(/Critical dependency/)).toHaveFocus();
+  await press.ArrowDown();
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("#1247 ");
 });
 
-test("show emoji popover when typing : at the beginning", async () => {
+test(": at the beginning", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getPopover()).not.toBeInTheDocument();
   await type(":");
-  expect(getTextarea()).toHaveValue(":");
-  expect(getTextarea()).toHaveFocus();
-  expect(getPopover()).toBeVisible();
-  expect(getOption("😄 smile")).toHaveFocus();
+  expect(getOption(/smile$/)).toHaveFocus();
+  await press.ArrowUp();
+  await press.ArrowUp();
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("😌 ");
 });
 
-test("type", async () => {
+test("showing popover in the middle of the textarea", async () => {
   render(<Example />);
   await press.Tab();
-  await type("Hello, @");
-  expect(getTextarea()).toHaveValue("Hello, @");
-  expect(getPopover()).toBeVisible();
-  expect(getTextarea()).toHaveFocus();
-  expect(getOption("diegohaz")).toHaveFocus();
-  await type("l");
-  expect(getPopover()).toBeVisible();
-  expect(getTextarea()).toHaveFocus();
-  expect(getOption("lluia")).toHaveFocus();
-  await press.ArrowLeft();
-  expect(getPopover()).not.toBeInTheDocument();
-  await press.ArrowRight(null, { shiftKey: true });
-  await type("\b");
-  expect(getTextarea()).toHaveValue("Hello, @");
-  expect(getPopover()).toBeVisible();
-  expect(getTextarea()).toHaveFocus();
-  expect(getOption("diegohaz")).not.toHaveFocus();
+  await type("Hi @");
+  await press.ArrowDown();
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("Hi @tcodes0 ");
+  await type("@ma");
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva ");
+  await type("\b\n\n#lat");
+  await press.Enter();
+  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1094 ");
 });
