@@ -178,24 +178,27 @@ export function usePopoverState({
           middlewares.size({
             padding: overflowPadding,
             apply({ width, height, reference }) {
+              const referenceWidth = Math.round(reference.width);
+              const availableWidth = Math.round(width);
+              const availableHeight = Math.round(height);
               popover.style.setProperty(
                 "--popover-anchor-width",
-                `${reference.width}px`
+                `${referenceWidth}px`
               );
               popover.style.setProperty(
                 "--popover-available-width",
-                `${width}px`
+                `${availableWidth}px`
               );
               popover.style.setProperty(
                 "--popover-available-height",
-                `${height}px`
+                `${availableHeight}px`
               );
               if (sameWidth) {
-                popover.style.width = `${reference.width}px`;
+                popover.style.width = `${referenceWidth}px`;
               }
               if (fitViewport) {
-                popover.style.maxWidth = `${width}px`;
-                popover.style.maxHeight = `${height}px`;
+                popover.style.maxWidth = `${availableWidth}px`;
+                popover.style.maxHeight = `${availableHeight}px`;
               }
             },
           })
