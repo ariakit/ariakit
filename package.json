@@ -62,7 +62,7 @@
     "eslint": "8.14.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jest": "26.1.4",
+    "eslint-plugin-jest": "26.1.5",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.29.4",
     "expect-puppeteer": "6.1.0",
