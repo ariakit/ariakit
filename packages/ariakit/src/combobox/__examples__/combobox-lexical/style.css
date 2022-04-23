@@ -1,0 +1,18 @@
+@import url("../combobox/style.css");
+
+.wrapper {
+  @apply relative;
+}
+
+.placeholder {
+  @apply absolute top-4 left-4 pointer-events-none;
+}
+
+.combobox-wrapper {
+  @apply relative;
+}
+
+.combobox {
+  min-height: 150px;
+  @apply p-4;
+}

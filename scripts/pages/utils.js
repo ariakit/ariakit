@@ -240,10 +240,16 @@ async function getPageContent({ filename, dest, componentPath }) {
   const importsFlat = Object.values(imports).flat();
 
   const importDeclarations = uniq(
-    importsFlat.map((i) => {
-      if (!i.identifier) return `import "${i.source}";`;
-      if (i.defaultExport) return `import ${i.identifier} from "${i.source}";`;
-      return `import * as ${i.identifier} from "${i.source}";`;
+    importsFlat.map((item, i, array) => {
+      const isDuplicate = array
+        .slice(0, i)
+        .some(({ identifier }) => identifier === item.identifier);
+      if (!item.identifier || isDuplicate) {
+        return `import "${item.source}";`;
+      } else if (item.defaultExport) {
+        return `import ${item.identifier} from "${item.source}";`;
+      }
+      return `import * as ${item.identifier} from "${item.source}";`;
     })
   );
 
