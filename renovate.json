@@ -15,6 +15,7 @@
         "react-dom",
         "react",
         "typescript",
+        "use-isomorphic-layout-effect",
         "webpack"
       ],
       "matchPackagePatterns": [

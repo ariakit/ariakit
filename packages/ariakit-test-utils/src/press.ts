@@ -81,24 +81,37 @@ const keyDownMap: Record<
     }
   },
 
-  // TODO: Implement Arrow/Home/End movement on inputs.
+  // TODO: Refactor all arrow keys
   ArrowLeft(element, { shiftKey }) {
     if (element instanceof HTMLElement && isTextField(element)) {
       const start = element.selectionStart ?? 0;
       const end = element.selectionEnd ?? 0;
-      const nextStart = Math.max(
-        0,
-        !shiftKey && start !== end ? start : start - 1
-      );
+      const isSelecting = shiftKey;
+      const isCollapsing = !shiftKey && start !== end;
+      const nextStart = Math.max(0, isCollapsing ? start : start - 1);
       const nextEnd = Math.min(
         element.value.length,
-        shiftKey ? end : nextStart
+        isSelecting ? end : nextStart
       );
       element.setSelectionRange(nextStart, nextEnd);
     }
   },
 
-  // TODO: Refactor and test ArrowUp and ArrowDown
+  ArrowRight(element, { shiftKey }) {
+    if (element instanceof HTMLElement && isTextField(element)) {
+      const start = element.selectionStart ?? 0;
+      const end = element.selectionEnd ?? 0;
+      const isSelecting = shiftKey;
+      const isCollapsing = !shiftKey && start !== end;
+      const nextEnd = Math.min(
+        element.value.length,
+        isCollapsing ? end : end + 1
+      );
+      const nextStart = Math.max(0, isSelecting ? start : nextEnd);
+      element.setSelectionRange(nextStart, nextEnd);
+    }
+  },
+
   ArrowUp(element) {
     if (element instanceof HTMLInputElement && element.type === "number") {
       const value = +element.value + 1;
