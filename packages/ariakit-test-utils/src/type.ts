@@ -79,7 +79,9 @@ export async function type(
           });
           // Need to re-assign the selection state for React 17 and/or React
           // Testing Library 12 (not sure which).
-          input.setSelectionRange(nextCaretPosition, nextCaretPosition);
+          if (input.selectionStart !== nextCaretPosition) {
+            input.setSelectionRange(nextCaretPosition, nextCaretPosition);
+          }
         }
       }
     }
