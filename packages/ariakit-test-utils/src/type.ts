@@ -50,8 +50,8 @@ export async function type(
         value = `${firstPart}${lastPart}`;
         inputType = "deleteContentBackward";
       } else {
-        // Any other character. Just get the caret position and add the character
-        // there.
+        // Any other character. Just get the caret position and add the
+        // character there.
         const firstPart = input.value.slice(0, start);
         const lastPart = input.value.slice(end, input.value.length);
         nextCaretPosition = start + 1;
@@ -77,6 +77,9 @@ export async function type(
             inputType,
             ...options,
           });
+          // Need to re-assign the selection state for React 17 and/or React
+          // Testing Library 12 (not sure which).
+          input.setSelectionRange(nextCaretPosition, nextCaretPosition);
         }
       }
     }
