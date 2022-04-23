@@ -1,5 +1,10 @@
 {
-  "packages": ["packages/ariakit*"],
+  "packages": [
+    "packages/ariakit-utils",
+    "packages/ariakit",
+    "packages/ariakit-test-utils",
+    "packages/ariakit-playground"
+  ],
   "buildCommand": "build",
   "sandboxes": ["m4n32vjkoj"]
 }
