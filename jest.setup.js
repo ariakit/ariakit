@@ -1,4 +1,3 @@
-// @ts-check
 const jestDOMMatchers = require("@testing-library/jest-dom/matchers");
 const { toHaveNoViolations: axeMatchers } = require("jest-axe");
 const failOnConsole = require("jest-fail-on-console");
