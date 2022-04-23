@@ -45,7 +45,7 @@ test(": at the beginning", async () => {
   expect(getTextarea()).toHaveValue("😌 ");
 });
 
-test("showing popover in the middle of the textarea", async () => {
+test("typing on the textarea", async () => {
   render(<Example />);
   await press.Tab();
   await type("Hi @");
@@ -56,6 +56,13 @@ test("showing popover in the middle of the textarea", async () => {
   await press.Enter();
   expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva ");
   await type("\b\n\n#lat");
+  await press.ArrowLeft();
+  await expect(getPopover()).not.toBeInTheDocument();
+  await type("\b");
+  await expect(getPopover()).not.toBeInTheDocument();
+  await type("\b");
+  await expect(getPopover()).toBeVisible();
+  await press.ArrowUp();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1094 ");
+  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1018 t");
 });
