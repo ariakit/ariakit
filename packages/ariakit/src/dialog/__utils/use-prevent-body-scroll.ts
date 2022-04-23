@@ -45,8 +45,10 @@ export function usePreventBodyScroll(enabled?: boolean) {
 
     return () => {
       restoreStyle();
-      window.scrollTo(scrollX, scrollY);
-
+      // istanbul ignore next: JSDOM doesn't implement window.scrollTo
+      if (process.env.NODE_ENV !== "test") {
+        window.scrollTo(scrollX, scrollY);
+      }
       if (previousScrollbarWidth) {
         documentElement.style.setProperty(
           "--scrollbar-width",
