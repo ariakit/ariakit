@@ -8,24 +8,32 @@ import {
   useRef,
   useState,
 } from "react";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/closebrackets";
-import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { commentKeymap } from "@codemirror/comment";
-import { highlightActiveLineGutter, lineNumbers } from "@codemirror/gutter";
-import { HighlightStyle, tags as t } from "@codemirror/highlight";
-import { history, historyKeymap } from "@codemirror/history";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from "@codemirror/commands";
 import { css } from "@codemirror/lang-css";
 import { javascript } from "@codemirror/lang-javascript";
-import { bracketMatching } from "@codemirror/matchbrackets";
+import {
+  HighlightStyle,
+  bracketMatching,
+  syntaxHighlighting,
+} from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { EditorState, Extension, StateEffect } from "@codemirror/state";
 import {
   EditorView,
   drawSelection,
   highlightActiveLine,
+  highlightActiveLineGutter,
   keymap,
+  lineNumbers,
   scrollPastEnd,
 } from "@codemirror/view";
+import { tags as t } from "@lezer/highlight";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useControlledState,
@@ -95,7 +103,7 @@ const prismjsClassNames = HighlightStyle.define([
 ]);
 
 const defaultExtensions = [
-  prismjsClassNames,
+  syntaxHighlighting(prismjsClassNames),
   highlightActiveLineGutter(),
   highlightActiveLine(),
   drawSelection(),
@@ -107,7 +115,6 @@ const defaultExtensions = [
   keymap.of([
     ...defaultKeymap,
     ...historyKeymap,
-    ...commentKeymap,
     ...closeBracketsKeymap,
     ...searchKeymap,
     indentWithTab,
