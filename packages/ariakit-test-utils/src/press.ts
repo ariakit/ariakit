@@ -11,6 +11,12 @@ import { blur } from "./blur";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
 import { sleep } from "./sleep";
+import { type } from "./type";
+
+type KeyActionMap = Record<
+  string,
+  (element: Element, options: KeyboardEventInit) => void
+>;
 
 const clickableInputTypes = [
   "button",
@@ -21,36 +27,41 @@ const clickableInputTypes = [
   "submit",
 ];
 
-// TODO: Press should type when it's a printable character and the element is an
-// input?
 function submitFormByPressingEnterOn(
   element: HTMLInputElement,
   options: KeyboardEventInit
 ) {
   const { form } = element;
   if (!form) return;
-
   const elements = Array.from(form.elements);
-
   const validInputs = elements.filter(
     (el) => el instanceof HTMLInputElement && isTextField(el)
   );
-
   const submitButton = elements.find(
     (el) =>
       (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
       el.type === "submit"
   );
-
   if (validInputs.length === 1 || submitButton) {
     fireEvent.submit(form, options);
   }
 }
 
-const keyDownMap: Record<
-  string,
-  (element: Element, options: KeyboardEventInit) => void
-> = {
+function isNumberInput(element: Element): element is HTMLInputElement {
+  return element instanceof HTMLInputElement && element.type === "number";
+}
+
+function incrementNumberInput(element: HTMLInputElement, by = 1) {
+  const value = +element.value + by;
+  const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
+  const min = element.min ? +element.min : Number.MIN_SAFE_INTEGER;
+  if (value > max || value < min) return;
+  element.value = value.toString();
+  fireEvent.input(element);
+  fireEvent.change(element);
+}
+
+const keyDownMap: KeyActionMap = {
   Tab(_, { shiftKey }) {
     const nextElement = shiftKey ? getPreviousTabbable() : getNextTabbable();
     if (nextElement) {
@@ -70,77 +81,84 @@ const keyDownMap: Record<
       element instanceof HTMLInputElement &&
       !nonSubmittableTypes.includes(element.type);
 
-    const isLineBreakable = element instanceof HTMLTextAreaElement;
-
     if (isClickable) {
       fireEvent.click(element, options);
-    } else if (isLineBreakable) {
-      (element as HTMLTextAreaElement).value += "\n";
     } else if (isSubmittable) {
       submitFormByPressingEnterOn(element as HTMLInputElement, options);
     }
   },
 
-  // TODO: Refactor all arrow keys
   ArrowLeft(element, { shiftKey }) {
-    if (element instanceof HTMLElement && isTextField(element)) {
-      const start = element.selectionStart ?? 0;
-      const end = element.selectionEnd ?? 0;
-      const isSelecting = shiftKey;
-      const isCollapsing = !shiftKey && start !== end;
-      const nextStart = Math.max(0, isCollapsing ? start : start - 1);
-      const nextEnd = Math.min(
-        element.value.length,
-        isSelecting ? end : nextStart
+    if (isTextField(element)) {
+      const { value, selectionStart, selectionEnd, selectionDirection } =
+        element;
+      const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
+      const collapsing = !shiftKey && start !== end;
+      const nextStart = Math.max(0, collapsing ? start : start - 1);
+      const nextEnd = Math.min(value.length, shiftKey ? end : nextStart);
+      element.setSelectionRange(
+        nextStart,
+        nextEnd,
+        selectionDirection || "backward"
       );
-      element.setSelectionRange(nextStart, nextEnd);
     }
   },
 
   ArrowRight(element, { shiftKey }) {
-    if (element instanceof HTMLElement && isTextField(element)) {
-      const start = element.selectionStart ?? 0;
-      const end = element.selectionEnd ?? 0;
-      const isSelecting = shiftKey;
-      const isCollapsing = !shiftKey && start !== end;
-      const nextEnd = Math.min(
-        element.value.length,
-        isCollapsing ? end : end + 1
+    if (isTextField(element)) {
+      const { value, selectionStart, selectionEnd, selectionDirection } =
+        element;
+      const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
+      const collapsing = !shiftKey && start !== end;
+      const nextEnd = Math.min(value.length, collapsing ? end : end + 1);
+      const nextStart = Math.max(0, shiftKey ? start : nextEnd);
+      element.setSelectionRange(
+        nextStart,
+        nextEnd,
+        selectionDirection || "forward"
       );
-      const nextStart = Math.max(0, isSelecting ? start : nextEnd);
-      element.setSelectionRange(nextStart, nextEnd);
     }
   },
 
-  ArrowUp(element) {
-    if (element instanceof HTMLInputElement && element.type === "number") {
-      const value = +element.value + 1;
-      const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
-      const min = element.min ? +element.min : Number.MIN_SAFE_INTEGER;
-      if (value > max || value < min) return;
-      element.value = value.toString();
-      fireEvent.input(element);
-      fireEvent.change(element);
+  ArrowUp(element, { shiftKey }) {
+    if (isTextField(element)) {
+      if (!shiftKey) {
+        return element.setSelectionRange(0, 0);
+      } else {
+        const { selectionStart, selectionEnd, selectionDirection } = element;
+        const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
+        if (selectionDirection === "forward") {
+          element.setSelectionRange(start, start);
+        } else {
+          element.setSelectionRange(0, end, "backward");
+        }
+      }
+    } else if (isNumberInput(element)) {
+      incrementNumberInput(element);
     }
   },
 
-  ArrowDown(element) {
-    if (element instanceof HTMLInputElement && element.type === "number") {
-      const value = +element.value - 1;
-      const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
-      const min = element.min ? +element.min : Number.MIN_SAFE_INTEGER;
-      if (value > max || value < min) return;
-      element.value = value.toString();
-      fireEvent.input(element);
-      fireEvent.change(element);
+  ArrowDown(element, { shiftKey }) {
+    if (isTextField(element)) {
+      const length = element.value.length;
+      if (!shiftKey) {
+        element.setSelectionRange(length, length);
+      } else {
+        const { selectionStart, selectionEnd, selectionDirection } = element;
+        const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
+        if (selectionDirection === "backward") {
+          element.setSelectionRange(end, end);
+        } else {
+          element.setSelectionRange(start, length, "forward");
+        }
+      }
+    } else if (isNumberInput(element)) {
+      incrementNumberInput(element, -1);
     }
   },
 };
 
-const keyUpMap: Record<
-  string,
-  (element: Element, options: KeyboardEventInit) => void
-> = {
+const keyUpMap: KeyActionMap = {
   // Space
   " ": (element, options) => {
     const spaceableTypes = [...clickableInputTypes, "checkbox", "radio"];
@@ -169,6 +187,19 @@ export async function press(
 
   // We can't press on elements that aren't focusable
   if (!isFocusable(element) && element.tagName !== "BODY") return;
+
+  // If it's a printable character, we type it
+  if (isTextField(element)) {
+    if (key.length === 1) {
+      return type(key, element, options);
+    } else if (key === "Delete") {
+      return type("\x7f", element, options);
+    } else if (key === "Backspace") {
+      return type("\b", element, options);
+    } else if (key === "Enter" && element.tagName === "TEXTAREA") {
+      return type("\n", element, options);
+    }
+  }
 
   // If element is not focused, we should focus it
   if (element.ownerDocument?.activeElement !== element) {
