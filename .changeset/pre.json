@@ -9,11 +9,22 @@
     "website": "0.0.0"
   },
   "changesets": [
+    "combobox-auto-select-flash",
+    "dialog-hide-on-escape-ref",
+    "dialog-prevent-body-scroll-ios",
     "drop-react-16",
+    "hovercard-disable-pointer-events-ref",
+    "menu-initial-focus",
+    "npmignore-src-folder",
+    "playground-upgrade-codemirror",
+    "popover-round-size",
     "popover-state-auto-placements",
     "popover-state-fit-viewport",
     "popover-state-overlap",
     "popover-state-shift-gutter",
-    "popover-state-slide"
+    "popover-state-slide",
+    "select-focus-visible-flash",
+    "test-utils-press-selection",
+    "test-utils-press-type"
   ]
 }
