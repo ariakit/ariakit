@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { ComboboxItem, ComboboxPopover, ComboboxState } from "ariakit/combobox";
 import {
   $getSelection,
   $isRangeSelection,
@@ -83,7 +84,13 @@ function getSearchValue(value: string, triggers = defaultTriggers) {
 //   return true;
 // }
 
-export default function MentionsPlugin() {
+export default function MentionsPlugin({
+  state,
+  setAnchorRect,
+}: {
+  state: ComboboxState;
+  setAnchorRect: (...args: any[]) => any;
+}) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
@@ -99,6 +106,20 @@ export default function MentionsPlugin() {
       const searchValue = getSearchValue(value);
       const trigger = getTrigger(value);
       const range = document.createRange();
+      editor.getEditorState().read(() => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) return;
+        const element = editor.getElementByKey(selection.anchor.key);
+        if (triggerOffset !== -1 && element) {
+          console.log(element, triggerOffset);
+          range.setStart(element!.childNodes[0]!, triggerOffset);
+          range.collapse();
+        }
+      });
+      setAnchorRect(range.getBoundingClientRect());
+      if (trigger) {
+        state.show();
+      }
       // let anchorNode: TextNode | null = null;
       // editor.getEditorState().read(() => {
       //   const selection = $getSelection();
@@ -115,5 +136,11 @@ export default function MentionsPlugin() {
     };
   }, [editor]);
 
-  return null;
+  return (
+    <ComboboxPopover state={state} className="popover">
+      <ComboboxItem value="Apple" className="combobox-item" />
+      <ComboboxItem value="Banana" className="combobox-item" />
+      <ComboboxItem value="Cherry" className="combobox-item" />
+    </ComboboxPopover>
+  );
 }
