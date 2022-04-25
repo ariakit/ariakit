@@ -1,5 +1,11 @@
 # ariakit-utils
 
+## 0.17.0-next.17
+
+### Patch Changes
+
+- Stopped shipping the `src` folder with the npm package to reduce the size of the package. ([#1272](https://github.com/ariakit/ariakit/pull/1272))
+
 ## 0.17.0-next.16
 
 ### Minor Changes
