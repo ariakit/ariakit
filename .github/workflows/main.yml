@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: ["1/2", "2/2"]
+        shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
       - name: Checkout repository
@@ -143,56 +143,20 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache coverage
-        uses: actions/cache@v3
-        with:
-          path: coverage-stats/${{ matrix.shard }}
-          key: coverage-${{ github.run_id }}
-
       - name: Test
-        run: >
-          npm test --
-          --shard ${{ matrix.shard }}
-          --maxWorkers 2
-          --coverage
-          --coverageDirectory coverage-stats/${{ matrix.shard }}
-
-  coverage:
-    name: Coverage
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache coverage (1/2)
-        uses: actions/cache@v3
-        with:
-          path: coverage-stats/1/2
-          key: coverage-${{ github.run_id }}
-
-      - name: Cache coverage (2/2)
-        uses: actions/cache@v3
-        with:
-          path: coverage-stats/2/2
-          key: coverage-${{ github.run_id }}
-
-      - name: Cache coverage (2/2)
-        uses: actions/cache@v3
-        with:
-          path: coverage-stats/*/*
-          key: coverage-${{ github.run_id }}
-
-      - name: Merge coverage
-        run: >
-          npx istanbul-merge
-          coverage-stats/*/*/coverage-final.json
-          --out coverage/coverage-final.json
+        run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 
   react17:
-    name: Test with React 17
+    name: Test React 17 (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/4", "2/4", "3/4", "4/4"]
 
     steps:
       - name: Checkout repository
@@ -215,7 +179,7 @@ jobs:
         run: npm run react17
 
       - name: Test
-        run: npm test -- --maxWorkers 2
+        run: npm test -- --maxWorkers 2 --shard ${{ matrix.shard }}
 
   website:
     name: Build website
