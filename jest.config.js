@@ -3,6 +3,7 @@
 module.exports = {
   rootDir: __dirname,
   testEnvironment: "jsdom",
+  reporters: ["default", "github-actions"],
   projects: [
     "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",

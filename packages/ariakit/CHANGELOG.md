@@ -1,5 +1,19 @@
 # ariakit
 
+## 2.0.0-next.24
+
+### Patch Changes
+
+- Fixed focus flash when `Combobox` has `autoSelect` set to `true`.
+- Fixed `Dialog` not closing when pressing <kbd>Esc</kbd> when the `ref` prop is lazily evaluated.
+- Fixed `Dialog` not correctly preventing body scroll on iOS. ([#1271](https://github.com/ariakit/ariakit/pull/1271))
+- Fixed `Hovercard` not disabling pointer events outside while the mouse is moving torwards the card when the `ref` prop is lazily evaluated.
+- Fixed `Menu` initial focus when all the menu items are re-mounted. ([#1260](https://github.com/ariakit/ariakit/pull/1260))
+- Stopped shipping the `src` folder with the npm package to reduce the size of the package. ([#1272](https://github.com/ariakit/ariakit/pull/1272))
+- `--popover-available-width`, `--popover-available-height`, and `--popover-anchor-width` are now defined as integer values instead of floats.
+- Fixed the `data-focus-visible` attribute flash on `Select` after clicking on it. ([#1262](https://github.com/ariakit/ariakit/pull/1262))
+- Updated dependencies: `ariakit-utils@0.17.0-next.17`.
+
 ## 2.0.0-next.23
 
 ### Major Changes

@@ -1,11 +1,4 @@
-import {
-  MutableRefObject,
-  RefObject,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
 import {
   Middleware,
   VirtualElement,
@@ -17,7 +10,11 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
-import { useEventCallback, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import {
+  useEventCallback,
+  useForceUpdate,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 import {
   DialogState,
@@ -122,7 +119,7 @@ export function usePopoverState({
   const arrowRef = useRef<HTMLElement>(null);
 
   const [currentPlacement, setCurrentPlacement] = useState(placement);
-  const [rendered, render] = useReducer(() => ({}), {});
+  const [rendered, render] = useForceUpdate();
 
   useSafeLayoutEffect(() => {
     const popover = popoverRef.current;

@@ -88,6 +88,6 @@ export type SelectLabelOptions<T extends As = "div"> = Options<T> & {
   state: SelectState;
 };
 
-export type SelectLabelProps<T extends As = "label"> = Props<
+export type SelectLabelProps<T extends As = "div"> = Props<
   SelectLabelOptions<T>
 >;

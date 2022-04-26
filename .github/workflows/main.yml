@@ -118,15 +118,13 @@ jobs:
         run: npm run build
 
   test:
-    name: Test
-    # TODO: Add on Jest 28
-    # name: test (${{ matrix.shard }})
+    name: Test (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    #   matrix:
-    #     shard: ["1/4", "2/4", "3/4", "4/4"]
+      matrix:
+        shard: ["1/2", "2/2"]
 
     steps:
       - name: Checkout repository
@@ -146,15 +144,19 @@ jobs:
           key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Test
-        run: npm test -- --max-workers 2 --coverage
+        run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 
   react17:
-    name: Test with React 17
+    name: Test React 17 (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/2", "2/2"]
 
     steps:
       - name: Checkout repository
@@ -177,7 +179,7 @@ jobs:
         run: npm run react17
 
       - name: Test
-        run: npm test -- --max-workers 2
+        run: npm test -- --maxWorkers 2 --shard ${{ matrix.shard }}
 
   website:
     name: Build website
@@ -240,4 +242,4 @@ jobs:
           key: nextjs-${{ github.run_id }}
 
       - name: Test
-        run: npm run test-e2e-start -- --max-workers 2
+        run: npm run test-e2e-start -- --maxWorkers 2
