@@ -287,7 +287,7 @@ function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
  * purpose of re-rendering the component.
  */
 export function useForceUpdate() {
-  return useReducer(() => ({}), {});
+  return useReducer(() => [], []);
 }
 
 /**
