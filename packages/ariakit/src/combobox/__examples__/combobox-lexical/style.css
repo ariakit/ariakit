@@ -14,5 +14,5 @@
 
 .combobox {
   min-height: 150px;
-  @apply p-4;
+  @apply p-4 overflow-auto;
 }

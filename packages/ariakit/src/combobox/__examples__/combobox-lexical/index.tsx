@@ -28,10 +28,7 @@ function Combo({ state }) {
       ref={ref}
       contentEditable
       className="combobox"
-      // We'll overwrite how the combobox popover is shown, so we disable
-      // the default behaviors.
-      showOnChange={false}
-      showOnKeyDown={false}
+      // showOnKeyDown={false}
       showOnMouseDown={false}
       // To the combobox state, we'll only set the value after the trigger
       // character (the search value), so we disable the default behavior.
@@ -41,13 +38,22 @@ function Combo({ state }) {
       onScroll={state.render}
       // Hide the combobox popover whenever the selection changes.
       onPointerDown={state.hide}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.stopPropagation();
+        }
+      }}
     />
   );
 }
 
 export function Editor() {
-  const [anchorRect, setAnchorRect] = useState({ x: 0, y: 0, height: 0 });
-  const combobox = useComboboxState({ getAnchorRect: () => anchorRect });
+  const [anchorRect, setAnchorRect] = useState(() => () => ({
+    x: 0,
+    y: 0,
+    height: 0,
+  }));
+  const combobox = useComboboxState({ getAnchorRect: anchorRect });
   const initialConfig = {
     theme,
     onError(error: Error) {

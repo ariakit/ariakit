@@ -5,6 +5,8 @@ import {
   $getSelection,
   $isRangeSelection,
   $isTextNode,
+  COMMAND_PRIORITY_NORMAL,
+  KEY_ESCAPE_COMMAND,
   LexicalEditor,
   RangeSelection,
   TextNode,
@@ -111,12 +113,12 @@ export default function MentionsPlugin({
         if (!$isRangeSelection(selection)) return;
         const element = editor.getElementByKey(selection.anchor.key);
         if (triggerOffset !== -1 && element) {
-          console.log(element, triggerOffset);
+          state.anchorRef.current = element;
           range.setStart(element!.childNodes[0]!, triggerOffset);
           range.collapse();
         }
       });
-      setAnchorRect(range.getBoundingClientRect());
+      setAnchorRect(() => () => range.getBoundingClientRect());
       if (trigger) {
         state.show();
       }
@@ -131,8 +133,18 @@ export default function MentionsPlugin({
       // range.setStart(anchorNode!, triggerOffset);
     };
     const removeUpdateListener = editor.registerUpdateListener(updateListener);
+
+    const unregisterCommand = editor.registerCommand(
+      KEY_ESCAPE_COMMAND,
+      (payload: KeyboardEvent) => {
+        return true;
+      },
+      COMMAND_PRIORITY_NORMAL
+    );
+
     return () => {
       removeUpdateListener();
+      unregisterCommand();
     };
   }, [editor]);
 
