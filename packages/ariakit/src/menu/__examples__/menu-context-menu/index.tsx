@@ -1,14 +1,16 @@
+import { useState } from "react";
 import { Menu, MenuItem, MenuSeparator, useMenuState } from "ariakit/menu";
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState();
+  const [anchorRect, setAnchorRect] = useState({ x: 0, y: 0 });
+  const menu = useMenuState({ getAnchorRect: () => anchorRect });
   return (
     <div
       className="wrapper"
       onContextMenu={(event) => {
         event.preventDefault();
-        menu.setAnchorRect({ x: event.clientX, y: event.clientY });
+        setAnchorRect({ x: event.clientX, y: event.clientY });
         menu.show();
       }}
     >

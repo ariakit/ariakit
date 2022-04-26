@@ -1,9 +1,5 @@
 import { HTMLAttributes, RefObject, useEffect, useState } from "react";
-import {
-  useForkRef,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "ariakit-utils/hooks";
+import { useSafeLayoutEffect, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -36,16 +32,6 @@ export const usePopover = createHook<PopoverOptions>(
     ...props
   }) => {
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
-    const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-    const portalRef = useForkRef(setPortalNode, props.portalRef);
-
-    // When the popover is rendered within a portal, we need to wait for the
-    // portalNode to be created so we can update the popover position.
-    useSafeLayoutEffect(() => {
-      if (!portalNode) return;
-      if (!state.mounted) return;
-      state.render();
-    }, [portalNode, state.mounted, state.render]);
 
     // Makes sure the wrapper element that's passed to popper has the same
     // z-index as the popover element so users only need to set the z-index
@@ -113,7 +99,6 @@ export const usePopover = createHook<PopoverOptions>(
       portal,
       autoFocusOnShow: canAutoFocusOnShow && autoFocusOnShow,
       ...props,
-      portalRef,
     });
 
     return props;

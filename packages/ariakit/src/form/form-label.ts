@@ -60,7 +60,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const id = useId(props.id);
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, name, type: "label" };
         if (getItemProp) {
           return getItemProp(nextItem);

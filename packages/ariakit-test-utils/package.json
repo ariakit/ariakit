@@ -1,6 +1,6 @@
 {
   "name": "ariakit-test-utils",
-  "version": "0.17.0-alpha.16",
+  "version": "0.17.0-next.19",
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
@@ -9,6 +9,9 @@
   "module": "esm/index.js",
   "unpkg": "umd/ariakit-test-utils.min.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -30,11 +33,11 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "file:../ariakit-utils"
+    "ariakit-utils": "0.17.0-next.17"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",
     "@testing-library/react": "^12.0.0 || ^13.0.0 || ^13.0.0-alpha",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   }
 }

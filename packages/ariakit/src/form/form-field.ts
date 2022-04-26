@@ -100,7 +100,7 @@ export const useFormField = createHook<FormFieldOptions>(
       "useValidate",
       "setError",
       useCallback((s: FormState) => s.getError(name), [name]),
-      useCallback((s: FormState) => s.getFieldTouched(name), [name]),
+      useCallback((s: FormState) => s.getFieldTouched(name).toString(), [name]),
       useCallback((s: FormState) => findItem(s.items, name, "label"), [name]),
       useCallback((s: FormState) => findItem(s.items, name, "error"), [name]),
       useCallback(
@@ -121,7 +121,7 @@ export const useFormField = createHook<FormFieldOptions>(
     });
 
     const getItem = useCallback(
-      (item) => {
+      (item: any) => {
         const nextItem = { ...item, id, name, type: "field" };
         if (getItemProp) {
           return getItemProp(nextItem);

@@ -1,0 +1,20 @@
+@import url("../combobox/style.css");
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default;
+}
+
+.separator {
+  border-width: 1px 0 0;
+  border-color: currentcolor;
+  @apply my-2 h-0 opacity-25;
+}
+
+.no-results {
+  @apply gap-2 p-2;
+}

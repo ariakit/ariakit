@@ -14,6 +14,7 @@ This guide is intended to help you get started with contributing to the project.
 10. [Writing another example](#writing-another-example)
 11. [Importing styles from other examples](#importing-styles-from-other-examples)
 12. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+13. [Versioning](#versioning)
 
 ## Cloning the repository
 
@@ -306,3 +307,27 @@ Note that we're passing the `customProp` prop to the component:
 <MyComponent className="my-component" customProp="Hello world" />
 ```
 ````
+
+## Versioning
+
+When adding new features or fixing bugs, we'll need to bump the packages version. We use [Changesets](https://github.com/changesets/changesets) to do that.
+
+> The action of adding a new example doesn't require a version bump. Only changes to the codebase that affect the public API or existing behavior (e.g., bugs) do.
+
+You can create a new changeset file with the following command:
+
+```bash
+npm run changeset
+```
+
+After answering the questions, you can open and edit the changeset file in your editor. It's located in the `.changeset` directory. Make sure to include the PR reference in the description. For example:
+
+```markdown
+---
+"ariakit": minor
+---
+
+Publish packages with the `next` tag. ([#1213](https://github.com/ariakit/ariakit/pull/1213))
+```
+
+Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm.

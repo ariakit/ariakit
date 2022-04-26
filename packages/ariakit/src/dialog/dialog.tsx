@@ -322,11 +322,11 @@ export const useDialog = createHook<DialogOptions>(
 
     // Hide on Escape.
     useEffect(() => {
-      const dialog = ref.current;
-      if (!dialog) return;
       if (!domReady) return;
       if (!state.mounted) return;
       const onKeyDown = (event: KeyboardEvent) => {
+        const dialog = ref.current;
+        if (!dialog) return;
         const target = event.target as Node | null;
         const disclosure = state.disclosureRef.current;
         if (event.key !== "Escape") return;

@@ -47,10 +47,10 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * Returns a value that is lazily initiated and never changes.
  * @example
  * function Component() {
- *   const set = useLazyRef(() => new Set());
+ *   const set = useLazyValue(() => new Set());
  * }
  */
-export function useLazyRef<T>(init: () => T) {
+export function useLazyValue<T>(init: () => T) {
   const ref = useRef<T>();
   if (ref.current === undefined) {
     ref.current = init();
@@ -72,6 +72,17 @@ export function useLiveRef<T>(value: T) {
     ref.current = value;
   });
   return ref;
+}
+
+/**
+ * Keeps the reference of the previous value to be used in the render phase.
+ */
+export function usePreviousValue<T>(value: T) {
+  const [previousValue, setPreviousValue] = useState(value);
+  if (value !== previousValue) {
+    setPreviousValue(value);
+  }
+  return previousValue;
 }
 
 /**
@@ -276,7 +287,7 @@ function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
  * purpose of re-rendering the component.
  */
 export function useForceUpdate() {
-  return useReducer(() => ({}), {});
+  return useReducer(() => [], []);
 }
 
 /**

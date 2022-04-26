@@ -82,7 +82,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     focusable = true,
     autoSelect = false,
     showOnChange = true,
+    setValueOnChange = true,
     showOnMouseDown = true,
+    setValueOnClick = true,
     showOnKeyDown = true,
     autoComplete = state.list.length ? "list" : "none",
     ...props
@@ -155,17 +157,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       hasInsertedTextRef.current = false;
     }, [state.visible]);
 
-    // Auto select the first item on type.
+    // Auto select the first item on type. If autoSelect is true and the last
+    // change was a text insertion, we automatically focus on the first
+    // suggestion. This effect runs both when the value changes and when the
+    // items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
       if (!hasInsertedTextRef.current) return;
-      // If autoSelect is set to true and the last change was a text insertion,
-      // we want to automatically focus on the first suggestion. This effect
-      // will run both when value changes and when items change so we can also
-      // catch async items. We need to defer the focus to avoid scroll jumps.
-      const timeout = setTimeout(() => state.move(state.first()), 16);
-      return () => clearTimeout(timeout);
+      state.move(state.first());
     }, [
       valueUpdated,
       state.value,
@@ -201,6 +201,7 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const onChangeProp = useEventCallback(props.onChange);
     const showOnChangeProp = useBooleanEventCallback(showOnChange);
+    const setValueOnChangeProp = useBooleanEventCallback(setValueOnChange);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
@@ -213,7 +214,9 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (showOnChangeProp(event)) {
           state.show();
         }
-        state.setValue(event.target.value);
+        if (setValueOnChangeProp(event)) {
+          state.setValue(event.target.value);
+        }
         if (inline && autoSelect) {
           // The state.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The
@@ -233,9 +236,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
       [
         onChangeProp,
-        state.setValue,
         showOnChangeProp,
         state.show,
+        setValueOnChangeProp,
+        state.setValue,
         inline,
         autoSelect,
         state.setActiveId,
@@ -275,6 +279,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     const onClickProp = useEventCallback(props.onClick);
+    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
 
     // When clicking on the combobox input, we should make sure the current
     // input value is set on the state and focus is set on the input only.
@@ -283,9 +288,17 @@ export const useCombobox = createHook<ComboboxOptions>(
         onClickProp(event);
         if (event.defaultPrevented) return;
         state.setActiveId(null);
-        state.setValue(value);
+        if (setValueOnClickProp(event)) {
+          state.setValue(value);
+        }
       },
-      [onClickProp, state.setActiveId, state.setValue, value]
+      [
+        onClickProp,
+        state.setActiveId,
+        setValueOnClickProp,
+        state.setValue,
+        value,
+      ]
     );
 
     const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
@@ -401,9 +414,9 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     state: ComboboxState;
     /**
-     * Determines whether the first item will be automatically selected when the
-     * combobox input value changes. When it's set to `true`, the exact behavior
-     * will depend on the value of `autoComplete` prop:
+     * Whether the first item will be automatically selected when the combobox
+     * input value changes. When it's set to `true`, the exact behavior will
+     * depend on the value of `autoComplete` prop:
      *   - If `autoComplete` is `both` or `inline`, the first item is
      *     automatically focused when the popup opens, and the input value
      *     changes to reflect this. The inline completion string will be
@@ -415,10 +428,10 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     autoSelect?: boolean;
     /**
-     * Determines whether the items will be filtered based on `value` and
-     * whether the input value will temporarily change based on the active item.
-     * If `defaultList` or `list` are provided, this will be set to `list` by
-     * default, otherwise it'll default to `none`.
+     * Whether the items will be filtered based on `value` and whether the input
+     * value will temporarily change based on the active item. If `defaultList`
+     * or `list` are provided, this will be set to `list` by default, otherwise
+     * it'll default to `none`.
      *   - `both`: the items will be filtered based on `value` and the input
      *     value will temporarily change based on the active item.
      *   - `list`: the items will be filtered based on `value` and the input
@@ -431,20 +444,25 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      */
     autoComplete?: "both" | "inline" | "list" | "none";
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * input value is changed. This can be a boolean or a function that receives
-     * a ChangeEvent and returns a boolean.
+     * Whether the combobox list/popover should be shown when the input value is
+     * changed.
      * @default true
      * @example
      * ```jsx
      * <Combobox showOnChange={(event) => event.target.value.length > 1} />
      * ```
      */
-    showOnChange?: BooleanOrCallback<ChangeEvent<HTMLInputElement>>;
+    showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * input is clicked. This can be a boolean or a function that receives a
-     * MouseEvent and returns a boolean.
+     * Whether the combobox state value will be updated when the input value
+     * changes. This is useful if you want to customize how the state value is
+     * updated based on the input value.
+     * @default true
+     */
+    setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
+    /**
+     * Whether the combobox list/popover should be shown when the input is
+     * clicked.
      * @default true
      * @example
      * ```jsx
@@ -452,12 +470,10 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * <Combobox state={combobox} showOnMouseDown={combobox.value.length > 1} />
      * ```
      */
-    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLInputElement>>;
+    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
-     * Determines whether the combobox list/popover should be shown when the
-     * user presses the arrow up or down keys while focusing on the combobox
-     * input element. This can be a boolean or a function that receives a
-     * KeyboardEvent and returns a boolean.
+     * Whether the combobox list/popover should be shown when the user presses
+     * the arrow up or down keys while focusing on the combobox input element.
      * @default true
      * @example
      * ```jsx
@@ -465,7 +481,16 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      * <Combobox state={combobox} showOnKeyDown={combobox.value.length > 1} />
      * ```
      */
-    showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLInputElement>>;
+    showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
+    /**
+     * Whether the combobox state value will be updated when the combobox input
+     * element gets clicked. This usually only applies when `autoComplete` is
+     * `both` or `inline`, because the input value will temporarily change based
+     * on the active item and the state value will not be updated until the user
+     * confirms the selection.
+     * @default true
+     */
+    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   };
 
 export type ComboboxProps<T extends As = "input"> = Props<ComboboxOptions<T>>;
