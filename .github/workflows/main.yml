@@ -152,7 +152,7 @@ jobs:
       - name: Test
         run: >
           npm test --
-          --shard ${matrix.shard}
+          --shard ${{ matrix.shard }}
           --maxWorkers 2
           --coverage
           --coverageDirectory coverage-stats/${{ matrix.shard }}
