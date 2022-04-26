@@ -10,7 +10,7 @@ import { FormState } from "./form-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form input. Unline `useFormField`, this hook
+ * Ariakit component to render a form input. Unlike `useFormField`, this hook
  * returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
  * @see https://ariakit.org/components/form
@@ -59,7 +59,7 @@ export const useFormInput = createHook<FormInputOptions>(
 );
 
 /**
- * A component that renders a form input. Unline `FormField`, this component
+ * A component that renders a form input. Unlike `FormField`, this component
  * passes the `value` and `onChange` props down to the underlying element that
  * can be a native input, select or textarea elements.
  * @see https://ariakit.org/components/form
