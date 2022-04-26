@@ -144,7 +144,7 @@ jobs:
           key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Test
-        run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
+        run: npm test -- --coverage --runInBand --maxWorkers 2 --shard ${{ matrix.shard }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
