@@ -152,6 +152,7 @@ jobs:
       - name: Test
         run: >
           npm test --
+          --shard ${matrix.shard}
           --maxWorkers 2
           --coverage
           --coverageDirectory coverage-stats/${{ matrix.shard }}
@@ -161,12 +162,22 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Cache coverage
+      - name: Cache coverage (1/2)
         uses: actions/cache@v3
         with:
-          path: |
-            coverage-stats/1/2
-            coverage-stats/2/2
+          path: coverage-stats/1/2
+          key: coverage-${{ github.run_id }}
+
+      - name: Cache coverage (2/2)
+        uses: actions/cache@v3
+        with:
+          path: coverage-stats/2/2
+          key: coverage-${{ github.run_id }}
+
+      - name: Cache coverage (2/2)
+        uses: actions/cache@v3
+        with:
+          path: coverage-stats/*/*
           key: coverage-${{ github.run_id }}
 
       - name: Merge coverage
