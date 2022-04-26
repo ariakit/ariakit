@@ -118,15 +118,13 @@ jobs:
         run: npm run build
 
   test:
-    name: Test
-    # TODO: Add on Jest 28
-    # name: test (${{ matrix.shard }})
+    name: Test (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    #   matrix:
-    #     shard: ["1/4", "2/4", "3/4", "4/4"]
+      matrix:
+        shard: ["1/2", "2/2"]
 
     steps:
       - name: Checkout repository
@@ -145,8 +143,37 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Cache coverage
+        uses: actions/cache@v3
+        with:
+          path: coverage-stats/${{ matrix.shard }}
+          key: coverage-${{ github.run_id }}
+
       - name: Test
-        run: npm test -- --max-workers 2 --coverage
+        run: >
+          npm test --
+          --maxWorkers 2
+          --coverage
+          --coverageDirectory coverage-stats/${{ matrix.shard }}
+
+  coverage:
+    name: Coverage
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache coverage
+        uses: actions/cache@v3
+        with:
+          path: |
+            coverage-stats/1/2
+            coverage-stats/2/2
+          key: coverage-${{ github.run_id }}
+
+      - name: Merge coverage
+        run: >
+          npx istanbul-merge
+          coverage-stats/*/*/coverage-final.json
+          --out coverage/coverage-final.json
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -177,7 +204,7 @@ jobs:
         run: npm run react17
 
       - name: Test
-        run: npm test -- --max-workers 2
+        run: npm test -- --maxWorkers 2
 
   website:
     name: Build website
@@ -240,4 +267,4 @@ jobs:
           key: nextjs-${{ github.run_id }}
 
       - name: Test
-        run: npm run test-e2e-start -- --max-workers 2
+        run: npm run test-e2e-start -- --maxWorkers 2
