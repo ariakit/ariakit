@@ -213,7 +213,7 @@ jobs:
       - name: Build website
         run: npm run build-website
         env:
-          USE_BABEL_PLUGIN_ISTANBUL: "true"
+          COVERAGE: "true"
 
   test-chrome:
     name: Test Chrome

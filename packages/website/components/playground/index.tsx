@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { css } from "@emotion/react";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
-// import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
-import { PlaygroundEditor } from "ariakit-playground/playground-editor";
-// import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
-import { PlaygroundPreview } from "ariakit-playground/playground-preview";
+import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
+import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import darkTheme from "ariakit-playground/themes/vscode-dark";
 import {
@@ -21,10 +19,9 @@ import {
   useCompositeOverflowState,
 } from "ariakit/composite";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
-// import dynamic from "next/dynamic";
+import dynamic from "next/dynamic";
 import useOverflowList from "packages/website/utils/use-overflow-list";
 import Popup from "../popup";
-import OpenInCodeSandbox from "./open-in-code-sandbox";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
 
@@ -41,25 +38,25 @@ const theme = css`
 
 const errorProps = { as: PlaygroundError };
 
-// const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
-//   () =>
-//     import("ariakit-playground/playground-editor").then(
-//       (mod) => mod.PlaygroundEditor
-//     ),
-//   {
-//     loading: () => (
-//       <div className="h-2 rounded-b-[inherit] bg-canvas-1 dark:bg-canvas-1-dark" />
-//     ),
-//   }
-// );
+const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
+  () =>
+    import("ariakit-playground/playground-editor").then(
+      (mod) => mod.PlaygroundEditor
+    ),
+  {
+    loading: () => (
+      <div className="h-2 rounded-b-[inherit] bg-canvas-1 dark:bg-canvas-1-dark" />
+    ),
+  }
+);
 
-// const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
-//   import("ariakit-playground/playground-preview").then(
-//     (mod) => mod.PlaygroundPreview
-//   )
-// );
+const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
+  import("ariakit-playground/playground-preview").then(
+    (mod) => mod.PlaygroundPreview
+  )
+);
 
-// const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"));
+const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"));
 
 type PlaygroundProps = {
   defaultValues: Record<string, string>;
