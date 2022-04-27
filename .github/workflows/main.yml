@@ -148,6 +148,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          flags: test
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -258,6 +260,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          flags: test-chrome
 
   test-safari:
     name: Test Safari
@@ -295,3 +299,5 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          flags: test-safari
