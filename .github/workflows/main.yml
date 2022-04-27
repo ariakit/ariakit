@@ -243,7 +243,7 @@ jobs:
           restore-keys: playwright-
 
       - name: Install playwright
-        run: npx playwright install --with-deps chrome chrome
+        run: npx playwright install --with-deps chromium chromium
 
       - name: Restore website
         uses: actions/cache@v3
