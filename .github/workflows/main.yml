@@ -257,7 +257,7 @@ jobs:
   test-safari:
     name: Test Safari
     needs: website
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -275,13 +275,6 @@ jobs:
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Cache playwright
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ github.run_id }}
-          restore-keys: playwright-
 
       - name: Install playwright
         run: npx playwright install --with-deps webkit webkit
