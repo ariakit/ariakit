@@ -212,6 +212,8 @@ jobs:
 
       - name: Build website
         run: npm run build-website
+        env:
+          USE_BABEL_PLUGIN_ISTANBUL: "true"
 
   test-chrome:
     name: Test Chrome
@@ -254,6 +256,9 @@ jobs:
       - name: Test
         run: npm run test-chrome -- --workers 2
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
   test-safari:
     name: Test Safari
     needs: website
@@ -287,3 +292,6 @@ jobs:
 
       - name: Test
         run: npm run test-safari -- --workers 2
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
