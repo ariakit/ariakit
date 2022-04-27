@@ -147,7 +147,7 @@ jobs:
         run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v2
         with:
           flags: test
 
@@ -259,7 +259,7 @@ jobs:
         run: npm run test-chrome -- --workers 2
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v2
         with:
           flags: test-chrome
 
@@ -298,6 +298,6 @@ jobs:
         run: npm run test-safari -- --workers 2
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v2
         with:
           flags: test-safari
