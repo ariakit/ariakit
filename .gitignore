@@ -2,6 +2,7 @@
 
 packages/website/public
 .cache
+test-results
 
 # dependencies
 node_modules

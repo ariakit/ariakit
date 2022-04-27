@@ -129,6 +129,7 @@ export default function Example() {
             <ComboboxItem
               key={value + i}
               value={value}
+              focusOnHover
               onClick={onItemClick(value)}
               className="combobox-item"
             >

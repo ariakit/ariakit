@@ -10,6 +10,11 @@ const launchOptions: LaunchOptions = {
 };
 
 const config: PlaywrightTestConfig = {
+  expect: {
+    toMatchSnapshot: {
+      maxDiffPixelRatio: headed ? 1 : undefined,
+    },
+  },
   webServer: {
     command: "npm start",
     reuseExistingServer: !process.env.CI,
