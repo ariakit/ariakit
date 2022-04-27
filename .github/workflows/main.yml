@@ -147,9 +147,10 @@ jobs:
         run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@master
+        uses: codecov/codecov-action@v3
         with:
           flags: test
+          gcov: true
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -259,9 +260,10 @@ jobs:
         run: npm run test-chrome -- --workers 2
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@master
+        uses: codecov/codecov-action@v3
         with:
           flags: test-chrome
+          gcov: true
 
   test-safari:
     name: Test Safari
@@ -298,6 +300,7 @@ jobs:
         run: npm run test-safari -- --workers 2
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@master
+        uses: codecov/codecov-action@v3
         with:
           flags: test-safari
+          gcov: true
