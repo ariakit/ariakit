@@ -150,7 +150,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           flags: test
-          gcov: true
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -218,52 +217,51 @@ jobs:
         env:
           COVERAGE: "true"
 
-  test-chrome:
-    name: Test Chrome
-    needs: website
-    runs-on: ubuntu-latest
+  # test-chrome:
+  #   name: Test Chrome
+  #   needs: website
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: .nvmrc
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version-file: .nvmrc
 
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           node_modules
+  #           packages/*/node_modules
+  #         key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache playwright
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ github.run_id }}
-          restore-keys: playwright-
+  #     - name: Cache playwright
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.cache/ms-playwright
+  #         key: playwright-${{ github.run_id }}
+  #         restore-keys: playwright-
 
-      - name: Install playwright
-        run: npx playwright install --with-deps chromium chromium
+  #     - name: Install playwright
+  #       run: npx playwright install --with-deps chromium chromium
 
-      - name: Restore website
-        uses: actions/cache@v3
-        with:
-          path: packages/website/.next
-          key: nextjs-${{ github.run_id }}
+  #     - name: Restore website
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: packages/website/.next
+  #         key: nextjs-${{ github.run_id }}
 
-      - name: Test
-        run: npm run test-chrome -- --workers 2
+  #     - name: Test
+  #       run: npm run test-chrome -- --workers 2
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          flags: test-chrome
-          gcov: true
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v3
+  #       with:
+  #         flags: test-chrome
 
   test-safari:
     name: Test Safari
@@ -303,4 +301,3 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           flags: test-safari
-          gcov: true
