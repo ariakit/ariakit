@@ -33,7 +33,7 @@ import {
 } from "ariakit-utils/system";
 import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
 
-const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
+const isSafariOrFirefoxOnAppleDevice = false; // isApple() && (isSafari() || isFirefox());
 
 const alwaysFocusVisibleInputTypes = [
   "text",
