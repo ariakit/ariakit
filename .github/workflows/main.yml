@@ -213,8 +213,8 @@ jobs:
       - name: Build website
         run: npm run build-website
 
-  e2e:
-    name: End-to-end test
+  test-chrome:
+    name: Test Chrome
     needs: website
     runs-on: ubuntu-latest
 
@@ -242,4 +242,4 @@ jobs:
           key: nextjs-${{ github.run_id }}
 
       - name: Test
-        run: npm run test-e2e-start -- --maxWorkers 2
+        run: npm run test-chrome -- --workers 2

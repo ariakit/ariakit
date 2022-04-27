@@ -1,16 +1,30 @@
-import { PlaywrightTestConfig, devices } from "@playwright/test";
+import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
+
+process.env.PLAYWRIGHT_EXPERIMENTAL_FEATURES = "1";
+
+const headed = process.env.HEADED === "true";
+
+const launchOptions: LaunchOptions = {
+  headless: !headed,
+  slowMo: headed ? 100 : undefined,
+};
 
 const config: PlaywrightTestConfig = {
-  testMatch: "e2e*.ts",
   webServer: {
-    command: "npm run dev",
-    reuseExistingServer: true,
+    command: "npm start",
+    reuseExistingServer: !process.env.CI,
     port: 3000,
   },
   projects: [
     {
       name: "chrome",
-      use: { ...devices["Desktop Chrome"] },
+      testMatch: "test-chrome.ts",
+      use: { ...devices["Desktop Chrome"], launchOptions },
+    },
+    {
+      name: "safari",
+      testMatch: "test-safari.ts",
+      use: { ...devices["Desktop Safari"], launchOptions },
     },
   ],
 };

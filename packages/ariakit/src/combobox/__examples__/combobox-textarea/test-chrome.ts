@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test("basic test", async ({ page }) => {
+test("basic test", async ({ page }, testInfo) => {
+  console.log(testInfo.file);
   await page.goto("http://localhost:3000/examples/combobox-textarea");
   const element = await page.locator("role=combobox[name='Comment']");
   await element.click();
