@@ -257,7 +257,14 @@ jobs:
           key: nextjs-${{ github.run_id }}
 
       - name: Test
+        id: test
         run: npm run test-chrome -- --workers 2
+
+      - uses: actions/upload-artifact@v3
+        if: failure() && steps.test.outcome == 'failure'
+        with:
+          name: test-results
+          path: test-results
 
   test-safari:
     name: Test Safari
@@ -303,4 +310,11 @@ jobs:
           key: nextjs-${{ github.run_id }}
 
       - name: Test
+        id: test
         run: npm run test-safari -- --workers 2
+
+      - uses: actions/upload-artifact@v3
+        if: failure() && steps.test.outcome == 'failure'
+        with:
+          name: test-results
+          path: test-results

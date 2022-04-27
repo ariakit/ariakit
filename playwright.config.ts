@@ -10,16 +10,20 @@ const launchOptions: LaunchOptions = {
 };
 
 const config: PlaywrightTestConfig = {
-  expect: {
-    toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : undefined,
-    },
-  },
   webServer: {
     command: "npm start",
     reuseExistingServer: !process.env.CI,
     port: 3000,
   },
+  expect: {
+    toMatchSnapshot: {
+      maxDiffPixelRatio: headed ? 1 : undefined,
+    },
+  },
+  use: {
+    screenshot: "only-on-failure",
+  },
+  reporter: process.env.CI ? [["github"], ["dot"]] : "list",
   projects: [
     {
       name: "chrome",
