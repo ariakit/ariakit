@@ -248,7 +248,7 @@ jobs:
 
       - name: Install playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Restore website
         uses: actions/cache@v3
@@ -294,7 +294,7 @@ jobs:
 
       - name: Install playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps webkit webkit
+        run: npx playwright install --with-deps webkit
 
       - name: Restore website
         uses: actions/cache@v3
