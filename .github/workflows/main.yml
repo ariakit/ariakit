@@ -235,15 +235,19 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Get playwright version
+        id: playwright-version
+        run: echo "::set-output name=version::$(npm view playwright version)"
+
       - name: Cache playwright
         uses: actions/cache@v3
-        id: cache-playwright
+        id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-chromium
+          key: playwright-chromium-${{ steps.playwright-version.outputs.version }}
 
       - name: Install playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium chromium
 
       - name: Restore website
@@ -277,7 +281,7 @@ jobs:
 
       - name: Install playwright
         run: |
-          npm install playwright
+          npm install --no-package-lock --no-save @playwright/test
           npx playwright install --with-deps webkit webkit
 
       - name: Test
