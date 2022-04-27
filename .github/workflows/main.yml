@@ -148,9 +148,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        with:
-          files: coverage/coverage-final.json
-          flags: test
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -215,8 +212,6 @@ jobs:
 
       - name: Build website
         run: npm run build-website
-        env:
-          COVERAGE: "true"
 
   test-chrome:
     name: Test Chrome
@@ -242,12 +237,13 @@ jobs:
 
       - name: Cache playwright
         uses: actions/cache@v3
+        id: cache-playwright
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ github.run_id }}
-          restore-keys: playwright-
+          key: playwright-chromium
 
       - name: Install playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium chromium
 
       - name: Restore website
@@ -258,11 +254,6 @@ jobs:
 
       - name: Test
         run: npm run test-chrome -- --workers 2
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          flags: test-chrome
 
   test-safari:
     name: Test Safari
@@ -278,27 +269,16 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install playwright
-        run: npx playwright install --with-deps webkit webkit
-
       - name: Restore website
         uses: actions/cache@v3
         with:
           path: packages/website/.next
           key: nextjs-${{ github.run_id }}
 
+      - name: Install playwright
+        run: |
+          npm install playwright
+          npx playwright install --with-deps webkit webkit
+
       - name: Test
         run: npm run test-safari -- --workers 2
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          flags: test-safari
