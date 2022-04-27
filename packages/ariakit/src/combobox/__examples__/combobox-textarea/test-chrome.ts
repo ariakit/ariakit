@@ -8,10 +8,10 @@ test("popover is rendered correctly", async ({ page }) => {
   const popover = await page.locator(".popover[role='listbox']");
   await expect(popover).toBeVisible();
   expect(await popover.boundingBox()).toEqual({
-    x: 514,
-    y: 337,
     width: 180,
     height: 186,
+    x: 516,
+    y: 336,
   });
   await textarea.type("\n\n\n\n\n\n\n\n\n\n");
   await textarea.press("ArrowUp");
@@ -20,20 +20,17 @@ test("popover is rendered correctly", async ({ page }) => {
   await textarea.press("ArrowUp");
   await textarea.type("@");
   expect(await popover.boundingBox()).toEqual({
-    x: 472,
-    y: 348,
     width: 180,
     height: 186,
+    x: 473,
+    y: 346,
   });
   await page.mouse.wheel(0, -50);
-  await page.waitForFunction(
-    (textarea) => textarea?.scrollTop === 59,
-    await textarea.elementHandle()
-  );
+  await page.waitForTimeout(250);
   await expect(await popover.boundingBox()).toEqual({
-    x: 472,
-    y: 398,
     width: 180,
     height: 186,
+    x: 473,
+    y: 396,
   });
 });
