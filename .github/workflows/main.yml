@@ -273,16 +273,34 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Get playwright version
+        id: playwright-version
+        run: echo "::set-output name=version::$(npm view playwright version)"
+
+      - name: Cache playwright
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-webkit-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install playwright
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps webkit webkit
+
       - name: Restore website
         uses: actions/cache@v3
         with:
           path: packages/website/.next
           key: nextjs-${{ github.run_id }}
-
-      - name: Install playwright
-        run: |
-          npm install --no-package-lock --no-save @playwright/test
-          npx playwright install --with-deps webkit webkit
 
       - name: Test
         run: npm run test-safari -- --workers 2
