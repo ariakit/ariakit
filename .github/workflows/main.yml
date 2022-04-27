@@ -235,6 +235,16 @@ jobs:
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
+      - name: Cache playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ github.run_id }}
+          restore-keys: playwright-
+
+      - name: Install playwright
+        run: npx playwright install --with-deps chrome chrome
+
       - name: Restore website
         uses: actions/cache@v3
         with:
