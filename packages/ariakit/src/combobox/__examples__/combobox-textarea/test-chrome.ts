@@ -27,7 +27,7 @@ test("popover is rendered correctly", async ({ page }) => {
   expect(await popover.boundingBox()).toEqual({
     width: 180,
     height: 186,
-    x: process.platform === "linux" ? 472 : 473,
+    x: 473,
     y: 346,
   });
 
@@ -37,7 +37,7 @@ test("popover is rendered correctly", async ({ page }) => {
   expect(await popover.boundingBox()).toEqual({
     width: 180,
     height: 186,
-    x: process.platform === "linux" ? 472 : 473,
+    x: 473,
     y: 396,
   });
 });
