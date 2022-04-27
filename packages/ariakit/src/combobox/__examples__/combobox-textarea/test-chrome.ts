@@ -7,30 +7,21 @@ test("popover is rendered correctly", async ({ page }) => {
   await textarea.type("Hello @a");
   const popover = await page.locator(".popover[role='listbox']");
   await expect(popover).toBeVisible();
-  expect(await popover.boundingBox()).toEqual({
-    width: 180,
-    height: 186,
-    x: 516,
-    y: 336,
-  });
+  let boundingBox = await popover.boundingBox();
+  expect(boundingBox).toMatchObject({ width: 180, height: 186, y: 336 });
+  expect(boundingBox?.x).toBeCloseTo(516);
   await textarea.type("\n\n\n\n\n\n\n\n\n\n");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.type("@");
-  expect(await popover.boundingBox()).toEqual({
-    width: 180,
-    height: 186,
-    x: 473,
-    y: 346,
-  });
+  boundingBox = await popover.boundingBox();
+  expect(boundingBox).toMatchObject({ width: 180, height: 186, y: 346 });
+  expect(boundingBox?.x).toBeCloseTo(473);
   await page.mouse.wheel(0, -50);
   await page.waitForTimeout(250);
-  await expect(await popover.boundingBox()).toEqual({
-    width: 180,
-    height: 186,
-    x: 473,
-    y: 396,
-  });
+  boundingBox = await popover.boundingBox();
+  expect(boundingBox).toMatchObject({ width: 180, height: 186, y: 396 });
+  expect(boundingBox?.x).toBeCloseTo(473);
 });
