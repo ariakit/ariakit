@@ -3,8 +3,9 @@
   "private": true,
   "scripts": {
     "start": "npm start -w website",
-    "dev": "npm run dev -w website",
     "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12",
+    "dev": "npm run dev -w website",
+    "dev-react17": "npm run react17 && npm run dev; npm i",
     "test": "jest",
     "test-watch": "npm test -- --watch",
     "test-react17": "npm run react17 && npm test; npm i",
@@ -22,7 +23,6 @@
     "build": "lerna exec --scope ariakit* -- npm run build",
     "build-website": "npm run build --prefix packages/website",
     "clean": "npm run clean -ws --if-present",
-    "changeset": "changeset",
     "prepare": "husky install"
   },
   "workspaces": [

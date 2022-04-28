@@ -1,6 +1,8 @@
 # Contributing
 
-This guide is intended to help you get started with contributing to the project. By following these steps, you will understand the basic development process and workflow.
+## Basic tutorial
+
+This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
 1. [Cloning the repository](#cloning-the-repository)
 2. [Installing Node.js and npm](#installing-nodejs-and-npm)
@@ -14,7 +16,13 @@ This guide is intended to help you get started with contributing to the project.
 10. [Writing another example](#writing-another-example)
 11. [Importing styles from other examples](#importing-styles-from-other-examples)
 12. [Writing documentation for other examples](#writing-documentation-for-other-examples)
-13. [Versioning](#versioning)
+13. [Submitting a pull request](#submitting-a-pull-request)
+
+## Advanced tutorial
+
+14. [Versioning](#versioning)
+15. [Running with React 17](#running-with-react-17)
+16. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 ## Cloning the repository
 
@@ -24,7 +32,7 @@ To start contributing to the project, you have to fork this repository and clone
 git clone https://github.com/YOUR_USERNAME/ariakit.git
 ```
 
-If you are already part of the organization on GitHub, you can clone the repository directly:
+If you are already part of the organization on GitHub, clone the repository directly:
 
 ```bash
 git clone https://github.com/ariakit/ariakit.git
@@ -41,19 +49,19 @@ node -v
 npm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, you can download them from https://nodejs.org.
+If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
 
-Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, you can run the following command in your terminal:
+Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
 
 ```bash
 nvm use
 ```
 
-> If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. You can just follow the instructions in your terminal.
+> If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. Follow the instructions in your terminal.
 
 ## Installing dependencies
 
-Once in the project's root directory, you can run the following command to install the project's dependencies:
+Once in the project's root directory, run the following command to install the project's dependencies:
 
 ```bash
 npm install
@@ -69,7 +77,7 @@ git checkout -b feat/my-component
 
 ## Starting the development server
 
-After installing the project's dependencies, you can run the following command to start the development server:
+After installing the project's dependencies, run the following command to start the development server:
 
 ```bash
 npm run dev
@@ -77,11 +85,11 @@ npm run dev
 
 > On Windows, you should run this command as administrator or in developer mode. Otherwise, symlinks won't be created.
 
-Now you can open http://localhost:3000 in your browser to see the project's site.
+Now open http://localhost:3000 in your browser to see the project's site.
 
 ## Creating a component
 
-To create a new component, create a file with the following contents:
+To make a new component, create a file with the following contents:
 
 `packages/ariakit/src/my-component/my-component.ts`
 
@@ -162,11 +170,11 @@ export default function Example() {
 }
 ```
 
-Now you can open http://localhost:3000/examples/my-component in your browser to see the example in action.
+Now open http://localhost:3000/examples/my-component to see the example in action.
 
 ## Styling the example
 
-When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You can find the theme configuration in the [`tailwind.config.js`](tailwind.config.js) file.
+When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.js`](tailwind.config.js) file.
 
 > To use Tailwind in a CSS file rather than applying classes directly to the HTML elements, we're using the [`@apply`](https://tailwindcss.com/docs/functions-and-directives#apply) directive.
 >
@@ -193,7 +201,7 @@ export default function Example() {
 }
 ```
 
-Now you can open http://localhost:3000/examples/my-component in your browser to see the example with the styles applied.
+Now open http://localhost:3000/examples/my-component to see the example with the styles applied.
 
 You'll notice that the transpiled CSS file has been also added to editor's files so people can easily edit it directly in the browser. You can also use it to see the output CSS while applying Tailwind classes.
 
@@ -211,13 +219,13 @@ Let's create a test for our example:
 import { render, getByText } from "ariakit-test";
 import Example from ".";
 
-test("My component", () => {
+test("my component", () => {
   render(<Example />);
   expect(getByText("My component")).toBeInTheDocument();
 });
 ```
 
-Now you can run the following command in your terminal to watch the test results:
+Now run the following command in your terminal to watch the test results:
 
 ```bash
 npm run test-watch
@@ -251,7 +259,7 @@ npm install ariakit
 Learn more on [Get started](/guide/get-started).
 ````
 
-Now you can open http://localhost:3000/components/my-component in your browser to see the component documentation.
+Now open http://localhost:3000/components/my-component to see the component documentation.
 
 ## Writing another example
 
@@ -272,11 +280,11 @@ export default function Example() {
 }
 ```
 
-Now you can open http://localhost:3000/examples/my-component-custom-prop in your browser to see the example with the custom prop applied.
+Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
 
 ## Importing styles from other examples
 
-We can `@import` CSS files from other examples. You'll usually import the CSS file from the default example on the other examples so you don't need to repeat yourself.
+We can `@import` CSS files from other examples. You'll usually import the CSS file from the default example into the other examples so you don't need to repeat the same base styles.
 
 `packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
 
@@ -308,26 +316,95 @@ Note that we're passing the `customProp` prop to the component:
 ```
 ````
 
+## Submitting a pull request
+
+When you're ready to submit a pull request, you can follow these naming conventions:
+
+- Pull request titles use the [Imperative Mood](https://en.wikipedia.org/wiki/Imperative_mood) (e.g., `Add something`, `Fix something`).
+- [Changesets](#versioning) use past tense verbs (e.g., `Added something`, `Fixed something`).
+
+When you submit a pull request, GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
+
+Now you're ready to contribute to the project. Follow the next steps if you need more advanced instructions.
+
+---
+
 ## Versioning
 
-When adding new features or fixing bugs, we'll need to bump the packages version. We use [Changesets](https://github.com/changesets/changesets) to do that.
+When adding new features or fixing bugs, we'll need to bump the package versions. We use [Changesets](https://github.com/changesets/changesets) to do this.
 
 > The action of adding a new example doesn't require a version bump. Only changes to the codebase that affect the public API or existing behavior (e.g., bugs) do.
 
-You can create a new changeset file with the following command:
+Let's create a new changeset file for our component:
 
-```bash
-npm run changeset
-```
-
-After answering the questions, you can open and edit the changeset file in your editor. It's located in the `.changeset` directory. Make sure to include the PR reference in the description. For example:
+`.changeset/my-component.md`
 
 ```markdown
 ---
 "ariakit": minor
 ---
 
-Publish packages with the `next` tag. ([#1213](https://github.com/ariakit/ariakit/pull/1213))
+Added `MyComponent` component. ([#1271](https://github.com/ariakit/ariakit/pull/1271))
 ```
 
-Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm.
+> The name of the file doesn't really matter as long as it's unique across changesets. Just try to name it in a way that we can easily remember what the change was when reviewing the all the changesets.
+
+Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit/CHANGELOG.md) will be updated.
+
+## Running with React 17
+
+Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
+
+Development server:
+
+```bash
+npm run dev-react-17
+```
+
+Tests:
+
+```bash
+npm run test-react17
+```
+
+These commands will automatically re-install React 18 at the end of the process (e.g., when you stop the development server). If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
+
+## Writing end-to-end tests
+
+Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
+
+Combined with the [`ariakit-test`](packages/ariakit-test) package, this is more than enough for 99% of the cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in JSDOM. For those cases, we use [Playwright](https://playwright.dev).
+
+Let's create an end-to-end test for our example:
+
+`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/test-chrome.ts`
+
+```ts
+import { expect, test } from "@playwright/test";
+
+test("my component", async ({ page }) => {
+  await page.goto("/examples/my-component-custom-prop");
+  const element = await page.locator("text=My component");
+  await expect(eleemnt).toBeVisible();
+});
+```
+
+Now run the following command in your terminal to see the test results:
+
+> **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
+
+```bash
+npm run test-chrome
+```
+
+You can also run the tests in headed mode:
+
+```bash
+npm run test-chrome-browser
+```
+
+Or in debug mode:
+
+```bash
+npm run test-chrome-debug
+```
