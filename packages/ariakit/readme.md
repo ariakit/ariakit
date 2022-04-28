@@ -8,7 +8,7 @@
 
 <br>
 
-<p align="center">
+<div align="center">
   <a href="https://npmjs.org/package/ariakit">
     <img alt="NPM version" src="https://img.shields.io/npm/v/ariakit.svg?logo=npm&color=007acc" />
   </a>
@@ -30,13 +30,19 @@
   <a href="https://twitter.com/ariakitjs">
     <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
   </a>
-</p>
+</div>
 
 <br>
 
-> **Note**: This is the Ariakit (v2) branch <sup>[<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>]</sup>, which is still in alpha.
->
-> If you're looking for Reakit (v1), check out the [v1](https://github.com/ariakit/ariakit/tree/v1) branch.
+---
+
+<p align="center">
+  This is the Ariakit (v2) branch (<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>), which is still in alpha.
+  <br>
+  If you're looking for Reakit (v1), check out the <a href="https://github.com/ariakit/ariakit/tree/v1">v1</a> branch.
+</p>
+
+---
 
 ## Installation
 
@@ -79,3 +85,7 @@ function App() {
 
 createRoot(document.getElementById("root")).render(<App />);
 ```
+
+## Contributing
+
+See [[v2] Examples](https://github.com/ariakit/ariakit/issues/939) and follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
