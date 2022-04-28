@@ -28,6 +28,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "lerna": {
+    "version": "independent"
+  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --ext js,ts,tsx --fix",
     "*.css": "stylelint --fix"
