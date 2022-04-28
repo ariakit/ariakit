@@ -1,7 +1,7 @@
 ---
 "ariakit": patch
 "ariakit-playground": patch
-"ariakit-test-utils": patch
+"ariakit-test": patch
 "ariakit-utils": patch
 ---
 

@@ -5,7 +5,7 @@ import {
   queryByRole,
   render,
   type,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite food" });

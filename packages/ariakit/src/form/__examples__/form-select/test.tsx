@@ -5,7 +5,7 @@ import {
   press,
   queryByText,
   render,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getLabel = () => getByText("Favorite fruit");

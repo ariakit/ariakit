@@ -1,4 +1,4 @@
-import { blur, getByRole, hover, press, render } from "ariakit-test-utils";
+import { blur, getByRole, hover, press, render } from "ariakit-test";
 import Example from ".";
 
 test("show tooltip on hover", async () => {

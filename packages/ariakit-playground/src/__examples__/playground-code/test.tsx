@@ -1,4 +1,4 @@
-import { render } from "ariakit-test-utils";
+import { render } from "ariakit-test";
 import Example from ".";
 
 test("markup", () => {
@@ -52,7 +52,7 @@ test("markup", () => {
               >
                 function
               </span>
-               
+
               <span
                 class="token function"
               >
@@ -68,20 +68,20 @@ test("markup", () => {
               >
                 )
               </span>
-               
+
               <span
                 class="token punctuation"
               >
                 {
               </span>
-              
-      
+
+
               <span
                 class="token keyword"
               >
                 return
               </span>
-               
+
               <span
                 class="token tag"
               >
@@ -130,14 +130,14 @@ test("markup", () => {
               >
                 ;
               </span>
-              
+
 
               <span
                 class="token punctuation"
               >
                 }
               </span>
-              
+
 
             </code>
           </pre>

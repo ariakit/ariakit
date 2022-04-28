@@ -1,7 +1,7 @@
 ---
 "ariakit": major
 "ariakit-playground": minor
-"ariakit-test-utils": minor
+"ariakit-test": minor
 "ariakit-utils": minor
 ---
 
