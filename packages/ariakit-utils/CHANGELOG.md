@@ -15,6 +15,7 @@
   The package may still work with React 16.8, but we're not testing the codebase against this version anymore. Upgrade to React 17 or higher to guarantee that your app works with Ariakit.
 
 - Renamed `useLazyRef` function to `useLazyValue`.
+
 - Added `usePreviousValue` function to `ariakit-utils/hooks`. ([#1219](https://github.com/ariakit/ariakit/pull/1219))
 
 ## 0.17.0-next.15
