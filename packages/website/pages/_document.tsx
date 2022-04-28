@@ -6,31 +6,23 @@ import Document, {
   NextScript,
 } from "next/document";
 
-const fontWeights = [300, 400, 500, 600, 700];
-
-function getFontUrl(weight: number, style = "normal", format = "woff2") {
-  const suffix = style === "normal" ? "" : `-${style}`;
-  return `/fonts/inter/inter-${weight}${suffix}.${format}?v=3.19`;
-}
-
-function createFontFace(weight: number, style = "normal") {
-  return `
+const fontFaces = `
 @font-face {
   font-family: Inter;
-  font-style: ${style};
-  font-weight: ${weight};
+  font-weight: 100 900;
   font-display: swap;
-  src:
-    url("${getFontUrl(weight, style, "woff2")}") format("woff2"),
-    url("${getFontUrl(weight, style, "woff")}") format("woff");
-}`;
+  font-style: normal;
+  font-named-instance: 'Regular';
+  src: url("/fonts/Inter-roman.var.woff2?v=3.19") format("woff2");
 }
-
-const fontFaces = fontWeights
-  .map(
-    (weight) => `${createFontFace(weight)}${createFontFace(weight, "italic")}`
-  )
-  .join("");
+@font-face {
+  font-family: Inter;
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+  font-named-instance: 'Italic';
+  src: url("/fonts/Inter-italic.var.woff2?v=3.19") format("woff2");
+}`;
 
 const darkModeScript = `
 function classList(action) {
@@ -55,16 +47,13 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          {[400, 500, 700].map((weight) => (
-            <link
-              key={weight}
-              rel="preload"
-              href={getFontUrl(weight)}
-              as="font"
-              type="font/woff2"
-              crossOrigin="anonymous"
-            />
-          ))}
+          <link
+            rel="preload"
+            crossOrigin="anonymous"
+            href="/fonts/Inter-roman.var.woff2?v=3.19"
+            type="font/woff2"
+            as="font"
+          />
           <style dangerouslySetInnerHTML={{ __html: fontFaces }} />
         </Head>
         <body>
