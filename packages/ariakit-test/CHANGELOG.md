@@ -1,4 +1,4 @@
-# ariakit-test-utils
+# ariakit-test
 
 ## 0.17.0-next.19
 
@@ -22,7 +22,7 @@
 
 ### Patch Changes
 
-- Exposed `ariakit-test-utils/mock-get-client-rects` module. ([#1227](https://github.com/ariakit/ariakit/pull/1227))
+- Exposed `ariakit-test/mock-get-client-rects` module. ([#1227](https://github.com/ariakit/ariakit/pull/1227))
 - Updated dependencies: `ariakit-utils@0.17.0-next.16`.
 
 ## 0.17.0-next.17

@@ -6,7 +6,7 @@ import {
   press,
   render,
   type,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 

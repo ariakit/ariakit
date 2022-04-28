@@ -201,14 +201,14 @@ You'll notice that the transpiled CSS file has been also added to editor's files
 
 One of the goals of having use cases written like that is so we can write automated tests for them. Instead of testing the Ariakit components directly, we're testing the examples that represent the way people use Ariakit components.
 
-> We use [`ariakit-test-utils`](packages/ariakit-test-utils), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
+> We use [`ariakit-test`](packages/ariakit-test), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
 
 Let's create a test for our example:
 
 `packages/ariakit/src/my-component/__examples__/my-component/test.tsx`
 
 ```tsx
-import { render, getByText } from "ariakit-test-utils";
+import { render, getByText } from "ariakit-test";
 import Example from ".";
 
 test("My component", () => {

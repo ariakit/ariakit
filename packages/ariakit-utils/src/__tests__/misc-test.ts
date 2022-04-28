@@ -1,4 +1,4 @@
-import { sleep } from "ariakit-test-utils";
+import { sleep } from "ariakit-test";
 import {
   applyState,
   chain,
