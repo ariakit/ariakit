@@ -208,12 +208,12 @@ Let's create a test for our example:
 `packages/ariakit/src/my-component/__examples__/my-component/test.tsx`
 
 ```tsx
-import * as t from "ariakit-test";
+import { render, getByText } from "ariakit-test";
 import Example from ".";
 
 test("My component", () => {
-  t.render(<Example />);
-  expect(t.getByText("My component")).toBeInTheDocument();
+  render(<Example />);
+  expect(getByText("My component")).toBeInTheDocument();
 });
 ```
 
