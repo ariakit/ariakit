@@ -20,9 +20,17 @@ This guide is intended to help you get started with contributing to the project.
 
 ## Advanced tutorial
 
+This guide covers more advanced topics. Pick the topics based on your needs.
+
 14. [Versioning](#versioning)
 15. [Running with React 17](#running-with-react-17)
 16. [Writing end-to-end tests](#writing-end-to-end-tests)
+
+<br>
+
+---
+
+<br>
 
 ## Cloning the repository
 
@@ -37,6 +45,10 @@ If you are already part of the organization on GitHub, clone the repository dire
 ```bash
 git clone https://github.com/ariakit/ariakit.git
 ```
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Installing Node.js and npm
 
@@ -59,6 +71,10 @@ nvm use
 
 > If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. Follow the instructions in your terminal.
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Installing dependencies
 
 Once in the project's root directory, run the following command to install the project's dependencies:
@@ -67,6 +83,10 @@ Once in the project's root directory, run the following command to install the p
 npm install
 ```
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Creating a new branch
 
 Make sure you create a new branch for your changes. You can do this by running the following command in your terminal:
@@ -74,6 +94,10 @@ Make sure you create a new branch for your changes. You can do this by running t
 ```bash
 git checkout -b feat/my-component
 ```
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Starting the development server
 
@@ -86,6 +110,10 @@ npm run dev
 > On Windows, you should run this command as administrator or in developer mode. Otherwise, symlinks won't be created.
 
 Now open http://localhost:3000 in your browser to see the project's site.
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Creating a component
 
@@ -152,6 +180,10 @@ Finally, create an `index.ts` file in the same directory as the component. This 
 export * from "./my-component";
 ```
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Creating the default example
 
 The development workflow on this project is entirely based on examples. You can think of an example as a use case of a component. This will be used not only for development purposes, but also to show the component and its usage in the documentation.
@@ -171,6 +203,10 @@ export default function Example() {
 ```
 
 Now open http://localhost:3000/examples/my-component to see the example in action.
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Styling the example
 
@@ -205,6 +241,10 @@ Now open http://localhost:3000/examples/my-component to see the example with the
 
 You'll notice that the transpiled CSS file has been also added to editor's files so people can easily edit it directly in the browser. You can also use it to see the output CSS while applying Tailwind classes.
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Testing the example
 
 One of the goals of having use cases written like that is so we can write automated tests for them. Instead of testing the Ariakit components directly, we're testing the examples that represent the way people use Ariakit components.
@@ -230,6 +270,10 @@ Now run the following command in your terminal to watch the test results:
 ```bash
 npm run test-watch
 ```
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Writing the component documentation
 
@@ -261,6 +305,10 @@ Learn more on [Get started](/guide/get-started).
 
 Now open http://localhost:3000/components/my-component to see the component documentation.
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Writing another example
 
 A component may have multiple examples besides the default one. This is useful when you want to show a component in different contexts and props.
@@ -282,6 +330,10 @@ export default function Example() {
 
 Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Importing styles from other examples
 
 We can `@import` CSS files from other examples. You'll usually import the CSS file from the default example into the other examples so you don't need to repeat the same base styles.
@@ -295,6 +347,10 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
   @apply p-4;
 }
 ```
+
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Writing documentation for other examples
 
@@ -316,6 +372,10 @@ Note that we're passing the `customProp` prop to the component:
 ```
 ````
 
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Submitting a pull request
 
 When you're ready to submit a pull request, you can follow these naming conventions:
@@ -325,9 +385,21 @@ When you're ready to submit a pull request, you can follow these naming conventi
 
 When you submit a pull request, GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
 
-Now you're ready to contribute to the project. Follow the next steps if you need more advanced instructions.
+<div align="right">
+    <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
+<br>
 
 ---
+
+<div align="center">
+  ✅ Now you're ready to contribute to the project. Follow the next steps if you need more advanced instructions.
+</div>
+
+---
+
+<br>
 
 ## Versioning
 
@@ -351,6 +423,10 @@ Added `MyComponent` component. ([#1271](https://github.com/ariakit/ariakit/pull/
 
 Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit/CHANGELOG.md) will be updated.
 
+<div align="right">
+    <a href="#advanced-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Running with React 17
 
 Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
@@ -368,6 +444,10 @@ npm run test-react17
 ```
 
 These commands will automatically re-install React 18 at the end of the process (e.g., when you stop the development server). If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
+
+<div align="right">
+    <a href="#advanced-tutorial">&uarr; back to top</a></b>
+</div>
 
 ## Writing end-to-end tests
 
@@ -408,3 +488,7 @@ Or in debug mode:
 ```bash
 npm run test-chrome-debug
 ```
+
+<div align="right">
+    <a href="#advanced-tutorial">&uarr; back to top</a></b>
+</div>
