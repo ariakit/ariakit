@@ -280,25 +280,8 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-macos-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-macos-
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-macos-${{ hashFiles('package-lock.json') }}
-
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: npm install @playwright/test --ignore-scripts --no-package-lock --no-save
 
       - name: Get playwright version
         id: playwright-version
