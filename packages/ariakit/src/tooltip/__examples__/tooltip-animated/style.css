@@ -1,0 +1,52 @@
+.button {
+  @apply
+    flex
+    h-10
+    cursor-pointer
+    items-center
+    justify-center
+    gap-2
+    rounded-lg
+    border-none
+    px-4
+    focus-visible:ariakit-outline
+    aria-disabled:opacity-50
+    text-base
+    bg-alpha-2
+    text-alpha-2
+    hover:bg-alpha-2-hover
+    dark:bg-alpha-2-dark
+    dark:text-alpha-2-dark
+    dark:hover:bg-alpha-2-dark-hover;
+}
+
+.tooltip {
+  @apply
+    rounded-md
+    border
+    border-canvas-1
+    bg-canvas-1
+    py-1
+    px-2
+    text-sm
+    text-canvas-1
+    drop-shadow-sm
+    ease-in
+    duration-500
+    opacity-0
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark
+    dark:drop-shadow-sm-dark;
+}
+
+.tooltip[data-enter] {
+  @apply opacity-100;
+}
+
+.tooltip[data-leave] {
+  @apply
+    ease-in-out
+    duration-150
+  ;
+}
