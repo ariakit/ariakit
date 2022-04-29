@@ -6,7 +6,7 @@ test("markup", () => {
   expect(container).toMatchInlineSnapshot(`
     <div>
       <div
-        class="css-r36kf1 code-jsx has-line-numbers"
+        class="css-lnm415 code-jsx has-line-numbers"
       >
         <div
           class="cm-editor"

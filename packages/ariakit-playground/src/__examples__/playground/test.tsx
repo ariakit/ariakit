@@ -11,7 +11,7 @@ test("markup", () => {
         <div
           aria-describedby=":r0:"
           aria-label="index.js"
-          class="css-r36kf1 code-jsx has-line-numbers editor"
+          class="css-lnm415 code-jsx has-line-numbers editor"
           data-command=""
           role="group"
           tabindex="0"
