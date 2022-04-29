@@ -227,6 +227,12 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
@@ -249,12 +255,6 @@ jobs:
       - name: Install playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
-
-      - name: Restore website
-        uses: actions/cache@v3
-        with:
-          path: packages/website/.next
-          key: nextjs-${{ github.run_id }}
 
       - name: Test
         id: test
@@ -280,10 +280,19 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Install dependencies
-        run: >
-          rm -rf package-lock.json &&
-          npm install @playwright/test --no-scripts --no-package-lock --no-save
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Get playwright version
         id: playwright-version
@@ -299,12 +308,6 @@ jobs:
       - name: Install playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps webkit
-
-      - name: Restore website
-        uses: actions/cache@v3
-        with:
-          path: packages/website/.next
-          key: nextjs-${{ github.run_id }}
 
       - name: Test
         id: test
