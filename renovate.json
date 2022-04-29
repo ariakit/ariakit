@@ -4,6 +4,7 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "@codesandbox/sandpack-client",
         "babel-plugin-module-resolver",
         "cross-env",
         "cross-spawn",
