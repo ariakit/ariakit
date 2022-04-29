@@ -10,7 +10,7 @@
 }
 
 .editor {
-  max-height: 250px;
+  height: 250px;
   @apply
     border-r
     border-canvas-3
