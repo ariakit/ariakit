@@ -281,7 +281,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm install @playwright/test --ignore-scripts --no-package-lock --no-save
+        run: npm install @playwright/test --omit dev
 
       - name: Get playwright version
         id: playwright-version
