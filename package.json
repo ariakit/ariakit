@@ -71,7 +71,7 @@
     "eslint-plugin-react": "7.29.4",
     "fs-extra": "10.1.0",
     "husky": "7.0.4",
-    "jest": "28.0.2",
+    "jest": "28.0.3",
     "jest-axe": "6.0.0",
     "jest-environment-jsdom": "28.0.2",
     "jest-fail-on-console": "2.4.1",
