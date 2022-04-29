@@ -225,6 +225,7 @@ export default function Playground(props: PlaygroundProps) {
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers
+                      foldMultilineImports
                       className="bg-canvas-1 focus-visible:ariakit-outline-input dark:bg-canvas-1-dark"
                       state={playground}
                       file={file}

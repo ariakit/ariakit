@@ -100,6 +100,12 @@ const theme = css`
     line-height: 21px;
   }
 
+  .cm-foldPlaceholder {
+    padding: 2px 6px;
+    margin: 0 4px;
+    border: none;
+  }
+
   .cm-cursor {
     border-left-width: 2px;
     border-left-style: solid;

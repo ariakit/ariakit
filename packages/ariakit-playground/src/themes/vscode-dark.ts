@@ -48,6 +48,7 @@ const theme = css`
     border-left-color: ${foreground};
   }
 
+  .cm-foldPlaceholder,
   .cm-matchingBracket,
   .cm-nonmatchingBracket {
     background-color: ${selectionMatch};

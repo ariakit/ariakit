@@ -20,6 +20,8 @@ import { javascript } from "@codemirror/lang-javascript";
 import {
   HighlightStyle,
   bracketMatching,
+  codeFolding,
+  foldEffect,
   syntaxHighlighting,
 } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
@@ -112,6 +114,7 @@ const defaultExtensions = [
   closeBrackets(),
   history(),
   highlightSelectionMatches(),
+  codeFolding(),
   keymap.of([
     ...defaultKeymap,
     ...historyKeymap,
@@ -128,6 +131,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     lineNumbers: showLineNumbers = true,
     keyboardDescription = "Press Enter to edit the code",
     keyboardDescriptionProps,
+    foldMultilineImports,
     maxHeight,
     defaultExpanded,
     expanded: expandedProp,
@@ -206,11 +210,26 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       appendEditorProps(editor, file);
       parent.appendChild(editor.dom);
       setEditorDOM(editor.dom);
+
+      if (foldMultilineImports) {
+        const matches = Array.from(
+          initialValue.matchAll(/^import \{\n([^}]+)\} from/gm)
+        );
+        editor.dispatch({
+          effects: matches.map((match) =>
+            foldEffect.of({
+              from: match.index! + 8,
+              to: match.index! + 8 + match[1]!.length + 1,
+            })
+          ),
+        });
+      }
+
       return () => {
         editor.destroy();
         setEditorDOM(null);
       };
-    }, [initialValue, initialExtensions, file]);
+    }, [initialValue, initialExtensions, file, foldMultilineImports]);
 
     const onClickProp = useEventCallback(props.onClick);
 
@@ -332,6 +351,7 @@ export type PlaygroundEditorOptions<T extends As = "div"> =
       state?: PlaygroundState;
       file: string;
       lineNumbers?: boolean;
+      foldMultilineImports?: boolean;
       keyboardDescription?: string;
       keyboardDescriptionProps?: RoleProps;
     };

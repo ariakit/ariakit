@@ -57,6 +57,7 @@ const theme = css`
     background-color: ${activeLine};
   }
 
+  .cm-foldPlaceholder,
   .cm-matchingBracket,
   .cm-nonmatchingBracket {
     background-color: ${selectionMatch};
