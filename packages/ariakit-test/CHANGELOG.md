@@ -1,15 +1,17 @@
-# ariakit-test-utils
+# ariakit-test
 
 ## 0.17.0-next.19
 
 ### Minor Changes
 
 - `press`ing `ArrowUp`, `ArrowRight`, `ArrowDown` and `ArrowLeft` on text fields now changes the selection/caret position.
+
 - `press`ing printable characters on text fields now uses `type` underneath, which means they are typed in the input.
 
 ### Patch Changes
 
 - Stopped shipping the `src` folder with the npm package to reduce the size of the package. ([#1272](https://github.com/ariakit/ariakit/pull/1272))
+
 - Updated dependencies: `ariakit-utils@0.17.0-next.17`.
 
 ## 0.17.0-next.18
@@ -22,7 +24,8 @@
 
 ### Patch Changes
 
-- Exposed `ariakit-test-utils/mock-get-client-rects` module. ([#1227](https://github.com/ariakit/ariakit/pull/1227))
+- Exposed `ariakit-test/mock-get-client-rects` module. ([#1227](https://github.com/ariakit/ariakit/pull/1227))
+
 - Updated dependencies: `ariakit-utils@0.17.0-next.16`.
 
 ## 0.17.0-next.17

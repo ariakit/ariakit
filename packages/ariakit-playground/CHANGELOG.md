@@ -5,7 +5,9 @@
 ### Patch Changes
 
 - Stopped shipping the `src` folder with the npm package to reduce the size of the package. ([#1272](https://github.com/ariakit/ariakit/pull/1272))
+
 - Updated CodeMirror version to `0.20.0`. ([#1270](https://github.com/ariakit/ariakit/pull/1270))
+
 - Updated dependencies: `ariakit@2.0.0-next.24`, `ariakit-utils@0.17.0-next.17`.
 
 ## 0.17.0-next.23

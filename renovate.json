@@ -4,14 +4,13 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "@codesandbox/sandpack-client",
         "babel-plugin-module-resolver",
         "cross-env",
         "cross-spawn",
-        "expect-puppeteer",
         "fs-extra",
         "lodash",
         "prettier",
-        "puppeteer",
         "react-dom",
         "react",
         "typescript",
@@ -20,6 +19,7 @@
       ],
       "matchPackagePatterns": [
         "^@babel/",
+        "^@playwright/",
         "^@rollup/",
         "^@testing-library/",
         "^@types/",

@@ -6,7 +6,7 @@ import {
   press,
   render,
   waitFor,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getAnchor = () => getByRole("link", { name: "@ariakitjs" });

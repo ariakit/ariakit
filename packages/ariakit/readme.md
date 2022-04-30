@@ -8,20 +8,41 @@
 
 <br>
 
-<p align="center">
-  <a href="https://npmjs.org/package/ariakit"><img alt="NPM version" src="https://img.shields.io/npm/v/ariakit.svg" /></a>
-  <a href="https://npmjs.org/package/ariakit"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/ariakit.svg"></a>
-  <a href="https://github.com/ariakit/ariakit/actions"><img alt="Build Status" src="https://github.com/ariakit/ariakit/workflows/ci/badge.svg?event=push&branch=main" /></a>
-  <a href="https://codecov.io/gh/ariakit/ariakit"><img src="https://codecov.io/gh/ariakit/ariakit/branch/main/graph/badge.svg" /></a><br>
-  <a href="https://opencollective.com/ariakit"><img alt="Sponsors" src="https://opencollective.com/ariakit/sponsor/badge.svg?label=sponsors" /></a>
-  <a href="https://opencollective.com/ariakit"><img alt="Backers" src="https://opencollective.com/ariakit/backer/badge.svg?label=backers" /></a>
+<div align="center">
+  <a href="https://npmjs.org/package/ariakit">
+    <img alt="NPM version" src="https://img.shields.io/npm/v/ariakit.svg?logo=npm&color=007acc" />
+  </a>
+  <a href="https://github.com/ariakit/ariakit/releases">
+    <img alt="GitHub (Pre-)Release Date" src="https://img.shields.io/github/release-date-pre/ariakit/ariakit?logo=github&color=007acc">
+  </a>
+  <a href="https://github.com/ariakit/ariakit/discussions">
+    <img alt="GitHub Discussions" src="https://img.shields.io/github/discussions/ariakit/ariakit?logo=github&color=007acc">
+  </a>
+  <br>
+  <a href="https://npmjs.org/package/ariakit">
+    <img alt="NPM downloads" src="https://img.shields.io/npm/dm/ariakit.svg?logo=npm&style=social">
+  </a>
+  &nbsp;
+  <a href="https://github.com/ariakit/ariakit/stargazers">
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
+  </a>
+  &nbsp;
   <a href="https://twitter.com/ariakitjs">
-    <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg"></a>
+    <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
+  </a>
+</div>
+
+<br>
+
+---
+
+<p align="center">
+  This is the Ariakit (v2) branch (<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>), which is still in alpha.
+  <br>
+  If you're looking for Reakit (v1), check out the <a href="https://github.com/ariakit/ariakit/tree/v1">v1</a> branch.
 </p>
 
-> **Note**: This is the Ariakit (v2) branch <sup>[<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>]</sup>, which is still in alpha.
-> 
-> If you're looking for Reakit (v1), check out the [v1](https://github.com/ariakit/ariakit/tree/v1) branch.
+---
 
 ## Installation
 
@@ -64,3 +85,7 @@ function App() {
 
 createRoot(document.getElementById("root")).render(<App />);
 ```
+
+## Contributing
+
+See [[v2] Examples](https://github.com/ariakit/ariakit/issues/939) and follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).

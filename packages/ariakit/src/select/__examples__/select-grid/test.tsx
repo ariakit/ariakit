@@ -6,7 +6,7 @@ import {
   render,
   sleep,
   type,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getSelect = () => getByRole("combobox", { name: "Position" });

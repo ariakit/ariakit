@@ -1,10 +1,4 @@
-import {
-  getByRole,
-  press,
-  queryByRole,
-  render,
-  type,
-} from "ariakit-test-utils";
+import { getByRole, press, queryByRole, render, type } from "ariakit-test";
 import Example from ".";
 
 const getTextarea = () => getByRole("combobox");

@@ -1,5 +1,5 @@
-import "ariakit-test-utils/mock-get-client-rects";
-import { sleep } from "ariakit-test-utils";
+import "ariakit-test/mock-get-client-rects";
+import { sleep } from "ariakit-test";
 import {
   disableFocus,
   disableFocusIn,

@@ -6,14 +6,14 @@ const changelogFunctions = {
     const updatedDepenenciesList = dependenciesUpdated.map(
       (dependency) => `\`${dependency.name}@${dependency.newVersion}\``
     );
-    return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}.`;
+    return `\n- Updated dependencies: ${updatedDepenenciesList.join(", ")}.`;
   },
   getReleaseLine: async (changeset) => {
     const [firstLine, ...nextLines] = changeset.summary
       .split("\n")
       .map((l) => l.trimEnd());
 
-    let returnVal = `- ${firstLine}`;
+    let returnVal = `\n\n- ${firstLine}`;
 
     if (nextLines.length > 0) {
       returnVal += `\n${nextLines.map((l) => `  ${l}`).join("\n")}`;
