@@ -8,16 +8,10 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const dialog = useDialogState({
-    animated: true,
-  });
+  const dialog = useDialogState({ animated: true });
   return (
     <>
-      <Button
-        onClick={dialog.toggle}
-        aria-label="Open modal details"
-        className="button"
-      >
+      <Button onClick={dialog.toggle} className="button">
         Open modal details
       </Button>
       <Dialog state={dialog} className="dialog">
@@ -38,12 +32,7 @@ export default function Example() {
           </p>
         </div>
         <div className="footer">
-          <button
-            type="button"
-            className="button"
-            aria-label="Hide dialog"
-            onClick={dialog.hide}
-          >
+          <button type="button" className="button" onClick={dialog.hide}>
             Submit
           </button>
         </div>
