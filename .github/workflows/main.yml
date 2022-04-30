@@ -280,13 +280,15 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache node_modules
+      - name: Cache npm
         uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci --no-audit
 
       - name: Get playwright version
         id: playwright-version

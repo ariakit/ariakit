@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("popover is rendered correctly", async ({ page }) => {
+test("popover is positioned correctly", async ({ page }) => {
   await page.goto("/examples/combobox-textarea");
 
   const textarea = await page.locator("role=combobox[name='Comment']");
@@ -10,11 +10,13 @@ test("popover is rendered correctly", async ({ page }) => {
   const popover = await page.locator(".popover[role='listbox']");
   await expect(popover).toBeVisible();
 
+  const { x, y } = (await textarea.boundingBox())!;
+
   expect(await popover.boundingBox()).toEqual({
     width: 180,
     height: 186,
-    x: process.platform === "linux" ? 515 : 516,
-    y: 336,
+    x: process.platform === "linux" ? x + 65 : x + 66,
+    y: y + 34,
   });
 
   await textarea.type("\n\n\n\n\n\n\n\n\n\n");
@@ -27,8 +29,8 @@ test("popover is rendered correctly", async ({ page }) => {
   expect(await popover.boundingBox()).toEqual({
     width: 180,
     height: 186,
-    x: 473,
-    y: 346,
+    x: x + 23,
+    y: y + 44,
   });
 
   await page.mouse.wheel(0, -50);
@@ -37,7 +39,7 @@ test("popover is rendered correctly", async ({ page }) => {
   expect(await popover.boundingBox()).toEqual({
     width: 180,
     height: 186,
-    x: 473,
-    y: 396,
+    x: x + 23,
+    y: y + 94,
   });
 });

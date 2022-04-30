@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
   },
   expect: {
     toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : undefined,
+      maxDiffPixelRatio: headed ? 1 : 0.01,
     },
   },
   use: {
