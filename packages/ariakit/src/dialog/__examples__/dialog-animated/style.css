@@ -1,5 +1,5 @@
 @import url("../../../button/__examples__/button/style.css");
-@import url("../dialog//style.css");
+@import url("../dialog/style.css");
 
 [data-backdrop] {
   background-color: rgb(0 0 0 / 10%);
@@ -44,7 +44,8 @@
     border-solid
     border-canvas-4
     p-4
-    dark:border-canvas-4-dark;
+    dark:border-canvas-4-dark
+  ;
 }
 
 .heading {

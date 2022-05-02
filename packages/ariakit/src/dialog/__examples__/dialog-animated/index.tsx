@@ -20,21 +20,32 @@ export default function Example() {
           <DialogDismiss className="button dismiss" />
         </header>
         <div className="content">
-          <p>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-            ac consectetur ac, vestibulum at eros.
-          </p>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-            Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-            auctor.
-          </p>
+          <ul>
+            <li>
+              <strong>Calories:</strong> 95
+            </li>
+            <li>
+              <strong>Carbs:</strong> 25 grams
+            </li>
+            <li>
+              <strong>Fibers:</strong> 4 grams
+            </li>
+            <li>
+              <strong>Vitamin C:</strong> 14% of the Reference Daily Intake
+              (RDI)
+            </li>
+            <li>
+              <strong>Potassium:</strong> 6% of the RDI
+            </li>
+            <li>
+              <strong>Vitamin K:</strong> 5% of the RDI
+            </li>
+          </ul>
         </div>
         <div className="footer">
-          <button type="button" className="button" onClick={dialog.hide}>
+          <Button className="button" onClick={dialog.hide}>
             Submit
-          </button>
+          </Button>
         </div>
       </Dialog>
     </>
