@@ -27,6 +27,7 @@ const links: Array<{ href: string; label: string }> = [
   },
   { href: "/examples/menu-context-menu", label: "Context menu" },
   { href: "/examples/dialog", label: "Dialog" },
+  { href: "/examples/dialog-animated", label: "Dialog Animated" },
   { href: "/examples/disclosure", label: "Disclosure" },
   { href: "/examples/focus-trap", label: "Focus trap" },
   { href: "/examples/form", label: "Form" },
