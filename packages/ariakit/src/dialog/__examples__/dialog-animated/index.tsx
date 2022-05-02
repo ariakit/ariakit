@@ -12,11 +12,11 @@ export default function Example() {
   return (
     <>
       <Button onClick={dialog.toggle} className="button">
-        Open modal details
+        View details
       </Button>
       <Dialog state={dialog} className="dialog">
         <header className="header">
-          <DialogHeading className="heading">Dialog title</DialogHeading>
+          <DialogHeading className="heading">Apples</DialogHeading>
           <DialogDismiss className="button dismiss" />
         </header>
         <div className="content">
@@ -44,7 +44,7 @@ export default function Example() {
         </div>
         <div className="footer">
           <Button className="button" onClick={dialog.hide}>
-            Submit
+            Close
           </Button>
         </div>
       </Dialog>
