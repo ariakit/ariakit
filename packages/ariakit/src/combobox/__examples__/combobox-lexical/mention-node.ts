@@ -16,7 +16,7 @@ export class MentionNode extends TextNode {
     this.__mention = mentionName;
   }
 
-  createDOM(config: EditorConfig<Record<string, any>>) {
+  createDOM(config: EditorConfig) {
     const dom = super.createDOM(config);
     dom.classList.add("mention");
     return dom;
