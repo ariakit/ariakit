@@ -44,8 +44,7 @@
     border-solid
     border-canvas-4
     p-4
-    dark:border-canvas-4-dark
-  ;
+    dark:border-canvas-4-dark;
 }
 
 .heading {
@@ -66,6 +65,5 @@
     rounded-b
     border-t
     border-canvas-4
-    dark:border-canvas-4-dark
-  ;
+    dark:border-canvas-4-dark;
 }
