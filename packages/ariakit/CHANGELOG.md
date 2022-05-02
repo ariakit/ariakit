@@ -1,5 +1,11 @@
 # ariakit
 
+## 2.0.0-next.25
+
+### Patch Changes
+
+- Fixed `SelectLabelProps` type to default to `div` instead of `label`. ([#1281](https://github.com/ariakit/ariakit/pull/1281))
+
 ## 2.0.0-next.24
 
 ### Patch Changes
