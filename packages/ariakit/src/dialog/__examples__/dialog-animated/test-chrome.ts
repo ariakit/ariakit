@@ -7,5 +7,3 @@ test("show/hide on disclosure click", async ({ page }) => {
   await page.locator("role=button[name='Dismiss popup']").click();
   await expect(page.locator("role=dialog[name='Apples']")).not.toBeVisible();
 });
-
-a
