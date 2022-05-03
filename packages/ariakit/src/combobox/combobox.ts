@@ -1,6 +1,7 @@
 import {
   ChangeEvent,
   CompositionEvent,
+  FormEvent,
   MouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
   useCallback,
@@ -199,6 +200,19 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
     }, [inline, state.contentElement, state.setValue, value]);
 
+    const onInputCaptureProp = useEventCallback(props.onInputCapture);
+
+    const onInputCapture = useCallback(
+      (event: FormEvent<HTMLInputElement>) => {
+        const nativeEvent = event.nativeEvent;
+        if (isInputEvent(nativeEvent)) {
+          hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
+        }
+        onInputCaptureProp(event);
+      },
+      [onInputCaptureProp]
+    );
+
     const onChangeProp = useEventCallback(props.onChange);
     const showOnChangeProp = useBooleanEventCallback(showOnChange);
     const setValueOnChangeProp = useBooleanEventCallback(setValueOnChange);
@@ -207,10 +221,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       (event: ChangeEvent<HTMLInputElement>) => {
         onChangeProp(event);
         if (event.defaultPrevented) return;
-        const nativeEvent = event.nativeEvent;
-        if (isInputEvent(nativeEvent)) {
-          hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
-        }
         if (showOnChangeProp(event)) {
           state.show();
         }
@@ -370,6 +380,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       value,
       ...props,
       ref: useForkRef(ref, props.ref),
+      onInputCapture,
       onChange,
       onCompositionEnd,
       onMouseDown,
