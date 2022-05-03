@@ -9,13 +9,14 @@ import {
 } from "react";
 import { ClassNames } from "@emotion/react";
 import {
+  useLazyValue,
   useLiveRef,
   useUpdateEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+import { AnyObject, As, Options, Props } from "ariakit-utils/types";
 import { PortalContext } from "ariakit/portal";
 import { Role, RoleProps } from "ariakit/role";
 import { compileComponent } from "./__utils/compile-component";
@@ -113,6 +114,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
     const [error, setError] = useState<Error | null>(null);
     const [cssModule, setCssModule] = useState("");
     const cssModuleRef = useLiveRef(cssModule);
+    const transformCache = useLazyValue<AnyObject>(() => Object.create(null));
     const values = state?.values || {};
     const filename = getFile(values, file);
     const debouncedValues = useDebouncedValue(values, 750);
@@ -132,7 +134,12 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
         if (!moduleName) return;
         const code = debouncedValues[moduleName] || "";
         try {
-          const internalModule = compileModule(code, moduleName, getModule);
+          const internalModule = compileModule(
+            code,
+            moduleName,
+            getModule,
+            transformCache
+          );
           const css = getCSSModule(internalModule);
           if (css) {
             setCssModule(css);

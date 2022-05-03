@@ -1,3 +1,5 @@
+import { $createMentionNode } from "./nodes";
+
 export const defaultTriggers = ["@", "#", ":"];
 
 export function getList(trigger: string | null) {
@@ -25,8 +27,17 @@ export function getValue(listValue: string, trigger: string | null) {
   return list.find((item) => item.listValue === listValue)?.value;
 }
 
+export function getNode(listValue: string, trigger: string | null) {
+  const value = getValue(listValue, trigger);
+  if (value) {
+    return $createMentionNode(value);
+  }
+  return null;
+}
+
 const users = [
   { value: "@diegohaz", listValue: "diegohaz" },
+  { value: "Diego Haz", listValue: "Diego Haz" },
   { value: "@tcodes0", listValue: "tcodes0" },
   { value: "@SCasarotto", listValue: "SCasarotto" },
   { value: "@matheus1lva", listValue: "matheus1lva" },

@@ -3,8 +3,10 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $wrapLeafNodesInElements } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 import {
   Combobox,
@@ -13,32 +15,48 @@ import {
   useComboboxState,
 } from "ariakit/combobox";
 import {
+  $createTextNode,
   $getSelection,
   $isRangeSelection,
-  EditorConfig,
+  $isTextNode,
+  ElementNode,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
   KEY_TAB_COMMAND,
   LexicalEditor,
-  LexicalNode,
   TextNode,
 } from "lexical";
-import { defaultTriggers } from "./list";
+import useLayoutEffect from "use-isomorphic-layout-effect";
 
-export function ComboboxContentEditable() {
+export type ComboboxContentEditableProps = {
+  isTrigger?: (char: string, offset: number) => boolean;
+  getList?: (trigger: string | null) => string[];
+  getItemNode?: (
+    item: string,
+    trigger: string | null
+  ) => ElementNode | TextNode | null;
+};
+
+export function ComboboxContentEditable({
+  isTrigger,
+  getList = () => [],
+  getItemNode = () => null,
+}: ComboboxContentEditableProps) {
+  const [trigger, setTrigger] = useState<string | null>(null);
   const anchorRectRef = useRef<() => DOMRect | null>(() => null);
   const combobox = useComboboxState({
+    limit: 10,
     getAnchorRect: () => anchorRectRef.current(),
   });
   const [editor] = useLexicalComposerContext();
 
-  useEffect(() => {
-    if (!editor.hasNodes([MentionNode])) {
-      throw new Error(
-        "ComboboxContentEditable: MentionNode not registered on editor"
-      );
-    }
-  }, [editor]);
+  useLayoutEffect(() => {
+    combobox.setList(getList(trigger));
+  }, [combobox.setList, trigger]);
+
+  if (!combobox.mounted && trigger) {
+    setTrigger(null);
+  }
 
   useEffect(() => {
     if (!combobox.visible) return;
@@ -71,15 +89,15 @@ export function ComboboxContentEditable() {
   useEffect(() => {
     return editor.registerTextContentListener(() => {
       const value = getTextBeforeCursor(editor);
-      const triggerOffset = getTriggerOffset(value);
+      const triggerOffset = getTriggerOffset(value, isTrigger);
       if (triggerOffset === -1) {
         combobox.hide();
       }
-      const trigger = getTriggerInPreviousChar(value);
+      const trigger = getTriggerInPreviousChar(value, isTrigger);
       const selectionElement = getSelectionElement(editor);
       if (!selectionElement) return;
       if (!selectionElement.firstChild) return;
-      const searchValue = getSearchValue(value);
+      const searchValue = getSearchValue(value, isTrigger);
       combobox.setValue(searchValue);
       const range = document.createRange();
       range.setStart(selectionElement.firstChild, triggerOffset + 1);
@@ -88,6 +106,7 @@ export function ComboboxContentEditable() {
       anchorRectRef.current = () => range.getBoundingClientRect();
       if (trigger) {
         combobox.show();
+        setTrigger(trigger);
       }
     });
   }, [editor]);
@@ -120,69 +139,52 @@ export function ComboboxContentEditable() {
         className="combobox"
       />
       <ComboboxPopover state={combobox} className="popover">
-        <ComboboxItem
-          value="Apple"
-          className="combobox-item"
-          onClick={() => {
-            editor.update(() => {
-              const selection = $getSelection();
-              if (!$isRangeSelection(selection)) return;
-              const value = getTextBeforeCursor(editor);
-              const startOffset = getTriggerOffset(value);
-              const selectionOffset = startOffset + 1 + combobox.value.length;
-              const anchor = selection.anchor;
-              if (anchor.type !== "text") return;
-              const anchorNode = anchor.getNode();
-              if (!anchorNode.isSimpleText()) return;
-              // eslint-disable-next-line prefer-const
-              let [orNode, nodeToReplace] = anchorNode.splitText(
-                startOffset,
-                selectionOffset
-              );
-              if (startOffset === 0) {
-                nodeToReplace = orNode;
-              }
-              const mentionNode = $createMentionNode("Apple");
-              nodeToReplace?.replace(mentionNode);
-              mentionNode.select();
-            });
-          }}
-        />
-        <ComboboxItem value="Banana" className="combobox-item" />
-        <ComboboxItem value="Cherry" className="combobox-item" />
+        {combobox.matches.map((item) => (
+          <ComboboxItem
+            value={item}
+            key={item}
+            className="combobox-item"
+            onClick={() => {
+              editor.update(() => {
+                const selection = $getSelection();
+                if (!$isRangeSelection(selection)) return;
+                const value = getTextBeforeCursor(editor);
+                const startOffset = getTriggerOffset(value, isTrigger);
+                const selectionOffset = startOffset + 1 + combobox.value.length;
+                const anchor = selection.anchor;
+                if (anchor.type !== "text") return;
+                const anchorNode = anchor.getNode();
+                if (!anchorNode.isSimpleText()) return;
+                // eslint-disable-next-line prefer-const
+                let [orNode, nodeToReplace] = anchorNode.splitText(
+                  startOffset,
+                  selectionOffset
+                );
+                if (startOffset === 0) {
+                  nodeToReplace = orNode;
+                }
+                const mentionNode = getItemNode(item, trigger);
+                if (mentionNode && nodeToReplace) {
+                  if ($isTextNode(mentionNode)) {
+                    nodeToReplace.replace(mentionNode);
+                    const space = $createTextNode(" ");
+                    mentionNode.insertAfter(space);
+                    space.select();
+                  } else {
+                    nodeToReplace!.remove();
+                    $wrapLeafNodesInElements(selection, () => {
+                      const node = getItemNode(item, trigger) as ElementNode;
+                      return node;
+                    });
+                  }
+                }
+              });
+            }}
+          />
+        ))}
       </ComboboxPopover>
     </>
   );
-}
-
-export class MentionNode extends TextNode {
-  static getType() {
-    return "mention";
-  }
-
-  static clone(node: MentionNode) {
-    return new MentionNode(node.__text, node.__key);
-  }
-
-  createDOM(config: EditorConfig) {
-    const dom = super.createDOM(config);
-    dom.classList.add("mention");
-    return dom;
-  }
-
-  isTextEntity() {
-    return true;
-  }
-}
-
-export function $createMentionNode(mentionName: string) {
-  const mentionNode = new MentionNode(mentionName);
-  mentionNode.setMode("segmented").toggleDirectionless();
-  return mentionNode;
-}
-
-export function $isMentionNode(node: LexicalNode): node is MentionNode {
-  return node instanceof MentionNode;
 }
 
 function getTextBeforeCursor(editor: LexicalEditor) {
@@ -210,26 +212,30 @@ function getSelectionElement(editor: LexicalEditor) {
   });
 }
 
-function getTriggerOffset(value: string, triggers = defaultTriggers) {
+function defaultIsTrigger(_char: string, _offset: number) {
+  return false;
+}
+
+function getTriggerOffset(value: string, isTrigger = defaultIsTrigger) {
   for (let i = value.length; i >= 0; i--) {
     const char = value[i];
-    if (char && triggers.includes(char)) return i;
+    if (char && isTrigger(char, i)) return i;
   }
   return -1;
 }
 
-function getTriggerInPreviousChar(value: string, triggers = defaultTriggers) {
+function getTriggerInPreviousChar(value: string, isTrigger = defaultIsTrigger) {
   const previousChar = value[value.length - 1];
   if (!previousChar) return null;
   const secondPreviousChar = value[value.length - 2];
   const isIsolated = !secondPreviousChar || /\s/.test(secondPreviousChar);
   if (!isIsolated) return null;
-  if (triggers.includes(previousChar)) return previousChar;
+  if (isTrigger(previousChar, value.length - 1)) return previousChar;
   return null;
 }
 
-function getSearchValue(value: string, triggers = defaultTriggers) {
-  const offset = getTriggerOffset(value, triggers);
+function getSearchValue(value: string, isTrigger = defaultIsTrigger) {
+  const offset = getTriggerOffset(value, isTrigger);
   if (offset === -1) return "";
   return value.slice(offset + 1);
 }

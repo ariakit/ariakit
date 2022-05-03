@@ -1,7 +1,7 @@
 @import url("../combobox/style.css");
 
 .wrapper {
-  @apply relative;
+  @apply relative w-full;
 }
 
 .placeholder {
@@ -13,6 +13,30 @@
 }
 
 .combobox {
-  min-height: 150px;
-  @apply p-4 overflow-auto;
+  min-height: 200px;
+  line-height: normal;
+  @apply p-4 overflow-auto w-full;
+}
+
+.combobox h1 {
+  @apply text-3xl mb-4;
+}
+
+.popover {
+  min-width: 180px;
+  max-height: min(var(--popover-available-height, 186px), 186px);
+  max-width: 280px;
+  @apply p-1 rounded-md;
+}
+
+.mention {
+  @apply
+    p-1
+    rounded
+    border
+    border-solid
+    border-primary-1
+    bg-primary-1
+    dark:border-primary-1-dark
+    dark:bg-primary-1-dark;
 }

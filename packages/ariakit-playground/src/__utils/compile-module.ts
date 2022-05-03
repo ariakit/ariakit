@@ -14,7 +14,8 @@ function createModule(exports: AnyObject = {}) {
 export function compileModule(
   code: string,
   filename: string,
-  getModule?: (path: string) => any
+  getModule?: (path: string) => any,
+  transformCache?: AnyObject
 ) {
   const extension = getExtension(filename);
   const defaultDeps = { react: React };
@@ -36,6 +37,13 @@ export function compileModule(
   if (extension === "css") {
     return createModule(createCSSModule(code));
   }
+  if (
+    transformCache != null &&
+    transformCache[filename] != null &&
+    transformCache[filename].code === code
+  ) {
+    return transformCache[filename].result;
+  }
   const compiled = transform(code, {
     filename,
     presets: [
@@ -46,5 +54,9 @@ export function compileModule(
   });
   const compiledCode = `${compiled.code};\nreturn exports`;
   const fn = new Function("require", "exports", "React", compiledCode);
-  return fn(customRequire, Object.create(null), React);
+  const result = fn(customRequire, Object.create(null), React);
+  if (transformCache) {
+    transformCache[filename] = { code, result };
+  }
+  return result;
 }
