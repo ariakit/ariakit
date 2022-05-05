@@ -1,10 +1,6 @@
 import { MouseEvent, useCallback } from "react";
 import { getPopupRole } from "ariakit-utils/dom";
-import {
-  useBooleanEventCallback,
-  useEvent,
-  useWrapElement,
-} from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -89,8 +85,8 @@ export const useSelectItem = createHook<SelectItemOptions>(
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
 
     const onClickProp = useEvent(props.onClick);
-    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
-    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
+    const hideOnClickProp = useBooleanEvent(hideOnClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -146,7 +142,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
       ...props,
     });
 
-    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
+    const focusOnHoverProp = useBooleanEvent(focusOnHover);
 
     props = useCompositeHover({
       state,

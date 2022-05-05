@@ -1,11 +1,7 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { getPopupRole, isTextField } from "ariakit-utils/dom";
 import { hasFocus } from "ariakit-utils/focus";
-import {
-  useBooleanEventCallback,
-  useEvent,
-  useWrapElement,
-} from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -76,8 +72,8 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     const onClickProp = useEvent(props.onClick);
-    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
-    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
+    const hideOnClickProp = useBooleanEvent(hideOnClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {

@@ -2,7 +2,7 @@ import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
 import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEvent } from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
@@ -69,7 +69,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
     state = useStore(state || CompositeContext, ["setActiveId", "baseRef"]);
 
-    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
+    const focusOnHoverProp = useBooleanEvent(focusOnHover);
     const onMouseMoveProp = useEvent(props.onMouseMove);
 
     useEffect(() => {

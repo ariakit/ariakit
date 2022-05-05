@@ -11,7 +11,7 @@ import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
@@ -147,8 +147,8 @@ export const useHovercard = createHook<HovercardOptions>(
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     const domReady = !portal || portalNode;
 
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
-    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+    const hideOnControlProp = useBooleanEvent(hideOnControl);
 
     // Hide on Escape/Control. Popover already handles this, but only when the
     // dialog, the backdrop or the disclosure elements are focused. Since the
@@ -167,9 +167,9 @@ export const useHovercard = createHook<HovercardOptions>(
     }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
-    const hideOnHoverOutsideProp = useBooleanEventCallback(hideOnHoverOutside);
+    const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
     const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
-    const disablePointerEventsProp = useBooleanEventCallback(
+    const disablePointerEventsProp = useBooleanEvent(
       disablePointerEventsOnApproach
     );
 

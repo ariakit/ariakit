@@ -291,10 +291,10 @@ export function useForceUpdate() {
 }
 
 /**
- * Returns an event callback similar to `useEvent`, but this also
- * accepts a boolean value, which will be turned into a function.
+ * Returns an event callback similar to `useEvent`, but this also accepts a
+ * boolean value, which will be turned into a function.
  */
-export function useBooleanEventCallback<T extends unknown[]>(
+export function useBooleanEvent<T extends unknown[]>(
   booleanOrCallback: boolean | ((...args: T) => boolean)
 ) {
   return useEvent(

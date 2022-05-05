@@ -8,7 +8,7 @@ import {
 import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
@@ -61,9 +61,7 @@ export function DialogBackdrop({
     backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
   }, [state.contentElement]);
 
-  const hideOnInteractOutsideProp = useBooleanEventCallback(
-    hideOnInteractOutside
-  );
+  const hideOnInteractOutsideProp = useBooleanEvent(hideOnInteractOutside);
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -78,7 +76,7 @@ export function DialogBackdrop({
     [onClickProp, hideOnInteractOutsideProp, state.hide]
   );
 
-  const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+  const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
   // When hideOnInteractOutside is false and the backdrop is clicked, the
   // backdrop will receive focus (because we set the tabIndex on it). Therefore,

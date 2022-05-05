@@ -11,7 +11,7 @@ import {
 import { getPopupRole } from "ariakit-utils/dom";
 import { isFocusEventOutside, queueBeforeEvent } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForceUpdate,
   useForkRef,
@@ -200,8 +200,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     }, [inline, state.contentElement, state.setValue, value]);
 
     const onChangeProp = useEvent(props.onChange);
-    const showOnChangeProp = useBooleanEventCallback(showOnChange);
-    const setValueOnChangeProp = useBooleanEventCallback(setValueOnChange);
+    const showOnChangeProp = useBooleanEvent(showOnChange);
+    const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +265,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     const onMouseDownProp = useEvent(props.onMouseDown);
-    const showOnMouseDownProp = useBooleanEventCallback(showOnMouseDown);
+    const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
 
     const onMouseDown = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {
@@ -279,7 +279,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     const onClickProp = useEvent(props.onClick);
-    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
 
     // When clicking on the combobox input, we should make sure the current
     // input value is set on the state and focus is set on the input only.
@@ -331,7 +331,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     const onKeyDownProp = useEvent(props.onKeyDown);
-    const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
+    const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
     const onKeyDown = useCallback(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {

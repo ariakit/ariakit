@@ -1,7 +1,7 @@
 import { FocusEvent, RefObject, useCallback, useMemo, useRef } from "react";
 import { getDocument } from "ariakit-utils/dom";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useId,
@@ -132,7 +132,7 @@ export const useFormField = createHook<FormFieldOptions>(
     );
 
     const onBlurProp = useEvent(props.onBlur);
-    const touchOnBlurProp = useBooleanEventCallback(touchOnBlur);
+    const touchOnBlurProp = useBooleanEvent(touchOnBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {

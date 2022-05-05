@@ -1,6 +1,6 @@
 import { MouseEvent, useCallback, useRef, useState } from "react";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
@@ -56,7 +56,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     );
 
     const onClickProp = useEvent(props.onClick);
-    const toggleOnClickProp = useBooleanEventCallback(toggleOnClick);
+    const toggleOnClickProp = useBooleanEvent(toggleOnClick);
     const isDuplicate = "data-disclosure" in props;
 
     const onClick = useCallback(

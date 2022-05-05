@@ -12,7 +12,7 @@ import {
 import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useId,
@@ -285,9 +285,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     );
 
     const onKeyDownProp = useEvent(props.onKeyDown);
-    const preventScrollOnKeyDownProp = useBooleanEventCallback(
-      preventScrollOnKeyDown
-    );
+    const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
     const item = useItem(state?.items, id);
     const isGrid = !!item?.rowId;
 
