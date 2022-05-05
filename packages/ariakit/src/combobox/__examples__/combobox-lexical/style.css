@@ -13,13 +13,16 @@
 }
 
 .combobox {
-  min-height: 200px;
-  line-height: normal;
-  @apply p-4 overflow-auto w-full;
+  min-height: 270px;
+  @apply p-4 overflow-auto w-full h-full;
 }
 
 .combobox h1 {
   @apply text-3xl mb-4;
+}
+
+.combobox p {
+  @apply mb-4;
 }
 
 .popover {
