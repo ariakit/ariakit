@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -73,7 +73,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       [state.animated, state.animating, state.stopAnimation]
     );
 
-    const onTransitionEndProp = useEventCallback(props.onTransitionEnd);
+    const onTransitionEndProp = useEvent(props.onTransitionEnd);
 
     const onTransitionEnd = useCallback(
       (event: TransitionEvent<HTMLDivElement>) => {
@@ -83,7 +83,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       [onTransitionEndProp, onEnd]
     );
 
-    const onAnimationEndProp = useEventCallback(props.onAnimationEnd);
+    const onAnimationEndProp = useEvent(props.onAnimationEnd);
 
     const onAnimationEnd = useCallback(
       (event: AnimationEvent<HTMLDivElement>) => {

@@ -1,7 +1,7 @@
 import { MouseEvent, useCallback, useRef, useState } from "react";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -45,7 +45,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
       setExpanded(state.visible && isCurrentDisclosure);
     }, [state.disclosureRef, state.visible]);
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = useEvent(props.onMouseDown);
 
     const onMouseDown = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
@@ -55,8 +55,8 @@ export const useDisclosure = createHook<DisclosureOptions>(
       [onMouseDownProp, state.disclosureRef]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
-    const toggleOnClickProp = useBooleanEventCallback(toggleOnClick);
+    const onClickProp = useEvent(props.onClick);
+    const toggleOnClickProp = useBooleanEvent(toggleOnClick);
     const isDuplicate = "data-disclosure" in props;
 
     const onClick = useCallback(

@@ -5,11 +5,7 @@ import {
   useRef,
 } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useForkRef,
-} from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent, useForkRef } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -63,8 +59,8 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       return addGlobalEventListener("mouseleave", onMouseLeave, true);
     }, [state.anchorRef]);
 
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-    const showOnHoverProp = useBooleanEventCallback(showOnHover);
+    const onMouseMoveProp = useEvent(props.onMouseMove);
+    const showOnHoverProp = useBooleanEvent(showOnHover);
 
     const onMouseMove = useCallback(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {

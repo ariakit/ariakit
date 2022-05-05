@@ -1,5 +1,5 @@
 import { FocusEvent, MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -28,7 +28,7 @@ import { TooltipState } from "./tooltip-state";
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
   ({ state, described, ...props }) => {
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -45,7 +45,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       [onFocusProp, state.show]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -56,7 +56,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       [onBlurProp, state.hide]
     );
 
-    const onMouseEnterProp = useEventCallback(props.onMouseEnter);
+    const onMouseEnterProp = useEvent(props.onMouseEnter);
 
     const onMouseEnter = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -73,7 +73,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       [onMouseEnterProp, state.show]
     );
 
-    const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
+    const onMouseLeaveProp = useEvent(props.onMouseLeave);
 
     const onMouseLeave = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {

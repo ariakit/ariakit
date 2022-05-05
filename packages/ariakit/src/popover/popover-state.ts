@@ -11,7 +11,7 @@ import {
   size,
 } from "@floating-ui/dom";
 import {
-  useEventCallback,
+  useEvent,
   useForceUpdate,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -110,9 +110,7 @@ export function usePopoverState({
   const defaultGetAnchorRect = (anchor?: HTMLElement | null) =>
     anchor?.getBoundingClientRect() || null;
 
-  const getAnchorRect = useEventCallback(
-    props.getAnchorRect || defaultGetAnchorRect
-  );
+  const getAnchorRect = useEvent(props.getAnchorRect || defaultGetAnchorRect);
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const popoverRef = useRef<HTMLElement>(null);

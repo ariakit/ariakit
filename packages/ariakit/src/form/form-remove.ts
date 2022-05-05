@@ -1,6 +1,6 @@
 import { MouseEvent, useCallback } from "react";
 import { isTextField } from "ariakit-utils/dom";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -66,7 +66,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
     const name = `${nameProp}`;
     state = useStore(state || FormContext, ["items", "removeValue"]);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

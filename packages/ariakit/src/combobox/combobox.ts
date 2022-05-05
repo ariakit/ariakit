@@ -11,8 +11,8 @@ import {
 import { getPopupRole } from "ariakit-utils/dom";
 import { isFocusEventOutside, queueBeforeEvent } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForceUpdate,
   useForkRef,
   useSafeLayoutEffect,
@@ -199,9 +199,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
     }, [inline, state.contentElement, state.setValue, value]);
 
-    const onChangeProp = useEventCallback(props.onChange);
-    const showOnChangeProp = useBooleanEventCallback(showOnChange);
-    const setValueOnChangeProp = useBooleanEventCallback(setValueOnChange);
+    const onChangeProp = useEvent(props.onChange);
+    const showOnChangeProp = useBooleanEvent(showOnChange);
+    const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
@@ -246,7 +246,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       ]
     );
 
-    const onCompositionEndProp = useEventCallback(props.onCompositionEnd);
+    const onCompositionEndProp = useEvent(props.onCompositionEnd);
 
     // When dealing with composition text (for example, when the user is typing
     // in accents or chinese characters), we need to set hasInsertedTextRef to
@@ -264,8 +264,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       [onCompositionEndProp, autoSelect]
     );
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
-    const showOnMouseDownProp = useBooleanEventCallback(showOnMouseDown);
+    const onMouseDownProp = useEvent(props.onMouseDown);
+    const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
 
     const onMouseDown = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {
@@ -278,8 +278,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       [onMouseDownProp, showOnMouseDownProp, state.show]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
-    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
+    const onClickProp = useEvent(props.onClick);
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
 
     // When clicking on the combobox input, we should make sure the current
     // input value is set on the state and focus is set on the input only.
@@ -301,7 +301,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       ]
     );
 
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
 
     const onKeyDownCapture = useCallback(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
@@ -330,8 +330,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       [onKeyDownCaptureProp, state.items, state.activeId]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
+    const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
     const onKeyDown = useCallback(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {

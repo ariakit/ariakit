@@ -8,7 +8,7 @@ import {
 } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useInitialValue,
   useTagName,
@@ -94,7 +94,7 @@ export const useForm = createHook<FormOptions>(
       }
     }, [autoFocusOnSubmit, state.submitFailed, state.items]);
 
-    const onSubmitProp = useEventCallback(props.onSubmit);
+    const onSubmitProp = useEvent(props.onSubmit);
 
     const onSubmit = useCallback(
       (event: FormEvent<HTMLFormElement>) => {
@@ -108,7 +108,7 @@ export const useForm = createHook<FormOptions>(
       [onSubmitProp, state.submit, autoFocusOnSubmit]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLFormElement>) => {
@@ -121,7 +121,7 @@ export const useForm = createHook<FormOptions>(
       [onBlurProp, validateOnBlur, state.items, state.validate]
     );
 
-    const onResetProp = useEventCallback(props.onReset);
+    const onResetProp = useEvent(props.onReset);
 
     const onReset = useCallback(
       (event: FormEvent<HTMLFormElement>) => {

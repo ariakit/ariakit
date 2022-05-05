@@ -1,5 +1,5 @@
 import { KeyboardEvent, useCallback, useEffect, useState } from "react";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
@@ -68,7 +68,7 @@ export const useMenuList = createHook<MenuListOptions>(
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
     const dir = state.placement.split("-")[0] as BasePlacement;
     const orientation =
       state.orientation === "both" ? undefined : state.orientation;

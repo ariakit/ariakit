@@ -7,7 +7,7 @@ import {
   useRef,
 } from "react";
 import { getPopupRole } from "ariakit-utils/dom";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -76,7 +76,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       state.disclosureRef.current = ref.current;
     });
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
@@ -112,7 +112,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     const dir = state.placement.split("-")[0] as BasePlacement;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -137,7 +137,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       ]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

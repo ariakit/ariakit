@@ -12,8 +12,8 @@ import {
 import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useId,
   useSafeLayoutEffect,
@@ -214,7 +214,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [id, rowId, trulyDisabled, getItemProp]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
     const hasFocusedComposite = useRef(false);
 
     const onFocus = useCallback(
@@ -266,7 +266,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       ]
     );
 
-    const onBlurCaptureProp = useEventCallback(props.onBlurCapture);
+    const onBlurCaptureProp = useEvent(props.onBlurCapture);
 
     const onBlurCapture = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
@@ -284,10 +284,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [onBlurCaptureProp, state?.virtualFocus]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const preventScrollOnKeyDownProp = useBooleanEventCallback(
-      preventScrollOnKeyDown
-    );
+    const onKeyDownProp = useEvent(props.onKeyDown);
+    const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
     const item = useItem(state?.items, id);
     const isGrid = !!item?.rowId;
 

@@ -37,7 +37,7 @@ import { tags as t } from "@lezer/highlight";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useControlledState,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useId,
   useInitialValue,
@@ -212,7 +212,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       };
     }, [initialValue, initialExtensions, file]);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -225,7 +225,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onClickProp]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
@@ -238,7 +238,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onKeyDownProp]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -252,7 +252,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onBlurProp]
     );
 
-    const onFocusVisibleProp = useEventCallback(props.onFocusVisible);
+    const onFocusVisibleProp = useEvent(props.onFocusVisible);
 
     const onFocusVisible = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {

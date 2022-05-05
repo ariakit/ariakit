@@ -1,5 +1,5 @@
 import { CSSProperties, FocusEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -39,7 +39,7 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
     portal = false,
     ...props
   }) => {
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {

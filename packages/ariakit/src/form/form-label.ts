@@ -1,11 +1,6 @@
 import { MouseEvent, useCallback, useRef } from "react";
 import { getFirstTabbableIn } from "ariakit-utils/focus";
-import {
-  useEventCallback,
-  useForkRef,
-  useId,
-  useTagName,
-} from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId, useTagName } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -74,7 +69,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const fieldTagName = useTagName(field?.ref, "input");
     const isNativeLabel = supportsNativeLabel(fieldTagName);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLLabelElement>) => {

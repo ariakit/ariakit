@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback, useContext, useMemo } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -27,7 +27,7 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
   ({ state, ...props }) => {
     const context = useContext(DialogContext);
     state = state || context;
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

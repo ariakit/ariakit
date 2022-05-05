@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -32,7 +32,7 @@ export const useFormInput = createHook<FormInputOptions>(
       useCallback((s: FormState) => s.getValue(name), [name]),
     ]);
 
-    const onChangeProp = useEventCallback(props.onChange);
+    const onChangeProp = useEvent(props.onChange);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
