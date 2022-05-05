@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -38,8 +38,8 @@ export function DialogBackdrop({
   children,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const onClickProp = useEventCallback(backdropProps?.onClick);
-  const onKeyDownProp = useEventCallback(backdropProps?.onKeyDown);
+  const onClickProp = useEvent(backdropProps?.onClick);
+  const onKeyDownProp = useEvent(backdropProps?.onKeyDown);
   const previousMouseDownRef = usePreviousMouseDownRef(state.mounted);
   const Component = typeof backdrop !== "boolean" ? backdrop || "div" : "div";
 

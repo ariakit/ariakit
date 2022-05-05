@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -49,7 +49,7 @@ const children = (
  */
 export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
   ({ state, ...props }) => {
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = useEvent(props.onMouseDown);
 
     const onMouseDown = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
@@ -62,7 +62,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
       [onMouseDownProp, state.move]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

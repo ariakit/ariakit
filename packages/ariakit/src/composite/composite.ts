@@ -14,7 +14,7 @@ import {
   isSelfTarget,
 } from "ariakit-utils/events";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useLiveRef,
   useSafeLayoutEffect,
@@ -52,7 +52,7 @@ function useKeyboardEventProxy(
   activeItem?: Item,
   onKeyboardEventProp?: KeyboardEventHandler
 ) {
-  const onKeyboardEvent = useEventCallback(onKeyboardEventProp);
+  const onKeyboardEvent = useEvent(onKeyboardEventProp);
   return useCallback(
     (event: ReactKeyboardEvent) => {
       onKeyboardEvent(event);
@@ -167,7 +167,7 @@ export const useComposite = createHook<CompositeOptions>(
       props.onKeyUpCapture
     );
 
-    const onFocusCaptureProp = useEventCallback(props.onFocusCapture);
+    const onFocusCaptureProp = useEvent(props.onFocusCapture);
 
     const onFocusCapture = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -194,7 +194,7 @@ export const useComposite = createHook<CompositeOptions>(
       [onFocusCaptureProp, virtualFocus, state.items]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -231,7 +231,7 @@ export const useComposite = createHook<CompositeOptions>(
       [onFocusProp, composite, virtualFocus, state.setActiveId]
     );
 
-    const onBlurCaptureProp = useEventCallback(props.onBlurCapture);
+    const onBlurCaptureProp = useEvent(props.onBlurCapture);
 
     const onBlurCapture = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -299,7 +299,7 @@ export const useComposite = createHook<CompositeOptions>(
       [onBlurCaptureProp, virtualFocus, activeItem, state.items]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {

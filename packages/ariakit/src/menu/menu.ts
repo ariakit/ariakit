@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -46,7 +46,7 @@ export const useMenu = createHook<MenuOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
     const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
 
     const onKeyDown = useCallback(

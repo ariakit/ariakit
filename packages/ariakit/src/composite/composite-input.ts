@@ -4,7 +4,7 @@ import {
   getTextboxSelection,
   isTextField,
 } from "ariakit-utils/dom";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -42,7 +42,7 @@ function getValueLength(element: HTMLElement) {
  */
 export const useCompositeInput = createHook<CompositeInputOptions>(
   ({ state, ...props }) => {
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
 
     const onKeyDownCapture = useCallback(
       (event: KeyboardEvent<HTMLInputElement>) => {
@@ -64,7 +64,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
       [onKeyDownCaptureProp]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {

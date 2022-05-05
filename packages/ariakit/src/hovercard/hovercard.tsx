@@ -12,7 +12,7 @@ import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useBooleanEventCallback,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -89,7 +89,7 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
     }
   }, [state.mounted]);
 
-  const onFocusProp = useEventCallback(props.onFocus);
+  const onFocusProp = useEvent(props.onFocus);
 
   const onFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {

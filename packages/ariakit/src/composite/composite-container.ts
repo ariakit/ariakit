@@ -14,7 +14,7 @@ import {
   getFirstTabbableIn,
   restoreFocusIn,
 } from "ariakit-utils/focus";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import { useEvent, useForkRef } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -97,7 +97,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       }
     }, [state?.items]);
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -129,7 +129,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       [onFocusProp, state?.baseRef, state?.setMoves]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -142,7 +142,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       [onBlurProp, close]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
@@ -202,7 +202,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       [onKeyDownProp, open]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {

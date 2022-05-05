@@ -1,9 +1,5 @@
 import { FocusEvent, useCallback, useRef, useState } from "react";
-import {
-  useEventCallback,
-  useForkRef,
-  useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -39,7 +35,7 @@ export const useCompositeOverflowDisclosure =
       state.disclosureRef.current = ref.current;
     });
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
@@ -50,7 +46,7 @@ export const useCompositeOverflowDisclosure =
       [onFocusProp]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     const onBlur = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {

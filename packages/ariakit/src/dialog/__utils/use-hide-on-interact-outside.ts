@@ -2,7 +2,7 @@ import { RefObject, useEffect } from "react";
 import { contains, getDocument } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { ensureFocus } from "ariakit-utils/focus";
-import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
+import { useEvent, useLiveRef } from "ariakit-utils/hooks";
 import { DialogOptions } from "../dialog";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref";
 
@@ -61,7 +61,7 @@ function useEventOutside({
   enabled,
   capture,
 }: EventOutsideOptions) {
-  const callListener = useEventCallback(listener);
+  const callListener = useEvent(listener);
   const nestedDialogsRef = useLiveRef(nestedDialogs);
 
   useEffect(() => {

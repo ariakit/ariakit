@@ -19,7 +19,7 @@ import {
 } from "ariakit-utils/events";
 import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
   useTagName,
@@ -138,7 +138,7 @@ function useDisableEvent(
   eventProp?: EventHandler<SyntheticEvent>,
   disabled?: boolean
 ) {
-  const onEventProp = useEventCallback(eventProp);
+  const onEventProp = useEvent(eventProp);
   return useCallback(
     (event: SyntheticEvent) => {
       onEventProp(event);
@@ -265,7 +265,7 @@ export const useFocusable = createHook<FocusableOptions>(
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = useEvent(props.onMouseDown);
 
     const onMouseDown = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -291,7 +291,7 @@ export const useFocusable = createHook<FocusableOptions>(
       [onMouseDownProp, focusable]
     );
 
-    const onFocusVisibleProp = useEventCallback(onFocusVisible);
+    const onFocusVisibleProp = useEvent(onFocusVisible);
 
     const onFocusVisibleEvent = useCallback(
       (event: SyntheticEvent<HTMLDivElement>) => {
@@ -303,7 +303,7 @@ export const useFocusable = createHook<FocusableOptions>(
       [onFocusVisibleProp, focusable]
     );
 
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
 
     const onKeyDownCapture = useCallback(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -322,7 +322,7 @@ export const useFocusable = createHook<FocusableOptions>(
       [onKeyDownCaptureProp, focusable, focusVisible, onFocusVisibleEvent]
     );
 
-    const onFocusCaptureProp = useEventCallback(props.onFocusCapture);
+    const onFocusCaptureProp = useEvent(props.onFocusCapture);
 
     const onFocusCapture = useCallback(
       (event: FocusEvent<HTMLDivElement>) => {
@@ -348,7 +348,7 @@ export const useFocusable = createHook<FocusableOptions>(
       [onFocusCaptureProp, focusable, onFocusVisibleEvent]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = useEvent(props.onBlur);
 
     // Note: Can't use onBlurCapture here otherwise it will not work with
     // CompositeItem's with the virtualFocus state set to true.

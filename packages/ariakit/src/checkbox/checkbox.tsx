@@ -1,7 +1,7 @@
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useRef } from "react";
 import {
   useControlledState,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useTagName,
   useWrapElement,
@@ -79,7 +79,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       element.checked = isChecked;
     }, [mixed, isChecked]);
 
-    const onChangeProp = useEventCallback(props.onChange);
+    const onChangeProp = useEvent(props.onChange);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +118,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       ]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {

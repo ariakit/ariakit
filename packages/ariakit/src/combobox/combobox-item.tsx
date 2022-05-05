@@ -3,7 +3,7 @@ import { getPopupRole, isTextField } from "ariakit-utils/dom";
 import { hasFocus } from "ariakit-utils/focus";
 import {
   useBooleanEventCallback,
-  useEventCallback,
+  useEvent,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
@@ -75,7 +75,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value, getItemProp]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
     const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
 
@@ -105,7 +105,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       ]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {

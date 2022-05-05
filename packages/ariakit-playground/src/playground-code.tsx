@@ -11,7 +11,7 @@ import {
 import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -106,7 +106,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       [lineNumbers, lines]
     );
 
-    const onMouseDownCaptureProp = useEventCallback(props.onMouseDownCapture);
+    const onMouseDownCaptureProp = useEvent(props.onMouseDownCapture);
 
     const onMouseDownCapture = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -117,7 +117,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       [onMouseDownCaptureProp]
     );
 
-    const disclosureOnClickProp = useEventCallback(disclosureProps?.onClick);
+    const disclosureOnClickProp = useEvent(disclosureProps?.onClick);
 
     const disclosureOnClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

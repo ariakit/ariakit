@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback } from "react";
-import { useEventCallback, useWrapElement } from "ariakit-utils/hooks";
+import { useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -39,7 +39,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
       useCallback((s: MenuState) => s.values[name], [name]),
     ]);
 
-    const onChangeCallback = useEventCallback(onChangeProp);
+    const onChangeCallback = useEvent(onChangeProp);
 
     const onChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {

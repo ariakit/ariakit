@@ -90,11 +90,11 @@ export function usePreviousValue<T>(value: T) {
  * incoming callback.
  * @example
  * function Component(props) {
- *   const onClick = useEventCallback(props.onClick);
+ *   const onClick = useEvent(props.onClick);
  *   React.useEffect(() => {}, [onClick]);
  * }
  */
-export function useEventCallback<T extends AnyFunction>(callback?: T) {
+export function useEvent<T extends AnyFunction>(callback?: T) {
   // @ts-ignore
   const ref = useRef<T | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
@@ -291,13 +291,13 @@ export function useForceUpdate() {
 }
 
 /**
- * Returns an event callback similar to `useEventCallback`, but this also
+ * Returns an event callback similar to `useEvent`, but this also
  * accepts a boolean value, which will be turned into a function.
  */
 export function useBooleanEventCallback<T extends unknown[]>(
   booleanOrCallback: boolean | ((...args: T) => boolean)
 ) {
-  return useEventCallback(
+  return useEvent(
     typeof booleanOrCallback === "function"
       ? booleanOrCallback
       : () => booleanOrCallback

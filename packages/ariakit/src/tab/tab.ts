@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { useEvent, useId } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -59,7 +59,7 @@ export const useTab = createHook<TabOptions>(
       [dimmed, getItemProp]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

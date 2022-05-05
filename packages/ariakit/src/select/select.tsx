@@ -13,7 +13,7 @@ import { getPopupRole } from "ariakit-utils/dom";
 import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useRefId,
   useWrapElement,
@@ -89,7 +89,7 @@ export const useSelect = createHook<SelectOptions>(
   }) => {
     toggleOnPress = toggleOnClick ? false : toggleOnPress;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
     const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
     const toggleOnPressProp = useBooleanEventCallback(toggleOnPress);
@@ -162,7 +162,7 @@ export const useSelect = createHook<SelectOptions>(
       ]
     );
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = useEvent(props.onMouseDown);
 
     const onMouseDown = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {

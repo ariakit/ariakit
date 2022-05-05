@@ -7,7 +7,7 @@ import {
 } from "react";
 import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import { useEvent, useForkRef } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -78,7 +78,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
       return () => observer.disconnect();
     }, [state.anchorRef]);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     // By default, hovercards don't receive focus when they are shown. When the
     // disclosure element is clicked, though, we want it to behave like a
@@ -92,7 +92,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
       [onClickProp, state.setAutoFocusOnShow]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     // Since the disclosure button is only visually hidden, it may receive focus
     // when the user tabs to it. So we make sure it's visible when that happens.

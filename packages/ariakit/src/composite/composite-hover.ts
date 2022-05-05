@@ -2,7 +2,7 @@ import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
 import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
@@ -70,7 +70,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     state = useStore(state || CompositeContext, ["setActiveId", "baseRef"]);
 
     const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
+    const onMouseMoveProp = useEvent(props.onMouseMove);
 
     useEffect(() => {
       // We're not returning the event listener cleanup function here because we
@@ -102,7 +102,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       [onMouseMoveProp, focusOnHoverProp, state?.baseRef, state?.setActiveId]
     );
 
-    const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
+    const onMouseLeaveProp = useEvent(props.onMouseLeave);
 
     const onMouseLeave = useCallback(
       (event: ReactMouseEvent<HTMLDivElement>) => {

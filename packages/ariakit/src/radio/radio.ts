@@ -7,7 +7,7 @@ import {
   useRef,
 } from "react";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useId,
   useLiveRef,
@@ -75,7 +75,7 @@ export const useRadio = createHook<RadioOptions>(
       }
     }, [isChecked, state?.setActiveId, id]);
 
-    const onChangeProp = useEventCallback(props.onChange);
+    const onChangeProp = useEvent(props.onChange);
     const tagName = useTagName(ref, props.as || "input");
     const nativeRadio = isNativeRadio(tagName, props.type);
 
@@ -96,7 +96,7 @@ export const useRadio = createHook<RadioOptions>(
       [props.disabled, nativeRadio, onChangeProp, state?.setValue, value]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {
@@ -108,7 +108,7 @@ export const useRadio = createHook<RadioOptions>(
       [onClickProp, nativeRadio, onChange]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = useEvent(props.onFocus);
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLInputElement>) => {

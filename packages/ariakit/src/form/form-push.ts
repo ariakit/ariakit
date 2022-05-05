@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback, useEffect, useState } from "react";
-import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
+import { useEvent, useLiveRef } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -92,7 +92,7 @@ export const useFormPush = createHook<FormPushOptions>(
       [name, getItemProp]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
     const valueRef = useLiveRef(value);
 
     const onClick = useCallback(

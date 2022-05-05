@@ -1,5 +1,5 @@
 import { KeyboardEvent, useCallback, useRef } from "react";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -30,7 +30,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {

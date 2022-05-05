@@ -2,7 +2,7 @@ import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEventCallback,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useId,
   useRefId,
@@ -58,7 +58,7 @@ export const useSelectList = createHook<SelectListOptions>(
 
     resetOnEscape = resetOnEscape && !multiSelectable;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
     const resetOnEscapeProp = useBooleanEventCallback(resetOnEscape);
     const hideOnEnterProp = useBooleanEventCallback(hideOnEnter);
 

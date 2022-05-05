@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEventCallback, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
@@ -45,7 +45,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
       useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
       menuBarState;
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
     const hideOnClickProp = useBooleanEventCallback(hideOnClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
     const isWithinMenu = !!hideMenu;

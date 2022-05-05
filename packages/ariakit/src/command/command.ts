@@ -5,7 +5,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useTagName } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useTagName } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -54,7 +54,7 @@ export const useCommand = createHook<CommandOptions>(
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
     const isDuplicate = "data-command" in props;
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -104,7 +104,7 @@ export const useCommand = createHook<CommandOptions>(
       [onKeyDownProp, isDuplicate, props.disabled, clickOnEnter, clickOnSpace]
     );
 
-    const onKeyUpProp = useEventCallback(props.onKeyUp);
+    const onKeyUpProp = useEvent(props.onKeyUp);
 
     const onKeyUp = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {

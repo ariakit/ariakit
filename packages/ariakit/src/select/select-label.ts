@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -25,7 +25,7 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
   ({ state, ...props }) => {
     const id = useId(props.id);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {

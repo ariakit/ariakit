@@ -1,7 +1,7 @@
 import { KeyboardEvent, useCallback, useContext, useRef } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
   createComponent,
@@ -92,7 +92,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
   ({ state, typeahead = true, ...props }) => {
     const context = useContext(CompositeContext);
     state = state || context;
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
     const cleanupTimeoutRef = useRef(0);
 
     // We have to listen to the event in the capture phase because the event
