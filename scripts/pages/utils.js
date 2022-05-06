@@ -111,61 +111,66 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   const content = fs.readFileSync(filename, "utf8");
   const parsed = babel.parseSync(content, { filename, ...babelConfig });
 
-  /** @type {babel.types.Program} */
-  // @ts-ignore
-  const program = parsed.program;
+  babel.traverse(parsed, {
+    enter(nodePath) {
+      const isImportDeclaration = nodePath.isImportDeclaration();
+      const isCallExpression = nodePath.isCallExpression();
+      if (!isImportDeclaration && !isCallExpression) return;
+      if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
 
-  program.body.forEach((node) => {
-    if (!t.isImportDeclaration(node)) return;
+      /** @type {string} */
+      const source = isCallExpression
+        ? // @ts-ignore
+          nodePath.node.arguments[0].value
+        : nodePath.node.source.value;
+      const mod = resolveModuleName(source, filename);
+      const relativeFilename = pathToPosix(
+        path.relative(dest, mod.resolvedFileName)
+      );
 
-    const source = node.source.value;
-    const mod = resolveModuleName(source, filename);
-    const relativeFilename = pathToPosix(
-      path.relative(dest, mod.resolvedFileName)
-    );
+      if (mod.isExternalLibraryImport) {
+        imports.push({
+          source,
+          originalSource: source,
+          filename: relativeFilename,
+          identifier: pathToIdentifier(relativeFilename),
+          defaultExport: false,
+        });
+        return;
+      }
 
-    if (mod.isExternalLibraryImport) {
+      if (/\.s?css$/.test(relativeFilename)) {
+        imports.push({
+          source: `!raw-loader!postcss-loader!${relativeFilename}`,
+          originalSource: source,
+          filename: relativeFilename,
+          identifier: pathToIdentifier(relativeFilename),
+          defaultExport: true,
+        });
+        return;
+      }
+
+      const isInternal = source.startsWith(".");
+
+      if (isInternal) {
+        const nextImports = getPageImports({
+          filename: mod.resolvedFileName,
+          dest,
+          originalSource: source,
+          importerFilePath: filename,
+        });
+        imports.push(...nextImports);
+        return;
+      }
+
       imports.push({
-        source,
+        source: relativeFilename,
         originalSource: source,
         filename: relativeFilename,
         identifier: pathToIdentifier(relativeFilename),
         defaultExport: false,
       });
-      return;
-    }
-
-    if (/\.s?css$/.test(relativeFilename)) {
-      imports.push({
-        source: `!raw-loader!postcss-loader!${relativeFilename}`,
-        originalSource: source,
-        filename: relativeFilename,
-        identifier: pathToIdentifier(relativeFilename),
-        defaultExport: true,
-      });
-      return;
-    }
-
-    const isInternal = source.startsWith(".");
-
-    if (isInternal) {
-      const nextImports = getPageImports({
-        filename: mod.resolvedFileName,
-        dest,
-        originalSource: source,
-        importerFilePath: filename,
-      });
-      imports.push(...nextImports);
-      return;
-    }
-
-    imports.push({
-      source: relativeFilename,
-      originalSource: source,
-      filename: relativeFilename,
-      identifier: pathToIdentifier(relativeFilename),
-      defaultExport: false,
-    });
+    },
   });
 
   return imports;
