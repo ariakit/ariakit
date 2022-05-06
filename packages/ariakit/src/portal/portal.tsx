@@ -106,7 +106,6 @@ export const usePortal = createHook<PortalOptions>(
       // Otherwise, we need to remove the portal from the DOM.
       return () => {
         portalEl.remove();
-        setPortalNode(null);
         setRef(portalRef, null);
       };
     }, [portal, portalElement, context, portalRef]);
