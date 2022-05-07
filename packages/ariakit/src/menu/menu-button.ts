@@ -80,7 +80,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     const onFocus = useCallback(
       (event: FocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event);
+        onFocusProp(event as any);
         if (disabled) return;
         if (event.defaultPrevented) return;
         // Reset the autoFocusOnShow state so we can focus the menu button while
@@ -116,7 +116,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownProp(event);
+        onKeyDownProp(event as any);
         if (disabled) return;
         if (event.defaultPrevented) return;
         const initialFocus = getInitialFocus(event, dir);
@@ -141,7 +141,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
+        onClickProp(event as any);
         if (event.defaultPrevented) return;
         const isKeyboardClick = !event.detail;
         // When the menu button is clicked, if the menu is hidden or if it's
