@@ -86,8 +86,9 @@ export function usePreviousValue<T>(value: T) {
 }
 
 /**
- * Creates a memoized callback function that is constantly updated with the
- * incoming callback.
+ * Creates a stable callback function that has access to the latest state and
+ * can be used within event handlers and effect callbacks. Throws when used in
+ * the render phase.
  * @example
  * function Component(props) {
  *   const onClick = useEvent(props.onClick);
@@ -95,18 +96,16 @@ export function usePreviousValue<T>(value: T) {
  * }
  */
 export function useEvent<T extends AnyFunction>(callback?: T) {
-  // @ts-ignore
-  const ref = useRef<T | undefined>(() => {
+  const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
   useSafeLayoutEffect(() => {
     ref.current = callback;
   });
-  return useCallback(
-    // @ts-ignore
-    (...args: Parameters<T>): ReturnType<T> => ref.current?.(...args),
+  return useCallback<AnyFunction>(
+    (...args) => ref.current?.apply(null, args),
     []
-  );
+  ) as T;
 }
 
 /**
