@@ -3,7 +3,6 @@ import {
   FocusEvent,
   KeyboardEvent,
   MouseEvent,
-  useCallback,
   useEffect,
   useRef,
 } from "react";
@@ -57,7 +56,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
     const ref = useRef<HTMLDivElement>(null);
     const isOpenRef = useRef(false);
 
-    const open = useCallback((collapseToEnd = false) => {
+    const open = (collapseToEnd = false) => {
       const container = ref.current;
       if (!container) return;
       restoreFocusIn(container);
@@ -73,14 +72,14 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
           selectTextField(tabbable, collapseToEnd);
         }
       });
-    }, []);
+    };
 
-    const close = useCallback(() => {
+    const close = () => {
       const container = ref.current;
       if (!container) return;
       isOpenRef.current = false;
       disableFocusIn(container);
-    }, []);
+    };
 
     // Disable focus on the tabbable elements inside the container when the
     // container is mounted.
@@ -97,125 +96,113 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       }
     }, [state?.items]);
 
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        const isOpen = isOpenRef.current;
-        if (isSelfTarget(event)) {
-          // The container element itself has received focus. Here we make an
-          // additional step in case tabbable elements have been added lazily to
-          // the DOM. We get all containers in the current composite element and
-          // disable all tabbable elements inside them.
-          isOpenRef.current = false;
-          const composite = state?.baseRef.current;
-          const selector = "[data-composite-container]";
-          const containers = composite?.querySelectorAll<HTMLElement>(selector);
-          containers?.forEach((container) => disableFocusIn(container));
-        } else if (!isOpen) {
-          // Otherwise, if any element inside the container has received focus,
-          // for example, by a direct user click, we should act as the container
-          // has been opened.
-          isOpenRef.current = true;
-          restoreFocusIn(event.currentTarget);
-          // Resets the moves in the state so the composite item will not be
-          // focused right after the focusable element inside the container gets
-          // focus.
-          state?.setMoves(0);
-        }
-      },
-      [onFocusProp, state?.baseRef, state?.setMoves]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      const isOpen = isOpenRef.current;
+      if (isSelfTarget(event)) {
+        // The container element itself has received focus. Here we make an
+        // additional step in case tabbable elements have been added lazily to
+        // the DOM. We get all containers in the current composite element and
+        // disable all tabbable elements inside them.
+        isOpenRef.current = false;
+        const composite = state?.baseRef.current;
+        const selector = "[data-composite-container]";
+        const containers = composite?.querySelectorAll<HTMLElement>(selector);
+        containers?.forEach((container) => disableFocusIn(container));
+      } else if (!isOpen) {
+        // Otherwise, if any element inside the container has received focus,
+        // for example, by a direct user click, we should act as the container
+        // has been opened.
+        isOpenRef.current = true;
+        restoreFocusIn(event.currentTarget);
+        // Resets the moves in the state so the composite item will not be
+        // focused right after the focusable element inside the container gets
+        // focus.
+        state?.setMoves(0);
+      }
+    });
 
-    const onBlurProp = useEvent(props.onBlur);
+    const onBlurProp = props.onBlur;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        if (isFocusEventOutside(event)) {
-          close();
-        }
-      },
-      [onBlurProp, close]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isFocusEventOutside(event)) {
+        close();
+      }
+    });
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.altKey) return;
-        if (event.ctrlKey) return;
-        if (event.metaKey) return;
-        if (event.shiftKey) return;
-        const container = event.currentTarget;
-        if (isSelfTarget(event)) {
-          // Alphanumeric key on container: focus the first tabbable element in
-          // the container if it's a text field or contenteditable element. This
-          // will automatically replace the text field value with the pressed
-          // key.
-          if (event.key.length === 1 && event.key !== " ") {
-            const tabbable = getFirstTabbable(container);
-            if (!tabbable) return;
-            if (isTextField(tabbable) || tabbable.isContentEditable) {
-              event.stopPropagation();
-              open();
-            }
-          }
-          // Delete/Backspace on container: focus on the first tabbable element
-          // in the container if it's a text field or contenteditable element.
-          // This will automatically clear the text field value.
-          else if (event.key === "Delete" || event.key === "Backspace") {
-            const tabbable = getFirstTabbable(container);
-            if (!tabbable) return;
-            if (isTextField(tabbable) || tabbable.isContentEditable) {
-              open();
-              // We need to move focus back to the container as soon as the
-              // delete/backspace key is captured by the text field.
-              const onInput = () => queueMicrotask(() => container.focus());
-              container.addEventListener("input", onInput, { once: true });
-            }
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.altKey) return;
+      if (event.ctrlKey) return;
+      if (event.metaKey) return;
+      if (event.shiftKey) return;
+      const container = event.currentTarget;
+      if (isSelfTarget(event)) {
+        // Alphanumeric key on container: focus the first tabbable element in
+        // the container if it's a text field or contenteditable element. This
+        // will automatically replace the text field value with the pressed
+        // key.
+        if (event.key.length === 1 && event.key !== " ") {
+          const tabbable = getFirstTabbable(container);
+          if (!tabbable) return;
+          if (isTextField(tabbable) || tabbable.isContentEditable) {
+            event.stopPropagation();
+            open();
           }
         }
-        // Escape on tabbable element inside container: move focus back to the
-        // container.
-        else if (event.key === "Escape") {
+        // Delete/Backspace on container: focus on the first tabbable element
+        // in the container if it's a text field or contenteditable element.
+        // This will automatically clear the text field value.
+        else if (event.key === "Delete" || event.key === "Backspace") {
+          const tabbable = getFirstTabbable(container);
+          if (!tabbable) return;
+          if (isTextField(tabbable) || tabbable.isContentEditable) {
+            open();
+            // We need to move focus back to the container as soon as the
+            // delete/backspace key is captured by the text field.
+            const onInput = () => queueMicrotask(() => container.focus());
+            container.addEventListener("input", onInput, { once: true });
+          }
+        }
+      }
+      // Escape on tabbable element inside container: move focus back to the
+      // container.
+      else if (event.key === "Escape") {
+        queueMicrotask(() => container.focus());
+      }
+      // Enter on tabbable element inside container: move focus back to the
+      // container only if it's an input or contenteditable element.
+      else if (event.key === "Enter") {
+        const target = event.target as HTMLElement;
+        const isInput =
+          (target.tagName === "INPUT" && !isButton(target)) ||
+          target.tagName === "TEXTAREA";
+        if (isInput || target.isContentEditable) {
+          event.preventDefault();
           queueMicrotask(() => container.focus());
         }
-        // Enter on tabbable element inside container: move focus back to the
-        // container only if it's an input or contenteditable element.
-        else if (event.key === "Enter") {
-          const target = event.target as HTMLElement;
-          const isInput =
-            (target.tagName === "INPUT" && !isButton(target)) ||
-            target.tagName === "TEXTAREA";
-          if (isInput || target.isContentEditable) {
-            event.preventDefault();
-            queueMicrotask(() => container.focus());
-          }
-        }
-      },
-      [onKeyDownProp, open]
-    );
+      }
+    });
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (isSelfTarget(event) && !event.detail) {
-          // Move focus to the first tabbable element in the container and place
-          // at the end.
-          open(true);
-        }
-      },
-      [onClickProp, open]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isSelfTarget(event) && !event.detail) {
+        // Move focus to the first tabbable element in the container and place
+        // at the end.
+        open(true);
+      }
+    });
 
     props = {
       "data-composite-container": "",

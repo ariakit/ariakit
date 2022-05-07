@@ -113,8 +113,8 @@ export const useCheckbox = createHook<CheckboxOptions>(
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (nativeCheckbox) return;
-      // @ts-ignore The onChange event expects a ChangeEvent, but here we need
-      // to pass a MouseEvent.
+      // @ts-expect-error The onChange event expects a ChangeEvent, but here we
+      // need to pass a MouseEvent.
       onChange(event);
     });
 
