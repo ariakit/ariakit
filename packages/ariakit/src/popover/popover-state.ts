@@ -172,10 +172,8 @@ export function usePopoverState({
         middleware.push(
           middlewares.size({
             padding: overflowPadding,
-            apply({ width, height, reference }) {
-              const referenceWidth = Math.round(reference.width);
-              const availableWidth = Math.round(width);
-              const availableHeight = Math.round(height);
+            apply({ availableWidth, availableHeight, rects }) {
+              const referenceWidth = Math.round(rects.reference.width);
               popover.style.setProperty(
                 "--popover-anchor-width",
                 `${referenceWidth}px`
