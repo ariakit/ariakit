@@ -1,8 +1,8 @@
-import { MouseEvent as ReactMouseEvent, useCallback, useEffect } from "react";
+import { MouseEvent as ReactMouseEvent, useEffect } from "react";
 import { closest, contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
@@ -69,9 +69,6 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ state, focusOnHover = true, ...props }) => {
     state = useStore(state || CompositeContext, ["setActiveId", "baseRef"]);
 
-    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
-    const onMouseMoveProp = useEventCallback(props.onMouseMove);
-
     useEffect(() => {
       // We're not returning the event listener cleanup function here because we
       // may lose some events if this component is unmounted, but others are
@@ -84,40 +81,37 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       addGlobalEventListener("scroll", resetMouseMoving, true);
     }, []);
 
-    const onMouseMove = useCallback(
-      (event: ReactMouseEvent<HTMLDivElement>) => {
-        onMouseMoveProp(event);
-        if (event.defaultPrevented) return;
-        if (!hasMouseMovement(event)) return;
-        if (!focusOnHoverProp(event)) return;
-        // If we're hovering over an item that doesn't have DOM focus, we move
-        // focus to the composite element. We're doing this here before setting
-        // the active id because the composite element will automatically set
-        // the active id to null when it receives focus.
-        if (!hasFocusWithin(event.currentTarget)) {
-          state?.baseRef.current?.focus();
-        }
-        state?.setActiveId(event.currentTarget.id);
-      },
-      [onMouseMoveProp, focusOnHoverProp, state?.baseRef, state?.setActiveId]
-    );
+    const onMouseMoveProp = props.onMouseMove;
+    const focusOnHoverProp = useBooleanEvent(focusOnHover);
 
-    const onMouseLeaveProp = useEventCallback(props.onMouseLeave);
-
-    const onMouseLeave = useCallback(
-      (event: ReactMouseEvent<HTMLDivElement>) => {
-        onMouseLeaveProp(event);
-        if (event.defaultPrevented) return;
-        if (!mouseMoving) return;
-        if (hoveringInside(event)) return;
-        if (movingToAnotherItem(event)) return;
-        if (!focusOnHoverProp(event)) return;
-        state?.setActiveId(null);
-        // Move focus to the composite element.
+    const onMouseMove = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+      onMouseMoveProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!hasMouseMovement(event)) return;
+      if (!focusOnHoverProp(event)) return;
+      // If we're hovering over an item that doesn't have DOM focus, we move
+      // focus to the composite element. We're doing this here before setting
+      // the active id because the composite element will automatically set the
+      // active id to null when it receives focus.
+      if (!hasFocusWithin(event.currentTarget)) {
         state?.baseRef.current?.focus();
-      },
-      [onMouseLeaveProp, focusOnHoverProp, state?.setActiveId, state?.baseRef]
-    );
+      }
+      state?.setActiveId(event.currentTarget.id);
+    });
+
+    const onMouseLeaveProp = props.onMouseLeave;
+
+    const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+      onMouseLeaveProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!mouseMoving) return;
+      if (hoveringInside(event)) return;
+      if (movingToAnotherItem(event)) return;
+      if (!focusOnHoverProp(event)) return;
+      state?.setActiveId(null);
+      // Move focus to the composite element.
+      state?.baseRef.current?.focus();
+    });
 
     props = {
       "data-composite-hover": "",

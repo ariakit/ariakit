@@ -1,5 +1,5 @@
-import { MouseEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { MouseEvent } from "react";
+import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -49,29 +49,23 @@ const children = (
  */
 export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
   ({ state, ...props }) => {
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onMouseDownProp(event);
-        // We have to prevent the element from getting focused on mousedown.
-        event.preventDefault();
-        // This will immediately move focus to the combobox input.
-        state.move(null);
-      },
-      [onMouseDownProp, state.move]
-    );
+    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onMouseDownProp?.(event);
+      // We have to prevent the element from getting focused on mousedown.
+      event.preventDefault();
+      // This will immediately move focus to the combobox input.
+      state.move(null);
+    });
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state.disclosureRef.current = state.baseRef.current;
-      },
-      [onClickProp, state.baseRef, state.disclosureRef]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state.disclosureRef.current = state.baseRef.current;
+    });
 
     const label = state.visible ? "Hide popup" : "Show popup";
 

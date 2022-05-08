@@ -1,7 +1,7 @@
 import { HTMLAttributes, RefObject, useEffect } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -53,8 +53,8 @@ export const useTooltip = createHook<TooltipOptions>(
       wrapper.style.zIndex = getComputedStyle(tooltip).zIndex;
     }, [popoverRef, state.contentElement]);
 
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
-    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+    const hideOnControlProp = useBooleanEvent(hideOnControl);
 
     // Hide on Escape/Control
     useEffect(() => {

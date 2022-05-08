@@ -2,13 +2,12 @@ import {
   AnimationEvent,
   SyntheticEvent,
   TransitionEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -60,38 +59,31 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return () => cancelAnimationFrame(raf.current);
     }, [state.animated, state.visible, state.animating]);
 
-    const onEnd = useCallback(
-      (event: SyntheticEvent) => {
-        if (event.defaultPrevented) return;
-        if (!isSelfTarget(event)) return;
-        if (!state.animating) return;
-        // Ignores number animated
-        if (state.animated === true) {
-          state.stopAnimation();
-        }
-      },
-      [state.animated, state.animating, state.stopAnimation]
-    );
+    const onEnd = (event: SyntheticEvent) => {
+      if (event.defaultPrevented) return;
+      if (!isSelfTarget(event)) return;
+      if (!state.animating) return;
+      // Ignores number animated
+      if (state.animated === true) {
+        state.stopAnimation();
+      }
+    };
 
-    const onTransitionEndProp = useEventCallback(props.onTransitionEnd);
+    const onTransitionEndProp = props.onTransitionEnd;
 
-    const onTransitionEnd = useCallback(
+    const onTransitionEnd = useEvent(
       (event: TransitionEvent<HTMLDivElement>) => {
-        onTransitionEndProp(event);
+        onTransitionEndProp?.(event);
         onEnd(event);
-      },
-      [onTransitionEndProp, onEnd]
+      }
     );
 
-    const onAnimationEndProp = useEventCallback(props.onAnimationEnd);
+    const onAnimationEndProp = props.onAnimationEnd;
 
-    const onAnimationEnd = useCallback(
-      (event: AnimationEvent<HTMLDivElement>) => {
-        onAnimationEndProp(event);
-        onEnd(event);
-      },
-      [onAnimationEndProp, onEnd]
-    );
+    const onAnimationEnd = useEvent((event: AnimationEvent<HTMLDivElement>) => {
+      onAnimationEndProp?.(event);
+      onEnd(event);
+    });
 
     const style =
       state.mounted || props.hidden === false

@@ -11,7 +11,7 @@ import {
 import { ClassNames, SerializedStyles } from "@emotion/react";
 import {
   useControlledState,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -106,30 +106,26 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       [lineNumbers, lines]
     );
 
-    const onMouseDownCaptureProp = useEventCallback(props.onMouseDownCapture);
+    const onMouseDownCaptureProp = props.onMouseDownCapture;
 
-    const onMouseDownCapture = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseDownCaptureProp(event);
-        if (event.defaultPrevented) return;
-        setExpanded(true);
-      },
-      [onMouseDownCaptureProp]
-    );
+    const onMouseDownCapture = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onMouseDownCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      setExpanded(true);
+    });
 
-    const disclosureOnClickProp = useEventCallback(disclosureProps?.onClick);
+    const disclosureOnClickProp = disclosureProps?.onClick;
 
-    const disclosureOnClick = useCallback(
+    const disclosureOnClick = useEvent(
       (event: MouseEvent<HTMLButtonElement>) => {
-        disclosureOnClickProp(event);
+        disclosureOnClickProp?.(event);
         if (event.defaultPrevented) return;
         event.stopPropagation();
         if (!expanded) {
           ref.current?.querySelector<HTMLElement>(".cm-content")?.focus();
         }
         setExpanded(!expanded);
-      },
-      [disclosureOnClickProp, expanded]
+      }
     );
 
     props = useWrapElement(

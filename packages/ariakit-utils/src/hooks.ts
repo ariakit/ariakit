@@ -86,27 +86,26 @@ export function usePreviousValue<T>(value: T) {
 }
 
 /**
- * Creates a memoized callback function that is constantly updated with the
- * incoming callback.
+ * Creates a stable callback function that has access to the latest state and
+ * can be used within event handlers and effect callbacks. Throws when used in
+ * the render phase.
  * @example
  * function Component(props) {
- *   const onClick = useEventCallback(props.onClick);
+ *   const onClick = useEvent(props.onClick);
  *   React.useEffect(() => {}, [onClick]);
  * }
  */
-export function useEventCallback<T extends AnyFunction>(callback?: T) {
-  // @ts-ignore
-  const ref = useRef<T | undefined>(() => {
+export function useEvent<T extends AnyFunction>(callback?: T) {
+  const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
   useSafeLayoutEffect(() => {
     ref.current = callback;
   });
-  return useCallback(
-    // @ts-ignore
-    (...args: Parameters<T>): ReturnType<T> => ref.current?.(...args),
+  return useCallback<AnyFunction>(
+    (...args) => ref.current?.apply(null, args),
     []
-  );
+  ) as T;
 }
 
 /**
@@ -291,13 +290,13 @@ export function useForceUpdate() {
 }
 
 /**
- * Returns an event callback similar to `useEventCallback`, but this also
- * accepts a boolean value, which will be turned into a function.
+ * Returns an event callback similar to `useEvent`, but this also accepts a
+ * boolean value, which will be turned into a function.
  */
-export function useBooleanEventCallback<T extends unknown[]>(
+export function useBooleanEvent<T extends unknown[]>(
   booleanOrCallback: boolean | ((...args: T) => boolean)
 ) {
-  return useEventCallback(
+  return useEvent(
     typeof booleanOrCallback === "function"
       ? booleanOrCallback
       : () => booleanOrCallback
