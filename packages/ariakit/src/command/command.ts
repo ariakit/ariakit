@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "ariakit-utils/dom";
 import {
   fireClickEvent,
@@ -54,81 +54,75 @@ export const useCommand = createHook<CommandOptions>(
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
     const isDuplicate = "data-command" in props;
-    const onKeyDownProp = useEvent(props.onKeyDown);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownProp(event);
-        const element = event.currentTarget;
+    const onKeyDownProp = props.onKeyDown;
 
-        if (event.defaultPrevented) return;
-        if (isDuplicate) return;
-        if (props.disabled) return;
-        if (event.metaKey) return;
-        if (!isSelfTarget(event)) return;
-        if (isTextField(element)) return;
-        if (element.isContentEditable) return;
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDownProp?.(event);
+      const element = event.currentTarget;
 
-        const isEnter = clickOnEnter && event.key === "Enter";
-        const isSpace = clickOnSpace && event.key === " ";
-        const shouldPreventEnter = event.key === "Enter" && !clickOnEnter;
-        const shouldPreventSpace = event.key === " " && !clickOnSpace;
+      if (event.defaultPrevented) return;
+      if (isDuplicate) return;
+      if (props.disabled) return;
+      if (event.metaKey) return;
+      if (!isSelfTarget(event)) return;
+      if (isTextField(element)) return;
+      if (element.isContentEditable) return;
 
-        if (shouldPreventEnter || shouldPreventSpace) {
-          event.preventDefault();
-          return;
-        }
+      const isEnter = clickOnEnter && event.key === "Enter";
+      const isSpace = clickOnSpace && event.key === " ";
+      const shouldPreventEnter = event.key === "Enter" && !clickOnEnter;
+      const shouldPreventSpace = event.key === " " && !clickOnSpace;
 
-        if (isEnter || isSpace) {
-          const nativeClick = isNativeClick(event);
-          if (isEnter) {
-            if (!nativeClick) {
-              event.preventDefault();
-              const { view, ...eventInit } = event;
-              queueBeforeEvent(element, "keyup", () =>
-                // Fire a click event instead of calling element.click()
-                // directly so we can pass the modifier state to the click
-                // event.
-                fireClickEvent(element, eventInit)
-              );
-            }
-          } else if (isSpace) {
-            activeRef.current = true;
-            if (!nativeClick) {
-              event.preventDefault();
-              setActive(true);
-            }
-          }
-        }
-      },
-      [onKeyDownProp, isDuplicate, props.disabled, clickOnEnter, clickOnSpace]
-    );
+      if (shouldPreventEnter || shouldPreventSpace) {
+        event.preventDefault();
+        return;
+      }
 
-    const onKeyUpProp = useEvent(props.onKeyUp);
-
-    const onKeyUp = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyUpProp(event);
-
-        if (event.defaultPrevented) return;
-        if (isDuplicate) return;
-        if (props.disabled) return;
-        if (event.metaKey) return;
-
-        const isSpace = clickOnSpace && event.key === " ";
-
-        if (activeRef.current && isSpace) {
-          activeRef.current = false;
-          if (!isNativeClick(event)) {
-            setActive(false);
-            const element = event.currentTarget;
+      if (isEnter || isSpace) {
+        const nativeClick = isNativeClick(event);
+        if (isEnter) {
+          if (!nativeClick) {
+            event.preventDefault();
             const { view, ...eventInit } = event;
-            requestAnimationFrame(() => fireClickEvent(element, eventInit));
+            queueBeforeEvent(element, "keyup", () =>
+              // Fire a click event instead of calling element.click() directly
+              // so we can pass the modifier state to the click event.
+              fireClickEvent(element, eventInit)
+            );
+          }
+        } else if (isSpace) {
+          activeRef.current = true;
+          if (!nativeClick) {
+            event.preventDefault();
+            setActive(true);
           }
         }
-      },
-      [onKeyUpProp, isDuplicate, props.disabled, clickOnSpace]
-    );
+      }
+    });
+
+    const onKeyUpProp = props.onKeyUp;
+
+    const onKeyUp = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+      onKeyUpProp?.(event);
+
+      if (event.defaultPrevented) return;
+      if (isDuplicate) return;
+      if (props.disabled) return;
+      if (event.metaKey) return;
+
+      const isSpace = clickOnSpace && event.key === " ";
+
+      if (activeRef.current && isSpace) {
+        activeRef.current = false;
+        if (!isNativeClick(event)) {
+          setActive(false);
+          const element = event.currentTarget;
+          const { view, ...eventInit } = event;
+          requestAnimationFrame(() => fireClickEvent(element, eventInit));
+        }
+      }
+    });
 
     props = {
       "data-command": "",

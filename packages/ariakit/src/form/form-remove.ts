@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import { useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -66,35 +66,25 @@ export const useFormRemove = createHook<FormRemoveOptions>(
     const name = `${nameProp}`;
     state = useStore(state || FormContext, ["items", "removeValue"]);
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state?.removeValue(name, index);
-        if (!autoFocusOnClick) return;
-        const item = findNextOrPreviousField(state?.items, name, index);
-        const element = item?.ref.current;
-        if (element) {
-          element.focus();
-          if (isTextField(element)) {
-            element.select();
-          }
-        } else {
-          const pushButton = findPushButton(state?.items, name);
-          pushButton?.ref.current?.focus();
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.removeValue(name, index);
+      if (!autoFocusOnClick) return;
+      const item = findNextOrPreviousField(state?.items, name, index);
+      const element = item?.ref.current;
+      if (element) {
+        element.focus();
+        if (isTextField(element)) {
+          element.select();
         }
-      },
-      [
-        onClickProp,
-        state?.removeValue,
-        name,
-        index,
-        autoFocusOnClick,
-        state?.items,
-      ]
-    );
+      } else {
+        const pushButton = findPushButton(state?.items, name);
+        pushButton?.ref.current?.focus();
+      }
+    });
 
     props = {
       ...props,

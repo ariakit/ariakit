@@ -36,16 +36,13 @@ export const useFormRadio = createHook<FormRadioOptions>(
       useCallback((s: FormState) => s.getValue(name), [name]),
     ]);
 
-    const onChangeProp = useEvent(props.onChange);
+    const onChangeProp = props.onChange;
 
-    const onChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
-        state?.setValue(name, value);
-      },
-      [onChangeProp, state?.setValue, name, value]
-    );
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setValue(name, value);
+    });
 
     const checked = props.checked ?? state?.getValue(name) === value;
 

@@ -1,10 +1,4 @@
-import {
-  KeyboardEvent,
-  MouseEvent,
-  ReactNode,
-  useCallback,
-  useRef,
-} from "react";
+import { KeyboardEvent, MouseEvent, ReactNode, useRef } from "react";
 import { useMemo } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
@@ -38,10 +32,6 @@ export function DialogBackdrop({
   children,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const onClickProp = useEvent(backdropProps?.onClick);
-  const onKeyDownProp = useEvent(backdropProps?.onKeyDown);
-  const previousMouseDownRef = usePreviousMouseDownRef(state.mounted);
-  const Component = typeof backdrop !== "boolean" ? backdrop || "div" : "div";
 
   state = useMemo(
     () => ({
@@ -61,38 +51,35 @@ export function DialogBackdrop({
     backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
   }, [state.contentElement]);
 
+  const onClickProp = backdropProps?.onClick;
   const hideOnInteractOutsideProp = useBooleanEvent(hideOnInteractOutside);
+  const previousMouseDownRef = usePreviousMouseDownRef(state.mounted);
 
-  const onClick = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
-      onClickProp(event);
-      if (event.defaultPrevented) return;
-      if (!isSelfTarget(event)) return;
-      if (previousMouseDownRef.current !== event.currentTarget) return;
-      if (!hideOnInteractOutsideProp(event)) return;
-      event.stopPropagation();
-      state.hide();
-    },
-    [onClickProp, hideOnInteractOutsideProp, state.hide]
-  );
+  const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    onClickProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!isSelfTarget(event)) return;
+    if (previousMouseDownRef.current !== event.currentTarget) return;
+    if (!hideOnInteractOutsideProp(event)) return;
+    event.stopPropagation();
+    state.hide();
+  });
 
+  const onKeyDownProp = backdropProps?.onKeyDown;
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
   // When hideOnInteractOutside is false and the backdrop is clicked, the
   // backdrop will receive focus (because we set the tabIndex on it). Therefore,
   // the Escape key will not be captured by the Dialog component. So we listen
   // to it here.
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      onKeyDownProp(event);
-      if (event.defaultPrevented) return;
-      if (event.key !== "Escape") return;
-      if (!isSelfTarget(event)) return;
-      if (!hideOnEscapeProp(event)) return;
-      state.hide();
-    },
-    [onKeyDownProp, hideOnEscapeProp, state.hide]
-  );
+  const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    onKeyDownProp?.(event);
+    if (event.defaultPrevented) return;
+    if (event.key !== "Escape") return;
+    if (!isSelfTarget(event)) return;
+    if (!hideOnEscapeProp(event)) return;
+    state.hide();
+  });
 
   const props = useDisclosureContent({
     state,
@@ -112,6 +99,8 @@ export function DialogBackdrop({
       ...backdropProps?.style,
     },
   });
+
+  const Component = typeof backdrop !== "boolean" ? backdrop || "div" : "div";
 
   return (
     <Component {...props} data-backdrop={state.contentElement?.id}>

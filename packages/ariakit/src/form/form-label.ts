@@ -54,8 +54,8 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const ref = useRef<HTMLInputElement>(null);
     const id = useId(props.id);
 
-    const getItem = useCallback(
-      (item: any) => {
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
+      (item) => {
         const nextItem = { ...item, id, name, type: "label" };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -69,23 +69,20 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const fieldTagName = useTagName(field?.ref, "input");
     const isNativeLabel = supportsNativeLabel(fieldTagName);
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLLabelElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (isNativeLabel) return;
-        const fieldElement = field?.ref.current;
-        if (!fieldElement) return;
-        queueMicrotask(() => {
-          const focusableElement = getFirstTabbableIn(fieldElement, true, true);
-          focusableElement?.focus();
-          focusableElement?.click();
-        });
-      },
-      [onClickProp, isNativeLabel, field]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLLabelElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isNativeLabel) return;
+      const fieldElement = field?.ref.current;
+      if (!fieldElement) return;
+      queueMicrotask(() => {
+        const focusableElement = getFirstTabbableIn(fieldElement, true, true);
+        focusableElement?.focus();
+        focusableElement?.click();
+      });
+    });
 
     props = {
       id,

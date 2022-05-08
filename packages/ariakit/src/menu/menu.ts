@@ -1,10 +1,4 @@
-import {
-  KeyboardEvent,
-  RefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -46,25 +40,22 @@ export const useMenu = createHook<MenuOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape") {
-          if (!hideOnEscapeProp(event)) return;
-          if (!hasParentMenu) {
-            // On Esc, only stop propagation if there's no parent menu.
-            // Otherwise, pressing Esc should close all menus
-            event.stopPropagation();
-          }
-          return state.hide();
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape") {
+        if (!hideOnEscapeProp(event)) return;
+        if (!hasParentMenu) {
+          // On Esc, only stop propagation if there's no parent menu. Otherwise,
+          // pressing Esc should close all menus
+          event.stopPropagation();
         }
-      },
-      [onKeyDownProp, hideOnEscapeProp, hasParentMenu, state.hide]
-    );
+        return state.hide();
+      }
+    });
 
     props = {
       ...props,

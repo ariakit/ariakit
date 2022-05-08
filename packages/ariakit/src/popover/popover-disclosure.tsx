@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent } from "react";
 import { useEvent, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -28,15 +28,12 @@ import { PopoverAnchorOptions, usePopoverAnchor } from "./popover-anchor";
  */
 export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
   ({ state, ...props }) => {
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        state.anchorRef.current = event.currentTarget;
-        onClickProp(event);
-      },
-      [state.anchorRef, onClickProp]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      state.anchorRef.current = event.currentTarget;
+      onClickProp?.(event);
+    });
 
     props = useWrapElement(
       props,

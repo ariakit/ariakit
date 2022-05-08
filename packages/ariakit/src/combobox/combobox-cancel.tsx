@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent } from "react";
 import { useEvent, useRefId } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -43,18 +43,15 @@ const children = (
  */
 export const useComboboxCancel = createHook<ComboboxCancelOptions>(
   ({ state, ...props }) => {
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state.setValue("");
-        // Move focus to the combobox input.
-        state.move(null);
-      },
-      [onClickProp, state.setValue, state.move]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state.setValue("");
+      // Move focus to the combobox input.
+      state.move(null);
+    });
 
     const comboboxId = useRefId(state.baseRef);
 

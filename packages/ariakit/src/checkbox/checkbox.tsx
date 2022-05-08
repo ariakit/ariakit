@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useRef } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useRef } from "react";
 import {
   useControlledState,
   useEvent,
@@ -79,58 +79,44 @@ export const useCheckbox = createHook<CheckboxOptions>(
       element.checked = isChecked;
     }, [mixed, isChecked]);
 
-    const onChangeProp = useEvent(props.onChange);
+    const onChangeProp = props.onChange;
 
-    const onChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        if (props.disabled) {
-          event.stopPropagation();
-          event.preventDefault();
-          return;
-        }
-        setMixed(event.currentTarget, mixed);
-        if (!nativeCheckbox) {
-          // If the element is not a native checkbox, we need to manually update
-          // its checked property.
-          event.currentTarget.checked = !event.currentTarget.checked;
-        }
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+      if (props.disabled) {
+        event.stopPropagation();
+        event.preventDefault();
+        return;
+      }
+      setMixed(event.currentTarget, mixed);
+      if (!nativeCheckbox) {
+        // If the element is not a native checkbox, we need to manually update
+        // its checked property.
+        event.currentTarget.checked = !event.currentTarget.checked;
+      }
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
 
-        const elementChecked = event.currentTarget.checked;
-        setChecked(elementChecked);
+      const elementChecked = event.currentTarget.checked;
+      setChecked(elementChecked);
 
-        state?.setValue((prevValue) => {
-          if (!value) return elementChecked;
-          if (!Array.isArray(prevValue)) return value;
-          if (elementChecked) return [...prevValue, value];
-          return prevValue.filter((v) => v !== value);
-        });
-      },
-      [
-        props.disabled,
-        mixed,
-        nativeCheckbox,
-        onChangeProp,
-        setChecked,
-        state?.setValue,
-        value,
-      ]
-    );
+      state?.setValue((prevValue) => {
+        if (!value) return elementChecked;
+        if (!Array.isArray(prevValue)) return value;
+        if (elementChecked) return [...prevValue, value];
+        return prevValue.filter((v) => v !== value);
+      });
+    });
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLInputElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (nativeCheckbox) return;
-        // @ts-ignore The onChange event expects a ChangeEvent, but here we need
-        // to pass a MouseEvent.
-        onChange(event);
-      },
-      [onClickProp, onChange]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (nativeCheckbox) return;
+      // @ts-expect-error The onChange event expects a ChangeEvent, but here we
+      // need to pass a MouseEvent.
+      onChange(event);
+    });
 
     props = useWrapElement(
       props,

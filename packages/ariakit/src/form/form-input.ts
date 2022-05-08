@@ -32,16 +32,13 @@ export const useFormInput = createHook<FormInputOptions>(
       useCallback((s: FormState) => s.getValue(name), [name]),
     ]);
 
-    const onChangeProp = useEvent(props.onChange);
+    const onChangeProp = props.onChange;
 
-    const onChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
-        state?.setValue(name, event.target.value);
-      },
-      [onChangeProp, state?.setValue, name]
-    );
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setValue(name, event.target.value);
+    });
 
     const value = state?.getValue(name);
 

@@ -60,8 +60,8 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       "mounted",
     ]);
 
-    const getItem = useCallback(
-      (item: any) => {
+    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
+      (item) => {
         const nextItem = { ...item, value };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -71,64 +71,50 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value, getItemProp]
     );
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (value != null && setValueOnClickProp(event)) {
-          state?.setValue(value);
-        }
-        if (hideOnClickProp(event)) {
-          // When ComboboxList is used instead of ComboboxPopover, state.hide()
-          // does nothing. The focus will not be moved over to the combobox
-          // input automatically. So we need to move manually here.
-          state?.move(null);
-          state?.hide();
-        }
-      },
-      [
-        onClickProp,
-        value,
-        setValueOnClickProp,
-        state?.setValue,
-        hideOnClickProp,
-        state?.move,
-        state?.hide,
-      ]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (value != null && setValueOnClickProp(event)) {
+        state?.setValue(value);
+      }
+      if (hideOnClickProp(event)) {
+        // When ComboboxList is used instead of ComboboxPopover, state.hide()
+        // does nothing. The focus will not be moved over to the combobox
+        // input automatically. So we need to move manually here.
+        state?.move(null);
+        state?.hide();
+      }
+    });
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        const baseElement = state?.baseRef.current;
-        if (!baseElement) return;
-        if (hasFocus(baseElement)) return;
-        // When the combobox is not working with virtual focus, the items will
-        // receive DOM focus. Therefore, pressing printable keys will not fill
-        // the text field. So we need to programmatically focus on the text
-        // field when the user presses printable keys.
-        const printable = event.key.length === 1;
-        if (printable || event.key === "Backspace" || event.key === "Delete") {
-          queueMicrotask(() => baseElement.focus());
-          if (isTextField(baseElement)) {
-            // If the combobox element is a text field, we should update the
-            // state value with the current's element value. This is necessary
-            // because the value may temporarily change based on the currently
-            // selected item, but it'll be reset to the original value when the
-            // combobox input is focused.
-            state?.setValue(baseElement.value);
-          }
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      const baseElement = state?.baseRef.current;
+      if (!baseElement) return;
+      if (hasFocus(baseElement)) return;
+      // When the combobox is not working with virtual focus, the items will
+      // receive DOM focus. Therefore, pressing printable keys will not fill
+      // the text field. So we need to programmatically focus on the text
+      // field when the user presses printable keys.
+      const printable = event.key.length === 1;
+      if (printable || event.key === "Backspace" || event.key === "Delete") {
+        queueMicrotask(() => baseElement.focus());
+        if (isTextField(baseElement)) {
+          // If the combobox element is a text field, we should update the
+          // state value with the current's element value. This is necessary
+          // because the value may temporarily change based on the currently
+          // selected item, but it'll be reset to the original value when the
+          // combobox input is focused.
+          state?.setValue(baseElement.value);
         }
-      },
-      [onKeyDownProp, state?.baseRef, state?.setValue]
-    );
+      }
+    });
 
     props = useWrapElement(
       props,

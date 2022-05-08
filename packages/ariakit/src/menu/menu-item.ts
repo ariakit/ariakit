@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent } from "react";
 import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -45,24 +45,21 @@ export const useMenuItem = createHook<MenuItemOptions>(
       useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
       menuBarState;
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (!hideMenu) return;
-        // If this item is also a menu button, we don't want to hide the menu.
-        const popupType = event.currentTarget.getAttribute("aria-haspopup");
-        if (popupType === "menu") return;
-        if (!hideOnClickProp(event)) return;
-        hideMenu();
-      },
-      [onClickProp, hideMenu, hideOnClickProp]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!hideMenu) return;
+      // If this item is also a menu button, we don't want to hide the menu.
+      const popupType = event.currentTarget.getAttribute("aria-haspopup");
+      if (popupType === "menu") return;
+      if (!hideOnClickProp(event)) return;
+      hideMenu();
+    });
 
     props = {
       role: "menuitem",

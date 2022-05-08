@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useContext, useRef } from "react";
+import { KeyboardEvent, useContext, useRef } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
 import { useEvent } from "ariakit-utils/hooks";
@@ -92,16 +92,16 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
   ({ state, typeahead = true, ...props }) => {
     const context = useContext(CompositeContext);
     state = state || context;
-    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = props.onKeyDownCapture;
     const cleanupTimeoutRef = useRef(0);
 
     // We have to listen to the event in the capture phase because the event
     // might be handled by a child component. For example, the space key may
     // trigger a click event on a child component. We need to prevent this
     // behavior if the character is a valid typeahead key.
-    const onKeyDownCapture = useCallback(
+    const onKeyDownCapture = useEvent(
       (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownCaptureProp(event);
+        onKeyDownCaptureProp?.(event);
         if (event.defaultPrevented) return;
         if (!typeahead) return;
         if (!state?.items) return;
@@ -129,14 +129,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
           // search.
           clearChars();
         }
-      },
-      [
-        onKeyDownCaptureProp,
-        typeahead,
-        state?.items,
-        state?.activeId,
-        state?.move,
-      ]
+      }
     );
 
     props = {
