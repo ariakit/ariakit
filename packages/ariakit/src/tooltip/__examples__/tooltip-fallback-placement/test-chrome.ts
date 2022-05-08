@@ -5,11 +5,10 @@ const getCanvas = (page: Page) =>
 
 test("tooltip fallback placement", async ({ page }) => {
   await page.goto("/examples/tooltip-fallback-placement");
-  // Resize the viewport to ensure it overflows for animation before focusing inside dialog
+  // Resize the viewport to ensure it overflows
   await page.setViewportSize(devices["iPhone 8"].viewport);
-  // Wait for animation before focusing inside dialog
   await expect(page.locator("role=tooltip[name='Tooltip']")).toBeVisible();
-  // Wait for animation before hiding the dialog
   const canvas = await getCanvas(page);
+  // Expect the tooltip to be placed on the bottom
   expect(await canvas.screenshot()).toMatchSnapshot();
 });
