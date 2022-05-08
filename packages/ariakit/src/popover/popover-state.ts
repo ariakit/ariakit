@@ -295,6 +295,7 @@ export function usePopoverState({
     fitViewport,
     arrowPadding,
     placement,
+    fallbackPlacement,
     fixed,
     renderCallback,
   ]);
@@ -307,6 +308,7 @@ export function usePopoverState({
       popoverRef,
       arrowRef,
       currentPlacement,
+      fallbackPlacement,
       placement,
       fixed,
       gutter,
@@ -325,6 +327,7 @@ export function usePopoverState({
       dialog,
       getAnchorRect,
       currentPlacement,
+      fallbackPlacement,
       placement,
       fixed,
       gutter,
