@@ -2,7 +2,6 @@ import {
   FocusEvent,
   KeyboardEvent,
   MouseEvent,
-  useCallback,
   useEffect,
   useRef,
 } from "react";
@@ -76,99 +75,67 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       state.disclosureRef.current = ref.current;
     });
 
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event as any);
-        if (disabled) return;
-        if (event.defaultPrevented) return;
-        // Reset the autoFocusOnShow state so we can focus the menu button while
-        // the menu is open and press arrow keys to move focus to the menu
-        // items.
-        state.setAutoFocusOnShow(false);
-        // We need to unset the active menu item so no menu item appears active
-        // while the menu button is focused.
-        state.setActiveId(null);
-        // When the menu button is focused, we'll only show its menu if it's in
-        // a menu bar
-        if (!parentMenuBar) return;
-        if (!parentIsMenuBar) return;
-        // and there's already another expanded menu button.
-        if (hasExpandedMenuButton(parentMenuBar.items, event.currentTarget)) {
-          state.show();
-        }
-      },
-      [
-        onFocusProp,
-        disabled,
-        state.setAutoFocusOnShow,
-        state.setActiveId,
-        parentMenuBar,
-        parentIsMenuBar,
-        state.show,
-      ]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+      onFocusProp?.(event as any);
+      if (disabled) return;
+      if (event.defaultPrevented) return;
+      // Reset the autoFocusOnShow state so we can focus the menu button while
+      // the menu is open and press arrow keys to move focus to the menu items.
+      state.setAutoFocusOnShow(false);
+      // We need to unset the active menu item so no menu item appears active
+      // while the menu button is focused.
+      state.setActiveId(null);
+      // When the menu button is focused, we'll only show its menu if it's in a
+      // menu bar
+      if (!parentMenuBar) return;
+      if (!parentIsMenuBar) return;
+      // and there's already another expanded menu button.
+      if (hasExpandedMenuButton(parentMenuBar.items, event.currentTarget)) {
+        state.show();
+      }
+    });
 
     const dir = state.placement.split("-")[0] as BasePlacement;
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownProp(event as any);
-        if (disabled) return;
-        if (event.defaultPrevented) return;
-        const initialFocus = getInitialFocus(event, dir);
-        if (initialFocus) {
-          event.preventDefault();
-          state.show();
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDownProp?.(event as any);
+      if (disabled) return;
+      if (event.defaultPrevented) return;
+      const initialFocus = getInitialFocus(event, dir);
+      if (initialFocus) {
+        event.preventDefault();
+        state.show();
+        state.setAutoFocusOnShow(true);
+        state.setInitialFocus(initialFocus);
+      }
+    });
+
+    const onClickProp = props.onClick;
+
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event as any);
+      if (event.defaultPrevented) return;
+      const isKeyboardClick = !event.detail;
+      // When the menu button is clicked, if the menu is hidden or if it's a
+      // keyboard click (enter or space),
+      if (!state.mounted || isKeyboardClick) {
+        // we'll only automatically focus on the menu if it's not a submenu
+        // button, or if it's a keyboard click.
+        if (!hasParentMenu || isKeyboardClick) {
           state.setAutoFocusOnShow(true);
-          state.setInitialFocus(initialFocus);
         }
-      },
-      [
-        onKeyDownProp,
-        disabled,
-        dir,
-        state.show,
-        state.setAutoFocusOnShow,
-        state.setInitialFocus,
-      ]
-    );
-
-    const onClickProp = useEvent(props.onClick);
-
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event as any);
-        if (event.defaultPrevented) return;
-        const isKeyboardClick = !event.detail;
-        // When the menu button is clicked, if the menu is hidden or if it's
-        // a keyboard click (enter or space),
-        if (!state.mounted || isKeyboardClick) {
-          // we'll only automatically focus on the menu if it's not a submenu
-          // button, or if it's a keyboard click.
-          if (!hasParentMenu || isKeyboardClick) {
-            state.setAutoFocusOnShow(true);
-          }
-          state.setInitialFocus(isKeyboardClick ? "first" : "container");
-        }
-        // On submenu buttons, we can't hide the submenu by clicking on the menu
-        // button again.
-        if (hasParentMenu) {
-          state.show();
-        }
-      },
-      [
-        onClickProp,
-        state.mounted,
-        state.setAutoFocusOnShow,
-        state.setInitialFocus,
-        hasParentMenu,
-        state.show,
-      ]
-    );
+        state.setInitialFocus(isKeyboardClick ? "first" : "container");
+      }
+      // On submenu buttons, we can't hide the submenu by clicking on the menu
+      // button again.
+      if (hasParentMenu) {
+        state.show();
+      }
+    });
 
     if (hasParentMenu) {
       // On Safari, VO+Space triggers a click twice on native button elements

@@ -120,8 +120,8 @@ export const useFormField = createHook<FormFieldOptions>(
       }
     });
 
-    const getItem = useCallback(
-      (item: any) => {
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
+      (item) => {
         const nextItem = { ...item, id, name, type: "field" };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -131,18 +131,15 @@ export const useFormField = createHook<FormFieldOptions>(
       [id, name, getItemProp]
     );
 
-    const onBlurProp = useEvent(props.onBlur);
+    const onBlurProp = props.onBlur;
     const touchOnBlurProp = useBooleanEvent(touchOnBlur);
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLInputElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        if (!touchOnBlurProp(event)) return;
-        state?.setFieldTouched(name, true);
-      },
-      [onBlurProp, touchOnBlurProp, state?.setFieldTouched, name]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLInputElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!touchOnBlurProp(event)) return;
+      state?.setFieldTouched(name, true);
+    });
 
     const tagName = useTagName(ref, props.as || "input");
 

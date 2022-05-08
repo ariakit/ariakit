@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEvent,
@@ -58,33 +58,23 @@ export const useSelectList = createHook<SelectListOptions>(
 
     resetOnEscape = resetOnEscape && !multiSelectable;
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
     const resetOnEscapeProp = useBooleanEvent(resetOnEscape);
     const hideOnEnterProp = useBooleanEvent(hideOnEnter);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape" && resetOnEscapeProp(event)) {
-          state.setValue(defaultValue);
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape" && resetOnEscapeProp(event)) {
+        state.setValue(defaultValue);
+      }
+      if (event.key === " " || event.key === "Enter") {
+        if (isSelfTarget(event) && hideOnEnterProp(event)) {
+          event.preventDefault();
+          state.hide();
         }
-        if (event.key === " " || event.key === "Enter") {
-          if (isSelfTarget(event) && hideOnEnterProp(event)) {
-            event.preventDefault();
-            state.hide();
-          }
-        }
-      },
-      [
-        onKeyDownProp,
-        resetOnEscapeProp,
-        state.setValue,
-        defaultValue,
-        hideOnEnterProp,
-        state.hide,
-      ]
-    );
+      }
+    });
 
     props = useStoreProvider({ state, ...props }, SelectContext);
 

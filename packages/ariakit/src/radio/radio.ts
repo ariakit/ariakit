@@ -75,52 +75,43 @@ export const useRadio = createHook<RadioOptions>(
       }
     }, [isChecked, state?.setActiveId, id]);
 
-    const onChangeProp = useEvent(props.onChange);
+    const onChangeProp = props.onChange;
     const tagName = useTagName(ref, props.as || "input");
     const nativeRadio = isNativeRadio(tagName, props.type);
 
-    const onChange = useCallback(
-      (event: SyntheticEvent<HTMLInputElement>) => {
-        if (props.disabled) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-        if (!nativeRadio) {
-          event.currentTarget.checked = true;
-        }
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
-        state?.setValue(value);
-      },
-      [props.disabled, nativeRadio, onChangeProp, state?.setValue, value]
-    );
+    const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
+      if (props.disabled) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (!nativeRadio) {
+        event.currentTarget.checked = true;
+      }
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setValue(value);
+    });
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLInputElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (nativeRadio) return;
-        onChange(event);
-      },
-      [onClickProp, nativeRadio, onChange]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (nativeRadio) return;
+      onChange(event);
+    });
 
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLInputElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        if (!nativeRadio) return;
-        if (!state?.moves) return;
-        if (!isActiveItemRef.current) return;
-        onChange(event);
-      },
-      [onFocusProp, nativeRadio, state?.moves, onChange]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!nativeRadio) return;
+      if (!state?.moves) return;
+      if (!isActiveItemRef.current) return;
+      onChange(event);
+    });
 
     props = {
       id,

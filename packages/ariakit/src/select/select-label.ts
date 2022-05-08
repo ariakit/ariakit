@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent } from "react";
 import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent } from "ariakit-utils/store";
@@ -25,23 +25,20 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
   ({ state, ...props }) => {
     const id = useId(props.id);
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        // queueMicrotask will guarantee that the focus and click events will be
-        // triggered only after the current event queue is flushed (which
-        // includes this click event).
-        queueMicrotask(() => {
-          const select = state.selectRef.current;
-          select?.focus();
-          select?.click();
-        });
-      },
-      [onClickProp, state.selectRef]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      // queueMicrotask will guarantee that the focus and click events will be
+      // triggered only after the current event queue is flushed (which includes
+      // this click event).
+      queueMicrotask(() => {
+        const select = state.selectRef.current;
+        select?.focus();
+        select?.click();
+      });
+    });
 
     props = {
       id,

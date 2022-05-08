@@ -225,43 +225,34 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onClickProp]
     );
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key !== "Escape") return;
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key !== "Escape") return;
+      setEditable(false);
+      ref.current?.focus();
+    });
+
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      setFocusVisible(false);
+      if (isFocusEventOutside(event)) {
         setEditable(false);
-        ref.current?.focus();
-      },
-      [onKeyDownProp]
-    );
+      }
+    });
 
-    const onBlurProp = useEvent(props.onBlur);
+    const onFocusVisibleProp = props.onFocusVisible;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        setFocusVisible(false);
-        if (isFocusEventOutside(event)) {
-          setEditable(false);
-        }
-      },
-      [onBlurProp]
-    );
-
-    const onFocusVisibleProp = useEvent(props.onFocusVisible);
-
-    const onFocusVisible = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onFocusVisibleProp(event);
-        if (event.defaultPrevented) return;
-        setFocusVisible(true);
-      },
-      [onFocusVisibleProp]
-    );
+    const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusVisibleProp?.(event);
+      if (event.defaultPrevented) return;
+      setFocusVisible(true);
+    });
 
     const keyboardDescriptionId = useId(keyboardDescriptionProps?.id);
 
