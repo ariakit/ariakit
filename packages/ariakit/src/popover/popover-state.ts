@@ -103,6 +103,7 @@ export function usePopoverState({
   arrowPadding = 4,
   overflowPadding = 8,
   renderCallback,
+  fallbackPlacement,
   ...props
 }: PopoverStateProps = {}): PopoverState {
   const dialog = useDialogState(props);
@@ -154,7 +155,15 @@ export function usePopoverState({
 
         if (flip) {
           // https://floating-ui.com/docs/flip
-          middleware.push(middlewares.flip({ padding: overflowPadding }));
+          middleware.push(
+            middlewares.flip({
+              padding: overflowPadding,
+              fallbackPlacements:
+                fallbackPlacement !== undefined
+                  ? [fallbackPlacement]
+                  : undefined,
+            })
+          );
         }
 
         if (slide || overlap) {
@@ -402,6 +411,11 @@ export type PopoverState = DialogState & {
    */
   placement: Placement;
   /**
+   * The fallback placement if the `placement` overflows. In order for this to work
+   * the `flip` property must be `true`.
+   */
+  fallbackPlacement?: Placement;
+  /**
    * Whether the popover has `position: fixed` or not.
    * @default false
    */
@@ -482,6 +496,7 @@ export type PopoverStateProps = DialogStateProps &
       | "gutter"
       | "shift"
       | "flip"
+      | "fallbackPlacement"
       | "slide"
       | "overlap"
       | "sameWidth"

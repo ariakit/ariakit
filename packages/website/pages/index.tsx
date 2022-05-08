@@ -55,6 +55,10 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/toolbar", label: "Toolbar" },
   { href: "/examples/toolbar-select", label: "Toolbar with Select" },
   { href: "/examples/tooltip", label: "Tooltip" },
+  {
+    href: "/examples/tooltip-fallback-placement",
+    label: "Tooltip fallback placement",
+  },
   { href: "/examples/tooltip-placement", label: "Tooltip placement" },
   { href: "/examples/tooltip-timeout", label: "Tooltip timeout" },
 ].sort((a, b) => a.label.localeCompare(b.label));
