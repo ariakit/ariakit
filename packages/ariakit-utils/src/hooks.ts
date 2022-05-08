@@ -102,10 +102,7 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
   useSafeLayoutEffect(() => {
     ref.current = callback;
   });
-  return useCallback<AnyFunction>(
-    (...args) => ref.current?.apply(null, args),
-    []
-  ) as T;
+  return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
 }
 
 /**

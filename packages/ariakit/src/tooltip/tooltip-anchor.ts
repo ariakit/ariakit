@@ -1,4 +1,4 @@
-import { FocusEvent, MouseEvent, useCallback } from "react";
+import { FocusEvent, MouseEvent } from "react";
 import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -28,61 +28,49 @@ import { TooltipState } from "./tooltip-state";
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
   ({ state, described, ...props }) => {
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        // When using multiple anchors for the same tooltip, we need to
-        // re-render the tooltip to update its position.
-        if (state.anchorRef.current !== event.currentTarget) {
-          state.anchorRef.current = event.currentTarget;
-          state.render();
-        }
-        state.show();
-      },
-      [onFocusProp, state.show]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      // When using multiple anchors for the same tooltip, we need to re-render
+      // the tooltip to update its position.
+      if (state.anchorRef.current !== event.currentTarget) {
+        state.anchorRef.current = event.currentTarget;
+        state.render();
+      }
+      state.show();
+    });
 
-    const onBlurProp = useEvent(props.onBlur);
+    const onBlurProp = props.onBlur;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        state.hide();
-      },
-      [onBlurProp, state.hide]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      state.hide();
+    });
 
-    const onMouseEnterProp = useEvent(props.onMouseEnter);
+    const onMouseEnterProp = props.onMouseEnter;
 
-    const onMouseEnter = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseEnterProp(event);
-        if (event.defaultPrevented) return;
-        // When using multiple anchors for the same tooltip, we need to
-        // re-render the tooltip to update its position.
-        if (state.anchorRef.current !== event.currentTarget) {
-          state.anchorRef.current = event.currentTarget;
-          state.render();
-        }
-        state.show();
-      },
-      [onMouseEnterProp, state.show]
-    );
+    const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onMouseEnterProp?.(event);
+      if (event.defaultPrevented) return;
+      // When using multiple anchors for the same tooltip, we need to re-render
+      // the tooltip to update its position.
+      if (state.anchorRef.current !== event.currentTarget) {
+        state.anchorRef.current = event.currentTarget;
+        state.render();
+      }
+      state.show();
+    });
 
-    const onMouseLeaveProp = useEvent(props.onMouseLeave);
+    const onMouseLeaveProp = props.onMouseLeave;
 
-    const onMouseLeave = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onMouseLeaveProp(event);
-        if (event.defaultPrevented) return;
-        state.hide();
-      },
-      [onMouseLeaveProp, state.hide]
-    );
+    const onMouseLeave = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onMouseLeaveProp?.(event);
+      if (event.defaultPrevented) return;
+      state.hide();
+    });
 
     props = {
       tabIndex: 0,

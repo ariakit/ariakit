@@ -1,4 +1,4 @@
-import { FocusEvent, KeyboardEvent, useCallback } from "react";
+import { FocusEvent, KeyboardEvent } from "react";
 import {
   getDocument,
   getTextboxSelection,
@@ -42,11 +42,11 @@ function getValueLength(element: HTMLElement) {
  */
 export const useCompositeInput = createHook<CompositeInputOptions>(
   ({ state, ...props }) => {
-    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useCallback(
+    const onKeyDownCapture = useEvent(
       (event: KeyboardEvent<HTMLInputElement>) => {
-        onKeyDownCaptureProp(event);
+        onKeyDownCaptureProp?.(event);
         if (event.defaultPrevented) return;
         const element = event.currentTarget;
         if (!element.isContentEditable && !isTextField(element)) return;
@@ -60,20 +60,16 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
             event.stopPropagation();
           }
         }
-      },
-      [onKeyDownCaptureProp]
+      }
     );
 
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLInputElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        selectTextField(event.currentTarget);
-      },
-      [onFocusProp]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      selectTextField(event.currentTarget);
+    });
 
     props = {
       ...props,

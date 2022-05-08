@@ -3,7 +3,6 @@ import {
   CompositionEvent,
   MouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -199,113 +198,88 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
     }, [inline, state.contentElement, state.setValue, value]);
 
-    const onChangeProp = useEvent(props.onChange);
+    const onChangeProp = props.onChange;
     const showOnChangeProp = useBooleanEvent(showOnChange);
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
-    const onChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
-        const nativeEvent = event.nativeEvent;
-        if (isInputEvent(nativeEvent)) {
-          hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
-        }
-        if (showOnChangeProp(event)) {
-          state.show();
-        }
-        if (setValueOnChangeProp(event)) {
-          state.setValue(event.target.value);
-        }
-        if (inline && autoSelect) {
-          // The state.setValue(event.target.value) above may not trigger a
-          // state update. For example, say the first item starts with "t". The
-          // user starts typing "t", then the first item is auto selected and
-          // the inline completion string is appended and highlited. The user
-          // then selects all the text and type "t" again. This change will
-          // produce the same value as the state value, and therefore the state
-          // update will not trigger a re-render. We need to force a re-render
-          // here so the inline completion effect will be fired.
-          forceValueUpdate();
-        }
-        if (!autoSelect || !hasInsertedTextRef.current) {
-          // If autoSelect is not set or it's not an insertion of text, focus on
-          // the combobox input after changing the value.
-          state.setActiveId(null);
-        }
-      },
-      [
-        onChangeProp,
-        showOnChangeProp,
-        state.show,
-        setValueOnChangeProp,
-        state.setValue,
-        inline,
-        autoSelect,
-        state.setActiveId,
-      ]
-    );
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
+      const nativeEvent = event.nativeEvent;
+      if (isInputEvent(nativeEvent)) {
+        hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
+      }
+      if (showOnChangeProp(event)) {
+        state.show();
+      }
+      if (setValueOnChangeProp(event)) {
+        state.setValue(event.target.value);
+      }
+      if (inline && autoSelect) {
+        // The state.setValue(event.target.value) above may not trigger a state
+        // update. For example, say the first item starts with "t". The user
+        // starts typing "t", then the first item is auto selected and the
+        // inline completion string is appended and highlited. The user then
+        // selects all the text and type "t" again. This change will produce the
+        // same value as the state value, and therefore the state update will
+        // not trigger a re-render. We need to force a re-render here so the
+        // inline completion effect will be fired.
+        forceValueUpdate();
+      }
+      if (!autoSelect || !hasInsertedTextRef.current) {
+        // If autoSelect is not set or it's not an insertion of text, focus on
+        // the combobox input after changing the value.
+        state.setActiveId(null);
+      }
+    });
 
-    const onCompositionEndProp = useEvent(props.onCompositionEnd);
+    const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
     // in accents or chinese characters), we need to set hasInsertedTextRef to
     // true when the composition ends. This is because the native input event
     // that's passed to the change event above will not produce a consistent
     // inputType value across browsers, so we can't rely on that there.
-    const onCompositionEnd = useCallback(
+    const onCompositionEnd = useEvent(
       (event: CompositionEvent<HTMLInputElement>) => {
-        onCompositionEndProp(event);
+        onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
         hasInsertedTextRef.current = true;
         if (!autoSelect) return;
         forceValueUpdate();
-      },
-      [onCompositionEndProp, autoSelect]
+      }
     );
 
-    const onMouseDownProp = useEvent(props.onMouseDown);
+    const onMouseDownProp = props.onMouseDown;
     const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
 
-    const onMouseDown = useCallback(
-      (event: MouseEvent<HTMLInputElement>) => {
-        onMouseDownProp(event);
-        if (event.defaultPrevented) return;
-        if (showOnMouseDownProp(event)) {
-          queueBeforeEvent(event.currentTarget, "mouseup", state.show);
-        }
-      },
-      [onMouseDownProp, showOnMouseDownProp, state.show]
-    );
+    const onMouseDown = useEvent((event: MouseEvent<HTMLInputElement>) => {
+      onMouseDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (showOnMouseDownProp(event)) {
+        queueBeforeEvent(event.currentTarget, "mouseup", state.show);
+      }
+    });
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
 
     // When clicking on the combobox input, we should make sure the current
     // input value is set on the state and focus is set on the input only.
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLInputElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state.setActiveId(null);
-        if (setValueOnClickProp(event)) {
-          state.setValue(value);
-        }
-      },
-      [
-        onClickProp,
-        state.setActiveId,
-        setValueOnClickProp,
-        state.setValue,
-        value,
-      ]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state.setActiveId(null);
+      if (setValueOnClickProp(event)) {
+        state.setValue(value);
+      }
+    });
 
-    const onKeyDownCaptureProp = useEvent(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useCallback(
+    const onKeyDownCapture = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        onKeyDownCaptureProp(event);
+        onKeyDownCaptureProp?.(event);
         if (event.defaultPrevented) return;
         if (isPrintableKey(event)) {
           // Printable characters shouldn't perform actions on the combobox
@@ -326,16 +300,15 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (!allowHorizontalNavigationOnItems && isHomeOrEnd) {
           event.stopPropagation();
         }
-      },
-      [onKeyDownCaptureProp, state.items, state.activeId]
+      }
     );
 
-    const onKeyDownProp = useEvent(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
-    const onKeyDown = useCallback(
+    const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        onKeyDownProp(event);
+        onKeyDownProp?.(event);
         hasInsertedTextRef.current = false;
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;
@@ -351,14 +324,7 @@ export const useCombobox = createHook<ComboboxOptions>(
             state.show();
           }
         }
-      },
-      [
-        onKeyDownProp,
-        state.visible,
-        state.activeId,
-        showOnKeyDownProp,
-        state.show,
-      ]
+      }
     );
 
     props = {

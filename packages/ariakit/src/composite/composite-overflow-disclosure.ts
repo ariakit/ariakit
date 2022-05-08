@@ -1,4 +1,4 @@
-import { FocusEvent, useCallback, useRef, useState } from "react";
+import { FocusEvent, useRef, useState } from "react";
 import { useEvent, useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -35,27 +35,21 @@ export const useCompositeOverflowDisclosure =
       state.disclosureRef.current = ref.current;
     });
 
-    const onFocusProp = useEvent(props.onFocus);
+    const onFocusProp = props.onFocus;
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        setShouldRegisterItem(true);
-      },
-      [onFocusProp]
-    );
+    const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      setShouldRegisterItem(true);
+    });
 
-    const onBlurProp = useEvent(props.onBlur);
+    const onBlurProp = props.onBlur;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        setShouldRegisterItem(false);
-      },
-      [onBlurProp]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      setShouldRegisterItem(false);
+    });
 
     props = {
       "aria-hidden": !shouldRegisterItem,

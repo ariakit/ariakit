@@ -48,8 +48,8 @@ export const useTab = createHook<TabOptions>(
 
     const dimmed = props.disabled;
 
-    const getItem = useCallback(
-      (item: any) => {
+    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
+      (item) => {
         const nextItem = { ...item, dimmed };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -59,16 +59,13 @@ export const useTab = createHook<TabOptions>(
       [dimmed, getItemProp]
     );
 
-    const onClickProp = useEvent(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state?.setSelectedId(id);
-      },
-      [onClickProp, state?.setSelectedId, id]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setSelectedId(id);
+    });
 
     const panelId = getPanelId(state?.panels, id);
 
