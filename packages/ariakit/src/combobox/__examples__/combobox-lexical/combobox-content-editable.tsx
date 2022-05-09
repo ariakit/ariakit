@@ -1,4 +1,5 @@
 import {
+  MouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
@@ -6,7 +7,6 @@ import {
   useState,
 } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $wrapLeafNodesInElements } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 import {
   Combobox,
@@ -15,11 +15,8 @@ import {
   useComboboxState,
 } from "ariakit/combobox";
 import {
-  $createTextNode,
   $getSelection,
   $isRangeSelection,
-  $isTextNode,
-  ElementNode,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
   KEY_TAB_COMMAND,
@@ -29,18 +26,25 @@ import {
 import useLayoutEffect from "use-isomorphic-layout-effect";
 
 export type ComboboxContentEditableProps = {
-  isTrigger?: (char: string, offset: number) => boolean;
-  getList?: (trigger: string | null) => string[];
-  getItemNode?: (
-    item: string,
-    trigger: string | null
-  ) => ElementNode | TextNode | null;
+  isTrigger?: (props: { editor: LexicalEditor; trigger: string }) => boolean;
+  getList?: (props: {
+    editor: LexicalEditor;
+    trigger: string | null;
+  }) => string[];
+  onItemClick?: (props: {
+    event: MouseEvent<HTMLDivElement>;
+    editor: LexicalEditor;
+    trigger: string | null;
+    item: string;
+    searchValue: string;
+    node?: TextNode;
+  }) => void;
 };
 
 export function ComboboxContentEditable({
   isTrigger,
   getList = () => [],
-  getItemNode = () => null,
+  onItemClick = () => {},
 }: ComboboxContentEditableProps) {
   const [trigger, setTrigger] = useState<string | null>(null);
   const anchorRectRef = useRef<() => DOMRect | null>(() => null);
@@ -50,18 +54,18 @@ export function ComboboxContentEditable({
   });
   const [editor] = useLexicalComposerContext();
 
-  useLayoutEffect(() => {
-    combobox.setList(getList(trigger));
-  }, [combobox.setList, trigger]);
-
   if (!combobox.mounted && trigger) {
     setTrigger(null);
   }
 
-  useEffect(() => {
-    if (!combobox.visible) return;
-    combobox.move(combobox.first());
-  }, [combobox.visible, combobox.move, combobox.first]);
+  useLayoutEffect(() => {
+    Promise.resolve(getList({ editor, trigger })).then(combobox.setList);
+  }, [editor, trigger, combobox.setList]);
+
+  // useEffect(() => {
+  //   if (!combobox.visible) return;
+  //   combobox.move(combobox.first());
+  // }, [combobox.visible, combobox.move, combobox.first]);
 
   useEffect(() => {
     return editor.registerCommand(KEY_ESCAPE_COMMAND, () => true, 1);
@@ -89,15 +93,15 @@ export function ComboboxContentEditable({
   useEffect(() => {
     return editor.registerTextContentListener(() => {
       const value = getTextBeforeCursor(editor);
-      const triggerOffset = getTriggerOffset(value, isTrigger);
+      const triggerOffset = getTriggerOffset(value, editor, isTrigger);
       if (triggerOffset === -1) {
         combobox.hide();
       }
-      const trigger = getTriggerInPreviousChar(value, isTrigger);
+      const trigger = getTriggerInPreviousChar(value, editor, isTrigger);
       const selectionElement = getSelectionElement(editor);
       if (!selectionElement) return;
       if (!selectionElement.firstChild) return;
-      const searchValue = getSearchValue(value, isTrigger);
+      const searchValue = getSearchValue(value, editor, isTrigger);
       combobox.setValue(searchValue);
       const range = document.createRange();
       range.setStart(selectionElement.firstChild, triggerOffset + 1);
@@ -144,12 +148,12 @@ export function ComboboxContentEditable({
             value={item}
             key={item}
             className="combobox-item"
-            onClick={() => {
+            onClick={(event) => {
               editor.update(() => {
                 const selection = $getSelection();
                 if (!$isRangeSelection(selection)) return;
                 const value = getTextBeforeCursor(editor);
-                const startOffset = getTriggerOffset(value, isTrigger);
+                const startOffset = getTriggerOffset(value, editor, isTrigger);
                 const selectionOffset = startOffset + 1 + combobox.value.length;
                 const anchor = selection.anchor;
                 if (anchor.type !== "text") return;
@@ -163,21 +167,14 @@ export function ComboboxContentEditable({
                 if (startOffset === 0) {
                   nodeToReplace = orNode;
                 }
-                const mentionNode = getItemNode(item, trigger);
-                if (mentionNode && nodeToReplace) {
-                  if ($isTextNode(mentionNode)) {
-                    nodeToReplace.replace(mentionNode);
-                    const space = $createTextNode(" ");
-                    mentionNode.insertAfter(space);
-                    space.select();
-                  } else {
-                    nodeToReplace!.remove();
-                    $wrapLeafNodesInElements(selection, () => {
-                      const node = getItemNode(item, trigger) as ElementNode;
-                      return node;
-                    });
-                  }
-                }
+                onItemClick?.({
+                  event,
+                  editor,
+                  trigger,
+                  item,
+                  searchValue: combobox.value,
+                  node: nodeToReplace,
+                });
               });
             }}
           />
@@ -212,30 +209,38 @@ function getSelectionElement(editor: LexicalEditor) {
   });
 }
 
-function defaultIsTrigger(_char: string, _offset: number) {
-  return false;
-}
-
-function getTriggerOffset(value: string, isTrigger = defaultIsTrigger) {
+function getTriggerOffset(
+  value: string,
+  editor: LexicalEditor,
+  isTrigger: ComboboxContentEditableProps["isTrigger"]
+) {
   for (let i = value.length; i >= 0; i--) {
-    const char = value[i];
-    if (char && isTrigger(char, i)) return i;
+    const trigger = value[i];
+    if (trigger && isTrigger?.({ editor, trigger })) return i;
   }
   return -1;
 }
 
-function getTriggerInPreviousChar(value: string, isTrigger = defaultIsTrigger) {
+function getTriggerInPreviousChar(
+  value: string,
+  editor: LexicalEditor,
+  isTrigger: ComboboxContentEditableProps["isTrigger"]
+) {
   const previousChar = value[value.length - 1];
   if (!previousChar) return null;
   const secondPreviousChar = value[value.length - 2];
   const isIsolated = !secondPreviousChar || /\s/.test(secondPreviousChar);
   if (!isIsolated) return null;
-  if (isTrigger(previousChar, value.length - 1)) return previousChar;
+  if (isTrigger?.({ editor, trigger: previousChar })) return previousChar;
   return null;
 }
 
-function getSearchValue(value: string, isTrigger = defaultIsTrigger) {
-  const offset = getTriggerOffset(value, isTrigger);
+function getSearchValue(
+  value: string,
+  editor: LexicalEditor,
+  isTrigger: ComboboxContentEditableProps["isTrigger"]
+) {
+  const offset = getTriggerOffset(value, editor, isTrigger);
   if (offset === -1) return "";
   return value.slice(offset + 1);
 }

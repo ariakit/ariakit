@@ -2,6 +2,14 @@ import LexicalComposer from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import LexicalRichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
+import { $wrapLeafNodesInElements } from "@lexical/selection";
+import {
+  $createTextNode,
+  $getSelection,
+  $isRangeSelection,
+  ElementNode,
+  LexicalEditor,
+} from "lexical";
 import { ComboboxContentEditable } from "./combobox-content-editable";
 import { defaultTriggers, getList, getNode } from "./list";
 import { MentionNode } from "./nodes";
@@ -11,6 +19,32 @@ const theme = {
   // Theme styling goes here
   // ...
 };
+
+function getText(editor: LexicalEditor) {
+  return editor.getEditorState().read(() => {
+    const selection = $getSelection();
+    if (!$isRangeSelection(selection)) return "";
+    const anchor = selection.anchor;
+    if (anchor.type !== "text") return "";
+    const anchorNode = anchor.getNode();
+    if (!anchorNode.isSimpleText()) return "";
+    return anchorNode.getTextContent();
+  });
+}
+
+function getItemNode(item: string, trigger: string) {
+  if (trigger === "/") {
+    switch (item) {
+      case "Heading 1":
+        return $createHeadingNode("h1");
+      case "Heading 2":
+        return $createHeadingNode("h2");
+      default:
+        return null;
+    }
+  }
+  return getNode(item, trigger);
+}
 
 export function Editor() {
   const initialConfig = {
@@ -27,25 +61,35 @@ export function Editor() {
         <LexicalRichTextPlugin
           contentEditable={
             <ComboboxContentEditable
-              isTrigger={(char, offset) =>
-                defaultTriggers.includes(char) || (char === "/" && offset === 0)
-              }
-              getList={(trigger) => {
-                if (trigger === "/") return ["Heading 1", "Heading 2"];
+              isTrigger={({ editor, trigger }) => {
+                if (defaultTriggers.includes(trigger)) return true;
+                return trigger === "/" && getText(editor) === "/";
+              }}
+              getList={({ editor, trigger }) => {
+                if (trigger === "/" && getText(editor) === "/") {
+                  return ["Heading 1", "Heading 2"];
+                }
                 return getList(trigger);
               }}
-              getItemNode={(item, trigger) => {
-                if (trigger === "/") {
-                  switch (item) {
-                    case "Heading 1":
-                      return $createHeadingNode("h1");
-                    case "Heading 2":
-                      return $createHeadingNode("h2");
-                    default:
-                      return null;
-                  }
+              onItemClick={({ editor, item, trigger, node }) => {
+                if (!node) return;
+                if (!trigger) return;
+                const selection = $getSelection();
+                if (!$isRangeSelection(selection)) return;
+                if (trigger === "/" && getText(editor) === "/") {
+                  node.remove();
+                  $wrapLeafNodesInElements(
+                    selection,
+                    () => getItemNode(item, trigger) as ElementNode
+                  );
+                } else {
+                  const nextNode = getItemNode(item, trigger);
+                  if (!nextNode) return;
+                  node.replace(nextNode);
+                  const space = $createTextNode(" ");
+                  nextNode.insertAfter(space);
+                  space.select();
                 }
-                return getNode(item, trigger);
               }}
             />
           }
