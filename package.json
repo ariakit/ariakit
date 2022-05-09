@@ -70,7 +70,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.29.4",
     "fs-extra": "10.1.0",
-    "husky": "8.0.0",
+    "husky": "8.0.1",
     "jest": "28.1.0",
     "jest-axe": "6.0.0",
     "jest-environment-jsdom": "28.1.0",
