@@ -1,5 +1,13 @@
 # ariakit-utils
 
+## 0.17.0-next.18
+
+### Minor Changes
+
+- `useBooleanEventCallback` has been renamed to `useBooleanEvent`. ([#1323](https://github.com/ariakit/ariakit/pull/1323))
+
+* `useEventCallback` has been renamed to `useEvent`. ([#1323](https://github.com/ariakit/ariakit/pull/1323), [#1332](https://github.com/ariakit/ariakit/pull/1332))
+
 ## 0.17.0-next.17
 
 ### Patch Changes
