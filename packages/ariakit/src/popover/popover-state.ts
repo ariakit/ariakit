@@ -82,7 +82,7 @@ function getAnchorElement(
 }
 
 function isValidPlacement(flip: string): flip is Placement {
-  return /^(?:top|bottom|left|right)(?:-(?:left|right))?$/.test(flip);
+  return /^(?:top|bottom|left|right)(?:-(?:start|end))?$/.test(flip);
 }
 
 /**
