@@ -46,12 +46,16 @@ export type BooleanOrCallback<T = never> =
   | BivariantCallback<T extends never ? () => boolean : (arg: T) => boolean>;
 
 /**
- * A string that will provide autocomplete for specific strings.
- * @template T The specific strings.
+ * Generic type that accepts any type T, but suggest U in the autocomplete
+ * popup.
+ * @template T Any type.
+ * @template U Any subset of T that will be suggested in the autocomplete popup.
+ * @example
+ * // "apple" and "banana" will be suggested, but "watermelon"
+ * // is also valid since it's a string.
+ * const fruit: Suggest<string, "apple" | "banana"> = "watermelon";
  */
-export type StringWithValue<T extends string> =
-  | T
-  | (string & Record<never, never>);
+export type Suggest<T, U extends T> = U | (T & Record<never, never>);
 
 /**
  * Render prop type.
