@@ -53,8 +53,6 @@ export default function Example() {
   };
 
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = event.target;
-    setValue(value);
     const trigger = getTrigger(event.target);
     const searchValue = getSearchValue(event.target);
     // If there's a trigger character, we'll show the combobox popover.
@@ -72,7 +70,7 @@ export default function Example() {
       combobox.hide();
     }
     // Sets our textarea value.
-    setValue(value);
+    setValue(event.target.value);
     // Sets the combobox value that will be used to search in the list.
     combobox.setValue(searchValue);
   };
