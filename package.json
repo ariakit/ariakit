@@ -61,8 +61,8 @@
     "@types/react-dom": "18.0.3",
     "@types/tailwindcss": "3.0.10",
     "@types/textarea-caret": "3.0.1",
-    "@typescript-eslint/eslint-plugin": "5.22.0",
-    "@typescript-eslint/parser": "5.22.0",
+    "@typescript-eslint/eslint-plugin": "5.23.0",
+    "@typescript-eslint/parser": "5.23.0",
     "babel-plugin-module-resolver": "4.1.0",
     "chalk": "4.1.2",
     "cross-env": "7.0.3",
@@ -112,6 +112,6 @@
     "unist-util-visit": "4.1.0",
     "use-isomorphic-layout-effect": "1.1.2",
     "utility-types": "3.10.0",
-    "webpack": "5.72.0"
+    "webpack": "5.72.1"
   }
 }

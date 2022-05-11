@@ -116,11 +116,10 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
       const isImportDeclaration = nodePath.isImportDeclaration();
       const isExportDeclaration = nodePath.isExportDeclaration();
       const isCallExpression = nodePath.isCallExpression();
-      if (!isImportDeclaration && !isExportDeclaration && !isCallExpression) {
-        return;
-      }
-      // @ts-expect-error
-      if (isExportDeclaration && !nodePath.node.source) return;
+      const isValidExpression =
+        !isImportDeclaration && !isExportDeclaration && !isCallExpression;
+      if (!isValidExpression) return;
+      if (isExportDeclaration && !("source" in nodePath.node)) return;
       if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
 
       /** @type {string} */
