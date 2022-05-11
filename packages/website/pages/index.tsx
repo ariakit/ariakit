@@ -41,6 +41,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/menu-item-checkbox", label: "Menu item checkbox" },
   { href: "/examples/menu-nested", label: "Menu nested" },
   { href: "/examples/popover", label: "Popover" },
+  { href: "/examples/popover-flip", label: "Popover flip" },
   { href: "/examples/popover-responsive", label: "Popover responsive" },
   { href: "/examples/radio", label: "Radio" },
   { href: "/examples/select", label: "Select" },
@@ -55,10 +56,6 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/toolbar", label: "Toolbar" },
   { href: "/examples/toolbar-select", label: "Toolbar with Select" },
   { href: "/examples/tooltip", label: "Tooltip" },
-  {
-    href: "/examples/tooltip-fallback-placement",
-    label: "Tooltip fallback placement",
-  },
   { href: "/examples/tooltip-placement", label: "Tooltip placement" },
   { href: "/examples/tooltip-timeout", label: "Tooltip timeout" },
 ].sort((a, b) => a.label.localeCompare(b.label));

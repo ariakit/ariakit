@@ -81,6 +81,10 @@ function getAnchorElement(
   };
 }
 
+function isValidPlacement(flip: string): flip is Placement {
+  return /^(?:top|bottom|left|right)(?:-(?:left|right))?$/.test(flip);
+}
+
 /**
  * Provides state for the `Popover` components.
  * @example
@@ -103,7 +107,6 @@ export function usePopoverState({
   arrowPadding = 4,
   overflowPadding = 8,
   renderCallback,
-  fallbackPlacement,
   ...props
 }: PopoverStateProps = {}): PopoverState {
   const dialog = useDialogState(props);
@@ -153,15 +156,22 @@ export function usePopoverState({
           }),
         ];
 
-        if (flip) {
+        if (flip !== false) {
+          const fallbackPlacements =
+            typeof flip === "string" ? flip.split(" ") : undefined;
+
+          if (
+            fallbackPlacements !== undefined &&
+            !fallbackPlacements.every(isValidPlacement)
+          ) {
+            throw new Error("`flip` expected a string ");
+          }
+
           // https://floating-ui.com/docs/flip
           middleware.push(
             middlewares.flip({
               padding: overflowPadding,
-              fallbackPlacements:
-                fallbackPlacement !== undefined
-                  ? [fallbackPlacement]
-                  : undefined,
+              fallbackPlacements: fallbackPlacements,
             })
           );
         }
@@ -295,7 +305,6 @@ export function usePopoverState({
     fitViewport,
     arrowPadding,
     placement,
-    fallbackPlacement,
     fixed,
     renderCallback,
   ]);
@@ -308,7 +317,6 @@ export function usePopoverState({
       popoverRef,
       arrowRef,
       currentPlacement,
-      fallbackPlacement,
       placement,
       fixed,
       gutter,
@@ -327,7 +335,6 @@ export function usePopoverState({
       dialog,
       getAnchorRect,
       currentPlacement,
-      fallbackPlacement,
       placement,
       fixed,
       gutter,
@@ -414,11 +421,6 @@ export type PopoverState = DialogState & {
    */
   placement: Placement;
   /**
-   * The fallback placement if the `placement` overflows. In order for this to work
-   * the `flip` property must be `true`.
-   */
-  fallbackPlacement?: Placement;
-  /**
    * Whether the popover has `position: fixed` or not.
    * @default false
    */
@@ -435,11 +437,27 @@ export type PopoverState = DialogState & {
    */
   shift: number;
   /**
-   * Whether the popover should flip to the opposite side of the viewport
+   * Controls the behavior of the popover when it overflows the viewport.
+   *
+   * If a boolean, specifies whether the popover should flip to the opposite side
    * when it overflows.
+   *
+   * If a string, indicates the preferred fallback placements when it overflows.
+   * The placements must be spaced-delimited, e.g. "top left".
+   *
+   * @example
+   *  ```jsx
+   *  const popover = usePopoverState({
+   *      placement: "right",
+   *      // In case the `right` placement overflows the viewport,
+   *      // the placement will fallback to the `bottom` or `top`,
+   *      // in that order, depending on where it fits.
+   *      flip: "bottom top",
+   *  });
+   * ```
    * @default true
    */
-  flip: boolean;
+  flip: boolean | string;
   /**
    * Whether the popover should slide when it overflows.
    * @default true
@@ -499,7 +517,6 @@ export type PopoverStateProps = DialogStateProps &
       | "gutter"
       | "shift"
       | "flip"
-      | "fallbackPlacement"
       | "slide"
       | "overlap"
       | "sameWidth"
