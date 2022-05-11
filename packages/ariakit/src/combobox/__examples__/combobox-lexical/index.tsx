@@ -1,23 +1,38 @@
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import LexicalRichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
-import { $createHeadingNode, HeadingNode } from "@lexical/rich-text";
 import { $wrapLeafNodesInElements } from "@lexical/selection";
 import {
+  $createParagraphNode,
   $createTextNode,
   $getSelection,
   $isRangeSelection,
+  EditorThemeClasses,
   ElementNode,
   LexicalEditor,
 } from "lexical";
 import { ComboboxContentEditable } from "./combobox-content-editable";
 import { defaultTriggers, getList, getNode } from "./list";
-import { MentionNode } from "./nodes";
+import {
+  $createHeadingNode,
+  $createQuoteNode,
+  HeadingNode,
+  QuoteNode,
+  StyledNode,
+} from "./nodes";
+import { getTextBeforeCursor } from "./utils";
 import "./style.css";
 
-const theme = {
-  // Theme styling goes here
-  // ...
+const theme: EditorThemeClasses = {
+  quote: "editor-blockquote",
+  paragraph: "editor-paragraph",
+  heading: {
+    h1: "editor-heading-1",
+    h2: "editor-heading-2",
+    h3: "editor-heading-3",
+    h4: "editor-heading-4",
+    h5: "editor-heading-5",
+  },
 };
 
 function getText(editor: LexicalEditor) {
@@ -35,10 +50,20 @@ function getText(editor: LexicalEditor) {
 function getItemNode(item: string, trigger: string) {
   if (trigger === "/") {
     switch (item) {
+      case "Blockquote":
+        return $createQuoteNode();
       case "Heading 1":
         return $createHeadingNode("h1");
+      case "Paragraph":
+        return $createParagraphNode();
       case "Heading 2":
         return $createHeadingNode("h2");
+      case "Heading 3":
+        return $createHeadingNode("h3");
+      case "Heading 4":
+        return $createHeadingNode("h4");
+      case "Heading 5":
+        return $createHeadingNode("h5");
       default:
         return null;
     }
@@ -52,7 +77,7 @@ export function Editor() {
     onError(error: Error) {
       throw error;
     },
-    nodes: [MentionNode, HeadingNode],
+    nodes: [HeadingNode, QuoteNode, StyledNode],
   };
 
   return (
@@ -63,20 +88,37 @@ export function Editor() {
             <ComboboxContentEditable
               isTrigger={({ editor, trigger }) => {
                 if (defaultTriggers.includes(trigger)) return true;
-                return trigger === "/" && getText(editor) === "/";
+                return (
+                  trigger === "/" &&
+                  getText(editor) === getTextBeforeCursor(editor)
+                );
               }}
               getList={({ editor, trigger }) => {
-                if (trigger === "/" && getText(editor) === "/") {
-                  return ["Heading 1", "Heading 2"];
+                if (
+                  trigger === "/" &&
+                  getText(editor) === getTextBeforeCursor(editor)
+                ) {
+                  return [
+                    "Blockquote",
+                    "Heading 1",
+                    "Paragraph",
+                    "Heading 2",
+                    "Heading 3",
+                    "Heading 4",
+                    "Heading 5",
+                  ];
                 }
                 return getList(trigger);
               }}
-              onItemClick={({ editor, item, trigger, node }) => {
+              onSelect={({ editor, item, trigger, node }) => {
                 if (!node) return;
                 if (!trigger) return;
                 const selection = $getSelection();
                 if (!$isRangeSelection(selection)) return;
-                if (trigger === "/" && getText(editor) === "/") {
+                if (
+                  trigger === "/" &&
+                  getText(editor) === getTextBeforeCursor(editor)
+                ) {
                   node.remove();
                   $wrapLeafNodesInElements(
                     selection,
@@ -93,7 +135,7 @@ export function Editor() {
               }}
             />
           }
-          placeholder={<div className="placeholder">Enter some text...</div>}
+          placeholder={null}
         />
         <HistoryPlugin />
       </LexicalComposer>

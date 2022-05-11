@@ -114,15 +114,21 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   babel.traverse(parsed, {
     enter(nodePath) {
       const isImportDeclaration = nodePath.isImportDeclaration();
+      const isExportDeclaration = nodePath.isExportDeclaration();
       const isCallExpression = nodePath.isCallExpression();
-      if (!isImportDeclaration && !isCallExpression) return;
+      if (!isImportDeclaration && !isExportDeclaration && !isCallExpression) {
+        return;
+      }
+      // @ts-expect-error
+      if (isExportDeclaration && !nodePath.node.source) return;
       if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
 
       /** @type {string} */
       const source = isCallExpression
-        ? // @ts-ignore
+        ? // @ts-expect-error
           nodePath.node.arguments[0].value
-        : nodePath.node.source.value;
+        : // @ts-expect-error
+          nodePath.node.source.value;
       const mod = resolveModuleName(source, filename);
       const relativeFilename = pathToPosix(
         path.relative(dest, mod.resolvedFileName)

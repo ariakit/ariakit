@@ -1,31 +1,45 @@
-import { EditorConfig, LexicalNode, TextNode } from "lexical";
+import { EditorConfig, LexicalNode, NodeKey, TextNode } from "lexical";
 
-export class MentionNode extends TextNode {
+export {
+  HeadingNode,
+  $createHeadingNode,
+  $isHeadingNode,
+  QuoteNode,
+  $createQuoteNode,
+  $isQuoteNode,
+} from "@lexical/rich-text";
+
+export class StyledNode extends TextNode {
+  __className?: string;
+
   static getType() {
-    return "mention";
+    return "styled";
   }
 
-  static clone(node: MentionNode) {
-    return new MentionNode(node.__text, node.__key);
+  static clone(node: StyledNode) {
+    return new StyledNode(node.__text, node.__className, node.__key);
+  }
+
+  constructor(text: string, className?: string, key?: NodeKey) {
+    super(text, key);
+    this.__className = className;
   }
 
   createDOM(config: EditorConfig) {
     const dom = super.createDOM(config);
-    dom.classList.add("mention");
+    if (this.__className) {
+      dom.classList.add(this.__className);
+    }
     return dom;
   }
-
-  isTextEntity() {
-    return true;
-  }
 }
 
-export function $createMentionNode(mentionName: string) {
-  const mentionNode = new MentionNode(mentionName);
-  mentionNode.setMode("segmented").toggleDirectionless();
-  return mentionNode;
+export function $createStyledNode(text: string, className: string) {
+  const node = new StyledNode(text, className);
+  node.setMode("segmented").toggleDirectionless();
+  return node;
 }
 
-export function $isMentionNode(node: LexicalNode): node is MentionNode {
-  return node instanceof MentionNode;
+export function $isStyledNode(node: LexicalNode): node is StyledNode {
+  return node instanceof StyledNode;
 }

@@ -1,4 +1,4 @@
-import { $createMentionNode } from "./nodes";
+import { $createStyledNode } from "./nodes";
 
 export const defaultTriggers = ["@", "#", ":"];
 
@@ -30,7 +30,7 @@ export function getValue(listValue: string, trigger: string | null) {
 export function getNode(listValue: string, trigger: string | null) {
   const value = getValue(listValue, trigger);
   if (value) {
-    return $createMentionNode(value);
+    return $createStyledNode(value, "mention");
   }
   return null;
 }

@@ -8,17 +8,41 @@
   @apply absolute top-4 left-4 pointer-events-none;
 }
 
+.editor-paragraph {
+  @apply relative mb-4;
+}
+
+.editor-blockquote {
+  @apply
+    px-4
+    py-1
+    mb-4
+    border-l-4
+    border-canvas-1
+    dark:border-canvas-1-dark;
+}
+
+.editor-paragraph.empty::before {
+  content: "Type / to choose a block";
+  @apply absolute top-0 left-0 opacity-60;
+}
+
+.editor-paragraph.empty + .editor-paragraph.empty::before {
+  content: "";
+}
+
 .combobox-wrapper {
   @apply relative;
 }
 
 .combobox {
   min-height: 270px;
+  max-height: min(calc(100vh - 64px), 600px);
   @apply p-4 overflow-auto w-full h-full;
 }
 
 .combobox h1 {
-  @apply text-3xl mb-4;
+  @apply text-4xl mb-4;
 }
 
 .combobox p {
