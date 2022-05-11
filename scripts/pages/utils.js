@@ -114,15 +114,20 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   babel.traverse(parsed, {
     enter(nodePath) {
       const isImportDeclaration = nodePath.isImportDeclaration();
+      const isExportDeclaration = nodePath.isExportDeclaration();
       const isCallExpression = nodePath.isCallExpression();
-      if (!isImportDeclaration && !isCallExpression) return;
+      const isValidExpression =
+        !isImportDeclaration && !isExportDeclaration && !isCallExpression;
+      if (!isValidExpression) return;
+      if (isExportDeclaration && !("source" in nodePath.node)) return;
       if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
 
       /** @type {string} */
       const source = isCallExpression
-        ? // @ts-ignore
+        ? // @ts-expect-error
           nodePath.node.arguments[0].value
-        : nodePath.node.source.value;
+        : // @ts-expect-error
+          nodePath.node.source.value;
       const mod = resolveModuleName(source, filename);
       const relativeFilename = pathToPosix(
         path.relative(dest, mod.resolvedFileName)
@@ -245,10 +250,16 @@ async function getPageContent({ filename, dest, componentPath }) {
   const importsFlat = Object.values(imports).flat();
 
   const importDeclarations = uniq(
-    importsFlat.map((i) => {
-      if (!i.identifier) return `import "${i.source}";`;
-      if (i.defaultExport) return `import ${i.identifier} from "${i.source}";`;
-      return `import * as ${i.identifier} from "${i.source}";`;
+    importsFlat.map((item, i, array) => {
+      const isDuplicate = array
+        .slice(0, i)
+        .some(({ identifier }) => identifier === item.identifier);
+      if (!item.identifier || isDuplicate) {
+        return `import "${item.source}";`;
+      } else if (item.defaultExport) {
+        return `import ${item.identifier} from "${item.source}";`;
+      }
+      return `import * as ${item.identifier} from "${item.source}";`;
     })
   );
 
