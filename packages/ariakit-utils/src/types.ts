@@ -51,7 +51,7 @@ export type BooleanOrCallback<T = never> =
  */
 export type StringWithValue<T extends string> =
   | T
-  | (string & { [key in symbol]: never });
+  | (string & Record<never, never>);
 
 /**
  * Render prop type.
