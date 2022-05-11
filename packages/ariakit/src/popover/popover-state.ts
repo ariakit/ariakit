@@ -164,7 +164,9 @@ export function usePopoverState({
             fallbackPlacements !== undefined &&
             !fallbackPlacements.every(isValidPlacement)
           ) {
-            throw new Error("`flip` expected a string ");
+            throw new Error(
+              "`flip` expects a spaced-delimited list of placements"
+            );
           }
 
           // https://floating-ui.com/docs/flip
