@@ -33,8 +33,8 @@ export default function Example() {
   }, [combobox.setVisible, hasMatches]);
 
   useLayoutEffect(() => {
-    Promise.resolve(getList(trigger)).then(combobox.setList);
-  }, [trigger, combobox.setList]);
+    combobox.setList(getList(trigger));
+  }, [combobox.setList, trigger]);
 
   useLayoutEffect(() => {
     if (caretOffset != null) {
