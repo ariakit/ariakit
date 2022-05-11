@@ -24,9 +24,14 @@
     "popover-state-overlap",
     "popover-state-shift-gutter",
     "popover-state-slide",
+    "portal-suspense",
     "select-focus-visible-flash",
     "select-label-as-div",
+    "stable-events",
     "test-utils-press-selection",
-    "test-utils-press-type"
+    "test-utils-press-type",
+    "update-floating-ui",
+    "utils-use-boolean-event",
+    "utils-use-event"
   ]
 }
