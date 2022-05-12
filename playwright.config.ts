@@ -28,7 +28,7 @@ const config: PlaywrightTestConfig = {
     {
       name: "chrome",
       testMatch: "test-chrome.ts",
-      retries: 2,
+      retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {

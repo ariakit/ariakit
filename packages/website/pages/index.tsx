@@ -42,6 +42,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/menu-nested", label: "Menu nested" },
   { href: "/examples/popover", label: "Popover" },
   { href: "/examples/popover-flip", label: "Popover flip" },
+  { href: "/examples/popover-standalone", label: "Popover standalone" },
   { href: "/examples/popover-responsive", label: "Popover responsive" },
   { href: "/examples/radio", label: "Radio" },
   { href: "/examples/select", label: "Select" },
