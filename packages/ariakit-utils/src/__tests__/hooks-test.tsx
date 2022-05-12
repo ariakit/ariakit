@@ -24,7 +24,6 @@ test("useInitialValue", () => {
   const TestComponent = () => {
     const [someState, setSomeState] = useState("some value");
     const initialValue = useInitialValue(someState);
-
     return (
       <button onClick={() => setSomeState("some new value")}>
         {initialValue}
@@ -41,7 +40,6 @@ test("useLazyValue", () => {
   const TestComponent = () => {
     const [someState, setSomeState] = useState("some value");
     const lazyValue = useLazyValue(() => someState);
-
     return (
       <button onClick={() => setSomeState("some new value")}>
         {lazyValue}
@@ -80,7 +78,6 @@ test("usePreviousValue", () => {
     const [someState, setSomeState] = useState("some value");
     const prevValue = usePreviousValue(someState);
     duringRender(prevValue);
-
     return (
       <button onClick={() => setSomeState("some new value")}>
         {prevValue}
@@ -139,10 +136,8 @@ test("useForkRef", () => {
   const TestComponent = () => {
     const internalRef = useRef();
     const ref = useForkRef(internalRef, ref1, ref2);
-
     return <button ref={ref} />;
   };
-
   const { container } = render(<TestComponent />);
   expect(ref1).toBeCalledTimes(1);
   expect(ref2).toBeCalledTimes(1);
@@ -168,7 +163,6 @@ test("useRefId", () => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useRefId(ref);
     idVal = id;
-
     return <div id="some-id" ref={ref} />;
   };
   expect(idVal).toBeUndefined();
@@ -192,7 +186,6 @@ test("useId", () => {
   const TestComponent = () => {
     const [idState, setIdState] = useState("");
     const id = useId(idState);
-
     return <button onClick={() => setIdState("some-id")} id={id} />;
   };
   const { container } = render(<TestComponent />);
@@ -208,7 +201,6 @@ test("useTagName", () => {
     const ref = useRef<HTMLDivElement>(null);
     const tagName = useTagName(ref);
     tagNameVal = tagName;
-
     return <div ref={ref} />;
   };
   render(<TestComponent />);
@@ -220,7 +212,6 @@ test("useTagName", () => {
     const ref = useRef<HTMLDivElement>(null);
     const tagName = useTagName(ref, "button");
     tagNameVal2 = tagName;
-
     return <div ref={ref} />;
   };
   render(<TestComponent2 />);
