@@ -48,7 +48,11 @@ export function DialogBackdrop({
     const dialog = state.contentElement;
     if (!backdrop) return;
     if (!dialog) return;
-    backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
+    const backdropZIndex = getComputedStyle(backdrop).zIndex;
+    const dialogZIndex = getComputedStyle(dialog).zIndex;
+    if (backdropZIndex === "auto" && dialogZIndex !== "auto") {
+      backdrop.style.zIndex = dialogZIndex;
+    }
   }, [state.contentElement]);
 
   const onClickProp = backdropProps?.onClick;
