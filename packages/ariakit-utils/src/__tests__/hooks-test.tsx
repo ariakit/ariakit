@@ -47,7 +47,7 @@ test("useLazyValue", () => {
   };
   const { container, getByRole } = render(<TestComponent />);
   expect(container).toHaveTextContent("some value");
-  fireEvent.click(getByRole("button")!);
+  fireEvent.click(getByRole("button"));
   expect(container).toHaveTextContent("some value");
 });
 
@@ -271,14 +271,20 @@ test("useControlledState", async () => {
     );
     return (
       <div>
-        <button id="controlled" onClick={() => setControlled(!controlled)} />
-        <button id="update-state" onClick={() => setState("some-state")} />
         <button
-          id="update-controlled-state"
+          data-testid="controlled"
+          onClick={() => setControlled(!controlled)}
+        />
+        <button
+          data-testid="update-state"
+          onClick={() => setState("some-state")}
+        />
+        <button
+          data-testid="update-controlled-state"
           onClick={() => setControlledState("some-controlled-state")}
         />
         <button
-          id="reset"
+          data-testid="reset"
           onClick={() => {
             setControlled(false);
             // Have to force this on a separate tick to avoid
@@ -293,13 +299,11 @@ test("useControlledState", async () => {
       </div>
     );
   };
-  const { container } = render(<TestComponent />);
-  const controlled = container.querySelector("#controlled")!;
-  const updateState = container.querySelector("#update-state")!;
-  const updateControlledState = container.querySelector(
-    "#update-controlled-state"
-  )!;
-  const reset = container.querySelector("#reset")!;
+  const { container, getByTestId } = render(<TestComponent />);
+  const controlled = getByTestId("controlled");
+  const updateState = getByTestId("update-state");
+  const updateControlledState = getByTestId("update-controlled-state");
+  const reset = getByTestId("reset");
   expect(container).toHaveTextContent("initial controlled state");
   fireEvent.click(updateControlledState);
   expect(container).toHaveTextContent("some-controlled-state");
@@ -327,7 +331,7 @@ test("useForceUpdate", () => {
   const { getByRole } = render(<TestComponent />);
   // Should render twice on mount
   expect(someFunction).toBeCalledTimes(2);
-  fireEvent.click(getByRole("button")!);
+  fireEvent.click(getByRole("button"));
   expect(someFunction).toBeCalledTimes(3);
 });
 
@@ -338,16 +342,22 @@ test("useBooleanEvent", () => {
     const bool = useBooleanEvent(true);
     return (
       <div>
-        <button id="func" onClick={() => (func() ? someFunc("func") : null)} />
-        <button id="bool" onClick={() => (bool() ? someFunc("bool") : null)} />
+        <button
+          data-testid="func"
+          onClick={() => (func() ? someFunc("func") : null)}
+        />
+        <button
+          data-testid="bool"
+          onClick={() => (bool() ? someFunc("bool") : null)}
+        />
       </div>
     );
   };
-  const { container } = render(<TestComponent />);
-  fireEvent.click(container.querySelector("#func")!);
+  const { getByTestId } = render(<TestComponent />);
+  fireEvent.click(getByTestId("func"));
   expect(someFunc).toBeCalledTimes(1);
   expect(someFunc).toBeCalledWith("func");
-  fireEvent.click(container.querySelector("#bool")!);
+  fireEvent.click(getByTestId("bool"));
   expect(someFunc).toBeCalledTimes(2);
   expect(someFunc).toBeCalledWith("bool");
 });
@@ -356,30 +366,32 @@ test("useWrapElement", () => {
   const DeeplyWrappedComponent = () => {
     const [count, setCount] = useState(3);
     const newProps1 = useWrapElement({}, (element) => (
-      <div id="wrap1">{element}</div>
+      <div data-testid="wrap1">{element}</div>
     ));
     const newProps2 = useWrapElement(newProps1, (element) => (
-      <div id="wrap2">{element}</div>
+      <div data-testid="wrap2">{element}</div>
     ));
     const newProps3 = useWrapElement(
       newProps2,
-      (element) => <div id={`wrap${count}`}>{element}</div>,
+      (element) => <div data-testid={`wrap${count}`}>{element}</div>,
       [count]
     );
     return newProps3.wrapElement(
-      <div id="innerElement">
+      <div data-testid="innerElement">
         <button onClick={() => setCount(count + 1)}>Click me</button>
       </div>
     );
   };
-  const { container } = render(<DeeplyWrappedComponent />);
-  expect(container.querySelector("#wrap1")).toBeInTheDocument();
-  expect(container.querySelector("#wrap2")).toBeInTheDocument();
-  expect(container.querySelector("#wrap3")).toBeInTheDocument();
-  expect(container.querySelector("#innerElement")).toBeInTheDocument();
-  fireEvent.click(container.querySelector("button")!);
-  expect(container.querySelector("#wrap1")).toBeInTheDocument();
-  expect(container.querySelector("#wrap2")).toBeInTheDocument();
-  expect(container.querySelector("#wrap3")).not.toBeInTheDocument();
-  expect(container.querySelector("#wrap4")).toBeInTheDocument();
+  const { getByTestId, queryByTestId, getByRole } = render(
+    <DeeplyWrappedComponent />
+  );
+  expect(getByTestId("wrap1")).toBeInTheDocument();
+  expect(getByTestId("wrap2")).toBeInTheDocument();
+  expect(getByTestId("wrap3")).toBeInTheDocument();
+  expect(getByTestId("innerElement")).toBeInTheDocument();
+  fireEvent.click(getByRole("button"));
+  expect(getByTestId("wrap1")).toBeInTheDocument();
+  expect(getByTestId("wrap2")).toBeInTheDocument();
+  expect(queryByTestId("wrap3")).not.toBeInTheDocument();
+  expect(getByTestId("wrap4")).toBeInTheDocument();
 });
