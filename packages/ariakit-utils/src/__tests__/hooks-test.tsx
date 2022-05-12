@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { fireEvent } from "@testing-library/react";
-import { render, sleep } from "ariakit-test";
+import { fireEvent, render, sleep } from "ariakit-test";
 
 import {
   useBooleanEvent,
