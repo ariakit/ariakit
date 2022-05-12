@@ -94,9 +94,7 @@ test("useEvent function is stable", () => {
   const TestComponent = () => {
     const [callback, setCallback] = useState(() => effectFunction);
     const result = useEvent(callback);
-    useEffect(() => {
-      effectFunction();
-    }, [result]);
+    useEffect(effectFunction, [result]);
     return <button onClick={() => setCallback(jest.fn())} />;
   };
   const { getByRole } = render(<TestComponent />);
@@ -106,21 +104,16 @@ test("useEvent function is stable", () => {
 });
 
 test("useEvent errors is used during render", () => {
-  let error: Error | undefined;
+  const consoleError = jest.spyOn(console, "error").mockImplementation();
   const TestComponent = () => {
     const result = useEvent(jest.fn());
-    try {
-      result();
-    } catch (e) {
-      if (e instanceof Error) {
-        error = e;
-      }
-    }
-    return <div />;
+    result();
+    return null;
   };
-  expect(error).toBeUndefined();
-  render(<TestComponent />);
-  expect(error).toBeDefined();
+  expect(() => render(<TestComponent />)).toThrow(
+    "Cannot call an event handler while rendering."
+  );
+  consoleError.mockRestore();
 });
 
 test("useForkRef", () => {
@@ -323,9 +316,7 @@ test("useForceUpdate", () => {
   const TestComponent = () => {
     const [_, forceUpdateFunc] = useForceUpdate();
     someFunction();
-    useEffect(() => {
-      forceUpdateFunc();
-    }, []);
+    useEffect(forceUpdateFunc, []);
     return <button onClick={() => forceUpdateFunc()} />;
   };
   const { getByRole } = render(<TestComponent />);
