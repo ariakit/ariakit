@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fireEvent, render, sleep } from "ariakit-test";
 
 import {
@@ -29,9 +29,9 @@ test("useInitialValue", () => {
       </button>
     );
   };
-  const { container } = render(<TestComponent />);
+  const { container, getByRole } = render(<TestComponent />);
   expect(container).toHaveTextContent("some value");
-  fireEvent.click(container.querySelector("button")!);
+  fireEvent.click(getByRole("button"));
   expect(container).toHaveTextContent("some value");
 });
 
@@ -45,9 +45,9 @@ test("useLazyValue", () => {
       </button>
     );
   };
-  const { container } = render(<TestComponent />);
+  const { container, getByRole } = render(<TestComponent />);
   expect(container).toHaveTextContent("some value");
-  fireEvent.click(container.querySelector("button")!);
+  fireEvent.click(getByRole("button")!);
   expect(container).toHaveTextContent("some value");
 });
 
@@ -56,17 +56,13 @@ test("useLiveRef", async () => {
   const TestComponent = () => {
     const [someState, setSomeState] = useState("some value");
     const liveRef = useLiveRef(someState);
-
-    useLayoutEffect(() => {
-      effectFunction(liveRef.current);
-    }, [someState]);
-
+    useEffect(() => effectFunction(liveRef.current), [someState]);
     return <button onClick={() => setSomeState("some new value")} />;
   };
-  render(<TestComponent />);
+  const { getByRole } = render(<TestComponent />);
   expect(effectFunction).toHaveBeenCalledTimes(1);
   expect(effectFunction).toHaveBeenCalledWith("some value");
-  fireEvent.click(document.body.querySelector("button")!);
+  fireEvent.click(getByRole("button"));
   expect(effectFunction).toHaveBeenCalledTimes(2);
   expect(effectFunction).toHaveBeenCalledWith("some new value");
 });
@@ -83,16 +79,16 @@ test("usePreviousValue", () => {
       </button>
     );
   };
-  const { container } = render(<TestComponent />);
+  const { container, getByRole } = render(<TestComponent />);
   expect(container).toHaveTextContent("some value");
-  fireEvent.click(container.querySelector("button")!);
+  fireEvent.click(getByRole("button"));
   expect(duringRender).nthCalledWith(1, "some value");
   expect(duringRender).nthCalledWith(2, "some value");
   expect(duringRender).nthCalledWith(3, "some new value");
   expect(container).toHaveTextContent("some new value");
 });
 
-test("useEvent", () => {
+test("useEvent function is stable", () => {
   // Check function is stable
   const effectFunction = jest.fn();
   const TestComponent = () => {
@@ -101,19 +97,18 @@ test("useEvent", () => {
     useEffect(() => {
       effectFunction();
     }, [result]);
-
     return <button onClick={() => setCallback(jest.fn())} />;
   };
-  const { container } = render(<TestComponent />);
+  const { getByRole } = render(<TestComponent />);
   expect(effectFunction).toBeCalledTimes(1);
-  fireEvent.click(container.querySelector("button")!);
+  fireEvent.click(getByRole("button"));
   expect(effectFunction).toBeCalledTimes(1);
+});
 
-  // Check that error is thrown during render
+test("useEvent errors is used during render", () => {
   let error: Error | undefined;
-  const TestComponent2 = () => {
+  const TestComponent = () => {
     const result = useEvent(jest.fn());
-
     try {
       result();
     } catch (e) {
@@ -121,11 +116,10 @@ test("useEvent", () => {
         error = e;
       }
     }
-
     return <div />;
   };
   expect(error).toBeUndefined();
-  render(<TestComponent2 />);
+  render(<TestComponent />);
   expect(error).toBeDefined();
 });
 
@@ -137,14 +131,15 @@ test("useForkRef", () => {
     const ref = useForkRef(internalRef, ref1, ref2);
     return <button ref={ref} />;
   };
-  const { container } = render(<TestComponent />);
+  const { getByRole } = render(<TestComponent />);
   expect(ref1).toBeCalledTimes(1);
   expect(ref2).toBeCalledTimes(1);
-  const button = container.querySelector("button")!;
+  const button = getByRole("button");
   expect(ref1).toHaveBeenCalledWith(button);
   expect(ref2).toHaveBeenCalledWith(button);
+});
 
-  // No refs case
+test("useForkRef no refs provided", () => {
   let refVal: any;
   const TestComponent2 = () => {
     const ref = useForkRef();
@@ -167,28 +162,29 @@ test("useRefId", () => {
   expect(idVal).toBeUndefined();
   render(<TestComponent />);
   expect(idVal).toBe("some-id");
+});
 
-  // Undefined case
-  let idVal2: string | undefined;
+test("useRefId undefined ref", () => {
+  let idVal: string | undefined;
   const TestComponent2 = () => {
-    const id = useRefId();
+    const ref = useRef<HTMLDivElement>(null);
+    const id = useRefId(ref);
     idVal = id;
     return <div />;
   };
-  expect(idVal2).toBeUndefined();
+  expect(idVal).toBeUndefined();
   render(<TestComponent2 />);
-  expect(idVal2).toBeUndefined();
+  expect(idVal).toBeUndefined();
 });
 
 test("useId", () => {
-  // Case where react id is defined
   const TestComponent = () => {
     const [idState, setIdState] = useState("");
     const id = useId(idState);
     return <button onClick={() => setIdState("some-id")} id={id} />;
   };
-  const { container } = render(<TestComponent />);
-  const button = container.querySelector("button")!;
+  const { getByRole } = render(<TestComponent />);
+  const button = getByRole("button");
   expect(button.id).toBeTruthy();
   fireEvent.click(button);
   expect(button.id).toBe("some-id");
@@ -204,39 +200,37 @@ test("useTagName", () => {
   };
   render(<TestComponent />);
   expect(tagNameVal).toBe("div");
+});
 
-  // With type case
-  let tagNameVal2: string | undefined;
-  const TestComponent2 = () => {
+test("useTagName with type", () => {
+  let tagNameVal: string | undefined;
+  const TestComponent = () => {
     const ref = useRef<HTMLDivElement>(null);
     const tagName = useTagName(ref, "button");
-    tagNameVal2 = tagName;
+    tagNameVal = tagName;
     return <div ref={ref} />;
   };
-  render(<TestComponent2 />);
-  expect(tagNameVal2).toBe("div");
+  render(<TestComponent />);
+  expect(tagNameVal).toBe("div");
+});
 
-  // Undefined case
-  let tagNameVal3: string | undefined;
-  const TestComponent3 = () => {
+test("useTagName with type and element undefined", () => {
+  let tagNameVal: string | undefined;
+  const TestComponent = () => {
     const ref = useRef<HTMLDivElement>(null);
     const tagName = useTagName(ref, "button");
-    tagNameVal3 = tagName;
+    tagNameVal = tagName;
     return <div />;
   };
-  render(<TestComponent3 />);
-  expect(tagNameVal3).toBe("button");
+  render(<TestComponent />);
+  expect(tagNameVal).toBe("button");
 });
 
 test("useUpdateEffect", () => {
   const effectFunction = jest.fn();
   const TestComponent = (props: { somePropVale: number }) => {
     const { somePropVale } = props;
-
-    useUpdateEffect(() => {
-      effectFunction();
-    }, [somePropVale]);
-
+    useUpdateEffect(effectFunction, [somePropVale]);
     return <div />;
   };
   const { rerender } = render(<TestComponent somePropVale={0} />);
@@ -253,11 +247,7 @@ test("useUpdateLayoutEffect", () => {
   const effectFunction = jest.fn();
   const TestComponent = (props: { somePropVale: number }) => {
     const { somePropVale } = props;
-
-    useUpdateLayoutEffect(() => {
-      effectFunction();
-    }, [somePropVale]);
-
+    useUpdateLayoutEffect(effectFunction, [somePropVale]);
     return <div />;
   };
   const { rerender } = render(<TestComponent somePropVale={0} />);
@@ -279,7 +269,6 @@ test("useControlledState", async () => {
       controlled ? state : undefined,
       controlled ? setState : undefined
     );
-
     return (
       <div>
         <button id="controlled" onClick={() => setControlled(!controlled)} />
@@ -335,10 +324,10 @@ test("useForceUpdate", () => {
     }, []);
     return <button onClick={() => forceUpdateFunc()} />;
   };
-  render(<TestComponent />);
+  const { getByRole } = render(<TestComponent />);
   // Should render twice on mount
   expect(someFunction).toBeCalledTimes(2);
-  fireEvent.click(document.querySelector("button")!);
+  fireEvent.click(getByRole("button")!);
   expect(someFunction).toBeCalledTimes(3);
 });
 
@@ -347,7 +336,6 @@ test("useBooleanEvent", () => {
   const TestComponent = () => {
     const func = useBooleanEvent(() => true);
     const bool = useBooleanEvent(true);
-
     return (
       <div>
         <button id="func" onClick={() => (func() ? someFunc("func") : null)} />
