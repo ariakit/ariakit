@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { fireEvent } from "@testing-library/react";
 import { render, sleep } from "ariakit-test";
 
@@ -55,38 +55,23 @@ test("useLazyValue", () => {
 });
 
 test("useLiveRef", async () => {
+  const effectFunction = jest.fn();
   const TestComponent = () => {
     const [someState, setSomeState] = useState("some value");
-    const [_, update] = useForceUpdate();
     const liveRef = useLiveRef(someState);
 
-    return (
-      <button
-        onClick={() => {
-          setSomeState("some new value");
-          // This is hacky but in order to test the ref value after the useEffect happens we must re-render another time
-          // Even though canUseDOM is true, it seems like the ref value is being updated after the render (not synchronously)
-          setTimeout(() => update(), 0);
-        }}
-      >
-        {liveRef.current}
-      </button>
-    );
-  };
-  const { container } = render(<TestComponent />);
-  expect(container).toHaveTextContent("some value");
-  fireEvent.click(container.querySelector("button")!);
-  await sleep();
-  expect(container).toHaveTextContent("some new value");
+    useLayoutEffect(() => {
+      effectFunction(liveRef.current);
+    }, [someState]);
 
-  // Leaving this here for discussion. Interesting when using renderHook, things behave differently
-  //
-  // const { result, rerender } = renderHook((value) => useLiveRef(value), {
-  //   initialProps: "some value",
-  // });
-  // expect(result.current.current).toBe("some value");
-  // rerender("new value");
-  // expect(result.current.current).toBe("new value");
+    return <button onClick={() => setSomeState("some new value")} />;
+  };
+  render(<TestComponent />);
+  expect(effectFunction).toHaveBeenCalledTimes(1);
+  expect(effectFunction).toHaveBeenCalledWith("some value");
+  fireEvent.click(document.body.querySelector("button")!);
+  expect(effectFunction).toHaveBeenCalledTimes(2);
+  expect(effectFunction).toHaveBeenCalledWith("some new value");
 });
 
 test("usePreviousValue", () => {
@@ -363,8 +348,7 @@ test("useForceUpdate", () => {
   render(<TestComponent />);
   // Should render twice on mount
   expect(someFunction).toBeCalledTimes(2);
-  const button = document.querySelector("button")!;
-  fireEvent.click(button);
+  fireEvent.click(document.querySelector("button")!);
   expect(someFunction).toBeCalledTimes(3);
 });
 
@@ -382,12 +366,10 @@ test("useBooleanEvent", () => {
     );
   };
   const { container } = render(<TestComponent />);
-  const func = container.querySelector("#func")!;
-  const bool = container.querySelector("#bool")!;
-  fireEvent.click(func);
+  fireEvent.click(container.querySelector("#func")!);
   expect(someFunc).toBeCalledTimes(1);
   expect(someFunc).toBeCalledWith("func");
-  fireEvent.click(bool);
+  fireEvent.click(container.querySelector("#bool")!);
   expect(someFunc).toBeCalledTimes(2);
   expect(someFunc).toBeCalledWith("bool");
 });
@@ -417,9 +399,7 @@ test("useWrapElement", () => {
   expect(container.querySelector("#wrap2")).toBeInTheDocument();
   expect(container.querySelector("#wrap3")).toBeInTheDocument();
   expect(container.querySelector("#innerElement")).toBeInTheDocument();
-
-  const button = container.querySelector("button")!;
-  fireEvent.click(button);
+  fireEvent.click(container.querySelector("button")!);
   expect(container.querySelector("#wrap1")).toBeInTheDocument();
   expect(container.querySelector("#wrap2")).toBeInTheDocument();
   expect(container.querySelector("#wrap3")).not.toBeInTheDocument();
