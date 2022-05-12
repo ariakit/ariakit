@@ -26,10 +26,9 @@ test("useInitialValue", () => {
     const initialValue = useInitialValue(someState);
 
     return (
-      <div>
-        <button onClick={() => setSomeState("some new value")} />
+      <button onClick={() => setSomeState("some new value")}>
         {initialValue}
-      </div>
+      </button>
     );
   };
   const { container } = render(<TestComponent />);
@@ -44,10 +43,9 @@ test("useLazyValue", () => {
     const lazyValue = useLazyValue(() => someState);
 
     return (
-      <div>
-        <button onClick={() => setSomeState("some new value")} />
+      <button onClick={() => setSomeState("some new value")}>
         {lazyValue}
-      </div>
+      </button>
     );
   };
   const { container } = render(<TestComponent />);
@@ -63,17 +61,16 @@ test("useLiveRef", async () => {
     const liveRef = useLiveRef(someState);
 
     return (
-      <div>
-        <button
-          onClick={() => {
-            setSomeState("some new value");
-            // This is hacky but in order to test the ref value after the useEffect happens we must re-render another time
-            // Even though canUseDOM is true, it seems like the ref value is being updated after the render (not synchronously)
-            setTimeout(() => update(), 0);
-          }}
-        />
+      <button
+        onClick={() => {
+          setSomeState("some new value");
+          // This is hacky but in order to test the ref value after the useEffect happens we must re-render another time
+          // Even though canUseDOM is true, it seems like the ref value is being updated after the render (not synchronously)
+          setTimeout(() => update(), 0);
+        }}
+      >
         {liveRef.current}
-      </div>
+      </button>
     );
   };
   const { container } = render(<TestComponent />);
@@ -100,10 +97,9 @@ test("usePreviousValue", () => {
     duringRender(prevValue);
 
     return (
-      <div>
-        <button onClick={() => setSomeState("some new value")} />
+      <button onClick={() => setSomeState("some new value")}>
         {prevValue}
-      </div>
+      </button>
     );
   };
   const { container } = render(<TestComponent />);
