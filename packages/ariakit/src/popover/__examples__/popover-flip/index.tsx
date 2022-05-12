@@ -12,9 +12,9 @@ import "./style.css";
 export default function Example() {
   const popover = usePopoverState({
     placement: "right",
-    flip: "bottom top",
-    visible: true,
+    flip: "top bottom",
   });
+
   return (
     <>
       <PopoverDisclosure state={popover} className="button">
