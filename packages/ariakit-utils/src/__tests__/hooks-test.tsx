@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { fireEvent, render, renderHook } from "@testing-library/react";
-import { AnyFunction } from "ariakit-utils/types";
+import { fireEvent } from "@testing-library/react";
+import { render, sleep } from "ariakit-test";
 
 import {
   useBooleanEvent,
   useControlledState,
-  useDeferredValue,
   useEvent,
   useForceUpdate,
   useForkRef,
@@ -22,279 +21,379 @@ import {
 } from "../hooks";
 
 test("useInitialValue", () => {
-  const { result, rerender } = renderHook((value) => useInitialValue(value), {
-    initialProps: "some value",
-  });
-  expect(result.current).toBe("some value");
-  rerender("new value");
-  expect(result.current).toBe("some value");
+  const TestComponent = () => {
+    const [someState, setSomeState] = useState("some value");
+    const initialValue = useInitialValue(someState);
+
+    return (
+      <div>
+        <button onClick={() => setSomeState("some new value")} />
+        {initialValue}
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  expect(container).toHaveTextContent("some value");
+  fireEvent.click(container.querySelector("button")!);
+  expect(container).toHaveTextContent("some value");
 });
 
 test("useLazyValue", () => {
-  const firstSet = new Set();
-  const { result, rerender } = renderHook((value) => useLazyValue(value), {
-    initialProps: () => firstSet,
-  });
-  expect(result.current).toBe(firstSet);
-  rerender(() => new Set());
-  expect(result.current).toBe(firstSet);
+  const TestComponent = () => {
+    const [someState, setSomeState] = useState("some value");
+    const lazyValue = useLazyValue(() => someState);
+
+    return (
+      <div>
+        <button onClick={() => setSomeState("some new value")} />
+        {lazyValue}
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  expect(container).toHaveTextContent("some value");
+  fireEvent.click(container.querySelector("button")!);
+  expect(container).toHaveTextContent("some value");
 });
 
-test("useLiveRef", () => {
-  const { result, rerender } = renderHook((value) => useLiveRef(value), {
-    initialProps: "some value",
-  });
-  expect(result.current.current).toBe("some value");
-  rerender("new value");
-  expect(result.current.current).toBe("new value");
+test("useLiveRef", async () => {
+  const TestComponent = () => {
+    const [someState, setSomeState] = useState("some value");
+    const [_, update] = useForceUpdate();
+    const liveRef = useLiveRef(someState);
+
+    return (
+      <div>
+        <button
+          onClick={() => {
+            setSomeState("some new value");
+            // This is hacky but in order to test the ref value after the useEffect happens we must re-render another time
+            // Even though canUseDOM is true, it seems like the ref value is being updated after the render (not synchronously)
+            setTimeout(() => update(), 0);
+          }}
+        />
+        {liveRef.current}
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  expect(container).toHaveTextContent("some value");
+  fireEvent.click(container.querySelector("button")!);
+  await sleep();
+  expect(container).toHaveTextContent("some new value");
+
+  // Leaving this here for discussion. Interesting when using renderHook, things behave differently
+  //
+  // const { result, rerender } = renderHook((value) => useLiveRef(value), {
+  //   initialProps: "some value",
+  // });
+  // expect(result.current.current).toBe("some value");
+  // rerender("new value");
+  // expect(result.current.current).toBe("new value");
 });
 
 test("usePreviousValue", () => {
   const duringRender = jest.fn();
-  const { result, rerender } = renderHook(
-    (value) => {
-      const result = usePreviousValue(value);
-      duringRender(result);
-      return result;
-    },
-    {
-      initialProps: "some value",
-    }
-  );
-  expect(result.current).toBe("some value");
-  rerender("new value");
-  expect(duringRender).toHaveBeenCalledWith("some value");
-  expect(result.current).toBe("new value");
+  const TestComponent = () => {
+    const [someState, setSomeState] = useState("some value");
+    const prevValue = usePreviousValue(someState);
+    duringRender(prevValue);
+
+    return (
+      <div>
+        <button onClick={() => setSomeState("some new value")} />
+        {prevValue}
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  expect(container).toHaveTextContent("some value");
+  fireEvent.click(container.querySelector("button")!);
+  expect(duringRender).nthCalledWith(1, "some value");
+  expect(duringRender).nthCalledWith(2, "some value");
+  expect(duringRender).nthCalledWith(3, "some new value");
+  expect(container).toHaveTextContent("some new value");
 });
 
 test("useEvent", () => {
   // Check function is stable
   const effectFunction = jest.fn();
-  const { rerender } = renderHook(
-    (callback: AnyFunction) => {
-      const result = useEvent(callback);
-      useEffect(() => {
-        effectFunction();
-      }, [result]);
+  const TestComponent = () => {
+    const [callback, setCallback] = useState(() => effectFunction);
+    const result = useEvent(callback);
+    useEffect(() => {
+      effectFunction();
+    }, [result]);
 
-      return result;
-    },
-    {
-      initialProps: jest.fn(),
-    }
-  );
+    return <button onClick={() => setCallback(jest.fn())} />;
+  };
+  const { container } = render(<TestComponent />);
   expect(effectFunction).toBeCalledTimes(1);
-  rerender(jest.fn());
+  fireEvent.click(container.querySelector("button")!);
   expect(effectFunction).toBeCalledTimes(1);
 
   // Check that error is thrown during render
   let error: Error | undefined;
-  renderHook(
-    (callback: AnyFunction) => {
-      const result = useEvent(callback);
+  const TestComponent2 = () => {
+    const result = useEvent(jest.fn());
 
-      try {
-        result();
-      } catch (e) {
-        if (e instanceof Error) {
-          error = e;
-        }
+    try {
+      result();
+    } catch (e) {
+      if (e instanceof Error) {
+        error = e;
       }
-
-      return result;
-    },
-    {
-      initialProps: jest.fn(),
     }
-  );
+
+    return <div />;
+  };
+  expect(error).toBeUndefined();
+  render(<TestComponent2 />);
   expect(error).toBeDefined();
 });
 
 test("useForkRef", () => {
   const ref1 = jest.fn();
   const ref2 = jest.fn();
-  const { result } = renderHook(() => {
+  const TestComponent = () => {
     const internalRef = useRef();
-    const result = useForkRef(internalRef, ref1, ref2);
+    const ref = useForkRef(internalRef, ref1, ref2);
 
-    return result;
-  });
-  expect(typeof result.current).toBe("function");
-  result.current?.("new value");
-  expect(ref1).toHaveBeenCalledWith("new value");
-  expect(ref2).toHaveBeenCalledWith("new value");
-  result.current?.("new value2");
-  expect(ref1).toHaveBeenCalledWith("new value2");
-  expect(ref2).toHaveBeenCalledWith("new value2");
+    return <button ref={ref} />;
+  };
+
+  const { container } = render(<TestComponent />);
+  expect(ref1).toBeCalledTimes(1);
+  expect(ref2).toBeCalledTimes(1);
+  const button = container.querySelector("button")!;
+  expect(ref1).toHaveBeenCalledWith(button);
+  expect(ref2).toHaveBeenCalledWith(button);
 
   // No refs case
-  const { result: result2 } = renderHook(() => useForkRef());
-  expect(result2.current).toBeUndefined();
+  let refVal: any;
+  const TestComponent2 = () => {
+    const ref = useForkRef();
+    refVal = ref;
+    return <div />;
+  };
+  expect(refVal).toBeUndefined();
+  render(<TestComponent2 />);
+  expect(refVal).toBeUndefined();
 });
 
 test("useRefId", () => {
-  const element = document.createElement("div");
-  element.id = "some-id";
-  const { result } = renderHook(() => {
-    const ref = useRef(element);
-    return useRefId(ref);
-  });
-  expect(result.current).toBe(element.id);
+  let idVal: string | undefined;
+  const TestComponent = () => {
+    const ref = useRef<HTMLDivElement>(null);
+    const id = useRefId(ref);
+    idVal = id;
+
+    return <div id="some-id" ref={ref} />;
+  };
+  expect(idVal).toBeUndefined();
+  render(<TestComponent />);
+  expect(idVal).toBe("some-id");
 
   // Undefined case
-  const { result: result2 } = renderHook(() => useRefId());
-  expect(result2.current).toBeUndefined();
+  let idVal2: string | undefined;
+  const TestComponent2 = () => {
+    const id = useRefId();
+    idVal = id;
+    return <div />;
+  };
+  expect(idVal2).toBeUndefined();
+  render(<TestComponent2 />);
+  expect(idVal2).toBeUndefined();
 });
 
 test("useId", () => {
   // Case where react id is defined
-  const { result, rerender } = renderHook((defaultId?: string) =>
-    useId(defaultId)
-  );
-  expect(result.current).toBeTruthy();
-  rerender("new id");
-  expect(result.current).toBe("new id");
+  const TestComponent = () => {
+    const [idState, setIdState] = useState("");
+    const id = useId(idState);
 
-  // Case where react id is not defined
-  // Not sure how to do this since useReactId is defined in this file
-});
-
-test("useDeferredValue", () => {
-  // Case where useDeferredValue is defined
-  const { result, rerender } = renderHook((value) => useDeferredValue(value));
-  expect(result.current).toBeUndefined();
-  rerender("new value");
-  expect(result.current).toBe("new value");
-
-  // Case where useDeferredValue is not defined
-  // Not sure how to do this since useReactDeferredValue is defined in this file
+    return <button onClick={() => setIdState("some-id")} id={id} />;
+  };
+  const { container } = render(<TestComponent />);
+  const button = container.querySelector("button")!;
+  expect(button.id).toBeTruthy();
+  fireEvent.click(button);
+  expect(button.id).toBe("some-id");
 });
 
 test("useTagName", () => {
-  const element = document.createElement("div");
-  const { result } = renderHook(() => {
-    const ref = useRef(element);
-    return useTagName(ref);
-  });
-  expect(result.current).toBe("div");
+  let tagNameVal: string | undefined;
+  const TestComponent = () => {
+    const ref = useRef<HTMLDivElement>(null);
+    const tagName = useTagName(ref);
+    tagNameVal = tagName;
+
+    return <div ref={ref} />;
+  };
+  render(<TestComponent />);
+  expect(tagNameVal).toBe("div");
 
   // With type case
-  const { result: result2 } = renderHook(() => {
-    const ref = useRef(element);
-    return useTagName(ref, "button");
-  });
-  expect(result2.current).toBe("div");
+  let tagNameVal2: string | undefined;
+  const TestComponent2 = () => {
+    const ref = useRef<HTMLDivElement>(null);
+    const tagName = useTagName(ref, "button");
+    tagNameVal2 = tagName;
+
+    return <div ref={ref} />;
+  };
+  render(<TestComponent2 />);
+  expect(tagNameVal2).toBe("div");
 
   // Undefined case
-  const { result: result3 } = renderHook(() => {
-    return useTagName(undefined, "button");
-  });
-  expect(result3.current).toBe("button");
+  let tagNameVal3: string | undefined;
+  const TestComponent3 = () => {
+    const ref = useRef<HTMLDivElement>(null);
+    const tagName = useTagName(ref, "button");
+    tagNameVal3 = tagName;
+    return <div />;
+  };
+  render(<TestComponent3 />);
+  expect(tagNameVal3).toBe("button");
 });
 
 test("useUpdateEffect", () => {
   const effectFunction = jest.fn();
-  const { rerender } = renderHook((someDep?: any) => {
+  const TestComponent = (props: { somePropVale: number }) => {
+    const { somePropVale } = props;
+
     useUpdateEffect(() => {
       effectFunction();
-    }, [someDep]);
-  });
+    }, [somePropVale]);
+
+    return <div />;
+  };
+  const { rerender } = render(<TestComponent somePropVale={0} />);
   expect(effectFunction).toBeCalledTimes(0);
-  rerender("some val");
+  rerender(<TestComponent somePropVale={1} />);
   expect(effectFunction).toBeCalledTimes(1);
-  rerender("some val");
+  rerender(<TestComponent somePropVale={1} />);
   expect(effectFunction).toBeCalledTimes(1);
-  rerender("some val2");
+  rerender(<TestComponent somePropVale={2} />);
   expect(effectFunction).toBeCalledTimes(2);
 });
 
 test("useUpdateLayoutEffect", () => {
   const effectFunction = jest.fn();
-  const { rerender } = renderHook((someDep?: any) => {
+  const TestComponent = (props: { somePropVale: number }) => {
+    const { somePropVale } = props;
+
     useUpdateLayoutEffect(() => {
       effectFunction();
-    }, [someDep]);
-  });
+    }, [somePropVale]);
+
+    return <div />;
+  };
+  const { rerender } = render(<TestComponent somePropVale={0} />);
   expect(effectFunction).toBeCalledTimes(0);
-  rerender("some val");
+  rerender(<TestComponent somePropVale={1} />);
   expect(effectFunction).toBeCalledTimes(1);
-  rerender("some val");
+  rerender(<TestComponent somePropVale={1} />);
   expect(effectFunction).toBeCalledTimes(1);
-  rerender("some val2");
+  rerender(<TestComponent somePropVale={2} />);
   expect(effectFunction).toBeCalledTimes(2);
 });
 
-test("useControlledState", () => {
-  const { result } = renderHook(() => useControlledState("initial value"));
-  const [value, setValue] = result.current;
-  expect(value).toBe("initial value");
-  expect(typeof setValue).toBe("function");
+test("useControlledState", async () => {
+  const TestComponent = () => {
+    const [controlled, setControlled] = useState(false);
+    const [state, setState] = useState("initial state");
+    const [controlledState, setControlledState] = useControlledState(
+      "initial controlled state",
+      controlled ? state : undefined,
+      controlled ? setState : undefined
+    );
 
-  // Case where state and setState are defined
-  const { result: result2, rerender } = renderHook(
-    (props: { valueToUpdate: string; controlled: boolean }) => {
-      const { valueToUpdate, controlled } = props;
-      const [state, setState] = useState(valueToUpdate);
-      const [controlledState, setControlledState] = useControlledState(
-        "default state",
-        controlled ? state : undefined,
-        controlled ? setState : undefined
-      );
-
-      useEffect(() => {
-        setControlledState(valueToUpdate);
-      }, [valueToUpdate]);
-
-      return [controlledState, setControlledState];
-    },
-    { initialProps: { valueToUpdate: "initial value2", controlled: true } }
-  );
-  expect(result2.current[0]).toBe("initial value2");
-  expect(typeof result2.current[1]).toBe("function");
-  rerender({ valueToUpdate: "new value", controlled: true });
-  expect(result2.current[0]).toBe("new value");
-  rerender({ valueToUpdate: "new value2", controlled: true });
-  expect(result2.current[0]).toBe("new value2");
-
-  // Case where state and setState are not defined
-  rerender({ valueToUpdate: "new value3", controlled: false });
-  expect(result2.current[0]).toBe("new value3");
+    return (
+      <div>
+        <button id="controlled" onClick={() => setControlled(!controlled)} />
+        <button id="update-state" onClick={() => setState("some-state")} />
+        <button
+          id="update-controlled-state"
+          onClick={() => setControlledState("some-controlled-state")}
+        />
+        <button
+          id="reset"
+          onClick={() => {
+            setControlled(false);
+            // Have to force this on a separate tick to avoid
+            // the state being reset into the controlled state
+            setTimeout(() => {
+              setState("initial state");
+              setControlledState("initial controlled state");
+            }, 0);
+          }}
+        />
+        <div>{controlledState}</div>
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  const controlled = container.querySelector("#controlled")!;
+  const updateState = container.querySelector("#update-state")!;
+  const updateControlledState = container.querySelector(
+    "#update-controlled-state"
+  )!;
+  const reset = container.querySelector("#reset")!;
+  expect(container).toHaveTextContent("initial controlled state");
+  fireEvent.click(updateControlledState);
+  expect(container).toHaveTextContent("some-controlled-state");
+  fireEvent.click(controlled);
+  expect(container).toHaveTextContent("initial state");
+  fireEvent.click(updateState);
+  expect(container).toHaveTextContent("some-state");
+  fireEvent.click(reset);
+  await sleep();
+  expect(container).toHaveTextContent("initial controlled state");
+  fireEvent.click(controlled);
+  expect(container).toHaveTextContent("initial state");
 });
 
 test("useForceUpdate", () => {
   const someFunction = jest.fn();
-  let updateCount = 0;
-
-  const { rerender } = renderHook(
-    (maxUpdateCount: number) => {
-      const [state, forceUpdateFunc] = useForceUpdate();
-
-      someFunction();
-      useEffect(() => {
-        if (updateCount !== maxUpdateCount) {
-          forceUpdateFunc();
-          updateCount = maxUpdateCount;
-        }
-      }, [maxUpdateCount]);
-
-      return [state, forceUpdateFunc];
-    },
-    { initialProps: 0 }
-  );
-  expect(someFunction).toBeCalledTimes(1);
-  rerender(updateCount + 1);
+  const TestComponent = () => {
+    const [_, forceUpdateFunc] = useForceUpdate();
+    someFunction();
+    useEffect(() => {
+      forceUpdateFunc();
+    }, []);
+    return <button onClick={() => forceUpdateFunc()} />;
+  };
+  render(<TestComponent />);
+  // Should render twice on mount
+  expect(someFunction).toBeCalledTimes(2);
+  const button = document.querySelector("button")!;
+  fireEvent.click(button);
   expect(someFunction).toBeCalledTimes(3);
 });
 
 test("useBooleanEvent", () => {
-  const { result } = renderHook(() => useBooleanEvent(() => true));
-  expect(typeof result.current).toBe("function");
-  expect(result.current()).toBe(true);
+  const someFunc = jest.fn();
+  const TestComponent = () => {
+    const func = useBooleanEvent(() => true);
+    const bool = useBooleanEvent(true);
 
-  // Case where its a boolean
-  const { result: result2 } = renderHook(() => useBooleanEvent(true));
-  expect(typeof result2.current).toBe("function");
-  expect(result2.current()).toBe(true);
+    return (
+      <div>
+        <button id="func" onClick={() => (func() ? someFunc("func") : null)} />
+        <button id="bool" onClick={() => (bool() ? someFunc("bool") : null)} />
+      </div>
+    );
+  };
+  const { container } = render(<TestComponent />);
+  const func = container.querySelector("#func")!;
+  const bool = container.querySelector("#bool")!;
+  fireEvent.click(func);
+  expect(someFunc).toBeCalledTimes(1);
+  expect(someFunc).toBeCalledWith("func");
+  fireEvent.click(bool);
+  expect(someFunc).toBeCalledTimes(2);
+  expect(someFunc).toBeCalledWith("bool");
 });
 
 test("useWrapElement", () => {
