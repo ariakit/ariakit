@@ -37,7 +37,7 @@ import { tags as t } from "@lezer/highlight";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useControlledState,
-  useEventCallback,
+  useEvent,
   useForkRef,
   useId,
   useInitialValue,
@@ -212,7 +212,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       };
     }, [initialValue, initialExtensions, file]);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
 
     const onClick = useCallback(
       (event: MouseEvent<HTMLDivElement>) => {
@@ -225,43 +225,34 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       [onClickProp]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key !== "Escape") return;
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key !== "Escape") return;
+      setEditable(false);
+      ref.current?.focus();
+    });
+
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      setFocusVisible(false);
+      if (isFocusEventOutside(event)) {
         setEditable(false);
-        ref.current?.focus();
-      },
-      [onKeyDownProp]
-    );
+      }
+    });
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onFocusVisibleProp = props.onFocusVisible;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        setFocusVisible(false);
-        if (isFocusEventOutside(event)) {
-          setEditable(false);
-        }
-      },
-      [onBlurProp]
-    );
-
-    const onFocusVisibleProp = useEventCallback(props.onFocusVisible);
-
-    const onFocusVisible = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onFocusVisibleProp(event);
-        if (event.defaultPrevented) return;
-        setFocusVisible(true);
-      },
-      [onFocusVisibleProp]
-    );
+    const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusVisibleProp?.(event);
+      if (event.defaultPrevented) return;
+      setFocusVisible(true);
+    });
 
     const keyboardDescriptionId = useId(keyboardDescriptionProps?.id);
 

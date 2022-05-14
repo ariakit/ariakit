@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
   },
   expect: {
     toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : undefined,
+      maxDiffPixelRatio: headed ? 1 : 0.01,
     },
   },
   use: {
@@ -28,6 +28,7 @@ const config: PlaywrightTestConfig = {
     {
       name: "chrome",
       testMatch: "test-chrome.ts",
+      retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {

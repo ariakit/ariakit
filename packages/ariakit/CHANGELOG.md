@@ -1,5 +1,25 @@
 # ariakit
 
+## 2.0.0-next.26
+
+### Minor Changes
+
+- Event handlers returned by Ariakit components are now always stable references. ([#1326](https://github.com/ariakit/ariakit/pull/1326))
+
+### Patch Changes
+
+- Fixed infinite loop on `Portal` when used within `React.Suspense`. ([#1327](https://github.com/ariakit/ariakit/pull/1327))
+
+* Updated dependency `@floating-ui/dom` to `v0.5.0`. ([#1333](https://github.com/ariakit/ariakit/pull/1333))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.18`.
+
+## 2.0.0-next.25
+
+### Patch Changes
+
+- Fixed `SelectLabelProps` type to default to `div` instead of `label`. ([#1281](https://github.com/ariakit/ariakit/pull/1281))
+
 ## 2.0.0-next.24
 
 ### Patch Changes

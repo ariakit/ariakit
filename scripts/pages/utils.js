@@ -111,61 +111,72 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
   const content = fs.readFileSync(filename, "utf8");
   const parsed = babel.parseSync(content, { filename, ...babelConfig });
 
-  /** @type {babel.types.Program} */
-  // @ts-ignore
-  const program = parsed.program;
+  babel.traverse(parsed, {
+    enter(nodePath) {
+      const isImportDeclaration = nodePath.isImportDeclaration();
+      const isExportDeclaration = nodePath.isExportDeclaration();
+      const isCallExpression = nodePath.isCallExpression();
+      const isValidExpression =
+        isImportDeclaration || isExportDeclaration || isCallExpression;
+      if (!isValidExpression) return;
+      // @ts-expect-error
+      if (isExportDeclaration && !nodePath.node.source) return;
+      if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
 
-  program.body.forEach((node) => {
-    if (!t.isImportDeclaration(node)) return;
+      /** @type {string} */
+      const source = isCallExpression
+        ? // @ts-expect-error
+          nodePath.node.arguments[0].value
+        : // @ts-expect-error
+          nodePath.node.source.value;
+      const mod = resolveModuleName(source, filename);
+      const relativeFilename = pathToPosix(
+        path.relative(dest, mod.resolvedFileName)
+      );
 
-    const source = node.source.value;
-    const mod = resolveModuleName(source, filename);
-    const relativeFilename = pathToPosix(
-      path.relative(dest, mod.resolvedFileName)
-    );
+      if (mod.isExternalLibraryImport) {
+        imports.push({
+          source,
+          originalSource: source,
+          filename: relativeFilename,
+          identifier: pathToIdentifier(relativeFilename),
+          defaultExport: false,
+        });
+        return;
+      }
 
-    if (mod.isExternalLibraryImport) {
+      if (/\.s?css$/.test(relativeFilename)) {
+        imports.push({
+          source: `!raw-loader!postcss-loader!${relativeFilename}`,
+          originalSource: source,
+          filename: relativeFilename,
+          identifier: pathToIdentifier(relativeFilename),
+          defaultExport: true,
+        });
+        return;
+      }
+
+      const isInternal = source.startsWith(".");
+
+      if (isInternal) {
+        const nextImports = getPageImports({
+          filename: mod.resolvedFileName,
+          dest,
+          originalSource: source,
+          importerFilePath: filename,
+        });
+        imports.push(...nextImports);
+        return;
+      }
+
       imports.push({
-        source,
+        source: relativeFilename,
         originalSource: source,
         filename: relativeFilename,
         identifier: pathToIdentifier(relativeFilename),
         defaultExport: false,
       });
-      return;
-    }
-
-    if (/\.s?css$/.test(relativeFilename)) {
-      imports.push({
-        source: `!raw-loader!postcss-loader!${relativeFilename}`,
-        originalSource: source,
-        filename: relativeFilename,
-        identifier: pathToIdentifier(relativeFilename),
-        defaultExport: true,
-      });
-      return;
-    }
-
-    const isInternal = source.startsWith(".");
-
-    if (isInternal) {
-      const nextImports = getPageImports({
-        filename: mod.resolvedFileName,
-        dest,
-        originalSource: source,
-        importerFilePath: filename,
-      });
-      imports.push(...nextImports);
-      return;
-    }
-
-    imports.push({
-      source: relativeFilename,
-      originalSource: source,
-      filename: relativeFilename,
-      identifier: pathToIdentifier(relativeFilename),
-      defaultExport: false,
-    });
+    },
   });
 
   return imports;
@@ -240,10 +251,16 @@ async function getPageContent({ filename, dest, componentPath }) {
   const importsFlat = Object.values(imports).flat();
 
   const importDeclarations = uniq(
-    importsFlat.map((i) => {
-      if (!i.identifier) return `import "${i.source}";`;
-      if (i.defaultExport) return `import ${i.identifier} from "${i.source}";`;
-      return `import * as ${i.identifier} from "${i.source}";`;
+    importsFlat.map((item, i, array) => {
+      const isDuplicate = array
+        .slice(0, i)
+        .some(({ identifier }) => identifier === item.identifier);
+      if (!item.identifier || isDuplicate) {
+        return `import "${item.source}";`;
+      } else if (item.defaultExport) {
+        return `import ${item.identifier} from "${item.source}";`;
+      }
+      return `import * as ${item.identifier} from "${item.source}";`;
     })
   );
 

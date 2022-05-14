@@ -1,5 +1,17 @@
 # ariakit-test
 
+## 0.17.0-next.21
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.18`.
+
+## 0.17.0-next.20
+
+### Minor Changes
+
+- The `ariakit-test-utils` package has been renamed to `ariakit-test`. ([#1296](https://github.com/ariakit/ariakit/pull/1296))
+
 ## 0.17.0-next.19
 
 ### Minor Changes

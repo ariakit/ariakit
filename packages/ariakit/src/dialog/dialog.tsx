@@ -23,7 +23,7 @@ import {
   isFocusable,
 } from "ariakit-utils/focus";
 import {
-  useBooleanEventCallback,
+  useBooleanEvent,
   useForkRef,
   useLiveRef,
   useSafeLayoutEffect,
@@ -318,7 +318,7 @@ export const useDialog = createHook<DialogOptions>(
       return focusOnHide;
     }, [autoFocusOnHide, state.visible, finalFocusRef, state.disclosureRef]);
 
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
     // Hide on Escape.
     useEffect(() => {

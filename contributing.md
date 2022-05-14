@@ -457,36 +457,36 @@ Combined with the [`ariakit-test`](packages/ariakit-test) package, this is more 
 
 Let's create an end-to-end test for our example:
 
-`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/test-chrome.ts`
+`packages/ariakit/src/my-component/__examples__/my-component/test-chrome.ts`
 
 ```ts
 import { expect, test } from "@playwright/test";
 
 test("my component", async ({ page }) => {
-  await page.goto("/examples/my-component-custom-prop");
+  await page.goto("/examples/my-component");
   const element = await page.locator("text=My component");
   await expect(eleemnt).toBeVisible();
 });
 ```
 
-Now run the following command in your terminal to see the test results:
+Now run the following command in your terminal to see the test results (make sure to replace `my-component` with the name of your example, or omit it to run all the tests):
 
 > **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
 
 ```bash
-npm run test-chrome
+npm run test-chrome my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-npm run test-chrome-browser
+npm run test-chrome-browser my-component
 ```
 
 Or in debug mode:
 
 ```bash
-npm run test-chrome-debug
+npm run test-chrome-debug my-component
 ```
 
 <div align="right">

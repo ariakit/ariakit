@@ -4,7 +4,6 @@ import {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   SyntheticEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -19,7 +18,7 @@ import {
 } from "ariakit-utils/events";
 import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
   useTagName,
@@ -135,21 +134,17 @@ function getTabIndex(
 }
 
 function useDisableEvent(
-  eventProp?: EventHandler<SyntheticEvent>,
+  onEvent?: EventHandler<SyntheticEvent>,
   disabled?: boolean
 ) {
-  const onEventProp = useEventCallback(eventProp);
-  return useCallback(
-    (event: SyntheticEvent) => {
-      onEventProp(event);
-      if (event.defaultPrevented) return;
-      if (disabled) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-    },
-    [onEventProp, disabled]
-  );
+  return useEvent((event: SyntheticEvent) => {
+    onEvent?.(event);
+    if (event.defaultPrevented) return;
+    if (disabled) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+  });
 }
 
 // isKeyboardModality should be true by defaault.
@@ -265,49 +260,45 @@ export const useFocusable = createHook<FocusableOptions>(
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useCallback(
-      (event: ReactMouseEvent<HTMLDivElement>) => {
-        onMouseDownProp(event);
-        if (event.defaultPrevented) return;
-        if (!focusable) return;
-        const element = event.currentTarget;
-        // Safari and Firefox on MacOS don't focus on buttons on mouse down like
-        // other browsers/platforms. Instead, they focus on the closest
-        // focusable ancestor element, which is ultimately the body element. So
-        // we make sure to give focus to the tabbable element on mouse down so
-        // it works consistently across browsers.
-        if (!isSafariOrFirefoxOnAppleDevice) return;
-        if (isPortalEvent(event)) return;
-        if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
-        // We can't focus right away after on mouse down, otherwise it would
-        // prevent drag events from happening. So we queue the focus to the next
-        // animation frame, but always before the next mouseup event. The
-        // mouseup event might happen before the next animation frame on touch
-        // devices or by tapping on a MacBook's trackpad, for example.
-        queueBeforeEvent(element, "mouseup", () => focusIfNeeded(element));
-      },
-      [onMouseDownProp, focusable]
-    );
+    const onMouseDown = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+      onMouseDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!focusable) return;
+      const element = event.currentTarget;
+      // Safari and Firefox on MacOS don't focus on buttons on mouse down like
+      // other browsers/platforms. Instead, they focus on the closest focusable
+      // ancestor element, which is ultimately the body element. So we make sure
+      // to give focus to the tabbable element on mouse down so it works
+      // consistently across browsers.
+      if (!isSafariOrFirefoxOnAppleDevice) return;
+      if (isPortalEvent(event)) return;
+      if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
+      // We can't focus right away after on mouse down, otherwise it would
+      // prevent drag events from happening. So we queue the focus to the next
+      // animation frame, but always before the next mouseup event. The mouseup
+      // event might happen before the next animation frame on touch devices or
+      // by tapping on a MacBook's trackpad, for example.
+      queueBeforeEvent(element, "mouseup", () => focusIfNeeded(element));
+    });
 
-    const onFocusVisibleProp = useEventCallback(onFocusVisible);
+    const onFocusVisibleProp = onFocusVisible;
 
-    const onFocusVisibleEvent = useCallback(
+    const onFocusVisibleEvent = useEvent(
       (event: SyntheticEvent<HTMLDivElement>) => {
-        onFocusVisibleProp(event);
+        onFocusVisibleProp?.(event);
         if (event.defaultPrevented) return;
         if (!focusable) return;
         setFocusVisible(true);
-      },
-      [onFocusVisibleProp, focusable]
+      }
     );
 
-    const onKeyDownCaptureProp = useEventCallback(props.onKeyDownCapture);
+    const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useCallback(
+    const onKeyDownCapture = useEvent(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
-        onKeyDownCaptureProp(event);
+        onKeyDownCaptureProp?.(event);
         if (!focusable) return;
         if (event.metaKey) return;
         if (event.altKey) return;
@@ -318,50 +309,43 @@ export const useFocusable = createHook<FocusableOptions>(
           // non-keyboard focus, but then a key has been pressed.
           onFocusVisibleEvent(event);
         }
-      },
-      [onKeyDownCaptureProp, focusable, focusVisible, onFocusVisibleEvent]
+      }
     );
 
-    const onFocusCaptureProp = useEventCallback(props.onFocusCapture);
+    const onFocusCaptureProp = props.onFocusCapture;
 
-    const onFocusCapture = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onFocusCaptureProp(event);
-        if (event.defaultPrevented) return;
-        if (!focusable) return;
-        if (!isSelfTarget(event)) {
-          setFocusVisible(false);
-          return;
-        }
-        if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
-          onFocusVisibleEvent(event);
-        }
-        // See https://github.com/ariakit/ariakit/issues/1257
-        else if (isAlwaysFocusVisibleDelayed(event.target)) {
-          queueBeforeEvent(event.target, "focusout", () =>
-            onFocusVisibleEvent(event)
-          );
-        } else {
-          setFocusVisible(false);
-        }
-      },
-      [onFocusCaptureProp, focusable, onFocusVisibleEvent]
-    );
+    const onFocusCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!focusable) return;
+      if (!isSelfTarget(event)) {
+        setFocusVisible(false);
+        return;
+      }
+      if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
+        onFocusVisibleEvent(event);
+      }
+      // See https://github.com/ariakit/ariakit/issues/1257
+      else if (isAlwaysFocusVisibleDelayed(event.target)) {
+        queueBeforeEvent(event.target, "focusout", () =>
+          onFocusVisibleEvent(event)
+        );
+      } else {
+        setFocusVisible(false);
+      }
+    });
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = props.onBlur;
 
     // Note: Can't use onBlurCapture here otherwise it will not work with
     // CompositeItem's with the virtualFocus state set to true.
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLDivElement>) => {
-        onBlurProp(event);
-        if (!focusable) return;
-        if (isFocusEventOutside(event)) {
-          setFocusVisible(false);
-        }
-      },
-      [onBlurProp, focusable]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (!focusable) return;
+      if (isFocusEventOutside(event)) {
+        setFocusVisible(false);
+      }
+    });
 
     // The native autoFocus prop is problematic in many ways. For example, when
     // an element has the native autofocus attribute, the focus event will be

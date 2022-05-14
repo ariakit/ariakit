@@ -1,8 +1,14 @@
+comment: false
+
+codecov:
+  notify:
+    after_n_builds: 2
+
 coverage:
   status:
     project:
       default:
-        threshold: 0%
+        informational: true
     patch:
       default:
-        threshold: 0%
+        informational: true

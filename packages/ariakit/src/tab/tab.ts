@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback } from "react";
-import { useEventCallback, useId } from "ariakit-utils/hooks";
+import { useEvent, useId } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -48,8 +48,8 @@ export const useTab = createHook<TabOptions>(
 
     const dimmed = props.disabled;
 
-    const getItem = useCallback(
-      (item: any) => {
+    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
+      (item) => {
         const nextItem = { ...item, dimmed };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -59,16 +59,13 @@ export const useTab = createHook<TabOptions>(
       [dimmed, getItemProp]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state?.setSelectedId(id);
-      },
-      [onClickProp, state?.setSelectedId, id]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setSelectedId(id);
+    });
 
     const panelId = getPanelId(state?.panels, id);
 
