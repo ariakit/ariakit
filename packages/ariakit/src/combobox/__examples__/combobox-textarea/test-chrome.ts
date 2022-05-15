@@ -30,7 +30,7 @@ test("popover is positioned correctly", async ({ page }) => {
     width: 180,
     height: 186,
     x: x + 23,
-    y: y + 44,
+    y: process.platform === "linux" ? y + 44 : y + 45,
   });
 
   await page.mouse.wheel(0, -50);
@@ -40,6 +40,6 @@ test("popover is positioned correctly", async ({ page }) => {
     width: 180,
     height: 186,
     x: x + 23,
-    y: y + 94,
+    y: process.platform === "linux" ? y + 94 : y + 95,
   });
 });
