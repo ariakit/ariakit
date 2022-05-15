@@ -6,7 +6,7 @@ const headed = process.env.HEADED === "true";
 
 const launchOptions: LaunchOptions = {
   headless: !headed,
-  slowMo: headed ? 100 : undefined,
+  slowMo: headed ? 250 : undefined,
 };
 
 const config: PlaywrightTestConfig = {
