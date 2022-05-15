@@ -15,7 +15,7 @@ test("popover flip", async ({ page }, testInfo) => {
   // Expect the popover to be placed on the top
   expect(await getPreview(page).screenshot()).toMatchSnapshot();
   // Scroll the page to the end so it fallbacks to the bottom
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.mouse.wheel(0, 200);
   // Expect the popover to be placed on the bottom
   expect(await getPreview(page).screenshot()).toMatchSnapshot();
 });
