@@ -14,7 +14,6 @@ export default function Example() {
     placement: "right",
     flip: "top bottom",
   });
-
   return (
     <>
       <PopoverDisclosure state={popover} className="button">
