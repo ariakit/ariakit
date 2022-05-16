@@ -18,6 +18,7 @@
     "menu-initial-focus",
     "npmignore-src-folder",
     "playground-upgrade-codemirror",
+    "popover-flip-fallback-placements",
     "popover-round-size",
     "popover-state-auto-placements",
     "popover-state-fit-viewport",
