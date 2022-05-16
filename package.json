@@ -36,10 +36,10 @@
     "*.css": "stylelint --fix"
   },
   "devDependencies": {
-    "@babel/core": "7.17.10",
-    "@babel/preset-env": "7.17.10",
-    "@babel/preset-react": "7.16.7",
-    "@babel/preset-typescript": "7.16.7",
+    "@babel/core": "7.17.12",
+    "@babel/preset-env": "7.17.12",
+    "@babel/preset-react": "7.17.12",
+    "@babel/preset-typescript": "7.17.12",
     "@changesets/cli": "2.22.0",
     "@playwright/test": "1.22.0",
     "@rollup/plugin-babel": "5.3.1",
