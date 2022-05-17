@@ -1,5 +1,8 @@
 comment: false
 
+github_checks:
+  annotations: false
+
 codecov:
   notify:
     after_n_builds: 2
