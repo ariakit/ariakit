@@ -6,7 +6,7 @@ const headed = process.env.HEADED === "true";
 
 const launchOptions: LaunchOptions = {
   headless: !headed,
-  slowMo: headed ? 100 : undefined,
+  slowMo: headed ? 250 : undefined,
 };
 
 const config: PlaywrightTestConfig = {
@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
   },
   expect: {
     toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : 0.01,
+      maxDiffPixelRatio: headed ? 1 : 0.025,
     },
   },
   use: {

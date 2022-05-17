@@ -173,7 +173,7 @@ export function useStoreProvider<P, S>(
 
   const initialContext = getInitialContext(context);
 
-  props = useWrapElement(
+  return useWrapElement(
     props,
     (element) => {
       if (value && initialContext) {
@@ -190,8 +190,6 @@ export function useStoreProvider<P, S>(
     },
     [value, initialContext, state, context]
   );
-
-  return props;
 }
 
 /**
