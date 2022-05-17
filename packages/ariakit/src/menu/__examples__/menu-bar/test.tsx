@@ -7,7 +7,7 @@ import {
   render,
   sleep,
   type,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getMenu = (name: string) =>
@@ -83,6 +83,10 @@ test("show/hide on key down", async () => {
   expect(getMenu("Edit")).toBeInTheDocument();
   expect(getMenu("Edit")).toBeVisible();
   expect(getMenuItem("Edit")).toHaveFocus();
+  await press.ArrowUp();
+  expect(getMenuItem("Emoji & Symbols")).toHaveFocus();
+  await press.ArrowLeft();
+  await press.ArrowRight();
   await press.ArrowUp();
   expect(getMenuItem("Emoji & Symbols")).toHaveFocus();
   await type("f");

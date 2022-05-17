@@ -1,5 +1,5 @@
 import { MouseEvent, useCallback, useEffect, useState } from "react";
-import { useEventCallback, useLiveRef } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -81,7 +81,7 @@ export const useFormPush = createHook<FormPushOptions>(
       setShouldFocus(false);
     }, [shouldFocus, state?.items, name]);
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, type: "button", name };
         if (getItemProp) {
@@ -92,19 +92,15 @@ export const useFormPush = createHook<FormPushOptions>(
       [name, getItemProp]
     );
 
-    const onClickProp = useEventCallback(props.onClick);
-    const valueRef = useLiveRef(value);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state?.pushValue(name, valueRef.current);
-        if (!autoFocusOnClick) return;
-        setShouldFocus(true);
-      },
-      [onClickProp, state?.pushValue, name, valueRef, autoFocusOnClick]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.pushValue(name, value);
+      if (!autoFocusOnClick) return;
+      setShouldFocus(true);
+    });
 
     props = {
       ...props,

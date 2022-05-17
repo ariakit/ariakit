@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useControlledState, useLiveRef } from "ariakit-utils/hooks";
+import { useControlledState, usePreviousValue } from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 
 /**
@@ -32,10 +32,10 @@ export function useDisclosureState({
     null
   );
   const [animating, setAnimating] = useState(false);
-  const visibleRef = useLiveRef(visible);
+  const prevVisible = usePreviousValue(visible);
   const mounted = visible || animating;
 
-  if (animated && !animating && visibleRef.current !== visible) {
+  if (animated && !animating && prevVisible !== visible) {
     setAnimating(true);
   }
 

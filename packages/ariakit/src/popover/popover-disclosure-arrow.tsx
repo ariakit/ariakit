@@ -1,5 +1,4 @@
 import { useContext, useMemo } from "react";
-import { BasePlacement } from "@popperjs/core";
 import {
   createComponent,
   createElement,
@@ -8,6 +7,8 @@ import {
 import { As, Options, Props } from "ariakit-utils/types";
 import { PopoverContext } from "./__utils";
 import { PopoverState } from "./popover-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const pointsMap = {
   top: "4,10 8,6 12,10",

@@ -3,16 +3,31 @@
   "semanticCommits": false,
   "packageRules": [
     {
-      "matchPackageNames": ["prettier", "typescript"],
+      "matchPackageNames": [
+        "@codesandbox/sandpack-client",
+        "babel-plugin-module-resolver",
+        "cross-env",
+        "cross-spawn",
+        "fs-extra",
+        "lodash",
+        "prettier",
+        "react-dom",
+        "react",
+        "typescript",
+        "use-isomorphic-layout-effect",
+        "webpack"
+      ],
       "matchPackagePatterns": [
         "^@babel/",
+        "^@playwright/",
         "^@rollup/",
         "^@testing-library/",
         "^@types/",
         "^@typescript-eslint/",
         "^eslint",
         "^jest",
-        "^rollup"
+        "^rollup",
+        "^stylelint"
       ],
       "automerge": true,
       "automergeType": "pr",

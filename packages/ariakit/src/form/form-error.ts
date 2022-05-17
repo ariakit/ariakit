@@ -38,14 +38,14 @@ export const useFormError = createHook<FormErrorOptions>(
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       useCallback((s: FormState) => s.getError(name), [name]),
-      useCallback((s: FormState) => s.getFieldTouched(name), [name]),
+      useCallback((s: FormState) => s.getFieldTouched(name).toString(), [name]),
     ]);
 
     const ref = useRef<HTMLInputElement>(null);
 
     const id = useId(props.id);
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, name, type: "error" };
         if (getItemProp) {

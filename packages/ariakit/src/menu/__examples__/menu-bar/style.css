@@ -37,6 +37,16 @@
     dark:text-alpha-3-dark;
 }
 
+.menu {
+  max-height: var(--popover-available-height);
+  max-width:
+    max(
+      var(--popover-available-width),
+      calc(100% - calc(var(--popover-overflow-padding) * 2))
+    );
+  @apply w-max overflow-auto;
+}
+
 .menu .menu-item .label {
   @apply flex-1 pr-8;
 }

@@ -1,18 +1,20 @@
+import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
 import {
-  MutableRefObject,
-  RefObject,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
-import {
-  BasePlacement,
+  Middleware,
   VirtualElement,
-  applyStyles,
-  createPopper,
-} from "@popperjs/core";
-import { useControlledState, useSafeLayoutEffect } from "ariakit-utils/hooks";
+  arrow,
+  autoUpdate,
+  computePosition,
+  flip,
+  offset,
+  shift,
+  size,
+} from "@floating-ui/dom";
+import {
+  useEvent,
+  useForceUpdate,
+  useSafeLayoutEffect,
+} from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 import {
   DialogState,
@@ -20,22 +22,12 @@ import {
   useDialogState,
 } from "../dialog/dialog-state";
 
+type BasePlacement = "top" | "bottom" | "left" | "right";
+
 type Placement =
-  | "auto-start"
-  | "auto"
-  | "auto-end"
-  | "top-start"
-  | "top"
-  | "top-end"
-  | "right-start"
-  | "right"
-  | "right-end"
-  | "bottom-end"
-  | "bottom"
-  | "bottom-start"
-  | "left-end"
-  | "left"
-  | "left-start";
+  | BasePlacement
+  | `${BasePlacement}-start`
+  | `${BasePlacement}-end`;
 
 type AnchorRect = {
   x?: number;
@@ -44,10 +36,13 @@ type AnchorRect = {
   height?: number;
 };
 
+const middlewares = { arrow, flip, offset, shift, size };
+
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
     return new DOMRect(x, y, width, height);
   }
+  // JSDOM doesn't support DOMRect constructor.
   const rect = {
     x,
     y,
@@ -61,7 +56,7 @@ function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   return { ...rect, toJSON: () => rect };
 }
 
-function getDOMRect(anchorRect: AnchorRect | null) {
+function getDOMRect(anchorRect?: AnchorRect | null) {
   if (!anchorRect) return createDOMRect();
   const { x, y, width, height } = anchorRect;
   return createDOMRect(x, y, width, height);
@@ -69,16 +64,25 @@ function getDOMRect(anchorRect: AnchorRect | null) {
 
 function getAnchorElement(
   anchorRef: RefObject<HTMLElement | null>,
-  anchorRect: AnchorRect | null
+  getAnchorRect: (anchor: HTMLElement | null) => AnchorRect | null
 ) {
+  // https://floating-ui.com/docs/virtual-elements
   const contextElement = anchorRef.current || undefined;
   return {
     contextElement,
-    getBoundingClientRect: () =>
-      anchorRect || !contextElement
-        ? getDOMRect(anchorRect)
-        : contextElement.getBoundingClientRect(),
+    getBoundingClientRect: () => {
+      const anchor = anchorRef.current;
+      const anchorRect = getAnchorRect(anchor);
+      if (anchorRect || !anchor) {
+        return getDOMRect(anchorRect);
+      }
+      return anchor.getBoundingClientRect();
+    },
   };
+}
+
+function isValidPlacement(flip: string): flip is Placement {
+  return /^(?:top|bottom|left|right)(?:-(?:start|end))?$/.test(flip);
 }
 
 /**
@@ -93,159 +97,197 @@ function getAnchorElement(
 export function usePopoverState({
   placement = "bottom",
   fixed = false,
-  padding = 8,
-  arrowPadding = 4,
-  flip = true,
   gutter,
+  flip = true,
   shift = 0,
-  preventOverflow = true,
+  slide = true,
+  overlap = false,
   sameWidth = false,
+  fitViewport = false,
+  arrowPadding = 4,
+  overflowPadding = 8,
   renderCallback,
   ...props
 }: PopoverStateProps = {}): PopoverState {
   const dialog = useDialogState(props);
 
-  const [anchorRect, setAnchorRect] = useControlledState(
-    props.defaultAnchorRect || null,
-    props.anchorRect,
-    props.setAnchorRect
-  );
+  const defaultGetAnchorRect = (anchor?: HTMLElement | null) =>
+    anchor?.getBoundingClientRect() || null;
+
+  const getAnchorRect = useEvent(props.getAnchorRect || defaultGetAnchorRect);
 
   const anchorRef = useRef<HTMLElement | null>(null);
   const popoverRef = useRef<HTMLElement>(null);
   const arrowRef = useRef<HTMLElement>(null);
 
   const [currentPlacement, setCurrentPlacement] = useState(placement);
-  const [rendered, render] = useReducer(() => ({}), {});
+  const [rendered, render] = useForceUpdate();
 
   useSafeLayoutEffect(() => {
     const popover = popoverRef.current;
     if (!popover) return;
-    const anchor = getAnchorElement(anchorRef, anchorRect);
+    const anchor = getAnchorElement(anchorRef, getAnchorRect);
     const arrow = arrowRef.current;
     const arrowOffset = (arrow?.clientHeight || 0) / 2;
     const finalGutter =
       typeof gutter === "number" ? gutter + arrowOffset : gutter ?? arrowOffset;
 
+    popover.style.setProperty(
+      "--popover-overflow-padding",
+      `${overflowPadding}px`
+    );
+
     const defaultRenderCallback = () => {
-      const popper = createPopper(anchor, popover, {
-        // https://popper.js.org/docs/v2/constructors/#options
-        placement,
-        strategy: fixed ? "fixed" : "absolute",
-        modifiers: [
-          {
-            // https://popper.js.org/docs/v2/modifiers/event-listeners/
-            name: "eventListeners",
-            enabled: dialog.mounted,
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/apply-styles/
-            name: "applyStyles",
-            enabled: true,
-            fn: (args) => {
-              // Remove specific popper HTML attributes
-              args.state.attributes.popper = {};
-              // Add specific arrow styles
-              const arrowStyles = args.state.styles.arrow;
-              if (arrowStyles) {
-                const dir = args.state.placement.split("-")[0] as BasePlacement;
-                arrowStyles[dir] = "100%";
+      const update = async () => {
+        if (!dialog.mounted) return;
+
+        const middleware: Middleware[] = [
+          // https://floating-ui.com/docs/offset
+          middlewares.offset(({ placement }) => {
+            // If there's no placement alignment (*-start or *-end), we'll
+            // fallback to the crossAxis offset as it also works for
+            // center-aligned placements.
+            const hasAlignment = !!placement.split("-")[1];
+            return {
+              crossAxis: !hasAlignment ? shift : undefined,
+              mainAxis: finalGutter,
+              alignmentAxis: shift,
+            };
+          }),
+        ];
+
+        if (flip !== false) {
+          const fallbackPlacements =
+            typeof flip === "string" ? flip.split(" ") : undefined;
+
+          if (
+            fallbackPlacements !== undefined &&
+            !fallbackPlacements.every(isValidPlacement)
+          ) {
+            throw new Error(
+              "`flip` expects a spaced-delimited list of placements"
+            );
+          }
+
+          // https://floating-ui.com/docs/flip
+          middleware.push(
+            middlewares.flip({
+              padding: overflowPadding,
+              fallbackPlacements: fallbackPlacements,
+            })
+          );
+        }
+
+        if (slide || overlap) {
+          // https://floating-ui.com/docs/shift
+          middleware.push(
+            middlewares.shift({
+              mainAxis: slide,
+              crossAxis: overlap,
+              padding: overflowPadding,
+            })
+          );
+        }
+
+        // https://floating-ui.com/docs/size
+        middleware.push(
+          middlewares.size({
+            padding: overflowPadding,
+            apply({ availableWidth, availableHeight, rects }) {
+              const referenceWidth = Math.round(rects.reference.width);
+              popover.style.setProperty(
+                "--popover-anchor-width",
+                `${referenceWidth}px`
+              );
+              popover.style.setProperty(
+                "--popover-available-width",
+                `${availableWidth}px`
+              );
+              popover.style.setProperty(
+                "--popover-available-height",
+                `${availableHeight}px`
+              );
+              if (sameWidth) {
+                popover.style.width = `${referenceWidth}px`;
               }
-              applyStyles.fn(args);
-            },
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/flip/
-            name: "flip",
-            // See https://github.com/ariakit/ariakit/issues/1117
-            enabled: placement?.startsWith("auto") || (flip && dialog.mounted),
-            options: { padding },
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/offset/
-            name: "offset",
-            options: {
-              // Makes sure the shift value is applied to the popover element
-              // consistently no matter the placement. That is, a negative shift
-              // should move down a popover with a "right-end" placement, but
-              // move it up when the placement is "right-start". A good example
-              // is a sub menu that must have a small negative shift so the
-              // first menu item is aligned with its menu button.
-              offset: ({ placement }: { placement: Placement }) => {
-                const start = placement.split("-")[1] === "start";
-                return [start ? shift : -shift, finalGutter];
-              },
-            },
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/prevent-overflow/
-            name: "preventOverflow",
-            enabled: preventOverflow && dialog.mounted,
-            options: {
-              padding,
-              tetherOffset: finalGutter,
-            },
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/arrow/
-            name: "arrow",
-            enabled: !!arrow,
-            options: { element: arrow, padding: arrowPadding },
-          },
-          {
-            // https://codesandbox.io/s/bitter-sky-pe3z9?file=/src/index.js
-            name: "sameWidth",
-            enabled: sameWidth,
-            phase: "beforeWrite",
-            requires: ["computeStyles"],
-            fn: ({ state }) => {
-              if (state.styles.popper) {
-                state.styles.popper.width = `${state.rects.reference.width}px`;
-              }
-            },
-            effect: ({ state }) => {
-              const { reference } = state.elements;
-              const referenceElement = (
-                "contextElement" in reference
-                  ? reference.contextElement
-                  : reference
-              ) as HTMLElement | null;
-              if (referenceElement && "offsetWidth" in referenceElement) {
-                const referenceWidth = referenceElement.offsetWidth + "px";
-                state.elements.popper.style.width = referenceWidth;
+              if (fitViewport) {
+                popover.style.maxWidth = `${availableWidth}px`;
+                popover.style.maxHeight = `${availableHeight}px`;
               }
             },
-          },
-          {
-            // https://popper.js.org/docs/v2/modifiers/#custom-modifiers
-            name: "updateState",
-            phase: "write",
-            requires: ["computeStyles"],
-            enabled: dialog.mounted && process.env.NODE_ENV !== "test",
-            fn: ({ state }) => setCurrentPlacement(state.placement),
-          },
-        ],
+          })
+        );
+
+        if (arrow) {
+          // https://floating-ui.com/docs/arrow
+          middleware.push(
+            middlewares.arrow({ element: arrow, padding: arrowPadding })
+          );
+        }
+
+        // https://floating-ui.com/docs/computePosition
+        const pos = await computePosition(anchor, popover, {
+          placement,
+          strategy: fixed ? "fixed" : "absolute",
+          middleware,
+        });
+
+        setCurrentPlacement(pos.placement);
+
+        const x = Math.round(pos.x);
+        const y = Math.round(pos.y);
+
+        // https://floating-ui.com/docs/misc#subpixel-and-accelerated-positioning
+        Object.assign(popover.style, {
+          position: fixed ? "fixed" : "absolute",
+          top: "0",
+          left: "0",
+          transform: `translate3d(${x}px, ${y}px, 0)`,
+        });
+
+        // https://floating-ui.com/docs/arrow#usage
+        if (arrow && pos.middlewareData.arrow) {
+          const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
+
+          const dir = pos.placement.split("-")[0] as BasePlacement;
+
+          Object.assign(arrow.style, {
+            left: arrowX != null ? `${arrowX}px` : "",
+            top: arrowY != null ? `${arrowY}px` : "",
+            [dir]: "100%",
+          });
+        }
+      };
+
+      // autoUpdate does not call update immediately, so for the first update,
+      // we should call the update function ourselves.
+      update();
+
+      // https://floating-ui.com/docs/autoUpdate
+      return autoUpdate(anchor, popover, update, {
+        // JSDOM doesn't support ResizeObserver
+        elementResize: typeof ResizeObserver === "function",
       });
-      return popper.destroy;
     };
 
     if (renderCallback) {
       return renderCallback({
-        defaultRenderCallback,
-        setPlacement: setCurrentPlacement,
         mounted: dialog.mounted,
-        gutter: finalGutter,
         placement,
         fixed,
-        flip,
-        padding,
-        arrowPadding,
-        preventOverflow,
-        sameWidth,
+        gutter: finalGutter,
         shift,
+        overlap,
+        flip,
+        sameWidth,
+        fitViewport,
+        arrowPadding,
+        overflowPadding,
         popover,
         anchor,
         arrow,
+        setPlacement: setCurrentPlacement,
+        defaultRenderCallback,
       });
     }
 
@@ -253,55 +295,59 @@ export function usePopoverState({
   }, [
     rendered,
     dialog.contentElement,
-    anchorRect,
-    shift,
+    getAnchorRect,
     gutter,
-    renderCallback,
+    dialog.mounted,
+    shift,
+    overlap,
+    flip,
+    overflowPadding,
+    slide,
+    sameWidth,
+    fitViewport,
+    arrowPadding,
     placement,
     fixed,
-    dialog.mounted,
-    flip,
-    padding,
-    arrowPadding,
-    preventOverflow,
-    sameWidth,
+    renderCallback,
   ]);
 
   const state = useMemo(
     () => ({
       ...dialog,
-      anchorRect,
-      setAnchorRect,
+      getAnchorRect,
       anchorRef,
       popoverRef,
       arrowRef,
       currentPlacement,
       placement,
       fixed,
-      padding,
-      arrowPadding,
-      flip,
       gutter,
       shift,
-      preventOverflow,
+      flip,
+      slide,
+      overlap,
       sameWidth,
+      fitViewport,
+      arrowPadding,
+      overflowPadding,
       render,
       renderCallback,
     }),
     [
       dialog,
-      anchorRect,
-      setAnchorRect,
+      getAnchorRect,
       currentPlacement,
       placement,
       fixed,
-      padding,
-      arrowPadding,
-      flip,
       gutter,
       shift,
-      preventOverflow,
+      flip,
+      slide,
+      overlap,
       sameWidth,
+      fitViewport,
+      arrowPadding,
+      overflowPadding,
       render,
       renderCallback,
     ]
@@ -312,16 +358,17 @@ export function usePopoverState({
 
 export type PopoverStateRenderCallbackProps = Pick<
   PopoverState,
-  | "fixed"
-  | "flip"
   | "mounted"
-  | "padding"
-  | "arrowPadding"
   | "placement"
-  | "preventOverflow"
-  | "sameWidth"
+  | "fixed"
   | "gutter"
   | "shift"
+  | "overlap"
+  | "flip"
+  | "sameWidth"
+  | "fitViewport"
+  | "arrowPadding"
+  | "overflowPadding"
 > & {
   /**
    * The popover element.
@@ -348,14 +395,10 @@ export type PopoverStateRenderCallbackProps = Pick<
 
 export type PopoverState = DialogState & {
   /**
-   * The coordinates that will be used to position the popover. When defined,
-   * this will override the `anchorRef` prop.
+   * Function that returns the anchor element's DOMRect. If this is explicitly
+   * passed, it will override the anchor `getBoundingClientRect` method.
    */
-  anchorRect: AnchorRect | null;
-  /**
-   * Sets the `anchorRect` state.
-   */
-  setAnchorRect: SetState<PopoverState["anchorRect"]>;
+  getAnchorRect: (anchor: HTMLElement | null) => AnchorRect | null;
   /**
    * The anchor element.
    */
@@ -385,46 +428,76 @@ export type PopoverState = DialogState & {
    */
   fixed: boolean;
   /**
-   * The minimum padding between the popover and the viewport edge.
-   * @default 8
+   * The distance between the popover and the anchor element. By default, it's 0
+   * plus half of the arrow offset, if it exists.
+   * @default 0
    */
-  padding: number;
+  gutter?: number;
+  /**
+   * The skidding of the popover along the anchor element.
+   * @default 0
+   */
+  shift: number;
+  /**
+   * Controls the behavior of the popover when it overflows the viewport.
+   *
+   * If a boolean, specifies whether the popover should flip to the opposite side
+   * when it overflows.
+   *
+   * If a string, indicates the preferred fallback placements when it overflows.
+   * The placements must be spaced-delimited, e.g. "top left".
+   *
+   * @example
+   *  ```jsx
+   *  const popover = usePopoverState({
+   *      placement: "right",
+   *      // In case the `right` placement overflows the viewport,
+   *      // the placement will fallback to the `bottom` or `top`,
+   *      // in that order, depending on where it fits.
+   *      flip: "bottom top",
+   *  });
+   * ```
+   * @default true
+   */
+  flip: boolean | string;
+  /**
+   * Whether the popover should slide when it overflows.
+   * @default true
+   */
+  slide: boolean;
+  /**
+   * Whether the popover can overlap the anchor element when it overflows.
+   * @default false
+   */
+  overlap: boolean;
+  /**
+   * Whether the popover should have the same width as the anchor element. This
+   * will be exposed to CSS as `--popover-anchor-width`.
+   * @default false
+   */
+  sameWidth: boolean;
+  /**
+   * Whether the popover should fit the viewport. If this is set to true, the
+   * popover wrapper will have `maxWidth` and `maxHeight` set to the viewport
+   * size. This will be exposed to CSS as `--popover-available-width` and
+   * `--popover-available-height`.
+   * @default false
+   */
+  fitViewport: boolean;
   /**
    * The minimum padding between the arrow and the popover corner.
    * @default 4
    */
   arrowPadding: number;
   /**
-   * Whether the popover should flip to the opposite side of the viewport
-   * when it overflows.
-   * @default true
+   * The minimum padding between the popover and the viewport edge. This will be
+   * exposed to CSS as `--popover-overflow-padding`.
+   * @default 8
    */
-  flip: boolean;
-  /**
-   * The distance between the popover and the anchor element. By default, it's 0
-   * plus half of the arrow offset, if it exists.
-   * @default 0
-   */
-  gutter?: number | string;
-  /**
-   * The skidding of the popover along the anchor element.
-   * @default 0
-   */
-  shift: number | string;
-  /**
-   * Whether the popover should prevent overflowing its clipping container.
-   * @default true
-   */
-  preventOverflow: boolean;
-  /**
-   * Whether the popover should have the same width as the anchor element.
-   * @default false
-   */
-  sameWidth: boolean;
+  overflowPadding: number;
   /**
    * A function that can be used to recompute the popover styles. This is useful
-   * when the popover contents change in a way that affects its position or
-   * size.
+   * when the popover anchor changes in a way that affects the popover position.
    */
   render: () => void;
   /**
@@ -440,35 +513,18 @@ export type PopoverStateProps = DialogStateProps &
   Partial<
     Pick<
       PopoverState,
-      | "anchorRect"
+      | "getAnchorRect"
       | "placement"
       | "fixed"
-      | "padding"
-      | "arrowPadding"
-      | "flip"
       | "gutter"
       | "shift"
-      | "preventOverflow"
+      | "flip"
+      | "slide"
+      | "overlap"
       | "sameWidth"
+      | "fitViewport"
+      | "arrowPadding"
+      | "overflowPadding"
       | "renderCallback"
     >
-  > & {
-    /**
-     * The coordinates that will be used to position the popover. When defined,
-     * this will override the `anchorRef` property.
-     * @example
-     * const popover = usePopoverState({
-     *   defaultAnchorRect: { x: 10, y: 10, width: 100, height: 100 },
-     * });
-     */
-    defaultAnchorRect?: PopoverState["anchorRect"];
-    /**
-     * Function that will be called when setting the popover `anchorRect` state.
-     * @example
-     * const [anchorRect, setAnchorRect] = useState(
-     *   { x: 10, y: 10, width: 100, height: 100 }
-     * );
-     * usePopoverState({ anchorRect, setAnchorRect });
-     */
-    setAnchorRect?: (anchor: PopoverState["anchorRect"]) => void;
-  };
+  >;

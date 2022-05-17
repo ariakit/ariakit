@@ -11,9 +11,10 @@ import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import { hasFocusWithin } from "ariakit-utils/focus";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
@@ -88,7 +89,7 @@ function useAutoFocusOnHide({ state, ...props }: HovercardProps) {
     }
   }, [state.mounted]);
 
-  const onFocusProp = useEventCallback(props.onFocus);
+  const onFocusProp = useEvent(props.onFocus);
 
   const onFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
@@ -140,14 +141,14 @@ export const useHovercard = createHook<HovercardOptions>(
   }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
-    const timeoutRef = useRef(0);
+    const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     const domReady = !portal || portalNode;
 
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
-    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+    const hideOnControlProp = useBooleanEvent(hideOnControl);
 
     // Hide on Escape/Control. Popover already handles this, but only when the
     // dialog, the backdrop or the disclosure elements are focused. Since the
@@ -166,9 +167,9 @@ export const useHovercard = createHook<HovercardOptions>(
     }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
-    const hideOnHoverOutsideProp = useBooleanEventCallback(hideOnHoverOutside);
+    const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
     const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
-    const disablePointerEventsProp = useBooleanEventCallback(
+    const disablePointerEventsProp = useBooleanEvent(
       disablePointerEventsOnApproach
     );
 
@@ -194,13 +195,13 @@ export const useHovercard = createHook<HovercardOptions>(
             target && anchor && contains(anchor, target)
               ? getEventPoint(event)
               : null;
-          window.clearTimeout(timeoutRef.current);
-          timeoutRef.current = 0;
+          window.clearTimeout(hideTimeoutRef.current);
+          hideTimeoutRef.current = 0;
           return;
         }
         // If there's already a scheduled timeout to hide the hovercard, we do
         // nothing.
-        if (timeoutRef.current) return;
+        if (hideTimeoutRef.current) return;
         // Enter point will be null when the user hovers over the hovercard
         // element.
         if (enterPoint) {
@@ -213,6 +214,8 @@ export const useHovercard = createHook<HovercardOptions>(
           // so we disable this event. This is necessary because the mousemove
           // event may trigger focus on other elements and close the hovercard.
           if (isPointInPolygon(currentPoint, polygon)) {
+            // Refreshes the enter point.
+            enterPointRef.current = currentPoint;
             if (!disablePointerEventsProp(event)) return;
             event.preventDefault();
             event.stopPropagation();
@@ -221,7 +224,10 @@ export const useHovercard = createHook<HovercardOptions>(
         }
         if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
-        timeoutRef.current = window.setTimeout(state.hide, state.hideTimeout);
+        hideTimeoutRef.current = window.setTimeout(
+          state.hide,
+          state.hideTimeout
+        );
       };
       return addGlobalEventListener("mousemove", onMouseMove, true);
     }, [
@@ -245,9 +251,9 @@ export const useHovercard = createHook<HovercardOptions>(
       if (!domReady) return;
       if (!state.mounted) return;
       if (!mayDisablePointerEvents) return;
-      const element = ref.current;
-      if (!element) return;
       const disableEvent = (event: MouseEvent) => {
+        const element = ref.current;
+        if (!element) return;
         const enterPoint = enterPointRef.current;
         if (!enterPoint) return;
         const placement = state.currentPlacement;
@@ -278,9 +284,13 @@ export const useHovercard = createHook<HovercardOptions>(
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
     // if it's not a modal, is portal and is mounted. We don't need to register
-    // non-portal hovercards because they will be captured by contains in the
-    // isMovingOnHovercard function above.
-    useEffect(() => {
+    // non-portal hovercards because they will be captured by the contains
+    // function in the isMovingOnHovercard function above. This must be a layout
+    // effect so we don't lose mouse move events right after the nested
+    // hovercard has been mounted (for example, a submenu that's overlapping its
+    // menu button and we keep moving the mouse while the submenu is due to
+    // open).
+    useSafeLayoutEffect(() => {
       if (modal) return;
       if (!portal) return;
       if (!state.mounted) return;
@@ -291,7 +301,7 @@ export const useHovercard = createHook<HovercardOptions>(
     }, [modal, portal, state.mounted, domReady]);
 
     const registerNestedHovercard = useCallback(
-      (element) => {
+      (element: any) => {
         setNestedHovercards((prevElements) => [...prevElements, element]);
         const parentUnregister = registerOnParent?.(element);
         return () => {

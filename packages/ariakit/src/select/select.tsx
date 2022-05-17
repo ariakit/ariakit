@@ -3,18 +3,16 @@ import {
   KeyboardEvent,
   MouseEvent,
   SelectHTMLAttributes,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { BasePlacement } from "@popperjs/core";
 import { getPopupRole } from "ariakit-utils/dom";
 import { queueBeforeEvent } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useRefId,
   useWrapElement,
@@ -38,6 +36,8 @@ import { VisuallyHidden } from "../visually-hidden";
 import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
 import { SelectArrow } from "./select-arrow";
 import { SelectState } from "./select-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
@@ -88,94 +88,71 @@ export const useSelect = createHook<SelectOptions>(
   }) => {
     toggleOnPress = toggleOnClick ? false : toggleOnPress;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const showOnKeyDownProp = useBooleanEventCallback(showOnKeyDown);
-    const moveOnKeyDownProp = useBooleanEventCallback(moveOnKeyDown);
-    const toggleOnPressProp = useBooleanEventCallback(toggleOnPress);
+    const onKeyDownProp = props.onKeyDown;
+    const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
+    const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
+    const toggleOnPressProp = useBooleanEvent(toggleOnPress);
     const dir = state.placement.split("-")[0] as BasePlacement;
     const multiSelectable = Array.isArray(state.value);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        // toggleOnPress
-        if (event.key === " " || event.key === "Enter") {
-          if (toggleOnPressProp(event)) {
-            state.toggle();
-          }
-        }
-        // moveOnKeyDown
-        const isVertical = state.orientation !== "horizontal";
-        const isHorizontal = state.orientation !== "vertical";
-        const isGrid = !!findFirstEnabledItemWithValue(state.items)?.rowId;
-        const moveKeyMap = {
-          ArrowUp:
-            (isGrid || isVertical) && nextWithValue(state.items, state.up),
-          ArrowRight:
-            (isGrid || isHorizontal) && nextWithValue(state.items, state.next),
-          ArrowDown:
-            (isGrid || isVertical) && nextWithValue(state.items, state.down),
-          ArrowLeft:
-            (isGrid || isHorizontal) &&
-            nextWithValue(state.items, state.previous),
-        };
-        const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
-        if (getId && moveOnKeyDownProp(event)) {
-          event.preventDefault();
-          state.move(getId());
-        }
-        // showOnKeyDown
-        const isTopOrBottom = dir === "top" || dir === "bottom";
-        const isLeft = dir === "left";
-        const isRight = dir === "right";
-        const canShowKeyMap = {
-          ArrowDown: isTopOrBottom,
-          ArrowUp: isTopOrBottom,
-          ArrowLeft: isLeft,
-          ArrowRight: isRight,
-        };
-        const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
-        if (canShow && showOnKeyDownProp(event)) {
-          event.preventDefault();
-          state.show();
-          state.move(state.activeId);
-        }
-      },
-      [
-        onKeyDownProp,
-        toggleOnPressProp,
-        state.toggle,
-        state.orientation,
-        state.items,
-        state.up,
-        state.next,
-        state.down,
-        state.previous,
-        moveOnKeyDownProp,
-        state.move,
-        dir,
-        showOnKeyDownProp,
-        state.show,
-        state.activeId,
-      ]
-    );
-
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
-
-    const onMouseDown = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onMouseDownProp(event);
-        if (event.defaultPrevented) return;
-        if (!toggleOnPressProp(event)) return;
-        const element = event.currentTarget;
-        queueBeforeEvent(element, "focusin", () => {
-          state.disclosureRef.current = element;
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      // toggleOnPress
+      if (event.key === " " || event.key === "Enter") {
+        if (toggleOnPressProp(event)) {
           state.toggle();
-        });
-      },
-      [onMouseDownProp, toggleOnPressProp, state.toggle]
-    );
+        }
+      }
+      // moveOnKeyDown
+      const isVertical = state.orientation !== "horizontal";
+      const isHorizontal = state.orientation !== "vertical";
+      const isGrid = !!findFirstEnabledItemWithValue(state.items)?.rowId;
+      const moveKeyMap = {
+        ArrowUp: (isGrid || isVertical) && nextWithValue(state.items, state.up),
+        ArrowRight:
+          (isGrid || isHorizontal) && nextWithValue(state.items, state.next),
+        ArrowDown:
+          (isGrid || isVertical) && nextWithValue(state.items, state.down),
+        ArrowLeft:
+          (isGrid || isHorizontal) &&
+          nextWithValue(state.items, state.previous),
+      };
+      const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
+      if (getId && moveOnKeyDownProp(event)) {
+        event.preventDefault();
+        state.move(getId());
+      }
+      // showOnKeyDown
+      const isTopOrBottom = dir === "top" || dir === "bottom";
+      const isLeft = dir === "left";
+      const isRight = dir === "right";
+      const canShowKeyMap = {
+        ArrowDown: isTopOrBottom,
+        ArrowUp: isTopOrBottom,
+        ArrowLeft: isLeft,
+        ArrowRight: isRight,
+      };
+      const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
+      if (canShow && showOnKeyDownProp(event)) {
+        event.preventDefault();
+        state.show();
+        state.move(state.activeId);
+      }
+    });
+
+    const onMouseDownProp = props.onMouseDown;
+
+    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onMouseDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!toggleOnPressProp(event)) return;
+      const element = event.currentTarget;
+      queueBeforeEvent(element, "focusin", () => {
+        state.disclosureRef.current = element;
+        state.toggle();
+      });
+    });
 
     props = useStoreProvider({ state, ...props }, SelectContext);
 

@@ -1,11 +1,4 @@
-import {
-  click,
-  getByRole,
-  getByText,
-  press,
-  render,
-  type,
-} from "ariakit-test-utils";
+import { click, getByRole, getByText, press, render, type } from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 

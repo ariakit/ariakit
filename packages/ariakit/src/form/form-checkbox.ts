@@ -12,6 +12,12 @@ import { FormContext } from "./__utils";
 import { FormFieldOptions, useFormField } from "./form-field";
 import { FormState } from "./form-state";
 
+function stringIfBoolean<T>(value: T) {
+  return typeof value === "boolean"
+    ? value.toString()
+    : (value as Exclude<T, boolean>);
+}
+
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a checkbox as a form field.
@@ -33,7 +39,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
       "setValue",
-      useCallback((s: FormState) => s.getValue(name), [name]),
+      useCallback((s: FormState) => stringIfBoolean(s.getValue(name)), [name]),
     ]);
 
     const setValue: CheckboxState["setValue"] = useCallback(

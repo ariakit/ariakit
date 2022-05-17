@@ -47,10 +47,10 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * Returns a value that is lazily initiated and never changes.
  * @example
  * function Component() {
- *   const set = useLazyRef(() => new Set());
+ *   const set = useLazyValue(() => new Set());
  * }
  */
-export function useLazyRef<T>(init: () => T) {
+export function useLazyValue<T>(init: () => T) {
   const ref = useRef<T>();
   if (ref.current === undefined) {
     ref.current = init();
@@ -75,27 +75,34 @@ export function useLiveRef<T>(value: T) {
 }
 
 /**
- * Creates a memoized callback function that is constantly updated with the
- * incoming callback.
+ * Keeps the reference of the previous value to be used in the render phase.
+ */
+export function usePreviousValue<T>(value: T) {
+  const [previousValue, setPreviousValue] = useState(value);
+  if (value !== previousValue) {
+    setPreviousValue(value);
+  }
+  return previousValue;
+}
+
+/**
+ * Creates a stable callback function that has access to the latest state and
+ * can be used within event handlers and effect callbacks. Throws when used in
+ * the render phase.
  * @example
  * function Component(props) {
- *   const onClick = useEventCallback(props.onClick);
+ *   const onClick = useEvent(props.onClick);
  *   React.useEffect(() => {}, [onClick]);
  * }
  */
-export function useEventCallback<T extends AnyFunction>(callback?: T) {
-  // @ts-ignore
-  const ref = useRef<T | undefined>(() => {
+export function useEvent<T extends AnyFunction>(callback?: T) {
+  const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
   useSafeLayoutEffect(() => {
     ref.current = callback;
   });
-  return useCallback(
-    // @ts-ignore
-    (...args: Parameters<T>): ReturnType<T> => ref.current?.(...args),
-    []
-  );
+  return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
 }
 
 /**
@@ -276,17 +283,17 @@ function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
  * purpose of re-rendering the component.
  */
 export function useForceUpdate() {
-  return useReducer(() => ({}), {});
+  return useReducer(() => [], []);
 }
 
 /**
- * Returns an event callback similar to `useEventCallback`, but this also
- * accepts a boolean value, which will be turned into a function.
+ * Returns an event callback similar to `useEvent`, but this also accepts a
+ * boolean value, which will be turned into a function.
  */
-export function useBooleanEventCallback<T extends unknown[]>(
+export function useBooleanEvent<T extends unknown[]>(
   booleanOrCallback: boolean | ((...args: T) => boolean)
 ) {
-  return useEventCallback(
+  return useEvent(
     typeof booleanOrCallback === "function"
       ? booleanOrCallback
       : () => booleanOrCallback

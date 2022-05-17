@@ -1,3 +1,5 @@
+import "ariakit-test/mock-get-client-rects";
+
 import {
   closest,
   contains,
@@ -73,7 +75,7 @@ test("getActiveElement", () => {
 
   // Test with an element focused
   const input = getById("testInput");
-  input?.focus();
+  input.focus();
 
   expect(getActiveElement(undefined)).toBe(input);
   expect(getActiveElement(null)).toBe(input);
@@ -94,7 +96,7 @@ test("getActiveElement", () => {
 
   // activeDecendant = true
   const input2 = getById("cb1-edit");
-  input2?.focus();
+  input2.focus();
 
   const focusedLi = getById("cb1-opt6");
 
@@ -188,56 +190,18 @@ test("matches", () => {
 });
 
 test("isVisible", () => {
-  document.body.innerHTML = '<div id="testNode" />';
+  const initialInnerHTML = document.body.innerHTML;
+  document.body.innerHTML = `
+    <div id="testNode" />
+    <div id="testNode2" style="display:none" />
+  `;
   const element = getById("testNode");
+  const element2 = getById("testNode2");
 
-  // Have to fake the offset* properties because they are not supported in jsdom
-  // Store the original values
-  const originalOffsetHeight =
-    Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetHeight") ??
-    {};
-  const originalOffsetWidth =
-    Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetWidth") ?? {};
-
-  // Tests the case with no offset* properties or getClientRects
-  expect(isVisible(element)).toBe(false);
-
-  // Tests the case with offsetHeight
-  Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
-    configurable: true,
-    value: 200,
-  });
   expect(isVisible(element)).toBe(true);
-  Object.defineProperty(
-    HTMLElement.prototype,
-    "offsetHeight",
-    originalOffsetHeight
-  );
+  expect(isVisible(element2)).toBe(false);
 
-  // Tests the case with offsetWidth
-  Object.defineProperty(HTMLElement.prototype, "offsetWidth", {
-    configurable: true,
-    value: 200,
-  });
-  expect(isVisible(element)).toBe(true);
-  Object.defineProperty(
-    HTMLElement.prototype,
-    "offsetWidth",
-    originalOffsetWidth!
-  );
-
-  // Tests the case with getClientRects
-  const originalGetClientRects = element.getClientRects;
-  element.getClientRects = () =>
-    // @ts-expect-error
-    //  getClientRects is suppose to return a DOMRectList but there is no way to construct one
-    //  So we just return an array with > 0 lengh
-    ["some", "fake", "DOMRectList"];
-  expect(isVisible(element)).toBe(true);
-  element.getClientRects = originalGetClientRects;
-
-  // Check that things were reset correctly
-  expect(isVisible(element)).toBe(false);
+  document.body.innerHTML = initialInnerHTML;
 });
 
 test("closest", () => {

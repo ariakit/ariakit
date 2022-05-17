@@ -1,0 +1,43 @@
+{
+  "name": "ariakit-test",
+  "version": "0.17.0-next.21",
+  "description": "Ariakit test utils",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://ariakit.org",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-test.min.js",
+  "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-test"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "keywords": [
+    "ariakit",
+    "react"
+  ],
+  "dependencies": {
+    "ariakit-utils": "0.17.0-next.18"
+  },
+  "peerDependencies": {
+    "@testing-library/dom": "^8.0.0",
+    "@testing-library/react": "^12.0.0 || ^13.0.0 || ^13.0.0-alpha",
+    "react": "^17.0.0 || ^18.0.0"
+  }
+}

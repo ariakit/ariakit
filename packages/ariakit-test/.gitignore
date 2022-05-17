@@ -1,0 +1,20 @@
+# Automatically generated
+/act
+/blur
+/cjs
+/click
+/esm
+/fire-event
+/focus
+/hover
+/mock-get-client-rects
+/press
+/render
+/screen
+/sleep
+/tap
+/ts
+/type
+/umd
+/wait-for
+/within

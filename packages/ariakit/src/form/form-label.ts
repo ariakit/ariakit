@@ -1,11 +1,6 @@
 import { MouseEvent, useCallback, useRef } from "react";
 import { getFirstTabbableIn } from "ariakit-utils/focus";
-import {
-  useEventCallback,
-  useForkRef,
-  useId,
-  useTagName,
-} from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId, useTagName } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -59,7 +54,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const ref = useRef<HTMLInputElement>(null);
     const id = useId(props.id);
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, name, type: "label" };
         if (getItemProp) {
@@ -74,23 +69,20 @@ export const useFormLabel = createHook<FormLabelOptions>(
     const fieldTagName = useTagName(field?.ref, "input");
     const isNativeLabel = supportsNativeLabel(fieldTagName);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = props.onClick;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLLabelElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (isNativeLabel) return;
-        const fieldElement = field?.ref.current;
-        if (!fieldElement) return;
-        queueMicrotask(() => {
-          const focusableElement = getFirstTabbableIn(fieldElement, true, true);
-          focusableElement?.focus();
-          focusableElement?.click();
-        });
-      },
-      [onClickProp, isNativeLabel, field]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLLabelElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isNativeLabel) return;
+      const fieldElement = field?.ref.current;
+      if (!fieldElement) return;
+      queueMicrotask(() => {
+        const focusableElement = getFirstTabbableIn(fieldElement, true, true);
+        focusableElement?.focus();
+        focusableElement?.click();
+      });
+    });
 
     props = {
       id,

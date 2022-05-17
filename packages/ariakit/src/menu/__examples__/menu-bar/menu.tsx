@@ -62,6 +62,8 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
     const inSubmenu = useContext(MenuContext);
     const menu = useMenuState({
       gutter: 8,
+      overlap: inSubmenu,
+      fitViewport: true,
       shift: inSubmenu ? -9 : -5,
     });
     return (

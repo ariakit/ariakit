@@ -1,14 +1,7 @@
-import {
-  FocusEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FocusEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useInitialValue,
   useTagName,
@@ -94,44 +87,35 @@ export const useForm = createHook<FormOptions>(
       }
     }, [autoFocusOnSubmit, state.submitFailed, state.items]);
 
-    const onSubmitProp = useEventCallback(props.onSubmit);
+    const onSubmitProp = props.onSubmit;
 
-    const onSubmit = useCallback(
-      (event: FormEvent<HTMLFormElement>) => {
-        onSubmitProp(event);
-        if (event.defaultPrevented) return;
-        event.preventDefault();
-        state.submit();
-        if (!autoFocusOnSubmit) return;
-        setShouldFocusOnSubmit(true);
-      },
-      [onSubmitProp, state.submit, autoFocusOnSubmit]
-    );
+    const onSubmit = useEvent((event: FormEvent<HTMLFormElement>) => {
+      onSubmitProp?.(event);
+      if (event.defaultPrevented) return;
+      event.preventDefault();
+      state.submit();
+      if (!autoFocusOnSubmit) return;
+      setShouldFocusOnSubmit(true);
+    });
 
-    const onBlurProp = useEventCallback(props.onBlur);
+    const onBlurProp = props.onBlur;
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLFormElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        if (!validateOnBlur) return;
-        if (!isField(event.target, state.items)) return;
-        state.validate();
-      },
-      [onBlurProp, validateOnBlur, state.items, state.validate]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLFormElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!validateOnBlur) return;
+      if (!isField(event.target, state.items)) return;
+      state.validate();
+    });
 
-    const onResetProp = useEventCallback(props.onReset);
+    const onResetProp = props.onReset;
 
-    const onReset = useCallback(
-      (event: FormEvent<HTMLFormElement>) => {
-        onResetProp(event);
-        if (event.defaultPrevented) return;
-        event.preventDefault();
-        state.reset();
-      },
-      [onResetProp, state.reset]
-    );
+    const onReset = useEvent((event: FormEvent<HTMLFormElement>) => {
+      onResetProp?.(event);
+      if (event.defaultPrevented) return;
+      event.preventDefault();
+      state.reset();
+    });
 
     const tagName = useTagName(ref, props.as || "form");
 

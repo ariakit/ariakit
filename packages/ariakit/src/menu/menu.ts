@@ -1,12 +1,6 @@
-import {
-  KeyboardEvent,
-  RefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -46,25 +40,22 @@ export const useMenu = createHook<MenuOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+    const onKeyDownProp = props.onKeyDown;
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape") {
-          if (!hideOnEscapeProp(event)) return;
-          if (!hasParentMenu) {
-            // On Esc, only stop propagation if there's no parent menu.
-            // Otherwise, pressing Esc should close all menus
-            event.stopPropagation();
-          }
-          return state.hide();
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape") {
+        if (!hideOnEscapeProp(event)) return;
+        if (!hasParentMenu) {
+          // On Esc, only stop propagation if there's no parent menu. Otherwise,
+          // pressing Esc should close all menus
+          event.stopPropagation();
         }
-      },
-      [onKeyDownProp, hideOnEscapeProp, hasParentMenu, state.hide]
-    );
+        return state.hide();
+      }
+    });
 
     props = {
       ...props,
@@ -76,36 +67,37 @@ export const useMenu = createHook<MenuOptions>(
       ...props,
     });
 
-    const hasItems = !!state.items.length;
     const [initialFocusRef, setInitialFocusRef] =
       useState<RefObject<HTMLElement>>();
 
+    // Sets the initial focus ref.
     useEffect(() => {
-      if (!hasItems) return;
-      if (!state.mounted) return;
-      setInitialFocusRef(
-        state.initialFocus === "first"
-          ? getItemRefById(state.items, state.first())
-          : state.initialFocus === "last"
-          ? getItemRefById(state.items, state.last())
-          : state.baseRef
-      );
-      // We're intentionally only listening to hasItems here and not to
-      // state.items, state.first and state.last, because we don't want to set
-      // the initial focus ref again whenever the items change, but only when
-      // the menu and the items have been mounted.
-    }, [hasItems, state.mounted, state.initialFocus, state.baseRef]);
-
-    const autoFocusOnShow =
-      props.autoFocusOnShow != null
-        ? props.autoFocusOnShow
-        : state.autoFocusOnShow || !!props.modal;
+      setInitialFocusRef((prevInitialFocusRef) => {
+        if (!state.autoFocusOnShow) return undefined;
+        if (prevInitialFocusRef) return prevInitialFocusRef;
+        switch (state.initialFocus) {
+          case "first":
+            return getItemRefById(state.items, state.first());
+          case "last":
+            return getItemRefById(state.items, state.last());
+          default:
+            return state.baseRef;
+        }
+      });
+    }, [
+      state.autoFocusOnShow,
+      state.initialFocus,
+      state.items,
+      state.first,
+      state.last,
+      state.baseRef,
+    ]);
 
     props = useHovercard({
       state,
       initialFocusRef,
+      autoFocusOnShow: state.autoFocusOnShow || !!props.modal,
       ...props,
-      autoFocusOnShow,
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {
           return hideOnHoverOutside(event);

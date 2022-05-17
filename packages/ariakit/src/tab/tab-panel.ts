@@ -52,7 +52,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
       setHasTabbableChildren(!!tabbable.length);
     }, []);
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, tabId: tabIdProp };
         if (getItemProp) {

@@ -1,13 +1,12 @@
 import {
   MouseEvent,
   FocusEvent as ReactFocusEvent,
-  useCallback,
   useEffect,
   useState,
 } from "react";
 import { contains } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useEventCallback, useForkRef } from "ariakit-utils/hooks";
+import { useEvent, useForkRef } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -78,32 +77,26 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
       return () => observer.disconnect();
     }, [state.anchorRef]);
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = props.onClick;
 
     // By default, hovercards don't receive focus when they are shown. When the
     // disclosure element is clicked, though, we want it to behave like a
     // popover, so we set the autoFocusOnShow prop to true.
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        state.setAutoFocusOnShow(true);
-      },
-      [onClickProp, state.setAutoFocusOnShow]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      state.setAutoFocusOnShow(true);
+    });
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = props.onFocus;
 
     // Since the disclosure button is only visually hidden, it may receive focus
     // when the user tabs to it. So we make sure it's visible when that happens.
-    const onFocus = useCallback(
-      (event: ReactFocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        setVisible(true);
-      },
-      [onFocusProp]
-    );
+    const onFocus = useEvent((event: ReactFocusEvent<HTMLButtonElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      setVisible(true);
+    });
 
     const { style } = useVisuallyHidden();
 

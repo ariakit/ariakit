@@ -3,6 +3,7 @@
 module.exports = {
   rootDir: __dirname,
   testEnvironment: "jsdom",
+  reporters: ["default", "github-actions"],
   projects: [
     "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",
@@ -12,6 +13,7 @@ module.exports = {
     "packages/ariakit/src/**/*.{js,ts,tsx}",
     "packages/ariakit-utils/src/**/*.{js,ts,tsx}",
     "!**/*test.{js,ts,tsx}",
+    "!**/test-*.{js,ts}",
   ],
   moduleNameMapper: {
     "\\.css$": "<rootDir>/jest.mock.js",

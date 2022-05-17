@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback } from "react";
-import { useEventCallback } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -10,7 +10,7 @@ import { FormState } from "./form-state";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form input. Unline `useFormField`, this hook
+ * Ariakit component to render a form input. Unlike `useFormField`, this hook
  * returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
  * @see https://ariakit.org/components/form
@@ -32,16 +32,13 @@ export const useFormInput = createHook<FormInputOptions>(
       useCallback((s: FormState) => s.getValue(name), [name]),
     ]);
 
-    const onChangeProp = useEventCallback(props.onChange);
+    const onChangeProp = props.onChange;
 
-    const onChange = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-        onChangeProp(event);
-        if (event.defaultPrevented) return;
-        state?.setValue(name, event.target.value);
-      },
-      [onChangeProp, state?.setValue, name]
-    );
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+      onChangeProp?.(event);
+      if (event.defaultPrevented) return;
+      state?.setValue(name, event.target.value);
+    });
 
     const value = state?.getValue(name);
 
@@ -59,7 +56,7 @@ export const useFormInput = createHook<FormInputOptions>(
 );
 
 /**
- * A component that renders a form input. Unline `FormField`, this component
+ * A component that renders a form input. Unlike `FormField`, this component
  * passes the `value` and `onChange` props down to the underlying element that
  * can be a native input, select or textarea elements.
  * @see https://ariakit.org/components/form

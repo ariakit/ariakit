@@ -1,6 +1,6 @@
 {
   "name": "ariakit-playground",
-  "version": "0.17.0-alpha.21",
+  "version": "0.17.0-next.27",
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
@@ -8,6 +8,9 @@
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -31,31 +34,27 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.17.2",
-    "@codemirror/closebrackets": "0.19.2",
-    "@codemirror/commands": "0.19.8",
-    "@codemirror/comment": "0.19.1",
-    "@codemirror/gutter": "0.19.9",
-    "@codemirror/highlight": "0.19.8",
-    "@codemirror/history": "0.19.2",
-    "@codemirror/lang-css": "0.19.3",
-    "@codemirror/lang-javascript": "0.19.7",
-    "@codemirror/matchbrackets": "0.19.4",
-    "@codemirror/search": "0.19.10",
-    "@codemirror/state": "0.19.9",
-    "@codemirror/view": "0.19.48",
-    "@codesandbox/sandpack-client": "0.18.0",
+    "@codemirror/autocomplete": "0.20.1",
+    "@codemirror/commands": "0.20.0",
+    "@codemirror/lang-css": "0.20.0",
+    "@codemirror/lang-javascript": "0.20.0",
+    "@codemirror/language": "0.20.0",
+    "@codemirror/search": "0.20.1",
+    "@codemirror/state": "0.20.0",
+    "@codemirror/view": "0.20.4",
+    "@codesandbox/sandpack-client": "0.19.1",
     "@emotion/react": "^11.7.1",
-    "ariakit-utils": "file:../ariakit-utils",
+    "@lezer/highlight": "0.16.0",
+    "ariakit": "2.0.0-next.27",
+    "ariakit-utils": "0.17.0-next.18",
     "codesandbox-import-utils": "^2.2.3",
     "prismjs": "^1.26.0"
   },
   "peerDependencies": {
-    "ariakit": "^2.0.0 || ^2.0.0-alpha",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.4",
-    "@types/prismjs": "1.26.0",
-    "ariakit": "file:../ariakit"
+    "@types/prismjs": "1.26.0"
   }
 }
