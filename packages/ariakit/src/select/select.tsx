@@ -146,6 +146,8 @@ export const useSelect = createHook<SelectOptions>(
     const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
+      if (event.button) return;
+      if (event.ctrlKey) return;
       if (!toggleOnPressProp(event)) return;
       const element = event.currentTarget;
       queueBeforeEvent(element, "focusin", () => {

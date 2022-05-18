@@ -256,9 +256,10 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onMouseDown = useEvent((event: MouseEvent<HTMLInputElement>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
-      if (showOnMouseDownProp(event)) {
-        queueBeforeEvent(event.currentTarget, "mouseup", state.show);
-      }
+      if (event.button) return;
+      if (event.ctrlKey) return;
+      if (!showOnMouseDownProp(event)) return;
+      queueBeforeEvent(event.currentTarget, "mouseup", state.show);
     });
 
     const onClickProp = props.onClick;
