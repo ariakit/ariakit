@@ -8,12 +8,11 @@ function hasSelectionWithin(element?: Element | null) {
   if (!selection?.rangeCount) return false;
   const range = selection.getRangeAt(0);
   if (range.collapsed) return false;
-  console.log(range);
   return !!element?.contains(range.commonAncestorContainer);
 }
 
 export default function Example() {
-  const ref = useRef<HTMLParagraphElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const popover = usePopoverState({
     placement: "top",
@@ -26,45 +25,40 @@ export default function Example() {
   });
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const doc = paragraphRef.current?.ownerDocument || document;
     const onPointerUp = () => {
-      if (!hasSelectionWithin(element)) return;
-      popover.setVisible(true);
+      if (!hasSelectionWithin(paragraphRef.current)) return;
       popover.render();
+      popover.setVisible(true);
     };
     const onSelect = () => {
-      if (hasSelectionWithin(element)) {
-        popover.render();
-        return;
+      if (hasSelectionWithin(paragraphRef.current)) {
+        return popover.render();
       }
       popover.setVisible(false);
     };
-    element.ownerDocument.addEventListener("pointerup", onPointerUp);
-    element.ownerDocument.addEventListener("selectionchange", onSelect);
+    doc.addEventListener("pointerup", onPointerUp);
+    doc.addEventListener("selectionchange", onSelect);
     return () => {
-      element.ownerDocument.removeEventListener("pointerup", onPointerUp);
-      element.ownerDocument.removeEventListener("selectionchange", onSelect);
+      doc.removeEventListener("pointerup", onPointerUp);
+      doc.removeEventListener("selectionchange", onSelect);
     };
-  }, [popover.setVisible, popover.render]);
+  }, [popover.render, popover.setVisible]);
 
   return (
     <div>
       <Popover
         state={popover}
-        hideOnInteractOutside={(event) => {
-          if (hasSelectionWithin(ref.current)) {
-            return false;
-          }
-          return true;
-        }}
         autoFocusOnShow={false}
+        hideOnInteractOutside={() => !hasSelectionWithin(paragraphRef.current)}
         className="popover"
       >
-        <PopoverArrow className="arrow" />
-        <Button className="button">Accept</Button>
+        <PopoverArrow size={24} className="arrow" />
+        <Button className="button secondary">Bookmark</Button>
+        <Button className="button secondary">Edit</Button>
+        <Button className="button secondary">Share</Button>
       </Popover>
-      <p ref={ref}>
+      <p ref={paragraphRef}>
         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odio, sed fuga
         necessitatibus aliquid expedita atque? Doloremque ea sequi totam
         laudantium laboriosam repellat quasi commodi omnis aut nulla. Numquam,
