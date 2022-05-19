@@ -9,7 +9,7 @@ export function usePreviousMouseDownRef(enabled?: boolean) {
     const onMouseDown = (event: MouseEvent) => {
       previousMouseDownRef.current = event.target;
     };
-    return addGlobalEventListener("mousedown", onMouseDown);
+    return addGlobalEventListener("mousedown", onMouseDown, true);
   }, [enabled]);
 
   return previousMouseDownRef;
