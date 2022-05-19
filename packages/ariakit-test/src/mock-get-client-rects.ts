@@ -1,20 +1,26 @@
-// @ts-ignore
-window.Element.prototype.getClientRects = function getClientRects() {
-  const isHidden = (element: Element) => {
-    if (element.parentElement && isHidden(element.parentElement)) {
-      return true;
+const isJSDOM = navigator.userAgent.includes("jsdom");
+
+if (isJSDOM) {
+  // @ts-ignore
+  window.Element.prototype.getClientRects = function getClientRects() {
+    const isHidden = (element: Element) => {
+      if (element.parentElement && isHidden(element.parentElement)) {
+        return true;
+      }
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+      if (element.hidden) {
+        return true;
+      }
+      const style = getComputedStyle(element);
+      return style.display === "none" || style.visibility === "hidden";
+    };
+    if (isHidden(this)) {
+      return [];
     }
-    if (!(element instanceof HTMLElement)) {
-      return false;
-    }
-    if (element.hidden) {
-      return true;
-    }
-    const style = getComputedStyle(element);
-    return style.display === "none" || style.visibility === "hidden";
+    return [{ width: 1, height: 1 }];
   };
-  if (isHidden(this)) {
-    return [];
-  }
-  return [{ width: 1, height: 1 }];
-};
+}
+
+export {};
