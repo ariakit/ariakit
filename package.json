@@ -69,7 +69,7 @@
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jest": "26.2.2",
     "eslint-plugin-prettier": "4.0.0",
-    "eslint-plugin-react": "7.29.4",
+    "eslint-plugin-react": "7.30.0",
     "fs-extra": "10.1.0",
     "husky": "8.0.1",
     "jest": "28.1.0",
