@@ -40,14 +40,21 @@ function isDisclosure(disclosure: Element, target: Element) {
   return false;
 }
 
+function isBackdrop(dialog: Element | null, target: Element | null) {
+  if (!dialog) return false;
+  if (!target) return false;
+  return (
+    target.hasAttribute("data-backdrop") &&
+    target.getAttribute("data-backdrop") === dialog.id
+  );
+}
+
 function dialogContains(target: Element) {
   return (dialogRef: RefObject<HTMLElement>) => {
     const dialog = dialogRef.current;
     if (!dialog) return false;
     if (contains(dialog, target)) return true;
-    if (target.getAttribute("data-backdrop") === dialogRef.current?.id) {
-      return true;
-    }
+    if (isBackdrop(dialog, target)) return true;
     return false;
   };
 }
@@ -69,8 +76,9 @@ function useEventOutside({
     const onEvent = (event: Event) => {
       const container = dialogRef.current;
       const disclosure = disclosureRef?.current;
-      const target = event.target as Element;
+      const target = event.target as Element | null;
       if (!container) return;
+      if (!target) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.
@@ -142,13 +150,15 @@ export function useHideOnInteractOutside(
         event.stopPropagation();
         return;
       }
-      // Make sure the element that has been clicked is the same that last
-      // triggered the mousedown event. This prevents the dialog from closing
-      // by dragging the cursor (for example, selecting some text inside the
-      // dialog and releasing the mouse outside of it).
-      if (previousMouseDownRef.current === event.target) {
-        state.hide();
-      }
+      const dialog = dialogRef.current;
+      const previousMouseDown = previousMouseDownRef.current as Element | null;
+      const isDraggingFromDialog =
+        dialog && previousMouseDown && contains(dialog, previousMouseDown);
+      // This prevents the dialog from closing by dragging the cursor (for
+      // example, selecting some text inside the dialog and releasing the mouse
+      // outside of it). See https://github.com/ariakit/ariakit/issues/1336
+      if (isDraggingFromDialog) return;
+      state.hide();
     },
   });
 
