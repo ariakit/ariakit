@@ -256,9 +256,8 @@ export function useStore<T>(
   const prevStateRef = useRef<T | null>(null);
   const deps = toArray(filter);
   const noFilter = !filter;
-
   useSafeLayoutEffect(() => {
-    if (!subscribe || !setState) return;
+    if (!subscribe) return;
     if (noFilter) return subscribe(setState);
     if (!deps.length) return;
     return subscribe((nextState) => {
