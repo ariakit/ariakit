@@ -5,7 +5,7 @@ export function mouseUp(element: Element, options?: MouseEventInit) {
 
   fireEvent.pointerUp(element, options);
 
-  // mouseup and click are not called on disabled elements
+  // mouseup is not called on disabled elements
   if (disabled) return;
 
   fireEvent.mouseUp(element, { detail: 1, ...options });

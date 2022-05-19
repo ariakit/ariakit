@@ -138,7 +138,7 @@ export async function click(
 
   mouseUp(element, options);
 
-  // mouseup and click are not called on disabled elements
+  // click is not called on disabled elements
   const { disabled } = element as HTMLButtonElement;
   if (disabled) return;
 
