@@ -4,6 +4,8 @@ export * from "./click";
 export * from "./fire-event";
 export * from "./focus";
 export * from "./hover";
+export * from "./mouse-down";
+export * from "./mouse-up";
 export * from "./press";
 export * from "./render";
 export * from "./screen";
