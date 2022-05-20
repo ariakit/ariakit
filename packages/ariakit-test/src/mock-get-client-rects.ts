@@ -1,6 +1,6 @@
-import { isJSDOM } from "./__utils";
+import { isBrowser } from "./__utils";
 
-if (isJSDOM) {
+if (!isBrowser) {
   // @ts-ignore
   window.Element.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {

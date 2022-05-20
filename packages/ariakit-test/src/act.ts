@@ -1,5 +1,8 @@
 import { act as reactAct } from "@testing-library/react";
-import { AnyFunction } from "ariakit-utils/types";
-import { isJSDOM } from "./__utils";
+import { isBrowser } from "./__utils";
 
-export const act = isJSDOM ? reactAct : (callback: AnyFunction) => callback?.();
+const noopAct = ((callback) => {
+  callback();
+}) as typeof reactAct;
+
+export const act = isBrowser ? noopAct : reactAct;

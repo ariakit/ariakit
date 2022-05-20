@@ -4,8 +4,8 @@ export type DirtiableElement = Element & { dirty?: boolean };
 
 export type TextField = HTMLInputElement | HTMLTextAreaElement;
 
-export const isJSDOM =
-  typeof navigator !== "undefined" && navigator.userAgent.includes("jsdom");
+export const isBrowser =
+  !navigator.userAgent.includes("jsdom") && !("happyDOM" in window);
 
 export function queuedMicrotasks(): Promise<void> {
   return act(() => Promise.resolve());

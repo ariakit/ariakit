@@ -67,6 +67,8 @@ export async function select(
     selection?.addRange(range);
   }
 
+  await sleep();
+
   mouseUp(element, options);
 
   fireEvent.click(element, { detail: 1, ...options });
