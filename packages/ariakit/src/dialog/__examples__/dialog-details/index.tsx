@@ -24,9 +24,9 @@ export default function Example() {
       </Button>
       <Dialog
         state={dialog}
-        portal={false}
         hidden={false}
-        backdrop={false}
+        portal={dialog.mounted}
+        backdrop={dialog.mounted}
         className="dialog"
       >
         <header className="header">
