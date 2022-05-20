@@ -1,4 +1,4 @@
-const isJSDOM = navigator.userAgent.includes("jsdom");
+import { isJSDOM } from "./__utils";
 
 if (isJSDOM) {
   // @ts-ignore
@@ -22,5 +22,3 @@ if (isJSDOM) {
     return [{ width: 1, height: 1 }];
   };
 }
-
-export {};

@@ -22,67 +22,57 @@ export async function select(
     })
   );
 
-  // each char should dispatch hover and set selection
-
   const startIndex = element.textContent?.indexOf(text) ?? -1;
-  const endIndex = startIndex + text.length;
-  const iterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
+  const selection = document.getSelection();
+  const range: Range = document.createRange();
 
-  let node: Node | null = null;
-  let i = startIndex;
-  let count = 0;
+  for (let i = 1; i <= text.length; i++) {
+    const iterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
+    const currentText = text.slice(0, i);
+    const endIndex = startIndex + currentText.length;
+    let currentIndex = startIndex;
+    let currentNode: Node | null = null;
+    let currentCharCount = 0;
+    let startContainer: Node | null = null;
+    let startOffset = -1;
+    let endContainer: Node | null = null;
+    let endOffset = -1;
 
-  let startContainer: Node | null = null;
-  let startOffset = -1;
-  let endContainer: Node | null = null;
-  let endOffset = -1;
-
-  while (
-    i >= 0 &&
-    i < endIndex &&
-    count < endIndex &&
-    (node = iterator.nextNode())
-  ) {
-    const textContent = node.textContent;
-    if (!textContent) continue;
-    count += textContent.length;
-    if (i > count) continue;
-    if (!startContainer) {
-      startContainer = node;
-      startOffset = i - count + textContent.length;
+    while (
+      currentIndex >= 0 &&
+      currentIndex < endIndex &&
+      currentCharCount < endIndex &&
+      (currentNode = iterator.nextNode())
+    ) {
+      const textContent = currentNode.textContent;
+      if (!textContent) continue;
+      currentCharCount += textContent.length;
+      if (currentIndex > currentCharCount) continue;
+      if (!startContainer) {
+        startContainer = currentNode;
+        startOffset = currentIndex - currentCharCount + textContent.length;
+      }
+      endContainer = currentNode;
+      endOffset = endIndex - currentCharCount + textContent.length;
+      currentIndex++;
     }
-    endContainer = node;
-    endOffset = endIndex - count + textContent.length;
-    i += 1;
+
+    if (!startContainer || !endContainer) continue;
+
+    await hover(element, options);
+
+    range.setStart(startContainer, startOffset);
+    range.setEnd(endContainer, endOffset);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   }
-
-  console.log(
-    startContainer?.textContent,
-    startOffset,
-    endContainer?.textContent,
-    endOffset
-  );
-
-  for (const char of text) {
-    // await hover(element, options);
-    // const range = document.createRange();
-    // range.
-  }
-
-  // if (window.getSelection) {
-  //   const selection = window.getSelection();
-  //   const range = document.createRange();
-  //   range.selectNodeContents(node);
-  //   selection.removeAllRanges();
-  //   selection.addRange(range);
-  // }
-
-  // change selection
 
   mouseUp(element, options);
 
   fireEvent.click(element, { detail: 1, ...options });
 
-  // change selection
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
   await sleep();
 }

@@ -1,7 +1,9 @@
-import { nextFrame } from "./__utils";
+import { isJSDOM, nextFrame } from "./__utils";
 import { act } from "./act";
 
-export async function sleep(ms = 16): Promise<void> {
+const defaultMs = isJSDOM ? 16 : 200;
+
+export async function sleep(ms = defaultMs): Promise<void> {
   await act(() => new Promise((resolve) => setTimeout(resolve, ms)));
   await nextFrame();
 }
