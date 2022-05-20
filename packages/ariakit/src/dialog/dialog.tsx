@@ -416,6 +416,8 @@ export const useDialog = createHook<DialogOptions>(
       [state.visible, modal, visibleModals]
     );
 
+    const hiddenProp = props.hidden;
+
     // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
     props = useWrapElement(
       props,
@@ -428,6 +430,7 @@ export const useDialog = createHook<DialogOptions>(
               backdropProps={backdropProps}
               hideOnInteractOutside={hideOnInteractOutside}
               hideOnEscape={hideOnEscape}
+              hidden={hiddenProp}
             >
               {element}
             </DialogBackdrop>
@@ -435,7 +438,14 @@ export const useDialog = createHook<DialogOptions>(
         }
         return element;
       },
-      [state, backdrop, backdropProps, hideOnInteractOutside, hideOnEscape]
+      [
+        state,
+        backdrop,
+        backdropProps,
+        hideOnInteractOutside,
+        hideOnEscape,
+        hiddenProp,
+      ]
     );
 
     const [headingId, setHeadingId] = useState<string>();

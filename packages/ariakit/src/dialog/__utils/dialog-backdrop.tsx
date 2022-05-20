@@ -19,6 +19,7 @@ type DialogBackdropProps = Pick<
   | "backdropProps"
   | "hideOnInteractOutside"
   | "hideOnEscape"
+  | "hidden"
 > & {
   children?: ReactNode;
 };
@@ -29,6 +30,7 @@ export function DialogBackdrop({
   backdropProps,
   hideOnInteractOutside = true,
   hideOnEscape = true,
+  hidden,
   children,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -86,6 +88,7 @@ export function DialogBackdrop({
     id: undefined,
     role: "presentation",
     tabIndex: -1,
+    hidden,
     ...backdropProps,
     ref: useForkRef(backdropProps?.ref, ref),
     onClick,
