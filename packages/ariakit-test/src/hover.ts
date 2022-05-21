@@ -15,7 +15,7 @@ export async function hover(element: Element, options?: MouseEventInit) {
   const { disabled } = element as HTMLButtonElement;
   const pointerEventsEnabled = isPointerEventsEnabled(element);
 
-  if (lastHovered) {
+  if (lastHovered && lastHovered !== element) {
     fireEvent.pointerMove(lastHovered, options);
     fireEvent.mouseMove(lastHovered, options);
 
