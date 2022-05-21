@@ -1,4 +1,3 @@
-import { MouseEvent } from "react";
 import { Button } from "ariakit/button";
 import {
   Dialog,
@@ -11,22 +10,18 @@ import "./style.css";
 export default function Example() {
   const dialog = useDialogState();
   return (
-    <details open={dialog.mounted}>
-      <Button
-        as="summary"
-        className="button"
-        onClick={(event: MouseEvent) => {
-          event.preventDefault();
-          dialog.toggle();
-        }}
-      >
+    <details
+      open={dialog.mounted}
+      onToggle={(event) => dialog.setVisible(event.currentTarget.open)}
+    >
+      <Button as="summary" className="button">
         View details
       </Button>
       <Dialog
         state={dialog}
-        hidden={false}
         portal={dialog.mounted}
         backdrop={dialog.mounted}
+        hidden={false}
         className="dialog"
       >
         <header className="header">
