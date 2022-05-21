@@ -1,6 +1,6 @@
-const isJSDOM = navigator.userAgent.includes("jsdom");
+import { isBrowser } from "./__utils";
 
-if (isJSDOM) {
+if (!isBrowser) {
   // @ts-ignore
   window.Element.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
@@ -22,5 +22,3 @@ if (isJSDOM) {
     return [{ width: 1, height: 1 }];
   };
 }
-
-export {};

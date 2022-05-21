@@ -9,6 +9,7 @@ export * from "./mouse-up";
 export * from "./press";
 export * from "./render";
 export * from "./screen";
+export * from "./select";
 export * from "./sleep";
 export * from "./tap";
 export * from "./type";
