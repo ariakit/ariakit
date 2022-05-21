@@ -24,37 +24,37 @@ export async function select(
 
   const startIndex = element.textContent?.indexOf(text) ?? -1;
   const selection = document.getSelection();
-  const range: Range = document.createRange();
+  const range = document.createRange();
 
   for (let i = 1; i <= text.length; i++) {
     const iterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
-    const currentText = text.slice(0, i);
-    const endIndex = startIndex + currentText.length;
-    let currentIndex = startIndex;
-    let currentNode: Node | null = null;
-    let currentCharCount = 0;
+    const textSlice = text.slice(0, i);
+    const endIndex = startIndex + textSlice.length;
+    let index = startIndex;
+    let node: Node | null = null;
+    let charCount = 0;
     let startContainer: Node | null = null;
     let startOffset = -1;
     let endContainer: Node | null = null;
     let endOffset = -1;
 
     while (
-      currentIndex >= 0 &&
-      currentIndex < endIndex &&
-      currentCharCount < endIndex &&
-      (currentNode = iterator.nextNode())
+      index >= 0 &&
+      index < endIndex &&
+      charCount < endIndex &&
+      (node = iterator.nextNode())
     ) {
-      const textContent = currentNode.textContent;
+      const textContent = node.textContent;
       if (!textContent) continue;
-      currentCharCount += textContent.length;
-      if (currentIndex > currentCharCount) continue;
+      charCount += textContent.length;
+      if (index > charCount) continue;
       if (!startContainer) {
-        startContainer = currentNode;
-        startOffset = currentIndex - currentCharCount + textContent.length;
+        startContainer = node;
+        startOffset = index - charCount + textContent.length;
       }
-      endContainer = currentNode;
-      endOffset = endIndex - currentCharCount + textContent.length;
-      currentIndex++;
+      endContainer = node;
+      endOffset = endIndex - charCount + textContent.length;
+      index++;
     }
 
     if (!startContainer || !endContainer) continue;
@@ -73,6 +73,7 @@ export async function select(
 
   fireEvent.click(element, { detail: 1, ...options });
 
+  // Fires selectionchange again
   selection?.removeAllRanges();
   selection?.addRange(range);
 
