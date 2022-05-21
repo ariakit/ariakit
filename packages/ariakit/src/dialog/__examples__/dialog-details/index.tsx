@@ -19,8 +19,7 @@ export default function Example() {
       </Button>
       <Dialog
         state={dialog}
-        portal={dialog.mounted}
-        backdrop={dialog.mounted}
+        modal={dialog.mounted}
         hidden={false}
         className="dialog"
       >
