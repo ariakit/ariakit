@@ -20,6 +20,7 @@ function isNativeClick(event: KeyboardEvent) {
   const element = event.currentTarget;
   return (
     isButton(element) ||
+    element.tagName === "SUMMARY" ||
     element.tagName === "INPUT" ||
     element.tagName === "TEXTAREA" ||
     element.tagName === "A" ||
