@@ -1,63 +1,53 @@
-import { click, getByRole, press, queryByRole, render } from "ariakit-test";
-import { axe } from "jest-axe";
+import {
+  click,
+  getByRole,
+  getByText,
+  press,
+  queryByRole,
+  render,
+  select,
+} from "ariakit-test";
 import Example from ".";
 
 const getPopover = () => queryByRole("dialog", { hidden: true });
-const getDisclosure = () => getByRole("button", { name: "Accept invite" });
+const getParagraph = () => getByText(/^Lorem ipsum dolor/);
 const getButton = (name: string) => getByRole("button", { name });
 
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
+Range.prototype.getBoundingClientRect = () => ({
+  bottom: 0,
+  height: 0,
+  left: 0,
+  right: 0,
+  top: 0,
+  width: 0,
+  x: 0,
+  y: 0,
+  toJSON: () => ({}),
 });
 
-test("show/hide when clicking on disclosure", async () => {
+test("show/hide popover on text selection", async () => {
   render(<Example />);
-  expect(getPopover()).not.toBeInTheDocument();
-  await click(getDisclosure());
+  expect(getPopover()).not.toBeVisible();
+  await select("dolor, sit");
   expect(getPopover()).toBeVisible();
-  expect(getButton("Accept")).toHaveFocus();
-  await click(getDisclosure());
-  expect(getPopover()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  await click(getParagraph());
+  expect(getPopover()).not.toBeVisible();
 });
 
-test("show/hide when pressing enter on disclosure", async () => {
+test("tab to popover", async () => {
   render(<Example />);
-  await press.Tab();
-  await press.Enter();
+  await select("amet");
   expect(getPopover()).toBeVisible();
-  expect(getButton("Accept")).toHaveFocus();
-  await press.ShiftTab();
-  await press.Enter();
-  expect(getPopover()).not.toBeInTheDocument();
-});
-
-test("show/hide when pressing space on disclosure", async () => {
-  render(<Example />);
-  await press.Tab();
-  await press.Space();
-  expect(getPopover()).toBeVisible();
-  expect(getButton("Accept")).toHaveFocus();
-  await press.ShiftTab();
-  await press.Space();
-  expect(getPopover()).not.toBeInTheDocument();
-});
-
-test("hide when pressing escape on disclosure", async () => {
-  render(<Example />);
-  await click(getDisclosure());
   await press.ShiftTab();
   expect(getPopover()).toBeVisible();
-  await press.Escape();
-  expect(getPopover()).not.toBeInTheDocument();
+  expect(getButton("Share")).toHaveFocus();
 });
 
-test("hide when pressing escape on popover", async () => {
+test("click on popover button", async () => {
   render(<Example />);
-  await click(getDisclosure());
+  await select("maxime.");
   expect(getPopover()).toBeVisible();
-  await press.Escape();
-  expect(getPopover()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  await click(getButton("Bookmark"));
+  expect(getPopover()).toBeVisible();
+  expect(getButton("Bookmark")).toHaveFocus();
 });

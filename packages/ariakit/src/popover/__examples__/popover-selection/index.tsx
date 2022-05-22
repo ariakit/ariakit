@@ -4,7 +4,7 @@ import { Popover, PopoverArrow, usePopoverState } from "ariakit/popover";
 import "./style.css";
 
 function hasSelectionWithin(element?: Element | null) {
-  const selection = window.getSelection();
+  const selection = element?.ownerDocument.getSelection();
   if (!selection?.rangeCount) return false;
   const range = selection.getRangeAt(0);
   if (range.collapsed) return false;
@@ -17,7 +17,7 @@ export default function Example() {
   const popover = usePopoverState({
     placement: "top",
     getAnchorRect: () => {
-      const selection = window.getSelection();
+      const selection = paragraphRef.current?.ownerDocument.getSelection();
       if (!selection?.rangeCount) return null;
       const range = selection.getRangeAt(0);
       return range.getBoundingClientRect();
@@ -32,9 +32,7 @@ export default function Example() {
       popover.setVisible(true);
     };
     const onSelect = () => {
-      if (hasSelectionWithin(paragraphRef.current)) {
-        return popover.render();
-      }
+      if (hasSelectionWithin(paragraphRef.current)) return popover.render();
       popover.setVisible(false);
     };
     doc.addEventListener("pointerup", onPointerUp);
