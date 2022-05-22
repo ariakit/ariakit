@@ -5,8 +5,8 @@ import { mouseUp } from "./mouse-up";
 import { sleep } from "./sleep";
 
 export async function select(
-  element: Element,
   text: string,
+  element: Element = document.body,
   options?: MouseEventInit
 ) {
   const document = element.ownerDocument;
