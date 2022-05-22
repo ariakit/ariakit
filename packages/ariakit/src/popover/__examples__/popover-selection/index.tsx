@@ -12,6 +12,7 @@ function hasSelectionWithin(element?: Element | null) {
 }
 
 export default function Example() {
+  const popoverRef = useRef<HTMLDivElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const popover = usePopoverState({
@@ -25,20 +26,27 @@ export default function Example() {
   });
 
   useEffect(() => {
-    const doc = paragraphRef.current?.ownerDocument || document;
-    const onPointerUp = () => {
-      if (!hasSelectionWithin(paragraphRef.current)) return;
+    const popoverContainer = popoverRef.current;
+    const paragraph = paragraphRef.current;
+    if (!popoverContainer) return;
+    if (!paragraph) return;
+    const doc = paragraph.ownerDocument || document;
+    const onMouseUp = () => {
+      if (!hasSelectionWithin(paragraph)) return;
       popover.render();
       popover.setVisible(true);
     };
     const onSelect = () => {
-      if (hasSelectionWithin(paragraphRef.current)) return popover.render();
+      if (popoverContainer.contains(doc.activeElement)) return;
+      if (hasSelectionWithin(paragraph)) {
+        return popover.render();
+      }
       popover.setVisible(false);
     };
-    doc.addEventListener("pointerup", onPointerUp);
+    doc.addEventListener("mouseup", onMouseUp);
     doc.addEventListener("selectionchange", onSelect);
     return () => {
-      doc.removeEventListener("pointerup", onPointerUp);
+      doc.removeEventListener("mouseup", onMouseUp);
       doc.removeEventListener("selectionchange", onSelect);
     };
   }, [popover.render, popover.setVisible]);
@@ -49,6 +57,7 @@ export default function Example() {
         state={popover}
         autoFocusOnShow={false}
         hideOnInteractOutside={() => !hasSelectionWithin(paragraphRef.current)}
+        ref={popoverRef}
         className="popover"
       >
         <PopoverArrow size={24} className="arrow" />
