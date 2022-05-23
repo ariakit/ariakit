@@ -1,5 +1,35 @@
 # ariakit
 
+## 2.0.0-next.28
+
+### Minor Changes
+
+- The `hidden` prop passed to `Dialog` is now inherited by the internal `DialogBackdrop` component. ([#1387](https://github.com/ariakit/ariakit/pull/1387))
+
+  Before, if we wanted to pass `hidden={false}` to both the dialog and the backdrop components, we would have to do this (still works):
+
+  ```jsx
+  <Dialog hidden={false} backdropProps={{ hidden: false }} />
+  ```
+
+  Now, the `backdropProps` is not necessary anymore:
+
+  ```jsx
+  <Dialog hidden={false} />
+  ```
+
+### Patch Changes
+
+- Fixed `ComboboxPopover` being shown on right clicks on the combobox input. ([#1371](https://github.com/ariakit/ariakit/pull/1371))
+
+* Fixed `Command` component not being clicked when using the keyboard on Firefox when it's rendered as a `summary` element. ([#1392](https://github.com/ariakit/ariakit/pull/1392))
+
+- Fixed `Dialog` and derived dialog components not hiding when dragging elements outside it. ([#1378](https://github.com/ariakit/ariakit/pull/1378))
+
+* Fixed `SelectPopover` being shown on right clicks on the select button. ([#1371](https://github.com/ariakit/ariakit/pull/1371))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.19`.
+
 ## 2.0.0-next.27
 
 ### Minor Changes

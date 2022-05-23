@@ -1,5 +1,11 @@
 # ariakit-utils
 
+## 0.17.0-next.19
+
+### Patch Changes
+
+- Adjusted the return type of `useStoreProvider` to be more accurate. ([#1367](https://github.com/ariakit/ariakit/pull/1367))
+
 ## 0.17.0-next.18
 
 ### Minor Changes
