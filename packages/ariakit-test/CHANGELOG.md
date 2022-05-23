@@ -1,5 +1,15 @@
 # ariakit-test
 
+## 0.17.0-next.22
+
+### Patch Changes
+
+- Added new `mouseDown` and `mouseUp` functions. ([#1379](https://github.com/ariakit/ariakit/pull/1379))
+
+* Added new `select` util to `ariakit-test`. ([#1386](https://github.com/ariakit/ariakit/pull/1386))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.19`.
+
 ## 0.17.0-next.21
 
 ### Patch Changes

@@ -9,6 +9,10 @@
     "website": "0.0.0"
   },
   "changesets": [
+    "combobox-right-click",
+    "command-summary",
+    "dialog-backdrop-hidden",
+    "dialog-hide-on-dragging-outside",
     "drop-react-16",
     "npmignore-src-folder",
     "popover-flip-fallback-placements",
@@ -16,6 +20,10 @@
     "popover-state-fit-viewport",
     "popover-state-overlap",
     "popover-state-shift-gutter",
-    "popover-state-slide"
+    "popover-state-slide",
+    "select-right-click",
+    "test-mouse-down-up",
+    "test-select",
+    "utils-use-store-provider-return-type"
   ]
 }
