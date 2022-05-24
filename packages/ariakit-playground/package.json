@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.17.2",
-    "@codemirror/autocomplete": "0.20.1",
+    "@codemirror/autocomplete": "0.20.2",
     "@codemirror/commands": "0.20.0",
     "@codemirror/lang-css": "0.20.0",
     "@codemirror/lang-javascript": "0.20.0",
