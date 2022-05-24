@@ -56,7 +56,6 @@ import {
 import { disableAccessibilityTreeOutside } from "./__utils/disable-accessibility-tree-outside";
 import { disablePointerEventsOutside } from "./__utils/disable-pointer-events-outside";
 import { prependHiddenDismiss } from "./__utils/prepend-hidden-dismiss";
-import { useChampionDialog } from "./__utils/use-champion-dialog";
 import { useFocusOnChildUnmount } from "./__utils/use-focus-on-child-unmount";
 import { useHideOnInteractOutside } from "./__utils/use-hide-on-interact-outside";
 import { useHideOnUnmount } from "./__utils/use-hide-on-unmount";
@@ -213,18 +212,12 @@ export const useDialog = createHook<DialogOptions>(
       return;
     }, [state.mounted, domReady, shouldDisableAccessibilityTree, state.hide]);
 
-    const shouldDisableOutside = useChampionDialog(
-      ref,
-      "data-dialog-disable-outside",
-      visibleIdle && shouldDisableAccessibilityTree && !visibleModals.length
-    );
-
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element.
-      if (!shouldDisableOutside()) return;
+      if (!visibleIdle) return;
       // If portal is enabled, we get the portalNode instead of the dialog
       // element. This will consider nested dialogs as they will be children of
       // the portal node, but not the dialog. This also accounts for the tiny
@@ -243,7 +236,7 @@ export const useDialog = createHook<DialogOptions>(
       }
       return;
     }, [
-      shouldDisableOutside,
+      visibleIdle,
       portal,
       portalNode,
       modal,
