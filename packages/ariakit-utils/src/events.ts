@@ -147,7 +147,7 @@ export function addGlobalEventListener(
   } catch (e) {}
 
   const listeners: Array<() => void> = [];
-  for (let i = 0; i < scope.frames.length; i += 1) {
+  for (let i = 0; i < scope.frames?.length; i += 1) {
     const frameWindow = scope.frames[i];
     if (frameWindow) {
       listeners.push(
