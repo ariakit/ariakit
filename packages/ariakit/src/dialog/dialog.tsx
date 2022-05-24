@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import {
+  closest,
   contains,
   getActiveElement,
   getDocument,
@@ -25,6 +26,7 @@ import {
 import {
   useBooleanEvent,
   useForkRef,
+  useId,
   useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -54,6 +56,7 @@ import {
 import { disableAccessibilityTreeOutside } from "./__utils/disable-accessibility-tree-outside";
 import { disablePointerEventsOutside } from "./__utils/disable-pointer-events-outside";
 import { prependHiddenDismiss } from "./__utils/prepend-hidden-dismiss";
+import { useChampionDialog } from "./__utils/use-champion-dialog";
 import { useFocusOnChildUnmount } from "./__utils/use-focus-on-child-unmount";
 import { useHideOnInteractOutside } from "./__utils/use-hide-on-interact-outside";
 import { useHideOnUnmount } from "./__utils/use-hide-on-unmount";
@@ -126,23 +129,34 @@ export const useDialog = createHook<DialogOptions>(
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // visible.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
+    const visibleIdle = state.visible && !state.animating;
+
+    // Usually, we only want to disable the accessibility tree outside if the
+    // dialog is a modal. But the Portal component can't preserve the tab order
+    // on Safari/VoiceOver. By allowing only the dialog/portal to be accessible,
+    // we provide a similar tab order flow. We don't need to disable pointer
+    // events because it's just for screen readers.
+    const shouldDisableAccessibilityTree =
+      modal || (portal && preserveTabOrder && isSafari());
+
+    const id = useId(props.id);
 
     // Sets disclosure ref. It needs to be a layout effect so we get the focused
     // element right before the dialog is mounted.
     useSafeLayoutEffect(() => {
-      if (!state.mounted) return;
+      if (!visibleIdle) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (activeElement && activeElement.tagName !== "BODY") {
         state.disclosureRef.current = activeElement;
       }
-    }, [state.mounted]);
+    }, [visibleIdle]);
 
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, visibleModals, wrapElement } = nested;
     const nestedDialogsRef = useLiveRef(nestedDialogs);
 
-    usePreventBodyScroll(preventBodyScroll && state.mounted);
+    usePreventBodyScroll(ref, preventBodyScroll && state.mounted);
     // When the dialog is unmounted, we make sure to update the state.
     useHideOnUnmount(ref, state);
     // When a focused child element is removed, focus will be placed on the
@@ -190,22 +204,27 @@ export const useDialog = createHook<DialogOptions>(
       // dialog is a modal. But, on Safari, since we're disabling the
       // accessibility tree outside, we need to ensure the user will be able to
       // close the dialog.
-      if (modal || (portal && preserveTabOrder && isSafari())) {
+      if (shouldDisableAccessibilityTree) {
         // If there's already a DialogDismiss component, it does nothing.
         const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
         if (existingDismiss) return;
         return prependHiddenDismiss(dialog, state.hide);
       }
       return;
-    }, [state.mounted, domReady, modal, portal, preserveTabOrder, state.hide]);
+    }, [state.mounted, domReady, shouldDisableAccessibilityTree, state.hide]);
+
+    const shouldDisableOutside = useChampionDialog(
+      ref,
+      "data-dialog-disable-outside",
+      visibleIdle && shouldDisableAccessibilityTree && !visibleModals.length
+    );
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element.
-      if (state.animating) return;
-      if (!state.visible) return;
+      if (!shouldDisableOutside()) return;
       // If portal is enabled, we get the portalNode instead of the dialog
       // element. This will consider nested dialogs as they will be children of
       // the portal node, but not the dialog. This also accounts for the tiny
@@ -219,29 +238,22 @@ export const useDialog = createHook<DialogOptions>(
           // events outside of the modal dialog.
           !backdrop ? disablePointerEventsOutside(element) : null
         );
-      } else if (portal && preserveTabOrder && isSafari()) {
-        // Usually, we only want to disable the accessibility tree outside if
-        // the dialog is a modal. But the Portal component can't preserve the
-        // tab order on Safari/VoiceOver. By allowing only the dialog/portal to
-        // be accessible, we provide a similar tab order flow. We don't need to
-        // disable pointer events because it's just for screen readers.
+      } else if (shouldDisableAccessibilityTree) {
         return disableAccessibilityTreeOutside(element);
       }
       return;
     }, [
-      state.animating,
-      state.visible,
+      shouldDisableOutside,
       portal,
       portalNode,
       modal,
       backdrop,
-      preserveTabOrder,
+      shouldDisableAccessibilityTree,
     ]);
 
     // Auto focus on show.
     useEffect(() => {
-      if (state.animating) return;
-      if (!state.visible) return;
+      if (!visibleIdle) return;
       if (!autoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
       // focus. This is useful for when the Dialog component is unmounted
@@ -265,8 +277,7 @@ export const useDialog = createHook<DialogOptions>(
         dialog;
       ensureFocus(element);
     }, [
-      state.animating,
-      state.visible,
+      visibleIdle,
       autoFocusOnShow,
       domReady,
       initialFocusRef,
@@ -289,18 +300,32 @@ export const useDialog = createHook<DialogOptions>(
         // Hide was triggered by a click/focus on a tabbable element outside
         // the dialog or on another dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
-        const element = finalFocusRef?.current || state.disclosureRef.current;
+        let element = finalFocusRef?.current || state.disclosureRef.current;
         if (element) {
           if (element.id) {
-            const document = getDocument(element);
+            const doc = getDocument(element);
             const selector = `[aria-activedescendant="${element.id}"]`;
-            const composite = document.querySelector<HTMLElement>(selector);
+            const composite = doc.querySelector<HTMLElement>(selector);
             // If the element is an item in a composite widget that handles
             // focus with the `aria-activedescendant` attribute, we want to
             // focus on the composite element itself.
             if (composite) {
-              ensureFocus(composite);
-              return;
+              element = composite;
+            }
+          }
+          // If the element is not focusable by the time the dialog is hidden,
+          // it's probably because it's an element inside another popover or
+          // menu that also got hidden when this dialog was shown. We'll try to
+          // focus on their disclosure element instead.
+          if (!isFocusable(element)) {
+            const parentDialog = closest(element, "[data-dialog]");
+            if (parentDialog && parentDialog.id) {
+              const doc = getDocument(parentDialog);
+              const selector = `[aria-controls~="${parentDialog.id}"]`;
+              const control = doc.querySelector<HTMLElement>(selector);
+              if (control) {
+                element = control;
+              }
             }
           }
           ensureFocus(element);
@@ -314,7 +339,7 @@ export const useDialog = createHook<DialogOptions>(
       }
       // Otherwise, we just return the focusOnHide function so it's going to
       // be executed when the Dialog component gets unmounted. This is useful
-      // so we can support both mouting and unmouting Dialog components.
+      // so we can support both mounting and unmounting Dialog components.
       return focusOnHide;
     }, [autoFocusOnHide, state.visible, finalFocusRef, state.disclosureRef]);
 
@@ -466,6 +491,7 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     props = {
+      id,
       "data-dialog": "",
       role: "dialog",
       tabIndex: focusable ? -1 : undefined,

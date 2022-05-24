@@ -21,6 +21,16 @@ const theme = css`
   ${defaultTheme}
   color: ${foreground};
 
+  .cm-scroller {
+    scrollbar-color: rgba(255, 255, 255, 0.46) transparent;
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.46);
+      &:hover {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+
   &.code-css pre,
   &.code-js pre,
   &.code-jsx pre,

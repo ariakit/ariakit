@@ -53,6 +53,26 @@ const theme = css`
     border-radius: inherit;
     padding: 16px 8px 16px 0;
     box-sizing: border-box;
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: currentColor transparent;
+
+    /* Other */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-corner,
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: currentColor;
+      border-radius: 4px;
+    }
   }
 
   &:not(.has-line-numbers) .cm-scroller {
