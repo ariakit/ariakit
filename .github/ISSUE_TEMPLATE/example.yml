@@ -11,7 +11,7 @@ body:
   - type: textarea
     attributes:
       label: Requirements
-      description: List your requirements. This will help us write tests for the example.
+      description: List your requirements. This will help us [write tests for the example](https://github.com/ariakit/ariakit/blob/main/contributing.md#testing-the-example).
       placeholder: |
         * The dialog should open when pressing the A key.
         * The dialog should close when pressing the B key.
