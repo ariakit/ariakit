@@ -1,0 +1,17 @@
+name: 🧩 Example request
+description: Suggest a use case for a component.
+labels: ["examples"]
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Describe the use case. Screenshots and code sandboxes are most welcome.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Requirements
+      description: List your requirements. This will help us write tests for the example.
+      placeholder: |
+        * The dialog should open when pressing the A key.
+        * The dialog should close when pressing the B key.
