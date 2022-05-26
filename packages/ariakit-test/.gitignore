@@ -8,9 +8,12 @@
 /focus
 /hover
 /mock-get-client-rects
+/mouse-down
+/mouse-up
 /press
 /render
 /screen
+/select
 /sleep
 /tap
 /ts

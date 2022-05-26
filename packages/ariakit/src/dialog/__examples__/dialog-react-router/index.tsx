@@ -5,14 +5,7 @@ import {
   DialogHeading,
   useDialogState,
 } from "ariakit/dialog";
-import {
-  Link,
-  MemoryRouter,
-  Outlet,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
+import { Link, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import "./style.css";
 
 function Login() {
@@ -26,11 +19,7 @@ function Login() {
     },
   });
   return (
-    <Dialog
-      state={dialog}
-      portal={typeof window !== "undefined"}
-      className="dialog"
-    >
+    <Dialog state={dialog} modal={false} className="dialog">
       <header className="header">
         <DialogHeading className="heading">Log in</DialogHeading>
         <DialogDismiss as={Link} to="/" className="button dismiss" />
@@ -65,12 +54,10 @@ function Home() {
 
 export default function Example() {
   return (
-    <MemoryRouter>
-      <Routes>
-        <Route path="/" element={<Home />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    <Routes>
+      <Route path="/" element={<Home />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
+    </Routes>
   );
 }

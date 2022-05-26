@@ -81,14 +81,15 @@ function getPageFilename(filename, extension = ".js") {
  * the import.
  */
 function getPageImports({ filename, dest, originalSource, importerFilePath }) {
+  const pagePath = path.join(dest, getPageFilename(filename, ""));
   const relativeDependencyLoader = pathToPosix(
-    path.relative(dest, dependencyLoader)
+    path.relative(pagePath, dependencyLoader)
   );
   importerFilePath = importerFilePath && pathToPosix(importerFilePath);
   const originalDependencyLoader = importerFilePath
     ? `${relativeDependencyLoader}?importerFilePath=${importerFilePath}!`
     : "";
-  const originalRelativeSource = pathToPosix(path.relative(dest, filename));
+  const originalRelativeSource = pathToPosix(path.relative(pagePath, filename));
   const originalImport = {
     originalSource,
     defaultExport: true,
@@ -99,7 +100,7 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
 
   if (/\.md$/.test(filename)) {
     const relativeMarkdownLoader = pathToPosix(
-      path.relative(dest, markdownLoader)
+      path.relative(pagePath, markdownLoader)
     );
     originalImport.source = `!${relativeMarkdownLoader}!${originalRelativeSource}`;
   }
@@ -131,7 +132,7 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
           nodePath.node.source.value;
       const mod = resolveModuleName(source, filename);
       const relativeFilename = pathToPosix(
-        path.relative(dest, mod.resolvedFileName)
+        path.relative(pagePath, mod.resolvedFileName)
       );
 
       if (mod.isExternalLibraryImport) {
@@ -292,13 +293,20 @@ async function getPageContent({ filename, dest, componentPath }) {
         .join("\n")}
     },`;
   });
+  const pagePath = path.join(dest, getPageFilename(filename, ""));
 
-  const componentSource = pathToPosix(path.relative(dest, componentPath));
+  const componentSource = pathToPosix(path.relative(pagePath, componentPath));
 
   const markdown =
     imports.default && imports.default[0]
       ? imports.default[0].identifier
       : JSON.stringify(tree);
+
+  const isServer = deps.some((item) => item.includes("react-router"));
+
+  const getServerSideProps = isServer
+    ? `\nexport async function getServerSideProps() { return { props: {} } }`
+    : "";
 
   const content = `
     /* Automatically generated */
@@ -319,6 +327,7 @@ async function getPageContent({ filename, dest, componentPath }) {
     export default function Page() {
       return <Component {...props} />;
     }
+    ${getServerSideProps}
   `;
 
   return prettier.format(content, { parser: "babel" });
@@ -348,7 +357,7 @@ async function writePage({ filename, dest, componentPath }) {
   // the page from that, so we can just return the source here for the index.js
   // file.
   if (getReadmePathFromIndex(filename)) return;
-  const pagePath = path.join(dest, getPageFilename(filename));
+  const pagePath = path.join(dest, getPageFilename(filename, ""), "index.js");
   fs.mkdirSync(path.dirname(pagePath), { recursive: true });
   fs.writeFileSync(
     pagePath,

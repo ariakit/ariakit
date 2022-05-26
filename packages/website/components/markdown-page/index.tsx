@@ -15,7 +15,7 @@ const { Compiler: renderAst } = new RehypeReact({
   Fragment: Fragment,
   components: {
     p: (props) => {
-      // @ts-expect-error
+      // @ts-ignore
       const [child] = props.children;
       if (child.props && "data-playground" in child.props) {
         return <>{props.children}</>;
@@ -23,6 +23,7 @@ const { Compiler: renderAst } = new RehypeReact({
       return <p {...props} />;
     },
     pre: (props) => {
+      // @ts-ignore
       const [child] = props.children;
       if (child.type === "code") {
         return (

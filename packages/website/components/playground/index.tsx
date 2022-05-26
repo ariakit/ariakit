@@ -20,7 +20,10 @@ import {
 } from "ariakit/composite";
 import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import useOverflowList from "packages/website/utils/use-overflow-list";
+import { BrowserRouter } from "react-router-dom";
+import { StaticRouter } from "react-router-dom/server";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
@@ -157,6 +160,10 @@ export default function Playground(props: PlaygroundProps) {
     </Tab>
   );
 
+  const router = useRouter();
+
+  const Router = typeof window !== "undefined" ? BrowserRouter : StaticRouter;
+
   return (
     <div className="!max-w-4xl">
       <PlaygroundContainer
@@ -164,13 +171,18 @@ export default function Playground(props: PlaygroundProps) {
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
         <div className="relative w-full">
-          <PlaygroundPreview
-            getModule={getModule}
-            errorProps={errorProps}
-            className="flex min-h-[300px] items-center
+          <Router
+            location={router.asPath}
+            basename={router.asPath.replace(/^(\/examples\/[^/]+).*/, "$1")}
+          >
+            <PlaygroundPreview
+              getModule={getModule}
+              errorProps={errorProps}
+              className="flex min-h-[300px] items-center
             justify-center rounded-lg border border-canvas-3 bg-canvas-3
             p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
-          />
+            />
+          </Router>
         </div>
         <div className="dark relative w-full max-w-3xl rounded-lg">
           <div

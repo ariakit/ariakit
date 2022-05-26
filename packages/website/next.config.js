@@ -14,7 +14,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  webpack: (config) => {
+  async rewrites() {
+    return [
+      {
+        source: "/examples/:example/:path*",
+        destination: `/examples/:example`,
+      },
+    ];
+  },
+  webpack(config) {
     const plugins = pages.map((page) => new PagesWebpackPlugin(page));
     config.plugins.unshift(...plugins);
     config.module.exprContextCritical = false;
