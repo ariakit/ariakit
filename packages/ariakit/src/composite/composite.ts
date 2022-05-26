@@ -158,7 +158,6 @@ export const useComposite = createHook<CompositeOptions>(
       if (!composite) return;
       const previousElement = previousElementRef.current;
       previousElementRef.current = null;
-      console.log(previousElement);
       if (previousElement) {
         fireBlurEvent(previousElement, {
           relatedTarget: activeItemRef.current?.ref.current,
