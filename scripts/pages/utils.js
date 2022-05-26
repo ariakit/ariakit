@@ -305,7 +305,13 @@ async function getPageContent({ filename, dest, componentPath }) {
   const isServer = deps.some((item) => item.includes("react-router"));
 
   const getServerSideProps = isServer
-    ? `\nexport async function getServerSideProps() { return { props: {} } }`
+    ? `export async function getServerSideProps({ res }) {
+      res.setHeader(
+        "Cache-Control",
+        "public, s-maxage=10, stale-while-revalidate=3600"
+      );
+      return { props: {} };
+    }`
     : "";
 
   const content = `
