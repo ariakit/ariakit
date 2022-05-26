@@ -19,7 +19,7 @@ function Login() {
     },
   });
   return (
-    <Dialog state={dialog} modal={false} className="dialog">
+    <Dialog state={dialog} portal={false} className="dialog">
       <header className="header">
         <DialogHeading className="heading">Log in</DialogHeading>
         <DialogDismiss as={Link} to="/" className="button dismiss" />
