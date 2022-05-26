@@ -1,7 +1,19 @@
 @import url("../select/style.css");
 
 .popover {
-  @apply p-0;
+  @apply
+    max-h-72
+    pt-0
+    overflow-auto;
+}
+
+.combobox-wrapper {
+  background-color: inherit;
+  @apply
+    sticky
+    top-0
+    py-2
+    w-fit;
 }
 
 .combobox {
@@ -10,7 +22,7 @@
     rounded
     border-none
     px-4
-    m-2
+    w-full
     text-base
     bg-canvas-1
     text-canvas-1
@@ -25,12 +37,6 @@
   outline-offset: 0;
 }
 
-.combobox-list {
-  background-color: inherit;
-  border-radius: inherit;
-  @apply max-h-60 overflow-auto px-2 pb-2;
-}
-
 .select-item {
-  @apply scroll-mt-0;
+  @apply scroll-mt-14;
 }

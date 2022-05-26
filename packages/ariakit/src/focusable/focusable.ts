@@ -304,6 +304,8 @@ export const useFocusable = createHook<FocusableOptions>(
         if (event.altKey) return;
         if (event.ctrlKey) return;
         if (!isSelfTarget(event)) return;
+        const { activeElement } = event.currentTarget.ownerDocument;
+        if (activeElement !== event.currentTarget) return;
         if (!focusVisible && !event.defaultPrevented) {
           // Triggers onFocusVisible when the element has initially received
           // non-keyboard focus, but then a key has been pressed.

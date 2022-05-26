@@ -153,6 +153,19 @@ export const useComposite = createHook<CompositeOptions>(
       previousElementRef.current = null;
     }, [composite, state.moves]);
 
+    useEffect(() => {
+      if (!virtualFocus) return;
+      if (!composite) return;
+      const previousElement = previousElementRef.current;
+      previousElementRef.current = null;
+      console.log(previousElement);
+      if (previousElement) {
+        fireBlurEvent(previousElement, {
+          relatedTarget: activeItemRef.current?.ref.current,
+        });
+      }
+    }, [virtualFocus, composite, state.activeId]);
+
     const onKeyDownCapture = useKeyboardEventProxy(
       activeItem,
       props.onKeyDownCapture

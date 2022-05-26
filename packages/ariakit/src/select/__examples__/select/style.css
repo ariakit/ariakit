@@ -24,6 +24,7 @@
 }
 
 .popover {
+  -webkit-overflow-scrolling: auto;
   @apply
     max-h-80
     z-50
@@ -33,6 +34,7 @@
     border
     p-2
     border-solid
+    overscroll-contain
     border-canvas-4
     bg-canvas-4
     text-canvas-4
@@ -44,8 +46,36 @@
     focus-visible:ariakit-outline-input;
 }
 
+.popover::-webkit-scrollbar {
+  @apply w-2.5 h-2.5;
+}
+
+.popover::-webkit-scrollbar-track {
+  @apply
+    rounded-tr-[inherit]
+    rounded-br-[inherit]
+    bg-[rgba(0,0,0,0.1)]
+    hover:bg-[rgba(0,0,0,0.2)]
+    dark:bg-[rgba(0,0,0,0.15)]
+    hover:dark:bg-[rgba(0,0,0,0.3)];
+}
+
+.popover::-webkit-scrollbar-thumb {
+  @apply
+    rounded-[inherit]
+    border-2
+    border-solid
+    border-[transparent]
+    bg-clip-padding
+    hover:border
+    bg-[rgba(0,0,0,0.4)]
+    hover:bg-[rgba(0,0,0,0.6)]
+    dark:bg-[rgba(255,255,255,0.3)]
+    dark:hover:bg-[rgba(255,255,255,0.5)];
+}
+
 .select-item {
-  outline: none;
+  outline: none !important;
   @apply
     flex
     gap-2
