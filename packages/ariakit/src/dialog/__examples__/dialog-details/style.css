@@ -1,9 +1,5 @@
 @import url("../dialog/style.css");
 
-.dialog {
-  @apply sm:ml-[calc(var(--scrollbar-width,0)*-0.5)];
-}
-
 .button {
   appearance: none;
 }
