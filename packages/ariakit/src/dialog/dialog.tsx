@@ -139,13 +139,13 @@ export const useDialog = createHook<DialogOptions>(
     // Sets disclosure ref. It needs to be a layout effect so we get the focused
     // element right before the dialog is mounted.
     useSafeLayoutEffect(() => {
-      if (!state.mounted) return;
+      if (!visibleIdle) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (activeElement && activeElement.tagName !== "BODY") {
         state.disclosureRef.current = activeElement;
       }
-    }, [state.mounted]);
+    }, [visibleIdle]);
 
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, visibleModals, wrapElement } = nested;
