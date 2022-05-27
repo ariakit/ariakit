@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Button } from "ariakit/button";
 import {
   Dialog,
@@ -8,9 +9,15 @@ import {
 import "./style.css";
 
 export default function Example() {
+  const ref = useRef<HTMLDetailsElement>(null);
   const dialog = useDialogState();
+
+  // Consider clicks before the JavaScript has loaded.
+  useEffect(() => dialog.setVisible(!!ref.current?.open), [dialog.setVisible]);
+
   return (
     <details
+      ref={ref}
       open={dialog.mounted}
       onToggle={(event) => dialog.setVisible(event.currentTarget.open)}
     >

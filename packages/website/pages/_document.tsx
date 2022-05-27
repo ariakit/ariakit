@@ -27,7 +27,6 @@ const fontFaces = `
 const darkModeScript = `
 function classList(action) {
   document.documentElement.classList[action]("dark");
-  document.documentElement.style.colorScheme = action === "add" ? "dark" : "light";
 }
 classList(localStorage.theme === "dark" ? "add" : "remove");
 if (!("theme" in localStorage)) {

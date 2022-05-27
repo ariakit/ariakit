@@ -11,7 +11,19 @@ body {
 html { font-family: Inter, sans-serif; }
 
 body {
-  @apply bg-canvas-2 text-canvas-2 dark:bg-canvas-2-dark dark:text-canvas-2-dark;
+  @apply
+    bg-canvas-2
+    text-canvas-2
+    dark:bg-canvas-2-dark
+    dark:text-canvas-2-dark;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
 }
 
 @media not all and (min-resolution: 0.001dpcm) {
