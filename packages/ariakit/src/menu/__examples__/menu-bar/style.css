@@ -38,13 +38,12 @@
 }
 
 .menu {
-  max-height: var(--popover-available-height);
   max-width:
     max(
       var(--popover-available-width),
       calc(100% - calc(var(--popover-overflow-padding) * 2))
     );
-  @apply w-max overflow-auto;
+  @apply w-max;
 }
 
 .menu .menu-item .label {

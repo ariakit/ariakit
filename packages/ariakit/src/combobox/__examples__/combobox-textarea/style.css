@@ -12,8 +12,8 @@
 
 .popover {
   min-width: 180px;
-  max-height: min(var(--popover-available-height, 186px), 186px);
   max-width: 280px;
+  max-height: min(var(--popover-available-height, 186px), 186px);
   @apply p-1 rounded-md;
 }
 
