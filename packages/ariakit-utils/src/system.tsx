@@ -98,6 +98,7 @@ export function createHook<O extends Options>(
     const copy = {} as typeof htmlProps;
     for (const prop in htmlProps) {
       if (hasOwnProperty(htmlProps, prop) && htmlProps[prop] !== undefined) {
+        // @ts-expect-error
         copy[prop] = htmlProps[prop];
       }
     }

@@ -2,6 +2,7 @@
 /** @type {import("@jest/types").Config.GlobalConfig} */
 module.exports = {
   rootDir: __dirname,
+  testTimeout: process.env.CI ? 10000 : 5000,
   testEnvironment: "jsdom",
   reporters: ["default", "github-actions"],
   projects: [

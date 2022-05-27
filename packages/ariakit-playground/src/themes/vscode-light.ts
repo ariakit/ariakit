@@ -22,11 +22,11 @@ const theme = css`
   color: ${foreground};
 
   .cm-scroller {
-    scrollbar-color: rgba(0, 0, 0, 0.46) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.6) transparent;
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.46);
+      background-color: rgba(0, 0, 0, 0.3);
       &:hover {
-        background: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0, 0, 0, 0.6);
       }
     }
   }

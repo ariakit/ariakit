@@ -26,7 +26,6 @@ import {
 import {
   useBooleanEvent,
   useForkRef,
-  useId,
   useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -137,8 +136,6 @@ export const useDialog = createHook<DialogOptions>(
     // events because it's just for screen readers.
     const shouldDisableAccessibilityTree =
       modal || (portal && preserveTabOrder && isSafari());
-
-    const id = useId(props.id);
 
     // Sets disclosure ref. It needs to be a layout effect so we get the focused
     // element right before the dialog is mounted.
@@ -484,7 +481,6 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     props = {
-      id,
       "data-dialog": "",
       role: "dialog",
       tabIndex: focusable ? -1 : undefined,
