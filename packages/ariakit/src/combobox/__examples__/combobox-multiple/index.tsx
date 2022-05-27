@@ -21,7 +21,7 @@ export default function Example() {
             <ComboboxMultipleItem key={value} value={value} />
           ))
         ) : (
-          <div>No results found</div>
+          <div className="no-results">No results found</div>
         )}
       </ComboboxMultiple>
     </div>

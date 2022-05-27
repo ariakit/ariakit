@@ -27,6 +27,7 @@
     flex-col
     p-2
     z-50
+    overscroll-contain
     overflow-auto
     rounded-lg
     border
@@ -42,7 +43,7 @@
 }
 
 .combobox-item {
-  outline: none;
+  outline: none !important;
   @apply
     flex
     gap-2
