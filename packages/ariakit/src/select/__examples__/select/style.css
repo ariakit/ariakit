@@ -24,14 +24,16 @@
 }
 
 .popover {
+  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
-    max-h-80
     z-50
     flex
     flex-col
     rounded-lg
     border
     p-2
+    overflow-auto
+    overscroll-contain
     border-solid
     overscroll-contain
     border-canvas-4

@@ -1,13 +1,7 @@
 @import url("../select/style.css");
 
 .popover {
-  @apply p-0 overflow-hidden;
-}
-
-.popover-scroller {
-  background-color: inherit;
-  width: calc(100% + 1px);
-  @apply p-2 pt-0 overflow-auto;
+  @apply pt-0;
 }
 
 .combobox-wrapper {

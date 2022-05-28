@@ -31,27 +31,21 @@ export default function Example() {
       <SelectLabel state={select}>Favorite fruit</SelectLabel>
       <Select state={select} className="select" />
       <SelectPopover state={select} composite={false} className="popover">
-        <div className="popover-scroller">
-          <div className="combobox-wrapper">
-            <Combobox
-              state={combobox}
-              autoSelect
-              placeholder="Search..."
-              className="combobox"
-            />
-          </div>
-          <ComboboxList state={combobox}>
-            {combobox.matches.map((value, i) => (
-              <ComboboxItem
-                key={value + i}
-                focusOnHover
-                className="select-item"
-              >
-                {(props) => <SelectItem {...props} value={value} />}
-              </ComboboxItem>
-            ))}
-          </ComboboxList>
+        <div className="combobox-wrapper">
+          <Combobox
+            state={combobox}
+            autoSelect
+            placeholder="Search..."
+            className="combobox"
+          />
         </div>
+        <ComboboxList state={combobox}>
+          {combobox.matches.map((value, i) => (
+            <ComboboxItem key={value + i} focusOnHover className="select-item">
+              {(props) => <SelectItem {...props} value={value} />}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
       </SelectPopover>
     </div>
   );
