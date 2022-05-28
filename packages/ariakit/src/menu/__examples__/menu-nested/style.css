@@ -1,5 +1,9 @@
 @import url("../menu/style.css");
 
+.menu {
+  @apply overflow-visible;
+}
+
 .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
   @apply
     bg-alpha-3-border
