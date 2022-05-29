@@ -1,3 +1,4 @@
+import { queuedMicrotasks } from "./__utils";
 import { fireEvent } from "./fire-event";
 import { sleep } from "./sleep";
 
@@ -59,4 +60,6 @@ export async function hover(element: Element, options?: MouseEventInit) {
   }
 
   document.lastHovered = element;
+
+  await queuedMicrotasks();
 }
