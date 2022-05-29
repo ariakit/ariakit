@@ -249,8 +249,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         });
       }
       hasFocusedComposite.current = true;
-      // TODO: Experiment with queueMicrotask after testing the order of the
-      // events.
       composite.focus();
     });
 
