@@ -1,0 +1,7 @@
+[role="toolbar"] {
+  @apply flex p-2 gap-2 focus-visible:ariakit-outline;
+}
+
+button {
+  @apply p-2 focus-visible:ariakit-outline;
+}
