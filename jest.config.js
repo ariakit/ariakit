@@ -5,6 +5,9 @@ module.exports = {
   testTimeout: process.env.CI ? 10000 : 5000,
   testEnvironment: "jsdom",
   reporters: ["default", "github-actions"],
+  snapshotFormat: {
+    printBasicPrototype: false,
+  },
   projects: [
     "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",

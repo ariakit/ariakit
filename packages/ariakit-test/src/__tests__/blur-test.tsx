@@ -22,7 +22,7 @@ test("blur", async () => {
   expect(document.body).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`
-    Array [
+    [
       "blur button",
       "focusout button",
     ]

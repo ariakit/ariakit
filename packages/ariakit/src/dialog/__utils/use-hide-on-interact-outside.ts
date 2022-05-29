@@ -152,12 +152,12 @@ export function useHideOnInteractOutside(
       }
       const dialog = dialogRef.current;
       const previousMouseDown = previousMouseDownRef.current as Element | null;
-      const isDraggingFromDialog =
-        dialog && previousMouseDown && contains(dialog, previousMouseDown);
+      if (!previousMouseDown) return;
+      const draggingFromDialog = dialog && contains(dialog, previousMouseDown);
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
       // outside of it). See https://github.com/ariakit/ariakit/issues/1336
-      if (isDraggingFromDialog) return;
+      if (draggingFromDialog) return;
       state.hide();
     },
   });

@@ -35,6 +35,9 @@ test("auto select with inline autocomplete on typing", async () => {
   await type("\b\bv");
   expect(getCombobox()).toHaveValue("vodka");
   expect(getSelectionValue(getCombobox())).toBe("odka");
+  await type("\bo");
+  expect(getCombobox()).toHaveValue("vodka");
+  expect(getSelectionValue(getCombobox())).toBe("dka");
 });
 
 test("auto select with inline autocomplete on arrow down", async () => {
