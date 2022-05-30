@@ -1,5 +1,13 @@
 # ariakit-playground
 
+## 0.17.0-next.29
+
+### Patch Changes
+
+- Adjusted playground scrollbars.
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`, `ariakit@2.0.0-next.29`.
+
 ## 0.17.0-next.28
 
 ### Patch Changes
