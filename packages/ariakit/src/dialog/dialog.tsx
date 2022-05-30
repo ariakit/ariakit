@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import {
+  closest,
   contains,
   getActiveElement,
   getDocument,
@@ -300,6 +301,21 @@ export const useDialog = createHook<DialogOptions>(
             // focus on the composite element itself.
             if (composite) {
               element = composite;
+            }
+          }
+          // If the element is not focusable by the time the dialog is hidden,
+          // it's probably because it's an element inside another popover or
+          // menu that also got hidden when this dialog was shown. We'll try to
+          // focus on their disclosure element instead.
+          if (!isFocusable(element)) {
+            const parentDialog = closest(element, "[data-dialog]");
+            if (parentDialog && parentDialog.id) {
+              const doc = getDocument(parentDialog);
+              const selector = `[aria-controls~="${parentDialog.id}"]`;
+              const control = doc.querySelector<HTMLElement>(selector);
+              if (control) {
+                element = control;
+              }
             }
           }
           ensureFocus(element);
