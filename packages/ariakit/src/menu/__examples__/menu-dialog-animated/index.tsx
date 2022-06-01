@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useState } from "react";
+import { Button } from "ariakit/button";
 import {
   Dialog,
   DialogDismiss,
@@ -39,8 +40,16 @@ export default function Example() {
   });
 
   const dialog = useDialogState({ animated: true });
-  const dialog2 = useDialogState();
+  const dialog2 = useDialogState({
+    setVisible: (visible) => {
+      if (!visible) {
+        dialog.show();
+      }
+    },
+  });
 
+  // TODO: Manage lists instead of create list, then create list inside the
+  // manage list modal.
   const form = useFormState({ defaultValues: { list: "" } });
 
   form.useSubmit(() => {
@@ -124,9 +133,9 @@ export default function Example() {
             <FormSubmit className="button">Create</FormSubmit>
           </Form>
         )}
-        <DialogDismiss onClick={dialog2.toggle} className="button secondary">
+        <Button onClick={dialog2.toggle} className="button secondary">
           Learn more about lists
-        </DialogDismiss>
+        </Button>
       </Dialog>
 
       {dialog2.mounted && (
@@ -140,7 +149,7 @@ export default function Example() {
             <DialogHeading className="heading">
               Learn more about lists
             </DialogHeading>
-            <DialogDismiss onClick={dialog.toggle} className="button dismiss" />
+            <DialogDismiss className="button dismiss" />
           </header>
           dsadadas
         </Dialog>
