@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import {
   Dialog,
   DialogDismiss,
@@ -39,6 +39,7 @@ export default function Example() {
   });
 
   const dialog = useDialogState({ animated: true });
+  const dialog2 = useDialogState();
 
   const form = useFormState({ defaultValues: { list: "" } });
 
@@ -100,12 +101,16 @@ export default function Example() {
         </MenuItem>
       </Menu>
 
-      {dialog.mounted && (
-        <Dialog state={dialog} className="dialog">
-          <header className="header">
-            <DialogHeading className="heading">Create list</DialogHeading>
-            <DialogDismiss className="button dismiss" />
-          </header>
+      <Dialog
+        state={dialog}
+        className="dialog"
+        data-animated={dialog.animated || undefined}
+      >
+        <header className="header">
+          <DialogHeading className="heading">Create list</DialogHeading>
+          <DialogDismiss className="button dismiss" />
+        </header>
+        {dialog.mounted && (
           <Form state={form} resetOnSubmit resetOnUnmount className="form">
             <div className="field">
               <FormLabel name={form.names.list}>List name</FormLabel>
@@ -118,6 +123,26 @@ export default function Example() {
             </div>
             <FormSubmit className="button">Create</FormSubmit>
           </Form>
+        )}
+        <DialogDismiss onClick={dialog2.toggle} className="button secondary">
+          Learn more about lists
+        </DialogDismiss>
+      </Dialog>
+
+      {dialog2.mounted && (
+        <Dialog
+          state={dialog2}
+          modal={!dialog.mounted}
+          portal
+          className="dialog"
+        >
+          <header className="header">
+            <DialogHeading className="heading">
+              Learn more about lists
+            </DialogHeading>
+            <DialogDismiss onClick={dialog.toggle} className="button dismiss" />
+          </header>
+          dsadadas
         </Dialog>
       )}
     </>

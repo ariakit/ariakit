@@ -143,7 +143,11 @@ export const useDialog = createHook<DialogOptions>(
       if (!visibleIdle) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
-      if (activeElement && activeElement.tagName !== "BODY") {
+      if (
+        activeElement &&
+        activeElement.tagName !== "BODY" &&
+        (!dialog || !contains(dialog, activeElement))
+      ) {
         state.disclosureRef.current = activeElement;
       }
     }, [visibleIdle]);
@@ -241,6 +245,8 @@ export const useDialog = createHook<DialogOptions>(
       shouldDisableAccessibilityTree,
     ]);
 
+    const focusedRef = useRef<HTMLElement[]>([]);
+
     // Auto focus on show.
     useEffect(() => {
       if (!visibleIdle) return;
@@ -256,6 +262,15 @@ export const useDialog = createHook<DialogOptions>(
       if (isNestedDialogVisible) return;
       const dialog = ref.current;
       if (!dialog) return;
+      const activeElement = getActiveElement(dialog, true);
+      if (
+        activeElement &&
+        focusedRef.current.length &&
+        contains(dialog, activeElement) &&
+        !focusedRef.current.includes(activeElement)
+      ) {
+        return;
+      }
       const initialFocus = initialFocusRef?.current;
       const element =
         initialFocus ||
@@ -265,12 +280,14 @@ export const useDialog = createHook<DialogOptions>(
         // receives focus.
         getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
         dialog;
+      focusedRef.current.push(element);
       ensureFocus(element);
     }, [
       visibleIdle,
       autoFocusOnShow,
       domReady,
       initialFocusRef,
+      modal,
       portal,
       preserveTabOrder,
     ]);

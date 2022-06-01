@@ -52,8 +52,13 @@
   @apply overflow-auto;
 }
 
-.dialog {
-  transform: translate3d(-50%, 10%, 0);
+.dialog:not([data-animated]) {
+  transform: translate3d(-50%, 64px, 0);
+  @apply top-0;
+}
+
+.dialog[data-animated] {
+  transform: translate3d(-50%, 32px, 0);
   @apply
     top-0
     opacity-0
@@ -61,7 +66,7 @@
 }
 
 .dialog[data-enter] {
-  transform: translate3d(-50%, 20%, 0);
+  transform: translate3d(-50%, 64px, 0);
   @apply opacity-100;
 }
 
