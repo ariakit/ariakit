@@ -46,6 +46,8 @@ If you are already part of the organization on GitHub, clone the repository dire
 ```bash
 git clone https://github.com/ariakit/ariakit.git
 ```
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/ariakit/ariakit)
+
 
 <div align="right">
     <a href="#basic-tutorial">&uarr; back to top</a></b>
