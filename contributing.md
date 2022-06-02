@@ -7,25 +7,24 @@ This guide is intended to help you get started with contributing to the project.
 1. [Cloning the repository](#cloning-the-repository)
 2. [Installing Node.js and npm](#installing-nodejs-and-npm)
 3. [Installing dependencies](#installing-dependencies)
-4. [Creating a new branch](#creating-a-new-branch)
-5. [Starting the development server](#starting-the-development-server)
-6. [Creating a component](#creating-a-component)
-7. [Creating the default example](#creating-the-default-example)
-8. [Styling the example](#styling-the-example)
-9. [Testing the example](#testing-the-example)
-10. [Writing the component documentation](#writing-the-component-documentation)
-11. [Writing another example](#writing-another-example)
-12. [Importing styles from other examples](#importing-styles-from-other-examples)
-13. [Writing documentation for other examples](#writing-documentation-for-other-examples)
-14. [Submitting a pull request](#submitting-a-pull-request)
+4. [Starting the development server](#starting-the-development-server)
+5. [Creating a component](#creating-a-component)
+6. [Creating the default example](#creating-the-default-example)
+7. [Styling the example](#styling-the-example)
+8. [Testing the example](#testing-the-example)
+9. [Writing the component documentation](#writing-the-component-documentation)
+10. [Writing another example](#writing-another-example)
+11. [Importing styles from other examples](#importing-styles-from-other-examples)
+12. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+13. [Submitting a pull request](#submitting-a-pull-request)
 
 ## Advanced tutorial
 
 This guide covers more advanced topics. Pick the topics based on your needs.
 
-15. [Versioning](#versioning)
-16. [Running with React 17](#running-with-react-17)
-17. [Writing end-to-end tests](#writing-end-to-end-tests)
+14. [Versioning](#versioning)
+15. [Running with React 17](#running-with-react-17)
+16. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 <br>
 
@@ -84,18 +83,6 @@ Once in the project's root directory, run the following command to install the p
 
 ```bash
 npm install
-```
-
-<div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
-</div>
-
-## Creating a new branch
-
-Make sure you create a new branch for your changes. You can do this by running the following command in your terminal:
-
-```bash
-git checkout -b feat/my-component
 ```
 
 <div align="right">
