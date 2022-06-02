@@ -1,0 +1,15 @@
+# See https://www.gitpod.io/docs/config-gitpod-file
+tasks:
+  - name: Development
+    init: npm install && gp sync-done install
+    command: npm run dev
+    openMode: split-left
+
+  - name: Test
+    init: gp sync-await install
+    command: npm run test-watch
+    openMode: split-right
+
+ports:
+  - port: 3000
+    onOpen: open-preview
