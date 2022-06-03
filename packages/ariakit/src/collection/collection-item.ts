@@ -1,5 +1,5 @@
 import { useContext, useRef } from "react";
-import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useForkRef, useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -34,14 +34,17 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     const contextRegisterItem = useContext(CollectionItemContext);
     const registerItem = state?.registerItem || contextRegisterItem;
     const ref = useRef<HTMLElement>(null);
+    const id = useId(props.id);
 
     useSafeLayoutEffect(() => {
+      if (!id) return;
       if (!shouldRegisterItem) return;
-      return registerItem?.(getItem({ ref }));
-    }, [shouldRegisterItem, getItem, registerItem]);
+      return registerItem?.(getItem({ id, ref }));
+    }, [id, shouldRegisterItem, getItem, registerItem]);
 
     props = {
       ...props,
+      id,
       ref: useForkRef(ref, props.ref),
     };
 

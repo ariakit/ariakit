@@ -12,7 +12,7 @@ function isElementPreceding(a: Element, b: Element) {
 }
 
 function findDOMIndex(items: Item[], item: Item) {
-  const itemElement = item.ref.current;
+  const itemElement = item.ref?.current;
   if (!itemElement) return -1;
   let length = items.length;
   if (!length) return -1;
@@ -21,7 +21,7 @@ function findDOMIndex(items: Item[], item: Item) {
   // index from the beginning.
   while (length--) {
     const currentItem = items[length];
-    if (!currentItem?.ref.current) continue;
+    if (!currentItem?.ref?.current) continue;
     if (isElementPreceding(currentItem.ref.current, itemElement)) {
       return length + 1;
     }
@@ -33,8 +33,8 @@ function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
-    const elementA = a.ref.current;
-    const elementB = b.ref.current;
+    const elementA = a.ref?.current;
+    const elementB = b.ref?.current;
     if (elementA === elementB) return 0;
     if (!elementA || !elementB) return 0;
     // a before b
@@ -67,10 +67,10 @@ function setItemsBasedOnDOMPosition<T extends Item>(
 }
 
 function getCommonParent(items: Item[]) {
-  const firstItem = items[0];
-  const lastItem = items[items.length - 1];
-  let parentElement = firstItem?.ref.current?.parentElement;
-  while (parentElement) {
+  const firstItem = items.find((item) => !!item.ref);
+  const lastItem = [...items].reverse().find((item) => !!item.ref);
+  let parentElement = firstItem?.ref?.current?.parentElement;
+  while (parentElement && lastItem?.ref) {
     const parent = parentElement;
     if (lastItem && parent.contains(lastItem.ref.current)) {
       return parentElement;
@@ -113,7 +113,7 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
     const root = getCommonParent(items);
     const observer = new IntersectionObserver(callback, { root });
     items.forEach((item) => {
-      if (item.ref.current) {
+      if (item.ref?.current) {
         observer.observe(item.ref.current);
       }
     });
@@ -137,25 +137,38 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
 export function useCollectionState<T extends Item = Item>(
   props: CollectionStateProps<T> = {}
 ): CollectionState<T> {
-  const [items, setItems] = useControlledState([], props.items, props.setItems);
+  const [items, setItems] = useControlledState(
+    props.defaultItems || [],
+    props.items,
+    props.setItems
+  );
 
   useSortBasedOnDOMPosition(items, setItems);
 
   const registerItem = useCallback((item: T) => {
     setItems((prevItems) => {
+      const sameId = prevItems.find((prevItem) => prevItem.id === item.id);
+      if (sameId) {
+        const index = prevItems.indexOf(sameId);
+        return [
+          ...prevItems.slice(0, index),
+          { ...sameId, ...item },
+          ...prevItems.slice(index + 1),
+        ];
+      }
       // Finds the item group based on the DOM hierarchy
       const index = findDOMIndex(prevItems, item);
       return addItemToArray(prevItems, item, index);
     });
     const unregisterItem = () => {
-      setItems((prevItems) => {
-        const nextItems = prevItems.filter(({ ref }) => ref !== item.ref);
-        if (prevItems.length === nextItems.length) {
-          // The item isn't registered, so do nothing
-          return prevItems;
-        }
-        return nextItems;
-      });
+      // setItems((prevItems) => {
+      //   const nextItems = prevItems.filter(({ id }) => id !== item.id);
+      //   if (prevItems.length === nextItems.length) {
+      //     // The item isn't registered, so do nothing
+      //     return prevItems;
+      //   }
+      //   return nextItems;
+      // });
     };
     return unregisterItem;
   }, []);
@@ -209,6 +222,10 @@ export type CollectionState<T extends Item = Item> = {
 export type CollectionStateProps<T extends Item = Item> = Partial<
   Pick<CollectionState<T>, "items">
 > & {
+  /**
+   * TODO: Comment.
+   */
+  defaultItems?: CollectionState<T>["items"];
   /**
    * Function that will be called when setting the collection `items` state.
    * @example

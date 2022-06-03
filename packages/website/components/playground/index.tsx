@@ -172,6 +172,25 @@ export default function Playground(props: PlaygroundProps) {
             p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
           />
         </div>
+      </PlaygroundContainer>
+    </div>
+  );
+
+  return (
+    <div className="!max-w-4xl">
+      <PlaygroundContainer
+        state={playground}
+        className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
+      >
+        <div className="relative w-full">
+          <PlaygroundPreview
+            getModule={getModule}
+            errorProps={errorProps}
+            className="flex min-h-[300px] items-center
+            justify-center rounded-lg border border-canvas-3 bg-canvas-3
+            p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
+          />
+        </div>
         <div className="dark relative w-full max-w-3xl rounded-lg">
           <div
             className="flex justify-between rounded-tl-[inherit] rounded-tr-[inherit] bg-canvas-1

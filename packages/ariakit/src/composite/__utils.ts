@@ -223,8 +223,8 @@ export const CompositeItemContext = createContext<ItemContext>(undefined);
 export type Orientation = "horizontal" | "vertical" | "both";
 
 export type Item = {
-  id: string | null;
-  ref: RefObject<HTMLElement>;
+  id: string;
+  ref?: RefObject<HTMLElement>;
   rowId?: string;
   disabled?: boolean;
 };
