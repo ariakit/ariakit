@@ -64,7 +64,7 @@
     "chalk": "4.1.2",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
-    "eslint": "8.16.0",
+    "eslint": "8.17.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jest": "26.4.6",
