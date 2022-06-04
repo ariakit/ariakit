@@ -16,14 +16,18 @@ function checkIsBrowser() {
 /**
  * Returns `element.ownerDocument || document`.
  */
-export function getDocument(node?: Node | null): Document {
-  return node ? node.ownerDocument || (node as Document) : document;
+export function getDocument(node?: Node | Document | Window | null): Document {
+  if (node && "ownerDocument" in node) {
+    return node.ownerDocument || (node as Document);
+  }
+  if (node) return node.document;
+  return document;
 }
 
 /**
  * Returns `element.ownerDocument.defaultView || window`.
  */
-export function getWindow(node?: Node | null): Window {
+export function getWindow(node?: Node | Window | null): Window {
   return getDocument(node).defaultView || window;
 }
 

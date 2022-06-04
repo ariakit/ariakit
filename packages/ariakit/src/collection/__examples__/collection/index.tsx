@@ -6,10 +6,15 @@ import {
 } from "ariakit/collection";
 import "./style.css";
 
-const items = Array.from({ length: 5000 }, (_, i) => ({
+function randomIntFromInterval(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+const items = Array.from({ length: 20000 }, (_, i) => ({
   id: `item-${i}`,
   children: `item-${i}`,
-  index: i,
+  lol: randomIntFromInterval(20, 100),
+  // lol: 40,
 }));
 
 export default function Example() {
@@ -20,14 +25,21 @@ export default function Example() {
     <Collection
       state={collection}
       style={{ position: "relative", overflow: "auto", height: 200 }}
+      // style={{ overflow: "clip", height: 200 }}
       className="collection"
     >
       <div>Items count: {collection.items.length}</div>
       <div>Items count: {collection.items.length}</div>
       <div>Items count: {collection.items.length}</div>
       <div>Items count: {collection.items.length}</div>
-      <CollectionViewport items={collection.items}>
-        {(item) => <CollectionItem {...item} className="collection-item" />}
+      <CollectionViewport>
+        {({ lol, ...item }) => (
+          <CollectionItem
+            {...item}
+            style={{ ...item.style, height: lol }}
+            className="collection-item"
+          />
+        )}
       </CollectionViewport>
     </Collection>
   );
