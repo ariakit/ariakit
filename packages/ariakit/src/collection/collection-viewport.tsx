@@ -10,7 +10,12 @@ import {
   useState,
 } from "react";
 import { getWindow } from "ariakit-utils/dom";
-import { useEvent, useForkRef, useLazyValue } from "ariakit-utils/hooks";
+import {
+  useControlledState,
+  useEvent,
+  useForkRef,
+  useLazyValue,
+} from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import { flushSync } from "react-dom";
 import { CollectionContext } from "./__utils";
@@ -104,6 +109,8 @@ export function useCollectionViewport<T extends Item = Item>({
   overscan = 1,
   children: renderItem,
   horizontal,
+  data: dataProp,
+  setData: setDataProp,
   ...props
 }: CollectionViewportProps<T> = {}) {
   state = useStore(state || (CollectionContext as any), ["items"]);
@@ -112,10 +119,8 @@ export function useCollectionViewport<T extends Item = Item>({
   const ref = useRef<HTMLDivElement>(null);
   const [visibleItems, setVisibleItems] = useState<Item[]>([]);
 
-  // useControlledState
-  const [measurements, setMeasurements] = useState<
-    Record<string, { start: number; end: number }>
-  >({});
+  // useControlledState, rename to data
+  const [data, setData] = useControlledState({}, dataProp, setDataProp);
 
   const [dynamicItemSize, setDynamicItemSize] = useState(itemSize);
 
@@ -124,18 +129,18 @@ export function useCollectionViewport<T extends Item = Item>({
   useEffect(() => {
     let newSize = itemSize;
     for (const id of neverChange) {
-      newSize += measurements[id]!.end - measurements[id]!.start;
+      newSize += data[id]!.end - data[id]!.start;
     }
     newSize /= neverChange.size || 1;
     setDynamicItemSize(Math.round(newSize));
-  }, [itemSize, measurements]);
+  }, [itemSize, data]);
 
   useEffect(() => {
     if (!items) return;
-    setMeasurements((measurements) => {
-      if (!items) return measurements;
+    setData((data) => {
+      if (!items) return data;
       let hasChange = false;
-      const nextMeasurements = { ...measurements };
+      const nextData = { ...data };
       let totalSize = 0;
       for (let i = 0; i < items.length; i += 1) {
         const item = items[i]!;
@@ -147,27 +152,28 @@ export function useCollectionViewport<T extends Item = Item>({
           const itemSize = horizontal ? width : height;
           if (
             !hasChange &&
-            (measurements[item.id]?.start !== totalSize ||
-              measurements[item.id]?.end !== totalSize + itemSize)
+            (data[item.id]?.start !== totalSize ||
+              data[item.id]?.end !== totalSize + itemSize)
           ) {
             hasChange = true;
           }
-          nextMeasurements[item.id] = {
+          nextData[item.id] = {
+            sealed: true,
             start: totalSize,
             end: totalSize + itemSize,
           };
           totalSize += itemSize;
-        } else if (neverChange.has(item.id)) {
-          const itemSize =
-            measurements[item.id]!.end - measurements[item.id]!.start;
+        } else if (neverChange.has(item.id) || data[item.id]?.sealed) {
+          const itemSize = data[item.id]!.end - data[item.id]!.start;
           if (
             !hasChange &&
-            (measurements[item.id]?.start !== totalSize ||
-              measurements[item.id]?.end !== totalSize + itemSize)
+            (data[item.id]?.start !== totalSize ||
+              data[item.id]?.end !== totalSize + itemSize)
           ) {
             hasChange = true;
           }
-          nextMeasurements[item.id] = {
+          nextData[item.id] = {
+            sealed: true,
             start: totalSize,
             end: totalSize + itemSize,
           };
@@ -176,12 +182,13 @@ export function useCollectionViewport<T extends Item = Item>({
           const itemSize = item.style.width;
           if (
             !hasChange &&
-            (measurements[item.id]?.start !== totalSize ||
-              measurements[item.id]?.end !== totalSize + itemSize)
+            (data[item.id]?.start !== totalSize ||
+              data[item.id]?.end !== totalSize + itemSize)
           ) {
             hasChange = true;
           }
-          nextMeasurements[item.id] = {
+          nextData[item.id] = {
+            sealed: false,
             start: totalSize,
             end: totalSize + itemSize,
           };
@@ -190,12 +197,13 @@ export function useCollectionViewport<T extends Item = Item>({
           const itemSize = item.style.height;
           if (
             !hasChange &&
-            (measurements[item.id]?.start !== totalSize ||
-              measurements[item.id]?.end !== totalSize + itemSize)
+            (data[item.id]?.start !== totalSize ||
+              data[item.id]?.end !== totalSize + itemSize)
           ) {
             hasChange = true;
           }
-          nextMeasurements[item.id] = {
+          nextData[item.id] = {
+            sealed: false,
             start: totalSize,
             end: totalSize + itemSize,
           };
@@ -204,12 +212,13 @@ export function useCollectionViewport<T extends Item = Item>({
           const itemSize = dynamicItemSize;
           if (
             !hasChange &&
-            (measurements[item.id]?.start !== totalSize ||
-              measurements[item.id]?.end !== totalSize + itemSize)
+            (data[item.id]?.start !== totalSize ||
+              data[item.id]?.end !== totalSize + itemSize)
           ) {
             hasChange = true;
           }
-          nextMeasurements[item.id] = {
+          nextData[item.id] = {
+            sealed: false,
             start: totalSize,
             end: totalSize + itemSize,
           };
@@ -217,9 +226,9 @@ export function useCollectionViewport<T extends Item = Item>({
         }
       }
       if (hasChange) {
-        return nextMeasurements;
+        return nextData;
       }
-      return measurements;
+      return data;
     });
   }, [dynamicItemSize, items, horizontal]);
 
@@ -228,21 +237,20 @@ export function useCollectionViewport<T extends Item = Item>({
       if (!items?.length) return;
       const container = ref.current;
       if (!container) return;
-      if (!Object.keys(measurements).length) return;
+      if (!Object.keys(data).length) return;
       const viewportElement = getViewportElement(viewport);
       const scrollOffset = getScrollOffset(viewportElement, horizontal);
       const size = getSize(viewportElement, horizontal);
       const initialStart = findNearestBinarySearch(
         items,
         scrollOffset - offset,
-        (id) => measurements[id]!.start
+        (id) => data[id]!.start
       );
       const length = items.length;
       let initialEnd = initialStart + 1;
       while (
         initialEnd < length &&
-        measurements[items[initialEnd - 1]!.id]!.end <
-          scrollOffset - offset + size
+        data[items[initialEnd - 1]!.id]!.end < scrollOffset - offset + size
       ) {
         initialEnd += 1;
       }
@@ -262,11 +270,11 @@ export function useCollectionViewport<T extends Item = Item>({
     if (!element) return;
     const viewport = getViewport(element.parentElement);
     if (!viewport) return;
-    if (Object.keys(measurements).length) {
+    if (Object.keys(data).length) {
       const offset = getOffset(element, viewport, horizontal);
-      // processVisibleItems(viewport, offset);
+      processVisibleItems(viewport, offset);
     }
-  }, [items, measurements]);
+  }, [items, data]);
 
   useEffect(() => {
     const element = ref.current;
@@ -286,7 +294,7 @@ export function useCollectionViewport<T extends Item = Item>({
     if (!items?.length) return;
     const style: typeof item.style = {
       transform: `translate${horizontal ? "X" : "Y"}(${
-        measurements[item.id]!.start
+        data[item.id]!.start
       }px)`,
       position: "absolute",
       left: 0,
@@ -310,7 +318,7 @@ export function useCollectionViewport<T extends Item = Item>({
     style: {
       flex: "none",
       position: "relative" as const,
-      [prop]: measurements[items![items!.length - 1]?.id || 0]?.end,
+      [prop]: data[items![items!.length - 1]?.id || 0]?.end,
       ...props.style,
     },
   };
@@ -378,6 +386,10 @@ export type CollectionViewportOptions<T extends Item = Item> = {
     start: number;
     end: number;
   }) => Array<T & Item>;
+  data?: Record<string, { sealed: boolean; start: number; end: number }>;
+  setData?: (
+    data: Record<string, { sealed: boolean; start: number; end: number }>
+  ) => void;
 };
 
 export type CollectionViewportProps<T extends Item = Item> =

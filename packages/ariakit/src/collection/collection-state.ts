@@ -146,8 +146,9 @@ export function useCollectionState<T extends Item = Item>(
   useSortBasedOnDOMPosition(items, setItems);
 
   const registerItem = useCallback((item: T) => {
+    let sameId;
     setItems((prevItems) => {
-      const sameId = prevItems.find((prevItem) => prevItem.id === item.id);
+      sameId = prevItems.find((prevItem) => prevItem.id === item.id);
       if (sameId) {
         const index = prevItems.indexOf(sameId);
         return [
@@ -161,6 +162,8 @@ export function useCollectionState<T extends Item = Item>(
       return addItemToArray(prevItems, item, index);
     });
     const unregisterItem = () => {
+      // TODO: Just revert to the previous state
+      // console.log(sameId);
       // setItems((prevItems) => {
       //   const nextItems = prevItems.filter(({ id }) => id !== item.id);
       //   if (prevItems.length === nextItems.length) {
