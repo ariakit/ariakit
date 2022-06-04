@@ -6,12 +6,11 @@ import {
   RefObject,
   forwardRef,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { getWindow } from "ariakit-utils/dom";
-import { useEvent, useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useLazyValue } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import { flushSync } from "react-dom";
 import { CollectionContext } from "./__utils";
@@ -117,46 +116,98 @@ export function useCollectionViewport<T extends Item = Item>({
     Record<string, { start: number; end: number }>
   >({});
 
-  const neverChange = useRef<string[]>([]);
+  const [dynamicItemSize, setDynamicItemSize] = useState(itemSize);
 
-  useSafeLayoutEffect(() => {
+  const neverChange = useLazyValue(() => new Set<string>());
+
+  useEffect(() => {
+    let newSize = itemSize;
+    for (const id of neverChange) {
+      newSize += measurements[id]!.end - measurements[id]!.start;
+    }
+    newSize /= neverChange.size || 1;
+    setDynamicItemSize(Math.round(newSize));
+  }, [itemSize, measurements]);
+
+  useEffect(() => {
     if (!items) return;
     setMeasurements((measurements) => {
       if (!items) return measurements;
+      let hasChange = false;
       const nextMeasurements = { ...measurements };
       let totalSize = 0;
       for (let i = 0; i < items.length; i += 1) {
         const item = items[i]!;
         if (item.ref?.current) {
-          neverChange.current.push(item.id);
-          const { offsetWidth, offsetHeight } = item.ref.current as HTMLElement;
-          const itemSize = horizontal ? offsetWidth : offsetHeight;
+          neverChange.add(item.id);
+          const { width, height } = (
+            item.ref.current as HTMLElement
+          ).getBoundingClientRect();
+          const itemSize = horizontal ? width : height;
+          if (
+            !hasChange &&
+            (measurements[item.id]?.start !== totalSize ||
+              measurements[item.id]?.end !== totalSize + itemSize)
+          ) {
+            hasChange = true;
+          }
           nextMeasurements[item.id] = {
             start: totalSize,
             end: totalSize + itemSize,
           };
           totalSize += itemSize;
-        } else if (neverChange.current.includes(item.id)) {
+        } else if (neverChange.has(item.id)) {
           const itemSize =
             measurements[item.id]!.end - measurements[item.id]!.start;
+          if (
+            !hasChange &&
+            (measurements[item.id]?.start !== totalSize ||
+              measurements[item.id]?.end !== totalSize + itemSize)
+          ) {
+            hasChange = true;
+          }
           nextMeasurements[item.id] = {
             start: totalSize,
             end: totalSize + itemSize,
           };
           totalSize += itemSize;
         } else if (horizontal && typeof item.style?.width === "number") {
+          const itemSize = item.style.width;
+          if (
+            !hasChange &&
+            (measurements[item.id]?.start !== totalSize ||
+              measurements[item.id]?.end !== totalSize + itemSize)
+          ) {
+            hasChange = true;
+          }
           nextMeasurements[item.id] = {
             start: totalSize,
-            end: totalSize + item.style.width,
+            end: totalSize + itemSize,
           };
-          totalSize += item.style.width;
+          totalSize += itemSize;
         } else if (!horizontal && typeof item.style?.height === "number") {
+          const itemSize = item.style.height;
+          if (
+            !hasChange &&
+            (measurements[item.id]?.start !== totalSize ||
+              measurements[item.id]?.end !== totalSize + itemSize)
+          ) {
+            hasChange = true;
+          }
           nextMeasurements[item.id] = {
             start: totalSize,
-            end: totalSize + item.style.height,
+            end: totalSize + itemSize,
           };
-          totalSize += item.style.height;
+          totalSize += itemSize;
         } else {
+          const itemSize = dynamicItemSize;
+          if (
+            !hasChange &&
+            (measurements[item.id]?.start !== totalSize ||
+              measurements[item.id]?.end !== totalSize + itemSize)
+          ) {
+            hasChange = true;
+          }
           nextMeasurements[item.id] = {
             start: totalSize,
             end: totalSize + itemSize,
@@ -164,41 +215,45 @@ export function useCollectionViewport<T extends Item = Item>({
           totalSize += itemSize;
         }
       }
-      return nextMeasurements;
+      if (hasChange) {
+        return nextMeasurements;
+      }
+      return measurements;
     });
-  }, [itemSize, items, horizontal]);
+  }, [dynamicItemSize, items, horizontal]);
 
-  const processVisibleItems = useEvent((viewport: Element | Window) => {
-    if (!items?.length) return;
-    const container = ref.current;
-    if (!container) return;
-    const offset = getOffset(container, viewport, horizontal);
-    const viewportElement = getViewportElement(viewport);
-    const scrollOffset = getScrollOffset(viewportElement, horizontal);
-    const size = getSize(viewportElement, horizontal);
-    const initialStart = findNearestBinarySearch(
-      items,
-      scrollOffset - offset,
-      (id) => measurements[id]!.start
-    );
-    const length = items.length;
-    let initialEnd = initialStart + 1;
-    while (
-      initialEnd < length &&
-      measurements[items[initialEnd - 1]!.id]!.end <
-        scrollOffset - offset + size
-    ) {
-      initialEnd += 1;
+  const processVisibleItems = useEvent(
+    (viewport: Element | Window, offset: number) => {
+      if (!items?.length) return;
+      const container = ref.current;
+      if (!container) return;
+      const viewportElement = getViewportElement(viewport);
+      const scrollOffset = getScrollOffset(viewportElement, horizontal);
+      const size = getSize(viewportElement, horizontal);
+      const initialStart = findNearestBinarySearch(
+        items,
+        scrollOffset - offset,
+        (id) => measurements[id]!.start
+      );
+      const length = items.length;
+      let initialEnd = initialStart + 1;
+      while (
+        initialEnd < length &&
+        measurements[items[initialEnd - 1]!.id]!.end <
+          scrollOffset - offset + size
+      ) {
+        initialEnd += 1;
+      }
+      // const initialEnd = Math.ceil((scrollOffset - offset + size) / itemSize);
+      const start = Math.max(initialStart - overscan, 0);
+      const end = Math.min(initialEnd + overscan, items.length);
+      let visibleItems = items.slice(start, end);
+      if (getVisibleItems) {
+        visibleItems = getVisibleItems({ visibleItems, items, start, end });
+      }
+      setVisibleItems(visibleItems);
     }
-    // const initialEnd = Math.ceil((scrollOffset - offset + size) / itemSize);
-    const start = Math.max(initialStart - overscan, 0);
-    const end = Math.min(initialEnd + overscan, items.length);
-    let visibleItems = items.slice(start, end);
-    if (getVisibleItems) {
-      visibleItems = getVisibleItems({ visibleItems, items, start, end });
-    }
-    setVisibleItems(visibleItems);
-  });
+  );
 
   useEffect(() => {
     const element = ref.current;
@@ -206,7 +261,8 @@ export function useCollectionViewport<T extends Item = Item>({
     const viewport = getViewport(element.parentElement);
     if (!viewport) return;
     if (Object.keys(measurements).length) {
-      processVisibleItems(viewport);
+      const offset = getOffset(element, viewport, horizontal);
+      processVisibleItems(viewport, offset);
     }
   }, [measurements]);
 
@@ -215,18 +271,21 @@ export function useCollectionViewport<T extends Item = Item>({
     if (!element) return;
     const viewport = getViewport(element.parentElement);
     if (!viewport) return;
+    const offset = getOffset(element, viewport, horizontal);
     const onScroll = () => {
-      flushSync(() => processVisibleItems(viewport));
-      // processVisibleItems(viewport);
+      flushSync(() => processVisibleItems(viewport, offset));
     };
+    // onScroll();
     viewport.addEventListener("scroll", onScroll, { passive: true });
     return () => viewport.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [horizontal]);
 
   const children = visibleItems!.map((item) => {
     if (!items?.length) return;
     const style: typeof item.style = {
-      transform: `translateY(${measurements[item.id]!.start}px)`,
+      transform: `translate${horizontal ? "X" : "Y"}(${
+        measurements[item.id]!.start
+      }px)`,
       position: "absolute",
       left: 0,
       top: 0,
@@ -240,6 +299,8 @@ export function useCollectionViewport<T extends Item = Item>({
     return <CollectionItem {...props} key={props.key} />;
   });
 
+  const prop = horizontal ? "width" : "height";
+
   const nextProps = {
     ...props,
     ref: useForkRef(ref, props.ref),
@@ -247,7 +308,7 @@ export function useCollectionViewport<T extends Item = Item>({
     style: {
       flex: "none",
       position: "relative" as const,
-      height: measurements[items![items!.length - 1]?.id || 0]?.end,
+      [prop]: measurements[items![items!.length - 1]?.id || 0]?.end,
       ...props.style,
     },
   };
@@ -290,7 +351,7 @@ export type CollectionViewportOptions<T extends Item = Item> = {
    * or `style.width` property for variable item sizes.
    * @default 40
    */
-  itemSize?: 40;
+  itemSize?: number;
   /**
    * The number of items that will be rendered before and after the viewport.
    * @default 1
