@@ -112,6 +112,7 @@ export function useCollectionViewport<T extends Item = Item>({
   const ref = useRef<HTMLDivElement>(null);
   const [visibleItems, setVisibleItems] = useState<Item[]>([]);
 
+  // useControlledState
   const [measurements, setMeasurements] = useState<
     Record<string, { start: number; end: number }>
   >({});
@@ -227,6 +228,7 @@ export function useCollectionViewport<T extends Item = Item>({
       if (!items?.length) return;
       const container = ref.current;
       if (!container) return;
+      if (!Object.keys(measurements).length) return;
       const viewportElement = getViewportElement(viewport);
       const scrollOffset = getScrollOffset(viewportElement, horizontal);
       const size = getSize(viewportElement, horizontal);
@@ -262,9 +264,9 @@ export function useCollectionViewport<T extends Item = Item>({
     if (!viewport) return;
     if (Object.keys(measurements).length) {
       const offset = getOffset(element, viewport, horizontal);
-      processVisibleItems(viewport, offset);
+      // processVisibleItems(viewport, offset);
     }
-  }, [measurements]);
+  }, [items, measurements]);
 
   useEffect(() => {
     const element = ref.current;

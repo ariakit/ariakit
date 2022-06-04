@@ -1,3 +1,4 @@
+import { createRef, useMemo, useState } from "react";
 import {
   Collection,
   CollectionItem,
@@ -11,7 +12,7 @@ function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-const items = Array.from({ length: 10000 }, (_, i) => ({
+const items = Array.from({ length: 5000 }, (_, i) => ({
   id: `item-${i}`,
   children: `item-${i}`,
   lol: randomIntFromInterval(20, 200),
@@ -23,20 +24,28 @@ export default function Example() {
     defaultItems: items,
   });
 
-  const rows = chunk(collection.items, 100).map((row, i) => ({
-    id: `row-${i}`,
-    items: row,
-  }));
+  const rows = useMemo(
+    () =>
+      chunk(collection.items, 100).map((row, i) => ({
+        id: `row-${i}`,
+        items: row,
+        // ref: createRef<HTMLDivElement>(),
+      })),
+    [collection.items]
+  );
+
+  const [size, setSize] = useState(200);
 
   return (
     <Collection
       state={collection}
-      style={{ position: "relative", overflow: "auto", height: 200 }}
+      style={{ position: "relative", overflow: "auto", height: size }}
       // style={{ overflow: "clip", height: 200 }}
       className="collection"
     >
+      <button onClick={() => setSize((size) => size + 100)}>Expand</button>
       <div>Items count: {collection.items.length}</div>
-      <CollectionViewport>
+      {/* <CollectionViewport>
         {({ lol, ...item }) => (
           <CollectionItem
             {...item}
@@ -49,8 +58,8 @@ export default function Example() {
             className="collection-item"
           />
         )}
-      </CollectionViewport>
-      {/* <CollectionViewport items={rows} itemSize={100}>
+      </CollectionViewport> */}
+      <CollectionViewport items={rows} itemSize={100}>
         {(row) => (
           <CollectionViewport {...row} itemSize={100} horizontal>
             {({ lol, ...item }) => (
@@ -66,7 +75,7 @@ export default function Example() {
             )}
           </CollectionViewport>
         )}
-      </CollectionViewport> */}
+      </CollectionViewport>
     </Collection>
   );
 }
