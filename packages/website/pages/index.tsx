@@ -32,6 +32,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/dialog-react-router", label: "Dialog react-router" },
   { href: "/examples/disclosure", label: "Disclosure" },
   { href: "/examples/focus-trap", label: "Focus trap" },
+  { href: "/examples/focus-trap-region", label: "Focus trap region" },
   { href: "/examples/form", label: "Form" },
   { href: "/examples/form-select", label: "Form select" },
   { href: "/examples/group", label: "Group" },
