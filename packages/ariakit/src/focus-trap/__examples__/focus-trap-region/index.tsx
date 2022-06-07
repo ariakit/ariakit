@@ -1,7 +1,7 @@
 import "./style.css";
 import { Button } from "ariakit/button";
 import { Checkbox, useCheckboxState } from "ariakit/checkbox";
-import { FocusTrapRegion } from "ariakit/focus-trap/focus-trap-region";
+import { FocusTrapRegion } from "ariakit/focus-trap";
 
 export default function Example() {
   const focusTrapped = useCheckboxState({ defaultValue: true });

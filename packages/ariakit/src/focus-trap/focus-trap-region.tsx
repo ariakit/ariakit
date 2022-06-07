@@ -20,7 +20,7 @@ import { FocusTrap } from "ariakit/focus-trap";
  * ```
  */
 export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
-  ({ enabled, ...props }) => {
+  ({ enabled = false, ...props }) => {
     const firstRef = React.useRef<HTMLElement>();
     const lastRef = React.useRef<HTMLElement>();
     const container = React.useRef<HTMLDivElement>();
@@ -89,7 +89,12 @@ export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
 );
 
 export type FocusTrapRegionOptions<T extends As = "div"> = Options<T> & {
-  enabled: boolean;
+  /**
+   * If true, will trap the focus in the region
+   *
+   * @default false
+   */
+  enabled?: boolean;
 };
 
 export type FocusTrapRegionProps<T extends As = "div"> = Props<
