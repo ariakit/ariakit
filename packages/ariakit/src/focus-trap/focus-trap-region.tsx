@@ -26,23 +26,28 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
     props = useWrapElement(
       props,
       (element) => {
-        const renderFocusTrap = (getTabbable: typeof getFirstTabbableIn) => {
+        const renderFocusTrap = () => {
           if (!enabled) return null;
           return (
             <FocusTrap
-              onFocus={() => {
+              onFocus={(event) => {
                 if (!container.current) return;
-                const tabbable = getTabbable(container.current, true);
-                tabbable?.focus();
+                const first = getFirstTabbableIn(container.current, true);
+                const last = getLastTabbableIn(container.current, true);
+                if (event.relatedTarget === first) {
+                  last?.focus();
+                } else {
+                  first?.focus();
+                }
               }}
             />
           );
         };
         return (
           <>
-            {renderFocusTrap(getLastTabbableIn)}
+            {renderFocusTrap()}
             {element}
-            {renderFocusTrap(getFirstTabbableIn)}
+            {renderFocusTrap()}
           </>
         );
       },
