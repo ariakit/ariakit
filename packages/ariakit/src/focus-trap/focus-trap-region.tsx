@@ -30,14 +30,10 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
           if (!enabled) return null;
           return (
             <FocusTrap
-              onFocus={(event) => {
+              onFocus={() => {
                 if (!container.current) return;
                 const tabbable = getTabbable(container.current, true);
-                if (event.relatedTarget === tabbable) {
-                  tabbable?.focus();
-                } else {
-                  tabbable?.focus();
-                }
+                tabbable?.focus();
               }}
             />
           );
