@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllTabbableIn } from "ariakit-utils/focus";
+import { getFirstTabbableIn, getLastTabbableIn } from "ariakit-utils/focus";
 import { useForkRef, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -21,29 +21,22 @@ import { FocusTrap } from "ariakit/focus-trap";
  */
 export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
   ({ enabled = false, ...props }) => {
-    const firstRef = React.useRef<HTMLElement>();
-    const lastRef = React.useRef<HTMLElement>();
     const container = React.useRef<HTMLDivElement>();
-
-    React.useEffect(() => {
-      if (!container.current) return;
-      const tabbables = getAllTabbableIn(container.current);
-      firstRef.current = tabbables[0];
-      lastRef.current = tabbables[tabbables.length - 1];
-    }, []);
 
     props = useWrapElement(
       props,
       (element) => {
-        const renderFocusTrap = () => {
+        const renderFocusTrap = (getTabbable: typeof getFirstTabbableIn) => {
           if (!enabled) return null;
           return (
             <FocusTrap
               onFocus={(event) => {
-                if (event.relatedTarget === firstRef.current) {
-                  lastRef.current?.focus();
+                if (!container.current) return;
+                const tabbable = getTabbable(container.current, true);
+                if (event.relatedTarget === tabbable) {
+                  tabbable?.focus();
                 } else {
-                  firstRef.current?.focus();
+                  tabbable?.focus();
                 }
               }}
             />
@@ -51,9 +44,9 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
         };
         return (
           <>
-            {renderFocusTrap()}
+            {renderFocusTrap(getLastTabbableIn)}
             {element}
-            {renderFocusTrap()}
+            {renderFocusTrap(getFirstTabbableIn)}
           </>
         );
       },
