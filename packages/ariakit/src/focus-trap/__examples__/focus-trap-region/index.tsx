@@ -7,25 +7,23 @@ export default function Example() {
   const focusTrapped = useCheckboxState({ defaultValue: true });
 
   return (
-    <>
-      <FocusTrapRegion className="wrapper" enabled={focusTrapped.value}>
-        <label className="label">
-          <Checkbox state={focusTrapped} className="checkbox" />
-          Trap focus
-        </label>
-        <Button className="button">Button 1</Button>
-        <Button className="button">Button 2</Button>
-        <Button className="button" disabled>
-          Button 3
-        </Button>
-        <input className="input" title="one" placeholder="Input" />
-        <input
-          className="input"
-          title="two"
-          disabled
-          placeholder="Disabled input"
-        />
-      </FocusTrapRegion>
-    </>
+    <FocusTrapRegion className="wrapper" enabled={focusTrapped.value}>
+      <label className="label">
+        <Checkbox state={focusTrapped} className="checkbox" />
+        Trap focus
+      </label>
+      <Button className="button">Button 1</Button>
+      <Button className="button">Button 2</Button>
+      <Button className="button" disabled>
+        Button 3
+      </Button>
+      <input className="input" title="one" placeholder="Input" />
+      <input
+        className="input"
+        title="two"
+        disabled
+        placeholder="Disabled input"
+      />
+    </FocusTrapRegion>
   );
 }
