@@ -1,5 +1,5 @@
 import { Separator } from "ariakit/separator";
-import "./styles.css";
+import "./style.css";
 
 export default function Example() {
   return <Separator orientation="horizontal" className="separator" />;
