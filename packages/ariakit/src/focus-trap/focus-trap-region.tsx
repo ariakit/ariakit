@@ -1,5 +1,5 @@
 import React from "react";
-import { getFirstTabbableIn, getLastTabbableIn } from "ariakit-utils/focus";
+import { getAllTabbableIn } from "ariakit-utils/focus";
 import { useForkRef, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -32,8 +32,9 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
             <FocusTrap
               onFocus={(event) => {
                 if (!container.current) return;
-                const first = getFirstTabbableIn(container.current, true);
-                const last = getLastTabbableIn(container.current, true);
+                const tabbables = getAllTabbableIn(container.current, true);
+                const first = tabbables[0];
+                const last = tabbables[tabbables.length - 1];
                 if (event.relatedTarget === first) {
                   last?.focus();
                 } else {

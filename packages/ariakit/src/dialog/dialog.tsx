@@ -36,7 +36,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
-import { FocusTrapRegion } from "ariakit/focus-trap";
+import { useFocusTrapRegion } from "ariakit/focus-trap";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
@@ -377,19 +377,10 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     // Focus traps.
-    props = useWrapElement(
-      props,
-      (element) => {
-        return (
-          <FocusTrapRegion
-            enabled={state.visible && modal && !visibleModals.length}
-          >
-            {element}
-          </FocusTrapRegion>
-        );
-      },
-      [state.visible, modal, visibleModals]
-    );
+    props = useFocusTrapRegion({
+      ...props,
+      enabled: state.visible && modal && !visibleModals.length,
+    });
 
     const hiddenProp = props.hidden;
 
