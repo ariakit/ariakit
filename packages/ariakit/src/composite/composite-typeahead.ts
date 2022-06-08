@@ -12,6 +12,8 @@ import { As, Options, Props } from "ariakit-utils/types";
 import { CompositeContext, Item, flipItems } from "./__utils";
 import { CompositeState } from "./composite-state";
 
+type TypeaheadItem = Item & { children?: unknown };
+
 let chars = "";
 
 function clearChars() {
@@ -34,11 +36,11 @@ function isValidTypeaheadEvent(event: KeyboardEvent) {
   );
 }
 
-function isSelfTargetOrItem(event: KeyboardEvent, items: Item[]) {
+function isSelfTargetOrItem(event: KeyboardEvent, items: TypeaheadItem[]) {
   if (isSelfTarget(event)) return true;
   const target = event.target as HTMLElement | null;
   if (!target) return false;
-  const isItem = items.some((item) => item.ref.current === target);
+  const isItem = items.some((item) => item.ref?.current === target);
   return isItem;
 }
 
@@ -46,8 +48,11 @@ function getEnabledItems(items: Item[]) {
   return items.filter((item) => !item.disabled);
 }
 
-function itemTextStartsWith(item: Item, text: string) {
-  const itemText = item.ref.current?.textContent;
+function itemTextStartsWith(item: TypeaheadItem, text: string) {
+  const itemText =
+    typeof item.children === "string"
+      ? item.children
+      : item.ref?.current?.textContent;
   if (!itemText) return false;
   return normalizeString(itemText).toLowerCase().startsWith(text.toLowerCase());
 }

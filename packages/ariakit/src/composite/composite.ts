@@ -29,10 +29,12 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
+import { useCollection } from "ariakit/collection";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
   Item,
+  RenderedItem,
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
@@ -52,7 +54,7 @@ function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
 }
 
 function useKeyboardEventProxy(
-  activeItem?: Item,
+  activeItem?: RenderedItem,
   onKeyboardEvent?: KeyboardEventHandler,
   previousElementRef?: RefObject<HTMLElement | null>
 ) {
@@ -90,10 +92,10 @@ function findFirstEnabledItemInTheLastRow(items: Item[]) {
 
 function isItem(items: Item[], element?: Element | EventTarget | null) {
   if (!element) return false;
-  return items.some((item) => item.ref.current === element);
+  return items.some((item) => item.ref?.current === element);
 }
 
-function useScheduleFocus(activeItem?: Item) {
+function useScheduleFocus(activeItem?: RenderedItem) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
   useEffect(() => {
@@ -124,7 +126,7 @@ export const useComposite = createHook<CompositeOptions>(
   ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
-    const activeItem = findEnabledItemById(state.items, state.activeId);
+    const activeItem = findEnabledItemById(state.renderedItems, state.activeId);
     const activeItemRef = useLiveRef(activeItem);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const isSelfActive = state.activeId === null;
@@ -317,7 +319,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (activeItemRef.current) return;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
+      const isGrid = !!findFirstEnabledItem(state.renderedItems)?.rowId;
       const up = () => {
         if (isGrid) {
           const item =
@@ -365,6 +367,7 @@ export const useComposite = createHook<CompositeOptions>(
     const focusable = composite && (virtualFocus || state.activeId === null);
 
     props = useFocusable({ focusable, ...props });
+    props = useCollection({ state, ...props });
 
     return props;
   }

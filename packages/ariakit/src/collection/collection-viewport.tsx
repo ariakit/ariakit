@@ -14,18 +14,26 @@ import {
   useControlledState,
   useEvent,
   useForkRef,
-  useLazyValue,
+  useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import { flushSync } from "react-dom";
-import { CollectionContext } from "./__utils";
+import { CollectionContext, Item } from "./__utils";
 import { CollectionItem } from "./collection-item";
 import { CollectionState } from "./collection-state";
 
-type Item = HTMLAttributes<HTMLElement> & {
-  id: string;
-  ref?: RefObject<any>;
+type ViewportItem = HTMLAttributes<HTMLElement> &
+  Omit<Item, "ref"> & {
+    ref?: RefObject<any>;
+  };
+
+type ItemData = {
+  rendered: boolean;
+  start: number;
+  end: number;
 };
+
+type Data = Map<string, ItemData>;
 
 function isWindow(element: Element | Window): element is Window {
   return element === getWindow(element);
@@ -77,16 +85,17 @@ function getOffset(
   return offset;
 }
 
-function findNearestBinarySearch<T extends Item = Item>(
+function findNearestBinarySearch<T extends ViewportItem = ViewportItem>(
   items: T[],
   value: number,
-  getCurrentValue: (id: string, index: number) => number
+  getCurrentValue: (id: string) => number
 ) {
   let low = 0;
   let high = items.length - 1;
   while (low <= high) {
     const middle = ((low + high) / 2) | 0;
-    const currentValue = getCurrentValue(items[middle]!.id, middle);
+    const id = items[middle]!.id;
+    const currentValue = getCurrentValue(id);
     if (currentValue < value) {
       low = middle + 1;
     } else if (currentValue > value) {
@@ -101,14 +110,14 @@ function findNearestBinarySearch<T extends Item = Item>(
   return 0;
 }
 
-export function useCollectionViewport<T extends Item = Item>({
+export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   state,
-  getVisibleItems,
   items,
   itemSize = 40,
   overscan = 1,
   children: renderItem,
   horizontal,
+  getVisibleItems,
   data: dataProp,
   setData: setDataProp,
   ...props
@@ -117,144 +126,80 @@ export function useCollectionViewport<T extends Item = Item>({
   items = items || state?.items;
 
   const ref = useRef<HTMLDivElement>(null);
-  const [visibleItems, setVisibleItems] = useState<Item[]>([]);
+  const [visibleItems, setVisibleItems] = useState<ViewportItem[]>([]);
+  const [data, setData] = useControlledState(
+    () => new Map(),
+    dataProp,
+    setDataProp
+  );
 
-  // useControlledState, rename to data
-  const [data, setData] = useControlledState({}, dataProp, setDataProp);
-
-  const [dynamicItemSize, setDynamicItemSize] = useState(itemSize);
-
-  const neverChange = useLazyValue(() => new Set<string>());
-
-  useEffect(() => {
-    let newSize = itemSize;
-    for (const id of neverChange) {
-      newSize += data[id]!.end - data[id]!.start;
-    }
-    newSize /= neverChange.size || 1;
-    setDynamicItemSize(Math.round(newSize));
-  }, [itemSize, data]);
-
-  useEffect(() => {
-    if (!items) return;
+  useSafeLayoutEffect(() => {
     setData((data) => {
       if (!items) return data;
-      let hasChange = false;
-      const nextData = { ...data };
-      let totalSize = 0;
-      for (let i = 0; i < items.length; i += 1) {
+      let changed = false;
+      let start = 0;
+      const length = items.length;
+      for (let i = 0; i < length; i += 1) {
         const item = items[i]!;
+        const prevData = data.get(item.id);
+        const prevRendered = prevData?.rendered ?? false;
+
+        const setSize = (size: number, rendered = prevRendered) => {
+          const end = start + size;
+          if (
+            prevData?.start !== start ||
+            prevData?.end !== end ||
+            prevRendered !== rendered
+          ) {
+            data.set(item.id, { start, end, rendered });
+            changed = true;
+          }
+          start = end;
+        };
+
         if (item.ref?.current) {
-          neverChange.add(item.id);
-          const { width, height } = (
-            item.ref.current as HTMLElement
-          ).getBoundingClientRect();
-          const itemSize = horizontal ? width : height;
-          if (
-            !hasChange &&
-            (data[item.id]?.start !== totalSize ||
-              data[item.id]?.end !== totalSize + itemSize)
-          ) {
-            hasChange = true;
-          }
-          nextData[item.id] = {
-            sealed: true,
-            start: totalSize,
-            end: totalSize + itemSize,
-          };
-          totalSize += itemSize;
-        } else if (neverChange.has(item.id) || data[item.id]?.sealed) {
-          const itemSize = data[item.id]!.end - data[item.id]!.start;
-          if (
-            !hasChange &&
-            (data[item.id]?.start !== totalSize ||
-              data[item.id]?.end !== totalSize + itemSize)
-          ) {
-            hasChange = true;
-          }
-          nextData[item.id] = {
-            sealed: true,
-            start: totalSize,
-            end: totalSize + itemSize,
-          };
-          totalSize += itemSize;
+          const element = item.ref.current as HTMLElement;
+          const { width, height } = element.getBoundingClientRect();
+          setSize(horizontal ? width : height, true);
+        } else if (prevData?.rendered) {
+          setSize(prevData.end - prevData.start);
         } else if (horizontal && typeof item.style?.width === "number") {
-          const itemSize = item.style.width;
-          if (
-            !hasChange &&
-            (data[item.id]?.start !== totalSize ||
-              data[item.id]?.end !== totalSize + itemSize)
-          ) {
-            hasChange = true;
-          }
-          nextData[item.id] = {
-            sealed: false,
-            start: totalSize,
-            end: totalSize + itemSize,
-          };
-          totalSize += itemSize;
+          setSize(item.style.width);
         } else if (!horizontal && typeof item.style?.height === "number") {
-          const itemSize = item.style.height;
-          if (
-            !hasChange &&
-            (data[item.id]?.start !== totalSize ||
-              data[item.id]?.end !== totalSize + itemSize)
-          ) {
-            hasChange = true;
-          }
-          nextData[item.id] = {
-            sealed: false,
-            start: totalSize,
-            end: totalSize + itemSize,
-          };
-          totalSize += itemSize;
+          setSize(item.style.height);
         } else {
-          const itemSize = dynamicItemSize;
-          if (
-            !hasChange &&
-            (data[item.id]?.start !== totalSize ||
-              data[item.id]?.end !== totalSize + itemSize)
-          ) {
-            hasChange = true;
-          }
-          nextData[item.id] = {
-            sealed: false,
-            start: totalSize,
-            end: totalSize + itemSize,
-          };
-          totalSize += itemSize;
+          setSize(itemSize);
         }
       }
-      if (hasChange) {
-        return nextData;
+      if (changed) {
+        return new Map(data);
       }
       return data;
     });
-  }, [dynamicItemSize, items, horizontal]);
+  }, [items, itemSize, horizontal]);
 
   const processVisibleItems = useEvent(
     (viewport: Element | Window, offset: number) => {
       if (!items?.length) return;
       const container = ref.current;
       if (!container) return;
-      if (!Object.keys(data).length) return;
+      if (!data.size) return;
       const viewportElement = getViewportElement(viewport);
       const scrollOffset = getScrollOffset(viewportElement, horizontal);
       const size = getSize(viewportElement, horizontal);
       const initialStart = findNearestBinarySearch(
         items,
         scrollOffset - offset,
-        (id) => data[id]!.start
+        (id) => data.get(id)?.start ?? 0
       );
       const length = items.length;
       let initialEnd = initialStart + 1;
       while (
         initialEnd < length &&
-        data[items[initialEnd - 1]!.id]!.end < scrollOffset - offset + size
+        data.get(items[initialEnd - 1]!.id)!.end < scrollOffset - offset + size
       ) {
         initialEnd += 1;
       }
-      // const initialEnd = Math.ceil((scrollOffset - offset + size) / itemSize);
       const start = Math.max(initialStart - overscan, 0);
       const end = Math.min(initialEnd + overscan, items.length);
       let visibleItems = items.slice(start, end);
@@ -265,16 +210,7 @@ export function useCollectionViewport<T extends Item = Item>({
     }
   );
 
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    const viewport = getViewport(element.parentElement);
-    if (!viewport) return;
-    if (Object.keys(data).length) {
-      const offset = getOffset(element, viewport, horizontal);
-      processVisibleItems(viewport, offset);
-    }
-  }, [items, data]);
+  const anotherEventRef = useRef(false);
 
   useEffect(() => {
     const element = ref.current;
@@ -283,19 +219,36 @@ export function useCollectionViewport<T extends Item = Item>({
     if (!viewport) return;
     const offset = getOffset(element, viewport, horizontal);
     const onScroll = () => {
+      anotherEventRef.current = true;
       flushSync(() => processVisibleItems(viewport, offset));
+      // processVisibleItems(viewport, offset);
     };
-    // onScroll();
-    viewport.addEventListener("scroll", onScroll, { passive: true });
+    viewport.addEventListener("scroll", onScroll, {
+      capture: false,
+      passive: true,
+    });
     return () => viewport.removeEventListener("scroll", onScroll);
   }, [horizontal]);
 
-  const children = visibleItems!.map((item) => {
-    if (!items?.length) return;
+  useSafeLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const viewport = getViewport(element.parentElement);
+    if (!viewport) return;
+    if (!data.size) return;
+    if (anotherEventRef.current) {
+      anotherEventRef.current = false;
+      return;
+    }
+    const offset = getOffset(element, viewport, horizontal);
+    processVisibleItems(viewport, offset);
+  }, [data]);
+
+  const children = visibleItems.map((item) => {
+    const axis = horizontal ? "X" : "Y";
+    const start = data.get(item.id)?.start ?? 0;
     const style: typeof item.style = {
-      transform: `translate${horizontal ? "X" : "Y"}(${
-        data[item.id]!.start
-      }px)`,
+      transform: `translate${axis}(${start}px)`,
       position: "absolute",
       left: 0,
       top: 0,
@@ -309,7 +262,8 @@ export function useCollectionViewport<T extends Item = Item>({
     return <CollectionItem {...props} key={props.key} />;
   });
 
-  const prop = horizontal ? "width" : "height";
+  const sizeProp = horizontal ? "width" : "height";
+  const lastId = items![items!.length - 1]?.id;
 
   const nextProps = {
     ...props,
@@ -318,7 +272,7 @@ export function useCollectionViewport<T extends Item = Item>({
     style: {
       flex: "none",
       position: "relative" as const,
-      [prop]: data[items![items!.length - 1]?.id || 0]?.end,
+      [sizeProp]: lastId && data.get(lastId)?.end,
       ...props.style,
     },
   };
@@ -326,7 +280,7 @@ export function useCollectionViewport<T extends Item = Item>({
   return nextProps;
 }
 
-function CollectionViewportImpl<T extends Item = Item>(
+function CollectionViewportImpl<T extends ViewportItem = ViewportItem>(
   props: CollectionViewportProps<T>,
   ref: ForwardedRef<HTMLDivElement>
 ) {
@@ -338,7 +292,7 @@ export const CollectionViewport = forwardRef(
   CollectionViewportImpl
 ) as unknown as typeof CollectionViewportImpl;
 
-export type CollectionViewportOptions<T extends Item = Item> = {
+export type CollectionViewportOptions<T extends ViewportItem = ViewportItem> = {
   /**
    * Object returned by the `useCollectionState` hook. If not provided, the
    * parent `Collection` component's context will be used.
@@ -376,22 +330,27 @@ export type CollectionViewportOptions<T extends Item = Item> = {
    * The children function will receive the item props and should return the
    * element that will be rendered for each item.
    */
-  children?: (item: T & Item) => ReactElement;
+  children?: (item: T & ViewportItem) => ReactElement;
+  /**
+   * A map of the item metadata. It will be used to calculate the item's
+   * position and size.
+   */
+  data?: Data;
+  /**
+   * A function that will be called to set the `data` prop.
+   */
+  setData?: (data: Data) => void;
   /**
    * A function that can be used to customize the visible items.
    */
   getVisibleItems?: (options: {
-    items: Array<T & Item>;
-    visibleItems: Array<T & Item>;
+    items: Array<T & ViewportItem>;
+    visibleItems: Array<T & ViewportItem>;
     start: number;
     end: number;
-  }) => Array<T & Item>;
-  data?: Record<string, { sealed: boolean; start: number; end: number }>;
-  setData?: (
-    data: Record<string, { sealed: boolean; start: number; end: number }>
-  ) => void;
+  }) => Array<T & ViewportItem>;
 };
 
-export type CollectionViewportProps<T extends Item = Item> =
+export type CollectionViewportProps<T extends ViewportItem = ViewportItem> =
   CollectionViewportOptions<T> &
     Omit<ComponentPropsWithRef<"div">, keyof CollectionViewportOptions<T>>;

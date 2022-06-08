@@ -2,6 +2,7 @@ import { RefObject, useCallback, useMemo, useRef } from "react";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import {
   useControlledState,
+  useEvent,
   useInitialValue,
   useLiveRef,
 } from "ariakit-utils/hooks";
@@ -15,6 +16,7 @@ import {
 import {
   Item,
   Orientation,
+  RenderedItem,
   findFirstEnabledItem,
   flipItems,
   getActiveId,
@@ -25,6 +27,8 @@ import {
   normalizeRows,
   verticalizeItems,
 } from "./__utils";
+
+type Id = string | null;
 
 /**
  * Provides state for the `Composite` component.
@@ -56,34 +60,36 @@ export function useCompositeState<T extends Item = Item>({
     props.setActiveId
   );
   const activeId = useMemo(
-    () => getActiveId(collection.items, _activeId),
-    [collection.items, _activeId]
+    () => getActiveId(collection.renderedItems, _activeId),
+    [collection.renderedItems, _activeId]
   );
   const initialActiveId = useInitialValue(activeId);
   const includesBaseElement =
     props.includesBaseElement ?? initialActiveId === null;
   const activeIdRef = useLiveRef(activeId);
 
-  const move = useCallback((id?: Item["id"]) => {
+  const move = useCallback((id?: Id) => {
     // move() does nothing
     if (id === undefined) return;
     setMoves((prevMoves) => prevMoves + 1);
     setActiveId(id);
   }, []);
 
-  const first = useCallback(() => {
-    const firstItem = findFirstEnabledItem(collection.items);
+  const first = useEvent(() => {
+    const firstItem = findFirstEnabledItem(collection.renderedItems);
     return firstItem?.id;
-  }, [collection.items]);
+  });
 
-  const last = useCallback(() => {
-    const firstItem = findFirstEnabledItem(reverseArray(collection.items));
+  const last = useEvent(() => {
+    const firstItem = findFirstEnabledItem(
+      reverseArray(collection.renderedItems)
+    );
     return firstItem?.id;
-  }, [collection.items]);
+  });
 
-  const getNextId = useCallback(
+  const getNextId = useEvent(
     (
-      items: Item[],
+      items: RenderedItem[],
       orientation: Orientation,
       hasNullItem: boolean,
       skip?: number
@@ -173,79 +179,66 @@ export function useCompositeState<T extends Item = Item>({
         return null;
       }
       return nextItem?.id;
-    },
-    [focusLoop, focusWrap, includesBaseElement]
+    }
   );
 
-  const next = useCallback(
-    (skip?: number) => {
-      return getNextId(collection.items, orientation, false, skip);
-    },
-    [getNextId, collection.items, orientation]
-  );
+  const next = useEvent((skip?: number) => {
+    return getNextId(collection.renderedItems, orientation, false, skip);
+  });
 
-  const previous = useCallback(
-    (skip?: number) => {
-      // If activeId is initially set to null or if includesBaseElement is set
-      // to true, then the composite container will be focusable while
-      // navigating with arrow keys. But, if it's a grid, we don't want to
-      // focus on the composite container with horizontal navigation.
-      const isGrid = !!findFirstEnabledItem(collection.items)?.rowId;
-      const hasNullItem = !isGrid && includesBaseElement;
-      return getNextId(
-        reverseArray(collection.items),
-        orientation,
-        hasNullItem,
-        skip
-      );
-    },
-    [collection.items, getNextId, orientation, includesBaseElement]
-  );
+  const previous = useEvent((skip?: number) => {
+    // If activeId is initially set to null or if includesBaseElement is set
+    // to true, then the composite container will be focusable while
+    // navigating with arrow keys. But, if it's a grid, we don't want to
+    // focus on the composite container with horizontal navigation.
+    const isGrid = !!findFirstEnabledItem(collection.renderedItems)?.rowId;
+    const hasNullItem = !isGrid && includesBaseElement;
+    return getNextId(
+      reverseArray(collection.renderedItems),
+      orientation,
+      hasNullItem,
+      skip
+    );
+  });
 
-  const down = useCallback(
-    (skip?: number) => {
-      const shouldShift = focusShift && !skip;
-      // First, we make sure rows have the same number of items by filling it
-      // with disabled fake items. Then, we reorganize the items.
-      const verticalItems = verticalizeItems(
+  const down = useEvent((skip?: number) => {
+    const shouldShift = focusShift && !skip;
+    // First, we make sure rows have the same number of items by filling it
+    // with disabled fake items. Then, we reorganize the items.
+    const verticalItems = verticalizeItems(
+      flatten2DArray(
+        normalizeRows(
+          groupItemsByRows(collection.renderedItems),
+          activeIdRef.current,
+          shouldShift
+        )
+      )
+    );
+    const canLoop = focusLoop && focusLoop !== "horizontal";
+    // Pressing down arrow key will only focus on the composite container if
+    // loop is true, both, or vertical.
+    const hasNullItem = canLoop && includesBaseElement;
+    return getNextId(verticalItems, "vertical", hasNullItem, skip);
+  });
+
+  const up = useEvent((skip?: number) => {
+    const shouldShift = focusShift && !skip;
+    const verticalItems = verticalizeItems(
+      reverseArray(
         flatten2DArray(
           normalizeRows(
-            groupItemsByRows(collection.items),
+            groupItemsByRows(collection.renderedItems),
             activeIdRef.current,
             shouldShift
           )
         )
-      );
-      const canLoop = focusLoop && focusLoop !== "horizontal";
-      // Pressing down arrow key will only focus on the composite container if
-      // loop is true, both, or vertical.
-      const hasNullItem = canLoop && includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
-    },
-    [collection.items, getNextId, focusShift, focusLoop]
-  );
-
-  const up = useCallback(
-    (skip?: number) => {
-      const shouldShift = focusShift && !skip;
-      const verticalItems = verticalizeItems(
-        reverseArray(
-          flatten2DArray(
-            normalizeRows(
-              groupItemsByRows(collection.items),
-              activeIdRef.current,
-              shouldShift
-            )
-          )
-        )
-      );
-      // If activeId is initially set to null, we'll always focus on the
-      // composite container when the up arrow key is pressed in the first row.
-      const hasNullItem = includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
-    },
-    [collection.items, getNextId, focusShift]
-  );
+      )
+    );
+    // If activeId is initially set to null, we'll always focus on the
+    // composite container when the up arrow key is pressed in the first row.
+    const hasNullItem = includesBaseElement;
+    return getNextId(verticalItems, "vertical", hasNullItem, skip);
+  });
 
   const state = useMemo(
     () => ({
@@ -406,7 +399,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *     itself will have focus and users will be able to navigate to it using
    *     arrow keys.
    */
-  activeId?: Item["id"];
+  activeId?: Id;
   /**
    * Sets the `activeId` state without moving focus.
    */
@@ -419,7 +412,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move("item-2"); // focus item 2
    * };
    */
-  move: (id?: Item["id"]) => void;
+  move: (id?: Id) => void;
   /**
    * Returns the id of the next item.
    * @example
@@ -428,7 +421,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.next()); // focus next item
    * };
    */
-  next: (skip?: number) => Item["id"] | undefined;
+  next: (skip?: number) => Id | undefined;
   /**
    * Returns the id of the previous item.
    * @example
@@ -437,7 +430,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.previous()); // focus previous item
    * };
    */
-  previous: (skip?: number) => Item["id"] | undefined;
+  previous: (skip?: number) => Id | undefined;
   /**
    * Returns the id of the item above.
    * @example
@@ -446,7 +439,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.up()); // focus the item above
    * };
    */
-  up: (skip?: number) => Item["id"] | undefined;
+  up: (skip?: number) => Id | undefined;
   /**
    * Returns the id of the item below.
    * @example
@@ -455,7 +448,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.down()); // focus the item below
    * };
    */
-  down: (skip?: number) => Item["id"] | undefined;
+  down: (skip?: number) => Id | undefined;
   /**
    * Returns the id of the first item.
    * @example
@@ -464,7 +457,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.first()); // focus the first item
    * };
    */
-  first: () => Item["id"] | undefined;
+  first: () => Id | undefined;
   /**
    * Returns the id of the last item.
    * @example
@@ -473,7 +466,7 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   composite.move(composite.last()); // focus the last item
    * };
    */
-  last: () => Item["id"] | undefined;
+  last: () => Id | undefined;
 };
 
 export type CompositeStateProps<T extends Item = Item> =

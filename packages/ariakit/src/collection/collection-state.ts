@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addItemToArray } from "ariakit-utils/array";
 import { getDocument } from "ariakit-utils/dom";
 import { useControlledState } from "ariakit-utils/hooks";
 import { BivariantCallback, SetState } from "ariakit-utils/types";
-import { Item } from "./__utils";
+import { Item, RenderedItem } from "./__utils";
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -11,17 +11,24 @@ function isElementPreceding(a: Element, b: Element) {
   );
 }
 
-function findDOMIndex(items: Item[], item: Item) {
-  const itemElement = item.ref?.current;
+function findDOMIndex(items: RenderedItem[], item: RenderedItem) {
+  const itemElement = item.ref.current;
   if (!itemElement) return -1;
   let length = items.length;
   if (!length) return -1;
+  const [first] = items;
+  if (
+    first?.ref.current &&
+    isElementPreceding(itemElement, first.ref.current)
+  ) {
+    return 0;
+  }
   // Most of the times, the new item will be added at the end of the list, so we
-  // do a findeIndex in reverse order, instead of wasting time searching the
+  // do a findIndex in reverse order, instead of wasting time searching the
   // index from the beginning.
   while (length--) {
     const currentItem = items[length];
-    if (!currentItem?.ref?.current) continue;
+    if (!currentItem?.ref.current) continue;
     if (isElementPreceding(currentItem.ref.current, itemElement)) {
       return length + 1;
     }
@@ -29,12 +36,12 @@ function findDOMIndex(items: Item[], item: Item) {
   return -1;
 }
 
-function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
+function sortBasedOnDOMPosition<T extends RenderedItem>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
-    const elementA = a.ref?.current;
-    const elementB = b.ref?.current;
+    const elementA = a.ref.current;
+    const elementB = b.ref.current;
     if (elementA === elementB) return 0;
     if (!elementA || !elementB) return 0;
     // a before b
@@ -56,7 +63,7 @@ function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   return items;
 }
 
-function setItemsBasedOnDOMPosition<T extends Item>(
+function setItemsBasedOnDOMPosition<T extends RenderedItem>(
   items: T[],
   setItems: (items: T[]) => any
 ) {
@@ -66,7 +73,7 @@ function setItemsBasedOnDOMPosition<T extends Item>(
   }
 }
 
-function getCommonParent(items: Item[]) {
+function getCommonParent(items: RenderedItem[]) {
   const firstItem = items.find((item) => !!item.ref);
   const lastItem = [...items].reverse().find((item) => !!item.ref);
   let parentElement = firstItem?.ref?.current?.parentElement;
@@ -80,7 +87,7 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-function useTimeoutObserver<T extends Item = Item>(
+function useTimeoutObserver<T extends RenderedItem = RenderedItem>(
   items: T[],
   setItems: (items: T[]) => any
 ) {
@@ -91,7 +98,7 @@ function useTimeoutObserver<T extends Item = Item>(
   });
 }
 
-function useSortBasedOnDOMPosition<T extends Item = Item>(
+function useSortBasedOnDOMPosition<T extends RenderedItem = RenderedItem>(
   items: T[],
   setItems: (items: T[]) => any
 ) {
@@ -142,43 +149,68 @@ export function useCollectionState<T extends Item = Item>(
     props.items,
     props.setItems
   );
+  const [renderedItems, setRenderedItems] = useState<RenderedItem<T>[]>([]);
 
-  useSortBasedOnDOMPosition(items, setItems);
+  useEffect(() => {
+    if (props.items) {
+      const nextRenderedItems = props.items.filter(
+        (item) => !!item.ref?.current
+      );
+      setRenderedItems(nextRenderedItems as RenderedItem<T>[]);
+    }
+  }, [props.items]);
+
+  useSortBasedOnDOMPosition(renderedItems, setRenderedItems);
 
   const registerItem = useCallback((item: T) => {
-    let sameId;
+    if (item.ref) {
+      const renderedItem = item as RenderedItem<T>;
+      setRenderedItems((prevItems) => {
+        // Finds the item index based on the DOM hierarchy
+        const index = findDOMIndex(prevItems, renderedItem);
+        return addItemToArray(prevItems, renderedItem, index);
+      });
+    }
+    let prevItem: T | undefined;
     setItems((prevItems) => {
-      sameId = prevItems.find((prevItem) => prevItem.id === item.id);
-      if (sameId) {
-        const index = prevItems.indexOf(sameId);
-        return [
-          ...prevItems.slice(0, index),
-          { ...sameId, ...item },
-          ...prevItems.slice(index + 1),
-        ];
+      prevItem = prevItems.find((prevItem) => prevItem.id === item.id);
+      if (prevItem) {
+        let index = prevItems.indexOf(prevItem);
+        if (index === -1) {
+          index = prevItems.length;
+        }
+        prevItems[index] = { ...prevItem, ...item };
+        return prevItems.slice();
       }
-      // Finds the item group based on the DOM hierarchy
-      const index = findDOMIndex(prevItems, item);
-      return addItemToArray(prevItems, item, index);
+      return addItemToArray(prevItems, item);
     });
     const unregisterItem = () => {
-      // TODO: Just revert to the previous state
-      // console.log(sameId);
-      // setItems((prevItems) => {
-      //   const nextItems = prevItems.filter(({ id }) => id !== item.id);
-      //   if (prevItems.length === nextItems.length) {
-      //     // The item isn't registered, so do nothing
-      //     return prevItems;
-      //   }
-      //   return nextItems;
-      // });
+      if (item.ref) {
+        setRenderedItems((prevItems) => {
+          const nextItems = prevItems.filter(({ id }) => id !== item.id);
+          if (prevItems.length === nextItems.length) {
+            // The item isn't registered, so do nothing
+            return prevItems;
+          }
+          return nextItems;
+        });
+      }
+      const previousItem = prevItem;
+      if (previousItem) {
+        setItems((prevItems) => {
+          const index = prevItems.indexOf(previousItem);
+          if (index === -1) return prevItems;
+          prevItems[index] = previousItem;
+          return prevItems.slice();
+        });
+      }
     };
     return unregisterItem;
   }, []);
 
   const state = useMemo(
-    () => ({ items, setItems, registerItem }),
-    [items, setItems, registerItem]
+    () => ({ renderedItems, items, setItems, registerItem }),
+    [renderedItems, items, setItems, registerItem]
   );
 
   return state;
@@ -197,13 +229,25 @@ export type CollectionState<T extends Item = Item> = {
    *   ...
    * });
    */
+  renderedItems: RenderedItem<T>[];
+  /**
+   * Lists all the items with their `id`s. This state is automatically updated
+   * when an item is registered or unregistered with the `registerItem`
+   * function.
+   * @example
+   * const { items } = useCollectionState();
+   * items.forEach((item) => {
+   *   const { id } = item;
+   *   ...
+   * });
+   */
   items: T[];
   /**
    * Sets the `items` state.
    * @example
    * const { setItems } = useCollectionState();
    * useEffect(() => {
-   *   const item = { ref: React.createRef() };
+   *   const item = { id: "item-1" };
    *   setItems((prevItems) => [...prevItems, item]);
    * }, [setItems])
    */
@@ -215,7 +259,7 @@ export type CollectionState<T extends Item = Item> = {
    * const ref = useRef();
    * const { registerItem } = useCollectionState();
    * useEffect(() => {
-   *   const unregisterItem = registerItem({ ref });
+   *   const unregisterItem = registerItem({ id: "item-1", ref });
    *   return unregisterItem;
    * }, [registerItem]);
    */

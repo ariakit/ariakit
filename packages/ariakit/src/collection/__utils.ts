@@ -7,6 +7,10 @@ export type Item = {
   ref?: RefObject<HTMLElement>;
 };
 
+export type RenderedItem<T extends Item = Item> = T & {
+  ref: RefObject<HTMLElement>;
+};
+
 export const CollectionContext = createStoreContext<CollectionState>();
 
 export const CollectionItemContext = createContext<

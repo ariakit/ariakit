@@ -49,7 +49,7 @@ function getFirstTabbable(container: HTMLElement) {
 export const useCompositeContainer = createHook<CompositeContainerOptions>(
   ({ state, ...props }) => {
     state = useStore(state || CompositeContext, [
-      "items",
+      "renderedItems",
       "baseRef",
       "setMoves",
     ]);
@@ -91,10 +91,10 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       // focus, so we consider edge cases where some tabbable elements become
       // disabled after the first render (for example, when rendering nested
       // composite elements).
-      if (!isOpen && state?.items.length) {
+      if (!isOpen && state?.renderedItems.length) {
         disableFocusIn(container);
       }
-    }, [state?.items]);
+    }, [state?.renderedItems]);
 
     const onFocusProp = props.onFocus;
 

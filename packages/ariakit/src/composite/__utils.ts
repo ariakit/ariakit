@@ -3,9 +3,9 @@ import { getDocument, isTextField } from "ariakit-utils/dom";
 import { createStoreContext } from "ariakit-utils/store";
 import { CompositeState } from "./composite-state";
 
-const NULL_ITEM = { id: null, ref: { current: null } };
+const NULL_ITEM = { id: "null-item", ref: { current: null } };
 
-function getMaxRowLength(array: Item[][]) {
+function getMaxRowLength(array: RenderedItem[][]) {
   let maxLength = 0;
   for (const { length } of array) {
     if (length > maxLength) {
@@ -18,7 +18,7 @@ function getMaxRowLength(array: Item[][]) {
 /**
  * Returns only enabled items.
  */
-export function getEnabledItems(items: Item[], excludeId?: string) {
+export function getEnabledItems(items: RenderedItem[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -30,7 +30,10 @@ export function getEnabledItems(items: Item[], excludeId?: string) {
 /**
  * Finds the first enabled item.
  */
-export function findFirstEnabledItem(items: Item[], excludeId?: string) {
+export function findFirstEnabledItem<T extends Item>(
+  items: T[],
+  excludeId?: string
+) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -44,7 +47,7 @@ export function findFirstEnabledItem(items: Item[], excludeId?: string) {
  * length.
  */
 export function normalizeRows(
-  rows: Item[][],
+  rows: RenderedItem[][],
   activeId?: string | null,
   focusShift?: boolean
 ) {
@@ -78,7 +81,10 @@ function createEmptyItem(rowId?: string) {
 /**
  * Finds the first enabled item by its id.
  */
-export function findEnabledItemById(items: Item[], id?: string | null) {
+export function findEnabledItemById<T extends Item>(
+  items: T[],
+  id?: string | null
+) {
   if (!id) return;
   return items.find((item) => item.id === id && !item.disabled);
 }
@@ -88,7 +94,7 @@ export function findEnabledItemById(items: Item[], id?: string | null) {
  * precedence.
  */
 export function getActiveId(
-  items: Item[],
+  items: RenderedItem[],
   activeId?: string | null,
   passedId?: string | null
 ) {
@@ -104,7 +110,7 @@ export function getActiveId(
 /**
  * Gets all items with the passed rowId.
  */
-export function getItemsInRow(items: Item[], rowId?: string) {
+export function getItemsInRow(items: RenderedItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
@@ -120,8 +126,8 @@ export function getOppositeOrientation(orientation: Orientation) {
 /**
  * Creates a two-dimensional array with items grouped by their rowId's.
  */
-export function groupItemsByRows(items: Item[]) {
-  const rows: Item[][] = [];
+export function groupItemsByRows<T extends Item>(items: T[]) {
+  const rows: T[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
     if (row) {
@@ -142,8 +148,8 @@ export function groupItemsByRows(items: Item[]) {
  * represents the composite container itself. When the active item is null, the
  * composite container has focus.
  */
-export function flipItems(
-  items: Item[],
+export function flipItems<T extends Item>(
+  items: T[],
   activeId: string,
   shouldInsertNullItem = false
 ) {
@@ -161,10 +167,10 @@ export function flipItems(
  * the first item in the second row, which is what you would expect when moving
  * up/down.
  */
-export function verticalizeItems(items: Item[]) {
+export function verticalizeItems(items: RenderedItem[]) {
   const rows = groupItemsByRows(items);
   const maxLength = getMaxRowLength(rows);
-  const verticalized: Item[] = [];
+  const verticalized: RenderedItem[] = [];
   for (let i = 0; i < maxLength; i += 1) {
     for (const row of rows) {
       const item = row[i];
@@ -227,4 +233,8 @@ export type Item = {
   ref?: RefObject<HTMLElement>;
   rowId?: string;
   disabled?: boolean;
+};
+
+export type RenderedItem<T extends Item = Item> = T & {
+  ref: RefObject<HTMLElement>;
 };
