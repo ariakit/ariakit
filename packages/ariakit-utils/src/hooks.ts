@@ -5,6 +5,8 @@ import {
   Ref,
   RefObject,
   // @ts-ignore
+  useInsertionEffect as _useInsertionEffect,
+  // @ts-ignore
   useDeferredValue as _useReactDeferredValue,
   // @ts-ignore
   useId as _useReactId,
@@ -25,6 +27,8 @@ const useReactDeferredValue =
   typeof _useReactDeferredValue === "function"
     ? _useReactDeferredValue
     : undefined;
+const useInsertionEffect =
+  typeof _useInsertionEffect === "function" ? _useInsertionEffect : undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -99,9 +103,13 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
   const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
-  useSafeLayoutEffect(() => {
+  if (useInsertionEffect) {
+    useInsertionEffect(() => {
+      ref.current = callback;
+    });
+  } else {
     ref.current = callback;
-  });
+  }
   return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
 }
 
@@ -163,9 +171,7 @@ export function useDeferredValue<T>(value: T): T {
   }
   const [deferredValue, setDeferredValue] = useState(value);
   useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      setDeferredValue(value);
-    });
+    const raf = requestAnimationFrame(() => setDeferredValue(value));
     return () => cancelAnimationFrame(raf);
   }, [value]);
   return deferredValue;
