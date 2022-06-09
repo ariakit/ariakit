@@ -343,7 +343,7 @@ export type CollectionViewportOptions<T extends ViewportItem = ViewportItem> = {
   /**
    * A function that can be used to customize the visible items.
    */
-  getVisibleItems?: (options: {
+  getVisibleItems?: (props: {
     items: Array<T & ViewportItem>;
     visibleItems: Array<T & ViewportItem>;
     start: number;

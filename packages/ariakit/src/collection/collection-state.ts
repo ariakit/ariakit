@@ -151,16 +151,13 @@ export function useCollectionState<T extends Item = Item>(
   );
   const [renderedItems, setRenderedItems] = useState<RenderedItem<T>[]>([]);
 
-  useEffect(() => {
-    if (props.items) {
-      const nextRenderedItems = props.items.filter(
-        (item) => !!item.ref?.current
-      );
-      setRenderedItems(nextRenderedItems as RenderedItem<T>[]);
-    }
-  }, [props.items]);
-
   useSortBasedOnDOMPosition(renderedItems, setRenderedItems);
+
+  // useEffect(() => {
+  //   if (!props.items) return;
+  //   const nextRenderedItems = props.items.filter((item) => item.ref?.current);
+  //   setRenderedItems(nextRenderedItems as RenderedItem<T>[]);
+  // }, [props.items]);
 
   const registerItem = useCallback((item: T) => {
     if (item.ref) {
