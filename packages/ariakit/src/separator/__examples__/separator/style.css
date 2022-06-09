@@ -1,0 +1,6 @@
+.separator {
+  @apply
+    w-full
+    border-canvas-5
+    dark:border-canvas-5-dark;
+}

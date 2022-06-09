@@ -1,4 +1,4 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
 .menu-arrow svg {
   @apply

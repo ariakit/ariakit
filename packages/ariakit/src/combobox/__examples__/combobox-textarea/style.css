@@ -1,5 +1,5 @@
-@import url("../combobox/style.css");
-@import url("../../../button/__examples__/button/style.css");
+@import "../combobox/style.css";
+@import "../../../button/__examples__/button/style.css";
 
 .combobox {
   width: 380px;

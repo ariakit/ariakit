@@ -331,7 +331,7 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
 `packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
 
 ```css
-@import url("../my-component/style.css");
+@import "../my-component/style.css";
 
 .my-component {
   @apply p-4;

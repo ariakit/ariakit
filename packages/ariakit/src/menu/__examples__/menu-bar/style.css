@@ -1,4 +1,4 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
 .menu-bar {
   @apply flex gap-2;

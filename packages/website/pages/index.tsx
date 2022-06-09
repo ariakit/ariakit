@@ -55,6 +55,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/select-group", label: "Select group" },
   { href: "/examples/select-item-custom", label: "Select item custom" },
   { href: "/examples/select-multiple", label: "Select multiple" },
+  { href: "/examples/separator", label: "Separator" },
   { href: "/examples/tab", label: "Tab" },
   { href: "/examples/tab-react-router", label: "Tab react-router" },
   { href: "/examples/toolbar", label: "Toolbar" },

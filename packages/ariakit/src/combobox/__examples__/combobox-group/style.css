@@ -1,4 +1,4 @@
-@import url("../combobox/style.css");
+@import "../combobox/style.css";
 
 .group-label {
   @apply

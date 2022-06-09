@@ -1,4 +1,4 @@
-@import url("../dialog/style.css");
+@import "../dialog/style.css";
 
 .dialog {
   @apply sm:w-[320px] max-w-[320px];

@@ -1,4 +1,4 @@
-@import url("../select/style.css");
+@import "../select/style.css";
 
 .photo {
   @apply w-12 h-12 rounded-full;
