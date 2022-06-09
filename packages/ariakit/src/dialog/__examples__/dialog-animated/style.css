@@ -1,4 +1,4 @@
-@import url("../dialog/style.css");
+@import "../dialog/style.css";
 
 [data-backdrop] {
   background-color: rgb(0 0 0 / 10%);
