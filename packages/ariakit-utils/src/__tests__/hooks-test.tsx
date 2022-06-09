@@ -103,19 +103,6 @@ test("useEvent function is stable", () => {
   expect(effectFunction).toBeCalledTimes(1);
 });
 
-test("useEvent errors is used during render", () => {
-  const consoleError = jest.spyOn(console, "error").mockImplementation();
-  const TestComponent = () => {
-    const result = useEvent(jest.fn());
-    result();
-    return null;
-  };
-  expect(() => render(<TestComponent />)).toThrow(
-    "Cannot call an event handler while rendering."
-  );
-  consoleError.mockRestore();
-});
-
 test("useForkRef", () => {
   const ref1 = jest.fn();
   const ref2 = jest.fn();
