@@ -17,32 +17,47 @@ function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+const items = Array.from({ length: 10000 }, (_, i) => ({
+  id: `item-${i}`,
+  children: `item-${i}`,
+  lol: randomIntFromInterval(50, 200),
+  // lol: 150,
+}));
+
 export default function Example() {
-  const [items, setItems] = useState([]);
-  const composite = useCompositeState({ items, setItems });
+  const composite = useCompositeState({ defaultItems: items });
 
-  const [size, setSize] = useState(400);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      const res = await fetch("https://jsonplaceholder.typicode.com/comments");
-      const result = await res.json();
-      return result.map((item) => ({
-        id: `item-${item.id}`,
-        children: item.body,
-        "data-group": Math.random() > 0.65 ? "group-1" : "group-2",
-      }));
-    };
-    fetchItems().then(setItems);
-  }, []);
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     const res = await fetch("https://jsonplaceholder.typicode.com/comments");
+  //     const result = await res.json();
+  //     return result.map((item) => ({
+  //       id: `item-${item.id}`,
+  //       children: item.body,
+  //       "data-group": Math.random() > 0.65 ? "group-1" : "group-2",
+  //     }));
+  //   };
+  //   fetchItems().then(setItems);
+  // }, []);
 
   return (
-    <div style={{ display: "flex", width: "100%", flexDirection: "column" }}>
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+      }}
+    >
       {/* <button onClick={() => setSize((size) => size + 100)}>Expand</button> */}
       {/* <div>Items count: {collection.items.length}</div> */}
       <Composite
         state={composite}
-        style={{ position: "relative", overflow: "auto", height: size }}
+        style={{
+          position: "relative",
+          width: "100%",
+          // flexDirection: "column-reverse",
+          overflow: "auto",
+          height: 400,
+        }}
         // style={{ overflow: "clip", height: 200 }}
         className="collection"
       >
@@ -56,10 +71,14 @@ export default function Example() {
                 item.id === composite.previous()
             );
           }}
-          itemSize={100}
         >
-          {(item) => (
-            <CompositeItem as="div" {...item} className="collection-item">
+          {({ lol, ...item }) => (
+            <CompositeItem
+              as="div"
+              {...item}
+              style={{ ...item.style, height: lol }}
+              className="collection-item"
+            >
               <div className="collection-item-child">{item.children}</div>
             </CompositeItem>
           )}

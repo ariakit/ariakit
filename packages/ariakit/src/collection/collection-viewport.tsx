@@ -56,8 +56,12 @@ function getViewportElement(viewport: Element | Window) {
   return isWindow(viewport) ? viewport.document.documentElement : viewport;
 }
 
-function getScrollOffset(element: Element, horizontal?: boolean) {
-  return horizontal ? element.scrollLeft : element.scrollTop;
+function getScrollOffset(element: Element, end: number, horizontal?: boolean) {
+  let scrollOffset = horizontal ? element.scrollLeft : element.scrollTop;
+  if (getComputedStyle(element).flexDirection.endsWith("-reverse")) {
+    scrollOffset = end + scrollOffset;
+  }
+  return scrollOffset;
 }
 
 function getSize(element: Element, horizontal?: boolean) {
@@ -115,7 +119,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   items,
   itemSize = 40,
   overscan = 1,
-  gap = 50,
+  gap = 0,
   children: renderItem,
   horizontal,
   getVisibleItems,
@@ -186,7 +190,13 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       if (!container) return;
       if (!data.size) return;
       const viewportElement = getViewportElement(viewport);
-      const scrollOffset = getScrollOffset(viewportElement, horizontal);
+      const scrollOffset = getScrollOffset(
+        viewportElement,
+        (items![items!.length - 1]?.id &&
+          data.get(items[items.length - 1]!.id)?.end) ||
+          0,
+        horizontal
+      );
       const size = getSize(viewportElement, horizontal);
       const initialStart = findNearestBinarySearch(
         items,
