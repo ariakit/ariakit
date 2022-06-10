@@ -46,7 +46,18 @@ export default function Example() {
         // style={{ overflow: "clip", height: 200 }}
         className="collection"
       >
-        <CollectionViewport itemSize={100}>
+        <CollectionViewport
+          getVisibleItems={({ items, visibleItems }) => {
+            return items.filter(
+              (item) =>
+                visibleItems.some(({ id }) => id === item.id) ||
+                item.id === composite.activeId ||
+                item.id === composite.next() ||
+                item.id === composite.previous()
+            );
+          }}
+          itemSize={100}
+        >
           {(item) => (
             <CompositeItem as="div" {...item} className="collection-item">
               <div className="collection-item-child">{item.children}</div>

@@ -153,61 +153,61 @@ export function useCollectionState<T extends Item = Item>(
 
   useSortBasedOnDOMPosition(renderedItems, setRenderedItems);
 
-  // useEffect(() => {
-  //   if (!props.items) return;
-  //   const nextRenderedItems = props.items.filter((item) => item.ref?.current);
-  //   setRenderedItems(nextRenderedItems as RenderedItem<T>[]);
-  // }, [props.items]);
-
-  const registerItem = useCallback((item: T) => {
-    if (item.ref) {
-      const renderedItem = item as RenderedItem<T>;
-      setRenderedItems((prevItems) => {
-        // Finds the item index based on the DOM hierarchy
-        const index = findDOMIndex(prevItems, renderedItem);
-        return addItemToArray(prevItems, renderedItem, index);
-      });
-    }
-    let prevItem: T | undefined;
-    setItems((prevItems) => {
-      prevItem = prevItems.find((prevItem) => prevItem.id === item.id);
-      if (prevItem) {
-        let index = prevItems.indexOf(prevItem);
-        if (index === -1) {
-          index = prevItems.length;
-        }
-        prevItems[index] = { ...prevItem, ...item };
-        return prevItems.slice();
-      }
-      return addItemToArray(prevItems, item);
+  const registerRenderedItem = useCallback((item: RenderedItem<T>) => {
+    setRenderedItems((items) => {
+      const index = findDOMIndex(items, item);
+      return addItemToArray(items, item, index);
     });
     const unregisterItem = () => {
-      if (item.ref) {
-        setRenderedItems((prevItems) => {
-          const nextItems = prevItems.filter(({ id }) => id !== item.id);
-          if (prevItems.length === nextItems.length) {
-            // The item isn't registered, so do nothing
-            return prevItems;
-          }
-          return nextItems;
-        });
-      }
-      const previousItem = prevItem;
-      if (previousItem) {
-        setItems((prevItems) => {
-          const index = prevItems.indexOf(previousItem);
-          if (index === -1) return prevItems;
-          prevItems[index] = previousItem;
-          return prevItems.slice();
-        });
-      }
+      setRenderedItems((items) => {
+        const nextItems = items.filter(({ ref }) => ref !== item.ref);
+        if (items.length === nextItems.length) return items;
+        return nextItems;
+      });
     };
     return unregisterItem;
   }, []);
 
+  const registerItem = useCallback(
+    (item: T) => {
+      let prevItem: T | undefined;
+      let index: number | undefined;
+
+      setItems((items) => {
+        prevItem = items.find(({ id }) => id === item.id);
+        if (prevItem) {
+          index = items.indexOf(prevItem);
+          items[index] = { ...prevItem, ...item };
+        } else {
+          items.push(item);
+        }
+        return items.slice();
+      });
+
+      let unregisterRenderedItem: (() => void) | undefined;
+      if (item.ref) {
+        const renderedItem = item as RenderedItem<T>;
+        unregisterRenderedItem = registerRenderedItem(renderedItem);
+      }
+
+      const unregisterItem = () => {
+        setItems((items) => {
+          if (!prevItem) return items.filter(({ id }) => id !== item.id);
+          if (!index || index <= 0) return items;
+          items[index] = prevItem;
+          return items.slice();
+        });
+        unregisterRenderedItem?.();
+      };
+
+      return unregisterItem;
+    },
+    [registerRenderedItem]
+  );
+
   const state = useMemo(
-    () => ({ renderedItems, items, setItems, registerItem }),
-    [renderedItems, items, setItems, registerItem]
+    () => ({ items, setItems, renderedItems, setRenderedItems, registerItem }),
+    [items, setItems, renderedItems, setRenderedItems, registerItem]
   );
 
   return state;
@@ -215,21 +215,9 @@ export function useCollectionState<T extends Item = Item>(
 
 export type CollectionState<T extends Item = Item> = {
   /**
-   * Lists all the items with their `ref`s. This state is automatically updated
-   * when an item is registered or unregistered with the `registerItem`
-   * function. The order of the items is automatically defined by the order of
-   * the elements in the DOM.
-   * @example
-   * const { items } = useCollectionState();
-   * items.forEach((item) => {
-   *   const { ref } = item;
-   *   ...
-   * });
-   */
-  renderedItems: RenderedItem<T>[];
-  /**
-   * Lists all the items with their `id`s. This state is automatically updated
-   * when an item is registered or unregistered with the `registerItem`
+   * TODO: Mention it's not sorted by the DOM.
+   * Array with all the items with their `id`s. This state is automatically
+   * updated when an item is registered or unregistered with the `registerItem`
    * function.
    * @example
    * const { items } = useCollectionState();
@@ -245,10 +233,41 @@ export type CollectionState<T extends Item = Item> = {
    * const { setItems } = useCollectionState();
    * useEffect(() => {
    *   const item = { id: "item-1" };
-   *   setItems((prevItems) => [...prevItems, item]);
-   * }, [setItems])
+   *   setItems((items) => [...items, item]);
+   *   return () => {
+   *     setItems((items) => items.filter(({ id }) => id !== item.id));
+   *   };
+   * }, [setItems]);
    */
   setItems: SetState<CollectionState<T>["items"]>;
+  /**
+   * Array with all the items with their `ref`s. This state is automatically
+   * updated when an item is registered or unregistered with the `registerItem`
+   * function. The order of the items is automatically defined by the order of
+   * the elements in the DOM.
+   * @example
+   * const { renderedItems } = useCollectionState();
+   * renderedItems.forEach((item) => {
+   *   const { ref } = item;
+   *   ...
+   * });
+   */
+  renderedItems: RenderedItem<T>[];
+  /**
+   * Sets the `renderedItems` state.
+   * @example
+   * const { setRenderedItems } = useCollectionState();
+   * useEffect(() => {
+   *   const item = { ref: React.createRef() };
+   *   setRenderedItems((items) => [...items, item]);
+   *   return () => {
+   *     setRenderedItems((items) =>
+   *       items.filter(({ ref }) => ref !== item.ref)
+   *     ));
+   *   };
+   * }, [setRenderedItems]);
+   */
+  setRenderedItems: SetState<CollectionState<T>["renderedItems"]>;
   /**
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
@@ -264,7 +283,7 @@ export type CollectionState<T extends Item = Item> = {
 };
 
 export type CollectionStateProps<T extends Item = Item> = Partial<
-  Pick<CollectionState<T>, "items">
+  Pick<CollectionState<T>, "items" | "renderedItems">
 > & {
   /**
    * TODO: Comment.

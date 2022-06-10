@@ -115,6 +115,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   items,
   itemSize = 40,
   overscan = 1,
+  gap = 50,
   children: renderItem,
   horizontal,
   getVisibleItems,
@@ -136,7 +137,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   useSafeLayoutEffect(() => {
     setData((data) => {
       if (!items) return data;
-      let changed = false;
+      let nextData: Data | undefined;
       let start = 0;
       const length = items.length;
       for (let i = 0; i < length; i += 1) {
@@ -145,14 +146,17 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
         const prevRendered = prevData?.rendered ?? false;
 
         const setSize = (size: number, rendered = prevRendered) => {
+          start = start ? start + gap : start;
           const end = start + size;
           if (
             prevData?.start !== start ||
             prevData?.end !== end ||
             prevRendered !== rendered
           ) {
-            data.set(item.id, { start, end, rendered });
-            changed = true;
+            if (nextData === undefined) {
+              nextData = new Map(data);
+            }
+            nextData.set(item.id, { start, end, rendered });
           }
           start = end;
         };
@@ -171,12 +175,9 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
           setSize(itemSize);
         }
       }
-      if (changed) {
-        return new Map(data);
-      }
-      return data;
+      return nextData || data;
     });
-  }, [items, itemSize, horizontal]);
+  }, [items, itemSize, gap, horizontal]);
 
   const processVisibleItems = useEvent(
     (viewport: Element | Window, offset: number) => {
@@ -236,6 +237,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
     const viewport = getViewport(element.parentElement);
     if (!viewport) return;
     if (!data.size) return;
+    // TODO: Not sure if we really need this
     if (anotherEventRef.current) {
       anotherEventRef.current = false;
       return;
@@ -316,6 +318,10 @@ export type CollectionViewportOptions<T extends ViewportItem = ViewportItem> = {
    * @default 40
    */
   itemSize?: number;
+  /**
+   * TODO: Comment
+   */
+  gap?: number;
   /**
    * The number of items that will be rendered before and after the viewport.
    * @default 1
