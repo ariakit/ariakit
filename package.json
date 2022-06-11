@@ -40,7 +40,7 @@
     "@babel/preset-env": "7.18.2",
     "@babel/preset-react": "7.17.12",
     "@babel/preset-typescript": "7.17.12",
-    "@changesets/cli": "2.22.0",
+    "@changesets/cli": "2.23.0",
     "@jest/types": "28.1.1",
     "@playwright/test": "1.22.2",
     "@rollup/plugin-babel": "5.3.1",
