@@ -47,6 +47,8 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/popover-responsive", label: "Popover responsive" },
   { href: "/examples/popover-selection", label: "Popover selection" },
   { href: "/examples/popover-standalone", label: "Popover standalone" },
+  { href: "/examples/portal", label: "Portal" },
+  { href: "/examples/portal-lazy", label: "Portal lazy" },
   { href: "/examples/radio", label: "Radio" },
   { href: "/examples/select", label: "Select" },
   { href: "/examples/select-autofill", label: "Select autofill" },
