@@ -23,7 +23,9 @@
     "prevent-body-scroll",
     "select-modal-show",
     "test-hover-microtask",
+    "test-is-browser-error",
     "test-mouse-down-up",
-    "test-select"
+    "test-select",
+    "utils-use-event-timing"
   ]
 }
