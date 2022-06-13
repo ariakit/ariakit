@@ -1,5 +1,11 @@
 # ariakit-utils
 
+## 0.17.0-next.21
+
+### Patch Changes
+
+- Fixed `useEvent` hook timing. ([#1481](https://github.com/ariakit/ariakit/pull/1481))
+
 ## 0.17.0-next.20
 
 ### Patch Changes
