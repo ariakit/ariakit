@@ -33,7 +33,6 @@ import {
   CompositeItemContext,
   CompositeRowContext,
   Item,
-  RenderedItem,
   findEnabledItemById,
   getContextId,
 } from "./__utils";
@@ -72,7 +71,7 @@ function getItemOffset(itemElement: Element, pageUp = false) {
 
 function findNextPageItemId(
   element: Element,
-  items?: CompositeState["renderedItems"],
+  items?: CompositeState["items"],
   next?: CompositeState["next"],
   pageUp = false
 ) {
@@ -91,7 +90,7 @@ function findNextPageItemId(
     if (!id) break;
     if (id === previousId) continue;
     const item = findEnabledItemById(items, id);
-    const itemElement = item?.ref.current;
+    const itemElement = item?.ref?.current;
     if (!itemElement) continue;
     const itemOffset = getItemOffset(itemElement, pageUp);
     const difference = itemOffset - nextPageOffset;
@@ -122,13 +121,13 @@ function useItem(items?: Item[], id?: string) {
   }, [items, id]);
 }
 
-function targetIsAnotherItem(event: SyntheticEvent, items: RenderedItem[]) {
+function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
   if (isSelfTarget(event)) return false;
   const target = event.target as HTMLElement;
   const { compositeItemId } = target.dataset;
   for (const item of items) {
-    if (item.ref.current === event.currentTarget) continue;
-    if (item.ref.current === target || compositeItemId === item.id) {
+    if (item.ref?.current === event.currentTarget) continue;
+    if (item.ref?.current === target || compositeItemId === item.id) {
       return true;
     }
   }
@@ -185,7 +184,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     state = useStore(state || CompositeContext, [
       useCallback((s: CompositeState) => s.activeId === id, [id]),
       "baseRef",
-      "renderedItems",
+      "items",
       "virtualFocus",
       "registerItem",
       "setActiveId",
@@ -228,10 +227,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       // are nested. This is okay when building, for example, tree or treegrid
       // elements. In this case, we just ignore the focus event on this parent
       // item.
-      if (
-        state?.renderedItems &&
-        targetIsAnotherItem(event, state.renderedItems)
-      ) {
+      if (state?.items && targetIsAnotherItem(event, state.items)) {
         return;
       }
       if (state?.activeId !== id) {
@@ -276,7 +272,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const onKeyDownProp = props.onKeyDown;
     const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
-    const item = useItem(state?.renderedItems, id);
+    const item = useItem(state?.items, id);
     const isGrid = !!item?.rowId;
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
@@ -305,7 +301,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         PageUp: () => {
           return findNextPageItemId(
             event.currentTarget,
-            state?.renderedItems,
+            state?.items,
             state?.up,
             true
           );
@@ -313,7 +309,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         PageDown: () => {
           return findNextPageItemId(
             event.currentTarget,
-            state?.renderedItems,
+            state?.items,
             state?.down
           );
         },
@@ -366,7 +362,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       (!state?.virtualFocus && isActiveItem) ||
       // We don't want to set tabIndex="-1" when using CompositeItem as a
       // standalone component, without state props.
-      !state?.renderedItems.length;
+      !state?.items.length;
 
     props = {
       id,

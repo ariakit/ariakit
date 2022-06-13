@@ -75,7 +75,7 @@ export const useFormPush = createHook<FormPushOptions>(
     useEffect(() => {
       if (!shouldFocus) return;
       const items = getFirstFieldsByName(state?.items, name);
-      const element = items?.[items.length - 1]?.ref.current;
+      const element = items?.[items.length - 1]?.ref?.current;
       if (!element) return;
       element.focus();
       setShouldFocus(false);

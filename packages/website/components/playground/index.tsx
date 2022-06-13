@@ -90,7 +90,9 @@ export default function Playground(props: PlaygroundProps) {
   const [visibleTabs, hiddenTabs] = useOverflowList({
     list: files,
     getContainer: useEvent(() => tab.baseRef.current),
-    getElements: useEvent(() => tab.items.map((item) => item.ref.current)),
+    getElements: useEvent(() =>
+      tab.items.map((item) => item.ref?.current || null)
+    ),
     setList: useCallback(
       ([nextVisible, nextHidden]: [string[], string[]]) => {
         const nextHiddenFile =

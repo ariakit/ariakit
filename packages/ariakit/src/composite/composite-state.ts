@@ -15,8 +15,8 @@ import {
 } from "../collection/collection-state";
 import {
   Item,
+  Item,
   Orientation,
-  RenderedItem,
   findFirstEnabledItem,
   flipItems,
   getActiveId,
@@ -60,8 +60,8 @@ export function useCompositeState<T extends Item = Item>({
     props.setActiveId
   );
   const activeId = useMemo(
-    () => getActiveId(collection.renderedItems, _activeId),
-    [collection.renderedItems, _activeId]
+    () => getActiveId(collection.items, _activeId),
+    [collection.items, _activeId]
   );
   const initialActiveId = useInitialValue(activeId);
   const includesBaseElement =
@@ -76,20 +76,18 @@ export function useCompositeState<T extends Item = Item>({
   }, []);
 
   const first = useEvent(() => {
-    const firstItem = findFirstEnabledItem(collection.renderedItems);
+    const firstItem = findFirstEnabledItem(collection.items);
     return firstItem?.id;
   });
 
   const last = useEvent(() => {
-    const firstItem = findFirstEnabledItem(
-      reverseArray(collection.renderedItems)
-    );
+    const firstItem = findFirstEnabledItem(reverseArray(collection.items));
     return firstItem?.id;
   });
 
   const getNextId = useEvent(
     (
-      items: RenderedItem[],
+      items: Item[],
       orientation: Orientation,
       hasNullItem: boolean,
       skip?: number
@@ -183,7 +181,7 @@ export function useCompositeState<T extends Item = Item>({
   );
 
   const next = useEvent((skip?: number) => {
-    return getNextId(collection.renderedItems, orientation, false, skip);
+    return getNextId(collection.items, orientation, false, skip);
   });
 
   const previous = useEvent((skip?: number) => {
@@ -191,10 +189,10 @@ export function useCompositeState<T extends Item = Item>({
     // to true, then the composite container will be focusable while
     // navigating with arrow keys. But, if it's a grid, we don't want to
     // focus on the composite container with horizontal navigation.
-    const isGrid = !!findFirstEnabledItem(collection.renderedItems)?.rowId;
+    const isGrid = !!findFirstEnabledItem(collection.items)?.rowId;
     const hasNullItem = !isGrid && includesBaseElement;
     return getNextId(
-      reverseArray(collection.renderedItems),
+      reverseArray(collection.items),
       orientation,
       hasNullItem,
       skip
@@ -208,7 +206,7 @@ export function useCompositeState<T extends Item = Item>({
     const verticalItems = verticalizeItems(
       flatten2DArray(
         normalizeRows(
-          groupItemsByRows(collection.renderedItems),
+          groupItemsByRows(collection.items),
           activeIdRef.current,
           shouldShift
         )
@@ -227,7 +225,7 @@ export function useCompositeState<T extends Item = Item>({
       reverseArray(
         flatten2DArray(
           normalizeRows(
-            groupItemsByRows(collection.renderedItems),
+            groupItemsByRows(collection.items),
             activeIdRef.current,
             shouldShift
           )

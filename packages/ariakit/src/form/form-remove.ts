@@ -74,7 +74,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
       state?.removeValue(name, index);
       if (!autoFocusOnClick) return;
       const item = findNextOrPreviousField(state?.items, name, index);
-      const element = item?.ref.current;
+      const element = item?.ref?.current;
       if (element) {
         element.focus();
         if (isTextField(element)) {
@@ -82,7 +82,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
         }
       } else {
         const pushButton = findPushButton(state?.items, name);
-        pushButton?.ref.current?.focus();
+        pushButton?.ref?.current?.focus();
       }
     });
 

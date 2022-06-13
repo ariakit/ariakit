@@ -34,7 +34,7 @@ import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
   Item,
-  RenderedItem,
+  Item,
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
@@ -54,7 +54,7 @@ function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
 }
 
 function useKeyboardEventProxy(
-  activeItem?: RenderedItem,
+  activeItem?: Item,
   onKeyboardEvent?: KeyboardEventHandler,
   previousElementRef?: RefObject<HTMLElement | null>
 ) {
@@ -62,7 +62,7 @@ function useKeyboardEventProxy(
     onKeyboardEvent?.(event);
     if (event.defaultPrevented) return;
     if (!canProxyKeyboardEvent(event)) return;
-    const activeElement = activeItem?.ref.current;
+    const activeElement = activeItem?.ref?.current;
     if (!activeElement) return;
     const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
@@ -95,11 +95,11 @@ function isItem(items: Item[], element?: Element | EventTarget | null) {
   return items.some((item) => item.ref?.current === element);
 }
 
-function useScheduleFocus(activeItem?: RenderedItem) {
+function useScheduleFocus(activeItem?: Item) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
   useEffect(() => {
-    const activeElement = activeItem?.ref.current;
+    const activeElement = activeItem?.ref?.current;
     if (scheduled && activeElement) {
       setScheduled(false);
       activeElement.focus();
@@ -126,7 +126,7 @@ export const useComposite = createHook<CompositeOptions>(
   ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
-    const activeItem = findEnabledItemById(state.renderedItems, state.activeId);
+    const activeItem = findEnabledItemById(state.items, state.activeId);
     const activeItemRef = useLiveRef(activeItem);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const isSelfActive = state.activeId === null;
@@ -137,7 +137,7 @@ export const useComposite = createHook<CompositeOptions>(
     useSafeLayoutEffect(() => {
       if (!focusOnMove) return;
       if (!state.moves) return;
-      const itemElement = activeItemRef.current?.ref.current;
+      const itemElement = activeItemRef.current?.ref?.current;
       if (!itemElement) return;
       // We're scheduling the focus on the next tick to avoid the `onFocus`
       // event on each item to be triggered before the state changes can
@@ -174,7 +174,7 @@ export const useComposite = createHook<CompositeOptions>(
       const previousElement = previousElementRef.current;
       previousElementRef.current = null;
       if (!previousElement) return;
-      const activeElement = activeItemRef.current?.ref.current;
+      const activeElement = activeItemRef.current?.ref?.current;
       const relatedTarget = activeElement || getActiveElement(previousElement);
       fireBlurEvent(previousElement, { relatedTarget });
     }, [virtualFocus, composite, state.activeId]);
@@ -260,7 +260,7 @@ export const useComposite = createHook<CompositeOptions>(
       // sequence of blurring and focusing on items and on the composite element
       // may be confusing, so we ignore intermediate focus and blur events by
       // stopping their propagation.
-      const activeElement = activeItem?.ref.current || null;
+      const activeElement = activeItem?.ref?.current || null;
       const nextActiveElement = event.relatedTarget;
       const nextActiveElementIsItem = isItem(state.items, nextActiveElement);
       // This is an intermediate blur event: blurring the composite container
@@ -319,7 +319,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (activeItemRef.current) return;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      const isGrid = !!findFirstEnabledItem(state.renderedItems)?.rowId;
+      const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
       const up = () => {
         if (isGrid) {
           const item =

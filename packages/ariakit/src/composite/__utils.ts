@@ -5,7 +5,7 @@ import { CompositeState } from "./composite-state";
 
 const NULL_ITEM = { id: "null-item", ref: { current: null } };
 
-function getMaxRowLength(array: RenderedItem[][]) {
+function getMaxRowLength(array: Item[][]) {
   let maxLength = 0;
   for (const { length } of array) {
     if (length > maxLength) {
@@ -18,7 +18,7 @@ function getMaxRowLength(array: RenderedItem[][]) {
 /**
  * Returns only enabled items.
  */
-export function getEnabledItems(items: RenderedItem[], excludeId?: string) {
+export function getEnabledItems(items: Item[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -47,7 +47,7 @@ export function findFirstEnabledItem<T extends Item>(
  * length.
  */
 export function normalizeRows(
-  rows: RenderedItem[][],
+  rows: Item[][],
   activeId?: string | null,
   focusShift?: boolean
 ) {
@@ -94,7 +94,7 @@ export function findEnabledItemById<T extends Item>(
  * precedence.
  */
 export function getActiveId(
-  items: RenderedItem[],
+  items: Item[],
   activeId?: string | null,
   passedId?: string | null
 ) {
@@ -110,7 +110,7 @@ export function getActiveId(
 /**
  * Gets all items with the passed rowId.
  */
-export function getItemsInRow(items: RenderedItem[], rowId?: string) {
+export function getItemsInRow(items: Item[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
@@ -167,10 +167,10 @@ export function flipItems<T extends Item>(
  * the first item in the second row, which is what you would expect when moving
  * up/down.
  */
-export function verticalizeItems(items: RenderedItem[]) {
+export function verticalizeItems(items: Item[]) {
   const rows = groupItemsByRows(items);
   const maxLength = getMaxRowLength(rows);
-  const verticalized: RenderedItem[] = [];
+  const verticalized: Item[] = [];
   for (let i = 0; i < maxLength; i += 1) {
     for (const row of rows) {
       const item = row[i];
@@ -233,8 +233,4 @@ export type Item = {
   ref?: RefObject<HTMLElement>;
   rowId?: string;
   disabled?: boolean;
-};
-
-export type RenderedItem<T extends Item = Item> = T & {
-  ref: RefObject<HTMLElement>;
 };

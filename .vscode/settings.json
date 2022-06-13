@@ -1,5 +1,6 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.validate.enable": true,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",

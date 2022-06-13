@@ -14,6 +14,8 @@ export function hasExpandedMenuButton(
   currentElement?: Element
 ) {
   return !!items
-    ?.filter((item) => item.ref.current !== currentElement)
-    .some((item) => item.ref.current?.getAttribute("aria-expanded") === "true");
+    ?.filter((item) => item.ref?.current && item.ref.current !== currentElement)
+    .some(
+      (item) => item.ref?.current?.getAttribute("aria-expanded") === "true"
+    );
 }

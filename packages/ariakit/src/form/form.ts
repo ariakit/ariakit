@@ -19,7 +19,7 @@ import { FormState } from "./form-state";
 
 function isField(element: HTMLElement, items: FormState["items"]) {
   return items.some(
-    (item) => item.type === "field" && item.ref.current === element
+    (item) => item.type === "field" && item.ref?.current === element
   );
 }
 
@@ -27,7 +27,7 @@ function getFirstInvalidField(items: FormState["items"]) {
   return items.find(
     (item) =>
       item.type === "field" &&
-      item.ref.current?.getAttribute("aria-invalid") === "true"
+      item.ref?.current?.getAttribute("aria-invalid") === "true"
   );
 }
 
@@ -78,7 +78,7 @@ export const useForm = createHook<FormOptions>(
       if (!shouldFocusOnSubmit) return;
       if (!state.submitFailed) return;
       const field = getFirstInvalidField(state.items);
-      const element = field?.ref.current;
+      const element = field?.ref?.current;
       if (!element) return;
       setShouldFocusOnSubmit(false);
       element.focus();
