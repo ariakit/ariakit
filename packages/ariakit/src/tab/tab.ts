@@ -12,7 +12,7 @@ import { TabState } from "./tab-state";
 
 function getPanelId(panels?: TabState["panels"], id?: string) {
   if (!id) return;
-  return panels?.items.find((panel) => panel.tabId === id)?.id;
+  return panels?.renderedItems.find((panel) => panel.tabId === id)?.id;
 }
 
 /**

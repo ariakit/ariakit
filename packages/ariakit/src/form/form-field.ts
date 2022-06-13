@@ -45,7 +45,7 @@ function acceptsNameAttribute(tagName?: string) {
 }
 
 function findItem(
-  items: FormState["items"] | undefined,
+  items: FormState["renderedItems"] | undefined,
   name: string,
   type: ItemType
 ) {
@@ -54,8 +54,8 @@ function findItem(
 
 function useItem(state: FormState | undefined, name: string, type: ItemType) {
   return useMemo(
-    () => findItem(state?.items, name, type),
-    [state?.items, name, type]
+    () => findItem(state?.renderedItems, name, type),
+    [state?.renderedItems, name, type]
   );
 }
 
@@ -101,10 +101,16 @@ export const useFormField = createHook<FormFieldOptions>(
       "setError",
       useCallback((s: FormState) => s.getError(name), [name]),
       useCallback((s: FormState) => s.getFieldTouched(name).toString(), [name]),
-      useCallback((s: FormState) => findItem(s.items, name, "label"), [name]),
-      useCallback((s: FormState) => findItem(s.items, name, "error"), [name]),
       useCallback(
-        (s: FormState) => findItem(s.items, name, "description"),
+        (s: FormState) => findItem(s.renderedItems, name, "label"),
+        [name]
+      ),
+      useCallback(
+        (s: FormState) => findItem(s.renderedItems, name, "error"),
+        [name]
+      ),
+      useCallback(
+        (s: FormState) => findItem(s.renderedItems, name, "description"),
         [name]
       ),
     ]);
@@ -122,6 +128,7 @@ export const useFormField = createHook<FormFieldOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        if (!id) return item;
         const nextItem = { ...item, id, name, type: "field" };
         if (getItemProp) {
           return getItemProp(nextItem);

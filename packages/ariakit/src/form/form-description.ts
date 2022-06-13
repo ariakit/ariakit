@@ -35,6 +35,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        if (!id) return item;
         const nextItem = { ...item, id, name, type: "description" };
         if (getItemProp) {
           return getItemProp(nextItem);

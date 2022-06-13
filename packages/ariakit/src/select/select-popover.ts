@@ -34,10 +34,10 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
     useEffect(() => {
       setItem((prevItem) => {
         if (state.mounted && prevItem) return prevItem;
-        const item = findEnabledItemByValue(state.items, value);
+        const item = findEnabledItemByValue(state.renderedItems, value);
         return item || null;
       });
-    }, [state.mounted, state.items, value]);
+    }, [state.mounted, state.renderedItems, value]);
 
     props = useSelectList({ state, ...props });
     props = usePopover({ state, initialFocusRef: item?.ref, ...props });

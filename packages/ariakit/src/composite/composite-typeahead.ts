@@ -109,9 +109,9 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         onKeyDownCaptureProp?.(event);
         if (event.defaultPrevented) return;
         if (!typeahead) return;
-        if (!state?.items) return;
+        if (!state?.renderedItems) return;
         if (!isValidTypeaheadEvent(event)) return clearChars();
-        let items = getEnabledItems(state.items);
+        let items = getEnabledItems(state.renderedItems);
         if (!isSelfTargetOrItem(event, items)) return clearChars();
         event.preventDefault();
         // We need to clear the previous cleanup timeout so we can append the

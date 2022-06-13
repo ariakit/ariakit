@@ -17,13 +17,13 @@ import { As, Options, Props } from "ariakit-utils/types";
 import { FormContext } from "./__utils";
 import { FormState } from "./form-state";
 
-function isField(element: HTMLElement, items: FormState["items"]) {
+function isField(element: HTMLElement, items: FormState["renderedItems"]) {
   return items.some(
     (item) => item.type === "field" && item.ref?.current === element
   );
 }
 
-function getFirstInvalidField(items: FormState["items"]) {
+function getFirstInvalidField(items: FormState["renderedItems"]) {
   return items.find(
     (item) =>
       item.type === "field" &&
@@ -77,7 +77,7 @@ export const useForm = createHook<FormOptions>(
     useEffect(() => {
       if (!shouldFocusOnSubmit) return;
       if (!state.submitFailed) return;
-      const field = getFirstInvalidField(state.items);
+      const field = getFirstInvalidField(state.renderedItems);
       const element = field?.ref?.current;
       if (!element) return;
       setShouldFocusOnSubmit(false);
@@ -85,7 +85,7 @@ export const useForm = createHook<FormOptions>(
       if (isTextField(element)) {
         element.select();
       }
-    }, [autoFocusOnSubmit, state.submitFailed, state.items]);
+    }, [autoFocusOnSubmit, state.submitFailed, state.renderedItems]);
 
     const onSubmitProp = props.onSubmit;
 
@@ -104,7 +104,7 @@ export const useForm = createHook<FormOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!validateOnBlur) return;
-      if (!isField(event.target, state.items)) return;
+      if (!isField(event.target, state.renderedItems)) return;
       state.validate();
     });
 

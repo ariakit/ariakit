@@ -40,7 +40,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     ...props
   }) => {
     // Use MenuBar state as a fallback.
-    const menuBarState = useStore(state || MenuBarContext, ["items"]);
+    const menuBarState = useStore(state || MenuBarContext, ["renderedItems"]);
     state =
       useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
       menuBarState;
@@ -90,7 +90,9 @@ export const useMenuItem = createHook<MenuItemOptions>(
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if there's another expanded menu button inside the menu
         // bar. Without this, the visible menus in the menu bar wouldn't close.
-        else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
+        else if (
+          hasExpandedMenuButton(state?.renderedItems, event.currentTarget)
+        ) {
           event.currentTarget.focus();
           return true;
         }

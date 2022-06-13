@@ -72,14 +72,14 @@ export function useSelectState<T extends Value = Value>({
   useEffect(() => {
     if (multiSelectable) return;
     if (initialValue != null) return;
-    if (!composite.items.length) return;
-    const item = findFirstEnabledItemWithValue(composite.items);
+    if (!composite.renderedItems.length) return;
+    const item = findFirstEnabledItemWithValue(composite.renderedItems);
     if (!item?.value) return;
     setValue((prevValue) => {
       if (prevValue || !item.value) return prevValue;
       return item.value as MutableValue<T>;
     });
-  }, [multiSelectable, initialValue, composite.items, setValue]);
+  }, [multiSelectable, initialValue, composite.renderedItems, setValue]);
 
   // Sets the active id when the value changes and the popover is hidden.
   useEffect(() => {
@@ -87,10 +87,10 @@ export function useSelectState<T extends Value = Value>({
     const values = toArray(value);
     const lastValue = values[values.length - 1];
     if (!lastValue) return;
-    const item = findEnabledItemByValue(composite.items, lastValue);
+    const item = findEnabledItemByValue(composite.renderedItems, lastValue);
     if (!item) return;
     composite.setActiveId(item.id);
-  }, [popover.mounted, composite.items, value, composite.setActiveId]);
+  }, [popover.mounted, composite.renderedItems, value, composite.setActiveId]);
 
   const mountedRef = useLiveRef(popover.mounted);
 
@@ -99,7 +99,7 @@ export function useSelectState<T extends Value = Value>({
   useEffect(() => {
     if (multiSelectable) return;
     if (!setValueOnMove && mountedRef.current) return;
-    const { activeId, items } = compositeRef.current;
+    const { activeId, renderedItems: items } = compositeRef.current;
     if (!composite.moves) return;
     if (!activeId) return;
     const item = findEnabledItemWithValueById(items, activeId);

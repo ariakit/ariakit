@@ -22,7 +22,7 @@ import {
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
-type Item = CompositeState["items"][number] & {
+type Item = CompositeState["renderedItems"][number] & {
   value?: string;
 };
 
@@ -110,10 +110,10 @@ export function useComboboxState({
   // usually happens when using the keyboard).
   const activeValue = useMemo(() => {
     if (!moved) return undefined;
-    return composite.items.find(
+    return composite.renderedItems.find(
       (item) => item.id === composite.activeId && item.value
     )?.value;
-  }, [moved, composite.items, composite.activeId]);
+  }, [moved, composite.renderedItems, composite.activeId]);
 
   const deferredValue = useDeferredValue(value);
 

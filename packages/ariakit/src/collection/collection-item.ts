@@ -29,7 +29,13 @@ function identity<T>(value: T) {
  * ```
  */
 export const useCollectionItem = createHook<CollectionItemOptions>(
-  ({ state, shouldRegisterItem = true, getItem = identity, ...props }) => {
+  ({
+    state,
+    presentation = false,
+    shouldRegisterItem = true,
+    getItem = identity,
+    ...props
+  }) => {
     state = useStore(state, ["registerItem"]);
     const contextRegisterItem = useContext(CollectionItemContext);
     const registerItem = state?.registerItem || contextRegisterItem;
@@ -39,8 +45,8 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     useSafeLayoutEffect(() => {
       if (!id) return;
       if (!shouldRegisterItem) return;
-      return registerItem?.(getItem({ id, ref }));
-    }, [id, shouldRegisterItem, getItem, registerItem]);
+      return registerItem?.(getItem({ id, ref, presentation }));
+    }, [id, shouldRegisterItem, getItem, registerItem, presentation]);
 
     props = {
       ...props,
@@ -78,6 +84,10 @@ export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
    * parent `Collection` component's context will be used.
    */
   state?: CollectionState;
+  /**
+   * TODO
+   */
+  presentation?: boolean;
   /**
    * Whether the item should be registered to the state.
    * @default true

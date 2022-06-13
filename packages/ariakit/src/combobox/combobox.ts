@@ -32,7 +32,7 @@ import {
 import { ComboboxState } from "./combobox-state";
 
 function isFirstItemAutoSelected(
-  items: ComboboxState["items"],
+  items: ComboboxState["renderedItems"],
   activeValue: ComboboxState["activeValue"],
   autoSelect: ComboboxProps["autoSelect"]
 ) {
@@ -109,7 +109,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         return state.value;
       }
       const firstItemAutoSelected = isFirstItemAutoSelected(
-        state.items,
+        state.renderedItems,
         state.activeValue,
         autoSelect
       );
@@ -124,14 +124,20 @@ export const useCombobox = createHook<ComboboxOptions>(
         return state.value;
       }
       return state.activeValue || state.value;
-    }, [inline, state.value, state.items, autoSelect, state.activeValue]);
+    }, [
+      inline,
+      state.value,
+      state.renderedItems,
+      autoSelect,
+      state.activeValue,
+    ]);
 
     // Highlights the completion string
     useEffect(() => {
       if (!inline) return;
       if (!state.activeValue) return;
       const firstItemAutoSelected = isFirstItemAutoSelected(
-        state.items,
+        state.renderedItems,
         state.activeValue,
         autoSelect
       );
@@ -144,7 +150,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       valueUpdated,
       inline,
       state.activeValue,
-      state.items,
+      state.renderedItems,
       autoSelect,
       state.value,
     ]);
@@ -162,14 +168,14 @@ export const useCombobox = createHook<ComboboxOptions>(
     // items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
-      if (!state.items.length) return;
+      if (!state.renderedItems.length) return;
       if (!hasInsertedTextRef.current) return;
       state.move(state.first());
     }, [
       valueUpdated,
       state.value,
       autoSelect,
-      state.items,
+      state.renderedItems,
       state.move,
       state.first,
     ]);
@@ -287,7 +293,7 @@ export const useCombobox = createHook<ComboboxOptions>(
           // items, only on the combobox input.
           return event.stopPropagation();
         }
-        const hasRows = state.items.some((item) => !!item.rowId);
+        const hasRows = state.renderedItems.some((item) => !!item.rowId);
         const focusingInputOnly = state.activeId === null;
         // Pressing Home or End keys on the combobox should only be allowed when
         // the widget has rows and the combobox input is not the only element

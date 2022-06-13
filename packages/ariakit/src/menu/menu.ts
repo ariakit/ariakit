@@ -13,7 +13,7 @@ import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuListOptions, useMenuList } from "./menu-list";
 import { MenuState } from "./menu-state";
 
-function getItemRefById(items: MenuState["items"], id?: null | string) {
+function getItemRefById(items: MenuState["renderedItems"], id?: null | string) {
   if (!id) return;
   return items.find((item) => item.id === id)?.ref;
 }
@@ -77,9 +77,9 @@ export const useMenu = createHook<MenuOptions>(
         if (prevInitialFocusRef) return prevInitialFocusRef;
         switch (state.initialFocus) {
           case "first":
-            return getItemRefById(state.items, state.first());
+            return getItemRefById(state.renderedItems, state.first());
           case "last":
-            return getItemRefById(state.items, state.last());
+            return getItemRefById(state.renderedItems, state.last());
           default:
             return state.baseRef;
         }
@@ -87,7 +87,7 @@ export const useMenu = createHook<MenuOptions>(
     }, [
       state.autoFocusOnShow,
       state.initialFocus,
-      state.items,
+      state.renderedItems,
       state.first,
       state.last,
       state.baseRef,

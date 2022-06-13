@@ -13,7 +13,7 @@ import { FormContext, StringLike } from "./__utils";
 import { FormState } from "./form-state";
 
 function findNextOrPreviousField(
-  items: FormState["items"] | undefined,
+  items: FormState["renderedItems"] | undefined,
   name: string,
   index: number
 ) {
@@ -32,7 +32,10 @@ function findNextOrPreviousField(
   });
 }
 
-function findPushButton(items: FormState["items"] | undefined, name: string) {
+function findPushButton(
+  items: FormState["renderedItems"] | undefined,
+  name: string
+) {
   return items?.find((item) => item.type === "button" && item.name === name);
 }
 
@@ -64,7 +67,7 @@ function findPushButton(items: FormState["items"] | undefined, name: string) {
 export const useFormRemove = createHook<FormRemoveOptions>(
   ({ state, name: nameProp, index, autoFocusOnClick = true, ...props }) => {
     const name = `${nameProp}`;
-    state = useStore(state || FormContext, ["items", "removeValue"]);
+    state = useStore(state || FormContext, ["renderedItems", "removeValue"]);
 
     const onClickProp = props.onClick;
 
@@ -73,7 +76,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
       if (event.defaultPrevented) return;
       state?.removeValue(name, index);
       if (!autoFocusOnClick) return;
-      const item = findNextOrPreviousField(state?.items, name, index);
+      const item = findNextOrPreviousField(state?.renderedItems, name, index);
       const element = item?.ref?.current;
       if (element) {
         element.focus();
@@ -81,7 +84,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
           element.select();
         }
       } else {
-        const pushButton = findPushButton(state?.items, name);
+        const pushButton = findPushButton(state?.renderedItems, name);
         pushButton?.ref?.current?.focus();
       }
     });

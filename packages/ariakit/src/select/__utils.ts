@@ -3,7 +3,7 @@ import { createStoreContext } from "ariakit-utils/store";
 import { CompositeState } from "../composite/composite-state";
 import { SelectState } from "./select-state";
 
-export type Item = CompositeState["items"][number] & {
+export type Item = CompositeState["renderedItems"][number] & {
   value?: string;
 };
 

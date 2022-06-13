@@ -34,7 +34,6 @@ import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
   Item,
-  Item,
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
@@ -126,7 +125,7 @@ export const useComposite = createHook<CompositeOptions>(
   ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
-    const activeItem = findEnabledItemById(state.items, state.activeId);
+    const activeItem = findEnabledItemById(state.renderedItems, state.activeId);
     const activeItemRef = useLiveRef(activeItem);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const isSelfActive = state.activeId === null;
@@ -199,7 +198,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (!virtualFocus) return;
       const previousActiveElement = event.relatedTarget as HTMLElement | null;
       const previousActiveElementWasItem = isItem(
-        state.items,
+        state.renderedItems,
         previousActiveElement
       );
       if (isSelfTarget(event) && previousActiveElementWasItem) {
@@ -262,7 +261,10 @@ export const useComposite = createHook<CompositeOptions>(
       // stopping their propagation.
       const activeElement = activeItem?.ref?.current || null;
       const nextActiveElement = event.relatedTarget;
-      const nextActiveElementIsItem = isItem(state.items, nextActiveElement);
+      const nextActiveElementIsItem = isItem(
+        state.renderedItems,
+        nextActiveElement
+      );
       // This is an intermediate blur event: blurring the composite container
       // to focus on an item (nextActiveElement).
       if (isSelfTarget(event) && nextActiveElementIsItem) {
@@ -298,7 +300,7 @@ export const useComposite = createHook<CompositeOptions>(
         // propagation of this event.
         event.stopPropagation();
       } else {
-        const targetIsItem = isItem(state.items, event.target);
+        const targetIsItem = isItem(state.renderedItems, event.target);
         // If target is not a composite item, it may be the composite element
         // itself (isSelfTarget) or a tabbable element inside the composite
         // element. This may be triggered by clicking outside of the composite
@@ -319,11 +321,12 @@ export const useComposite = createHook<CompositeOptions>(
       if (activeItemRef.current) return;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
+      const isGrid = !!findFirstEnabledItem(state.renderedItems)?.rowId;
       const up = () => {
         if (isGrid) {
           const item =
-            state.items && findFirstEnabledItemInTheLastRow(state.items);
+            state.renderedItems &&
+            findFirstEnabledItemInTheLastRow(state.renderedItems);
           return item?.id;
         }
         return state.last();

@@ -59,7 +59,6 @@ export const useMenuList = createHook<MenuListOptions>(
   ({ state, composite = true, ...props }) => {
     const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, [
-      "items",
       "move",
       "next",
       "previous",

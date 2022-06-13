@@ -47,6 +47,7 @@ export const useFormError = createHook<FormErrorOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        if (!id) return item;
         const nextItem = { ...item, id, name, type: "error" };
         if (getItemProp) {
           return getItemProp(nextItem);

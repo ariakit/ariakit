@@ -21,7 +21,7 @@ import { TabState } from "./tab-state";
 
 function getTabId(panels: TabState["panels"], id?: string) {
   if (!id) return;
-  return panels.items.find((panel) => panel.id === id)?.tabId;
+  return panels.renderedItems.find((panel) => panel.id === id)?.tabId;
 }
 
 /**
@@ -54,6 +54,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        if (!id) return item;
         const nextItem = { ...item, id, tabId: tabIdProp };
         if (getItemProp) {
           return getItemProp(nextItem);

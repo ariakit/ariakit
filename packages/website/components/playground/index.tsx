@@ -91,7 +91,7 @@ export default function Playground(props: PlaygroundProps) {
     list: files,
     getContainer: useEvent(() => tab.baseRef.current),
     getElements: useEvent(() =>
-      tab.items.map((item) => item.ref?.current || null)
+      tab.renderedItems.map((item) => item.ref?.current || null)
     ),
     setList: useCallback(
       ([nextVisible, nextHidden]: [string[], string[]]) => {

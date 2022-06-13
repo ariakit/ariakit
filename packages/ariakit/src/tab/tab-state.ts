@@ -12,11 +12,11 @@ import {
   useCompositeState,
 } from "../composite/composite-state";
 
-type Item = CompositeState["items"][number] & {
+type Item = CompositeState["renderedItems"][number] & {
   dimmed?: boolean;
 };
 
-type Panel = CollectionState["items"][number] & {
+type Panel = CollectionState["renderedItems"][number] & {
   id: string;
   tabId?: string | null;
 };
@@ -63,7 +63,7 @@ export function useTabState({
   // the keyboard.
   useEffect(() => {
     if (!selectOnMove) return;
-    const { activeId, items } = compositeRef.current;
+    const { activeId, renderedItems: items } = compositeRef.current;
     if (!activeId) return;
     const tab = findEnabledTabById(items, activeId);
     if (!tab) return;
@@ -81,31 +81,31 @@ export function useTabState({
     if (selectedId !== undefined) return;
     // First, we try to set selectedId based on the current active tab.
     const activeId = compositeRef.current.activeId;
-    const tab = findEnabledTabById(composite.items, activeId);
+    const tab = findEnabledTabById(composite.renderedItems, activeId);
     if (tab) {
       setSelectedId(activeId);
     }
     // If there's no active tab or the active tab is dimmed, we get the first
     // enabled tab instead.
     else {
-      const firstEnabledTab = findFirstEnabledTab(composite.items);
+      const firstEnabledTab = findFirstEnabledTab(composite.renderedItems);
       setSelectedId(firstEnabledTab?.id);
     }
-  }, [selectedId, composite.items, setSelectedId]);
+  }, [selectedId, composite.renderedItems, setSelectedId]);
 
   // Keep panels tabIds in sync with the current tabs.
   useEffect(() => {
-    if (!composite.items.length) return;
-    panels.setItems((prevPanels) => {
+    if (!composite.renderedItems.length) return;
+    panels.setRenderedItems((prevPanels) => {
       const hasOrphanPanels = prevPanels.some((panel) => !panel.tabId);
       if (!hasOrphanPanels) return prevPanels;
       return prevPanels.map((panel, i) => {
         if (panel.tabId) return panel;
-        const tab = composite.items[i];
+        const tab = composite.renderedItems[i];
         return { ...panel, tabId: tab?.id };
       });
     });
-  }, [composite.items, panels.setItems]);
+  }, [composite.renderedItems, panels.setRenderedItems]);
 
   const select: TabState["select"] = useCallback(
     (id) => {

@@ -5,10 +5,7 @@ import { CollectionState } from "./collection-state";
 export type Item = {
   id: string;
   ref?: RefObject<HTMLElement>;
-};
-
-export type RenderedItem<T extends Item = Item> = T & {
-  ref: RefObject<HTMLElement>;
+  presentation?: boolean;
 };
 
 export const CollectionContext = createStoreContext<CollectionState>();

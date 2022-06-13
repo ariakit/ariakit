@@ -12,7 +12,10 @@ import {
 import { FormContext, StringLike } from "./__utils";
 import { FormState } from "./form-state";
 
-function findField(items: FormState["items"] | undefined, name: string) {
+function findField(
+  items: FormState["renderedItems"] | undefined,
+  name: string
+) {
   return items?.find((item) => item.type === "field" && item.name === name);
 }
 
@@ -48,7 +51,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
   ({ state, name: nameProp, getItem: getItemProp, ...props }) => {
     const name = `${nameProp}`;
     state = useStore(state || FormContext, [
-      useCallback((s: FormState) => findField(s.items, name), [name]),
+      useCallback((s: FormState) => findField(s.renderedItems, name), [name]),
     ]);
 
     const ref = useRef<HTMLInputElement>(null);
@@ -56,6 +59,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        if (!id) return item;
         const nextItem = { ...item, id, name, type: "label" };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -65,7 +69,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
       [id, name, getItemProp]
     );
 
-    const field = findField(state?.items, name);
+    const field = findField(state?.renderedItems, name);
     const fieldTagName = useTagName(field?.ref, "input");
     const isNativeLabel = supportsNativeLabel(fieldTagName);
 

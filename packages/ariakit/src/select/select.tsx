@@ -107,16 +107,21 @@ export const useSelect = createHook<SelectOptions>(
       // moveOnKeyDown
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      const isGrid = !!findFirstEnabledItemWithValue(state.items)?.rowId;
+      const isGrid = !!findFirstEnabledItemWithValue(state.renderedItems)
+        ?.rowId;
       const moveKeyMap = {
-        ArrowUp: (isGrid || isVertical) && nextWithValue(state.items, state.up),
+        ArrowUp:
+          (isGrid || isVertical) &&
+          nextWithValue(state.renderedItems, state.up),
         ArrowRight:
-          (isGrid || isHorizontal) && nextWithValue(state.items, state.next),
+          (isGrid || isHorizontal) &&
+          nextWithValue(state.renderedItems, state.next),
         ArrowDown:
-          (isGrid || isVertical) && nextWithValue(state.items, state.down),
+          (isGrid || isVertical) &&
+          nextWithValue(state.renderedItems, state.down),
         ArrowLeft:
           (isGrid || isHorizontal) &&
-          nextWithValue(state.items, state.previous),
+          nextWithValue(state.renderedItems, state.previous),
       };
       const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
       if (getId && moveOnKeyDownProp(event)) {
@@ -177,9 +182,11 @@ export const useSelect = createHook<SelectOptions>(
     const values = useMemo(
       // Filter out items without value and duplicate values.
       () => [
-        ...new Set(state.items.map((i) => i.value!).filter((i) => i != null)),
+        ...new Set(
+          state.renderedItems.map((i) => i.value!).filter((i) => i != null)
+        ),
       ],
-      [state.items]
+      [state.renderedItems]
     );
 
     // Renders a native select element with the same value as the select so we

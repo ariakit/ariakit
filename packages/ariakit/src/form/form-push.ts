@@ -16,11 +16,11 @@ import { FormContext, StringLike } from "./__utils";
 import { FormState } from "./form-state";
 
 function getFirstFieldsByName(
-  items: FormState["items"] | undefined,
+  items: FormState["renderedItems"] | undefined,
   name: string
 ) {
   if (!items) return [];
-  const fields: FormState["items"] = [];
+  const fields: FormState["renderedItems"] = [];
   for (const item of items) {
     if (item.type !== "field") continue;
     if (!item.name.startsWith(name)) continue;
@@ -68,18 +68,18 @@ export const useFormPush = createHook<FormPushOptions>(
     ...props
   }) => {
     const name = `${nameProp}`;
-    state = useStore(state || FormContext, ["pushValue", "items"]);
+    state = useStore(state || FormContext, ["pushValue", "renderedItems"]);
 
     const [shouldFocus, setShouldFocus] = useState(false);
 
     useEffect(() => {
       if (!shouldFocus) return;
-      const items = getFirstFieldsByName(state?.items, name);
+      const items = getFirstFieldsByName(state?.renderedItems, name);
       const element = items?.[items.length - 1]?.ref?.current;
       if (!element) return;
       element.focus();
       setShouldFocus(false);
-    }, [shouldFocus, state?.items, name]);
+    }, [shouldFocus, state?.renderedItems, name]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {

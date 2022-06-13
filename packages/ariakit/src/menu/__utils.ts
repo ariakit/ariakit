@@ -10,7 +10,7 @@ export const MenuItemCheckedContext = createContext<boolean | undefined>(
 );
 
 export function hasExpandedMenuButton(
-  items?: MenuState["items"],
+  items?: MenuState["renderedItems"],
   currentElement?: Element
 ) {
   return !!items

@@ -29,7 +29,7 @@ import {
 type ErrorMessage = string | undefined | null;
 type Callback = () => void | Promise<void>;
 
-type Item = CollectionState["items"][number] & {
+type Item = CollectionState["renderedItems"][number] & {
   type: "field" | "label" | "description" | "error" | "button";
   name: string;
   id?: string;

@@ -59,8 +59,8 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
 export const useMenuButton = createHook<MenuButtonOptions>(
   ({ state, focusable, accessibleWhenDisabled, showOnHover, ...props }) => {
     const ref = useRef<HTMLElement>(null);
-    const parentMenu = useStore(MenuContext, ["items", "move"]);
-    const parentMenuBar = useStore(MenuBarContext, ["items", "move"]);
+    const parentMenu = useStore(MenuContext, ["renderedItems", "move"]);
+    const parentMenuBar = useStore(MenuBarContext, ["renderedItems", "move"]);
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled =
@@ -92,7 +92,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       if (!parentMenuBar) return;
       if (!parentIsMenuBar) return;
       // and there's already another expanded menu button.
-      if (hasExpandedMenuButton(parentMenuBar.items, event.currentTarget)) {
+      if (
+        hasExpandedMenuButton(parentMenuBar.renderedItems, event.currentTarget)
+      ) {
         state.show();
       }
     });
@@ -168,7 +170,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         if (typeof showOnHover === "function") return showOnHover(event);
         if (showOnHover != null) return showOnHover;
         if (hasParentMenu) return true;
-        return parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.items);
+        return (
+          parentIsMenuBar && hasExpandedMenuButton(parentMenuBar.renderedItems)
+        );
       },
     });
 
