@@ -9,23 +9,13 @@
     "website": "0.0.0"
   },
   "changesets": [
-    "add-global-event-listener-frames-undefined",
-    "composite-hover-focus-visible",
     "drop-react-16",
     "npmignore-src-folder",
-    "playground-scrollbars",
     "popover-flip-fallback-placements",
     "popover-state-auto-placements",
     "popover-state-fit-viewport",
     "popover-state-overlap",
     "popover-state-shift-gutter",
-    "popover-state-slide",
-    "prevent-body-scroll",
-    "select-modal-show",
-    "test-hover-microtask",
-    "test-is-browser-error",
-    "test-mouse-down-up",
-    "test-select",
-    "utils-use-event-timing"
+    "popover-state-slide"
   ]
 }
