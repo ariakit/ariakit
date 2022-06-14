@@ -71,6 +71,7 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       if (!element) return;
       const scrollerElement = element.querySelector(".cm-scroller");
       if (!scrollerElement) return;
+      if (typeof ResizeObserver !== "function") return;
       const observer = new ResizeObserver(() => {
         setCollapsible(scrollerElement.scrollHeight > maxHeight);
       });
