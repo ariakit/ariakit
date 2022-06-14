@@ -3,15 +3,27 @@ description: Suggest an idea for this project.
 labels: ["feature"]
 body:
   - type: textarea
+    validations:
+      required: true
     attributes:
       label: Motivation
       description: Outline the motivation for the proposal.
-    validations:
-      required: true
   - type: textarea
     attributes:
       label: Usage example
-      description: Provide documentation and code examples for how this feature would be used.
+      description: Provide code examples for how this feature could be used.
+      placeholder: |
+        As string:
+
+        ```jsx
+        <NewComponent newProp="newValue" />
+        ```
+
+        As boolean:
+
+        ```jsx
+        <NewComponent newProp />
+        ```
   - type: textarea
     attributes:
       label: Workaround
