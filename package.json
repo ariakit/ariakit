@@ -80,7 +80,7 @@
     "lerna": "5.1.2",
     "lint-staged": "13.0.1",
     "lodash": "4.17.21",
-    "marked": "4.0.16",
+    "marked": "4.0.17",
     "open-cli": "7.0.1",
     "postcss": "8.4.14",
     "postcss-combine-duplicated-selectors": "10.0.3",
