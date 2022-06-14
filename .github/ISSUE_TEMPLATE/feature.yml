@@ -14,13 +14,11 @@ body:
       description: Provide code examples for how this feature could be used.
       placeholder: |
         As string:
-
         ```jsx
         <NewComponent newProp="newValue" />
         ```
 
         As boolean:
-
         ```jsx
         <NewComponent newProp />
         ```
