@@ -29,5 +29,9 @@ body:
       required: true
   - type: textarea
     attributes:
+      label: Workaround
+      description: If you have fixed this issue in userland, please describe your solution here to help others.
+  - type: textarea
+    attributes:
       label: Possible solutions
-      description: If possible, describe how this bug could be fixed.
+      description: If possible, describe how this bug could be fixed in the library code.
