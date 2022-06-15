@@ -324,7 +324,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
           event.preventDefault();
           state?.move(nextId);
         }
-        return;
       }
     });
 

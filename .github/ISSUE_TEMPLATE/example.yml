@@ -3,13 +3,13 @@ description: Suggest a use case for a component.
 labels: ["examples"]
 body:
   - type: textarea
+    validations:
+      required: true
     attributes:
       label: Description
       description: >
         Describe the use case. **Make sure you include screenshots, videos
         and/or code sandboxes**, otherwise the request may be ignored.
-    validations:
-      required: true
   - type: textarea
     attributes:
       label: Requirements

@@ -26,6 +26,7 @@ export default function useOverflowList<T>({
   useEffect(() => {
     const container = getContainer();
     if (!container) return;
+    if (typeof ResizeObserver !== "function") return;
     const observer = new ResizeObserver(() => {
       const elements = getElements(container);
       const availableWidth = container.offsetWidth - disclosureWidth;

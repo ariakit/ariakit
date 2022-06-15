@@ -32,9 +32,11 @@ classList(localStorage.theme === "dark" ? "add" : "remove");
 if (!("theme" in localStorage)) {
   const query = window.matchMedia("(prefers-color-scheme: dark)");
   classList(query.matches ? "add" : "remove");
-  query.addEventListener("change", (event) => {
-    classList(event.matches ? "add" : "remove");
-  })
+  if ("addEventListener" in query) {
+    query.addEventListener("change", (event) => {
+      classList(event.matches ? "add" : "remove");
+    })
+  }
 }`;
 
 class MyDocument extends Document {
