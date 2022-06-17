@@ -10,6 +10,9 @@ body:
       description: >
         Describe the use case. **Make sure you include screenshots, videos
         and/or code sandboxes**, otherwise the request may be ignored.
+      placeholder: >
+        Make sure you include screenshots, videos and/or code sandboxes, otherwise
+        the request may be ignored.
   - type: textarea
     attributes:
       label: Requirements
