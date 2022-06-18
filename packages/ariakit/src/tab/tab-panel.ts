@@ -64,7 +64,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     );
 
     const tabId = tabIdProp || getTabId(state.panels, id);
-    const visible = !!tabId && state.selectedId === tabId;
+    const open = !!tabId && state.selectedId === tabId;
 
     props = {
       id,
@@ -74,7 +74,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
       ref: useForkRef(ref, props.ref),
     };
 
-    const disclosure = useDisclosureState({ visible });
+    const disclosure = useDisclosureState({ open });
 
     props = useFocusable({ focusable: !hasTabbableChildren, ...props });
     props = useDisclosureContent({ state: disclosure, ...props });
