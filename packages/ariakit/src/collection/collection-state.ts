@@ -157,9 +157,6 @@ export function useCollectionState<T extends Item = Item>(
   const registerItem = useCallback((item: T) => {
     let prevItem: T | undefined;
     let index: number | undefined;
-
-    const rendered = !!item.ref && !item.presentation;
-
     setItems((items) => {
       prevItem = items.find(({ id }) => id === item.id);
       const nextItems = items.slice();
@@ -171,14 +168,6 @@ export function useCollectionState<T extends Item = Item>(
       }
       return nextItems;
     });
-
-    if (rendered) {
-      setRenderedItems((items) => {
-        const index = findDOMIndex(items, item);
-        return addItemToArray(items, item, index);
-      });
-    }
-
     const unregisterItem = () => {
       setItems((items) => {
         if (!prevItem) return items.filter(({ id }) => id !== item.id);
@@ -187,18 +176,29 @@ export function useCollectionState<T extends Item = Item>(
         nextItems[index] = prevItem;
         return nextItems;
       });
+    };
+    return unregisterItem;
+  }, []);
 
-      if (rendered) {
+  const renderItem = useCallback(
+    (item: T) => {
+      const unregisterItem = registerItem(item);
+      setRenderedItems((items) => {
+        const index = findDOMIndex(items, item);
+        return addItemToArray(items, item, index);
+      });
+      const unrenderItem = () => {
+        unregisterItem();
         setRenderedItems((items) => {
           const nextItems = items.filter(({ ref }) => ref !== item.ref);
           if (items.length === nextItems.length) return items;
           return nextItems;
         });
-      }
-    };
-
-    return unregisterItem;
-  }, []);
+      };
+      return unrenderItem;
+    },
+    [registerItem]
+  );
 
   const state = useMemo(
     () => ({
@@ -207,8 +207,9 @@ export function useCollectionState<T extends Item = Item>(
       renderedItems,
       setRenderedItems,
       registerItem,
+      renderItem,
     }),
-    [items, setItems, renderedItems, setRenderedItems, registerItem]
+    [items, setItems, renderedItems, setRenderedItems, registerItem, renderItem]
   );
 
   return state;
@@ -245,8 +246,8 @@ export type CollectionState<T extends Item = Item> = {
   /**
    * Array with all the items with their respective `id`s and `ref`s. This state
    * is automatically updated when an item is registered or unregistered with
-   * the `registerItem` function. The order of the items is automatically
-   * defined by the order of the elements in the DOM.
+   * the `renderItem` function. The order of the items is automatically defined
+   * by the order of the elements in the DOM.
    * @example
    * const { renderedItems } = useCollectionState();
    * renderedItems.forEach((item) => {
@@ -274,14 +275,25 @@ export type CollectionState<T extends Item = Item> = {
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
    * @example
-   * const ref = useRef();
    * const { registerItem } = useCollectionState();
    * useEffect(() => {
-   *   const unregisterItem = registerItem({ id: "item-1", ref });
+   *   const unregisterItem = registerItem({ id: "item-1" });
    *   return unregisterItem;
    * }, [registerItem]);
    */
   registerItem: BivariantCallback<(item: T) => () => void>;
+  /**
+   * Registers a rendered item in the collection. This function returns a
+   * cleanup function that unregisters the item.
+   * @example
+   * const ref = useRef();
+   * const { renderItem } = useCollectionState();
+   * useEffect(() => {
+   *   const unrenderItem = renderItem({ id: "item-1", ref });
+   *   return unrenderItem;
+   * }, [renderItem]);
+   */
+  renderItem: BivariantCallback<(item: T) => () => void>;
 };
 
 export type CollectionStateProps<T extends Item = Item> = Partial<

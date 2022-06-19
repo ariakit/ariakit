@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 import { useForkRef, useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
@@ -7,7 +7,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { CollectionItemContext, Item } from "./__utils";
+import { CollectionContext, Item } from "./__utils";
 import { CollectionState } from "./collection-state";
 
 function identity<T>(value: T) {
@@ -36,17 +36,15 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     getItem = identity,
     ...props
   }) => {
-    state = useStore(state, ["registerItem"]);
-    const contextRegisterItem = useContext(CollectionItemContext);
-    const registerItem = state?.registerItem || contextRegisterItem;
+    state = useStore(state || CollectionContext, ["renderItem"]);
     const ref = useRef<HTMLElement>(null);
     const id = useId(props.id);
 
     useSafeLayoutEffect(() => {
       if (!id) return;
       if (!shouldRegisterItem) return;
-      return registerItem?.(getItem({ id, ref, presentation }));
-    }, [id, shouldRegisterItem, getItem, registerItem, presentation]);
+      return state?.renderItem(getItem({ id, ref }));
+    }, [id, shouldRegisterItem, getItem, state?.renderItem]);
 
     props = {
       ...props,

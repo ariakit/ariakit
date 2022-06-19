@@ -1,4 +1,3 @@
-import { useWrapElement } from "ariakit-utils/hooks";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -6,7 +5,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { CollectionContext, CollectionItemContext } from "./__utils";
+import { CollectionContext } from "./__utils";
 import { CollectionState } from "./collection-state";
 
 /**
@@ -28,16 +27,6 @@ import { CollectionState } from "./collection-state";
 export const useCollection = createHook<CollectionOptions>(
   ({ state, ...props }) => {
     props = useStoreProvider({ state, ...props }, CollectionContext);
-    props = useWrapElement(
-      props,
-      (element) => (
-        <CollectionItemContext.Provider value={state.registerItem}>
-          {element}
-        </CollectionItemContext.Provider>
-      ),
-      [state.registerItem]
-    );
-
     return props;
   }
 );
