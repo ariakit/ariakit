@@ -1,4 +1,6 @@
+import { getByTestId } from "@testing-library/dom";
 import { click, getByRole, getByText, press, render } from "ariakit-test";
+import { FocusTrapRegion } from "ariakit/focus-trap";
 import Example from ".";
 
 test("correctly traps focus in region", async () => {
@@ -51,4 +53,21 @@ test("correctly releases focus from region", async () => {
   await press.Tab();
   await press.Tab();
   expect(getByText("After")).toHaveFocus();
+});
+
+test("correctly fallbacks to container if no focusable elements are found", async () => {
+  const { container } = render(
+    <div>
+      <div tabIndex={0}>Before</div>
+      <FocusTrapRegion tabIndex={-1} data-testid="region" enabled />
+      <div tabIndex={0}>After</div>
+    </div>
+  );
+  await press.Tab();
+  expect(getByText("Before")).toHaveFocus();
+  await press.Tab();
+  expect(getByTestId(container, "region")).toHaveFocus();
+  // focus remains on the container
+  await press.Tab();
+  expect(getByTestId(container, "region")).toHaveFocus();
 });
