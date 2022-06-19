@@ -35,6 +35,11 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
                 const tabbables = getAllTabbableIn(container.current, true);
                 const first = tabbables[0];
                 const last = tabbables[tabbables.length - 1];
+                // Fallbacks to the container element
+                if (tabbables.length < 1) {
+                  container.current.focus();
+                  return;
+                }
                 if (event.relatedTarget === first) {
                   last?.focus();
                 } else {
