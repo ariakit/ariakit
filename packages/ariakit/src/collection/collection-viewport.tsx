@@ -5,6 +5,7 @@ import {
   ReactElement,
   RefObject,
   forwardRef,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -14,6 +15,7 @@ import {
   useControlledState,
   useEvent,
   useForkRef,
+  useLazyValue,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
@@ -131,12 +133,22 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   items = items || state?.items;
 
   const ref = useRef<HTMLDivElement>(null);
+  const elements = useLazyValue(() => new Map<string, HTMLElement>());
   const [visibleItems, setVisibleItems] = useState<ViewportItem[]>([]);
   const [data, setData] = useControlledState(
     () => new Map(),
     dataProp,
     setDataProp
   );
+
+  // TODO: When scrolling up, we should check the last item and get its scroll
+  // offset. Then, correct the scroll position after the items size are
+  // calculated so we don't have a scroll flickering.
+  const elementRef = useCallback((element: HTMLElement | null) => {
+    if (element) {
+      elements.set(element.id, element);
+    }
+  }, []);
 
   useSafeLayoutEffect(() => {
     setData((data) => {
@@ -167,6 +179,10 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
 
         if (item.ref?.current) {
           const element = item.ref.current as HTMLElement;
+          const { width, height } = element.getBoundingClientRect();
+          setSize(horizontal ? width : height, true);
+        } else if (elements.get(item.id)?.isConnected) {
+          const element = elements.get(item.id)!;
           const { width, height } = element.getBoundingClientRect();
           setSize(horizontal ? width : height, true);
         } else if (prevData?.rendered) {
@@ -266,7 +282,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       top: 0,
       ...item.style,
     };
-    const props = { ...item, key: item.id, style };
+    const props = { ...item, key: item.id, style, ref: item.ref || elementRef };
     if (renderItem) {
       // @ts-expect-error
       return renderItem?.(props);
