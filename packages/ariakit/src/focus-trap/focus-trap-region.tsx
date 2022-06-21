@@ -1,4 +1,4 @@
-import React from "react";
+import { useRef } from "react";
 import { getAllTabbableIn } from "ariakit-utils/focus";
 import { useForkRef, useWrapElement } from "ariakit-utils/hooks";
 import {
@@ -7,7 +7,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
-import { FocusTrap } from "ariakit/focus-trap";
+import { FocusTrap } from "./focus-trap";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -21,7 +21,7 @@ import { FocusTrap } from "ariakit/focus-trap";
  */
 export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
   ({ enabled = false, ...props }) => {
-    const container = React.useRef<HTMLDivElement>();
+    const ref = useRef<HTMLDivElement>(null);
 
     props = useWrapElement(
       props,
@@ -31,13 +31,14 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
           return (
             <FocusTrap
               onFocus={(event) => {
-                if (!container.current) return;
-                const tabbables = getAllTabbableIn(container.current, true);
+                const container = ref.current;
+                if (!container) return;
+                const tabbables = getAllTabbableIn(container, true);
                 const first = tabbables[0];
                 const last = tabbables[tabbables.length - 1];
                 // Fallbacks to the container element
-                if (tabbables.length < 1) {
-                  container.current.focus();
+                if (!tabbables.length) {
+                  container.focus();
                   return;
                 }
                 if (event.relatedTarget === first) {
@@ -62,7 +63,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(container, props.ref),
+      ref: useForkRef(ref, props.ref),
     };
 
     return props;
@@ -90,8 +91,7 @@ export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
 
 export type FocusTrapRegionOptions<T extends As = "div"> = Options<T> & {
   /**
-   * If true, will trap the focus in the region
-   *
+   * If true, it will trap the focus in the region.
    * @default false
    */
   enabled?: boolean;
