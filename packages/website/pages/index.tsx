@@ -14,6 +14,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/collection", label: "Collection" },
   { href: "/examples/combobox", label: "Combobox" },
   { href: "/examples/combobox-cancel", label: "Combobox cancel" },
+  { href: "/examples/combobox-disclosure", label: "Combobox disclosure" },
   { href: "/examples/combobox-matches", label: "Combobox matches" },
   { href: "/examples/combobox-multiple", label: "Combobox multiple" },
   { href: "/examples/command", label: "Command" },
