@@ -3,8 +3,11 @@
 }
 
 .collection-item {
-  max-width: 75%;
-  @apply pt-2 scroll-m-2;
+  @apply w-full scroll-m-2;
+}
+
+.collection-item.even {
+  @apply bg-canvas-1;
 }
 
 [data-group="group-1"] + [data-group="group-1"] {

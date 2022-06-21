@@ -20,8 +20,9 @@ function randomIntFromInterval(min: number, max: number) {
 const items = Array.from({ length: 10000 }, (_, i) => ({
   id: `item-${i}`,
   children: `item-${i}`,
-  lol: randomIntFromInterval(40, 200),
-  type: i % 30 === 0 ? "presentation" : undefined,
+  lol: randomIntFromInterval(30, 200),
+  i,
+  // type: i % 30 === 0 ? "presentation" : undefined,
 }));
 
 export default function Example() {
@@ -72,7 +73,7 @@ export default function Example() {
             );
           }}
         >
-          {({ lol, type, ...item }) =>
+          {({ lol, type, i, ...item }) =>
             type === "presentation" ? (
               <div {...item} style={{ ...item.style, height: lol }}>
                 Title
@@ -82,7 +83,7 @@ export default function Example() {
                 as="div"
                 {...item}
                 style={{ ...item.style, height: lol }}
-                className="collection-item"
+                className={`collection-item ${i % 2 === 0 ? "even" : "odd"}`}
               >
                 <div className="collection-item-child">{item.children}</div>
               </CompositeItem>

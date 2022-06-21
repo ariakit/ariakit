@@ -119,7 +119,7 @@ function findNearestBinarySearch<T extends ViewportItem = ViewportItem>(
 export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   state,
   items,
-  itemSize = 40,
+  itemSize,
   overscan = 1,
   gap = 0,
   children: renderItem,
@@ -141,9 +141,6 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
     setDataProp
   );
 
-  // TODO: When scrolling up, we should check the last item and get its scroll
-  // offset. Then, correct the scroll position after the items size are
-  // calculated so we don't have a scroll flickering.
   const elementRef = useCallback((element: HTMLElement | null) => {
     if (element) {
       elements.set(element.id, element);
@@ -156,12 +153,21 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       let nextData: Data | undefined;
       let start = 0;
       const length = items.length;
+      // TODO: We have to loop through all items before so that we can calculate
+      // the dynamic item size.
+      let dynamicItemSize = 40;
+      let refLength = 0;
       for (let i = 0; i < length; i += 1) {
         const item = items[i]!;
         const prevData = data.get(item.id);
         const prevRendered = prevData?.rendered ?? false;
 
         const setSize = (size: number, rendered = prevRendered) => {
+          if (rendered) {
+            refLength = refLength + 1;
+            dynamicItemSize =
+              (dynamicItemSize * (refLength - 1) + size) / refLength;
+          }
           start = start ? start + gap : start;
           const end = start + size;
           if (
@@ -192,9 +198,10 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
         } else if (!horizontal && typeof item.style?.height === "number") {
           setSize(item.style.height);
         } else {
-          setSize(itemSize);
+          setSize(dynamicItemSize);
         }
       }
+      console.log(dynamicItemSize);
       return nextData || data;
     });
   }, [items, itemSize, gap, horizontal]);
@@ -238,6 +245,8 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
   );
 
   const anotherEventRef = useRef(false);
+  const lastScrollTopRef = useRef(0);
+  const scrollingReverseRef = useRef(false);
 
   useEffect(() => {
     const element = ref.current;
@@ -249,6 +258,14 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       anotherEventRef.current = true;
       flushSync(() => processVisibleItems(viewport, offset));
       // processVisibleItems(viewport, offset);
+      const lastScrollTop = lastScrollTopRef.current;
+      const scrollOffset = getScrollOffset(
+        getViewportElement(viewport),
+        0,
+        horizontal
+      );
+      lastScrollTopRef.current = scrollOffset;
+      scrollingReverseRef.current = scrollOffset < lastScrollTop;
     };
     viewport.addEventListener("scroll", onScroll, {
       capture: false,
@@ -292,6 +309,20 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
 
   const sizeProp = horizontal ? "width" : "height";
   const lastId = items![items!.length - 1]?.id;
+  const totalSize = (lastId && data.get(lastId)?.end) || 0;
+  const prevTotalSizeRef = useRef(totalSize);
+
+  useSafeLayoutEffect(() => {
+    if (!scrollingReverseRef.current) return;
+    const prevTotalSize = prevTotalSizeRef.current;
+    prevTotalSizeRef.current = totalSize;
+    if (!prevTotalSize) return;
+    const element = ref.current;
+    if (!element) return;
+    const viewport = getViewport(element.parentElement);
+    if (!viewport) return;
+    viewport.scrollBy({ top: totalSize - prevTotalSize });
+  }, [totalSize]);
 
   const nextProps = {
     ...props,
@@ -300,7 +331,7 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
     style: {
       flex: "none",
       position: "relative" as const,
-      [sizeProp]: lastId && data.get(lastId)?.end,
+      [sizeProp]: totalSize,
       ...props.style,
     },
   };
