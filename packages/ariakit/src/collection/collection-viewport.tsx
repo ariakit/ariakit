@@ -157,17 +157,37 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       // the dynamic item size.
       let dynamicItemSize = 40;
       let refLength = 0;
-      for (let i = 0; i < length; i += 1) {
+      for (let i = 0; i < length; i++) {
         const item = items[i]!;
         const prevData = data.get(item.id);
         const prevRendered = prevData?.rendered ?? false;
-
+        // Set dynamic size only once.
         const setSize = (size: number, rendered = prevRendered) => {
           if (rendered) {
             refLength = refLength + 1;
             dynamicItemSize =
               (dynamicItemSize * (refLength - 1) + size) / refLength;
           }
+        };
+
+        if (item.ref?.current) {
+          const element = item.ref.current as HTMLElement;
+          const { width, height } = element.getBoundingClientRect();
+          setSize(horizontal ? width : height, true);
+        } else if (elements.get(item.id)?.isConnected) {
+          const element = elements.get(item.id)!;
+          const { width, height } = element.getBoundingClientRect();
+          setSize(horizontal ? width : height, true);
+        } else if (prevData?.rendered) {
+          setSize(prevData.end - prevData.start);
+        }
+      }
+      for (let i = 0; i < length; i += 1) {
+        const item = items[i]!;
+        const prevData = data.get(item.id);
+        const prevRendered = prevData?.rendered ?? false;
+
+        const setSize = (size: number, rendered = prevRendered) => {
           start = start ? start + gap : start;
           const end = start + size;
           if (
@@ -198,10 +218,9 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
         } else if (!horizontal && typeof item.style?.height === "number") {
           setSize(item.style.height);
         } else {
-          setSize(dynamicItemSize);
+          setSize(40);
         }
       }
-      console.log(dynamicItemSize);
       return nextData || data;
     });
   }, [items, itemSize, gap, horizontal]);
@@ -271,7 +290,17 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
       capture: false,
       passive: true,
     });
-    return () => viewport.removeEventListener("scroll", onScroll);
+
+    const viewportElement = getViewportElement(viewport);
+    const observer = new ResizeObserver(() => {
+      processVisibleItems(viewport, offset);
+    });
+
+    observer.observe(viewportElement);
+    return () => {
+      observer.disconnect();
+      viewport.removeEventListener("scroll", onScroll);
+    };
   }, [horizontal]);
 
   useSafeLayoutEffect(() => {

@@ -41,6 +41,10 @@ export default function Example() {
   //   fetchItems().then(setItems);
   // }, []);
 
+  const [size, setSize] = useState(400);
+
+  console.log(composite.renderedItems);
+
   return (
     <div
       style={{
@@ -48,7 +52,7 @@ export default function Example() {
         width: "100%",
       }}
     >
-      {/* <button onClick={() => setSize((size) => size + 100)}>Expand</button> */}
+      <button onClick={() => setSize((size) => size + 400)}>Expand</button>
       {/* <div>Items count: {collection.items.length}</div> */}
       <Composite
         state={composite}
@@ -57,7 +61,7 @@ export default function Example() {
           width: "100%",
           // flexDirection: "column-reverse",
           overflow: "auto",
-          height: 400,
+          height: 50,
         }}
         // style={{ overflow: "clip", height: 200 }}
         className="collection"
