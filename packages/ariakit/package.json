@@ -41,7 +41,7 @@
     "components"
   ],
   "dependencies": {
-    "@floating-ui/dom": "0.5.3",
+    "@floating-ui/dom": "0.5.4",
     "ariakit-utils": "0.17.0-next.21"
   },
   "peerDependencies": {
