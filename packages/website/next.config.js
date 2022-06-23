@@ -8,8 +8,7 @@ const withTranspileModules = transpileModules(["ariakit"]);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  // TODO: Add this back
-  // reactStrictMode: true,
+  reactStrictMode: true,
   experimental: {
     reactRoot: /^(16|17)/.test(React.version) ? false : true,
   },

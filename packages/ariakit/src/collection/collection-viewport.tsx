@@ -309,13 +309,14 @@ export function useCollectionViewport<T extends ViewportItem = ViewportItem>({
     const viewport = getViewport(element.parentElement);
     if (!viewport) return;
     if (!data.size) return;
-    // TODO: Not sure if we really need this
+    // TODO: Not sure if we really need this. Update: We can't. Infinite loop on
+    // strict mode.
     if (anotherEventRef.current) {
       anotherEventRef.current = false;
       return;
     }
     const offset = getOffset(element, viewport, horizontal);
-    processVisibleItems(viewport, offset);
+    // processVisibleItems(viewport, offset);
   }, [data]);
 
   const children = visibleItems.map((item) => {
