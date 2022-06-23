@@ -43,8 +43,6 @@ export default function Example() {
 
   const [size, setSize] = useState(400);
 
-  console.log(composite.renderedItems);
-
   return (
     <div
       style={{

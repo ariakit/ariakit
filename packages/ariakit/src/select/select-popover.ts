@@ -32,11 +32,16 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
 
     // Sets the initial focus ref.
     useEffect(() => {
+      let cleaning = false;
       setItem((prevItem) => {
+        if (cleaning) return null;
         if (state.mounted && prevItem) return prevItem;
         const item = findEnabledItemByValue(state.renderedItems, value);
         return item || null;
       });
+      return () => {
+        cleaning = true;
+      };
     }, [state.mounted, state.renderedItems, value]);
 
     props = useSelectList({ state, ...props });

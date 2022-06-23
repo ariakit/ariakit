@@ -211,12 +211,20 @@ function stringOrUndefined(type?: string | ComponentType) {
  */
 export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
   const mounted = useRef(false);
+
   useEffect(() => {
     if (mounted.current) {
       return effect();
     }
     mounted.current = true;
   }, deps);
+
+  useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
 }
 
 /**
@@ -227,12 +235,20 @@ export function useUpdateLayoutEffect(
   deps?: DependencyList
 ) {
   const mounted = useRef(false);
+
   useSafeLayoutEffect(() => {
     if (mounted.current) {
       return effect();
     }
     mounted.current = true;
   }, deps);
+
+  useSafeLayoutEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
 }
 
 /**
