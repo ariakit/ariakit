@@ -19,7 +19,6 @@ import {
   ensureFocus,
   focusIfNeeded,
   getFirstTabbableIn,
-  getLastTabbableIn,
   isFocusable,
 } from "ariakit-utils/focus";
 import {
@@ -37,6 +36,7 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+import { useFocusTrapRegion } from "ariakit/focus-trap";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
@@ -377,43 +377,10 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     // Focus traps.
-    props = useWrapElement(
-      props,
-      (element) => {
-        const renderFocusTrap = (getTabbable: typeof getFirstTabbableIn) => {
-          if (state.visible && modal && !visibleModals.length) {
-            return (
-              <span
-                tabIndex={0}
-                style={{ position: "fixed", top: 0, left: 0 }}
-                aria-hidden
-                data-focus-trap=""
-                onFocus={() => {
-                  const dialog = ref.current;
-                  if (!dialog) return;
-                  const tabbable = getTabbable(dialog, true);
-                  if (tabbable) {
-                    tabbable.focus();
-                  } else {
-                    // Fallbacks to the dialog element.
-                    dialog.focus();
-                  }
-                }}
-              />
-            );
-          }
-          return null;
-        };
-        return (
-          <>
-            {renderFocusTrap(getLastTabbableIn)}
-            {element}
-            {renderFocusTrap(getFirstTabbableIn)}
-          </>
-        );
-      },
-      [state.visible, modal, visibleModals]
-    );
+    props = useFocusTrapRegion({
+      ...props,
+      enabled: state.visible && modal && !visibleModals.length,
+    });
 
     const hiddenProp = props.hidden;
 
