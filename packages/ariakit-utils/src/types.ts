@@ -38,12 +38,11 @@ export type SetState<T> = BivariantCallback<(value: SetStateAction<T>) => void>;
 
 /**
  * A boolean value or a callback that returns a boolean value.
- * @template T The type of the callback parameter. By default, the function will
- * have no parameter.
+ * @template T The type of the callback parameter.
  */
-export type BooleanOrCallback<T = never> =
+export type BooleanOrCallback<T> =
   | boolean
-  | BivariantCallback<T extends never ? () => boolean : (arg: T) => boolean>;
+  | BivariantCallback<(arg: T) => boolean>;
 
 /**
  * A string that will provide autocomplete for specific strings.
