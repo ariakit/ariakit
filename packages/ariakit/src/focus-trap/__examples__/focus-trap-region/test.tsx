@@ -1,5 +1,5 @@
 import { getByTestId } from "@testing-library/dom";
-import { click, getByRole, getByText, press, render } from "ariakit-test";
+import { getByRole, getByText, press, render } from "ariakit-test";
 import { FocusTrapRegion } from "ariakit/focus-trap";
 import Example from ".";
 
@@ -16,6 +16,7 @@ test("correctly traps focus in region", async () => {
   expect(getByText("Before")).toHaveFocus();
   await press.Tab();
   expect(getByRole("checkbox")).toHaveFocus();
+  await press.Space(getByRole("checkbox"));
   await press.Tab();
   expect(getByRole("button", { name: "Button 1" })).toHaveFocus();
   await press.Tab();
@@ -40,6 +41,7 @@ test("correctly releases focus from region", async () => {
   expect(getByText("Before")).toHaveFocus();
   await press.Tab();
   expect(getByRole("checkbox")).toHaveFocus();
+  await press.Space(getByRole("checkbox"));
   await press.Tab();
   expect(getByRole("button", { name: "Button 1" })).toHaveFocus();
   await press.Tab();
@@ -47,7 +49,7 @@ test("correctly releases focus from region", async () => {
   await press.Tab();
   expect(getByRole("textbox", { name: "one" })).toHaveFocus();
   await press.Tab();
-  await click(getByRole("checkbox"));
+  await press.Space(getByRole("checkbox"));
   await press.Tab();
   await press.Tab();
   await press.Tab();

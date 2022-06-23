@@ -4,7 +4,7 @@ import { Checkbox, useCheckboxState } from "ariakit/checkbox";
 import { FocusTrapRegion } from "ariakit/focus-trap";
 
 export default function Example() {
-  const focusTrapped = useCheckboxState({ defaultValue: true });
+  const focusTrapped = useCheckboxState({ defaultValue: false });
 
   return (
     <FocusTrapRegion className="wrapper" enabled={focusTrapped.value}>
