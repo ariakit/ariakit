@@ -225,6 +225,8 @@ export function usePopoverState({
           );
         }
 
+        popover.style.position = fixed ? "fixed" : "absolute";
+
         // https://floating-ui.com/docs/computePosition
         const pos = await computePosition(anchor, popover, {
           placement,
@@ -239,7 +241,6 @@ export function usePopoverState({
 
         // https://floating-ui.com/docs/misc#subpixel-and-accelerated-positioning
         Object.assign(popover.style, {
-          position: fixed ? "fixed" : "absolute",
           top: "0",
           left: "0",
           transform: `translate3d(${x}px, ${y}px, 0)`,
@@ -258,10 +259,6 @@ export function usePopoverState({
           });
         }
       };
-
-      // autoUpdate does not call update immediately, so for the first update,
-      // we should call the update function ourselves.
-      update();
 
       // https://floating-ui.com/docs/autoUpdate
       return autoUpdate(anchor, popover, update, {
