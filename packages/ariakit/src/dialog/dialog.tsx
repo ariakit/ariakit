@@ -36,12 +36,12 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
-import { useFocusTrapRegion } from "ariakit/focus-trap";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
   useDisclosureContent,
 } from "../disclosure/disclosure-content";
+import { useFocusTrapRegion } from "../focus-trap/focus-trap-region";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import { HeadingLevel } from "../heading/heading-level";
 import { PortalOptions, usePortal } from "../portal/portal";
