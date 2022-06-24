@@ -4,12 +4,6 @@ import {
   EffectCallback,
   Ref,
   RefObject,
-  // @ts-ignore
-  useInsertionEffect as _useInsertionEffect,
-  // @ts-ignore
-  useDeferredValue as _useReactDeferredValue,
-  // @ts-ignore
-  useId as _useReactId,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -18,17 +12,20 @@ import {
   useRef,
   useState,
 } from "react";
+import * as React from "react";
 import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-const useReactId = typeof _useReactId === "function" ? _useReactId : undefined;
+const useReactId = typeof React.useId === "function" ? React.useId : undefined;
 const useReactDeferredValue =
-  typeof _useReactDeferredValue === "function"
-    ? _useReactDeferredValue
+  typeof React.useDeferredValue === "function"
+    ? React.useDeferredValue
     : undefined;
 const useInsertionEffect =
-  typeof _useInsertionEffect === "function" ? _useInsertionEffect : undefined;
+  typeof React.useInsertionEffect === "function"
+    ? React.useInsertionEffect
+    : undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
