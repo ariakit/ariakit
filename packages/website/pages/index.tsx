@@ -43,6 +43,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/menu-bar", label: "Menu bar" },
   { href: "/examples/menu-combobox", label: "Menu combobox" },
   { href: "/examples/menu-item-checkbox", label: "Menu item checkbox" },
+  { href: "/examples/menu-item-radio", label: "Menu item radio" },
   { href: "/examples/menu-nested", label: "Menu nested" },
   { href: "/examples/popover", label: "Popover" },
   { href: "/examples/popover-flip", label: "Popover flip" },
