@@ -9,8 +9,10 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState({ gutter: 8, defaultValues: { sort: "popular" } });
-
+  const menu = useMenuState({
+    gutter: 8,
+    defaultValues: { sort: "popular" },
+  });
   return (
     <>
       <MenuButton state={menu} className="button">
