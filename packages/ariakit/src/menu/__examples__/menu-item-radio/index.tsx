@@ -9,34 +9,26 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState({ gutter: 8, defaultValues: { view: "all" } });
+  const menu = useMenuState({ gutter: 8, defaultValues: { sort: "popular" } });
 
   return (
     <>
       <MenuButton state={menu} className="button">
-        View {menu.values.view}
+        Sort
         <MenuButtonArrow />
       </MenuButton>
       <Menu state={menu} className="menu">
-        <MenuItemRadio name="view" value="all" className="menu-item">
+        <MenuItemRadio name="sort" value="popular" className="menu-item">
           <MenuItemCheck />
-          All
+          Popular
         </MenuItemRadio>
-        <MenuItemRadio name="view" value="read" className="menu-item">
+        <MenuItemRadio name="sort" value="newest" className="menu-item">
           <MenuItemCheck />
-          Read
+          Newest
         </MenuItemRadio>
-        <MenuItemRadio name="view" value="unread" className="menu-item">
+        <MenuItemRadio name="sort" value="oldest" className="menu-item">
           <MenuItemCheck />
-          Unread
-        </MenuItemRadio>
-        <MenuItemRadio name="view" value="starred" className="menu-item">
-          <MenuItemCheck />
-          Starred
-        </MenuItemRadio>
-        <MenuItemRadio name="view" value="unstarred" className="menu-item">
-          <MenuItemCheck />
-          Unstarred
+          Oldest
         </MenuItemRadio>
       </Menu>
     </>

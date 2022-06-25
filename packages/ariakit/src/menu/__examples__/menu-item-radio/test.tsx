@@ -7,23 +7,21 @@ const getMenuItem = (name: string) => getByRole("menuitemradio", { name });
 
 test("a11y", async () => {
   const { container } = render(<Example />);
-  await click(getMenuButton("View all"));
+  await click(getMenuButton("Sort"));
   expect(await axe(container)).toHaveNoViolations();
 });
 
-test("update menu button label on menu item check", async () => {
+test("default checked menu item", async () => {
   render(<Example />);
-  await click(getMenuButton("View all"));
-  await click(getMenuItem("Unread"));
-  expect(getMenuButton("View unread")).toBeInTheDocument();
+  await click(getMenuButton("Sort"));
+  expect(getMenuItem("Popular")).toHaveAttribute("aria-checked", "true");
 });
 
 test("update checked menu item on click", async () => {
   render(<Example />);
-  await click(getMenuButton("View all"));
-  await click(getMenuItem("Read"));
-  expect(getMenuItem("Read")).toHaveAttribute("aria-checked", "true");
-  expect(getMenuButton("View read")).toBeInTheDocument();
+  await click(getMenuButton("Sort"));
+  await click(getMenuItem("Newest"));
+  expect(getMenuItem("Newest")).toHaveAttribute("aria-checked", "true");
 });
 
 test("update checked menu item on enter", async () => {
@@ -32,8 +30,7 @@ test("update checked menu item on enter", async () => {
   await press.Enter();
   await press.ArrowDown();
   await press.Enter();
-  expect(getMenuItem("Read")).toHaveAttribute("aria-checked", "true");
-  expect(getMenuButton("View read")).toBeInTheDocument();
+  expect(getMenuItem("Newest")).toHaveAttribute("aria-checked", "true");
 });
 
 test("update checked menu item on space", async () => {
@@ -42,6 +39,5 @@ test("update checked menu item on space", async () => {
   await press.Space();
   await press.ArrowDown();
   await press.Space();
-  expect(getMenuItem("Read")).toHaveAttribute("aria-checked", "true");
-  expect(getMenuButton("View read")).toBeInTheDocument();
+  expect(getMenuItem("Newest")).toHaveAttribute("aria-checked", "true");
 });
