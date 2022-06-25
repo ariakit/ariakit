@@ -1,6 +1,6 @@
-@import url("../menu/style.css");
-@import url("../../../dialog/__examples__/dialog/style.css");
-@import url("../../../form/__examples__/form/style.css");
+@import "../menu/style.css";
+@import "../../../dialog/__examples__/dialog/style.css";
+@import "../../../form/__examples__/form/style.css";
 
 .button {
   @apply gap-2;

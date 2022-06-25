@@ -4,6 +4,7 @@ import { getDocument, getWindow } from "ariakit-utils/dom";
 import { useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import { isApple, isMac } from "ariakit-utils/platform";
+import { useChampionDialog } from "./use-champion-dialog";
 
 function assignStyle(
   element: HTMLElement | null | undefined,
@@ -45,10 +46,16 @@ export function usePreventBodyScroll(
   dialogRef: RefObject<HTMLElement>,
   enabled?: boolean
 ) {
+  const isChampionDialog = useChampionDialog(
+    dialogRef,
+    "data-dialog-body-scroll",
+    enabled
+  );
+
   useSafeLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (!enabled) return;
+    if (!isChampionDialog()) return;
 
     const doc = getDocument(dialog);
     const win = getWindow(dialog);
@@ -102,5 +109,5 @@ export function usePreventBodyScroll(
       setScrollbarWidthProperty(),
       isIOS ? setIOSStyle() : setStyle()
     );
-  }, [dialogRef, enabled]);
+  }, [dialogRef, isChampionDialog]);
 }

@@ -1,12 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 import { Button } from "ariakit/button";
 import {
-  Dialog,
-  DialogDismiss,
-  DialogHeading,
-  useDialogState,
-} from "ariakit/dialog";
-import {
   Form,
   FormError,
   FormInput,
@@ -28,63 +22,72 @@ import {
 } from "ariakit/menu";
 import { MdAdd, MdPlaylistAdd } from "react-icons/md";
 import "./style.css";
+import { Dialog } from "./dialog";
 
 export default function Example() {
-  const [menuInitialFocus, setMenuInitialFocus] =
+  const [menuInitialFocusRef, setMenuInitialFocusRef] =
     useState<RefObject<HTMLElement>>();
   const [lists, setLists] = useState(["Future ideas", "My stack"]);
 
-  const menu = useMenuState({
+  const listMenu = useMenuState({
     animated: true,
-    defaultValues: { lists: ["My stack"] },
+    defaultValues: { selectedLists: ["My stack"] },
   });
 
-  const dialog = useDialogState({ animated: true });
-  const dialog2 = useDialogState({
-    setVisible: (visible) => {
-      if (!visible) {
-        dialog.show();
-      }
-    },
-  });
+  const [createListDialogOpen, setCreateListDialogOpen] = useState(false);
+  const [createListDialogMounted, setCreateListDialogMounted] = useState(false);
 
-  // TODO: Manage lists instead of create list, then create list inside the
-  // manage list modal.
+  if (createListDialogOpen && !createListDialogMounted) {
+    setCreateListDialogMounted(true);
+  }
+
+  const [listsInfoDialogOpen, setListsInfoDialogOpen] = useState(false);
+  const [listsInfoDialogMounted, setListsInfoDialogMounted] = useState(false);
+
+  if (listsInfoDialogOpen && !listsInfoDialogMounted) {
+    setListsInfoDialogMounted(true);
+  }
+
   const form = useFormState({ defaultValues: { list: "" } });
 
   form.useSubmit(() => {
     if (form.values.list) {
       setLists((prevLists) => [...prevLists, form.values.list]);
-      menu.setValues((prevValues) => ({
+      listMenu.setValues((prevValues) => ({
         ...prevValues,
-        lists: [...prevValues.lists, form.values.list],
+        selectedLists: [...prevValues.selectedLists, form.values.list],
       }));
-      dialog.hide();
-      menu.show();
+      listMenu.show();
+      setCreateListDialogOpen(false);
     }
   });
 
   useEffect(() => {
-    const item = menu.items.find(
-      (item) => item.ref.current?.textContent === menu.values.lists.at(-1)
+    if (!form.submitSucceed) return;
+    const item = listMenu.items.find(
+      (item) => item.ref.current?.textContent === lists[lists.length - 1]
     );
-    menu.setAutoFocusOnShow(true);
-    setMenuInitialFocus(item?.ref);
-  }, [form.submitSucceed]);
+    listMenu.setAutoFocusOnShow(true);
+    setMenuInitialFocusRef(item?.ref);
+  }, [form.submitSucceed, listMenu.items, lists, listMenu.setAutoFocusOnShow]);
 
-  if (!menu.autoFocusOnShow && menuInitialFocus) {
-    setMenuInitialFocus(undefined);
+  if (!listMenu.autoFocusOnShow && menuInitialFocusRef) {
+    setMenuInitialFocusRef(undefined);
   }
 
   return (
     <>
-      <MenuButton state={menu} className="button">
+      <MenuButton state={listMenu} className="button">
         <MdPlaylistAdd />
         Add to list
-        <span className="badge">{menu.values.lists.length}</span>
+        <span className="badge">{listMenu.values.selectedLists.length}</span>
       </MenuButton>
 
-      <Menu state={menu} initialFocusRef={menuInitialFocus} className="menu">
+      <Menu
+        state={listMenu}
+        initialFocusRef={menuInitialFocusRef}
+        className="menu"
+      >
         <MenuArrow />
         <div role="presentation" className="header">
           <MenuHeading className="heading">Lists</MenuHeading>
@@ -94,7 +97,7 @@ export default function Example() {
           {lists.map((list) => (
             <MenuItemCheckbox
               key={list}
-              name="lists"
+              name="selectedLists"
               value={list}
               className="menu-item"
             >
@@ -104,22 +107,23 @@ export default function Example() {
           ))}
         </div>
         <MenuSeparator className="separator" />
-        <MenuItem className="menu-item" onClick={dialog.toggle}>
+        <MenuItem
+          className="menu-item"
+          onClick={() => setCreateListDialogOpen(true)}
+        >
           <MdAdd />
           Create list
         </MenuItem>
       </Menu>
 
       <Dialog
-        state={dialog}
-        className="dialog"
-        data-animated={dialog.animated || undefined}
+        title="Create list"
+        animated
+        open={createListDialogOpen}
+        onClose={() => setCreateListDialogOpen(false)}
+        onUnmount={() => setCreateListDialogMounted(false)}
       >
-        <header className="header">
-          <DialogHeading className="heading">Create list</DialogHeading>
-          <DialogDismiss className="button dismiss" />
-        </header>
-        {dialog.mounted && (
+        {createListDialogMounted && (
           <Form state={form} resetOnSubmit resetOnUnmount className="form">
             <div className="field">
               <FormLabel name={form.names.list}>List name</FormLabel>
@@ -133,25 +137,26 @@ export default function Example() {
             <FormSubmit className="button">Create</FormSubmit>
           </Form>
         )}
-        <Button onClick={dialog2.toggle} className="button secondary">
+        <Button
+          onClick={() => setListsInfoDialogOpen(true)}
+          className="button secondary"
+        >
           Learn more about lists
         </Button>
       </Dialog>
 
-      {dialog2.mounted && (
+      {listsInfoDialogMounted && (
         <Dialog
-          state={dialog2}
-          modal={!dialog.mounted}
-          portal
-          className="dialog"
+          title="Learn more about lists"
+          animated
+          open={listsInfoDialogOpen}
+          onClose={() => {
+            setCreateListDialogOpen(true);
+            setListsInfoDialogOpen(false);
+          }}
+          backdrop={!createListDialogMounted}
         >
-          <header className="header">
-            <DialogHeading className="heading">
-              Learn more about lists
-            </DialogHeading>
-            <DialogDismiss className="button dismiss" />
-          </header>
-          dsadadas
+          dsadsadsa
         </Dialog>
       )}
     </>

@@ -34,7 +34,13 @@ function getItemRefById(items: MenuState["items"], id?: null | string) {
  * ```
  */
 export const useMenu = createHook<MenuOptions>(
-  ({ state, hideOnEscape = true, hideOnHoverOutside, ...props }) => {
+  ({
+    state,
+    hideOnEscape = true,
+    autoFocusOnShow = true,
+    hideOnHoverOutside,
+    ...props
+  }) => {
     const parentMenu = useStore(MenuContext, []);
     const parentMenuBar = useStore(MenuBarContext, []);
     const hasParentMenu = !!parentMenu;
@@ -75,7 +81,7 @@ export const useMenu = createHook<MenuOptions>(
       let cleaning = false;
       setInitialFocusRef((prevInitialFocusRef) => {
         if (cleaning) return;
-        if (!state.autoFocusOnShow) return undefined;
+        if (!state.autoFocusOnShow) return;
         if (prevInitialFocusRef) return prevInitialFocusRef;
         switch (state.initialFocus) {
           case "first":
@@ -101,7 +107,9 @@ export const useMenu = createHook<MenuOptions>(
     props = useHovercard({
       state,
       initialFocusRef,
-      autoFocusOnShow: state.autoFocusOnShow || !!props.modal,
+      autoFocusOnShow: autoFocusOnShow
+        ? !!initialFocusRef || !!props.initialFocusRef || !!props.modal
+        : state.autoFocusOnShow || !!props.modal,
       ...props,
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {

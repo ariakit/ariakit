@@ -24,6 +24,7 @@ import {
 import {
   useBooleanEvent,
   useForkRef,
+  useId,
   useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -54,9 +55,9 @@ import {
 import { disableAccessibilityTreeOutside } from "./__utils/disable-accessibility-tree-outside";
 import { disablePointerEventsOutside } from "./__utils/disable-pointer-events-outside";
 import { prependHiddenDismiss } from "./__utils/prepend-hidden-dismiss";
+import { useChampionDialog } from "./__utils/use-champion-dialog";
 import { useFocusOnChildUnmount } from "./__utils/use-focus-on-child-unmount";
 import { useHideOnInteractOutside } from "./__utils/use-hide-on-interact-outside";
-import { useHideOnUnmount } from "./__utils/use-hide-on-unmount";
 import { useNestedDialogs } from "./__utils/use-nested-dialogs";
 import { usePreventBodyScroll } from "./__utils/use-prevent-body-scroll";
 import { DialogState } from "./dialog-state";
@@ -136,6 +137,8 @@ export const useDialog = createHook<DialogOptions>(
     const shouldDisableAccessibilityTree =
       modal || (portal && preserveTabOrder && isSafari());
 
+    const id = useId(props.id);
+
     // Sets disclosure ref. It needs to be a layout effect so we get the focused
     // element right before the dialog is mounted.
     useSafeLayoutEffect(() => {
@@ -154,8 +157,6 @@ export const useDialog = createHook<DialogOptions>(
     const nestedDialogsRef = useLiveRef(nestedDialogs);
 
     usePreventBodyScroll(ref, preventBodyScroll && state.mounted);
-    // When the dialog is unmounted, we make sure to update the state.
-    useHideOnUnmount(ref, state);
     // When a focused child element is removed, focus will be placed on the
     // document's body. This will focus on the dialog instead.
     useFocusOnChildUnmount(ref, state);
@@ -210,12 +211,18 @@ export const useDialog = createHook<DialogOptions>(
       return;
     }, [state.mounted, domReady, shouldDisableAccessibilityTree, state.hide]);
 
+    const shouldDisableOutside = useChampionDialog(
+      ref,
+      "data-dialog-disable-outside",
+      visibleIdle && !visibleModals.length
+    );
+
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element.
-      if (!visibleIdle) return;
+      if (!shouldDisableOutside()) return;
       // If portal is enabled, we get the portalNode instead of the dialog
       // element. This will consider nested dialogs as they will be children of
       // the portal node, but not the dialog. This also accounts for the tiny
@@ -234,7 +241,7 @@ export const useDialog = createHook<DialogOptions>(
       }
       return;
     }, [
-      visibleIdle,
+      shouldDisableOutside,
       portal,
       portalNode,
       modal,
@@ -257,7 +264,8 @@ export const useDialog = createHook<DialogOptions>(
         (child) => child.current && !child.current.hidden
       );
       if (isNestedDialogVisible) return;
-      const dialog = ref.current;
+      // TODO: Comment: modal or backdrop
+      const dialog = state.contentElement;
       if (!dialog) return;
       const initialFocus = initialFocusRef?.current;
       const element =
@@ -282,8 +290,8 @@ export const useDialog = createHook<DialogOptions>(
       visibleIdle,
       autoFocusOnShow,
       domReady,
+      state.contentElement,
       initialFocusRef,
-      modal,
       portal,
       preserveTabOrder,
     ]);
@@ -461,6 +469,7 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     props = {
+      id,
       "data-dialog": "",
       role: "dialog",
       tabIndex: focusable ? -1 : undefined,
