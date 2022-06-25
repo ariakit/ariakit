@@ -1,4 +1,4 @@
-@import url("../../../button/__examples__/button/style.css");
+@import "../../../button/__examples__/button/style.css";
 
 .menu {
   max-height: var(--popover-available-height);

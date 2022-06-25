@@ -1,5 +1,23 @@
 # ariakit
 
+## 2.0.0-next.30
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.21`.
+
+## 2.0.0-next.29
+
+### Patch Changes
+
+- Fixed `data-focus-visible` behavior when using the `focusOnHover` prop on composite items. ([#1433](https://github.com/ariakit/ariakit/pull/1433))
+
+* Fixed `preventBodyScroll` behavior on `Dialog`. ([#1421](https://github.com/ariakit/ariakit/pull/1421))
+
+- Fixed `Select` with `modal` prop not opening on click. ([#1427](https://github.com/ariakit/ariakit/pull/1427))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`.
+
 ## 2.0.0-next.28
 
 ### Minor Changes

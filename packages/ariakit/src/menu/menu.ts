@@ -72,7 +72,9 @@ export const useMenu = createHook<MenuOptions>(
 
     // Sets the initial focus ref.
     useEffect(() => {
+      let cleaning = false;
       setInitialFocusRef((prevInitialFocusRef) => {
+        if (cleaning) return;
         if (!state.autoFocusOnShow) return undefined;
         if (prevInitialFocusRef) return prevInitialFocusRef;
         switch (state.initialFocus) {
@@ -84,6 +86,9 @@ export const useMenu = createHook<MenuOptions>(
             return state.baseRef;
         }
       });
+      return () => {
+        cleaning = true;
+      };
     }, [
       state.autoFocusOnShow,
       state.initialFocus,

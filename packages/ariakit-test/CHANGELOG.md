@@ -1,5 +1,21 @@
 # ariakit-test
 
+## 0.17.0-next.24
+
+### Patch Changes
+
+- Fixed error regarding accessing `isBrowser` before initialization. ([#1488](https://github.com/ariakit/ariakit/pull/1488))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.21`.
+
+## 0.17.0-next.23
+
+### Patch Changes
+
+- Fixed `hover` not waiting for queued microtasks. ([#1433](https://github.com/ariakit/ariakit/pull/1433))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`.
+
 ## 0.17.0-next.22
 
 ### Patch Changes

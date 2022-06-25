@@ -16,8 +16,6 @@
     "popover-state-fit-viewport",
     "popover-state-overlap",
     "popover-state-shift-gutter",
-    "popover-state-slide",
-    "test-mouse-down-up",
-    "test-select"
+    "popover-state-slide"
   ]
 }

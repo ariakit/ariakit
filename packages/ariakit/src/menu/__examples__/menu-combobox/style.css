@@ -1,4 +1,4 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
 .menu {
   max-height: min(var(--popover-available-height, 300px), 300px);

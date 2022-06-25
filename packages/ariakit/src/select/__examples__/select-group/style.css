@@ -1,4 +1,4 @@
-@import url("../select/style.css");
+@import "../select/style.css";
 
 .group-label {
   @apply
