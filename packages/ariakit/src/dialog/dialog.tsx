@@ -17,7 +17,6 @@ import {
 } from "ariakit-utils/dom";
 import { addGlobalEventListener, queueBeforeEvent } from "ariakit-utils/events";
 import {
-  ensureFocus,
   focusIfNeeded,
   getFirstTabbableIn,
   isFocusable,
@@ -143,11 +142,9 @@ export const useDialog = createHook<DialogOptions>(
       if (!visibleIdle) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
-      if (
-        activeElement &&
-        activeElement.tagName !== "BODY" &&
-        (!dialog || !contains(dialog, activeElement))
-      ) {
+      if (!activeElement) return;
+      if (activeElement.tagName === "BODY") return;
+      if (!dialog || !contains(dialog, activeElement)) {
         state.disclosureRef.current = activeElement;
       }
     }, [visibleIdle]);
@@ -245,7 +242,7 @@ export const useDialog = createHook<DialogOptions>(
       shouldDisableAccessibilityTree,
     ]);
 
-    const focusedRef = useRef<HTMLElement[]>([]);
+    const prevInitialFocusRef = useRef<HTMLElement | null>();
 
     // Auto focus on show.
     useEffect(() => {
@@ -262,15 +259,6 @@ export const useDialog = createHook<DialogOptions>(
       if (isNestedDialogVisible) return;
       const dialog = ref.current;
       if (!dialog) return;
-      const activeElement = getActiveElement(dialog, true);
-      if (
-        activeElement &&
-        focusedRef.current.length &&
-        contains(dialog, activeElement) &&
-        !focusedRef.current.includes(activeElement)
-      ) {
-        return;
-      }
       const initialFocus = initialFocusRef?.current;
       const element =
         initialFocus ||
@@ -280,8 +268,16 @@ export const useDialog = createHook<DialogOptions>(
         // receives focus.
         getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
         dialog;
-      focusedRef.current.push(element);
-      ensureFocus(element);
+      const prevInitialFocus = prevInitialFocusRef.current;
+      prevInitialFocusRef.current = initialFocus;
+      // If the initial focus is the same as the previous initial focus and
+      // there's already an element with focus inside the dialog, we don't
+      // change focus here.
+      if (initialFocus === prevInitialFocus) {
+        const activeElement = getActiveElement(dialog, true);
+        if (activeElement && contains(dialog, activeElement)) return;
+      }
+      element.focus();
     }, [
       visibleIdle,
       autoFocusOnShow,
@@ -335,7 +331,7 @@ export const useDialog = createHook<DialogOptions>(
               }
             }
           }
-          ensureFocus(element);
+          element.focus();
         }
       };
       if (!state.visible) {
