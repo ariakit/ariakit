@@ -1,5 +1,17 @@
 # ariakit-utils
 
+## 0.17.0-next.22
+
+### Minor Changes
+
+- **types**: `BooleanOrCallback` now requires a generic parameter input. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+### Patch Changes
+
+- Fixed an issue where `ariakit-utils` was importing React v18 APIs via named imports. As Webpack/CRA sees that these APIs do not exist on React v17, it would raise an error when an app used React v17. ([#1542](https://github.com/ariakit/ariakit/pull/1542))
+
+* Fixed `useUpdateEffect` and `useUpdateLayoutEffect` on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
 ## 0.17.0-next.21
 
 ### Patch Changes

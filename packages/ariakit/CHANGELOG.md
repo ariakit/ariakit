@@ -1,5 +1,25 @@
 # ariakit
 
+## 2.0.0-next.31
+
+### Minor Changes
+
+- Added `FocusTrapRegion` component. ([#1469](https://github.com/ariakit/ariakit/pull/1469))
+
+### Patch Changes
+
+- Fixed an issue where `ariakit-utils` was importing React v18 APIs via named imports. As Webpack/CRA sees that these APIs do not exist on React v17, it would raise an error when an app used React v17. ([#1542](https://github.com/ariakit/ariakit/pull/1542))
+
+* Fixed `Hovercard` incorrectly setting `autoFocusOnShow` to `false` on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+- Fixed `MenuBar` initial focus on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+* Fixed `Popover` initial position. ([#1535](https://github.com/ariakit/ariakit/pull/1535))
+
+- Fixed `Select` initial focus on strict mode. ([#1532](https://github.com/ariakit/ariakit/pull/1532))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.22`.
+
 ## 2.0.0-next.30
 
 ### Patch Changes
