@@ -1,5 +1,15 @@
 # ariakit-test
 
+## 0.17.0-next.25
+
+### Minor Changes
+
+- Components passed to the `render` function are now wrapped with `React.StrictMode`. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.22`.
+
 ## 0.17.0-next.24
 
 ### Patch Changes
