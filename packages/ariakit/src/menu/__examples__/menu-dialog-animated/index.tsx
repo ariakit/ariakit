@@ -147,7 +147,7 @@ export default function Example() {
 
       {listsInfoDialogMounted && (
         <Dialog
-          title="Learn more about lists"
+          title="About lists"
           animated
           open={listsInfoDialogOpen}
           onClose={() => {
@@ -156,7 +156,12 @@ export default function Example() {
           }}
           backdrop={!createListDialogMounted}
         >
-          dsadsadsa
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis et
+            officia rerum voluptatem exercitationem omnis laborum? Vero aliquid
+            maxime tenetur cum laboriosam perspiciatis cumque molestias
+            doloribus nisi, libero vel inventore!
+          </p>
         </Dialog>
       )}
     </>
