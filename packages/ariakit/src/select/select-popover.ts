@@ -45,7 +45,11 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
     }, [state.mounted, state.items, value]);
 
     props = useSelectList({ state, ...props });
-    props = usePopover({ state, initialFocusRef: item?.ref, ...props });
+    props = usePopover({
+      state,
+      initialFocusRef: item?.ref ?? state.baseRef,
+      ...props,
+    });
 
     return props;
   }
