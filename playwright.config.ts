@@ -2,12 +2,12 @@ import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
 
 process.env.PLAYWRIGHT_EXPERIMENTAL_FEATURES = "1";
 
-const headed = process.env.HEADED === "true";
+if (process.argv.includes("--headed")) {
+  process.env.PWHEADED = "true";
+}
 
-const launchOptions: LaunchOptions = {
-  headless: !headed,
-  slowMo: headed ? 250 : undefined,
-};
+const headed = process.env.PWHEADED === "true";
+const launchOptions: LaunchOptions = headed ? { slowMo: 300 } : {};
 
 const config: PlaywrightTestConfig = {
   webServer: {
