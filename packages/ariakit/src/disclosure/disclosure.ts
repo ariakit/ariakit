@@ -42,8 +42,8 @@ export const useDisclosure = createHook<DisclosureOptions>(
         state.disclosureRef.current = ref.current;
       }
       const isCurrentDisclosure = state.disclosureRef.current === ref.current;
-      setExpanded(state.visible && isCurrentDisclosure);
-    }, [state.disclosureRef, state.visible]);
+      setExpanded(state.open && isCurrentDisclosure);
+    }, [state.disclosureRef, state.open]);
 
     const onMouseDownProp = props.onMouseDown;
 

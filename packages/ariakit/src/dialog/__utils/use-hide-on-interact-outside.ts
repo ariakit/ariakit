@@ -110,7 +110,7 @@ function shouldHideOnInteractOutside(
 export function useHideOnInteractOutside(
   dialogRef: RefObject<HTMLElement>,
   nestedDialogs: Array<RefObject<HTMLElement>>,
-  { state, modal, hideOnInteractOutside, enabled = state.visible }: Options
+  { state, modal, hideOnInteractOutside, enabled = state.open }: Options
 ) {
   const previousMouseDownRef = usePreviousMouseDownRef(enabled);
 

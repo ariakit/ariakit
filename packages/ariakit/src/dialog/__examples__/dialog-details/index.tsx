@@ -13,13 +13,13 @@ export default function Example() {
   const dialog = useDialogState();
 
   // Consider clicks before the JavaScript has loaded.
-  useEffect(() => dialog.setVisible(!!ref.current?.open), [dialog.setVisible]);
+  useEffect(() => dialog.setOpen(!!ref.current?.open), [dialog.setOpen]);
 
   return (
     <details
       ref={ref}
       open={dialog.mounted}
-      onToggle={(event) => dialog.setVisible(event.currentTarget.open)}
+      onToggle={(event) => dialog.setOpen(event.currentTarget.open)}
     >
       <Button as="summary" className="button">
         View details

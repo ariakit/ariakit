@@ -18,9 +18,9 @@ import "./style.css";
 function Login() {
   const navigate = useNavigate();
   const dialog = useDialogState({
-    visible: true,
-    setVisible: (visible) => {
-      if (!visible) {
+    open: true,
+    setOpen: (open) => {
+      if (!open) {
         navigate("/");
       }
     },

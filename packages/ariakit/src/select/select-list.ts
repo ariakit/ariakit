@@ -99,7 +99,7 @@ export const useSelectList = createHook<SelectListOptions>(
       state,
       ...props,
       composite,
-      focusOnMove: state.visible && !state.animating && focusOnMove,
+      focusOnMove: state.open && !state.animating && focusOnMove,
     });
     props = useCompositeTypeahead({ state, ...props });
 

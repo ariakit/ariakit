@@ -13,7 +13,7 @@ import { DialogOptions } from "../dialog";
 type DialogRef = RefObject<HTMLElement>;
 
 const NestedDialogsContext = createContext<{
-  visible?: boolean;
+  open?: boolean;
   addDialog?: (ref: RefObject<HTMLElement>) => () => void;
   showModal?: (ref: RefObject<HTMLElement>) => () => void;
 }>({});
@@ -62,21 +62,21 @@ export function useNestedDialogs(
 
   useSafeLayoutEffect(() => {
     if (!modal) return;
-    if (!state.visible) return;
+    if (!state.open) return;
     return context.showModal?.(dialogRef);
-  }, [modal, state.visible, context.showModal, dialogRef]);
+  }, [modal, state.open, context.showModal, dialogRef]);
 
   // Close all nested dialogs when parent dialog closes.
   useSafeLayoutEffect(() => {
-    if (context.visible === false && state.visible) {
+    if (context.open === false && state.open) {
       state.hide();
     }
-  }, [context.visible, state.visible, state.hide]);
+  }, [context.open, state.open, state.hide]);
 
   // Provider
   const providerValue = useMemo(
-    () => ({ visible: state.visible, addDialog, showModal }),
-    [state.visible, addDialog, showModal]
+    () => ({ open: state.open, addDialog, showModal }),
+    [state.open, addDialog, showModal]
   );
 
   const wrapElement: WrapElement = useCallback(

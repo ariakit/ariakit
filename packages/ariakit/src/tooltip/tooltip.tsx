@@ -58,7 +58,7 @@ export const useTooltip = createHook<TooltipOptions>(
 
     // Hide on Escape/Control
     useEffect(() => {
-      if (!state.visible) return;
+      if (!state.open) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
         const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
@@ -67,7 +67,7 @@ export const useTooltip = createHook<TooltipOptions>(
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
+    }, [state.open, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     props = useWrapElement(
       props,

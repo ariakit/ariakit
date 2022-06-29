@@ -47,7 +47,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // See https://github.com/ariakit/ariakit/issues/643
       raf.current = requestAnimationFrame(() => {
         raf.current = requestAnimationFrame(() => {
-          if (state.visible) {
+          if (state.open) {
             setTransition("enter");
           } else if (state.animating) {
             setTransition("leave");
@@ -57,7 +57,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
         });
       });
       return () => cancelAnimationFrame(raf.current);
-    }, [state.animated, state.visible, state.animating]);
+    }, [state.animated, state.open, state.animating]);
 
     const onEnd = (event: SyntheticEvent) => {
       if (event.defaultPrevented) return;
