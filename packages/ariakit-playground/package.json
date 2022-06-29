@@ -42,7 +42,7 @@
     "@codemirror/search": "6.0.0",
     "@codemirror/state": "6.0.1",
     "@codemirror/view": "6.0.2",
-    "@codesandbox/sandpack-client": "1.2.1",
+    "@codesandbox/sandpack-client": "1.2.2",
     "@emotion/react": "^11.7.1",
     "@lezer/highlight": "1.0.0",
     "ariakit": "2.0.0-next.31",
