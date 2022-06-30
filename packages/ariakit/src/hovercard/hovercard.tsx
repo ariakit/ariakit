@@ -14,6 +14,7 @@ import {
   useBooleanEvent,
   useEvent,
   useForkRef,
+  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -57,6 +58,8 @@ function isMovingOnHovercard(
 // element is clicked. We have to reset it to false when the hovercard element
 // gets hidden or is unmounted.
 function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
+  const mountedRef = useLiveRef(state.mounted);
+
   // Resets autoFocusOnShow
   useEffect(() => {
     if (!state.mounted) {
@@ -64,9 +67,13 @@ function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
     }
   }, [state.mounted, state.setAutoFocusOnShow]);
 
-  // Resets on unmount as well
+  // On unmount as well.
   useEffect(
-    () => () => state.setAutoFocusOnShow(false),
+    () => () => {
+      if (!mountedRef.current) {
+        state.setAutoFocusOnShow(false);
+      }
+    },
     [state.setAutoFocusOnShow]
   );
 

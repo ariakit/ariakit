@@ -9,6 +9,8 @@ body:
       label: Motivation
       description: Outline the motivation for the proposal.
   - type: textarea
+    validations:
+      required: true
     attributes:
       label: Usage example
       description: Provide code examples for how this feature could be used.
@@ -23,9 +25,19 @@ body:
         <NewComponent newProp />
         ```
   - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Requirements
+      description: List the feature requirements. This will help us [write tests](https://github.com/ariakit/ariakit/blob/main/contributing.md#testing-the-example).
+      placeholder: |
+        - The component should open when pressing the A key.
+        - The component should close when pressing the B key.
+        - The component shouldn't close when `newProp` is set to `true`.
+  - type: textarea
     attributes:
       label: Workaround
-      description: If you have implemented this feature in userland, please describe your solution here to help others. 
+      description: If you have implemented this feature in userland, please describe or link to your solution here to help others. 
   - type: textarea
     attributes:
       label: Possible implementations

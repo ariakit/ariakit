@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, useEffect, useState } from "react";
+import { HTMLAttributes, RefObject } from "react";
 import { useSafeLayoutEffect, useWrapElement } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -27,7 +27,6 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
-    autoFocusOnShow = true,
     wrapperProps,
     ...props
   }) => {
@@ -43,16 +42,6 @@ export const usePopover = createHook<PopoverOptions>(
       if (!popover) return;
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
-
-    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
-
-    // We can't move focus right after the popover is shown. Otherwise we may
-    // see some scroll jumps (when it's absolutely positioned), or VoiceOver may
-    // not move focus (even when the position is fixed). So we wait a bit so
-    // Popper can finish positioning the popover before we move focus.
-    useEffect(() => {
-      setCanAutoFocusOnShow(state.mounted && !!state.contentElement);
-    }, [state.mounted, state.contentElement]);
 
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
@@ -97,7 +86,6 @@ export const usePopover = createHook<PopoverOptions>(
       modal,
       preserveTabOrder,
       portal,
-      autoFocusOnShow: canAutoFocusOnShow && autoFocusOnShow,
       ...props,
     });
 

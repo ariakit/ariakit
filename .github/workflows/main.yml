@@ -55,11 +55,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Lint
         run: npm run lint
@@ -83,11 +88,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Type check
         run: npm run type-check
@@ -108,11 +118,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Build
         run: npm run build
@@ -137,11 +152,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Test
         run: npm test -- --coverage --maxWorkers 2 --shard ${{ matrix.shard }}
@@ -169,11 +189,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Install React 17
         run: npm run react17
@@ -197,11 +222,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Cache Next.js
         uses: actions/cache@v3
@@ -229,11 +259,16 @@ jobs:
 
       - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
           path: |
             node_modules
             packages/*/node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Get playwright version
         id: playwright-version
@@ -241,13 +276,11 @@ jobs:
 
       - name: Cache playwright
         uses: actions/cache@v3
-        id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ steps.playwright-version.outputs.version }}
 
       - name: Install playwright
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Restore website
@@ -296,13 +329,11 @@ jobs:
 
       - name: Cache playwright
         uses: actions/cache@v3
-        id: playwright-cache
         with:
           path: ~/Library/Caches/ms-playwright
           key: playwright-webkit-${{ steps.playwright-version.outputs.version }}
 
       - name: Install playwright
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps webkit
 
       - name: Restore website

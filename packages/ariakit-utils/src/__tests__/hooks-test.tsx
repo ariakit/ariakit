@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, version } from "react";
 import { fireEvent, render, sleep } from "ariakit-test";
-
 import {
   useBooleanEvent,
   useControlledState,
@@ -18,6 +17,8 @@ import {
   useUpdateLayoutEffect,
   useWrapElement,
 } from "../hooks";
+
+const isReact17 = version.startsWith("17");
 
 test("useInitialValue", () => {
   const TestComponent = () => {
@@ -60,10 +61,10 @@ test("useLiveRef", async () => {
     return <button onClick={() => setSomeState("some new value")} />;
   };
   const { getByRole } = render(<TestComponent />);
-  expect(effectFunction).toHaveBeenCalledTimes(1);
+  expect(effectFunction).toHaveBeenCalledTimes(isReact17 ? 1 : 2);
   expect(effectFunction).toHaveBeenCalledWith("some value");
   fireEvent.click(getByRole("button"));
-  expect(effectFunction).toHaveBeenCalledTimes(2);
+  expect(effectFunction).toHaveBeenCalledTimes(isReact17 ? 2 : 3);
   expect(effectFunction).toHaveBeenCalledWith("some new value");
 });
 
@@ -84,7 +85,8 @@ test("usePreviousValue", () => {
   fireEvent.click(getByRole("button"));
   expect(duringRender).nthCalledWith(1, "some value");
   expect(duringRender).nthCalledWith(2, "some value");
-  expect(duringRender).nthCalledWith(3, "some new value");
+  expect(duringRender).nthCalledWith(3, "some value");
+  expect(duringRender).nthCalledWith(4, "some new value");
   expect(container).toHaveTextContent("some new value");
 });
 
@@ -98,9 +100,9 @@ test("useEvent function is stable", () => {
     return <button onClick={() => setCallback(jest.fn())} />;
   };
   const { getByRole } = render(<TestComponent />);
-  expect(effectFunction).toBeCalledTimes(1);
+  expect(effectFunction).toBeCalledTimes(isReact17 ? 1 : 2);
   fireEvent.click(getByRole("button"));
-  expect(effectFunction).toBeCalledTimes(1);
+  expect(effectFunction).toBeCalledTimes(isReact17 ? 1 : 2);
 });
 
 test("useForkRef", () => {
@@ -308,9 +310,9 @@ test("useForceUpdate", () => {
   };
   const { getByRole } = render(<TestComponent />);
   // Should render twice on mount
-  expect(someFunction).toBeCalledTimes(2);
+  expect(someFunction).toBeCalledTimes(4);
   fireEvent.click(getByRole("button"));
-  expect(someFunction).toBeCalledTimes(3);
+  expect(someFunction).toBeCalledTimes(6);
 });
 
 test("useBooleanEvent", () => {
