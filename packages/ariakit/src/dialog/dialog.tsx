@@ -189,7 +189,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Renders a hidden dismiss button at the top of the modal dialog element.
     // So that screen reader users aren't trapped in the dialog when there's no
-    // open dismiss button.
+    // visible dismiss button.
     useEffect(() => {
       if (!state.mounted) return;
       if (!domReady) return;
