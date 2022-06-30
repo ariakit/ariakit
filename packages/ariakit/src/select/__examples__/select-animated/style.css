@@ -1,0 +1,11 @@
+@import "../select/style.css";
+
+.popover {
+  transform: translateY(-16px);
+  @apply opacity-0 transition-[opacity,transform];
+}
+
+.popover[data-enter] {
+  transform: translateY(0);
+  @apply opacity-100;
+}
