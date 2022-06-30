@@ -162,7 +162,7 @@ export const useHovercard = createHook<HovercardOptions>(
     // hovercard, by default, does not receive focus when it's shown, we need to
     // handle this globally here.
     useEffect(() => {
-      if (!state.visible) return;
+      if (!state.open) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
         const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
@@ -171,7 +171,7 @@ export const useHovercard = createHook<HovercardOptions>(
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
+    }, [state.open, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);

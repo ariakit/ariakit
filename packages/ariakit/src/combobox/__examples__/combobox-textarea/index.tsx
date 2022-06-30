@@ -29,8 +29,8 @@ export default function Example() {
   const hasMatches = !!combobox.matches.length;
 
   useLayoutEffect(() => {
-    combobox.setVisible(hasMatches);
-  }, [combobox.setVisible, hasMatches]);
+    combobox.setOpen(hasMatches);
+  }, [combobox.setOpen, hasMatches]);
 
   useLayoutEffect(() => {
     combobox.setList(getList(trigger));

@@ -33,10 +33,10 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
     const fallbackRef = useRef<HTMLSpanElement>(null);
     const popover = usePopoverState({
       placement,
-      visible: isOpen,
-      setVisible: (visible) => {
-        if (!visible && onClose) onClose();
-        return visible;
+      open: isOpen,
+      setOpen: (open) => {
+        if (!open && onClose) onClose();
+        return open;
       },
       getAnchorRect: () => {
         if (getAnchorRect) {

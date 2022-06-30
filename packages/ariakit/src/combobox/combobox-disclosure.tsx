@@ -67,7 +67,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
       state.disclosureRef.current = state.baseRef.current;
     });
 
-    const label = state.visible ? "Hide popup" : "Show popup";
+    const label = state.open ? "Hide popup" : "Show popup";
 
     props = {
       children,

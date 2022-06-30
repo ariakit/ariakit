@@ -33,18 +33,18 @@ export function useTooltipState({
     window.clearTimeout(hideTimeout.current);
   }, []);
 
-  const [_visible, __setVisible] = useState(props.defaultVisible ?? false);
+  const [_visible, __setVisible] = useState(props.defaultOpen ?? false);
 
   const _setVisible = (nextVisible: boolean) => {
-    props.setVisible?.(nextVisible);
-    if (props.visible === undefined) {
+    props.setOpen?.(nextVisible);
+    if (props.open === undefined) {
       __setVisible(nextVisible);
     }
   };
 
-  const [visible, setVisible] = useControlledState(
-    props.defaultVisible ?? false,
-    props.visible ?? _visible,
+  const [open, setOpen] = useControlledState(
+    props.defaultOpen ?? false,
+    props.open ?? _visible,
     (nextVisible) => {
       clearTimeouts();
       if (nextVisible) {
@@ -78,21 +78,21 @@ export function useTooltipState({
     placement,
     gutter,
     ...props,
-    visible,
-    setVisible,
+    open,
+    setOpen,
   });
 
   useEffect(() => {
     return globalState.subscribe((activeRef) => {
       if (activeRef !== ref) {
         clearTimeouts();
-        if (popover.visible) {
-          // Make sure there will be only one tooltip visible
+        if (popover.open) {
+          // Make sure there will be only one tooltip open
           popover.hide();
         }
       }
     });
-  }, [clearTimeouts, popover.visible, popover.hide]);
+  }, [clearTimeouts, popover.open, popover.hide]);
 
   useEffect(
     () => () => {

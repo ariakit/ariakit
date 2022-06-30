@@ -127,11 +127,11 @@ export function useComboboxState({
   // will always put focus back on the combobox input. See
   // ../composite/composite.ts#132
   useUpdateLayoutEffect(() => {
-    if (popover.visible) return;
+    if (popover.open) return;
     // We need to reset the composite state when the popover is closed.
     composite.setActiveId(defaultActiveId);
     composite.setMoves(0);
-  }, [popover.visible, composite.setActiveId, composite.setMoves]);
+  }, [popover.open, composite.setActiveId, composite.setMoves]);
 
   const state = useMemo(
     () => ({

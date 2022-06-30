@@ -116,7 +116,7 @@ export const useDialog = createHook<DialogOptions>(
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const visibleRef = useRef(state.visible);
+    const visibleRef = useRef(state.open);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     // domReady can be also the portal node element so it's updated when the
@@ -124,9 +124,9 @@ export const useDialog = createHook<DialogOptions>(
     // again.
     const domReady = !portal || portalNode;
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
-    // visible.
+    // open.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
-    const visibleIdle = state.visible && !state.animating;
+    const visibleIdle = state.open && !state.animating;
 
     // Usually, we only want to disable the accessibility tree outside if the
     // dialog is a modal. But the Portal component can't preserve the tab order
@@ -161,7 +161,7 @@ export const useDialog = createHook<DialogOptions>(
       state,
       modal,
       hideOnInteractOutside,
-      enabled: state.visible,
+      enabled: state.open,
     });
 
     // Safari and Firefox on Apple devices do not focus on native buttons on
@@ -278,8 +278,8 @@ export const useDialog = createHook<DialogOptions>(
     useEffect(() => {
       const dialog = ref.current;
       const previouslyVisible = visibleRef.current;
-      visibleRef.current = state.visible;
-      // We only want to auto focus on hide if the dialog was visible before.
+      visibleRef.current = state.open;
+      // We only want to auto focus on hide if the dialog was open before.
       if (!previouslyVisible) return;
       if (!autoFocusOnHide) return;
       if (!dialog) return;
@@ -305,17 +305,17 @@ export const useDialog = createHook<DialogOptions>(
           ensureFocus(element);
         }
       };
-      if (!state.visible) {
-        // If this effect is running while state.visible is false, this means
+      if (!state.open) {
+        // If this effect is running while state.open is false, this means
         // that the Dialog component doesn't get unmounted when it's not
-        // visible, so we can immediatelly move focus.
+        // open, so we can immediatelly move focus.
         return focusOnHide();
       }
       // Otherwise, we just return the focusOnHide function so it's going to
       // be executed when the Dialog component gets unmounted. This is useful
       // so we can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [autoFocusOnHide, state.visible, finalFocusRef, state.disclosureRef]);
+    }, [autoFocusOnHide, state.open, finalFocusRef, state.disclosureRef]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
@@ -379,7 +379,7 @@ export const useDialog = createHook<DialogOptions>(
     // Focus traps.
     props = useFocusTrapRegion({
       ...props,
-      enabled: state.visible && modal && !visibleModals.length,
+      enabled: state.open && modal && !visibleModals.length,
     });
 
     const hiddenProp = props.hidden;
@@ -480,7 +480,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      *     `DialogDismiss` component hasn't been used. This allows screen reader
      *     users to close the dialog.
      *   - The focus will be trapped within the dialog.
-     *   - When the dialog is visible, the elements outside of the dialog will
+     *   - When the dialog is open, the elements outside of the dialog will
      *     be hidden to assistive technology users using the `aria-hidden`
      *     attribute.
      *   - When using the `Heading` or `DialogHeading` components within the

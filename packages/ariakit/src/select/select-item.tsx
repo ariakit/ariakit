@@ -64,7 +64,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
       "setValue",
       "hide",
       "contentElement",
-      "visible",
+      "open",
     ]);
 
     const disabled = props.disabled;
@@ -142,7 +142,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
       // closed by clicking on an item.
       focusOnHover: (event) => {
         if (!focusOnHoverProp(event)) return false;
-        return !!state?.visible;
+        return !!state?.open;
       },
     });
 
