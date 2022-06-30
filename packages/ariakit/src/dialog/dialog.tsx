@@ -223,7 +223,7 @@ export const useDialog = createHook<DialogOptions>(
       if (modal) {
         return chain(
           disableAccessibilityTreeOutside(element),
-          // When the backdrop is not open, we also need to disable pointer
+          // When the backdrop is not visible, we also need to disable pointer
           // events outside of the modal dialog.
           !backdrop ? disablePointerEventsOutside(element) : null
         );
