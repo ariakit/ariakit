@@ -78,14 +78,16 @@ export const usePortal = createHook<PortalOptions>(
     // Create the portal node and attach it to the DOM.
     useSafeLayoutEffect(() => {
       const element = ref.current;
-      if (!element) return;
-      if (!portal) return;
+      if (!element || !portal) {
+        setPortalNode(null);
+        return;
+      }
       const portalEl = getPortalElement(element, portalElement);
       // TODO: Warn about portals as the document.body element.
-      if (!portalEl) return;
-      // If the portal element is not in the DOM, append it to the root element,
-      // which can be either the parent portal or the document.body element,
-      // that's returned by the getRootElement function.
+      if (!portalEl) {
+        setPortalNode(null);
+        return;
+      }
       const isPortalInDocument = portalEl.isConnected;
       if (!isPortalInDocument) {
         const rootElement = context || getRootElement(element);

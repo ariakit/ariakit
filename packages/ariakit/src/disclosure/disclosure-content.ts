@@ -3,7 +3,6 @@ import {
   SyntheticEvent,
   TransitionEvent,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
@@ -15,6 +14,8 @@ import {
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import { DisclosureState } from "./disclosure-state";
+
+type TransitionState = "enter" | "leave" | null;
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -31,33 +32,18 @@ import { DisclosureState } from "./disclosure-state";
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
   ({ state, ...props }) => {
     const id = useId(props.id);
-
-    type TransitionState = "enter" | "leave" | null;
     const [transition, setTransition] = useState<TransitionState>(null);
-    const raf = useRef(0);
 
     useEffect(() => {
-      if (!state.animated) {
+      if (!state.animated) return;
+      // When the disclosure content element is rendered in a portal, we need to
+      // wait for the portal to be mounted before we can start the animation.
+      if (!state.contentElement?.isConnected) return;
+      setTransition(state.open ? "enter" : state.animating ? "leave" : null);
+      return () => {
         setTransition(null);
-        return;
-      }
-      // Double RAF is needed so the browser has enough time to paint the
-      // default styles before processing the `data-enter` attribute. Otherwise
-      // it wouldn't be considered a transition.
-      // See https://github.com/ariakit/ariakit/issues/643
-      raf.current = requestAnimationFrame(() => {
-        raf.current = requestAnimationFrame(() => {
-          if (state.visible) {
-            setTransition("enter");
-          } else if (state.animating) {
-            setTransition("leave");
-          } else {
-            setTransition(null);
-          }
-        });
-      });
-      return () => cancelAnimationFrame(raf.current);
-    }, [state.animated, state.visible, state.animating]);
+      };
+    }, [state.animated, state.contentElement, state.open, state.animating]);
 
     const onEnd = (event: SyntheticEvent) => {
       if (event.defaultPrevented) return;

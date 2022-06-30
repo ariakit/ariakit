@@ -20,9 +20,9 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   ({ title, animated, open = true, onClose, onUnmount, ...props }, ref) => {
     const dialog = useDialogState({
       animated,
-      visible: open,
-      setVisible: (visible) => {
-        if (dialog.visible !== visible && !visible) {
+      open,
+      setOpen: (open) => {
+        if (dialog.open !== open && !open) {
           onClose?.();
         }
       },
