@@ -26,8 +26,8 @@ export function useNestedDialogs(
   { state, modal }: Pick<DialogOptions, "state" | "modal">
 ) {
   const context = useContext(NestedDialogsContext);
+  const [openModals, setOpenModals] = useState<DialogRef[]>([]);
   const [nestedDialogs, setNestedDialogs] = useState<DialogRef[]>([]);
-  const [visibleModals, setVisibleModals] = useState<DialogRef[]>([]);
 
   const addDialog = useCallback(
     (ref: DialogRef) => {
@@ -46,10 +46,10 @@ export function useNestedDialogs(
   const showModal = useCallback(
     (ref: DialogRef) => {
       const hideModal = context.showModal?.(ref);
-      setVisibleModals((modals) => [...modals, ref]);
+      setOpenModals((modals) => [...modals, ref]);
       return () => {
         hideModal?.();
-        setVisibleModals((modals) => modals.filter((modal) => modal !== ref));
+        setOpenModals((modals) => modals.filter((modal) => modal !== ref));
       };
     },
     [context.showModal]
@@ -88,5 +88,5 @@ export function useNestedDialogs(
     [providerValue]
   );
 
-  return { nestedDialogs, visibleModals, wrapElement };
+  return { nestedDialogs, openModals, wrapElement };
 }

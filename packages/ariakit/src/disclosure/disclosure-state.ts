@@ -32,10 +32,10 @@ export function useDisclosureState({
     null
   );
   const [animating, setAnimating] = useState(false);
-  const prevVisible = usePreviousValue(open);
+  const prevOpen = usePreviousValue(open);
   const mounted = open || animating;
 
-  if (animated && !animating && prevVisible !== open) {
+  if (animated && !animating && prevOpen !== open) {
     setAnimating(true);
   }
 

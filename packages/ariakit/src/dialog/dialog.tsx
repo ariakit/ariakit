@@ -116,7 +116,7 @@ export const useDialog = createHook<DialogOptions>(
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const visibleRef = useRef(state.open);
+    const openRef = useRef(state.open);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const portalRef = useForkRef(setPortalNode, props.portalRef);
     // domReady can be also the portal node element so it's updated when the
@@ -126,7 +126,7 @@ export const useDialog = createHook<DialogOptions>(
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // open.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
-    const visibleIdle = state.open && !state.animating;
+    const openIdle = state.open && !state.animating;
 
     // Usually, we only want to disable the accessibility tree outside if the
     // dialog is a modal. But the Portal component can't preserve the tab order
@@ -148,7 +148,7 @@ export const useDialog = createHook<DialogOptions>(
     }, [state.mounted]);
 
     const nested = useNestedDialogs(ref, { state, modal });
-    const { nestedDialogs, visibleModals, wrapElement } = nested;
+    const { nestedDialogs, openModals, wrapElement } = nested;
     const nestedDialogsRef = useLiveRef(nestedDialogs);
 
     usePreventBodyScroll(ref, preventBodyScroll && state.mounted);
@@ -213,7 +213,7 @@ export const useDialog = createHook<DialogOptions>(
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element.
-      if (!visibleIdle) return;
+      if (!openIdle) return;
       // If portal is enabled, we get the portalNode instead of the dialog
       // element. This will consider nested dialogs as they will be children of
       // the portal node, but not the dialog. This also accounts for the tiny
@@ -232,7 +232,7 @@ export const useDialog = createHook<DialogOptions>(
       }
       return;
     }, [
-      visibleIdle,
+      openIdle,
       portal,
       portalNode,
       modal,
@@ -242,17 +242,17 @@ export const useDialog = createHook<DialogOptions>(
 
     // Auto focus on show.
     useEffect(() => {
-      if (!visibleIdle) return;
+      if (!openIdle) return;
       if (!autoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
       // focus. This is useful for when the Dialog component is unmounted
       // when hidden.
       if (!domReady) return;
       // If there are open nested dialogs, let them handle the focus.
-      const isNestedDialogVisible = nestedDialogsRef.current?.some(
+      const hasNestedOpenDialog = nestedDialogsRef.current?.some(
         (child) => child.current && !child.current.hidden
       );
-      if (isNestedDialogVisible) return;
+      if (hasNestedOpenDialog) return;
       const dialog = ref.current;
       if (!dialog) return;
       const initialFocus = initialFocusRef?.current;
@@ -266,7 +266,7 @@ export const useDialog = createHook<DialogOptions>(
         dialog;
       ensureFocus(element);
     }, [
-      visibleIdle,
+      openIdle,
       autoFocusOnShow,
       domReady,
       initialFocusRef,
@@ -277,10 +277,10 @@ export const useDialog = createHook<DialogOptions>(
     // Auto focus on hide.
     useEffect(() => {
       const dialog = ref.current;
-      const previouslyVisible = visibleRef.current;
-      visibleRef.current = state.open;
+      const prevOpen = openRef.current;
+      openRef.current = state.open;
       // We only want to auto focus on hide if the dialog was open before.
-      if (!previouslyVisible) return;
+      if (!prevOpen) return;
       if (!autoFocusOnHide) return;
       if (!dialog) return;
       // A function so we can use it on the effect setup and cleanup phases.
@@ -379,7 +379,7 @@ export const useDialog = createHook<DialogOptions>(
     // Focus traps.
     props = useFocusTrapRegion({
       ...props,
-      enabled: state.open && modal && !visibleModals.length,
+      enabled: state.open && modal && !openModals.length,
     });
 
     const hiddenProp = props.hidden;

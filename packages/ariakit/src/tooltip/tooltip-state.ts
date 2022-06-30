@@ -33,33 +33,33 @@ export function useTooltipState({
     window.clearTimeout(hideTimeout.current);
   }, []);
 
-  const [_visible, __setVisible] = useState(props.defaultOpen ?? false);
+  const [_open, __setOpen] = useState(props.defaultOpen ?? false);
 
-  const _setVisible = (nextVisible: boolean) => {
-    props.setOpen?.(nextVisible);
+  const _setOpen = (nextOpen: boolean) => {
+    props.setOpen?.(nextOpen);
     if (props.open === undefined) {
-      __setVisible(nextVisible);
+      __setOpen(nextOpen);
     }
   };
 
   const [open, setOpen] = useControlledState(
     props.defaultOpen ?? false,
-    props.open ?? _visible,
-    (nextVisible) => {
+    props.open ?? _open,
+    (nextOpen) => {
       clearTimeouts();
-      if (nextVisible) {
+      if (nextOpen) {
         if (!timeout || globalState.activeRef) {
-          // If there's no timeout or a tooltip visible already, we can show
-          // this immediately.
+          // If there's no timeout or an open tooltip already, we can show this
+          // immediately.
           globalState.show(ref);
         } else {
           // There may be a reference with focus whose tooltip is still not
-          // visible In this case, we want to update it before it gets shown.
+          // open. In this case, we want to update it before it gets shown.
           globalState.show(null);
           // Wait for the timeout to show the tooltip.
           showTimeout.current = window.setTimeout(() => {
             globalState.show(ref);
-            _setVisible(nextVisible);
+            _setOpen(nextOpen);
           }, timeout);
           return;
         }
@@ -70,7 +70,7 @@ export function useTooltipState({
           globalState.hide(ref);
         }, timeout);
       }
-      _setVisible(nextVisible);
+      _setOpen(nextOpen);
     }
   );
 
@@ -110,7 +110,7 @@ export function useTooltipState({
 export type TooltipState = PopoverState & {
   /**
    * The amount in milliseconds to wait before showing the tooltip. When there's
-   * already a visible tooltip in the page, this value will be ignored and other
+   * already an open tooltip in the page, this value will be ignored and other
    * tooltips will be shown immediately.
    * @default 0
    */

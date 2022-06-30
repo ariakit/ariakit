@@ -196,7 +196,7 @@ export const useHovercard = createHook<HovercardOptions>(
         // through valid hovercard elements.
         if (isMovingOnHovercard(target, element, anchor, nestedHovercards)) {
           // While the mouse is moving over the anchor element while the hover
-          // card is visible, keep track of the mouse position so we'll use the
+          // card is open, keep track of the mouse position so we'll use the
           // last point before the mouse leaves the anchor element.
           enterPointRef.current =
             target && anchor && contains(anchor, target)
