@@ -107,6 +107,12 @@ export const useMenu = createHook<MenuOptions>(
     props = useHovercard({
       state,
       initialFocusRef,
+      // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
+      // move focus to the menu when there's an initialFocusRef set or the menu
+      // is modal. Otherwise, users would have to manually call
+      // state.setAutoFocusOnShow(true) every time they want to open the menu.
+      // This differs from the usual dialog behavior that would automatically
+      // focus on the dialog container when no initialFocusRef is set.
       autoFocusOnShow: autoFocusOnShow
         ? !!initialFocusRef || !!props.initialFocusRef || !!props.modal
         : state.autoFocusOnShow || !!props.modal,
