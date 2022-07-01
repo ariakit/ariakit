@@ -147,9 +147,9 @@ export const useDialog = createHook<DialogOptions>(
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
       if (activeElement.tagName === "BODY") return;
-      if (!dialog || !contains(dialog, activeElement)) {
-        state.disclosureRef.current = activeElement;
-      }
+      // The disclosure element can't be inside the dialog.
+      if (dialog && contains(dialog, activeElement)) return;
+      state.disclosureRef.current = activeElement;
     }, [openIdle]);
 
     const nested = useNestedDialogs(ref, { state, modal });
@@ -264,7 +264,12 @@ export const useDialog = createHook<DialogOptions>(
         (child) => child.current && !child.current.hidden
       );
       if (hasNestedOpenDialog) return;
-      // TODO: Comment: modal or backdrop
+      // The dialog element may change for different reasons. For example, when
+      // the `modal`, `portal` or `backdrop` props change, the HTML structure
+      // will also change, which will affect the dialog element reference.
+      // That's why we're listening to `state.contentElement` here instead of
+      // getting the `ref.current` value. This ensures this effect will re-run
+      // when the dialog element reference changes.
       const dialog = state.contentElement;
       if (!dialog) return;
       const initialFocus = initialFocusRef?.current;
