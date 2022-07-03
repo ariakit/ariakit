@@ -7,7 +7,7 @@ if (process.argv.includes("--headed")) {
 }
 
 const headed = process.env.PWHEADED === "true";
-const launchOptions: LaunchOptions = headed ? { slowMo: 300 } : {};
+const launchOptions: LaunchOptions = headed ? { slowMo: 150 } : {};
 
 const config: PlaywrightTestConfig = {
   webServer: {

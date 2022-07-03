@@ -1,4 +1,5 @@
 import { Locator, Page, expect, test } from "@playwright/test";
+import { sleep } from "ariakit-test";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.locator(`role=button[name^='Add to list ${count}']`);
@@ -85,4 +86,26 @@ test("create list", async ({ page }) => {
   await expect(getMenuButton(page, 2)).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(getMenuButton(page, 1)).toBeVisible();
+});
+
+test("bug", async ({ page }) => {
+  await page.goto("/examples/menu-dialog-animated");
+  await getMenuButton(page).click();
+  await getMenuItem(page, "Create list").click();
+  await expect(getButton(page, "Dismiss popup")).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(getButton(page, "Learn more about lists")).toBeFocused();
+  await [...new Array(20)].reduce(
+    (p) =>
+      p
+        .then(() => page.keyboard.press("Enter"))
+        .then(() => expect(getDialog(page, "About lists")).toBeVisible())
+        .then(() =>
+          expect(
+            getButton(getDialog(page, "About lists"), "Dismiss popup")
+          ).toBeFocused()
+        )
+        .then(() => page.keyboard.press("Enter")),
+    Promise.resolve()
+  );
 });

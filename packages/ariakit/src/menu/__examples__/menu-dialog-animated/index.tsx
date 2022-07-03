@@ -9,90 +9,80 @@ import {
   useFormState,
 } from "ariakit/form";
 import {
-  Menu,
-  MenuArrow,
-  MenuButton,
-  MenuDismiss,
-  MenuHeading,
   MenuItem,
   MenuItemCheck,
   MenuItemCheckbox,
   MenuSeparator,
-  useMenuState,
 } from "ariakit/menu";
 import { MdAdd, MdPlaylistAdd } from "react-icons/md";
 import "./style.css";
 import { Dialog } from "./dialog";
+import { Menu, MenuProps } from "./menu";
 
 export default function Example() {
   const [menuInitialFocusRef, setMenuInitialFocusRef] =
     useState<RefObject<HTMLElement>>();
   const [lists, setLists] = useState(["Future ideas", "My stack"]);
 
-  const listMenu = useMenuState({
-    animated: true,
-    defaultValues: { selectedLists: ["My stack"] },
-  });
+  const [listMenuOpen, setListMenuOpen] = useState(false);
+  const [listMenuItems, setListMenuItems] = useState<
+    NonNullable<MenuProps["items"]>
+  >([]);
+  const [values, setValues] = useState({ selectedLists: ["My stack"] });
 
   const [createListDialogOpen, setCreateListDialogOpen] = useState(false);
   const [createListDialogMounted, setCreateListDialogMounted] = useState(false);
 
-  if (createListDialogOpen && !createListDialogMounted) {
-    setCreateListDialogMounted(true);
-  }
-
   const [listsInfoDialogOpen, setListsInfoDialogOpen] = useState(false);
   const [listsInfoDialogMounted, setListsInfoDialogMounted] = useState(false);
-
-  if (listsInfoDialogOpen && !listsInfoDialogMounted) {
-    setListsInfoDialogMounted(true);
-  }
 
   const form = useFormState({ defaultValues: { list: "" } });
 
   form.useSubmit(() => {
     if (form.values.list) {
       setLists((prevLists) => [...prevLists, form.values.list]);
-      listMenu.setValues((prevValues) => ({
+      setValues((prevValues) => ({
         ...prevValues,
         selectedLists: [...prevValues.selectedLists, form.values.list],
       }));
-      listMenu.show();
+      setListMenuOpen(true);
       setCreateListDialogOpen(false);
     }
   });
 
   useEffect(() => {
     if (!form.submitSucceed) return;
-    const item = listMenu.items.find(
+    const item = listMenuItems.find(
       (item) => item.ref.current?.textContent === lists[lists.length - 1]
     );
-    listMenu.setAutoFocusOnShow(true);
     setMenuInitialFocusRef(item?.ref);
-  }, [form.submitSucceed, listMenu.items, lists, listMenu.setAutoFocusOnShow]);
-
-  if (!listMenu.autoFocusOnShow && menuInitialFocusRef) {
-    setMenuInitialFocusRef(undefined);
-  }
+  }, [form.submitSucceed, listMenuItems, lists]);
 
   return (
     <>
-      <MenuButton state={listMenu} className="button">
-        <MdPlaylistAdd />
-        Add to list
-        <span className="badge">{listMenu.values.selectedLists.length}</span>
-      </MenuButton>
-
       <Menu
-        state={listMenu}
+        title="Lists"
+        animated
+        items={listMenuItems}
+        onItemsChange={setListMenuItems}
+        open={listMenuOpen}
+        onOpenChange={(open) => {
+          setListMenuOpen(open);
+          if (!open) {
+            setMenuInitialFocusRef(undefined);
+          }
+        }}
+        values={values}
+        onValuesChange={setValues}
         initialFocusRef={menuInitialFocusRef}
-        className="menu"
+        label={
+          <>
+            <MdPlaylistAdd />
+            Add to list
+            <span className="badge">{values.selectedLists.length}</span>
+          </>
+        }
       >
-        <MenuArrow />
-        <div role="presentation" className="header">
-          <MenuHeading className="heading">Lists</MenuHeading>
-          <MenuItem as={MenuDismiss} className="menu-item" />
-        </div>
         <div role="presentation" className="scroller">
           {lists.map((list) => (
             <MenuItemCheckbox
@@ -109,7 +99,10 @@ export default function Example() {
         <MenuSeparator className="separator" />
         <MenuItem
           className="menu-item"
-          onClick={() => setCreateListDialogOpen(true)}
+          onClick={() => {
+            setCreateListDialogMounted(true);
+            setCreateListDialogOpen(true);
+          }}
         >
           <MdAdd />
           Create list
@@ -117,8 +110,8 @@ export default function Example() {
       </Menu>
 
       <Dialog
-        title="Create list"
         animated
+        title="Create list"
         open={createListDialogOpen}
         onClose={() => setCreateListDialogOpen(false)}
         onUnmount={() => setCreateListDialogMounted(false)}
@@ -138,7 +131,10 @@ export default function Example() {
           </Form>
         )}
         <Button
-          onClick={() => setListsInfoDialogOpen(true)}
+          onClick={() => {
+            setListsInfoDialogMounted(true);
+            setListsInfoDialogOpen(true);
+          }}
           className="button secondary"
         >
           Learn more about lists
@@ -150,11 +146,13 @@ export default function Example() {
           title="About lists"
           animated
           open={listsInfoDialogOpen}
+          backdrop={!createListDialogMounted}
           onClose={() => {
+            setCreateListDialogMounted(true);
             setCreateListDialogOpen(true);
             setListsInfoDialogOpen(false);
           }}
-          backdrop={!createListDialogMounted}
+          onUnmount={() => setListsInfoDialogMounted(false)}
         >
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis et

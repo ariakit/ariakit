@@ -214,7 +214,7 @@ export const useDialog = createHook<DialogOptions>(
     const shouldDisableOutside = useChampionDialog(
       ref,
       "data-dialog-disable-outside",
-      openIdle && !openModals.length
+      openIdle && !openModals.length && shouldDisableAccessibilityTree
     );
 
     // Disables/enables the element tree around the modal dialog element.
@@ -236,18 +236,9 @@ export const useDialog = createHook<DialogOptions>(
           // events outside of the modal dialog.
           !backdrop ? disablePointerEventsOutside(element) : null
         );
-      } else if (shouldDisableAccessibilityTree) {
-        return disableAccessibilityTreeOutside(element);
       }
-      return;
-    }, [
-      shouldDisableOutside,
-      portal,
-      portalNode,
-      modal,
-      backdrop,
-      shouldDisableAccessibilityTree,
-    ]);
+      return disableAccessibilityTreeOutside(element);
+    }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
 
     const prevInitialFocusRef = useRef<HTMLElement | null>();
 

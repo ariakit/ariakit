@@ -17,7 +17,7 @@ export type DialogProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
-  ({ title, animated, open = true, onClose, onUnmount, ...props }, ref) => {
+  ({ title, animated, open, onClose, onUnmount, ...props }, ref) => {
     const dialog = useDialogState({
       animated,
       open,
@@ -38,12 +38,12 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       <BaseDialog
         state={dialog}
         ref={ref}
-        data-animated={animated ? "" : undefined}
         className="dialog"
+        data-animated={animated ? "" : undefined}
         {...props}
       >
         <header className="header">
-          {title && <DialogHeading className="heading">{title}</DialogHeading>}
+          <DialogHeading className="heading">{title}</DialogHeading>
           <DialogDismiss className="button dismiss" />
         </header>
         {props.children}
