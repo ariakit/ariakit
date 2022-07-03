@@ -1,5 +1,4 @@
 import { Locator, Page, expect, test } from "@playwright/test";
-import { sleep } from "ariakit-test";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.locator(`role=button[name^='Add to list ${count}']`);
