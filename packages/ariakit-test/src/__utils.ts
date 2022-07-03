@@ -18,9 +18,6 @@ export function queuedMicrotasks(): Promise<void> {
 }
 
 export function nextFrame(): Promise<void> {
-  if (typeof requestAnimationFrame !== "function") {
-    return Promise.resolve();
-  }
   return act(
     () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
   );
