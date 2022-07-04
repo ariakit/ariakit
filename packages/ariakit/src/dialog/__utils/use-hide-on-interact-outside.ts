@@ -1,7 +1,6 @@
 import { RefObject, useEffect } from "react";
 import { contains, getDocument } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { ensureFocus } from "ariakit-utils/focus";
 import { useEvent, useLiveRef } from "ariakit-utils/hooks";
 import { DialogOptions } from "../dialog";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref";
@@ -133,7 +132,7 @@ export function useHideOnInteractOutside(
         // shouldHideOnInteractOutside is false, we don't hide the dialog, but
         // ensure focus is placed on it. Otherwise the focus might end up on an
         // element outside of the dialog or the body element itself.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
       }
@@ -171,7 +170,7 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -191,7 +190,7 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
         return;

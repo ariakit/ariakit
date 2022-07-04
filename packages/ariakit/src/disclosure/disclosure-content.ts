@@ -37,9 +37,21 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     useEffect(() => {
       if (!state.animated) return;
       // When the disclosure content element is rendered in a portal, we need to
-      // wait for the portal to be mounted before we can start the animation.
+      // wait for the portal to be mounted and connected to the DOM before we
+      // can start the animation.
       if (!state.contentElement?.isConnected) return;
-      setTransition(state.open ? "enter" : state.animating ? "leave" : null);
+      if (state.open) {
+        // Double requestAnimationFrame is necessary here to avoid potential
+        // bugs when the data attribute is added before the element is fully
+        // rendered in the DOM, which wouldn't trigger the animation.
+        let raf = requestAnimationFrame(() => {
+          raf = requestAnimationFrame(() => {
+            setTransition("enter");
+          });
+        });
+        return () => cancelAnimationFrame(raf);
+      }
+      setTransition(state.animating ? "leave" : null);
       return () => {
         setTransition(null);
       };

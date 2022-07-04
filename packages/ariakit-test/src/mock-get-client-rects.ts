@@ -1,6 +1,6 @@
 import { isBrowser } from "./__utils";
 
-if (!isBrowser) {
+if (!isBrowser && typeof window !== "undefined") {
   // @ts-ignore
   window.Element.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
