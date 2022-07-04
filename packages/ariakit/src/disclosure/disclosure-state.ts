@@ -31,7 +31,7 @@ export function useDisclosureState({
   const [contentElement, setContentElement] = useState<HTMLElement | null>(
     null
   );
-  const [animating, setAnimating] = useState(false);
+  const [animating, setAnimating] = useState(!!animated && open);
   const prevOpen = usePreviousValue(open);
   const mounted = open || animating;
 

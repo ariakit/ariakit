@@ -1,6 +1,7 @@
 import { HTMLAttributes, forwardRef } from "react";
 import {
   Dialog as BaseDialog,
+  DialogProps as BaseDialogProps,
   DialogDismiss,
   DialogHeading,
   useDialogState,
@@ -14,6 +15,8 @@ export type DialogProps = HTMLAttributes<HTMLDivElement> & {
   backdrop?: boolean;
   onClose?: () => void;
   onUnmount?: () => void;
+  initialFocusRef?: BaseDialogProps["initialFocusRef"];
+  finalFocusRef?: BaseDialogProps["finalFocusRef"];
 };
 
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
@@ -38,8 +41,8 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       <BaseDialog
         state={dialog}
         ref={ref}
-        className="dialog"
         data-animated={animated ? "" : undefined}
+        className="dialog"
         {...props}
       >
         <header className="header">

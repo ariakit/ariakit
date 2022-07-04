@@ -27,6 +27,7 @@ import {
   useId,
   useLiveRef,
   useSafeLayoutEffect,
+  useUpdateEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
@@ -189,6 +190,16 @@ export const useDialog = createHook<DialogOptions>(
         };
       }, [state.mounted, state.disclosureRef]);
     }
+
+    // When the dialog is animated, changing the DOM strcuture may cause the
+    // onTransitionEnd/onAnimationEnd event to be skipped. Changing the
+    // backdrop, modal, and portal props will change the DOM structure, so we
+    // need to stop the animation here to prevent the animating state from being
+    // stale.
+    useUpdateEffect(() => {
+      if (!state.animated) return;
+      state.stopAnimation();
+    }, [backdrop, modal, portal, state.animated, state.stopAnimation]);
 
     // Renders a hidden dismiss button at the top of the modal dialog element.
     // So that screen reader users aren't trapped in the dialog when there's no

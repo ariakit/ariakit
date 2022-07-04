@@ -17,11 +17,9 @@ export type MenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   title?: string;
   animated?: boolean;
   values?: MenuStateProps["values"];
-  onValuesChange?: (values: any) => void;
-  items?: MenuStateProps["items"];
-  onItemsChange?: MenuStateProps["setItems"];
+  setValues?: (values: any) => void;
   open?: MenuStateProps["open"];
-  onOpenChange?: MenuStateProps["setOpen"];
+  setOpen?: MenuStateProps["setOpen"];
   onUnmount?: () => void;
   initialFocusRef?: BaseMenuProps["initialFocusRef"];
 };
@@ -33,11 +31,9 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
       title,
       animated,
       values,
-      onValuesChange,
-      items,
-      onItemsChange,
+      setValues,
       open,
-      onOpenChange,
+      setOpen,
       onUnmount,
       initialFocusRef,
       children,
@@ -45,15 +41,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
     },
     ref
   ) => {
-    const menu = useMenuState({
-      animated,
-      values,
-      setValues: onValuesChange,
-      items,
-      setItems: onItemsChange,
-      open,
-      setOpen: onOpenChange,
-    });
+    const menu = useMenuState({ animated, values, setValues, open, setOpen });
 
     useIsomorphicLayoutEffect(() => {
       if (!menu.mounted) {
@@ -63,7 +51,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
 
     return (
       <>
-        <MenuButton state={menu} className="button" ref={ref} {...props}>
+        <MenuButton state={menu} ref={ref} className="button" {...props}>
           {label}
         </MenuButton>
         <BaseMenu
