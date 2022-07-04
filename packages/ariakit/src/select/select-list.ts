@@ -83,12 +83,18 @@ export const useSelectList = createHook<SelectListOptions>(
       ? props.style
       : { ...props.style, display: "none" };
 
+    if (composite) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": multiSelectable ? true : undefined,
+        ...props,
+      };
+    }
+
     props = {
       id,
-      role: composite ? "listbox" : undefined,
       hidden: !state.mounted,
       "aria-labelledby": labelId,
-      "aria-multiselectable": multiSelectable ? true : undefined,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,
