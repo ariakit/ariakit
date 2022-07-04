@@ -24,18 +24,22 @@ import { AnyFunction, SetState, WrapElement } from "./types";
  * For example, `React.useId` will raise a compile time error when
  * using React v17, but `React['use' + 'Id']` will not.
  */
-// @ts-ignore
 const useReactId =
+  // @ts-ignore
   typeof React["use" + "Id"] === "function" ? React["use" + "Id"] : undefined;
-// @ts-ignore
+
 const useReactDeferredValue =
+  // @ts-ignore
   typeof React["use" + "DeferredValue"] === "function"
-    ? React["use" + "DeferredValue"]
+    ? // @ts-ignore
+      React["use" + "DeferredValue"]
     : undefined;
 // @ts-ignore
 const useInsertionEffect =
+  // @ts-ignore
   typeof React["use" + "InsertionEffect"] === "function"
-    ? React["use" + "InsertionEffect"]
+    ? // @ts-ignore
+      React["use" + "InsertionEffect"]
     : undefined;
 
 /**
