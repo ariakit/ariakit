@@ -1,4 +1,4 @@
-import React, {
+import {
   ComponentType,
   DependencyList,
   EffectCallback,
@@ -12,18 +12,23 @@ import React, {
   useRef,
   useState,
 } from "react";
+import * as React from "react";
 import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-const useReactId = typeof React.useId === "function" ? React.useId : undefined;
+// @ts-ignore
+const useReactId =
+  typeof React["use" + "Id"] === "function" ? React["use" + "Id"] : undefined;
+// @ts-ignore
 const useReactDeferredValue =
-  typeof React.useDeferredValue === "function"
-    ? React.useDeferredValue
+  typeof React["use" + "DeferredValue"] === "function"
+    ? React["use" + "DeferredValue"]
     : undefined;
+// @ts-ignore
 const useInsertionEffect =
-  typeof React.useInsertionEffect === "function"
-    ? React.useInsertionEffect
+  typeof React["use" + "InsertionEffect"] === "function"
+    ? React["use" + "InsertionEffect"]
     : undefined;
 
 /**
