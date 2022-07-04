@@ -1,5 +1,11 @@
 # ariakit-test
 
+## 0.17.0-next.26
+
+### Patch Changes
+
+- Fixed error when importing `ariakit-test` in a Node.js environment.
+
 ## 0.17.0-next.25
 
 ### Minor Changes
