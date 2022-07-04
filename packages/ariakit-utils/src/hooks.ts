@@ -17,14 +17,29 @@ import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-const useReactId = typeof React.useId === "function" ? React.useId : undefined;
+/**
+ * Access React v18 hooks using string concatenation in order to prevent
+ * Webpack from inferring that they are not present in React v17.
+ *
+ * For example, `React.useId` will raise a compile time error when
+ * using React v17, but `React['use' + 'Id']` will not.
+ */
+const useReactId =
+  // @ts-ignore
+  typeof React["use" + "Id"] === "function" ? React["use" + "Id"] : undefined;
+
 const useReactDeferredValue =
-  typeof React.useDeferredValue === "function"
-    ? React.useDeferredValue
+  // @ts-ignore
+  typeof React["use" + "DeferredValue"] === "function"
+    ? // @ts-ignore
+      React["use" + "DeferredValue"]
     : undefined;
+// @ts-ignore
 const useInsertionEffect =
-  typeof React.useInsertionEffect === "function"
-    ? React.useInsertionEffect
+  // @ts-ignore
+  typeof React["use" + "InsertionEffect"] === "function"
+    ? // @ts-ignore
+      React["use" + "InsertionEffect"]
     : undefined;
 
 /**
