@@ -34,14 +34,14 @@ export default function Example() {
     const onMouseUp = () => {
       if (!hasSelectionWithin(paragraph)) return;
       popover.render();
-      popover.setVisible(true);
+      popover.setOpen(true);
     };
     const onSelect = () => {
       if (popoverContainer.contains(doc.activeElement)) return;
       if (hasSelectionWithin(paragraph)) {
         return popover.render();
       }
-      popover.setVisible(false);
+      popover.setOpen(false);
     };
     doc.addEventListener("mouseup", onMouseUp);
     doc.addEventListener("selectionchange", onSelect);
@@ -49,7 +49,7 @@ export default function Example() {
       doc.removeEventListener("mouseup", onMouseUp);
       doc.removeEventListener("selectionchange", onSelect);
     };
-  }, [popover.render, popover.setVisible]);
+  }, [popover.render, popover.setOpen]);
 
   return (
     <div>

@@ -101,6 +101,7 @@ export const useSelect = createHook<SelectOptions>(
       // toggleOnPress
       if (event.key === " " || event.key === "Enter") {
         if (toggleOnPressProp(event)) {
+          event.preventDefault();
           state.toggle();
         }
       }

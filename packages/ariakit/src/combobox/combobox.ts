@@ -149,12 +149,12 @@ export const useCombobox = createHook<ComboboxOptions>(
       state.value,
     ]);
 
-    // Resets the inserted text flag when the popover is not visible so we don't
+    // Resets the inserted text flag when the popover is not open so we don't
     // try to auto select an item after the popover closes.
     useSafeLayoutEffect(() => {
-      if (state.visible) return;
+      if (state.open) return;
       hasInsertedTextRef.current = false;
-    }, [state.visible]);
+    }, [state.open]);
 
     // Auto select the first item on type. If autoSelect is true and the last
     // change was a text insertion, we automatically focus on the first
@@ -316,7 +316,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (event.altKey) return;
         if (event.shiftKey) return;
         if (event.metaKey) return;
-        if (state.visible) return;
+        if (state.open) return;
         if (state.activeId !== null) return;
         // Up and Down arrow keys should open the combobox popover.
         if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -332,7 +332,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       role: "combobox",
       "aria-autocomplete": autoComplete,
       "aria-haspopup": getPopupRole(state.contentElement, "listbox"),
-      "aria-expanded": state.visible,
+      "aria-expanded": state.open,
       "aria-controls": state.contentElement?.id,
       value,
       ...props,

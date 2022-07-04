@@ -89,7 +89,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
         }
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if there's another expanded menu button inside the menu
-        // bar. Without this, the visible menus in the menu bar wouldn't close.
+        // bar. Without this, the open menus in the menu bar wouldn't close.
         else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
           event.currentTarget.focus();
           return true;

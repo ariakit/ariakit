@@ -8,24 +8,5 @@
     "ariakit-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": [
-    "drop-react-16",
-    "fix-react-17-webpack-error",
-    "focus-trap-region",
-    "hovercard-strict-mode",
-    "menu-bar-strict-mode",
-    "npmignore-src-folder",
-    "playground-safari-resize-observer",
-    "popover-flip-fallback-placements",
-    "popover-position",
-    "popover-state-auto-placements",
-    "popover-state-fit-viewport",
-    "popover-state-overlap",
-    "popover-state-shift-gutter",
-    "popover-state-slide",
-    "select-initial-focus",
-    "test-strict-mode",
-    "utils-boolean-or-callback-generics",
-    "utils-update-effect-strict-mode"
-  ]
+  "changesets": []
 }

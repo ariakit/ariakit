@@ -41,7 +41,7 @@ test("hide hovercard on hover outside after timeout", async () => {
   await waitForHovercardToHide();
 });
 
-test("keep hovercard visible when it has focus", async () => {
+test("keep hovercard open when it has focus", async () => {
   const { baseElement } = render(<Example />);
   await hover(getAnchor());
   await waitForHovercardToShow();
@@ -51,7 +51,7 @@ test("keep hovercard visible when it has focus", async () => {
   await expect(getHovercard()).toBeVisible();
 });
 
-test("keep hovercard visible when hovering out and in quickly", async () => {
+test("keep hovercard open when hovering out and in quickly", async () => {
   const { baseElement } = render(<Example />);
   await hover(getAnchor());
   await waitForHovercardToShow();

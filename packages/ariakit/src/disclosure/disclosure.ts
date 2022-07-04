@@ -35,15 +35,15 @@ export const useDisclosure = createHook<DisclosureOptions>(
     // Assigns the disclosureRef whenever it's undefined or disconnected from
     // the DOM. If this disclosure element is the disclosureRef, this element
     // will get the `aria-expanded` attribute set to `true` when the disclosure
-    // content is visible.
+    // content is open.
     useSafeLayoutEffect(() => {
       const currentDisclosure = state.disclosureRef.current;
       if (!currentDisclosure || !currentDisclosure.isConnected) {
         state.disclosureRef.current = ref.current;
       }
       const isCurrentDisclosure = state.disclosureRef.current === ref.current;
-      setExpanded(state.visible && isCurrentDisclosure);
-    }, [state.disclosureRef, state.visible]);
+      setExpanded(state.open && isCurrentDisclosure);
+    }, [state.disclosureRef, state.open]);
 
     const onMouseDownProp = props.onMouseDown;
 

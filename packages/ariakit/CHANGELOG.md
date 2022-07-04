@@ -1,5 +1,45 @@
 # ariakit
 
+## 2.0.0-next.32
+
+### Major Changes
+
+- The `defaultVisible`, `visible`, and `setVisible` properties on `useDisclosureState` and derived state hooks have been renamed to `defaultOpen`, `open`, and `setOpen`, respectively. ([#1426](https://github.com/ariakit/ariakit/issues/1426), [#1521](https://github.com/ariakit/ariakit/pull/1521))
+
+  **Before**:
+
+  ```js
+  const dialog = useDialogState({ defaultVisible, visible, setVisible });
+  dialog.visible;
+  dialog.setVisible;
+  ```
+
+  **After**:
+
+  ```js
+  const dialog = useDialogState({ defaultOpen, open, setOpen });
+  dialog.open;
+  dialog.setOpen;
+  ```
+
+### Minor Changes
+
+- Improved disclosure detection on `Dialog`. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Made it easier to programmatically open `Menu` components using `menu.show()`. ([#1573](https://github.com/ariakit/ariakit/pull/1573))
+
+### Patch Changes
+
+- Fixed `Dialog` not auto-detecting the disclosure when animating. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Fixed cases where an animated `Dialog` wouldn't change its `animating` state and therefore not move focus. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+- Fixed behavior when transitioning between sibling `Dialog` components. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Fixed initial focus on animated `Select`. ([#1570](https://github.com/ariakit/ariakit/pull/1570))
+
+- Fixed `SelectPopover` not focusing on the base element when there's no selected item. ([#1557](https://github.com/ariakit/ariakit/pull/1557))
+
 ## 2.0.0-next.31
 
 ### Minor Changes
