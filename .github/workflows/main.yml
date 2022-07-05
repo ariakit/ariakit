@@ -334,7 +334,7 @@ jobs:
           key: playwright-macos-${{ steps.playwright-version.outputs.version }}
 
       - name: Install playwright
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps firefox webkit
 
       - name: Restore website
         uses: actions/cache@v3
@@ -342,9 +342,17 @@ jobs:
           path: packages/website/.next
           key: nextjs-${{ github.run_id }}
 
+      - name: CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
       - name: Test
         id: test
-        run: npm run test-browser -- --workers 2
+        run: >
+          npx playwright test
+          --project firefox
+          --project safari
+          --workers ${{ steps.cpu-cores.outputs.count }}
 
       - uses: actions/upload-artifact@v3
         if: failure() && steps.test.outcome == 'failure'
