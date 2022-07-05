@@ -288,7 +288,7 @@ jobs:
       - name: Cache playwright
         uses: actions/cache@v3
         with:
-          path: ~/Library/Caches/ms-playwright
+          path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ hashFiles('package-lock.json') }}
           restore-keys: playwright-chromium-
 
