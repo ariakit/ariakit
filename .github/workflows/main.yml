@@ -285,15 +285,12 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
-      - name: Get playwright version
-        id: playwright-version
-        run: echo "::set-output name=version::$(npm view playwright version)"
-
       - name: Cache playwright
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ steps.playwright-version.outputs.version }}
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-chromium-
 
       - name: Install playwright
         run: npx playwright install --with-deps chromium
@@ -342,15 +339,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
 
-      - name: Get playwright version
-        id: playwright-version
-        run: echo "::set-output name=version::$(npm view playwright version)"
-
       - name: Cache playwright
         uses: actions/cache@v3
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ steps.playwright-version.outputs.version }}
+          key: playwright-macos-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-macos-
 
       - name: Install playwright
         run: npx playwright install --with-deps firefox webkit
