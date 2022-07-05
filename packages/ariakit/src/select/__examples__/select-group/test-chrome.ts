@@ -10,7 +10,7 @@ const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
 
-test("show/hide", async ({ page, headless }, testInfo) => {
+test("scroll into view", async ({ page, headless }, testInfo) => {
   testInfo.snapshotSuffix = "";
   await page.goto("/examples/select-group");
   await getButton(page).click();
