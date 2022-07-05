@@ -100,7 +100,12 @@ function useScheduleFocus(activeItem?: Item) {
     const activeElement = activeItem?.ref.current;
     if (scheduled && activeElement) {
       setScheduled(false);
-      activeElement.focus();
+      if (!activeElement.scrollIntoView) {
+        activeElement.focus();
+      } else {
+        activeElement.focus({ preventScroll: true });
+        activeElement.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
     }
   }, [activeItem, scheduled]);
   return schedule;

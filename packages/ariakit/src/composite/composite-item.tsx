@@ -19,7 +19,6 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
-import { isSafari } from "ariakit-utils/platform";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
@@ -240,14 +239,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (isEditableElement(event.currentTarget)) return;
       const composite = state.baseRef.current;
       if (!composite) return;
-      if (isSafari()) {
-        // Safari doesn't scroll into view automatically if the focus changes so
-        // fast. So we need to do it manually.
-        event.currentTarget.scrollIntoView({
-          block: "nearest",
-          inline: "nearest",
-        });
-      }
       hasFocusedComposite.current = true;
       composite.focus();
     });
