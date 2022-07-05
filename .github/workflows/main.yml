@@ -299,8 +299,8 @@ jobs:
           name: test-results
           path: test-results
 
-  test-safari:
-    name: Test Safari
+  test-macos:
+    name: Test macOS
     needs: website
     runs-on: macos-latest
 
@@ -331,10 +331,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-webkit-${{ steps.playwright-version.outputs.version }}
+          key: playwright-macos-${{ steps.playwright-version.outputs.version }}
 
       - name: Install playwright
-        run: npx playwright install --with-deps webkit
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Restore website
         uses: actions/cache@v3
@@ -344,7 +344,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run test-safari -- --workers 2
+        run: npm run test-browser -- --workers 2
 
       - uses: actions/upload-artifact@v3
         if: failure() && steps.test.outcome == 'failure'

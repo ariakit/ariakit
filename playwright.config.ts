@@ -27,13 +27,20 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: "chrome",
-      testMatch: "test-chrome.ts",
+      testMatch: ["test-chrome.ts", "test-browser.ts"],
       retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {
+      name: "firefox",
+      testMatch: ["test-firefox.ts", "test-browser.ts"],
+      retries: 1,
+      use: { ...devices["Desktop Firefox"], launchOptions },
+    },
+    {
       name: "safari",
-      testMatch: "test-safari.ts",
+      testMatch: ["test-safari.ts", "test-browser.ts"],
+      retries: 1,
       use: { ...devices["Desktop Safari"], launchOptions },
     },
   ],

@@ -464,19 +464,19 @@ Now run the following command in your terminal to see the test results (make sur
 > **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
 
 ```bash
-npm run test-chrome my-component
+npm run test-browser my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-npm run test-chrome-browser my-component
+npm run test-browser-headed my-component
 ```
 
 Or in debug mode:
 
 ```bash
-npm run test-chrome-debug my-component
+npm run test-browser-debug my-component
 ```
 
 <div align="right">
