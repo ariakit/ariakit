@@ -14,6 +14,7 @@ import {
   useBooleanEvent,
   useEvent,
   useForkRef,
+  useLiveRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -57,6 +58,8 @@ function isMovingOnHovercard(
 // element is clicked. We have to reset it to false when the hovercard element
 // gets hidden or is unmounted.
 function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
+  const mountedRef = useLiveRef(state.mounted);
+
   // Resets autoFocusOnShow
   useEffect(() => {
     if (!state.mounted) {
@@ -64,9 +67,13 @@ function useAutoFocusOnShow({ state, ...props }: HovercardProps) {
     }
   }, [state.mounted, state.setAutoFocusOnShow]);
 
-  // Resets on unmount as well
+  // On unmount as well.
   useEffect(
-    () => () => state.setAutoFocusOnShow(false),
+    () => () => {
+      if (!mountedRef.current) {
+        state.setAutoFocusOnShow(false);
+      }
+    },
     [state.setAutoFocusOnShow]
   );
 
@@ -155,7 +162,7 @@ export const useHovercard = createHook<HovercardOptions>(
     // hovercard, by default, does not receive focus when it's shown, we need to
     // handle this globally here.
     useEffect(() => {
-      if (!state.visible) return;
+      if (!state.open) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
         const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
@@ -164,7 +171,7 @@ export const useHovercard = createHook<HovercardOptions>(
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
+    }, [state.open, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
@@ -189,7 +196,7 @@ export const useHovercard = createHook<HovercardOptions>(
         // through valid hovercard elements.
         if (isMovingOnHovercard(target, element, anchor, nestedHovercards)) {
           // While the mouse is moving over the anchor element while the hover
-          // card is visible, keep track of the mouse position so we'll use the
+          // card is open, keep track of the mouse position so we'll use the
           // last point before the mouse leaves the anchor element.
           enterPointRef.current =
             target && anchor && contains(anchor, target)

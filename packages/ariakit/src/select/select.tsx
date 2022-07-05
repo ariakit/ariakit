@@ -101,6 +101,7 @@ export const useSelect = createHook<SelectOptions>(
       // toggleOnPress
       if (event.key === " " || event.key === "Enter") {
         if (toggleOnPressProp(event)) {
+          event.preventDefault();
           state.toggle();
         }
       }
@@ -146,6 +147,8 @@ export const useSelect = createHook<SelectOptions>(
     const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
+      if (event.button) return;
+      if (event.ctrlKey) return;
       if (!toggleOnPressProp(event)) return;
       const element = event.currentTarget;
       queueBeforeEvent(element, "focusin", () => {

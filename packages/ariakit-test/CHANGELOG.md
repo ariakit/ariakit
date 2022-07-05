@@ -1,5 +1,47 @@
 # ariakit-test
 
+## 0.17.0-next.26
+
+### Patch Changes
+
+- Fixed error when importing `ariakit-test` in a Node.js environment.
+
+## 0.17.0-next.25
+
+### Minor Changes
+
+- Components passed to the `render` function are now wrapped with `React.StrictMode`. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.22`.
+
+## 0.17.0-next.24
+
+### Patch Changes
+
+- Fixed error regarding accessing `isBrowser` before initialization. ([#1488](https://github.com/ariakit/ariakit/pull/1488))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.21`.
+
+## 0.17.0-next.23
+
+### Patch Changes
+
+- Fixed `hover` not waiting for queued microtasks. ([#1433](https://github.com/ariakit/ariakit/pull/1433))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`.
+
+## 0.17.0-next.22
+
+### Patch Changes
+
+- Added new `mouseDown` and `mouseUp` functions. ([#1379](https://github.com/ariakit/ariakit/pull/1379))
+
+* Added new `select` util to `ariakit-test`. ([#1386](https://github.com/ariakit/ariakit/pull/1386))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.19`.
+
 ## 0.17.0-next.21
 
 ### Patch Changes

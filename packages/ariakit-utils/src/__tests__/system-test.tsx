@@ -24,7 +24,7 @@ test("createComponent supports as prop", () => {
   expect(div.getAttribute("as")).toBeNull();
   expect(someFunc).not.toHaveBeenCalled();
   rerender(<TestComponent as="div" customProp />);
-  expect(div.getAttribute("as")).toBe("div");
+  expect(getByTestId("div").getAttribute("as")).toBe("div");
   expect(someFunc).toHaveBeenCalled();
 });
 

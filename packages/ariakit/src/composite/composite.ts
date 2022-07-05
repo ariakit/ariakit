@@ -2,12 +2,14 @@ import {
   FocusEvent,
   KeyboardEventHandler,
   KeyboardEvent as ReactKeyboardEvent,
+  RefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
+import { getActiveElement } from "ariakit-utils/dom";
 import {
   fireBlurEvent,
   fireKeyboardEvent,
@@ -19,6 +21,7 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
+import { queueMicrotask } from "ariakit-utils/misc";
 import { useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -50,24 +53,31 @@ function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
 
 function useKeyboardEventProxy(
   activeItem?: Item,
-  onKeyboardEvent?: KeyboardEventHandler
+  onKeyboardEvent?: KeyboardEventHandler,
+  previousElementRef?: RefObject<HTMLElement | null>
 ) {
   return useEvent((event: ReactKeyboardEvent) => {
     onKeyboardEvent?.(event);
     if (event.defaultPrevented) return;
-    if (canProxyKeyboardEvent(event)) {
-      const activeElement = activeItem?.ref.current;
-      if (!activeElement) return;
-      const { view, ...eventInit } = event;
-      if (!fireKeyboardEvent(activeElement, event.type, eventInit)) {
-        event.preventDefault();
-      }
-      // The event will be triggered on the composite item and then
-      // propagated up to this composite element again, so we can pretend
-      // that it wasn't called on this component in the first place.
-      if (event.currentTarget.contains(activeElement)) {
-        event.stopPropagation();
-      }
+    if (!canProxyKeyboardEvent(event)) return;
+    const activeElement = activeItem?.ref.current;
+    if (!activeElement) return;
+    const { view, ...eventInit } = event;
+    const previousElement = previousElementRef?.current;
+    // If the active item element is not the previous element, this means that
+    // it hasn't been focused (for example, when using composite hover). So we
+    // focus on it before firing the keyboard event.
+    if (activeElement !== previousElement) {
+      activeElement.focus();
+    }
+    if (!fireKeyboardEvent(activeElement, event.type, eventInit)) {
+      event.preventDefault();
+    }
+    // The event will be triggered on the composite item and then propagated up
+    // to this composite element again, so we can pretend that it wasn't called
+    // on this component in the first place.
+    if (event.currentTarget.contains(activeElement)) {
+      event.stopPropagation();
     }
   });
 }
@@ -133,34 +143,50 @@ export const useComposite = createHook<CompositeOptions>(
       scheduleFocus();
     }, [focusOnMove, state.moves]);
 
+    // When virtualFocus is enabled, calling composite.move(null) will not fire
+    // a blur event on the active item. So we need to do it manually.
     useEffect(() => {
       if (!composite) return;
       if (!state.moves) return;
       if (!isSelfAciveRef.current) return;
       const element = ref.current;
-      // When virtualFocus is enabled, calling composite.move(null) will not
-      // fire a blur event on the active item. So we need to do it manually.
       const previousElement = previousElementRef.current;
+      // We have to clean up the previous element ref so an additional blur
+      // event is not fired on it, for example, when looping through items while
+      // includesBaseElement is true.
+      previousElementRef.current = null;
       if (previousElement) {
         fireBlurEvent(previousElement, { relatedTarget: element });
       }
       // If composite.move(null) has been called, the composite container (this
       // element) should receive focus.
       element?.focus();
-      // And we have to clean up the previous element ref so an additional blur
-      // event is not fired on it, for example, when looping through items while
-      // includesBaseElement is true.
-      previousElementRef.current = null;
     }, [composite, state.moves]);
+
+    // At this point, if the activeId has changed and we still have a
+    // previousElement, this means that the previousElement hasn't been blurred,
+    // so we do it here.
+    useSafeLayoutEffect(() => {
+      if (!virtualFocus) return;
+      if (!composite) return;
+      const previousElement = previousElementRef.current;
+      previousElementRef.current = null;
+      if (!previousElement) return;
+      const activeElement = activeItemRef.current?.ref.current;
+      const relatedTarget = activeElement || getActiveElement(previousElement);
+      fireBlurEvent(previousElement, { relatedTarget });
+    }, [virtualFocus, composite, state.activeId]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
       activeItem,
-      props.onKeyDownCapture
+      props.onKeyDownCapture,
+      previousElementRef
     );
 
     const onKeyUpCapture = useKeyboardEventProxy(
       activeItem,
-      props.onKeyUpCapture
+      props.onKeyUpCapture,
+      previousElementRef
     );
 
     const onFocusCaptureProp = props.onFocusCapture;
@@ -201,16 +227,12 @@ export const useComposite = createHook<CompositeOptions>(
         // like it would happen with roving tabindex. When it receives focus,
         // the composite item will move focus back to the composite element.
         if (isSelfTarget(event)) {
-          if (activeItemRef.current?.ref.current) {
-            activeItemRef.current.ref.current.focus();
-          } else {
-            // If there's no active item, it might be because the state.items
-            // haven't been populated yet, for example, when the composite
-            // element is focused right after it gets mounted. So we schedule
-            // a user focus and make another attempt in an effect when the
-            // state.items is populated.
-            scheduleFocus();
-          }
+          // By queueing a microtask, we ensure the scheduleFocus effect will be
+          // triggered after all the other effects that might have changed the
+          // active item. This also accounts for when the composite container is
+          // focused right after it gets mounted (for example, in a dialog), in
+          // which case state.items will not be populated yet.
+          queueMicrotask(scheduleFocus);
         }
       } else if (isSelfTarget(event)) {
         // When the roving tabindex composite gets intentionally focused (for

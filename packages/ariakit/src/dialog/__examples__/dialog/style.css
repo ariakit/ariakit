@@ -1,4 +1,4 @@
-@import url("../../../button/__examples__/button/style.css");
+@import "../../../button/__examples__/button/style.css";
 
 [data-backdrop] {
   background-color: rgb(0 0 0 / 10%);
@@ -12,6 +12,7 @@
     fixed
     w-full
     sm:w-[480px]
+    sm:ml-[calc(var(--scrollbar-width,0)*-0.5)]
     z-50
     top-1/2
     left-1/2

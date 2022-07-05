@@ -1,5 +1,39 @@
 # ariakit-playground
 
+## 0.17.0-next.32
+
+### Patch Changes
+
+- Updated dependencies: `ariakit@2.0.0-next.32`.
+
+## 0.17.0-next.31
+
+### Patch Changes
+
+- Fixed `ResizeObserver` error on Safari 12.
+
+- Updated dependencies: `ariakit@2.0.0-next.31`, `ariakit-utils@0.17.0-next.22`.
+
+## 0.17.0-next.30
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.21`, `ariakit@2.0.0-next.30`.
+
+## 0.17.0-next.29
+
+### Patch Changes
+
+- Adjusted playground scrollbars.
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`, `ariakit@2.0.0-next.29`.
+
+## 0.17.0-next.28
+
+### Patch Changes
+
+- Updated dependencies: `ariakit@2.0.0-next.28`, `ariakit-utils@0.17.0-next.19`.
+
 ## 0.17.0-next.27
 
 ### Patch Changes

@@ -3,12 +3,14 @@ description: Create a report to help us improve.
 labels: ["potential bug"]
 body:
   - type: textarea
+    validations:
+      required: true
     attributes:
       label: Current behavior
       description: Explain what's happening.
+  - type: textarea
     validations:
       required: true
-  - type: textarea
     attributes:
       label: Steps to reproduce the bug
       description: >
@@ -19,15 +21,17 @@ body:
         1. Open sandbox: https://codesandbox.io/s/m4n32vjkoj
         2. Remove any line
         3. See console logs
+  - type: textarea
     validations:
       required: true
-  - type: textarea
     attributes:
       label: Expected behavior
       description: Explain how it should behave.
-    validations:
-      required: true
+  - type: textarea
+    attributes:
+      label: Workaround
+      description: If you have fixed this issue in userland, please describe your solution here to help others.
   - type: textarea
     attributes:
       label: Possible solutions
-      description: If possible, describe how this bug could be fixed.
+      description: If possible, describe how this bug could be fixed in the library code.

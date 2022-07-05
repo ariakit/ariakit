@@ -1,5 +1,35 @@
 # ariakit-utils
 
+## 0.17.0-next.22
+
+### Minor Changes
+
+- **types**: `BooleanOrCallback` now requires a generic parameter input. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+### Patch Changes
+
+- Fixed an issue where `ariakit-utils` was importing React v18 APIs via named imports. As Webpack/CRA sees that these APIs do not exist on React v17, it would raise an error when an app used React v17. ([#1542](https://github.com/ariakit/ariakit/pull/1542))
+
+* Fixed `useUpdateEffect` and `useUpdateLayoutEffect` on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+## 0.17.0-next.21
+
+### Patch Changes
+
+- Fixed `useEvent` hook timing. ([#1481](https://github.com/ariakit/ariakit/pull/1481))
+
+## 0.17.0-next.20
+
+### Patch Changes
+
+- Fixed `addGlobalEventListener` when `window.frames` is undefined. ([#1404](https://github.com/ariakit/ariakit/pull/1404))
+
+## 0.17.0-next.19
+
+### Patch Changes
+
+- Adjusted the return type of `useStoreProvider` to be more accurate. ([#1367](https://github.com/ariakit/ariakit/pull/1367))
+
 ## 0.17.0-next.18
 
 ### Minor Changes

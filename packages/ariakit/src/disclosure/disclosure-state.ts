@@ -23,19 +23,19 @@ export function useDisclosureState({
   ...props
 }: DisclosureStateProps = {}): DisclosureState {
   const disclosureRef = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useControlledState(
-    props.defaultVisible ?? false,
-    props.visible,
-    props.setVisible
+  const [open, setOpen] = useControlledState(
+    props.defaultOpen ?? false,
+    props.open,
+    props.setOpen
   );
   const [contentElement, setContentElement] = useState<HTMLElement | null>(
     null
   );
-  const [animating, setAnimating] = useState(false);
-  const prevVisible = usePreviousValue(visible);
-  const mounted = visible || animating;
+  const [animating, setAnimating] = useState(!!animated && open);
+  const prevOpen = usePreviousValue(open);
+  const mounted = open || animating;
 
-  if (animated && !animating && prevVisible !== visible) {
+  if (animated && !animating && prevOpen !== open) {
     setAnimating(true);
   }
 
@@ -46,40 +46,40 @@ export function useDisclosureState({
     }
     // TODO: warn when 8 seconds have been passed
     return;
-    // We're also listening to the visible state here although it's not used in
+    // We're also listening to the open state here although it's not used in
     // the effect. This is so we can clear previous timeouts and avoid hiding
     // the content when the disclosure button gets clicked several times in
     // sequence.
-  }, [animated, animating, visible]);
+  }, [animated, animating, open]);
 
-  const show = useCallback(() => setVisible(true), [setVisible]);
-  const hide = useCallback(() => setVisible(false), [setVisible]);
-  const toggle = useCallback(() => setVisible((v) => !v), [setVisible]);
+  const show = useCallback(() => setOpen(true), [setOpen]);
+  const hide = useCallback(() => setOpen(false), [setOpen]);
+  const toggle = useCallback(() => setOpen((v) => !v), [setOpen]);
   const stopAnimation = useCallback(() => setAnimating(false), []);
 
   const state = useMemo(
     () => ({
       disclosureRef,
-      visible,
+      open,
       mounted,
       animated,
       animating,
       contentElement,
       setContentElement,
-      setVisible,
+      setOpen,
       show,
       hide,
       toggle,
       stopAnimation,
     }),
     [
-      visible,
+      open,
       mounted,
       animated,
       animating,
       contentElement,
       setContentElement,
-      setVisible,
+      setOpen,
       show,
       hide,
       toggle,
@@ -99,10 +99,10 @@ export type DisclosureState = {
    * The visibility state of the content.
    * @default false
    */
-  visible: boolean;
+  open: boolean;
   /**
    * The mounted state of the content. If `animated` is `false` or not defined,
-   * this will be the same as `visible`. Otherwise, it will wait for the
+   * this will be the same as `open`. Otherwise, it will wait for the
    * animation to complete before becoming `false` so the content is not
    * unmounted while animating.
    * @example
@@ -137,19 +137,19 @@ export type DisclosureState = {
    */
   setContentElement: SetState<DisclosureState["contentElement"]>;
   /**
-   * Sets the `visible` state.
+   * Sets the `open` state.
    */
-  setVisible: SetState<DisclosureState["visible"]>;
+  setOpen: SetState<DisclosureState["open"]>;
   /**
-   * Sets the `visible` state to `true`.
+   * Sets the `open` state to `true`.
    */
   show: () => void;
   /**
-   * Sets the `visible` state to `false`.
+   * Sets the `open` state to `false`.
    */
   hide: () => void;
   /**
-   * Sets the `visible` state to the opposite of the current value.
+   * Sets the `open` state to the opposite of the current value.
    */
   toggle: () => void;
   /**
@@ -159,30 +159,30 @@ export type DisclosureState = {
 };
 
 export type DisclosureStateProps = Partial<
-  Pick<DisclosureState, "visible" | "animated">
+  Pick<DisclosureState, "open" | "animated">
 > & {
   /**
    * The default visibility state of the content.
    * @default false
    */
-  defaultVisible?: DisclosureState["visible"];
+  defaultOpen?: DisclosureState["open"];
   /**
-   * Function that will be called when setting the disclosure `visible` state.
+   * Function that will be called when setting the disclosure `open` state.
    * @example
    * // Uncontrolled example
-   * useDisclosureState({ setVisible: (visible) => console.log(visible) });
+   * useDisclosureState({ setOpen: (open) => console.log(open) });
    * @example
    * // Controlled example
-   * const [visible, setVisible] = useState(false);
-   * useDisclosureState({ visible, setVisible });
+   * const [open, setOpen] = useState(false);
+   * useDisclosureState({ open, setOpen });
    * @example
    * // Externally controlled example
-   * function MyDisclosure({ visible, onVisibleChange }) {
+   * function MyDisclosure({ open, onOpenChange }) {
    *   const disclosure = useDisclosureState({
-   *     visible,
-   *     setVisible: onVisibleChange,
+   *     open,
+   *     setOpen: onOpenChange,
    *   });
    * }
    */
-  setVisible?: (visible: DisclosureState["visible"]) => void;
+  setOpen?: (open: DisclosureState["open"]) => void;
 };

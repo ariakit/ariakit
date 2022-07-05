@@ -7,11 +7,11 @@ This guide is intended to help you get started with contributing to the project.
 1. [Cloning the repository](#cloning-the-repository)
 2. [Installing Node.js and npm](#installing-nodejs-and-npm)
 3. [Installing dependencies](#installing-dependencies)
-4. [Creating a new branch](#creating-a-new-branch)
-5. [Starting the development server](#starting-the-development-server)
-6. [Creating a component](#creating-a-component)
-7. [Creating the default example](#creating-the-default-example)
-8. [Styling the example](#styling-the-example)
+4. [Starting the development server](#starting-the-development-server)
+5. [Creating a component](#creating-a-component)
+6. [Creating the default example](#creating-the-default-example)
+7. [Styling the example](#styling-the-example)
+8. [Testing the example](#testing-the-example)
 9. [Writing the component documentation](#writing-the-component-documentation)
 10. [Writing another example](#writing-another-example)
 11. [Importing styles from other examples](#importing-styles-from-other-examples)
@@ -45,6 +45,8 @@ If you are already part of the organization on GitHub, clone the repository dire
 ```bash
 git clone https://github.com/ariakit/ariakit.git
 ```
+
+Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit) and skip to [Creating a component](#creating-a-component).
 
 <div align="right">
     <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -81,18 +83,6 @@ Once in the project's root directory, run the following command to install the p
 
 ```bash
 npm install
-```
-
-<div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
-</div>
-
-## Creating a new branch
-
-Make sure you create a new branch for your changes. You can do this by running the following command in your terminal:
-
-```bash
-git checkout -b feat/my-component
 ```
 
 <div align="right">
@@ -341,7 +331,7 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
 `packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
 
 ```css
-@import url("../my-component/style.css");
+@import "../my-component/style.css";
 
 .my-component {
   @apply p-4;
@@ -474,19 +464,19 @@ Now run the following command in your terminal to see the test results (make sur
 > **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
 
 ```bash
-npm run test-chrome my-component
+npm run test-browser my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-npm run test-chrome-browser my-component
+npm run test-browser-headed my-component
 ```
 
 Or in debug mode:
 
 ```bash
-npm run test-chrome-debug my-component
+npm run test-browser-debug my-component
 ```
 
 <div align="right">

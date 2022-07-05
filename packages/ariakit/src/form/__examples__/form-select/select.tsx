@@ -23,8 +23,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       setValue,
       defaultValue,
       sameWidth: true,
-      setVisible: (visible) => {
-        if (!visible && onClose) {
+      setOpen: (open) => {
+        if (!open && onClose) {
           onClose();
         }
       },

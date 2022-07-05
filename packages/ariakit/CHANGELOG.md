@@ -1,5 +1,113 @@
 # ariakit
 
+## 2.0.0-next.32
+
+### Major Changes
+
+- The `defaultVisible`, `visible`, and `setVisible` properties on `useDisclosureState` and derived state hooks have been renamed to `defaultOpen`, `open`, and `setOpen`, respectively. ([#1426](https://github.com/ariakit/ariakit/issues/1426), [#1521](https://github.com/ariakit/ariakit/pull/1521))
+
+  **Before**:
+
+  ```js
+  const dialog = useDialogState({ defaultVisible, visible, setVisible });
+  dialog.visible;
+  dialog.setVisible;
+  ```
+
+  **After**:
+
+  ```js
+  const dialog = useDialogState({ defaultOpen, open, setOpen });
+  dialog.open;
+  dialog.setOpen;
+  ```
+
+### Minor Changes
+
+- Improved disclosure detection on `Dialog`. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Made it easier to programmatically open `Menu` components using `menu.show()`. ([#1573](https://github.com/ariakit/ariakit/pull/1573))
+
+### Patch Changes
+
+- Fixed `Dialog` not auto-detecting the disclosure when animating. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Fixed cases where an animated `Dialog` wouldn't change its `animating` state and therefore not move focus. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+- Fixed behavior when transitioning between sibling `Dialog` components. ([#1422](https://github.com/ariakit/ariakit/pull/1422))
+
+* Fixed initial focus on animated `Select`. ([#1570](https://github.com/ariakit/ariakit/pull/1570))
+
+- Fixed `SelectPopover` not focusing on the base element when there's no selected item. ([#1557](https://github.com/ariakit/ariakit/pull/1557))
+
+## 2.0.0-next.31
+
+### Minor Changes
+
+- Added `FocusTrapRegion` component. ([#1469](https://github.com/ariakit/ariakit/pull/1469))
+
+### Patch Changes
+
+- Fixed an issue where `ariakit-utils` was importing React v18 APIs via named imports. As Webpack/CRA sees that these APIs do not exist on React v17, it would raise an error when an app used React v17. ([#1542](https://github.com/ariakit/ariakit/pull/1542))
+
+* Fixed `Hovercard` incorrectly setting `autoFocusOnShow` to `false` on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+- Fixed `MenuBar` initial focus on strict mode. ([#1534](https://github.com/ariakit/ariakit/pull/1534))
+
+* Fixed `Popover` initial position. ([#1535](https://github.com/ariakit/ariakit/pull/1535))
+
+- Fixed `Select` initial focus on strict mode. ([#1532](https://github.com/ariakit/ariakit/pull/1532))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.22`.
+
+## 2.0.0-next.30
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.21`.
+
+## 2.0.0-next.29
+
+### Patch Changes
+
+- Fixed `data-focus-visible` behavior when using the `focusOnHover` prop on composite items. ([#1433](https://github.com/ariakit/ariakit/pull/1433))
+
+* Fixed `preventBodyScroll` behavior on `Dialog`. ([#1421](https://github.com/ariakit/ariakit/pull/1421))
+
+- Fixed `Select` with `modal` prop not opening on click. ([#1427](https://github.com/ariakit/ariakit/pull/1427))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.20`.
+
+## 2.0.0-next.28
+
+### Minor Changes
+
+- The `hidden` prop passed to `Dialog` is now inherited by the internal `DialogBackdrop` component. ([#1387](https://github.com/ariakit/ariakit/pull/1387))
+
+  Before, if we wanted to pass `hidden={false}` to both the dialog and the backdrop components, we would have to do this (still works):
+
+  ```jsx
+  <Dialog hidden={false} backdropProps={{ hidden: false }} />
+  ```
+
+  Now, the `backdropProps` is not necessary anymore:
+
+  ```jsx
+  <Dialog hidden={false} />
+  ```
+
+### Patch Changes
+
+- Fixed `ComboboxPopover` being shown on right clicks on the combobox input. ([#1371](https://github.com/ariakit/ariakit/pull/1371))
+
+* Fixed `Command` component not being clicked when using the keyboard on Firefox when it's rendered as a `summary` element. ([#1392](https://github.com/ariakit/ariakit/pull/1392))
+
+- Fixed `Dialog` and derived dialog components not hiding when dragging elements outside it. ([#1378](https://github.com/ariakit/ariakit/pull/1378))
+
+* Fixed `SelectPopover` being shown on right clicks on the select button. ([#1371](https://github.com/ariakit/ariakit/pull/1371))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.19`.
+
 ## 2.0.0-next.27
 
 ### Minor Changes

@@ -1,11 +1,12 @@
 import "./mock-get-client-rects";
 
 import { closest } from "ariakit-utils/dom";
-import { getClosestFocusable, isFocusable } from "ariakit-utils/focus";
-import { blur } from "./blur";
+import { isFocusable } from "ariakit-utils/focus";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
 import { hover } from "./hover";
+import { mouseDown } from "./mouse-down";
+import { mouseUp } from "./mouse-up";
 import { sleep } from "./sleep";
 
 function getClosestLabel(element: Element) {
@@ -129,47 +130,17 @@ export async function click(
   tap = false
 ) {
   await hover(element, options);
-  const { disabled } = element as HTMLButtonElement;
-
-  let defaultAllowed = fireEvent.pointerDown(element, options);
-
-  if (!disabled) {
-    // Mouse events are not called on disabled elements
-    if (!fireEvent.mouseDown(element, { detail: 1, ...options })) {
-      defaultAllowed = false;
-    }
-  }
-
-  // Do not enter this if event.preventDefault() has been called on
-  // pointerdown or mousedown.
-  if (defaultAllowed) {
-    if (
-      isFocusable(element) &&
-      getComputedStyle(element).pointerEvents !== "none"
-    ) {
-      focus(element);
-    } else if (element.parentElement) {
-      // If the element is not focusable, focus the closest focusable parent
-      const closestFocusable = getClosestFocusable(element.parentElement);
-      if (closestFocusable) {
-        focus(closestFocusable);
-      } else {
-        // This will automatically set document.body as the activeElement
-        blur();
-      }
-    }
-  }
+  mouseDown(element, options);
 
   if (!tap) {
     await sleep();
   }
 
-  fireEvent.pointerUp(element, options);
+  mouseUp(element, options);
 
-  // mouseup and click are not called on disabled elements
+  // click is not called on disabled elements
+  const { disabled } = element as HTMLButtonElement;
   if (disabled) return;
-
-  fireEvent.mouseUp(element, { detail: 1, ...options });
 
   const label = getClosestLabel(element);
 

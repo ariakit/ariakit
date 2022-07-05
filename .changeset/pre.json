@@ -8,14 +8,5 @@
     "ariakit-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": [
-    "drop-react-16",
-    "npmignore-src-folder",
-    "popover-flip-fallback-placements",
-    "popover-state-auto-placements",
-    "popover-state-fit-viewport",
-    "popover-state-overlap",
-    "popover-state-shift-gutter",
-    "popover-state-slide"
-  ]
+  "changesets": []
 }

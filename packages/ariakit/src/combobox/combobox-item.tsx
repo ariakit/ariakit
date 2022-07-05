@@ -138,8 +138,8 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       state,
       ...props,
       getItem,
-      // We only register the item on the state when the popover is visible so
-      // we don't try to move focus to hidden items when pressing arrow keys.
+      // We only register the item on the state when the popover is open so we
+      // don't try to move focus to hidden items when pressing arrow keys.
       shouldRegisterItem: state?.mounted && shouldRegisterItem,
     });
 

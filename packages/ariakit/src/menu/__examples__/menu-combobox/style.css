@@ -1,7 +1,8 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
 .menu {
-  @apply p-0;
+  max-height: min(var(--popover-available-height, 300px), 300px);
+  @apply p-0 overflow-visible;
 }
 
 .combobox {
@@ -13,25 +14,24 @@
     bg-canvas-1
     px-4
     m-2
+    flex-none
     text-base
     text-canvas-1
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
-}
-
-.combobox:focus {
-  outline: 2px solid theme("colors.primary-2.DEFAULT");
-  outline-offset: 0;
+    dark:hover:bg-canvas-1-dark-hover
+    focus-visible:ariakit-outline-input;
 }
 
 .combobox-list {
-  background-color: inherit;
-  border-radius: inherit;
-  @apply max-h-60 overflow-auto px-2 pb-2;
-}
-
-.menu-item {
-  @apply scroll-mt-0;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  @apply
+    p-2
+    overflow-auto
+    overscroll-contain
+    border-t
+    border-t-canvas-4
+    dark:border-t-canvas-4-dark;
 }

@@ -24,14 +24,16 @@
 }
 
 .popover {
+  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
-    max-h-80
     z-50
     flex
     flex-col
     rounded-lg
     border
     p-2
+    overflow-auto
+    overscroll-contain
     border-solid
     border-canvas-4
     bg-canvas-4
@@ -45,7 +47,7 @@
 }
 
 .select-item {
-  outline: none;
+  outline: none !important;
   @apply
     flex
     gap-2

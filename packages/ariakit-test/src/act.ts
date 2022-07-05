@@ -1,1 +1,1 @@
-export { act } from "@testing-library/react";
+export { act } from "./__utils";

@@ -1,3 +1,4 @@
+import { queuedMicrotasks } from "./__utils";
 import { fireEvent } from "./fire-event";
 import { sleep } from "./sleep";
 
@@ -15,7 +16,7 @@ export async function hover(element: Element, options?: MouseEventInit) {
   const { disabled } = element as HTMLButtonElement;
   const pointerEventsEnabled = isPointerEventsEnabled(element);
 
-  if (lastHovered) {
+  if (lastHovered && lastHovered !== element) {
     fireEvent.pointerMove(lastHovered, options);
     fireEvent.mouseMove(lastHovered, options);
 
@@ -59,4 +60,6 @@ export async function hover(element: Element, options?: MouseEventInit) {
   }
 
   document.lastHovered = element;
+
+  await queuedMicrotasks();
 }

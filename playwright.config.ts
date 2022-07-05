@@ -2,12 +2,12 @@ import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
 
 process.env.PLAYWRIGHT_EXPERIMENTAL_FEATURES = "1";
 
-const headed = process.env.HEADED === "true";
+if (process.argv.includes("--headed")) {
+  process.env.PWHEADED = "true";
+}
 
-const launchOptions: LaunchOptions = {
-  headless: !headed,
-  slowMo: headed ? 250 : undefined,
-};
+const headed = process.env.PWHEADED === "true";
+const launchOptions: LaunchOptions = headed ? { slowMo: 150 } : {};
 
 const config: PlaywrightTestConfig = {
   webServer: {
@@ -27,13 +27,20 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: "chrome",
-      testMatch: "test-chrome.ts",
+      testMatch: ["test-chrome.ts", "test-browser.ts"],
       retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {
+      name: "firefox",
+      testMatch: ["test-firefox.ts", "test-browser.ts"],
+      retries: 1,
+      use: { ...devices["Desktop Firefox"], launchOptions },
+    },
+    {
       name: "safari",
-      testMatch: "test-safari.ts",
+      testMatch: ["test-safari.ts", "test-browser.ts"],
+      retries: 1,
       use: { ...devices["Desktop Safari"], launchOptions },
     },
   ],

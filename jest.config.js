@@ -2,8 +2,12 @@
 /** @type {import("@jest/types").Config.GlobalConfig} */
 module.exports = {
   rootDir: __dirname,
+  testTimeout: process.env.CI ? 10000 : 5000,
   testEnvironment: "jsdom",
   reporters: ["default", "github-actions"],
+  snapshotFormat: {
+    printBasicPrototype: false,
+  },
   projects: [
     "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",
@@ -12,6 +16,7 @@ module.exports = {
   collectCoverageFrom: [
     "packages/ariakit/src/**/*.{js,ts,tsx}",
     "packages/ariakit-utils/src/**/*.{js,ts,tsx}",
+    "!**/__examples__/**",
     "!**/*test.{js,ts,tsx}",
     "!**/test-*.{js,ts}",
   ],

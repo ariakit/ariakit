@@ -1,7 +1,6 @@
 import { RefObject, useEffect } from "react";
 import { contains, getDocument } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { ensureFocus } from "ariakit-utils/focus";
 import { useEvent, useLiveRef } from "ariakit-utils/hooks";
 import { DialogOptions } from "../dialog";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref";
@@ -40,14 +39,21 @@ function isDisclosure(disclosure: Element, target: Element) {
   return false;
 }
 
+function isBackdrop(dialog: Element | null, target: Element | null) {
+  if (!dialog) return false;
+  if (!target) return false;
+  return (
+    target.hasAttribute("data-backdrop") &&
+    target.getAttribute("data-backdrop") === dialog.id
+  );
+}
+
 function dialogContains(target: Element) {
   return (dialogRef: RefObject<HTMLElement>) => {
     const dialog = dialogRef.current;
     if (!dialog) return false;
     if (contains(dialog, target)) return true;
-    if (target.getAttribute("data-backdrop") === dialogRef.current?.id) {
-      return true;
-    }
+    if (isBackdrop(dialog, target)) return true;
     return false;
   };
 }
@@ -69,8 +75,9 @@ function useEventOutside({
     const onEvent = (event: Event) => {
       const container = dialogRef.current;
       const disclosure = disclosureRef?.current;
-      const target = event.target as Element;
+      const target = event.target as Element | null;
       if (!container) return;
+      if (!target) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.
@@ -102,7 +109,7 @@ function shouldHideOnInteractOutside(
 export function useHideOnInteractOutside(
   dialogRef: RefObject<HTMLElement>,
   nestedDialogs: Array<RefObject<HTMLElement>>,
-  { state, modal, hideOnInteractOutside, enabled = state.visible }: Options
+  { state, modal, hideOnInteractOutside, enabled = state.open }: Options
 ) {
   const previousMouseDownRef = usePreviousMouseDownRef(enabled);
 
@@ -125,7 +132,7 @@ export function useHideOnInteractOutside(
         // shouldHideOnInteractOutside is false, we don't hide the dialog, but
         // ensure focus is placed on it. Otherwise the focus might end up on an
         // element outside of the dialog or the body element itself.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
       }
@@ -142,13 +149,15 @@ export function useHideOnInteractOutside(
         event.stopPropagation();
         return;
       }
-      // Make sure the element that has been clicked is the same that last
-      // triggered the mousedown event. This prevents the dialog from closing
-      // by dragging the cursor (for example, selecting some text inside the
-      // dialog and releasing the mouse outside of it).
-      if (previousMouseDownRef.current === event.target) {
-        state.hide();
-      }
+      const dialog = dialogRef.current;
+      const previousMouseDown = previousMouseDownRef.current as Element | null;
+      if (!previousMouseDown) return;
+      const draggingFromDialog = dialog && contains(dialog, previousMouseDown);
+      // This prevents the dialog from closing by dragging the cursor (for
+      // example, selecting some text inside the dialog and releasing the mouse
+      // outside of it). See https://github.com/ariakit/ariakit/issues/1336
+      if (draggingFromDialog) return;
+      state.hide();
     },
   });
 
@@ -161,7 +170,7 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -181,7 +190,7 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
-        ensureFocus(dialog);
+        dialog.focus();
         event.preventDefault();
         event.stopPropagation();
         return;

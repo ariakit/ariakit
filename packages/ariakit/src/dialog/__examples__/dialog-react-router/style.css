@@ -1,0 +1,30 @@
+@import "../dialog/style.css";
+
+.dialog {
+  @apply sm:w-[320px] max-w-[320px];
+}
+
+.form {
+  @apply flex flex-col gap-4;
+}
+
+.label {
+  @apply flex flex-col gap-2;
+}
+
+.input {
+  @apply
+    w-full
+    h-10
+    rounded-lg
+    border-none
+    px-4
+    text-base
+    focus-visible:ariakit-outline-input
+    bg-canvas-1
+    text-canvas-1
+    hover:bg-canvas-1-hover
+    dark:bg-canvas-1-dark
+    dark:text-canvas-1-dark
+    dark:hover:bg-canvas-1-dark-hover;
+}
