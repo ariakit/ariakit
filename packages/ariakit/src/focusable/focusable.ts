@@ -24,7 +24,7 @@ import {
   useTagName,
 } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
-import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
+import { isSafari } from "ariakit-utils/platform";
 import {
   createComponent,
   createElement,
@@ -32,7 +32,7 @@ import {
 } from "ariakit-utils/system";
 import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
 
-const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
+const isSafariBrowser = isSafari();
 
 const alwaysFocusVisibleInputTypes = [
   "text",
@@ -198,7 +198,7 @@ export const useFocusable = createHook<FocusableOptions>(
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
     // buttons when their labels are clicked. This effect will make sure the
     // focusable element is focused on label click.
-    if (isSafariOrFirefoxOnAppleDevice) {
+    if (isSafariBrowser) {
       useEffect(() => {
         if (!focusable) return;
         const element = ref.current;
@@ -267,20 +267,33 @@ export const useFocusable = createHook<FocusableOptions>(
       if (event.defaultPrevented) return;
       if (!focusable) return;
       const element = event.currentTarget;
-      // Safari and Firefox on MacOS don't focus on buttons on mouse down like
-      // other browsers/platforms. Instead, they focus on the closest focusable
+      // Safari doesn't focus on buttons on mouse down like other
+      // browsers/platforms. Instead, it focuses on the closest focusable
       // ancestor element, which is ultimately the body element. So we make sure
-      // to give focus to the tabbable element on mouse down so it works
+      // to give focus to this Focusable element on mouse down so it works
       // consistently across browsers.
-      if (!isSafariOrFirefoxOnAppleDevice) return;
+      if (!isSafariBrowser) return;
       if (isPortalEvent(event)) return;
       if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
+      // In future versions os Safari, it may change this behavior and start
+      // focusing on buttons on mouse down. To account for that, we check if the
+      // element has received focus before.
+      let receivedFocus = false;
+      const onFocus = () => {
+        receivedFocus = true;
+      };
+      const options = { capture: true, once: true };
+      element.addEventListener("focusin", onFocus, options);
       // We can't focus right away after on mouse down, otherwise it would
       // prevent drag events from happening. So we queue the focus to the next
       // animation frame, but always before the next mouseup event. The mouseup
       // event might happen before the next animation frame on touch devices or
       // by tapping on a MacBook's trackpad, for example.
-      queueBeforeEvent(element, "mouseup", () => focusIfNeeded(element));
+      queueBeforeEvent(element, "mouseup", () => {
+        element.removeEventListener("focusin", onFocus, true);
+        if (receivedFocus) return;
+        focusIfNeeded(element);
+      });
     });
 
     const onFocusVisibleProp = onFocusVisible;
