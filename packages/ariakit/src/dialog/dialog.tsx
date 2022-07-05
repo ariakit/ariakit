@@ -31,7 +31,7 @@ import {
   useWrapElement,
 } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
-import { isApple, isFirefox, isSafari } from "ariakit-utils/platform";
+import { isSafari } from "ariakit-utils/platform";
 import {
   createComponent,
   createElement,
@@ -63,7 +63,7 @@ import { useNestedDialogs } from "./__utils/use-nested-dialogs";
 import { usePreventBodyScroll } from "./__utils/use-prevent-body-scroll";
 import { DialogState } from "./dialog-state";
 
-const isSafariOrFirefoxOnAppleDevice = isApple() && (isSafari() || isFirefox());
+const isSafariBrowser = isSafari();
 
 function isBackdrop(dialog: HTMLElement, element: Element) {
   const id = dialog.id;
@@ -168,21 +168,29 @@ export const useDialog = createHook<DialogOptions>(
       enabled: state.open,
     });
 
-    // Safari and Firefox on Apple devices do not focus on native buttons on
-    // mousedown. The DialogDisclosure component normalizes this behavior using
-    // the useFocusable hook, but the disclosure button may use a custom
-    // component, and not DialogDisclosure. In this case, we need to make sure
-    // the disclosure button gets focused here.
-    if (isSafariOrFirefoxOnAppleDevice) {
+    // Safari does not focus on native buttons on mousedown. The
+    // DialogDisclosure component normalizes this behavior using the
+    // useFocusable hook, but the disclosure button may use a custom component,
+    // and not DialogDisclosure. In this case, we need to make sure the
+    // disclosure button gets focused here.
+    if (isSafariBrowser) {
       useEffect(() => {
         if (!state.mounted) return;
         const disclosure = state.disclosureRef.current;
         if (!disclosure) return;
         if (!isButton(disclosure)) return;
         const onMouseDown = () => {
-          queueBeforeEvent(disclosure, "mouseup", () =>
-            focusIfNeeded(disclosure)
-          );
+          let receivedFocus = false;
+          const onFocus = () => {
+            receivedFocus = true;
+          };
+          const options = { capture: true, once: true };
+          disclosure.addEventListener("focusin", onFocus, options);
+          queueBeforeEvent(disclosure, "mouseup", () => {
+            disclosure.removeEventListener("focusin", onFocus, true);
+            if (receivedFocus) return;
+            focusIfNeeded(disclosure);
+          });
         };
         disclosure.addEventListener("mousedown", onMouseDown);
         return () => {
