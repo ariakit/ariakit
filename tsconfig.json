@@ -8,8 +8,8 @@
       "ariakit-playground": ["packages/ariakit-playground/src"],
       "ariakit-playground/*": ["packages/ariakit-playground/src/*"],
 
-      "ariakit-test-utils": ["packages/ariakit-test-utils/src"],
-      "ariakit-test-utils/*": ["packages/ariakit-test-utils/src/*"],
+      "ariakit-test": ["packages/ariakit-test/src"],
+      "ariakit-test/*": ["packages/ariakit-test/src/*"],
 
       "ariakit-utils": ["packages/ariakit-utils/src"],
       "ariakit-utils/*": ["packages/ariakit-utils/src/*"]

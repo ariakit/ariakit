@@ -52,7 +52,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
       setHasTabbableChildren(!!tabbable.length);
     }, []);
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, tabId: tabIdProp };
         if (getItemProp) {
@@ -64,7 +64,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     );
 
     const tabId = tabIdProp || getTabId(state.panels, id);
-    const visible = !!tabId && state.selectedId === tabId;
+    const open = !!tabId && state.selectedId === tabId;
 
     props = {
       id,
@@ -74,7 +74,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
       ref: useForkRef(ref, props.ref),
     };
 
-    const disclosure = useDisclosureState({ visible });
+    const disclosure = useDisclosureState({ open });
 
     props = useFocusable({ focusable: !hasTabbableChildren, ...props });
     props = useDisclosureContent({ state: disclosure, ...props });

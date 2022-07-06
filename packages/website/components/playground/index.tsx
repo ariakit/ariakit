@@ -6,9 +6,9 @@ import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
 import darkTheme from "ariakit-playground/themes/vscode-dark";
 import {
-  useEventCallback,
+  useEvent,
   useId,
-  useLazyRef,
+  useLazyValue,
   useLiveRef,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
@@ -89,10 +89,8 @@ export default function Playground(props: PlaygroundProps) {
   });
   const [visibleTabs, hiddenTabs] = useOverflowList({
     list: files,
-    getContainer: useEventCallback(() => tab.baseRef.current),
-    getElements: useEventCallback(() =>
-      tab.items.map((item) => item.ref.current)
-    ),
+    getContainer: useEvent(() => tab.baseRef.current),
+    getElements: useEvent(() => tab.items.map((item) => item.ref.current)),
     setList: useCallback(
       ([nextVisible, nextHidden]: [string[], string[]]) => {
         const nextHiddenFile =
@@ -117,7 +115,7 @@ export default function Playground(props: PlaygroundProps) {
     ),
   });
 
-  const beenSelected = useLazyRef(() => new Set<string>());
+  const beenSelected = useLazyValue(() => new Set<string>());
 
   useEffect(() => {
     if (tab.selectedId) {

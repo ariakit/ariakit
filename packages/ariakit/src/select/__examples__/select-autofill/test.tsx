@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  getAllByLabelText,
-  getByRole,
-  render,
-} from "ariakit-test-utils";
+import { fireEvent, getAllByLabelText, getByRole, render } from "ariakit-test";
 import Example from ".";
 
 const getNativeSelect = () => getAllByLabelText("Role")[0]!;

@@ -1,0 +1,10 @@
+@import "../dialog/style.css";
+
+.button {
+  appearance: none;
+}
+
+.button::marker,
+.button::-webkit-details-marker {
+  display: none;
+}

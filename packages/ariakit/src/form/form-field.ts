@@ -1,8 +1,8 @@
 import { FocusEvent, RefObject, useCallback, useMemo, useRef } from "react";
 import { getDocument } from "ariakit-utils/dom";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useId,
   useTagName,
@@ -100,7 +100,7 @@ export const useFormField = createHook<FormFieldOptions>(
       "useValidate",
       "setError",
       useCallback((s: FormState) => s.getError(name), [name]),
-      useCallback((s: FormState) => s.getFieldTouched(name), [name]),
+      useCallback((s: FormState) => s.getFieldTouched(name).toString(), [name]),
       useCallback((s: FormState) => findItem(s.items, name, "label"), [name]),
       useCallback((s: FormState) => findItem(s.items, name, "error"), [name]),
       useCallback(
@@ -120,7 +120,7 @@ export const useFormField = createHook<FormFieldOptions>(
       }
     });
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, name, type: "field" };
         if (getItemProp) {
@@ -131,18 +131,15 @@ export const useFormField = createHook<FormFieldOptions>(
       [id, name, getItemProp]
     );
 
-    const onBlurProp = useEventCallback(props.onBlur);
-    const touchOnBlurProp = useBooleanEventCallback(touchOnBlur);
+    const onBlurProp = props.onBlur;
+    const touchOnBlurProp = useBooleanEvent(touchOnBlur);
 
-    const onBlur = useCallback(
-      (event: FocusEvent<HTMLInputElement>) => {
-        onBlurProp(event);
-        if (event.defaultPrevented) return;
-        if (!touchOnBlurProp(event)) return;
-        state?.setFieldTouched(name, true);
-      },
-      [onBlurProp, touchOnBlurProp, state?.setFieldTouched, name]
-    );
+    const onBlur = useEvent((event: FocusEvent<HTMLInputElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!touchOnBlurProp(event)) return;
+      state?.setFieldTouched(name, true);
+    });
 
     const tagName = useTagName(ref, props.as || "input");
 
@@ -160,7 +157,7 @@ export const useFormField = createHook<FormFieldOptions>(
     props = {
       id,
       "aria-labelledby": label?.id,
-      "aria-invalid": invalid ? true : undefined,
+      "aria-invalid": invalid,
       ...props,
       "aria-describedby": describedBy || undefined,
       // @ts-expect-error

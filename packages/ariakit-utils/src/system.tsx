@@ -1,4 +1,4 @@
-import { ElementType, forwardRef } from "react";
+import { ElementType, ReactElement, forwardRef } from "react";
 import { hasOwnProperty } from "./misc";
 import {
   Component,
@@ -31,7 +31,7 @@ function isRenderProp(children: any): children is RenderProp {
  * <Component as="button" customProp />
  */
 export function createComponent<O extends Options>(
-  render: (props: Props<O>) => JSX.Element | null
+  render: (props: Props<O>) => ReactElement
 ) {
   const Role = (props: Props<O>, ref: React.Ref<any>) =>
     render({ ref, ...props });
@@ -56,12 +56,12 @@ export function createComponent<O extends Options>(
  */
 export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   const { as: As, wrapElement, ...rest } = props;
-  let element: JSX.Element | null;
+  let element: ReactElement;
   if (As && typeof As !== "string") {
     element = <As {...rest} />;
   } else if (isRenderProp(props.children)) {
     const { children, ...otherProps } = rest;
-    element = props.children(otherProps);
+    element = props.children(otherProps) as ReactElement;
   } else if (As) {
     element = <As {...rest} />;
   } else {
@@ -98,6 +98,7 @@ export function createHook<O extends Options>(
     const copy = {} as typeof htmlProps;
     for (const prop in htmlProps) {
       if (hasOwnProperty(htmlProps, prop) && htmlProps[prop] !== undefined) {
+        // @ts-expect-error
         copy[prop] = htmlProps[prop];
       }
     }

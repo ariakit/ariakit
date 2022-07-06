@@ -238,4 +238,26 @@ test("addGlobalEventListener", () => {
   );
 
   Object.defineProperty(window, "frames", originalFrames);
+
+  // This tests when `window.frames` is undefined, which
+  // could happen in some test environments
+  Object.defineProperty(window, "frames", {
+    value: undefined,
+    configurable: true,
+  });
+
+  const remove3 = addGlobalEventListener("keyup", callback, undefined);
+  expect(addEventListenerSpy).toHaveBeenCalledWith(
+    "keyup",
+    callback,
+    undefined
+  );
+  remove3();
+  expect(removeEventListenerSpy).toHaveBeenCalledWith(
+    "keyup",
+    callback,
+    undefined
+  );
+
+  Object.defineProperty(window, "frames", originalFrames);
 });

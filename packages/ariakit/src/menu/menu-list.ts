@@ -1,6 +1,5 @@
-import { KeyboardEvent, useCallback, useEffect, useState } from "react";
-import { BasePlacement } from "@popperjs/core";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { KeyboardEvent, useEffect, useState } from "react";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
@@ -16,6 +15,8 @@ import {
 } from "../composite/composite-typeahead";
 import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuState } from "./menu-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const isSafariOnMac = isMac() && isSafari();
 
@@ -67,7 +68,7 @@ export const useMenuList = createHook<MenuListOptions>(
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = props.onKeyDown;
     const dir = state.placement.split("-")[0] as BasePlacement;
     const orientation =
       state.orientation === "both" ? undefined : state.orientation;
@@ -75,61 +76,51 @@ export const useMenuList = createHook<MenuListOptions>(
     const isMenuBarHorizontal =
       !!parentMenuBar && parentMenuBar?.orientation !== "vertical";
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (hasParentMenu || (parentMenuBar && !isHorizontal)) {
-          const hideMap = {
-            ArrowRight: () => dir === "left" && !isHorizontal,
-            ArrowLeft: () => dir === "right" && !isHorizontal,
-            ArrowUp: () => dir === "bottom" && isHorizontal,
-            ArrowDown: () => dir === "top" && isHorizontal,
-          };
-          const action = hideMap[event.key as keyof typeof hideMap];
-          if (action?.()) {
-            event.stopPropagation();
-            event.preventDefault();
-            return state.hide();
-          }
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (hasParentMenu || (parentMenuBar && !isHorizontal)) {
+        const hideMap = {
+          ArrowRight: () => dir === "left" && !isHorizontal,
+          ArrowLeft: () => dir === "right" && !isHorizontal,
+          ArrowUp: () => dir === "bottom" && isHorizontal,
+          ArrowDown: () => dir === "top" && isHorizontal,
+        };
+        const action = hideMap[event.key as keyof typeof hideMap];
+        if (action?.()) {
+          event.stopPropagation();
+          event.preventDefault();
+          return state.hide();
         }
-        if (parentMenuBar) {
-          const keyMap = {
-            ArrowRight: () => {
-              if (!isMenuBarHorizontal) return;
-              return parentMenuBar.next();
-            },
-            ArrowLeft: () => {
-              if (!isMenuBarHorizontal) return;
-              return parentMenuBar.previous();
-            },
-            ArrowDown: () => {
-              if (isMenuBarHorizontal) return;
-              return parentMenuBar.next();
-            },
-            ArrowUp: () => {
-              if (isMenuBarHorizontal) return;
-              return parentMenuBar.previous();
-            },
-          };
-          const action = keyMap[event.key as keyof typeof keyMap];
-          const id = action?.();
-          if (id !== undefined) {
-            event.stopPropagation();
-            event.preventDefault();
-            parentMenuBar.move(id);
-          }
+      }
+      if (parentMenuBar) {
+        const keyMap = {
+          ArrowRight: () => {
+            if (!isMenuBarHorizontal) return;
+            return parentMenuBar.next();
+          },
+          ArrowLeft: () => {
+            if (!isMenuBarHorizontal) return;
+            return parentMenuBar.previous();
+          },
+          ArrowDown: () => {
+            if (isMenuBarHorizontal) return;
+            return parentMenuBar.next();
+          },
+          ArrowUp: () => {
+            if (isMenuBarHorizontal) return;
+            return parentMenuBar.previous();
+          },
+        };
+        const action = keyMap[event.key as keyof typeof keyMap];
+        const id = action?.();
+        if (id !== undefined) {
+          event.stopPropagation();
+          event.preventDefault();
+          parentMenuBar.move(id);
         }
-      },
-      [
-        onKeyDownProp,
-        hasParentMenu,
-        parentMenuBar,
-        isHorizontal,
-        state.hide,
-        dir,
-      ]
-    );
+      }
+    });
 
     props = useStoreProvider({ state, ...props }, MenuContext);
 

@@ -2,7 +2,7 @@ import { SetStateAction, useCallback, useMemo, useState } from "react";
 import {
   useControlledState,
   useInitialValue,
-  useLazyRef,
+  useLazyValue,
   useLiveRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -81,9 +81,9 @@ export function useFormState<V = AnyObject>(
   const [submitSucceed, setSubmitSucceed] = useState(0);
   const [submitFailed, setSubmitFailed] = useState(0);
   const valid = useMemo(() => !hasMessages(errors), [errors]);
-  const names = useLazyRef(createNames);
-  const submitCallbacks = useLazyRef(() => new Set<Callback>());
-  const validateCallbacks = useLazyRef(() => new Set<Callback>());
+  const names = useLazyValue(createNames);
+  const submitCallbacks = useLazyValue(() => new Set<Callback>());
+  const validateCallbacks = useLazyValue(() => new Set<Callback>());
 
   const getValue: FormState["getValue"] = useCallback(
     (name) => get(values, name),

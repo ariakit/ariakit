@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useControlledState,
   useDeferredValue,
-  useLiveRef,
+  usePreviousValue,
   useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
@@ -98,24 +98,22 @@ export function useComboboxState({
     includesBaseElement,
   });
   const popover = usePopoverState({ ...props, placement });
-  const [activeValue, setActiveValue] = useState<string | undefined>();
-  const compositeRef = useLiveRef(composite);
+  const prevActiveId = usePreviousValue(composite.activeId);
+  const prevMoves = usePreviousValue(composite.moves);
+  const [moved, setMoved] = useState(false);
 
-  // Always reset the active value when the active item changes.
-  useEffect(() => {
-    setActiveValue(undefined);
-  }, [composite.activeId]);
+  if (prevActiveId !== composite.activeId) {
+    setMoved(prevMoves !== composite.moves);
+  }
 
   // Update the active value when the active item changes by moving (which
   // usually happens when using the keyboard).
-  useEffect(() => {
-    const { items, activeId } = compositeRef.current;
-    if (!activeId) return;
-    const nextActiveValue = items.find(
-      (item) => item.id === activeId && item.value
+  const activeValue = useMemo(() => {
+    if (!moved) return undefined;
+    return composite.items.find(
+      (item) => item.id === composite.activeId && item.value
     )?.value;
-    setActiveValue(nextActiveValue);
-  }, [composite.moves]);
+  }, [moved, composite.items, composite.activeId]);
 
   const deferredValue = useDeferredValue(value);
 
@@ -129,11 +127,11 @@ export function useComboboxState({
   // will always put focus back on the combobox input. See
   // ../composite/composite.ts#132
   useUpdateLayoutEffect(() => {
-    if (popover.visible) return;
+    if (popover.open) return;
     // We need to reset the composite state when the popover is closed.
     composite.setActiveId(defaultActiveId);
     composite.setMoves(0);
-  }, [popover.visible, composite.setActiveId, composite.setMoves]);
+  }, [popover.open, composite.setActiveId, composite.setMoves]);
 
   const state = useMemo(
     () => ({

@@ -1,6 +1,6 @@
-import { KeyboardEvent, useCallback, useMemo } from "react";
+import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { hasFocusWithin } from "ariakit-utils/focus";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
@@ -46,25 +46,22 @@ export const useMenu = createHook<MenuOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
+    const onKeyDownProp = props.onKeyDown;
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape") {
-          if (!hideOnEscapeProp(event)) return;
-          if (!hasParentMenu) {
-            // On Esc, only stop propagation if there's no parent menu.
-            // Otherwise, pressing Esc should close all menus
-            event.stopPropagation();
-          }
-          return state.hide();
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape") {
+        if (!hideOnEscapeProp(event)) return;
+        if (!hasParentMenu) {
+          // On Esc, only stop propagation if there's no parent menu. Otherwise,
+          // pressing Esc should close all menus
+          event.stopPropagation();
         }
-      },
-      [onKeyDownProp, hideOnEscapeProp, hasParentMenu, state.hide]
-    );
+        return state.hide();
+      }
+    });
 
     props = {
       ...props,
@@ -76,20 +73,49 @@ export const useMenu = createHook<MenuOptions>(
       ...props,
     });
 
-    const initialFocusRef = useMemo(
-      () =>
-        state.initialFocus === "first"
-          ? getItemRefById(state.items, state.first())
-          : state.initialFocus === "last"
-          ? getItemRefById(state.items, state.last())
-          : state.baseRef,
-      [state.initialFocus, state.items, state.first, state.last, state.baseRef]
-    );
+    const [initialFocusRef, setInitialFocusRef] =
+      useState<RefObject<HTMLElement>>();
+
+    // Sets the initial focus ref.
+    useEffect(() => {
+      let cleaning = false;
+      setInitialFocusRef((prevInitialFocusRef) => {
+        if (cleaning) return;
+        if (!state.autoFocusOnShow) return;
+        if (prevInitialFocusRef) return prevInitialFocusRef;
+        switch (state.initialFocus) {
+          case "first":
+            return getItemRefById(state.items, state.first());
+          case "last":
+            return getItemRefById(state.items, state.last());
+          default:
+            return state.baseRef;
+        }
+      });
+      return () => {
+        cleaning = true;
+      };
+    }, [
+      state.autoFocusOnShow,
+      state.initialFocus,
+      state.items,
+      state.first,
+      state.last,
+      state.baseRef,
+    ]);
 
     props = useHovercard({
       state,
-      autoFocusOnShow: state.autoFocusOnShow && autoFocusOnShow,
       initialFocusRef,
+      // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
+      // move focus to the menu when there's an initialFocusRef set or the menu
+      // is modal. Otherwise, users would have to manually call
+      // state.setAutoFocusOnShow(true) every time they want to open the menu.
+      // This differs from the usual dialog behavior that would automatically
+      // focus on the dialog container when no initialFocusRef is set.
+      autoFocusOnShow: autoFocusOnShow
+        ? !!initialFocusRef || !!props.initialFocusRef || !!props.modal
+        : state.autoFocusOnShow || !!props.modal,
       ...props,
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {

@@ -1,6 +1,6 @@
 {
   "name": "ariakit-playground",
-  "version": "0.17.0-alpha.20",
+  "version": "0.17.0-next.32",
   "description": "Ariakit playground",
   "sideEffects": false,
   "license": "MIT",
@@ -8,6 +8,9 @@
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -20,8 +23,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"
@@ -33,31 +34,27 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.17.2",
-    "@codemirror/closebrackets": "0.19.2",
-    "@codemirror/commands": "0.19.8",
-    "@codemirror/comment": "0.19.1",
-    "@codemirror/gutter": "0.19.9",
-    "@codemirror/highlight": "0.19.8",
-    "@codemirror/history": "0.19.2",
-    "@codemirror/lang-css": "0.19.3",
-    "@codemirror/lang-javascript": "0.19.7",
-    "@codemirror/matchbrackets": "0.19.4",
-    "@codemirror/search": "0.19.9",
-    "@codemirror/state": "0.19.9",
-    "@codemirror/view": "0.19.48",
-    "@codesandbox/sandpack-client": "0.18.0",
+    "@codemirror/autocomplete": "6.0.3",
+    "@codemirror/commands": "6.0.1",
+    "@codemirror/lang-css": "6.0.0",
+    "@codemirror/lang-javascript": "6.0.1",
+    "@codemirror/language": "6.2.0",
+    "@codemirror/search": "6.0.0",
+    "@codemirror/state": "6.1.0",
+    "@codemirror/view": "6.0.2",
+    "@codesandbox/sandpack-client": "1.2.2",
     "@emotion/react": "^11.7.1",
-    "ariakit-utils": "file:../ariakit-utils",
+    "@lezer/highlight": "1.0.0",
+    "ariakit": "2.0.0-next.32",
+    "ariakit-utils": "0.17.0-next.22",
     "codesandbox-import-utils": "^2.2.3",
     "prismjs": "^1.26.0"
   },
   "peerDependencies": {
-    "ariakit": "^2.0.0 || ^2.0.0-alpha",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@types/babel__standalone": "7.1.4",
-    "@types/prismjs": "1.26.0",
-    "ariakit": "file:../ariakit"
+    "@types/prismjs": "1.26.0"
   }
 }

@@ -12,8 +12,8 @@ import {
 import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useId,
   useSafeLayoutEffect,
@@ -203,7 +203,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const rowId = rowIdProp ?? getContextId(state, row);
     const trulyDisabled = props.disabled && !props.accessibleWhenDisabled;
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, id, rowId, disabled: !!trulyDisabled };
         if (getItemProp) {
@@ -214,145 +214,112 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [id, rowId, trulyDisabled, getItemProp]
     );
 
-    const onFocusProp = useEventCallback(props.onFocus);
+    const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
 
-    const onFocus = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onFocusProp(event);
-        if (event.defaultPrevented) return;
-        if (isPortalEvent(event)) return;
-        if (!id) return;
-        // If the target is another item, this probably means that composite
-        // items are nested. This is okay when building, for example, tree or
-        // treegrid elements. In this case, we just ignore the focus event on
-        // this parent item.
-        if (state?.items && targetIsAnotherItem(event, state.items)) return;
+    const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isPortalEvent(event)) return;
+      if (!id) return;
+      // If the target is another item, this probably means that composite items
+      // are nested. This is okay when building, for example, tree or treegrid
+      // elements. In this case, we just ignore the focus event on this parent
+      // item.
+      if (state?.items && targetIsAnotherItem(event, state.items)) return;
+      if (state?.activeId !== id) {
         state?.setActiveId(id);
-        // When using aria-activedescendant, we want to make sure that the
-        // composite container receives focus, not the composite item.
-        if (!state?.virtualFocus) return;
-        // But we'll only do this if the focused element is the composite item
-        // itself
-        if (!isSelfTarget(event)) return;
-        // and the composite item is not a text field or contenteditable
-        // element.
-        if (isEditableElement(event.currentTarget)) return;
-        const composite = state.baseRef.current;
-        if (!composite) return;
-        if (isSafari()) {
-          // Safari doesn't scroll into view automatically if the focus changes
-          // so fast. So we need to do it manually.
-          event.currentTarget.scrollIntoView({
-            block: "nearest",
-            inline: "nearest",
-          });
-        }
-        hasFocusedComposite.current = true;
-        // TODO: Experiment with queueMicrotask after testing the order of
-        // the events.
-        composite.focus();
-      },
-      [
-        onFocusProp,
-        id,
-        state?.items,
-        state?.setActiveId,
-        state?.virtualFocus,
-        state?.baseRef,
-      ]
-    );
+      }
+      // When using aria-activedescendant, we want to make sure that the
+      // composite container receives focus, not the composite item.
+      if (!state?.virtualFocus) return;
+      // But we'll only do this if the focused element is the composite item
+      // itself
+      if (!isSelfTarget(event)) return;
+      // and the composite item is not a text field or contenteditable element.
+      if (isEditableElement(event.currentTarget)) return;
+      const composite = state.baseRef.current;
+      if (!composite) return;
+      if (isSafari()) {
+        // Safari doesn't scroll into view automatically if the focus changes so
+        // fast. So we need to do it manually.
+        event.currentTarget.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+        });
+      }
+      hasFocusedComposite.current = true;
+      composite.focus();
+    });
 
-    const onBlurCaptureProp = useEventCallback(props.onBlurCapture);
+    const onBlurCaptureProp = props.onBlurCapture;
 
-    const onBlurCapture = useCallback(
-      (event: FocusEvent<HTMLButtonElement>) => {
-        onBlurCaptureProp(event);
-        if (event.defaultPrevented) return;
-        if (state?.virtualFocus && hasFocusedComposite.current) {
-          // When hasFocusedComposite is true, composite has been focused right
-          // after focusing on this item. This is an intermediate blur event, so
-          // we ignore it.
-          hasFocusedComposite.current = false;
-          event.preventDefault();
-          event.stopPropagation();
-        }
-      },
-      [onBlurCaptureProp, state?.virtualFocus]
-    );
+    const onBlurCapture = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+      onBlurCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      if (state?.virtualFocus && hasFocusedComposite.current) {
+        // When hasFocusedComposite is true, composite has been focused right
+        // after focusing on this item. This is an intermediate blur event, so
+        // we ignore it.
+        hasFocusedComposite.current = false;
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const preventScrollOnKeyDownProp = useBooleanEventCallback(
-      preventScrollOnKeyDown
-    );
+    const onKeyDownProp = props.onKeyDown;
+    const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
     const item = useItem(state?.items, id);
     const isGrid = !!item?.rowId;
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLButtonElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (!isSelfTarget(event)) return;
-        const isVertical = state?.orientation !== "horizontal";
-        const isHorizontal = state?.orientation !== "vertical";
-        const keyMap = {
-          ArrowUp: (isGrid || isVertical) && state?.up,
-          ArrowRight: (isGrid || isHorizontal) && state?.next,
-          ArrowDown: (isGrid || isVertical) && state?.down,
-          ArrowLeft: (isGrid || isHorizontal) && state?.previous,
-          Home: () => {
-            if (!isGrid || event.ctrlKey) {
-              return state?.first();
-            }
-            return state?.previous(-1);
-          },
-          End: () => {
-            if (!isGrid || event.ctrlKey) {
-              return state?.last();
-            }
-            return state?.next(-1);
-          },
-          PageUp: () => {
-            return findNextPageItemId(
-              event.currentTarget,
-              state?.items,
-              state?.up,
-              true
-            );
-          },
-          PageDown: () => {
-            return findNextPageItemId(
-              event.currentTarget,
-              state?.items,
-              state?.down
-            );
-          },
-        };
-        const action = keyMap[event.key as keyof typeof keyMap];
-        if (action) {
-          const nextId = action();
-          if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
-            event.preventDefault();
-            state?.move(nextId);
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!isSelfTarget(event)) return;
+      const isVertical = state?.orientation !== "horizontal";
+      const isHorizontal = state?.orientation !== "vertical";
+      const keyMap = {
+        ArrowUp: (isGrid || isVertical) && state?.up,
+        ArrowRight: (isGrid || isHorizontal) && state?.next,
+        ArrowDown: (isGrid || isVertical) && state?.down,
+        ArrowLeft: (isGrid || isHorizontal) && state?.previous,
+        Home: () => {
+          if (!isGrid || event.ctrlKey) {
+            return state?.first();
           }
-          return;
+          return state?.previous(-1);
+        },
+        End: () => {
+          if (!isGrid || event.ctrlKey) {
+            return state?.last();
+          }
+          return state?.next(-1);
+        },
+        PageUp: () => {
+          return findNextPageItemId(
+            event.currentTarget,
+            state?.items,
+            state?.up,
+            true
+          );
+        },
+        PageDown: () => {
+          return findNextPageItemId(
+            event.currentTarget,
+            state?.items,
+            state?.down
+          );
+        },
+      };
+      const action = keyMap[event.key as keyof typeof keyMap];
+      if (action) {
+        const nextId = action();
+        if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
+          event.preventDefault();
+          state?.move(nextId);
         }
-      },
-      [
-        onKeyDownProp,
-        state?.orientation,
-        isGrid,
-        state?.up,
-        state?.next,
-        state?.down,
-        state?.items,
-        state?.previous,
-        state?.first,
-        state?.last,
-        preventScrollOnKeyDownProp,
-        state?.move,
-      ]
-    );
+      }
+    });
 
     const providerValue = useMemo(
       () => ({ id, baseRef: state?.baseRef }),

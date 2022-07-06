@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
+import { useForceUpdate } from "ariakit-utils/hooks";
 
 type OverflowListProps<T> = {
   list: T[];
@@ -20,11 +21,12 @@ export default function useOverflowList<T>({
   minVisibleItems = 1,
 }: OverflowListProps<T>) {
   const [overflowList, setOverflowList] = useState<[T[], T[]]>([list, []]);
-  const [updated, forceUpdate] = useReducer(() => ({}), {});
+  const [updated, forceUpdate] = useForceUpdate();
 
   useEffect(() => {
     const container = getContainer();
     if (!container) return;
+    if (typeof ResizeObserver !== "function") return;
     const observer = new ResizeObserver(() => {
       const elements = getElements(container);
       const availableWidth = container.offsetWidth - disclosureWidth;

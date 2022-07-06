@@ -1,8 +1,8 @@
-import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useId,
   useRefId,
@@ -58,33 +58,23 @@ export const useSelectList = createHook<SelectListOptions>(
 
     resetOnEscape = resetOnEscape && !multiSelectable;
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
-    const resetOnEscapeProp = useBooleanEventCallback(resetOnEscape);
-    const hideOnEnterProp = useBooleanEventCallback(hideOnEnter);
+    const onKeyDownProp = props.onKeyDown;
+    const resetOnEscapeProp = useBooleanEvent(resetOnEscape);
+    const hideOnEnterProp = useBooleanEvent(hideOnEnter);
 
-    const onKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownProp(event);
-        if (event.defaultPrevented) return;
-        if (event.key === "Escape" && resetOnEscapeProp(event)) {
-          state.setValue(defaultValue);
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape" && resetOnEscapeProp(event)) {
+        state.setValue(defaultValue);
+      }
+      if (event.key === " " || event.key === "Enter") {
+        if (isSelfTarget(event) && hideOnEnterProp(event)) {
+          event.preventDefault();
+          state.hide();
         }
-        if (event.key === " " || event.key === "Enter") {
-          if (isSelfTarget(event) && hideOnEnterProp(event)) {
-            event.preventDefault();
-            state.hide();
-          }
-        }
-      },
-      [
-        onKeyDownProp,
-        resetOnEscapeProp,
-        state.setValue,
-        defaultValue,
-        hideOnEnterProp,
-        state.hide,
-      ]
-    );
+      }
+    });
 
     props = useStoreProvider({ state, ...props }, SelectContext);
 
@@ -93,12 +83,18 @@ export const useSelectList = createHook<SelectListOptions>(
       ? props.style
       : { ...props.style, display: "none" };
 
+    if (composite) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": multiSelectable ? true : undefined,
+        ...props,
+      };
+    }
+
     props = {
       id,
-      role: composite ? "listbox" : undefined,
       hidden: !state.mounted,
       "aria-labelledby": labelId,
-      "aria-multiselectable": multiSelectable ? true : undefined,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, ref, props.ref),
       style,
@@ -109,7 +105,7 @@ export const useSelectList = createHook<SelectListOptions>(
       state,
       ...props,
       composite,
-      focusOnMove: state.visible && !state.animating && focusOnMove,
+      focusOnMove: state.open && !state.animating && focusOnMove,
     });
     props = useCompositeTypeahead({ state, ...props });
 

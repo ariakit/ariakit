@@ -1,0 +1,39 @@
+@import "../../../button/__examples__/button/style.css";
+
+.toolbar {
+  @apply
+    flex
+    p-1
+    gap-1
+    border
+    rounded-lg
+    items-center
+    max-w-full
+    overflow-x-auto
+    bg-canvas-4
+    border-canvas-4
+    dark:bg-canvas-4-dark
+    dark:border-canvas-4-dark;
+}
+
+.button {
+  @apply
+    gap-2
+    rounded
+    text-canvas-4
+    bg-canvas-4
+    hover:bg-canvas-2-hover
+    active:bg-canvas-1-hover
+    dark:text-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:hover:bg-canvas-2-dark-hover
+    dark:active:bg-canvas-1-dark-hover;
+}
+
+.separator {
+  @apply
+    h-8
+    border-r
+    border-canvas-4
+    dark:border-canvas-4-dark;
+}

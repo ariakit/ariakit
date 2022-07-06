@@ -7,7 +7,7 @@ import {
   render,
   sleep,
   type,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
 const getLabel = () => getByText("Favorite fruit");
@@ -143,7 +143,7 @@ test("navigate through items with keyboard", async () => {
   expect(getOption("Apple")).toHaveFocus();
 });
 
-test("typeahead visible", async () => {
+test("typeahead open", async () => {
   render(<Example />);
   await press.Tab();
   await press.Enter();

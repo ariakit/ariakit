@@ -1,0 +1,374 @@
+name: main
+
+on:
+  push:
+    branches: [main, next]
+  pull_request:
+
+jobs:
+  install:
+    name: Install node modules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+  lint:
+    name: Lint
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Lint CSS
+        run: npm run lint-css
+
+  typescript:
+    name: Type check
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Type check
+        run: npm run type-check
+
+  build:
+    name: Build packages
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Build
+        run: npm run build
+
+  test:
+    name: Test (${{ matrix.shard }})
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/2", "2/2"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Test
+        run: >
+          npm test --
+          --coverage
+          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
+          --shard ${{ matrix.shard }}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+  react17:
+    name: Test React 17 (${{ matrix.shard }})
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/2", "2/2"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Install React 17
+        run: npm run react17
+
+      - name: CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Test
+        run: >
+          npm test --
+          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
+          --shard ${{ matrix.shard }}
+
+  website:
+    name: Build website
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Cache Next.js
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+          restore-keys: nextjs-
+
+      - name: Build website
+        run: npm run build-website
+
+  test-chrome:
+    name: Test Chrome
+    needs: website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Cache playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-chromium-
+
+      - name: Install playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+
+      - name: CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Test
+        id: test
+        run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
+
+      - uses: actions/upload-artifact@v3
+        if: failure() && steps.test.outcome == 'failure'
+        with:
+          name: test-results
+          path: test-results
+
+  test-macos:
+    name: Test macOS
+    needs: website
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Cache playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-macos-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-macos-
+
+      - name: Install playwright
+        run: npx playwright install --with-deps firefox webkit
+
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: packages/website/.next
+          key: nextjs-${{ github.run_id }}
+
+      - name: CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Test
+        id: test
+        run: >
+          npx playwright test
+          --project firefox
+          --project safari
+          --workers ${{ steps.cpu-cores.outputs.count }}
+
+      - uses: actions/upload-artifact@v3
+        if: failure() && steps.test.outcome == 'failure'
+        with:
+          name: test-results
+          path: test-results

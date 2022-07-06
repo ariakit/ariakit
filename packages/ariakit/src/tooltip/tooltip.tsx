@@ -1,8 +1,7 @@
-import { HTMLAttributes, RefObject, useEffect, useState } from "react";
+import { HTMLAttributes, RefObject, useEffect } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
 import {
-  useBooleanEventCallback,
-  useForkRef,
+  useBooleanEvent,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -41,17 +40,7 @@ export const useTooltip = createHook<TooltipOptions>(
     wrapperProps,
     ...props
   }) => {
-    const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-    const portalRef = useForkRef(setPortalNode, props.portalRef);
     const popoverRef = state.popoverRef as RefObject<HTMLDivElement>;
-
-    // When the tooltip is rendered within a portal, we need to wait for the
-    // portalNode to be created so we can update the tooltip position.
-    useSafeLayoutEffect(() => {
-      if (!portalNode) return;
-      if (!state.mounted) return;
-      state.render();
-    }, [portalNode, state.mounted, state.render]);
 
     // Makes sure the wrapper element that's passed to popper has the same
     // z-index as the popover element so users only need to set the z-index
@@ -64,12 +53,12 @@ export const useTooltip = createHook<TooltipOptions>(
       wrapper.style.zIndex = getComputedStyle(tooltip).zIndex;
     }, [popoverRef, state.contentElement]);
 
-    const hideOnEscapeProp = useBooleanEventCallback(hideOnEscape);
-    const hideOnControlProp = useBooleanEventCallback(hideOnControl);
+    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+    const hideOnControlProp = useBooleanEvent(hideOnControl);
 
     // Hide on Escape/Control
     useEffect(() => {
-      if (!state.visible) return;
+      if (!state.open) return;
       return addGlobalEventListener("keydown", (event) => {
         if (event.defaultPrevented) return;
         const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
@@ -78,7 +67,7 @@ export const useTooltip = createHook<TooltipOptions>(
           state.hide();
         }
       });
-    }, [state.visible, hideOnEscapeProp, hideOnControlProp, state.hide]);
+    }, [state.open, hideOnEscapeProp, hideOnControlProp, state.hide]);
 
     props = useWrapElement(
       props,
@@ -113,7 +102,7 @@ export const useTooltip = createHook<TooltipOptions>(
     };
 
     props = useDisclosureContent({ state, ...props });
-    props = usePortal({ portal, ...props, portalRef, preserveTabOrder: false });
+    props = usePortal({ portal, ...props, preserveTabOrder: false });
 
     return props;
   }

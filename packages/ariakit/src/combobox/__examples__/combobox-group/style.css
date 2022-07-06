@@ -1,0 +1,19 @@
+@import "../combobox/style.css";
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default;
+}
+
+.separator {
+  border-color: currentcolor;
+  @apply my-2 h-0 border-t opacity-25;
+}
+
+.no-results {
+  @apply gap-2 p-2;
+}

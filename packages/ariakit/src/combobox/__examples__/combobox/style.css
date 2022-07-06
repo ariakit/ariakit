@@ -6,9 +6,9 @@
   width: 250px;
   @apply
     h-10
+    px-4
     rounded-lg
     border-none
-    px-4
     text-base
     focus-visible:ariakit-outline-input
     bg-canvas-1
@@ -20,37 +20,38 @@
 }
 
 .popover {
-  max-height: 300px;
+  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
     relative
-    z-50
     flex
     flex-col
+    p-2
+    z-50
+    overscroll-contain
     overflow-auto
     rounded-lg
     border
     border-solid
     border-canvas-4
     bg-canvas-4
-    p-2
     text-canvas-4
-    drop-shadow
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
+    drop-shadow
     dark:drop-shadow-dark;
 }
 
 .combobox-item {
-  outline: none;
+  outline: none !important;
   @apply
     flex
-    cursor-default
-    scroll-m-2
-    items-center
     gap-2
-    rounded
     p-2
+    scroll-m-2
+    cursor-default
+    items-center
+    rounded
     hover:bg-primary-1-hover
     dark:hover:bg-primary-1-dark-hover
     active-item:bg-primary-2

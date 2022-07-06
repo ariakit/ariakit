@@ -5,9 +5,10 @@ import {
   press,
   queryByText,
   render,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import Example from ".";
 
+const getSubmit = () => getByRole("button", { name: "Submit" });
 const getLabel = () => getByText("Favorite fruit");
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
 const getList = () => getByRole("listbox", { hidden: true });
@@ -34,7 +35,16 @@ test("click on label", async () => {
   expect(getList()).not.toBeVisible();
 });
 
-test("show error", async () => {
+test("show error on tabbing through select button", async () => {
+  render(<Example />);
+  await press.Tab();
+  expect(getSelect()).toHaveFocus();
+  expect(getError()).not.toBeInTheDocument();
+  await press.Tab();
+  expect(getError()).toBeInTheDocument();
+});
+
+test("show error on close", async () => {
   render(<Example />);
   await click(getSelect());
   expect(getError()).not.toBeInTheDocument();
@@ -51,10 +61,8 @@ test("show error", async () => {
 
 test("submit failed", async () => {
   render(<Example />);
-  await press.Tab();
-  await press.Tab();
   expect(getError()).not.toBeInTheDocument();
-  await press.Enter();
+  await click(getSubmit());
   expect(getError()).toBeInTheDocument();
   expect(getSelect()).toHaveFocus();
   expect(getList()).not.toBeVisible();

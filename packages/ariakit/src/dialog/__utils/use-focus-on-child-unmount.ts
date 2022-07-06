@@ -11,7 +11,7 @@ export function useFocusOnChildUnmount(
   state: DialogState
 ) {
   useEffect(() => {
-    if (!state.visible) return;
+    if (!state.open) return;
 
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -31,5 +31,5 @@ export function useFocusOnChildUnmount(
 
     observer.observe(dialog, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [state.visible, dialogRef]);
+  }, [state.open, dialogRef]);
 }

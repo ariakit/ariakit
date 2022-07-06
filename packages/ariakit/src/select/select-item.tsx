@@ -1,10 +1,6 @@
 import { MouseEvent, useCallback } from "react";
 import { getPopupRole } from "ariakit-utils/dom";
-import {
-  useBooleanEventCallback,
-  useEventCallback,
-  useWrapElement,
-} from "ariakit-utils/hooks";
+import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
@@ -68,12 +64,12 @@ export const useSelectItem = createHook<SelectItemOptions>(
       "setValue",
       "hide",
       "contentElement",
-      "visible",
+      "open",
     ]);
 
     const disabled = props.disabled;
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         // When the item is disabled, we don't register its value.
         const nextItem = { ...item, value: disabled ? undefined : value };
@@ -88,36 +84,26 @@ export const useSelectItem = createHook<SelectItemOptions>(
     const multiSelectable = Array.isArray(state?.value);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
 
-    const onClickProp = useEventCallback(props.onClick);
-    const setValueOnClickProp = useBooleanEventCallback(setValueOnClick);
-    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
+    const onClickProp = props.onClick;
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
+    const hideOnClickProp = useBooleanEvent(hideOnClick);
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (setValueOnClickProp(event) && value != null) {
-          state?.setValue((prevValue) => {
-            if (!Array.isArray(prevValue)) return value;
-            if (prevValue.includes(value)) {
-              return prevValue.filter((v) => v !== value);
-            }
-            return [...prevValue, value];
-          });
-        }
-        if (hideOnClickProp(event)) {
-          state?.hide();
-        }
-      },
-      [
-        onClickProp,
-        value,
-        setValueOnClickProp,
-        state?.setValue,
-        hideOnClickProp,
-        state?.hide,
-      ]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (setValueOnClickProp(event) && value != null) {
+        state?.setValue((prevValue) => {
+          if (!Array.isArray(prevValue)) return value;
+          if (prevValue.includes(value)) {
+            return prevValue.filter((v) => v !== value);
+          }
+          return [...prevValue, value];
+        });
+      }
+      if (hideOnClickProp(event)) {
+        state?.hide();
+      }
+    });
 
     const selected = isSelected(state?.value, value);
 
@@ -146,7 +132,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
       ...props,
     });
 
-    const focusOnHoverProp = useBooleanEventCallback(focusOnHover);
+    const focusOnHoverProp = useBooleanEvent(focusOnHover);
 
     props = useCompositeHover({
       state,
@@ -156,7 +142,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
       // closed by clicking on an item.
       focusOnHover: (event) => {
         if (!focusOnHoverProp(event)) return false;
-        return !!state?.visible;
+        return !!state?.open;
       },
     });
 

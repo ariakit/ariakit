@@ -1,6 +1,6 @@
 {
   "name": "ariakit",
-  "version": "2.0.0-alpha.20",
+  "version": "2.0.0-next.32",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -9,6 +9,9 @@
   "module": "esm/index.js",
   "unpkg": "umd/ariakit.min.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -25,8 +28,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"
@@ -40,11 +41,11 @@
     "components"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.11.2",
-    "ariakit-utils": "file:../ariakit-utils"
+    "@floating-ui/dom": "0.5.4",
+    "ariakit-utils": "0.17.0-next.22"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
   }
 }

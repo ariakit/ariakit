@@ -118,7 +118,7 @@ export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
     const debouncedValues = useDebouncedValue(values, 750);
     const value = debouncedValues[filename] || "";
 
-    const handleError = useCallback((e) => {
+    const handleError = useCallback((e: any) => {
       console.error(e);
       setError(e);
     }, []);

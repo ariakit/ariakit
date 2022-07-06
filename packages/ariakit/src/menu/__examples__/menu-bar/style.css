@@ -1,4 +1,4 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
 .menu-bar {
   @apply flex gap-2;
@@ -35,6 +35,15 @@
     text-alpha-3
     dark:bg-alpha-3-dark-hover
     dark:text-alpha-3-dark;
+}
+
+.menu {
+  max-width:
+    max(
+      var(--popover-available-width),
+      calc(100% - calc(var(--popover-overflow-padding) * 2))
+    );
+  @apply w-max;
 }
 
 .menu .menu-item .label {

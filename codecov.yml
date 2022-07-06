@@ -1,8 +1,17 @@
+comment: false
+
+github_checks:
+  annotations: false
+
+codecov:
+  notify:
+    after_n_builds: 2
+
 coverage:
   status:
     project:
       default:
-        threshold: 85%
+        informational: true
     patch:
       default:
-        threshold: 85%
+        informational: true

@@ -1,8 +1,9 @@
-@import url("../../../button/__examples__/button/style.css");
+@import "../../../button/__examples__/button/style.css";
 
 .menu {
+  max-height: var(--popover-available-height);
   min-width: 180px;
-  outline: none;
+  outline: none !important;
   @apply
     relative
     z-50
@@ -12,6 +13,8 @@
     rounded-lg
     border
     border-solid
+    overflow-auto
+    overscroll-contain
     border-canvas-4
     bg-canvas-4
     text-canvas-4
@@ -23,7 +26,7 @@
 }
 
 .menu-item {
-  outline: none;
+  outline: none !important;
   @apply
     flex
     cursor-default
@@ -42,7 +45,10 @@
 }
 
 .separator {
-  border-width: 1px 0 0;
-  border-color: currentcolor;
-  @apply my-2 h-0 opacity-25;
+  @apply
+    my-2
+    h-0
+    border-t
+    border-canvas-4
+    dark:border-canvas-4-dark;
 }

@@ -1,0 +1,3 @@
+.wrapper {
+  @apply bg-danger-2 text-white dark:bg-danger-2-dark;
+}

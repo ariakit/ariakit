@@ -25,7 +25,7 @@ export default function Example() {
             <ComboboxItem key={value} value={value} className="combobox-item" />
           ))
         ) : (
-          <div>No results found</div>
+          <div className="no-results">No results found</div>
         )}
       </ComboboxPopover>
     </div>

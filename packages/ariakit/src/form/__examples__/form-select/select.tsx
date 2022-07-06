@@ -12,30 +12,53 @@ export type SelectProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   value?: string;
   setValue?: (value: string) => void;
   defaultValue?: string;
-  onClose?: () => void;
   required?: boolean;
+  onTouch?: () => void;
 };
 
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(
-  ({ children, value, setValue, defaultValue, onClose, ...props }, ref) => {
+  ({ children, value, setValue, defaultValue, onTouch, ...props }, ref) => {
     const select = useSelectState({
       value,
       setValue,
       defaultValue,
       sameWidth: true,
-      setVisible: (visible) => {
-        if (!visible && onClose) {
-          onClose();
+      setOpen: (open) => {
+        if (select.open !== open && !open) {
+          onTouch?.();
         }
       },
     });
+
     return (
       <>
-        <BaseSelect state={select} ref={ref} className="select" {...props}>
+        <BaseSelect
+          state={select}
+          ref={ref}
+          className="select"
+          {...props}
+          onBlur={(event) => {
+            props.onBlur?.(event);
+            if (event.defaultPrevented) return;
+            const popover = select.popoverRef.current;
+            if (popover?.contains(event.relatedTarget)) return;
+            onTouch?.();
+          }}
+        >
           {select.value || "Select an item"}
           <SelectArrow />
         </BaseSelect>
-        <SelectPopover state={select} modal className="popover">
+        <SelectPopover
+          state={select}
+          modal
+          className="popover"
+          onBlur={(event) => {
+            const disclosure = select.disclosureRef.current;
+            if (event.currentTarget.contains(event.relatedTarget)) return;
+            if (disclosure?.contains(event.relatedTarget)) return;
+            onTouch?.();
+          }}
+        >
           {children}
         </SelectPopover>
       </>

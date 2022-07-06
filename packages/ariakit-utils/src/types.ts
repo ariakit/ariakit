@@ -2,6 +2,7 @@ import {
   ComponentPropsWithRef,
   ElementType,
   HTMLAttributes,
+  ReactElement,
   ReactNode,
   RefAttributes,
 } from "react";
@@ -37,12 +38,11 @@ export type SetState<T> = BivariantCallback<(value: SetStateAction<T>) => void>;
 
 /**
  * A boolean value or a callback that returns a boolean value.
- * @template T The type of the callback parameter. By default, the function will
- * have no parameter.
+ * @template T The type of the callback parameter.
  */
-export type BooleanOrCallback<T = never> =
+export type BooleanOrCallback<T> =
   | boolean
-  | BivariantCallback<T extends never ? () => boolean : (arg: T) => boolean>;
+  | BivariantCallback<(arg: T) => boolean>;
 
 /**
  * A string that will provide autocomplete for specific strings.
@@ -58,7 +58,7 @@ export type StringWithValue<T extends string> =
  * @example
  * const children: RenderProp = (props) => <div {...props} />;
  */
-export type RenderProp<P = AnyObject> = (props: P) => JSX.Element | null;
+export type RenderProp<P = AnyObject> = (props: P) => ReactNode;
 
 /**
  * The `as` prop.
@@ -69,7 +69,7 @@ export type As<P = any> = ElementType<P>;
 /**
  * The `wrapElement` prop.
  */
-export type WrapElement = (element: JSX.Element | null) => JSX.Element | null;
+export type WrapElement = (element: ReactElement) => ReactElement;
 
 /**
  * The `children` prop that supports a function.
@@ -97,7 +97,7 @@ export type HTMLProps<O extends Options> = {
   wrapElement?: WrapElement;
   children?: Children;
   [index: `data-${string}`]: unknown;
-} & Omit<ComponentPropsWithRef<NonNullable<O["as"]>>, keyof O>;
+} & Omit<ComponentPropsWithRef<NonNullable<O["as"]>>, keyof O | "children">;
 
 /**
  * Options & HTMLProps

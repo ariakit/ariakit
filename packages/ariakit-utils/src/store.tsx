@@ -1,5 +1,6 @@
 import {
   Context,
+  ReactElement,
   createContext,
   memo,
   useCallback,
@@ -10,7 +11,7 @@ import {
 import { toArray } from "./array";
 import {
   useInitialValue,
-  useLazyRef,
+  useLazyValue,
   useSafeLayoutEffect,
   useWrapElement,
 } from "./hooks";
@@ -133,7 +134,7 @@ export function createStoreContext<T>() {
  * <Component as="button" state={{ customProp: true }} />
  */
 export function createMemoComponent<O extends Options & { state?: unknown }>(
-  render: (props: Props<O>) => JSX.Element | null,
+  render: (props: Props<O>) => ReactElement,
   propsAreEqual: (prev: Props<O>, next: Props<O>) => boolean = shallowEqual
 ) {
   const Role = createComponent(render);
@@ -172,7 +173,7 @@ export function useStoreProvider<P, S>(
 
   const initialContext = getInitialContext(context);
 
-  props = useWrapElement(
+  return useWrapElement(
     props,
     (element) => {
       if (value && initialContext) {
@@ -189,8 +190,6 @@ export function useStoreProvider<P, S>(
     },
     [value, initialContext, state, context]
   );
-
-  return props;
 }
 
 /**
@@ -205,7 +204,7 @@ export function useStoreProvider<P, S>(
  * }
  */
 export function useStorePublisher<T>(state: T) {
-  const listeners = useLazyRef(() => new Set<Listener<T>>());
+  const listeners = useLazyValue(() => new Set<Listener<T>>());
 
   useSafeLayoutEffect(() => {
     patchState(state);

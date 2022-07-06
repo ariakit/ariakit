@@ -2,10 +2,10 @@ import {
   ComponentType,
   DependencyList,
   EffectCallback,
+  MutableRefObject,
   Ref,
+  RefCallback,
   RefObject,
-  useDeferredValue as _useReactDeferredValue,
-  useId as _useReactId,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -14,15 +14,24 @@ import {
   useRef,
   useState,
 } from "react";
+import * as React from "react";
 import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-const useReactId = typeof _useReactId === "function" ? _useReactId : undefined;
-const useReactDeferredValue =
-  typeof _useReactDeferredValue === "function"
-    ? _useReactDeferredValue
-    : undefined;
+// @ts-ignore Access React v18 hooks using string concatenation in order to
+// prevent Webpack from inferring that they are not present in React v17. For
+// example, React.useId will raise a compile time error when using React v17,
+// but React['use' + 'Id'] will not.
+const useReactId = React["use" + "Id"] as typeof React.useId | undefined;
+// @ts-ignore
+const useReactDeferredValue = React["use" + "DeferredValue"] as
+  | typeof React.useDeferredValue
+  | undefined;
+// @ts-ignore
+const useInsertionEffect = React["use" + "InsertionEffect"] as
+  | typeof React.useInsertionEffect
+  | undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -45,10 +54,10 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * Returns a value that is lazily initiated and never changes.
  * @example
  * function Component() {
- *   const set = useLazyRef(() => new Set());
+ *   const set = useLazyValue(() => new Set());
  * }
  */
-export function useLazyRef<T>(init: () => T) {
+export function useLazyValue<T>(init: () => T) {
   const ref = useRef<T>();
   if (ref.current === undefined) {
     ref.current = init();
@@ -73,27 +82,38 @@ export function useLiveRef<T>(value: T) {
 }
 
 /**
- * Creates a memoized callback function that is constantly updated with the
- * incoming callback.
+ * Keeps the reference of the previous value to be used in the render phase.
+ */
+export function usePreviousValue<T>(value: T) {
+  const [previousValue, setPreviousValue] = useState(value);
+  if (value !== previousValue) {
+    setPreviousValue(value);
+  }
+  return previousValue;
+}
+
+/**
+ * Creates a stable callback function that has access to the latest state and
+ * can be used within event handlers and effect callbacks. Throws when used in
+ * the render phase.
  * @example
  * function Component(props) {
- *   const onClick = useEventCallback(props.onClick);
+ *   const onClick = useEvent(props.onClick);
  *   React.useEffect(() => {}, [onClick]);
  * }
  */
-export function useEventCallback<T extends AnyFunction>(callback?: T) {
-  // @ts-ignore
-  const ref = useRef<T | undefined>(() => {
+export function useEvent<T extends AnyFunction>(callback?: T) {
+  const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
-  useSafeLayoutEffect(() => {
+  if (useInsertionEffect) {
+    useInsertionEffect(() => {
+      ref.current = callback;
+    });
+  } else {
     ref.current = callback;
-  });
-  return useCallback(
-    // @ts-ignore
-    (...args: Parameters<T>): ReturnType<T> => ref.current?.(...args),
-    []
-  );
+  }
+  return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
 }
 
 /**
@@ -130,7 +150,7 @@ export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
 /**
  * Generates a unique ID. Uses React's useId if available.
  */
-export function useId(defaultId?: string) {
+export function useId(defaultId?: string): string | undefined {
   if (useReactId) {
     const reactId = useReactId();
     if (defaultId) return defaultId;
@@ -148,15 +168,13 @@ export function useId(defaultId?: string) {
 /**
  * Uses React's useDeferredValue if available.
  */
-export function useDeferredValue<T>(value: T) {
+export function useDeferredValue<T>(value: T): T {
   if (useReactDeferredValue) {
     return useReactDeferredValue(value);
   }
   const [deferredValue, setDeferredValue] = useState(value);
   useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      setDeferredValue(value);
-    });
+    const raf = requestAnimationFrame(() => setDeferredValue(value));
     return () => cancelAnimationFrame(raf);
   }, [value]);
   return deferredValue;
@@ -196,12 +214,20 @@ function stringOrUndefined(type?: string | ComponentType) {
  */
 export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
   const mounted = useRef(false);
+
   useEffect(() => {
     if (mounted.current) {
       return effect();
     }
     mounted.current = true;
   }, deps);
+
+  useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
 }
 
 /**
@@ -212,12 +238,20 @@ export function useUpdateLayoutEffect(
   deps?: DependencyList
 ) {
   const mounted = useRef(false);
+
   useSafeLayoutEffect(() => {
     if (mounted.current) {
       return effect();
     }
     mounted.current = true;
   }, deps);
+
+  useSafeLayoutEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    []
+  );
 }
 
 /**
@@ -274,17 +308,17 @@ function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
  * purpose of re-rendering the component.
  */
 export function useForceUpdate() {
-  return useReducer(() => ({}), {});
+  return useReducer(() => [], []);
 }
 
 /**
- * Returns an event callback similar to `useEventCallback`, but this also
- * accepts a boolean value, which will be turned into a function.
+ * Returns an event callback similar to `useEvent`, but this also accepts a
+ * boolean value, which will be turned into a function.
  */
-export function useBooleanEventCallback<T extends unknown[]>(
+export function useBooleanEvent<T extends unknown[]>(
   booleanOrCallback: boolean | ((...args: T) => boolean)
 ) {
-  return useEventCallback(
+  return useEvent(
     typeof booleanOrCallback === "function"
       ? booleanOrCallback
       : () => booleanOrCallback
@@ -310,4 +344,18 @@ export function useWrapElement<P>(
   );
 
   return { ...props, wrapElement };
+}
+
+/**
+ * Merges the portalRef prop and returns a `domReady` to be used in the
+ * components that use Portal underneath.
+ */
+export function usePortalRef(
+  portalProp = false,
+  portalRefProp?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement>
+) {
+  const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
+  const portalRef = useForkRef(setPortalNode, portalRefProp);
+  const domReady = !portalProp || portalNode;
+  return { portalRef, portalNode, domReady };
 }

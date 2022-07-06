@@ -1,5 +1,5 @@
-import { MouseEvent, useCallback } from "react";
-import { useBooleanEventCallback, useEventCallback } from "ariakit-utils/hooks";
+import { MouseEvent } from "react";
+import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
@@ -45,24 +45,21 @@ export const useMenuItem = createHook<MenuItemOptions>(
       useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
       menuBarState;
 
-    const onClickProp = useEventCallback(props.onClick);
-    const hideOnClickProp = useBooleanEventCallback(hideOnClick);
+    const onClickProp = props.onClick;
+    const hideOnClickProp = useBooleanEvent(hideOnClick);
     const hideMenu = state && "hideAll" in state ? state.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (!hideMenu) return;
-        // If this item is also a menu button, we don't want to hide the menu.
-        const popupType = event.currentTarget.getAttribute("aria-haspopup");
-        if (popupType === "menu") return;
-        if (!hideOnClickProp(event)) return;
-        hideMenu();
-      },
-      [onClickProp, hideMenu, hideOnClickProp]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!hideMenu) return;
+      // If this item is also a menu button, we don't want to hide the menu.
+      const popupType = event.currentTarget.getAttribute("aria-haspopup");
+      if (popupType === "menu") return;
+      if (!hideOnClickProp(event)) return;
+      hideMenu();
+    });
 
     props = {
       role: "menuitem",
@@ -93,7 +90,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
         // TODO: Check MenuItem as MenuButton with showOnHover.
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if there's another expanded menu button inside the menu
-        // bar. Without this, the visible menus in the menu bar wouldn't close.
+        // bar. Without this, the open menus in the menu bar wouldn't close.
         else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
           event.currentTarget.focus();
           return true;

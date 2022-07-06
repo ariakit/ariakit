@@ -1,6 +1,6 @@
 {
   "name": "ariakit-utils",
-  "version": "0.17.0-alpha.13",
+  "version": "0.17.0-next.22",
   "description": "Ariakit utils",
   "sideEffects": false,
   "license": "MIT",
@@ -9,6 +9,9 @@
   "module": "esm/index.js",
   "unpkg": "umd/ariakit-utils.min.js",
   "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -21,8 +24,6 @@
   },
   "scripts": {
     "test": "jest",
-    "coverage": "npm test -- --coverage",
-    "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"
@@ -33,6 +34,6 @@
     "utils"
   ],
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   }
 }

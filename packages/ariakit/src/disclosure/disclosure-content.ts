@@ -2,13 +2,11 @@ import {
   AnimationEvent,
   SyntheticEvent,
   TransitionEvent,
-  useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { isSelfTarget } from "ariakit-utils/events";
-import { useEventCallback, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -16,6 +14,8 @@ import {
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
 import { DisclosureState } from "./disclosure-state";
+
+type TransitionState = "enter" | "leave" | null;
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -32,66 +32,56 @@ import { DisclosureState } from "./disclosure-state";
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
   ({ state, ...props }) => {
     const id = useId(props.id);
-
-    type TransitionState = "enter" | "leave" | null;
     const [transition, setTransition] = useState<TransitionState>(null);
-    const raf = useRef(0);
 
     useEffect(() => {
-      if (!state.animated) {
-        setTransition(null);
-        return;
-      }
-      // Double RAF is needed so the browser has enough time to paint the
-      // default styles before processing the `data-enter` attribute. Otherwise
-      // it wouldn't be considered a transition.
-      // See https://github.com/ariakit/ariakit/issues/643
-      raf.current = requestAnimationFrame(() => {
-        raf.current = requestAnimationFrame(() => {
-          if (state.visible) {
+      if (!state.animated) return;
+      // When the disclosure content element is rendered in a portal, we need to
+      // wait for the portal to be mounted and connected to the DOM before we
+      // can start the animation.
+      if (!state.contentElement?.isConnected) return;
+      if (state.open) {
+        // Double requestAnimationFrame is necessary here to avoid potential
+        // bugs when the data attribute is added before the element is fully
+        // rendered in the DOM, which wouldn't trigger the animation.
+        let raf = requestAnimationFrame(() => {
+          raf = requestAnimationFrame(() => {
             setTransition("enter");
-          } else if (state.animating) {
-            setTransition("leave");
-          } else {
-            setTransition(null);
-          }
+          });
         });
-      });
-      return () => cancelAnimationFrame(raf.current);
-    }, [state.animated, state.visible, state.animating]);
+        return () => cancelAnimationFrame(raf);
+      }
+      setTransition(state.animating ? "leave" : null);
+      return () => {
+        setTransition(null);
+      };
+    }, [state.animated, state.contentElement, state.open, state.animating]);
 
-    const onEnd = useCallback(
-      (event: SyntheticEvent) => {
-        if (event.defaultPrevented) return;
-        if (!isSelfTarget(event)) return;
-        if (!state.animating) return;
-        // Ignores number animated
-        if (state.animated === true) {
-          state.stopAnimation();
-        }
-      },
-      [state.animated, state.animating, state.stopAnimation]
-    );
+    const onEnd = (event: SyntheticEvent) => {
+      if (event.defaultPrevented) return;
+      if (!isSelfTarget(event)) return;
+      if (!state.animating) return;
+      // Ignores number animated
+      if (state.animated === true) {
+        state.stopAnimation();
+      }
+    };
 
-    const onTransitionEndProp = useEventCallback(props.onTransitionEnd);
+    const onTransitionEndProp = props.onTransitionEnd;
 
-    const onTransitionEnd = useCallback(
+    const onTransitionEnd = useEvent(
       (event: TransitionEvent<HTMLDivElement>) => {
-        onTransitionEndProp(event);
+        onTransitionEndProp?.(event);
         onEnd(event);
-      },
-      [onTransitionEndProp, onEnd]
+      }
     );
 
-    const onAnimationEndProp = useEventCallback(props.onAnimationEnd);
+    const onAnimationEndProp = props.onAnimationEnd;
 
-    const onAnimationEnd = useCallback(
-      (event: AnimationEvent<HTMLDivElement>) => {
-        onAnimationEndProp(event);
-        onEnd(event);
-      },
-      [onAnimationEndProp, onEnd]
-    );
+    const onAnimationEnd = useEvent((event: AnimationEvent<HTMLDivElement>) => {
+      onAnimationEndProp?.(event);
+      onEnd(event);
+    });
 
     const style =
       state.mounted || props.hidden === false

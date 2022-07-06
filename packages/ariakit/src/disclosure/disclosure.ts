@@ -1,7 +1,7 @@
-import { MouseEvent, useCallback, useRef, useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import {
-  useBooleanEventCallback,
-  useEventCallback,
+  useBooleanEvent,
+  useEvent,
   useForkRef,
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
@@ -35,47 +35,35 @@ export const useDisclosure = createHook<DisclosureOptions>(
     // Assigns the disclosureRef whenever it's undefined or disconnected from
     // the DOM. If this disclosure element is the disclosureRef, this element
     // will get the `aria-expanded` attribute set to `true` when the disclosure
-    // content is visible.
+    // content is open.
     useSafeLayoutEffect(() => {
       const currentDisclosure = state.disclosureRef.current;
       if (!currentDisclosure || !currentDisclosure.isConnected) {
         state.disclosureRef.current = ref.current;
       }
       const isCurrentDisclosure = state.disclosureRef.current === ref.current;
-      setExpanded(state.visible && isCurrentDisclosure);
-    }, [state.disclosureRef, state.visible]);
+      setExpanded(state.open && isCurrentDisclosure);
+    }, [state.disclosureRef, state.open]);
 
-    const onMouseDownProp = useEventCallback(props.onMouseDown);
+    const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        state.disclosureRef.current = event.currentTarget;
-        onMouseDownProp(event);
-      },
-      [onMouseDownProp, state.disclosureRef]
-    );
+    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      state.disclosureRef.current = event.currentTarget;
+      onMouseDownProp?.(event);
+    });
 
-    const onClickProp = useEventCallback(props.onClick);
-    const toggleOnClickProp = useBooleanEventCallback(toggleOnClick);
+    const onClickProp = props.onClick;
+    const toggleOnClickProp = useBooleanEvent(toggleOnClick);
     const isDuplicate = "data-disclosure" in props;
 
-    const onClick = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        state.disclosureRef.current = event.currentTarget;
-        onClickProp(event);
-        if (event.defaultPrevented) return;
-        if (isDuplicate) return;
-        if (!toggleOnClickProp(event)) return;
-        state.toggle();
-      },
-      [
-        state.disclosureRef,
-        onClickProp,
-        isDuplicate,
-        toggleOnClickProp,
-        state.toggle,
-      ]
-    );
+    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+      state.disclosureRef.current = event.currentTarget;
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (isDuplicate) return;
+      if (!toggleOnClickProp(event)) return;
+      state.toggle();
+    });
 
     props = {
       "data-disclosure": "",

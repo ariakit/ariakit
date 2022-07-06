@@ -48,6 +48,9 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       autoFocusOnHide: false,
       finalFocusRef: state.baseRef,
       ...props,
+      // Combobox popovers can't be modal because the focus may be (and is by
+      // default) outside of it on the combobox input element.
+      modal: false,
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
@@ -92,7 +95,7 @@ export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(
 );
 
 export type ComboboxPopoverOptions<T extends As = "div"> =
-  ComboboxListOptions<T> & Omit<PopoverOptions<T>, "state">;
+  ComboboxListOptions<T> & Omit<PopoverOptions<T>, "state" | "modal">;
 
 export type ComboboxPopoverProps<T extends As = "div"> = Props<
   ComboboxPopoverOptions<T>

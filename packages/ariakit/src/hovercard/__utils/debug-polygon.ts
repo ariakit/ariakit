@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Polygon } from "./polygon";
 
 function getPolygon() {

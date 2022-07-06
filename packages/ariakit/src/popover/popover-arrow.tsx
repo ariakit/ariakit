@@ -1,5 +1,4 @@
 import { useContext, useMemo, useState } from "react";
-import { BasePlacement } from "@popperjs/core";
 import { getWindow } from "ariakit-utils/dom";
 import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
@@ -11,6 +10,8 @@ import { As, Options, Props } from "ariakit-utils/types";
 import { POPOVER_ARROW_PATH } from "./__popover-arrow-path";
 import { PopoverContext } from "./__utils";
 import { PopoverState } from "./popover-state";
+
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const defaultSize = 30;
 const halfDefaultSize = defaultSize / 2;

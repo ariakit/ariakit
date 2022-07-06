@@ -1,0 +1,6 @@
+@import "../toolbar/style.css";
+@import "../../../select/__examples__/select/style.css";
+
+.select-item {
+  @apply pr-8;
+}

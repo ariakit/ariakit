@@ -1,11 +1,4 @@
-import {
-  click,
-  getByRole,
-  hover,
-  press,
-  render,
-  type,
-} from "ariakit-test-utils";
+import { click, getByRole, hover, press, render, type } from "ariakit-test";
 import Example from ".";
 
 const getSelect = () => getByRole("combobox", { name: "Account" });

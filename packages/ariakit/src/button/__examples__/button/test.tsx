@@ -1,4 +1,4 @@
-import { getByRole, render } from "ariakit-test-utils";
+import { getByRole, render } from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 

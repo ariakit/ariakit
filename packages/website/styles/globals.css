@@ -6,20 +6,31 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Segoe UI Symbol";
 }
 
+html { font-family: Inter, sans-serif; }
+
 body {
-  @apply bg-canvas-2 text-canvas-2 dark:bg-canvas-2-dark dark:text-canvas-2-dark;
+  @apply
+    bg-canvas-2
+    text-canvas-2
+    dark:bg-canvas-2-dark
+    dark:text-canvas-2-dark;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    *:focus-visible,
+    *[data-focus-visible] {
+      outline-style: auto !important;
+    }
+  }
 }

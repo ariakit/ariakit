@@ -32,15 +32,27 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
 
     // Sets the initial focus ref.
     useEffect(() => {
+      let cleaning = false;
       setItem((prevItem) => {
-        if (state.mounted && prevItem?.ref.current) return prevItem;
+        if (cleaning) return null;
+        // This must be state.open instead of state.mounted, otherwise
+        // re-opening an animated popover before the leave animation is done
+        // will not restore focus to the correct item.
+        if (state.open && prevItem) return prevItem;
         const item = findEnabledItemByValue(state.items, value);
         return item || null;
       });
-    }, [state.mounted, state.items, value]);
+      return () => {
+        cleaning = true;
+      };
+    }, [state.open, state.items, value]);
 
     props = useSelectList({ state, ...props });
-    props = usePopover({ state, initialFocusRef: item?.ref, ...props });
+    props = usePopover({
+      state,
+      initialFocusRef: item?.ref || state.baseRef,
+      ...props,
+    });
 
     return props;
   }

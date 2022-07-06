@@ -1,4 +1,4 @@
-import { getByText, render } from "ariakit-test-utils";
+import { getByText, render } from "ariakit-test";
 import Example from ".";
 
 test("render correctly", async () => {
