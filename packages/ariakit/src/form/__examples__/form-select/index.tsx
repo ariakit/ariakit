@@ -26,7 +26,7 @@ export default function Example() {
           value={form.values.fruit}
           setValue={(value: string) => form.setValue(form.names.fruit, value)}
           touchOnBlur={false}
-          onClose={() => form.setFieldTouched(form.names.fruit, true)}
+          onTouch={() => form.setFieldTouched(form.names.fruit, true)}
           required
         >
           <SelectItem value="">Select an item</SelectItem>
