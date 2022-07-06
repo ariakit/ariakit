@@ -1,4 +1,4 @@
-import { FocusEvent, MouseEvent } from "react";
+import { FocusEvent } from "react";
 import { useEvent } from "ariakit-utils/hooks";
 import {
   createComponent,
@@ -7,9 +7,9 @@ import {
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
 import {
-  PopoverAnchorOptions,
-  usePopoverAnchor,
-} from "../popover/popover-anchor";
+  HovercardAnchorOptions,
+  useHovercardAnchor,
+} from "../hovercard/hovercard-anchor";
 import { TooltipState } from "./tooltip-state";
 
 /**
@@ -50,27 +50,18 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       state.hide();
     });
 
-    const onMouseEnterProp = props.onMouseEnter;
-
-    const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
-      onMouseEnterProp?.(event);
-      if (event.defaultPrevented) return;
-      // When using multiple anchors for the same tooltip, we need to re-render
-      // the tooltip to update its position.
-      if (state.anchorRef.current !== event.currentTarget) {
-        state.anchorRef.current = event.currentTarget;
-        state.render();
-      }
-      state.show();
-    });
-
-    const onMouseLeaveProp = props.onMouseLeave;
-
-    const onMouseLeave = useEvent((event: MouseEvent<HTMLDivElement>) => {
-      onMouseLeaveProp?.(event);
-      if (event.defaultPrevented) return;
-      state.hide();
-    });
+    // TODO
+    // const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    //   onMouseEnterProp?.(event);
+    //   if (event.defaultPrevented) return;
+    //   // When using multiple anchors for the same tooltip, we need to re-render
+    //   // the tooltip to update its position.
+    //   if (state.anchorRef.current !== event.currentTarget) {
+    //     state.anchorRef.current = event.currentTarget;
+    //     state.render();
+    //   }
+    //   state.show();
+    // });
 
     props = {
       tabIndex: 0,
@@ -79,11 +70,11 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       ...props,
       onFocus,
       onBlur,
-      onMouseEnter,
-      onMouseLeave,
+      // onMouseEnter,
+      // onMouseLeave,
     };
 
-    props = usePopoverAnchor({ state, ...props });
+    props = useHovercardAnchor({ state, ...props });
 
     return props;
   }
@@ -107,7 +98,7 @@ export const TooltipAnchor = createComponent<TooltipAnchorOptions>((props) => {
 });
 
 export type TooltipAnchorOptions<T extends As = "div"> = Omit<
-  PopoverAnchorOptions<T>,
+  HovercardAnchorOptions<T>,
   "state"
 > & {
   /**
@@ -115,6 +106,7 @@ export type TooltipAnchorOptions<T extends As = "div"> = Omit<
    */
   state: TooltipState;
   /**
+   * TODO: Do this automatically. Check if tooltip anchor has text.
    * Determines wether the tooltip anchor is described or labelled by the
    * tooltip. If `true`, the tooltip id will be set as the `aria-describedby`
    * attribute on the anchor element, and not as the `aria-labelledby`

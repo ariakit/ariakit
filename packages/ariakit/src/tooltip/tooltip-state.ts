@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useControlledState } from "ariakit-utils/hooks";
 import {
-  PopoverState,
-  PopoverStateProps,
-  usePopoverState,
-} from "../popover/popover-state";
+  HovercardState,
+  HovercardStateProps,
+  useHovercardState,
+} from "../hovercard/hovercard-state";
 import { createGlobalTooltipState } from "./__utils";
 
 const globalState = createGlobalTooltipState();
@@ -74,10 +74,13 @@ export function useTooltipState({
     }
   );
 
-  const popover = usePopoverState({
+  const popover = useHovercardState({
     placement,
     gutter,
     ...props,
+    timeout: 0,
+    showTimeout: 0,
+    hideTimeout: 0,
     open,
     setOpen,
   });
@@ -107,7 +110,7 @@ export function useTooltipState({
   return state;
 }
 
-export type TooltipState = PopoverState & {
+export type TooltipState = HovercardState & {
   /**
    * The amount in milliseconds to wait before showing the tooltip. When there's
    * already an open tooltip in the page, this value will be ignored and other
@@ -117,5 +120,8 @@ export type TooltipState = PopoverState & {
   timeout: number;
 };
 
-export type TooltipStateProps = PopoverStateProps &
+export type TooltipStateProps = Omit<
+  HovercardStateProps,
+  "showTimeout" | "hideTimeout"
+> &
   Partial<Pick<TooltipState, "timeout">>;

@@ -1,12 +1,13 @@
-import { useContext } from "react";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
 import { As, Props } from "ariakit-utils/types";
-import { PopoverArrowOptions, usePopoverArrow } from "../popover/popover-arrow";
-import { TooltipContext } from "./__utils";
+import {
+  HovercardArrowOptions,
+  useHovercardArrow,
+} from "../hovercard/hovercard-arrow";
 import { TooltipState } from "./tooltip-state";
 
 /**
@@ -26,11 +27,7 @@ import { TooltipState } from "./tooltip-state";
  */
 export const useTooltipArrow = createHook<TooltipArrowOptions>(
   ({ state, size = 16, ...props }) => {
-    // We need to get the tooltip state here because Tooltip is not using the
-    // Popover component, so PopoverArrow can't access the popover context.
-    const context = useContext(TooltipContext);
-    state = state || context;
-    props = usePopoverArrow({ state, size, ...props });
+    props = useHovercardArrow({ state, size, ...props });
     return props;
   }
 );
@@ -54,7 +51,7 @@ export const TooltipArrow = createComponent<TooltipArrowOptions>((props) => {
 });
 
 export type TooltipArrowOptions<T extends As = "div"> = Omit<
-  PopoverArrowOptions<T>,
+  HovercardArrowOptions<T>,
   "state"
 > & {
   /**

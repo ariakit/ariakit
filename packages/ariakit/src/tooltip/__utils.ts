@@ -1,5 +1,4 @@
-import { RefObject, createContext } from "react";
-import { TooltipState } from "./tooltip-state";
+import { RefObject } from "react";
 
 export function createGlobalTooltipState() {
   type ListenerRef = RefObject<any>;
@@ -29,7 +28,3 @@ export function createGlobalTooltipState() {
     },
   };
 }
-
-export const TooltipContext = createContext<TooltipState | undefined>(
-  undefined
-);

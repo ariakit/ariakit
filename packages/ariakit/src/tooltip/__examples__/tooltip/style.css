@@ -24,15 +24,16 @@
   @apply
     rounded-md
     border
-    border-canvas-1
-    bg-canvas-1
     py-1
     px-2
     text-sm
-    text-canvas-1
+    cursor-default
     drop-shadow-sm
+    dark:drop-shadow-sm-dark
+    border-canvas-1
+    bg-canvas-1
+    text-canvas-1
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    dark:drop-shadow-sm-dark;
+    dark:text-canvas-4-dark;
 }
