@@ -15,6 +15,7 @@ import {
   useEvent,
   useForkRef,
   useLiveRef,
+  usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
@@ -150,9 +151,7 @@ export const useHovercard = createHook<HovercardOptions>(
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
     const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
-    const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-    const portalRef = useForkRef(setPortalNode, props.portalRef);
-    const domReady = !portal || portalNode;
+    const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
     const hideOnControlProp = useBooleanEvent(hideOnControl);

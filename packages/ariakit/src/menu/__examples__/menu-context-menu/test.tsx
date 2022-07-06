@@ -6,6 +6,7 @@ import {
   press,
   render,
 } from "ariakit-test";
+import { nextFrame } from "ariakit-test/__utils";
 import Example from ".";
 
 const getContextMenuArea = () => getByText("Right click here");
@@ -16,9 +17,11 @@ test("show context menu and hide it with escape", async () => {
   render(<Example />);
   expect(getMenu()).not.toBeVisible();
   fireEvent.contextMenu(getContextMenuArea());
+  await nextFrame();
   expect(getMenu()).toBeVisible();
   expect(getMenu()).toHaveFocus();
   fireEvent.contextMenu(getContextMenuArea());
+  await nextFrame();
   expect(getMenu()).toBeVisible();
   expect(getMenu()).toHaveFocus();
   await press.Escape();
@@ -28,6 +31,7 @@ test("show context menu and hide it with escape", async () => {
 test("show context menu and hide it by clicking outside", async () => {
   render(<Example />);
   fireEvent.contextMenu(getContextMenuArea());
+  await nextFrame();
   expect(getMenu()).toBeVisible();
   await click(document.body);
   expect(getMenu()).not.toBeVisible();
@@ -36,6 +40,7 @@ test("show context menu and hide it by clicking outside", async () => {
 test("navigate through context menu with keyboard", async () => {
   render(<Example />);
   fireEvent.contextMenu(getContextMenuArea());
+  await nextFrame();
   expect(getMenu()).toBeVisible();
   await press.ArrowDown();
   expect(getMenuItem("Back")).toHaveFocus();

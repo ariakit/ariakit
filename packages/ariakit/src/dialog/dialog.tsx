@@ -26,6 +26,7 @@ import {
   useForkRef,
   useId,
   useLiveRef,
+  usePortalRef,
   useSafeLayoutEffect,
   useUpdateEffect,
   useWrapElement,
@@ -119,12 +120,13 @@ export const useDialog = createHook<DialogOptions>(
   }) => {
     const ref = useRef<HTMLDivElement>(null);
     const openRef = useRef(state.open);
-    const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-    const portalRef = useForkRef(setPortalNode, props.portalRef);
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
     // again.
-    const domReady = !portal || portalNode;
+    const { portalRef, portalNode, domReady } = usePortalRef(
+      portal,
+      props.portalRef
+    );
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // open.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
@@ -281,7 +283,7 @@ export const useDialog = createHook<DialogOptions>(
       // getting the `ref.current` value. This ensures this effect will re-run
       // when the dialog element reference changes.
       const dialog = state.contentElement;
-      if (!dialog) return;
+      if (!dialog?.isConnected) return;
       const initialFocus = initialFocusRef?.current;
       const element =
         initialFocus ||

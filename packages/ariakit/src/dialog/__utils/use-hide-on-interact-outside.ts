@@ -143,6 +143,12 @@ export function useHideOnInteractOutside(
     ...props,
     type: "click",
     listener: (event) => {
+      const previousMouseDown = previousMouseDownRef.current as Element | null;
+      // If there's no previously mousedown'd element, this probably means that
+      // the dialog opened with a mousedown event, and a subsequent click event
+      // was dispatched outside of the dialog. See form-select example. We just
+      // ignore this.
+      if (!previousMouseDown) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         event.preventDefault();
@@ -150,8 +156,6 @@ export function useHideOnInteractOutside(
         return;
       }
       const dialog = dialogRef.current;
-      const previousMouseDown = previousMouseDownRef.current as Element | null;
-      if (!previousMouseDown) return;
       const draggingFromDialog = dialog && contains(dialog, previousMouseDown);
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse

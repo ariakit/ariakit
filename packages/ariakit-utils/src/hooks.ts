@@ -2,7 +2,9 @@ import {
   ComponentType,
   DependencyList,
   EffectCallback,
+  MutableRefObject,
   Ref,
+  RefCallback,
   RefObject,
   useCallback,
   useEffect,
@@ -17,30 +19,19 @@ import { canUseDOM } from "./dom";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
-/**
- * Access React v18 hooks using string concatenation in order to prevent
- * Webpack from inferring that they are not present in React v17.
- *
- * For example, `React.useId` will raise a compile time error when
- * using React v17, but `React['use' + 'Id']` will not.
- */
-const useReactId =
-  // @ts-ignore
-  typeof React["use" + "Id"] === "function" ? React["use" + "Id"] : undefined;
-
-const useReactDeferredValue =
-  // @ts-ignore
-  typeof React["use" + "DeferredValue"] === "function"
-    ? // @ts-ignore
-      React["use" + "DeferredValue"]
-    : undefined;
+// @ts-ignore Access React v18 hooks using string concatenation in order to
+// prevent Webpack from inferring that they are not present in React v17. For
+// example, React.useId will raise a compile time error when using React v17,
+// but React['use' + 'Id'] will not.
+const useReactId = React["use" + "Id"] as typeof React.useId | undefined;
 // @ts-ignore
-const useInsertionEffect =
-  // @ts-ignore
-  typeof React["use" + "InsertionEffect"] === "function"
-    ? // @ts-ignore
-      React["use" + "InsertionEffect"]
-    : undefined;
+const useReactDeferredValue = React["use" + "DeferredValue"] as
+  | typeof React.useDeferredValue
+  | undefined;
+// @ts-ignore
+const useInsertionEffect = React["use" + "InsertionEffect"] as
+  | typeof React.useInsertionEffect
+  | undefined;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -353,4 +344,18 @@ export function useWrapElement<P>(
   );
 
   return { ...props, wrapElement };
+}
+
+/**
+ * Merges the portalRef prop and returns a `domReady` to be used in the
+ * components that use Portal underneath.
+ */
+export function usePortalRef(
+  portalProp = false,
+  portalRefProp?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement>
+) {
+  const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
+  const portalRef = useForkRef(setPortalNode, portalRefProp);
+  const domReady = !portalProp || portalNode;
+  return { portalRef, portalNode, domReady };
 }
