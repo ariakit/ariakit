@@ -157,7 +157,7 @@ export const useFormField = createHook<FormFieldOptions>(
     props = {
       id,
       "aria-labelledby": label?.id,
-      "aria-invalid": invalid ? true : undefined,
+      "aria-invalid": invalid,
       ...props,
       "aria-describedby": describedBy || undefined,
       // @ts-expect-error
