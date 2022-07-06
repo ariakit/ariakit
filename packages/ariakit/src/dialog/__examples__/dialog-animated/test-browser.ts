@@ -4,15 +4,19 @@ const getDialog = (page: Page) => page.locator("role=dialog[name='Apples']");
 const getButton = (page: Page, name: string) =>
   page.locator(`role=button[name='${name}']`);
 
-test("show/hide", async ({ page }) => {
+test("show/hide", async ({ page, headless }) => {
   await page.goto("/examples/dialog-animated");
+  await expect(getDialog(page)).not.toBeVisible();
   await getButton(page, "View details").click();
   await expect(getDialog(page)).toBeVisible();
-  // Wait for animation before focusing inside dialog
-  await expect(getButton(page, "Dismiss popup")).not.toBeFocused();
+  if (headless) {
+    await expect(getButton(page, "View details")).toBeFocused();
+  }
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
-  await page.locator("role=button[name='Dismiss popup']").click();
-  // Wait for animation before hiding the dialog
+  await getButton(page, "Dismiss popup").click();
   await expect(getDialog(page)).toBeVisible();
+  if (headless) {
+    await expect(getButton(page, "View details")).toBeFocused();
+  }
   await expect(getDialog(page)).not.toBeVisible();
 });

@@ -1,68 +1,15 @@
 @import "../dialog/style.css";
 
 [data-backdrop] {
-  background-color: rgb(0 0 0 / 10%);
-  @apply
-    ease-in
-    duration-300
-    opacity-0;
-}
-
-[data-backdrop][data-enter] {
-  @apply
-    ease-in
-    duration-300
-    opacity-100;
+  @apply transition-opacity opacity-0 enter:opacity-100;
 }
 
 .dialog {
-  transform: translate(-50%, -60%);
-  @apply
-    ease-in
-    duration-300
-    opacity-0
-    p-0;
+  transform: translate3d(-50%, 32px, 0);
+  @apply transition-[opacity,transform] opacity-0 top-0;
 }
 
 .dialog[data-enter] {
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, 64px, 0);
   @apply opacity-100;
-}
-
-.dialog[data-leave] {
-  transform: translate(-50%, -40%);
-  @apply ease-in-out;
-}
-
-.header {
-  @apply
-    flex
-    items-center
-    justify-between
-    border-b
-    border-solid
-    border-canvas-4
-    p-4
-    dark:border-canvas-4-dark;
-}
-
-.heading {
-  @apply m-0 text-2xl;
-}
-
-.content {
-  @apply p-4 gap-2;
-}
-
-.footer {
-  @apply
-    flex
-    items-center
-    justify-end
-    p-4
-    gap-2
-    rounded-b
-    border-t
-    border-canvas-4
-    dark:border-canvas-4-dark;
 }
