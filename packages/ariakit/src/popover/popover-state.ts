@@ -16,6 +16,7 @@ import {
   useSafeLayoutEffect,
 } from "ariakit-utils/hooks";
 import { SetState } from "ariakit-utils/types";
+import { flushSync } from "react-dom";
 import {
   DialogState,
   DialogStateProps,
@@ -124,6 +125,7 @@ export function usePopoverState({
   const [rendered, render] = useForceUpdate();
 
   useSafeLayoutEffect(() => {
+    if (!dialog.contentElement?.isConnected) return;
     const popover = popoverRef.current;
     if (!popover) return;
     const anchor = getAnchorElement(anchorRef, getAnchorRect);
@@ -225,8 +227,6 @@ export function usePopoverState({
           );
         }
 
-        popover.style.position = fixed ? "fixed" : "absolute";
-
         // https://floating-ui.com/docs/computePosition
         const pos = await computePosition(anchor, popover, {
           placement,
@@ -234,7 +234,14 @@ export function usePopoverState({
           middleware,
         });
 
-        setCurrentPlacement(pos.placement);
+        // Update the current placement state synchronously to avoid styling
+        // flashes. For example, without this, a popover that has initially
+        // placement set to "bottom", but gets flipped to "top" will have a
+        // frame where the popover arrow is not properly rotated (PopoverArrow
+        // uses the currentPlacement state).
+        flushSync(() => {
+          setCurrentPlacement(pos.placement);
+        });
 
         const x = Math.round(pos.x);
         const y = Math.round(pos.y);

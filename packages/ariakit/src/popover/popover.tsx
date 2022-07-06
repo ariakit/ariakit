@@ -1,5 +1,9 @@
-import { HTMLAttributes, RefObject } from "react";
-import { useSafeLayoutEffect, useWrapElement } from "ariakit-utils/hooks";
+import { HTMLAttributes, RefObject, useState } from "react";
+import {
+  usePortalRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -27,6 +31,7 @@ export const usePopover = createHook<PopoverOptions>(
     modal = false,
     portal = !!modal,
     preserveTabOrder = true,
+    autoFocusOnShow = true,
     wrapperProps,
     ...props
   }) => {
@@ -43,6 +48,24 @@ export const usePopover = createHook<PopoverOptions>(
       wrapper.style.zIndex = getComputedStyle(popover).zIndex;
     }, [popoverRef, state.contentElement]);
 
+    // We have to wait for the popover to be positioned before we can move
+    // focus, otherwise there may be scroll jumps. See popover-standalone
+    // example test-browser file.
+    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
+    const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
+
+    useSafeLayoutEffect(() => {
+      if (!domReady) return;
+      if (!state.mounted) return;
+      if (!state.contentElement?.isConnected) return;
+      const raf = requestAnimationFrame(() => {
+        setCanAutoFocusOnShow(true);
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+      };
+    }, [domReady, state.mounted, state.contentElement]);
+
     // Wrap our element in a div that will be used to position the popover.
     // This way the user doesn't need to override the popper's position to
     // create animations.
@@ -52,15 +75,16 @@ export const usePopover = createHook<PopoverOptions>(
         <div
           role="presentation"
           {...wrapperProps}
-          // Avoid the wrapper from taking space when used within a flexbox
-          // container with the gap property.
-          style={{ position: "fixed", ...wrapperProps?.style }}
+          style={{
+            position: state.fixed ? "fixed" : "absolute",
+            ...wrapperProps?.style,
+          }}
           ref={popoverRef}
         >
           {element}
         </div>
       ),
-      [popoverRef, wrapperProps]
+      [state.fixed, popoverRef, wrapperProps]
     );
 
     props = useWrapElement(
@@ -86,7 +110,9 @@ export const usePopover = createHook<PopoverOptions>(
       modal,
       preserveTabOrder,
       portal,
+      autoFocusOnShow: autoFocusOnShow && canAutoFocusOnShow,
       ...props,
+      portalRef,
     });
 
     return props;
