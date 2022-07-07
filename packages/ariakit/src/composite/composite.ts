@@ -15,6 +15,7 @@ import {
   fireKeyboardEvent,
   isSelfTarget,
 } from "ariakit-utils/events";
+import { focusIntoView } from "ariakit-utils/focus";
 import {
   useEvent,
   useForkRef,
@@ -100,12 +101,7 @@ function useScheduleFocus(activeItem?: Item) {
     const activeElement = activeItem?.ref.current;
     if (scheduled && activeElement) {
       setScheduled(false);
-      if (!activeElement.scrollIntoView) {
-        activeElement.focus();
-      } else {
-        activeElement.focus({ preventScroll: true });
-        activeElement.scrollIntoView({ block: "nearest", inline: "nearest" });
-      }
+      focusIntoView(activeElement);
     }
   }, [activeItem, scheduled]);
   return schedule;
