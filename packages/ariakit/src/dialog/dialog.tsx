@@ -18,6 +18,7 @@ import {
 import { addGlobalEventListener, queueBeforeEvent } from "ariakit-utils/events";
 import {
   focusIfNeeded,
+  focusIntoView,
   getFirstTabbableIn,
   isFocusable,
 } from "ariakit-utils/focus";
@@ -262,11 +263,13 @@ export const useDialog = createHook<DialogOptions>(
     }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
 
     const prevInitialFocusRef = useRef<HTMLElement | null>();
+    const mayAutoFocusOnShow = !!autoFocusOnShow;
+    const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
     // Auto focus on show.
     useEffect(() => {
       if (!openIdle) return;
-      if (!autoFocusOnShow) return;
+      if (!mayAutoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
       // focus. This is useful for when the Dialog component is unmounted
       // when hidden.
@@ -302,16 +305,21 @@ export const useDialog = createHook<DialogOptions>(
         const activeElement = getActiveElement(dialog, true);
         if (activeElement && contains(dialog, activeElement)) return;
       }
-      element.focus();
+      if (!autoFocusOnShowProp(element)) return;
+      focusIntoView(element);
     }, [
       openIdle,
-      autoFocusOnShow,
+      mayAutoFocusOnShow,
       domReady,
       state.contentElement,
       initialFocusRef,
       portal,
       preserveTabOrder,
+      autoFocusOnShowProp,
     ]);
+
+    const mayAutoFocusOnHide = !!autoFocusOnHide;
+    const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
     // Auto focus on hide.
     useEffect(() => {
@@ -320,7 +328,7 @@ export const useDialog = createHook<DialogOptions>(
       openRef.current = state.open;
       // We only want to auto focus on hide if the dialog was open before.
       if (!prevOpen) return;
-      if (!autoFocusOnHide) return;
+      if (!mayAutoFocusOnHide) return;
       if (!dialog) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
@@ -356,7 +364,8 @@ export const useDialog = createHook<DialogOptions>(
               }
             }
           }
-          element.focus();
+          if (!autoFocusOnHideProp(element)) return;
+          focusIntoView(element);
         }
       };
       if (!state.open) {
@@ -369,7 +378,13 @@ export const useDialog = createHook<DialogOptions>(
       // be executed when the Dialog component gets unmounted. This is useful
       // so we can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [autoFocusOnHide, state.open, finalFocusRef, state.disclosureRef]);
+    }, [
+      mayAutoFocusOnHide,
+      state.open,
+      finalFocusRef,
+      state.disclosureRef,
+      autoFocusOnHideProp,
+    ]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
@@ -582,7 +597,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * can be used to set a different element to receive focus.
      * @default true
      */
-    autoFocusOnShow?: boolean;
+    autoFocusOnShow?: BooleanOrCallback<HTMLElement>;
     /**
      * Determines whether an element outside of the dialog will be focused when
      * the dialog is hidden if another element hasn't been focused in the action
@@ -592,7 +607,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * different element to be focused.
      * @default true
      */
-    autoFocusOnHide?: boolean;
+    autoFocusOnHide?: BooleanOrCallback<HTMLElement>;
     /**
      * Determines which element will receive focus when the dialog is shown.
      * This has no effect if `autoFocusOnShow` is `false`. If not set, the first

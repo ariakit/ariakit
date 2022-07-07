@@ -1,9 +1,7 @@
 import "ariakit-test/mock-get-client-rects";
-import { sleep } from "ariakit-test";
 import {
   disableFocus,
   disableFocusIn,
-  ensureFocus,
   focusIfNeeded,
   getAllFocusable,
   getAllFocusableIn,
@@ -626,37 +624,4 @@ test("restoreFocusIn", () => {
   expect(div.getAttribute("tabindex")).toBe("2");
 
   document.body.innerHTML = initialInnerHTML;
-});
-
-test("ensureFocus", async () => {
-  const initialInnerHTML = document.body.innerHTML;
-  document.body.innerHTML = `
-    <input id="testInput" />
-  `;
-  const input = getById("testInput");
-  const rafSpy = jest
-    .spyOn(window, "requestAnimationFrame")
-    .mockImplementation((cb) => {
-      setTimeout(() => cb(0));
-      return 0;
-    });
-
-  expect(document.activeElement === input).toBe(false);
-  ensureFocus(input);
-  expect(document.activeElement === input).toBe(true);
-  input.blur();
-  // isActive -> false
-  const focusSpy = jest.spyOn(input, "focus");
-
-  expect(document.activeElement === input).toBe(false);
-  ensureFocus(input, { isActive: () => false });
-  expect(document.activeElement === input).toBe(true);
-
-  expect(focusSpy).toHaveBeenCalledTimes(1);
-  await sleep();
-  expect(focusSpy).toHaveBeenCalledTimes(2);
-
-  document.body.innerHTML = initialInnerHTML;
-  rafSpy.mockRestore();
-  focusSpy.mockRestore();
 });
