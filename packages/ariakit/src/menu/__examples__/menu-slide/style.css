@@ -1,6 +1,21 @@
-@import url("../menu/style.css");
+@import "../menu/style.css";
 
-.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
+.menu {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+  @apply p-0;
+}
+
+.menu::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+.menu-wrapper {
+  width: 180px;
+  @apply p-2 z-50 flex flex-col;
+}
+
+.menu-wrapper:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
   @apply
     bg-alpha-3-border
     text-alpha-3

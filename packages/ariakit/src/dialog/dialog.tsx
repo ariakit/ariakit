@@ -302,7 +302,8 @@ export const useDialog = createHook<DialogOptions>(
         const activeElement = getActiveElement(dialog, true);
         if (activeElement && contains(dialog, activeElement)) return;
       }
-      element.focus();
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ block: "nearest", inline: "nearest" });
     }, [
       openIdle,
       autoFocusOnShow,
@@ -356,7 +357,8 @@ export const useDialog = createHook<DialogOptions>(
               }
             }
           }
-          element.focus();
+          element.focus({ preventScroll: true });
+          element.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
       };
       if (!state.open) {
