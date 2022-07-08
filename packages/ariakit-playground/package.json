@@ -41,7 +41,7 @@
     "@codemirror/language": "6.2.0",
     "@codemirror/search": "6.0.0",
     "@codemirror/state": "6.1.0",
-    "@codemirror/view": "6.0.2",
+    "@codemirror/view": "6.0.3",
     "@codesandbox/sandpack-client": "1.2.2",
     "@emotion/react": "^11.7.1",
     "@lezer/highlight": "1.0.0",
