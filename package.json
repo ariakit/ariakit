@@ -100,7 +100,7 @@
     "react-router-dom": "6.3.0",
     "rehype-parse": "8.0.4",
     "rimraf": "3.0.2",
-    "rollup": "2.75.7",
+    "rollup": "2.76.0",
     "rollup-plugin-terser": "7.0.2",
     "stylelint": "14.9.1",
     "stylelint-config-standard": "26.0.0",
