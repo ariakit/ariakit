@@ -13,6 +13,7 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/checkbox-group", label: "Checkbox group" },
   { href: "/examples/collection", label: "Collection" },
   { href: "/examples/combobox", label: "Combobox" },
+  { href: "/examples/combobox-animated", label: "Combobox animated" },
   { href: "/examples/combobox-cancel", label: "Combobox cancel" },
   { href: "/examples/combobox-disclosure", label: "Combobox disclosure" },
   { href: "/examples/combobox-matches", label: "Combobox matches" },
