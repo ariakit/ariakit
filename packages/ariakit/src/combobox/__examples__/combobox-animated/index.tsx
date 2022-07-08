@@ -4,7 +4,7 @@ import {
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
-import "./styles.css";
+import "./style.css";
 
 export default function Example() {
   const combobox = useComboboxState({
