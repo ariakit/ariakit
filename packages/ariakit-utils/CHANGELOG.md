@@ -1,5 +1,19 @@
 # ariakit-utils
 
+## 0.17.0-next.23
+
+### Minor Changes
+
+- Removed `ensureFocus` function. ([#1599](https://github.com/ariakit/ariakit/pull/1599))
+
+### Patch Changes
+
+- Fixed an issue where `ariakit-utils` was directly accessing React v18 APIs via a _namespace_ import (`import * as React from 'react'`) and Webpack was raising an error. Changed access to string concatenation so that Webpack is unable to infer that these APIs _may_ not be in the imported package. ([#1560](https://github.com/ariakit/ariakit/pull/1560))
+
+* Added `focusIntoView` function. ([#1599](https://github.com/ariakit/ariakit/pull/1599))
+
+- Added `usePortalRef` hook. ([#1592](https://github.com/ariakit/ariakit/pull/1592))
+
 ## 0.17.0-next.22
 
 ### Minor Changes
