@@ -8,5 +8,21 @@
     "ariakit-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "combobox-popover-modal",
+    "composite-item-scroll-into-view",
+    "dialog-auto-focus-on-show",
+    "dialog-scroll-into-view",
+    "fix-react-17-webpack-error-again",
+    "form-field-aria-invalid",
+    "popover-arrow-flash",
+    "popover-portal-scroll-jump",
+    "select-focus-firefox",
+    "select-modal-click-outside",
+    "select-popover-composite-attributes",
+    "select-scroll-on-space",
+    "utils-ensure-focus",
+    "utils-focus-into-view",
+    "utils-use-portal-ref"
+  ]
 }
