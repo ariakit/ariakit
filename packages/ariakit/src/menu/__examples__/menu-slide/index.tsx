@@ -3,7 +3,7 @@ import "./style.css";
 
 export default function Example() {
   return (
-    <Menu label="Options">
+    <Menu label="Options 2">
       <MenuItem label="New Tab" />
       <MenuItem label="New Window" />
       <MenuSeparator />

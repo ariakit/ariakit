@@ -1,6 +1,5 @@
 import { KeyboardEvent, useEffect, useState } from "react";
 import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
-import { isMac, isSafari } from "ariakit-utils/platform";
 import { useStore, useStoreProvider } from "ariakit-utils/store";
 import {
   createComponent,
@@ -17,8 +16,6 @@ import { MenuBarContext, MenuContext } from "./__utils";
 import { MenuState } from "./menu-state";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
-
-const isSafariOnMac = isMac() && isSafari();
 
 function useAriaLabelledBy({ state, ...props }: MenuListProps) {
   const [id, setId] = useState<string | undefined>(undefined);
@@ -142,12 +139,7 @@ export const useMenuList = createHook<MenuListOptions>(
 
     if (composite) {
       props = {
-        // Safari/VoiceOver doesn't work well when role="menu" elements are
-        // hidden. So we have to use role="menubar" in this case. This may be a
-        // problem for developers targeting [role="menu"] on CSS. We should
-        // explicitly state that in the docs and remove this workaround as soon
-        // as Safari/VoiceOver is fixed.
-        role: isSafariOnMac ? "menubar" : "menu",
+        role: "menu",
         "aria-orientation": orientation,
         ...props,
       };
