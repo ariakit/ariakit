@@ -1,13 +1,12 @@
 import {
   HTMLAttributes,
-  MouseEvent,
   ReactNode,
   RefAttributes,
   createContext,
   forwardRef,
-  useCallback,
   useContext,
   useEffect,
+  useMemo,
 } from "react";
 import {
   Menu as BaseMenu,
@@ -22,11 +21,13 @@ import {
 } from "ariakit/menu";
 import { flushSync } from "react-dom";
 
-// Use React Context so we can determine if the menu is a submenu or not.
-const MenuContext = createContext<(() => HTMLElement | null) | null>(null);
-const ParentMenuContext = createContext<(() => HTMLElement | null) | null>(
-  null
-);
+type MenuContextProps = {
+  getWrapper: () => HTMLElement | null;
+  getMenu: () => HTMLElement | null;
+  getOffsetRight: () => number;
+};
+
+const MenuContext = createContext<MenuContextProps | null>(null);
 
 export type MenuProps = HTMLAttributes<HTMLDivElement> & {
   label: ReactNode;
@@ -38,102 +39,98 @@ type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
 
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const getParentMenuPopover = useContext(MenuContext);
-    const getParentMenu = useContext(ParentMenuContext);
-    const nested = !!getParentMenuPopover;
+    const parent = useContext(MenuContext);
+    const isSubmenu = !!parent;
 
     const menu = useMenuState({
-      gutter: 8,
-      animated: nested ? 500 : false,
-      flip: !nested,
-      placement: nested ? "right-start" : "bottom-start",
-      overflowPadding: 0,
+      placement: isSubmenu ? "right-start" : "bottom-start",
+      overflowPadding: isSubmenu ? 0 : 8,
+      animated: isSubmenu ? 500 : false,
+      gutter: isSubmenu ? 0 : 8,
+      flip: !isSubmenu,
       getAnchorRect: (anchor) => {
-        if (getParentMenu) {
-          return getParentMenu()?.getBoundingClientRect() || null;
-        }
-        return anchor?.getBoundingClientRect() || null;
+        return (
+          parent?.getMenu()?.getBoundingClientRect() ||
+          anchor?.getBoundingClientRect() ||
+          null
+        );
       },
     });
 
-    useEffect(() => {
-      if (!getParentMenuPopover) return;
-      const parentMenuPopover = getParentMenuPopover();
-      if (!parentMenuPopover) return;
-      let id = 0;
-
-      const onScroll = (event: Event) => {
-        clearTimeout(id);
-        const el = event.currentTarget as HTMLElement;
-        id = window.setTimeout(() => {
-          const popover = menu.popoverRef.current;
-          if (!popover) return;
-          // TOOD: Can't do this. Implementation detail.
-          const transform = getComputedStyle(popover).transform;
-          const matrix = new DOMMatrixReadOnly(transform);
-          if (el.scrollLeft + el.clientWidth <= matrix.m41) {
-            flushSync(() => {
-              menu.hide();
-            });
-            menu.stopAnimation();
-          }
-        }, 100);
-      };
-      parentMenuPopover.addEventListener("scroll", onScroll);
-      return () => {
-        parentMenuPopover.removeEventListener("scroll", onScroll);
-      };
-    }, [menu.popoverRef, getParentMenuPopover, menu.hide, menu.stopAnimation]);
-
+    // We only want to delay hiding the menu, so we immediately stop the
+    // animation when it's opening.
     if (menu.open && menu.animating) {
       menu.stopAnimation();
     }
 
-    // useEffect(() => {
-    //   if (menu.open) {
-    //     // menu.stopAnimation();
-    //     requestAnimationFrame(() => {
-    //       menu.stopAnimation();
-    //     });
-    //   }
-    // }, [menu.open, menu.stopAnimation]);
+    // By default, submenus don't automatically receive focus when they open.
+    // But here we want them to always receive focus.
+    if (!menu.autoFocusOnShow) {
+      menu.setAutoFocusOnShow(true);
+    }
+
+    const contextValue = useMemo<MenuContextProps>(
+      () => ({
+        getWrapper: () => parent?.getWrapper() || menu.popoverRef.current,
+        getMenu: () => menu.baseRef.current,
+        getOffsetRight: () =>
+          (parent?.getOffsetRight() ?? 0) +
+          (menu.baseRef.current?.offsetWidth ?? 0),
+      }),
+      [menu.popoverRef, menu.baseRef, parent?.getOffsetRight]
+    );
+
+    // Hide the submenu when it's not visible on scroll.
+    useEffect(() => {
+      if (!parent) return;
+      const parentWrapper = parent.getWrapper();
+      if (!parentWrapper) return;
+      let timeout = 0;
+      const onScroll = () => {
+        clearTimeout(timeout);
+        timeout = window.setTimeout(() => {
+          // In right-to-left layouts, scrollLeft is negative.
+          const scrollLeft = Math.abs(parentWrapper.scrollLeft);
+          const wrapperOffset = scrollLeft + parentWrapper.clientWidth;
+          if (wrapperOffset <= parent.getOffsetRight()) {
+            // Since the submenu is not visible anymore at this point, we want
+            // to hide it completely right away. That's why we syncrhonously
+            // hide it and immediately stops the animation so it's completely
+            // unmounted.
+            flushSync(menu.hide);
+            menu.stopAnimation();
+          }
+        }, 100);
+      };
+      parentWrapper.addEventListener("scroll", onScroll);
+      return () => parentWrapper.removeEventListener("scroll", onScroll);
+    }, [parent, menu.hide, menu.stopAnimation]);
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
       <MenuButton
+        as="button"
         state={menu}
-        className="button"
         showOnHover={false}
+        className="button"
         {...menuButtonProps}
-        onClick={(event: MouseEvent<HTMLDivElement>) => {
-          menuButtonProps.onClick?.(event);
-          menu.setAutoFocusOnShow(true);
-        }}
       >
         <span className="label">{label}</span>
         <MenuButtonArrow />
       </MenuButton>
     );
 
-    const portalElement = useCallback(
-      () => menu.popoverRef.current,
-      [menu.mounted, menu.popoverRef]
-    );
-
-    const baseElement = useCallback(
-      () => menu.contentElement,
-      [menu.contentElement]
-    );
+    const wrapperProps = isSubmenu ? {} : { className: "menu-wrapper" };
 
     return (
       <>
-        {nested ? (
+        {isSubmenu ? (
           // If it's a submenu, we have to combine the MenuButton and the
           // MenuItem components into a single component, so it works as a
           // submenu button.
           <BaseMenuItem
-            className="menu-item"
-            focusOnHover={false}
             ref={ref}
+            focusOnHover={false}
+            className="menu-item"
             {...props}
           >
             {renderMenuButton}
@@ -145,42 +142,37 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
         {menu.mounted && (
           <BaseMenu
             state={menu}
-            portal={nested}
-            portalElement={nested ? getParentMenuPopover : undefined}
-            className={`menu${nested ? " nested" : ""}`}
-            wrapperProps={{
-              className: nested ? "menu-wrapper-nested" : "menu-wrapper",
-            }}
-            hideOnHoverOutside={false}
+            className="menu"
+            portal={isSubmenu}
+            portalElement={parent?.getWrapper}
+            wrapperProps={wrapperProps}
             autoFocusOnShow={(element) => {
-              if (!nested) return true;
+              if (!isSubmenu) return true;
               element.focus({ preventScroll: true });
               element.scrollIntoView({ block: "nearest", inline: "start" });
               return false;
             }}
           >
-            <MenuContext.Provider
-              value={nested ? getParentMenuPopover : portalElement}
-            >
-              <ParentMenuContext.Provider value={baseElement}>
-                {nested && (
-                  <>
-                    <div className="header">
-                      <BaseMenuItem
-                        className="menu-item back"
-                        hideOnClick={false}
-                        focusOnHover={false}
-                        onClick={menu.hide}
-                      >
-                        <MenuButtonArrow placement="left" />
-                      </BaseMenuItem>
-                      <MenuHeading className="heading">{label}</MenuHeading>
-                    </div>
-                    <MenuSeparator />
-                  </>
-                )}
-                {children}
-              </ParentMenuContext.Provider>
+            <MenuContext.Provider value={contextValue}>
+              {isSubmenu && (
+                <>
+                  <div className="header">
+                    <BaseMenuItem
+                      as="button"
+                      hideOnClick={false}
+                      focusOnHover={false}
+                      onClick={menu.hide}
+                      className="menu-item"
+                      aria-label="Back to parent menu"
+                    >
+                      <MenuButtonArrow placement="left" />
+                    </BaseMenuItem>
+                    <MenuHeading className="heading">{label}</MenuHeading>
+                  </div>
+                  <MenuSeparator />
+                </>
+              )}
+              {children}
             </MenuContext.Provider>
           </BaseMenu>
         )}
@@ -189,15 +181,16 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   }
 );
 
-export type MenuItemProps = HTMLAttributes<HTMLDivElement> & {
+export type MenuItemProps = HTMLAttributes<HTMLButtonElement> & {
   label: ReactNode;
   disabled?: boolean;
 };
 
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
+export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(
   ({ label, ...props }, ref) => {
     return (
       <BaseMenuItem
+        as="button"
         className="menu-item"
         focusOnHover={false}
         ref={ref}

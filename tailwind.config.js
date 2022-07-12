@@ -269,9 +269,6 @@ module.exports = {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
           outlineOffset: "2px",
         },
-      });
-
-      addUtilities({
         ".ariakit-outline-input": {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
         },

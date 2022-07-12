@@ -2,12 +2,9 @@
 @import "../../../separator/__examples__/separator/style.css";
 
 .menu-wrapper {
-  max-height: var(--popover-available-height);
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  min-width: 180px;
   @apply
-    flex
     z-50
     rounded-lg
     border
@@ -16,15 +13,14 @@
     overflow-x-scroll
     overscroll-contain
     scroll-smooth
-    sm:text-sm
+    drop-shadow
+    dark:drop-shadow-dark
     border-canvas-4
     bg-canvas-4
     text-canvas-4
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark;
+    dark:text-canvas-4-dark;
 }
 
 .menu-wrapper::-webkit-scrollbar {
@@ -32,54 +28,52 @@
 }
 
 .menu {
-  width: 280px;
-  outline: none !important;
-  height: min(300px, var(--popover-available-height));
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  width: 320px;
+  height: min(320px, var(--popover-available-height));
   @apply
     p-2
     z-50
     flex
     flex-col
+    snap-start
+    snap-always
     overflow-y-auto
+    outline-none
     leave:z-0
     bg-canvas-4
     dark:bg-canvas-4-dark;
-}
-
-.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
-  @apply
-    bg-alpha-3-border
-    text-alpha-3
-    dark:bg-alpha-3-dark-hover
-    dark:text-alpha-3-dark;
-}
-
-.menu-item.back {
-  @apply w-9 h-9 justify-center;
 }
 
 .menu-item {
   outline: none !important;
   @apply
     flex
-    cursor-default
     scroll-m-2
     items-center
+    text-left
+    w-full
     gap-2
     rounded
     p-2
     aria-disabled:opacity-25
-    sm:hover:bg-primary-1
-    sm:dark:hover:bg-primary-1-dark-hover
-    sm:active:bg-primary-2
-    sm:active:text-primary-2
-    sm:dark:active:bg-primary-2-dark-hover
-    sm:focus-visible:active-item:bg-primary-2
-    sm:focus-visible:active-item:text-primary-2
-    sm:focus-visible:dark:active-item:bg-primary-2-dark
-    sm:focus-visible:dark:active-item:text-primary-2-dark;
+    [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
+    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")];
+}
+
+@media (any-hover: hover) {
+  .menu-item {
+    @apply
+      cursor-default
+      hover:bg-primary-1
+      dark:hover:bg-primary-1-dark-hover
+      focus-visible:active-item:bg-primary-2
+      focus-visible:active-item:text-primary-2
+      focus-visible:dark:active-item:bg-primary-2-dark
+      focus-visible:dark:active-item:text-primary-2-dark
+      active:bg-primary-2
+      active:text-primary-2
+      dark:active:bg-primary-2-dark-hover;
+  }
 }
 
 .menu-item .label {
@@ -87,8 +81,16 @@
 }
 
 .header {
-  grid-template-columns: 2rem auto 2rem;
+  --header-size: theme("spacing.10");
+
+  grid-template-columns: var(--header-size) auto var(--header-size);
   @apply grid items-center;
+}
+
+.header .menu-item {
+  width: var(--header-size);
+  height: var(--header-size);
+  @apply justify-center;
 }
 
 .heading {
@@ -97,7 +99,7 @@
 
 .group-label {
   @apply
-    text-xs
+    text-sm
     p-2
     font-medium
     opacity-60
