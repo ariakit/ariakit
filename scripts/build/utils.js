@@ -369,10 +369,10 @@ function makeExports(rootPath) {
  * @param {string} rootPath
  */
 function cleanExports(rootPath) {
-  const pkg = getPackage(rootPath);
   const filepath = join(rootPath, "package.json");
   const backupPath = join(rootPath, "package.json.backup");
-  const content = readFileSync(filepath, "utf-8");
+  if (!existsSync(backupPath)) return;
+  const content = readFileSync(backupPath, "utf-8");
   writeFileSync(filepath, content);
   removeSync(backupPath);
 }
