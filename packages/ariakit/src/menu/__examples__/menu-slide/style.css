@@ -56,6 +56,10 @@
     rounded
     p-2
     aria-disabled:opacity-25
+    ariakit-focus-visible:active-item:bg-primary-2
+    ariakit-focus-visible:active-item:text-primary-2
+    ariakit-focus-visible:dark:active-item:bg-primary-2-dark
+    ariakit-focus-visible:dark:active-item:text-primary-2-dark
     [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
     dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")];
 }
@@ -66,10 +70,6 @@
       cursor-default
       hover:bg-primary-1
       dark:hover:bg-primary-1-dark-hover
-      focus-visible:active-item:bg-primary-2
-      focus-visible:active-item:text-primary-2
-      focus-visible:dark:active-item:bg-primary-2-dark
-      focus-visible:dark:active-item:text-primary-2-dark
       active:bg-primary-2
       active:text-primary-2
       dark:active:bg-primary-2-dark-hover;

@@ -279,6 +279,7 @@ module.exports = {
       addVariant("active-item", "&[data-active-item]");
 
       addVariant("active", ["&:active", "&[data-active]"]);
+      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
       addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
       addVariant("aria-invalid", '&[aria-invalid="true"]');
       addVariant("aria-disabled", '&[aria-disabled="true"]');
