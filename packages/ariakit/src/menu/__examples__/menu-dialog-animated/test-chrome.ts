@@ -31,11 +31,23 @@ const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
 
-test("interact with menu", async ({ page, headless }) => {
+const createTransition = (duration = 100) => {
+  const then = performance.now();
+  const isPending = () => {
+    const now = performance.now();
+    return now - then < duration;
+  };
+  return isPending;
+};
+
+test("interact with menu", async ({ page }) => {
   await page.goto("/examples/menu-dialog-animated");
+  await expect(getMenu(page)).not.toBeVisible();
+  const isEntering = createTransition();
   await getMenuButton(page).click();
   await expect(getMenu(page)).toBeVisible();
-  if (headless) {
+  if (isEntering()) {
+    // The menu button should be focused while the menu is animating.
     await expect(getMenuButton(page)).toBeFocused();
   }
   await expect(getMenu(page)).toBeFocused();
@@ -51,14 +63,15 @@ test("interact with menu", async ({ page, headless }) => {
   await expect(getMenuItem(page, "Dismiss popup")).toBeFocused();
 });
 
-test("show/hide create list dialog", async ({ page, headless }) => {
+test("show/hide create list dialog", async ({ page }) => {
   await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).press("Enter");
   await expect(getMenuItem(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.type("cr");
   await expect(getMenuItem(page, "Create list")).toBeFocused();
+  const isEntering = createTransition();
   await page.keyboard.press("Enter");
-  if (headless) {
+  if (isEntering()) {
     await expect(getMenuButton(page)).toBeFocused();
   }
   await expect(getMenu(page)).not.toBeVisible();
@@ -91,13 +104,14 @@ test("create list", async ({ page }) => {
   await expect(getMenuButton(page, 1)).toBeVisible();
 });
 
-test("show/hide manage lists dialog", async ({ page, headless }) => {
+test("show/hide manage lists dialog", async ({ page }) => {
   await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
+  const isEntering = createTransition();
   await getButton(page, "Manage lists").click();
   await expect(getDialog(page, "Manage lists")).toBeVisible();
-  if (headless) {
+  if (isEntering()) {
     await expect(getButton(page, "Manage lists")).toBeFocused();
   }
   await expect(
@@ -107,14 +121,15 @@ test("show/hide manage lists dialog", async ({ page, headless }) => {
   await expect(getButton(page, "Manage lists")).toBeFocused();
 });
 
-test("show/hide information dialog", async ({ page, headless }) => {
+test("show/hide information dialog", async ({ page }) => {
   await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.press("Shift+Tab");
+  const isEntering = createTransition();
   await page.keyboard.press("Enter");
-  if (headless) {
+  if (isEntering()) {
     await expect(getMenuButton(page)).toBeFocused();
   }
   await expect(getDialog(page, "More information")).toBeVisible();
