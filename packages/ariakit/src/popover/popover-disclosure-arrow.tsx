@@ -33,45 +33,48 @@ const pointsMap = {
  * ```
  */
 export const usePopoverDisclosureArrow =
-  createHook<PopoverDisclosureArrowOptions>(({ state, ...props }) => {
-    const context = useContext(PopoverContext);
-    state = state || context;
-    const dir = state?.placement.split("-")[0] as BasePlacement;
-    const points = pointsMap[dir];
+  createHook<PopoverDisclosureArrowOptions>(
+    ({ state, placement, ...props }) => {
+      const context = useContext(PopoverContext);
+      state = state || context;
+      placement = placement ?? state?.placement;
+      const dir = placement?.split("-")[0] as BasePlacement;
+      const points = pointsMap[dir];
 
-    const children = useMemo(
-      () => (
-        <svg
-          display="block"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.5pt"
-          viewBox="0 0 16 16"
-          height="1em"
-          width="1em"
-        >
-          <polyline points={points} />
-        </svg>
-      ),
-      [points]
-    );
+      const children = useMemo(
+        () => (
+          <svg
+            display="block"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.5pt"
+            viewBox="0 0 16 16"
+            height="1em"
+            width="1em"
+          >
+            <polyline points={points} />
+          </svg>
+        ),
+        [points]
+      );
 
-    props = {
-      children,
-      "aria-hidden": true,
-      ...props,
-      style: {
-        width: "1em",
-        height: "1em",
-        pointerEvents: "none",
-        ...props.style,
-      },
-    };
+      props = {
+        children,
+        "aria-hidden": true,
+        ...props,
+        style: {
+          width: "1em",
+          height: "1em",
+          pointerEvents: "none",
+          ...props.style,
+        },
+      };
 
-    return props;
-  });
+      return props;
+    }
+  );
 
 /**
  * A component that renders an arrow pointing to the popover position. It's
@@ -100,6 +103,11 @@ export type PopoverDisclosureArrowOptions<T extends As = "span"> =
      * parent `PopoverDisclosure` component's context will be used.
      */
     state?: PopoverState;
+    /**
+     * Placement to which the arrow should point. If not provided, the parent
+     * `PopoverDisclosure` component's context will be used.
+     */
+    placement?: PopoverState["placement"];
   };
 
 export type PopoverDisclosureArrowProps<T extends As = "span"> = Props<
