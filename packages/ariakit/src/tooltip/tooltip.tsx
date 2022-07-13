@@ -75,15 +75,16 @@ export const useTooltip = createHook<TooltipOptions>(
         <div
           role="presentation"
           {...wrapperProps}
-          // Avoid the wrapper from taking space when used within a flexbox
-          // container with the gap property.
-          style={{ position: "fixed", ...wrapperProps?.style }}
+          style={{
+            position: state.fixed ? "fixed" : "absolute",
+            ...wrapperProps?.style,
+          }}
           ref={popoverRef}
         >
           {element}
         </div>
       ),
-      [popoverRef, wrapperProps]
+      [state.fixed, popoverRef, wrapperProps]
     );
 
     props = useWrapElement(
