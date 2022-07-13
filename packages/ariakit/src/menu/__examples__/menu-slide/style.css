@@ -1,0 +1,107 @@
+@import "../../../button/__examples__/button/style.css";
+@import "../../../separator/__examples__/separator/style.css";
+
+.menu-wrapper {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  @apply
+    z-50
+    rounded-lg
+    border
+    border-solid
+    overflow-y-hidden
+    overflow-x-scroll
+    overscroll-contain
+    scroll-smooth
+    drop-shadow
+    dark:drop-shadow-dark
+    border-canvas-4
+    bg-canvas-4
+    text-canvas-4
+    dark:border-canvas-4-dark
+    dark:bg-canvas-4-dark
+    dark:text-canvas-4-dark;
+}
+
+.menu-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.menu {
+  width: 320px;
+  height: min(320px, var(--popover-available-height));
+  @apply
+    p-2
+    z-50
+    flex
+    flex-col
+    snap-start
+    snap-always
+    overflow-y-auto
+    outline-none
+    leave:z-0
+    bg-canvas-4
+    dark:bg-canvas-4-dark;
+}
+
+.menu-item {
+  outline: none !important;
+  @apply
+    flex
+    scroll-m-2
+    items-center
+    text-left
+    w-full
+    gap-2
+    rounded
+    p-2
+    aria-disabled:opacity-25
+    ariakit-focus-visible:active-item:bg-primary-2
+    ariakit-focus-visible:active-item:text-primary-2
+    ariakit-focus-visible:dark:active-item:bg-primary-2-dark
+    ariakit-focus-visible:dark:active-item:text-primary-2-dark
+    [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
+    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")];
+}
+
+@media (any-hover: hover) {
+  .menu-item {
+    @apply
+      cursor-default
+      hover:bg-primary-1
+      dark:hover:bg-primary-1-dark-hover
+      active:bg-primary-2
+      active:text-primary-2
+      dark:active:bg-primary-2-dark-hover;
+  }
+}
+
+.menu-item .label {
+  @apply flex-1;
+}
+
+.header {
+  --header-size: theme("spacing.10");
+
+  grid-template-columns: var(--header-size) auto var(--header-size);
+  @apply grid items-center;
+}
+
+.header .menu-item {
+  width: var(--header-size);
+  height: var(--header-size);
+  @apply justify-center;
+}
+
+.heading {
+  @apply text-center font-medium;
+}
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default;
+}
