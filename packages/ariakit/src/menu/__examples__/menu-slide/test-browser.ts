@@ -30,7 +30,7 @@ test("show/hide with click", async ({ page, headless }, testInfo) => {
   if (headless) {
     expect(await wrapper?.screenshot()).toMatchSnapshot();
   }
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(250);
   await getMenuItem(page, "Recently closed windows").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
@@ -62,7 +62,7 @@ test("show/hide with keyboard", async ({ page }) => {
     getMenuItem(getMenu(page, "History"), "Back to parent menu")
   ).toBeFocused();
   await page.keyboard.type("rr");
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(250);
   await page.keyboard.press("ArrowRight");
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
