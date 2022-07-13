@@ -330,6 +330,43 @@ function makeTSConfigProd(rootPath) {
 }
 
 /**
+ * @param {string} rootPath
+ */
+function makeExports(rootPath) {
+  const pkg = getPackage(rootPath);
+  const filepath = join(rootPath, "package.json");
+  const content = readFileSync(filepath, "utf-8");
+  const publicFiles = getPublicFiles(getSourcePath(rootPath));
+  const mainDir = getMainDir(rootPath);
+  const moduleDir = getModuleDir(rootPath);
+  const typesDir = getTypesDir(rootPath);
+  const keys = Object.keys(publicFiles);
+  const obj = {};
+
+  for (const moduleName of keys) {
+    const name = `./${moduleName.replace(/\/?index$/, "")}`.replace(
+      /^\.\/$/,
+      "."
+    );
+    const tsModuleName = existsSync(join(getSourcePath(rootPath), moduleName))
+      ? `${moduleName}/index.d.ts`
+      : `${moduleName}.d.ts`;
+    obj[name] = {
+      require: `./${mainDir}/${moduleName}.js`,
+      ...(moduleDir ? { import: `./${moduleDir}/${moduleName}.js` } : {}),
+      ...(typesDir ? { types: `./${typesDir}/${tsModuleName}` } : {}),
+    };
+  }
+
+  pkg.exports = obj;
+  writeFileSync(filepath, JSON.stringify(pkg, null, 2));
+
+  return function restoreExports() {
+    writeFileSync(filepath, content);
+  };
+}
+
+/**
  * @param {NodeJS.ExitListener} callback
  */
 function onExit(callback) {
@@ -356,5 +393,6 @@ module.exports = {
   makeProxies,
   hasTSConfig,
   makeTSConfigProd,
+  makeExports,
   onExit,
 };

@@ -5,27 +5,30 @@ const {
   makeTSConfigProd,
   makeProxies,
   makeGitignore,
+  makeExports,
   onExit,
 } = require("./utils");
 
-require("./clean");
+onExit(makeExports(process.cwd()));
 
-process.env.NODE_ENV = "production";
+// require("./clean");
 
-if (process.argv.includes("--no-umd")) {
-  process.env.NO_UMD = true;
-}
+// process.env.NODE_ENV = "production";
 
-const cwd = process.cwd();
+// if (process.argv.includes("--no-umd")) {
+//   process.env.NO_UMD = true;
+// }
 
-makeGitignore(cwd);
-makeProxies(cwd);
+// const cwd = process.cwd();
 
-if (hasTSConfig(cwd)) {
-  onExit(makeTSConfigProd(cwd));
-  spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
-}
+// makeGitignore(cwd);
+// makeProxies(cwd);
 
-spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
-  stdio: "inherit",
-});
+// if (hasTSConfig(cwd)) {
+//   onExit(makeTSConfigProd(cwd));
+//   spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
+// }
+
+// spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
+//   stdio: "inherit",
+// });
