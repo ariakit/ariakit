@@ -104,7 +104,8 @@ export type PopoverDisclosureArrowOptions<T extends As = "span"> =
      */
     state?: PopoverState;
     /**
-     * TODO: Comment.
+     * Placement to which the arrow should point. If not provided, the parent
+     * `PopoverDisclosure` component's context will be used.
      */
     placement?: PopoverState["placement"];
   };
