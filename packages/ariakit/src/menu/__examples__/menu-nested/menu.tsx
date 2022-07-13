@@ -42,10 +42,10 @@ type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
 
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const inSubmenu = useContext(MenuContext);
+    const nested = useContext(MenuContext);
     const menu = useMenuState({
       gutter: 8,
-      shift: inSubmenu ? -9 : 0,
+      shift: nested ? -9 : 0,
     });
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
@@ -57,7 +57,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     return (
       <>
-        {inSubmenu ? (
+        {nested ? (
           // If it's a submenu, we have to combine the MenuButton and the
           // MenuItem components into a single component, so it works as a
           // submenu button.
