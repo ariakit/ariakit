@@ -19,6 +19,7 @@
       ],
       "matchPackagePatterns": [
         "^@babel/",
+        "^@jest/",
         "^@playwright/",
         "^@rollup/",
         "^@testing-library/",
