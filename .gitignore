@@ -2,6 +2,7 @@
 
 .cache
 test-results
+package.json.backup
 
 # dependencies
 node_modules

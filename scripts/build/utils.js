@@ -8,6 +8,7 @@ const {
   readFileSync,
   lstatSync,
   existsSync,
+  removeSync,
 } = require("fs-extra");
 const rimraf = require("rimraf");
 
@@ -359,11 +360,21 @@ function makeExports(rootPath) {
   }
 
   pkg.exports = obj;
-  writeFileSync(filepath, JSON.stringify(pkg, null, 2));
 
-  return function restoreExports() {
-    writeFileSync(filepath, content);
-  };
+  writeFileSync(filepath, `${JSON.stringify(pkg, null, 2)}\n`);
+  writeFileSync(join(rootPath, "package.json.backup"), content);
+}
+
+/**
+ * @param {string} rootPath
+ */
+function cleanExports(rootPath) {
+  const pkg = getPackage(rootPath);
+  const filepath = join(rootPath, "package.json");
+  const backupPath = join(rootPath, "package.json.backup");
+  const content = readFileSync(filepath, "utf-8");
+  writeFileSync(filepath, content);
+  removeSync(backupPath);
 }
 
 /**
@@ -394,5 +405,6 @@ module.exports = {
   hasTSConfig,
   makeTSConfigProd,
   makeExports,
+  cleanExports,
   onExit,
 };
