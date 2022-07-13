@@ -15,20 +15,31 @@ const expectActiveOption = (page: Page, name: string) =>
 const expectSelectedOption = (page: Page, name: string) =>
   expect(getOption(page, name)).toHaveAttribute("aria-selected", "true");
 
-test("show/hide", async ({ page, headless }) => {
+const createTransition = (duration = 100) => {
+  const then = performance.now();
+  const isPending = () => {
+    const now = performance.now();
+    return now - then < duration;
+  };
+  return isPending;
+};
+
+test("show/hide", async ({ page }) => {
   await page.goto("/examples/select-animated");
   await expect(getPopover(page)).not.toBeVisible();
+  const isEntering = createTransition();
   await getButton(page).click();
   await expect(getPopover(page)).toBeVisible();
-  if (headless) {
+  if (isEntering()) {
     await expect(getButton(page)).toBeFocused();
   }
   await expect(getPopover(page)).toBeFocused();
   await expectSelectedOption(page, "Apple");
   await expectActiveOption(page, "Apple");
+  const isLeaving = createTransition();
   await page.keyboard.press("Escape");
   await expect(getButton(page)).toBeFocused();
-  if (headless) {
+  if (isLeaving()) {
     await expect(getPopover(page)).toBeVisible();
   }
   await expect(getPopover(page)).not.toBeVisible();
