@@ -30,6 +30,7 @@ test("show/hide with click", async ({ page, headless }, testInfo) => {
   if (headless) {
     expect(await wrapper?.screenshot()).toMatchSnapshot();
   }
+  await page.waitForTimeout(100);
   await getMenuItem(page, "Recently closed windows").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
