@@ -124,10 +124,10 @@ function getInput(isUMD) {
  */
 function getConfig(isUMD) {
   return {
-    external: getExternal(isUMD),
-    plugins: getPlugins(isUMD),
-    output: getOutput(isUMD),
-    input: getInput(isUMD),
+    external: getExternal(!!isUMD),
+    plugins: getPlugins(!!isUMD),
+    output: getOutput(!!isUMD),
+    input: getInput(!!isUMD),
   };
 }
 

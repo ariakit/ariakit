@@ -228,10 +228,11 @@ function cleanBuild(rootPath) {
  * @param {string} path
  */
 function getIndexPath(path) {
-  return join(
-    path,
-    readdirSync(path).find((file) => /^index\.(j|t)sx?/.test(file))
-  );
+  const index = readdirSync(path).find((file) => /^index\.(j|t)sx?/.test(file));
+  if (!index) {
+    throw new Error(`Missing index file in ${path}`);
+  }
+  return join(path, index);
 }
 
 /**
