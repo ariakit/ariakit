@@ -21,8 +21,7 @@ const cwd = process.cwd();
 
 makeGitignore(cwd);
 makeProxies(cwd);
-
-onExit(makeExports(process.cwd()));
+makeExports(cwd);
 
 if (hasTSConfig(cwd)) {
   onExit(makeTSConfigProd(cwd));
