@@ -1,5 +1,11 @@
 # ariakit-playground
 
+## 0.17.0-next.33
+
+### Patch Changes
+
+- Updated dependencies: `ariakit@2.0.0-next.33`, `ariakit-utils@0.17.0-next.23`.
+
 ## 0.17.0-next.32
 
 ### Patch Changes

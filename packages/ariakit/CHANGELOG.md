@@ -1,5 +1,37 @@
 # ariakit
 
+## 2.0.0-next.33
+
+### Minor Changes
+
+- Removed the `modal` prop from `ComboboxPopover` as it wasn't working and doesn't really make sense. If you want to render the combobox popover in a portal, use the `portal` prop instead. ([#1582](https://github.com/ariakit/ariakit/pull/1582))
+
+* Changed the scroll behavior when focusing on `CompositeItem` elements using arrow keys. ([#1584](https://github.com/ariakit/ariakit/pull/1584))
+
+- The `autoFocusOnShow` and `autoFocusOnHide` props on `Dialog` now support a function value. ([#1599](https://github.com/ariakit/ariakit/pull/1599))
+
+### Patch Changes
+
+- Fixed smooth scrolling when auto focusing `Dialog` elements on Firefox. ([#1599](https://github.com/ariakit/ariakit/pull/1599))
+
+* Fixed an issue where `ariakit-utils` was directly accessing React v18 APIs via a _namespace_ import (`import * as React from 'react'`) and Webpack was raising an error. Changed access to string concatenation so that Webpack is unable to infer that these APIs _may_ not be in the imported package. ([#1560](https://github.com/ariakit/ariakit/pull/1560))
+
+- Fixed screen reader announcing untouched `FormField` elements as invalid. ([#1588](https://github.com/ariakit/ariakit/pull/1588))
+
+* Fixed `PopoverArrow` styling flash when `Popover` is flipped. ([#1593](https://github.com/ariakit/ariakit/pull/1593))
+
+- Fixed scroll jump issue on `Popover` with `portal` prop. ([#1592](https://github.com/ariakit/ariakit/pull/1592))
+
+* Fixed `SelectPopover` not receiving focus when clicking on `Select` on Firefox/macOS. ([#1585](https://github.com/ariakit/ariakit/pull/1585))
+
+- Fixed `SelectPopover` with `modal` prop automatically hiding right after clicking on the `Select` element. ([#1590](https://github.com/ariakit/ariakit/pull/1590))
+
+* Fixed `SelectPopover` props when `composite` is set to `false`. ([#1581](https://github.com/ariakit/ariakit/pull/1581))
+
+- Fixed unintended page scroll when pressing <kbd>Space</kbd> on the `Select` component. ([#1579](https://github.com/ariakit/ariakit/pull/1579))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.23`.
+
 ## 2.0.0-next.32
 
 ### Major Changes

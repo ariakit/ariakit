@@ -1,5 +1,11 @@
 # ariakit-test
 
+## 0.17.0-next.27
+
+### Patch Changes
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.23`.
+
 ## 0.17.0-next.26
 
 ### Patch Changes
