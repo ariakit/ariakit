@@ -1,5 +1,17 @@
 # ariakit
 
+## 2.0.0-next.34
+
+### Minor Changes
+
+- Added `placement` prop to `PopoverDisclosureArrow` component. ([#1618](https://github.com/ariakit/ariakit/pull/1618))
+
+### Patch Changes
+
+- Stopped rendering `Menu` as `role="menubar"` on Safari. Now it's `role="menu"` on all browsers. ([#1619](https://github.com/ariakit/ariakit/pull/1619))
+
+* Fixed `Tooltip` position. ([#1622](https://github.com/ariakit/ariakit/pull/1622))
+
 ## 2.0.0-next.33
 
 ### Minor Changes
