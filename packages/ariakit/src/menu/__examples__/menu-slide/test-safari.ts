@@ -24,7 +24,7 @@ test("hide with wheel", async ({ page }) => {
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
     wrapper!
   );
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(100);
   await getMenuItem(page, "Recently closed tabs").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
