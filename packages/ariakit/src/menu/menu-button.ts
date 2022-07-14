@@ -122,7 +122,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const isKeyboardClick = !event.detail;
       // When the menu button is clicked, if the menu is hidden or if it's a
       // keyboard click (enter or space),
-      if (!state.mounted || isKeyboardClick) {
+      if (!state.open || isKeyboardClick) {
         // we'll only automatically focus on the menu if it's not a submenu
         // button, or if it's a keyboard click.
         if (!hasParentMenu || isKeyboardClick) {
