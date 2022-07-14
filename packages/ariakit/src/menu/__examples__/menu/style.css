@@ -35,7 +35,8 @@
     gap-2
     rounded
     p-2
-    aria-disabled:opacity-25
+    aria-disabled:text-disabled
+    dark:aria-disabled:text-disabled-dark
     active:bg-primary-2-hover
     dark:active:bg-primary-2-dark-hover
     active-item:bg-primary-2

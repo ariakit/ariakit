@@ -20,6 +20,7 @@ import {
   useMenuState,
 } from "ariakit/menu";
 import { flushSync } from "react-dom";
+import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 type MenuContextProps = {
   getWrapper: () => HTMLElement | null;
@@ -56,12 +57,6 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
         );
       },
     });
-
-    // We only want to delay hiding the menu, so we immediately stop the
-    // animation when it's opening.
-    if (menu.open && menu.animating) {
-      menu.stopAnimation();
-    }
 
     // By default, submenus don't automatically receive focus when they open.
     // But here we want them to always receive focus.
@@ -105,6 +100,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       parentWrapper.addEventListener("scroll", onScroll);
       return () => parentWrapper.removeEventListener("scroll", onScroll);
     }, [parent, menu.hide, menu.stopAnimation]);
+
+    // We only want to delay hiding the menu, so we immediately stop the
+    // animation when it's opening.
+    useIsomorphicLayoutEffect(() => {
+      if (!menu.open) return;
+      menu.stopAnimation();
+    }, [menu.open, menu.stopAnimation]);
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
       <MenuButton

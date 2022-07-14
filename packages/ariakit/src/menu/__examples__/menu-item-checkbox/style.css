@@ -1,5 +1,9 @@
 @import "../menu/style.css";
 
+.menu {
+  @apply max-h-max overflow-visible;
+}
+
 .menu-arrow svg {
   @apply
     fill-canvas-4

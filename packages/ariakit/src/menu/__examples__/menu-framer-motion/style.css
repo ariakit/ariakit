@@ -1,0 +1,21 @@
+@import "../menu/style.css";
+
+.menu {
+  @apply max-h-max overflow-visible;
+}
+
+.menu[data-placement^="bottom"] {
+  transform-origin: calc(var(--popover-anchor-width) / 2) -12px;
+}
+
+.menu[data-placement^="top"] {
+  transform-origin: calc(var(--popover-anchor-width) / 2) calc(100% + 12px);
+}
+
+.menu-arrow svg {
+  @apply
+    fill-canvas-4
+    stroke-canvas-4
+    dark:fill-canvas-4-dark
+    dark:stroke-canvas-4-dark;
+}
