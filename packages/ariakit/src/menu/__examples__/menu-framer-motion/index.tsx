@@ -29,17 +29,18 @@ export default function Example() {
           ? { opacity: 1 }
           : {
               scale: 1,
-              transition: { staggerChildren: 0.05, when: "beforeChildren" },
+              transition: {
+                type: "spring",
+                duration: 0.4,
+                delayChildren: 0.2,
+                staggerChildren: 0.05,
+              },
             },
       }}
     >
-      <MenuItem {...itemProps} onClick={() => alert("Edit")}>
-        Edit
-      </MenuItem>
+      <MenuItem {...itemProps}>Edit</MenuItem>
       <MenuItem {...itemProps}>Share</MenuItem>
-      <MenuItem {...itemProps} disabled>
-        Delete
-      </MenuItem>
+      <MenuItem {...itemProps}>Delete</MenuItem>
       <MenuSeparator />
       <MenuItem {...itemProps}>Report</MenuItem>
     </Menu>

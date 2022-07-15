@@ -5,11 +5,11 @@
 }
 
 .menu[data-placement^="bottom"] {
-  transform-origin: calc(var(--popover-anchor-width) / 2) -12px;
+  transform-origin: calc(var(--popover-anchor-width) / 2) -11px;
 }
 
 .menu[data-placement^="top"] {
-  transform-origin: calc(var(--popover-anchor-width) / 2) calc(100% + 12px);
+  transform-origin: calc(var(--popover-anchor-width) / 2) calc(100% + 11px);
 }
 
 .menu-arrow svg {
@@ -18,4 +18,10 @@
     stroke-canvas-4
     dark:fill-canvas-4-dark
     dark:stroke-canvas-4-dark;
+}
+
+.menu-item {
+  @apply
+    aria-disabled:text-disabled
+    dark:aria-disabled:text-disabled-dark;
 }
