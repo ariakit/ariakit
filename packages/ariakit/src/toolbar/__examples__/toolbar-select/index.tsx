@@ -1,9 +1,11 @@
-import { ImBold, ImItalic, ImUnderline } from "react-icons/im";
 import {
-  MdFormatAlignCenter,
-  MdFormatAlignLeft,
-  MdFormatAlignRight,
-} from "react-icons/md";
+  alignCenter,
+  alignLeft,
+  alignRight,
+  bold,
+  italic,
+  underline,
+} from "./icons";
 import {
   Toolbar,
   ToolbarButton,
@@ -13,24 +15,24 @@ import {
 import "./style.css";
 
 const alignmentOptions = [
-  { value: "Align Left", icon: <MdFormatAlignLeft /> },
-  { value: "Align Center", icon: <MdFormatAlignCenter /> },
-  { value: "Align Right", icon: <MdFormatAlignRight /> },
+  { value: "Align Left", icon: alignLeft },
+  { value: "Align Center", icon: alignCenter },
+  { value: "Align Right", icon: alignRight },
 ];
 
 export default function Example() {
   return (
     <Toolbar>
       <ToolbarButton>
-        <ImBold />
+        {bold}
         Bold
       </ToolbarButton>
       <ToolbarButton>
-        <ImItalic />
+        {italic}
         Italic
       </ToolbarButton>
       <ToolbarButton>
-        <ImUnderline />
+        {underline}
         Underline
       </ToolbarButton>
       <ToolbarSeparator />

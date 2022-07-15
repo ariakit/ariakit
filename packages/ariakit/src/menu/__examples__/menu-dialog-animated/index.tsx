@@ -15,8 +15,8 @@ import {
   MenuItemCheckbox,
   MenuSeparator,
 } from "ariakit/menu";
-import { MdAdd, MdPlaylistAdd } from "react-icons/md";
 import { Dialog } from "./dialog";
+import { add, playlistAdd } from "./icons";
 import { Menu } from "./menu";
 import "./style.css";
 
@@ -81,7 +81,7 @@ export default function Example() {
         }}
         label={
           <>
-            <MdPlaylistAdd />
+            {playlistAdd}
             Add to list
             <span className="badge">{values.selectedLists.length}</span>
           </>
@@ -103,7 +103,7 @@ export default function Example() {
         </div>
         <MenuSeparator className="separator" />
         <MenuItem className="menu-item" onClick={createDialog.show}>
-          <MdAdd />
+          {add}
           Create list
         </MenuItem>
       </Menu>

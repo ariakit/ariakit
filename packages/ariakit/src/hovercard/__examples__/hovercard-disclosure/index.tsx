@@ -6,8 +6,17 @@ import {
   useHovercardState,
 } from "ariakit/hovercard";
 import { VisuallyHidden } from "ariakit/visually-hidden";
-import { HiChevronDown } from "react-icons/hi";
 import "./style.css";
+
+const chevronDown = (
+  <svg width="1em" height="1em" viewBox="0 0 20 20" fill="currentColor">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+    />
+  </svg>
+);
 
 export default function Example() {
   const hovercard = useHovercardState({ gutter: 16 });
@@ -22,7 +31,7 @@ export default function Example() {
       </HovercardAnchor>
       <HovercardDisclosure state={hovercard} className="disclosure">
         <VisuallyHidden>More details about @ariakitjs</VisuallyHidden>
-        <HiChevronDown size={20} />
+        {chevronDown}
       </HovercardDisclosure>
       <Hovercard portal state={hovercard} className="hovercard">
         <img

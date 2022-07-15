@@ -7,7 +7,6 @@ import {
   MenuItemCheckbox,
   useMenuState,
 } from "ariakit/menu";
-import { HiOutlineEye } from "react-icons/hi";
 import "./style.css";
 
 export default function Example() {
@@ -17,7 +16,6 @@ export default function Example() {
   return (
     <>
       <MenuButton state={menu} className="button">
-        <HiOutlineEye />
         {!!menu.values.watching.length ? "Unwatch" : "Watch"}
         <MenuButtonArrow />
       </MenuButton>

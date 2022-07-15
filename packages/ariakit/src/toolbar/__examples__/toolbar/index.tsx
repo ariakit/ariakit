@@ -4,7 +4,7 @@ import {
   ToolbarSeparator,
   useToolbarState,
 } from "ariakit/toolbar";
-import { ImBold, ImItalic, ImRedo, ImUnderline, ImUndo } from "react-icons/im";
+import { bold, italic, redo, underline, undo } from "./icons";
 import "./style.css";
 
 export default function Example() {
@@ -12,24 +12,24 @@ export default function Example() {
   return (
     <Toolbar state={toolbar} className="toolbar">
       <ToolbarItem className="button">
-        <ImUndo />
+        {undo}
         Undo
       </ToolbarItem>
       <ToolbarItem className="button" disabled>
-        <ImRedo />
+        {redo}
         Redo
       </ToolbarItem>
       <ToolbarSeparator className="separator" />
       <ToolbarItem className="button">
-        <ImBold />
+        {bold}
         Bold
       </ToolbarItem>
       <ToolbarItem className="button">
-        <ImItalic />
+        {italic}
         Italic
       </ToolbarItem>
       <ToolbarItem className="button">
-        <ImUnderline />
+        {underline}
         Underline
       </ToolbarItem>
     </Toolbar>
