@@ -8,6 +8,7 @@
         "babel-plugin-module-resolver",
         "cross-env",
         "cross-spawn",
+        "framer-motion",
         "fs-extra",
         "lodash",
         "prettier",
