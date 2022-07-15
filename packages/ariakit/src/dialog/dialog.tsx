@@ -131,7 +131,7 @@ export const useDialog = createHook<DialogOptions>(
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // open.
     const preserveTabOrder = props.preserveTabOrder && !modal && state.mounted;
-    const openIdle = state.open && !state.animating;
+    const openStable = state.open && !state.animating;
 
     // Usually, we only want to disable the accessibility tree outside if the
     // dialog is a modal. But the Portal component can't preserve the tab order
@@ -146,7 +146,7 @@ export const useDialog = createHook<DialogOptions>(
     // Sets disclosure ref. It needs to be a layout effect so we get the focused
     // element right before the dialog is mounted.
     useSafeLayoutEffect(() => {
-      if (!openIdle) return;
+      if (!openStable) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -154,7 +154,7 @@ export const useDialog = createHook<DialogOptions>(
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       state.disclosureRef.current = activeElement;
-    }, [openIdle]);
+    }, [openStable]);
 
     const nested = useNestedDialogs(ref, { state, modal });
     const { nestedDialogs, openModals, wrapElement } = nested;
@@ -236,7 +236,7 @@ export const useDialog = createHook<DialogOptions>(
     const shouldDisableOutside = useChampionDialog(
       ref,
       "data-dialog-disable-outside",
-      openIdle && !openModals.length && shouldDisableAccessibilityTree
+      openStable && !openModals.length && shouldDisableAccessibilityTree
     );
 
     // Disables/enables the element tree around the modal dialog element.
@@ -268,7 +268,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Auto focus on show.
     useEffect(() => {
-      if (!openIdle) return;
+      if (!openStable) return;
       if (!mayAutoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
       // focus. This is useful for when the Dialog component is unmounted
@@ -308,7 +308,7 @@ export const useDialog = createHook<DialogOptions>(
       if (!autoFocusOnShowProp(element)) return;
       focusIntoView(element);
     }, [
-      openIdle,
+      openStable,
       mayAutoFocusOnShow,
       domReady,
       state.contentElement,
