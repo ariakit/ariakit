@@ -220,13 +220,21 @@ module.exports = {
 
     textColor: (theme) => {
       const colors = theme("colors");
-      return Object.entries(colors).reduce((acc, [key, color]) => {
+      const textColor = Object.entries(colors).reduce((acc, [key, color]) => {
         acc[key] = {
           DEFAULT: color.text,
           dark: color.dark && color.dark.text,
         };
         return acc;
       }, {});
+
+      return {
+        ...textColor,
+        disabled: {
+          DEFAULT: "hsla(204, 10%, 10%, 30%)",
+          dark: "hsla(0, 0%, 100%, 30%)",
+        },
+      };
     },
 
     fill: (theme) => theme("colors"),
