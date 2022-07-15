@@ -34,7 +34,7 @@ const config: PlaywrightTestConfig = {
     {
       name: "firefox",
       testMatch: [/\/test[^\/]*\-firefox/, /\/test[^\/]*\-browser/],
-      retries: 1,
+      retries: 2,
       use: { ...devices["Desktop Firefox"], launchOptions },
     },
     {
