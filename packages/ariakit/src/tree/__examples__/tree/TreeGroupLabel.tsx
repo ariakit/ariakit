@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import { ReactNode, SVGProps } from "react";
 import { Role } from "ariakit/role";
 import { TreeGroupLabelProps, useTreeGroupLabel } from "ariakit/tree";
 
@@ -39,6 +39,7 @@ const ExpandIcon = (props: SVGProps<SVGSVGElement>) => (
 export const TreeGroupLabel = (props: TreeGroupLabelProps) => {
   const treeGroupLabelProps = useTreeGroupLabel(props);
   const { "data-parent-expanded": expanded, children } = treeGroupLabelProps;
+
   return (
     <Role {...treeGroupLabelProps}>
       {typeof expanded === "undefined" ? (
@@ -48,7 +49,7 @@ export const TreeGroupLabel = (props: TreeGroupLabelProps) => {
       ) : (
         <ExpandIcon />
       )}
-      <div>{children}</div>
+      <div>{children as ReactNode}</div>
     </Role>
   );
 };

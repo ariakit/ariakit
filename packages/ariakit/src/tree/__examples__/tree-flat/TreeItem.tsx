@@ -48,14 +48,16 @@ export const TreeItem = (props: TreeItemProps) => {
       {...treeItemProps}
       style={level ? { paddingLeft: level * 12 } : undefined}
     >
-      {typeof expanded === "undefined" ? (
-        <NoIcon style={{ display: "inline-block" }} />
-      ) : expanded ? (
-        <CollapseIcon style={{ display: "inline-block" }} />
-      ) : (
-        <ExpandIcon style={{ display: "inline-block" }} />
-      )}
-      {children}
+      <>
+        {typeof expanded === "undefined" ? (
+          <NoIcon style={{ display: "inline-block" }} />
+        ) : expanded ? (
+          <CollapseIcon style={{ display: "inline-block" }} />
+        ) : (
+          <ExpandIcon style={{ display: "inline-block" }} />
+        )}
+        {children}
+      </>
     </Role>
   );
 };
