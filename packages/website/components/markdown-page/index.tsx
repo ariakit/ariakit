@@ -7,6 +7,7 @@ import Link from "next/link";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
 import Playground from "../playground";
+import SEO from "../seo";
 import styles from "./style.module.css";
 
 // @ts-ignore
@@ -51,6 +52,16 @@ const { Compiler: renderAst } = new RehypeReact({
 
 // @ts-expect-error
 export default function MarkdownPage(props) {
+  const title = useMemo(() => {
+    let value = "";
+    visit(props.markdown, "element", (node) => {
+      if (value) return;
+      if (node.tagName !== "h1") return;
+      value = node.children[0].value;
+    });
+    return value;
+  }, [props.markdown]);
+
   const tree = useMemo(() => {
     visit(props.markdown, "element", (node) => {
       if (node.tagName !== "a") return;
@@ -62,8 +73,10 @@ export default function MarkdownPage(props) {
     });
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
+
   return (
     <div className="flex flex-col items-center">
+      <SEO title={`${title} - Ariakit`} />
       <div
         className={cx(
           styles["header"],
