@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useDisclosureContent, useDisclosureState, useGroup } from "ariakit";
 import {
-  useEventCallback,
+  useEvent,
   useForkRef,
   useId,
   useWrapElement,
@@ -64,7 +64,7 @@ export const useTreeItem = createHook<TreeItemOptions>(
         (parentExpanded ?? parentTreeItem?.expanded)) ??
       true;
 
-    const onClickProp = useEventCallback(props.onClick);
+    const onClickProp = useEvent(props.onClick);
     const onClick = useCallback(
       (event: MouseEvent<HTMLInputElement>) => {
         onClickProp(event);
@@ -75,7 +75,7 @@ export const useTreeItem = createHook<TreeItemOptions>(
       [onClickProp, state?.toggleExpand, id]
     );
 
-    const onKeyDownProp = useEventCallback(props.onKeyDown);
+    const onKeyDownProp = useEvent(props.onKeyDown);
     const onKeyDown = useCallback(
       (event: KeyboardEvent<HTMLDivElement>) => {
         onKeyDownProp(event);
@@ -108,7 +108,7 @@ export const useTreeItem = createHook<TreeItemOptions>(
       ]
     );
 
-    const getItem = useCallback(
+    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         const nextItem = {
           ...item,
@@ -172,7 +172,7 @@ export const useTreeItem = createHook<TreeItemOptions>(
 
     props = useGroup(props);
 
-    const disclosure = useDisclosureState({ visible });
+    const disclosure = useDisclosureState({ open: visible });
     props = useDisclosureContent({ state: disclosure, ...props });
     props = useCompositeItem({
       state,

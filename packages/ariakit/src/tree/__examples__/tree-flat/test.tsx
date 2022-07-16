@@ -1,4 +1,3 @@
-import { ByRoleOptions } from "@testing-library/dom";
 import {
   act,
   click,
@@ -6,15 +5,14 @@ import {
   press,
   queryByRole,
   render,
-} from "ariakit-test-utils";
+} from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 
 const getTree = () => getByRole("tree");
-const getTreeItem = (name: ByRoleOptions["name"]) =>
+const getTreeItem = (name: string) =>
   getByRole("treeitem", { name, hidden: true });
-const queryTreeItem = (name: ByRoleOptions["name"]) =>
-  queryByRole("treeitem", { name });
+const queryTreeItem = (name: string) => queryByRole("treeitem", { name });
 
 test("a11y", async () => {
   const { container } = render(<Example />);

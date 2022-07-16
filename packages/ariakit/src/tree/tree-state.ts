@@ -11,10 +11,10 @@ import { CollectionTreeItem } from "./__utils";
 
 function addToExpandedIds(
   prevExpandedIds: TreeState["expandedIds"],
-  id?: string
+  id?: string | null
 ) {
   if (!prevExpandedIds) return prevExpandedIds;
-  if (!id) return prevExpandedIds;
+  if (id === null || id === undefined) return;
   if (prevExpandedIds.includes(id)) return prevExpandedIds;
 
   return [...prevExpandedIds, id];
@@ -22,10 +22,10 @@ function addToExpandedIds(
 
 function deleteFromExpandedIds(
   prevExpandedIds: TreeState["expandedIds"],
-  id?: string
+  id?: string | null
 ) {
   if (!prevExpandedIds) return prevExpandedIds;
-  if (!id) return prevExpandedIds;
+  if (id === null || id === undefined) return;
 
   const indexToDelete = prevExpandedIds?.indexOf(id);
   if (indexToDelete > -1) {
@@ -53,19 +53,20 @@ export function useTreeState({
     ...props,
   });
 
-  const expand = useCallback((id) => {
+  const expand: TreeState["expand"] = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
       return addToExpandedIds(prevExpandedIds, id) || prevExpandedIds;
     });
   }, []);
 
-  const collapse = useCallback((id) => {
+  const collapse: TreeState["collapse"] = useCallback((id) => {
     setExpandedIds((prevExpandedIds) => {
       return deleteFromExpandedIds(prevExpandedIds, id) || prevExpandedIds;
     });
   }, []);
 
-  const toggleExpand = useCallback((id) => {
+  const toggleExpand: TreeState["toggleExpand"] = useCallback((id) => {
+    if (id === null || id === undefined) return;
     setExpandedIds((prevExpandedIds) => {
       const indexToDelete = prevExpandedIds?.indexOf(id);
       if (indexToDelete > -1) {
