@@ -18,7 +18,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any" />
         <link
           rel="apple-touch-icon"
           href="/apple-touch-icon.png"
@@ -35,6 +34,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           type="image/png"
           href="/favicon-16x16.png"
           sizes="16x16"
+        />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        <link
+          rel="icon"
+          type="image/svg+xml"
+          href="/icon-dark.svg"
+          media="(prefers-color-scheme: dark)"
         />
       </Head>
       <SEO />

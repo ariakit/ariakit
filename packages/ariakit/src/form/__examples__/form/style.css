@@ -1,9 +1,22 @@
 @import "../../../button/__examples__/button/style.css";
 
-.form {
-  width: 280px;
+.wrapper {
   min-height: 320px;
-  @apply flex flex-col gap-4 py-10;
+  @apply flex flex-col items-center justify-center;
+}
+
+.form {
+  width: 320px;
+  @apply
+    flex
+    flex-col
+    gap-4
+    p-4
+    rounded-lg
+    bg-canvas-2
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark;
 }
 
 .field {

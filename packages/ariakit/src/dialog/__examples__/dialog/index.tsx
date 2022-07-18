@@ -17,7 +17,7 @@ export default function Example() {
       <Dialog state={dialog} className="dialog">
         <header className="header">
           <DialogHeading className="heading">Apples</DialogHeading>
-          <DialogDismiss className="button dismiss" />
+          <DialogDismiss className="button dismiss secondary" />
         </header>
         <ul>
           <li>

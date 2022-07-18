@@ -41,8 +41,8 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark
+    drop-shadow-2xl
+    dark:drop-shadow-2xl-dark
     focus-visible:ariakit-outline-input;
 }
 

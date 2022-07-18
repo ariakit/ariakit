@@ -4,7 +4,7 @@ import { Playground as PlaygroundContainer } from "ariakit-playground/playground
 import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
 import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
-import darkTheme from "ariakit-playground/themes/vscode-dark";
+import vscodeTheme from "ariakit-playground/themes/vscode";
 import {
   useEvent,
   useId,
@@ -26,7 +26,7 @@ import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
 
 const theme = css`
-  ${darkTheme}
+  ${vscodeTheme}
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
   max-height: min(max(calc(100vh - 640px), 480px), 800px);
@@ -141,12 +141,11 @@ export default function Playground(props: PlaygroundProps) {
     <Tab
       className={cx(
         hidden ? "rounded-sm" : "rounded-md sm:rounded",
-        "h-10 whitespace-nowrap bg-alpha-2 px-4 text-base sm:h-8 sm:px-3 sm:text-sm",
-        "text-black-fade hover:bg-alpha-2-hover aria-selected:bg-primary-2",
-        "aria-selected:text-primary-2 aria-selected:hover:to-primary-2-hover",
-        "dark:text-white-fade dark:hover:bg-alpha-2-dark-hover",
-        "dark:aria-selected:bg-primary-2-dark dark:aria-selected:text-primary-2-dark",
-        "dark:aria-selected:hover:bg-primary-2-dark-hover",
+        "h-10 whitespace-nowrap bg-transparent px-4 text-base sm:h-8 sm:px-3 sm:text-sm border-b-4 border-[transparent] aria-selected:border-[color:theme(colors.primary-2.DEFAULT)] aria-selected:rounded-b-none",
+        "text-black/75 hover:bg-black/5 ",
+        "aria-selected:text-black",
+        "dark:text-white/75 dark:hover:bg-white/5",
+        "dark:aria-selected:text-white",
         "flex-start flex items-center focus-visible:ariakit-outline"
       )}
       key={file}
@@ -163,21 +162,19 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="relative w-full">
+        <div
+          className={
+            "relative rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full"
+          }
+        >
           <PlaygroundPreview
             getModule={getModule}
             errorProps={errorProps}
-            className="flex min-h-[300px] items-center
-            justify-center rounded-lg border border-canvas-3 bg-canvas-3
-            p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
+            className="relative flex min-h-[300px] items-center justify-center rounded-lg p-4 md:p-6"
           />
         </div>
-        <div className="dark relative w-full max-w-3xl rounded-lg">
-          <div
-            className="flex justify-between rounded-tl-[inherit] rounded-tr-[inherit] bg-canvas-1
-            p-3 pb-1 text-sm
-            dark:bg-canvas-1-dark"
-          >
+        <div className="relative w-full max-w-3xl rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-sm dark:drop-shadow-sm-dark bg-canvas-5 dark:bg-canvas-1-dark">
+          <div className="flex justify-between p-3 pb-1 text-sm">
             <TabList
               state={tab}
               className="flex w-full flex-row gap-2 overflow-x-auto p-1"
@@ -187,11 +184,7 @@ export default function Playground(props: PlaygroundProps) {
                 <>
                   <CompositeOverflowDisclosure
                     state={overflow}
-                    className="h-10 rounded bg-alpha-2 px-4 text-base text-black-fade hover:bg-alpha-2-hover
-                    focus-visible:ariakit-outline aria-expanded:bg-alpha-1 dark:text-white-fade
-                    dark:hover:bg-alpha-2-dark-hover dark:aria-expanded:bg-alpha-1-dark
-                    sm:h-8 sm:px-3
-                    sm:text-sm"
+                    className="h-10 rounded px-4 text-base text-black/75 focus-visible:ariakit-outline-input hover:bg-black/5 dark:hover:bg-white/5 aria-expanded:bg-black/10 dark:aria-expanded:bg-black dark:text-white/75 sm:h-8 sm:px-3 sm:text-sm"
                   >
                     +{hiddenTabs.length}
                   </CompositeOverflowDisclosure>
@@ -216,14 +209,14 @@ export default function Playground(props: PlaygroundProps) {
               state={tab}
               tabId={getTabId(file, baseId)}
               focusable={false}
-              className="rounded-[inherit]"
+              className="rounded-[inherit] bg-[color:inherit]"
             >
               {(props) =>
                 (!props.hidden || beenSelected.has(getTabId(file, baseId))) && (
                   <div {...props}>
                     <PlaygroundEditor
                       lineNumbers
-                      className="bg-canvas-1 focus-visible:ariakit-outline-input dark:bg-canvas-1-dark"
+                      className="focus-visible:ariakit-outline-input bg-[color:inherit]"
                       state={playground}
                       file={file}
                       theme={theme}

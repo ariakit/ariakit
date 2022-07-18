@@ -5,11 +5,7 @@
 }
 
 .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
-  @apply
-    bg-alpha-3-border
-    text-alpha-3
-    dark:bg-alpha-3-dark-hover
-    dark:text-alpha-3-dark;
+  @apply text-current bg-black/10 dark:bg-white/10;
 }
 
 .menu-item .label {
