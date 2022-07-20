@@ -200,8 +200,8 @@ export type ComboboxItemOptions<T extends As = "div"> = Omit<
      */
     hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
     /**
-     * Whether to set the combobox value with this item's value when this item is
-     * clicked.
+     * Whether to set the combobox value with this item's value when this item
+     * is clicked.
      * @default true
      */
     setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

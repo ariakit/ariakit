@@ -550,8 +550,8 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      *     `DialogDismiss` component hasn't been used. This allows screen reader
      *     users to close the dialog.
      *   - The focus will be trapped within the dialog.
-     *   - When the dialog is open, the elements outside of the dialog will
-     *     be hidden to assistive technology users using the `aria-hidden`
+     *   - When the dialog is open, the elements outside of the dialog will be
+     *     hidden to assistive technology users using the `aria-hidden`
      *     attribute.
      *   - When using the `Heading` or `DialogHeading` components within the
      *     dialog, their level will be reset so they start with `h1`.

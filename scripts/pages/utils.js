@@ -337,11 +337,11 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
 
 /**
  * @param {object} options
- * @param {string} options.filename The filename that will be used as a source to write
- * the page.
+ * @param {string} options.filename The filename that will be used as a source
+ * to write the page.
  * @param {string} options.dest The directory where the page will be written.
- * @param {string} options.componentPath The path to the component that will be used to
- * render the page.
+ * @param {string} options.componentPath The path to the component that will be
+ * used to render the page.
  */
 async function writePage({ filename, dest, componentPath }) {
   // If there's already a readme.md file in the same directory, we'll generate
