@@ -5,7 +5,6 @@ import {
   useEvent,
   useForkRef,
   useId,
-  useTagName,
 } from "ariakit-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
@@ -32,16 +31,6 @@ function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
     }
   }
   return element;
-}
-
-function acceptsNameAttribute(tagName?: string) {
-  return (
-    tagName === "input" ||
-    tagName === "button" ||
-    tagName === "textarea" ||
-    tagName === "fieldset" ||
-    tagName === "select"
-  );
 }
 
 function findItem(
@@ -141,8 +130,6 @@ export const useFormField = createHook<FormFieldOptions>(
       state?.setFieldTouched(name, true);
     });
 
-    const tagName = useTagName(ref, props.as || "input");
-
     const label = useItem(state, name, "label");
     const error = useItem(state, name, "error");
     const description = useItem(state, name, "description");
@@ -160,13 +147,11 @@ export const useFormField = createHook<FormFieldOptions>(
       "aria-invalid": invalid,
       ...props,
       "aria-describedby": describedBy || undefined,
-      // @ts-expect-error
-      name: acceptsNameAttribute(tagName) ? name : undefined,
       ref: useForkRef(ref, props.ref),
       onBlur,
     };
 
-    props = useCollectionItem({ state, ...props, getItem });
+    props = useCollectionItem({ state, ...props, name, getItem });
 
     return props;
   }
