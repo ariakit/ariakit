@@ -393,8 +393,8 @@ export type HovercardOptions<T extends As = "div"> = Omit<
    */
   hideOnHoverOutside?: BooleanOrCallback<MouseEvent>;
   /**
-   * Whether to disable the pointer events outside of the hovercard while
-   * the mouse is moving toward the hovercard. This is necessary because these
+   * Whether to disable the pointer events outside of the hovercard while the
+   * mouse is moving toward the hovercard. This is necessary because these
    * events may trigger focus on other elements and close the hovercard while
    * the user is moving the mouse toward it.
    * @default true

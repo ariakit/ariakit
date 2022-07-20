@@ -15,6 +15,7 @@
     "dialog-scroll-into-view",
     "fix-react-17-webpack-error-again",
     "form-field-aria-invalid",
+    "menu-button-autofocus",
     "menu-list-role",
     "popover-arrow-flash",
     "popover-disclosure-arrow-placement",

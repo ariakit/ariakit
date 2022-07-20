@@ -149,8 +149,8 @@ export type TooltipOptions<T extends As = "div"> = Omit<
      */
     hideOnControl?: BooleanOrCallback<KeyboardEvent>;
     /**
-     * Props that will be passed to the popover wrapper element. This element will
-     * be used to position the popover.
+     * Props that will be passed to the popover wrapper element. This element
+     * will be used to position the popover.
      */
     wrapperProps?: HTMLAttributes<HTMLDivElement>;
   };

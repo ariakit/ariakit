@@ -6,20 +6,16 @@ const theme = css`
   && {
     ${lightTheme}
   }
-
   @media (prefers-color-scheme: dark) {
     ${darkTheme};
   }
-
   @media (prefers-color-scheme: light) {
     ${lightTheme};
   }
-
   &.dark,
   .dark & {
     ${darkTheme}
   }
-
   &.light,
   .light & {
     ${lightTheme}

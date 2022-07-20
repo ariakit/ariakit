@@ -443,23 +443,20 @@ export type PopoverState = DialogState & {
    */
   shift: number;
   /**
-   * Controls the behavior of the popover when it overflows the viewport.
-   *
-   * If a boolean, specifies whether the popover should flip to the opposite side
-   * when it overflows.
-   *
-   * If a string, indicates the preferred fallback placements when it overflows.
-   * The placements must be spaced-delimited, e.g. "top left".
-   *
+   * Controls the behavior of the popover when it overflows the viewport:
+   *   - If a `boolean`, specifies whether the popover should flip to the
+   *     opposite side when it overflows.
+   *   - If a `string`, indicates the preferred fallback placements when it
+   *     overflows. The placements must be spaced-delimited, e.g. "top left".
    * @example
-   *  ```jsx
-   *  const popover = usePopoverState({
-   *      placement: "right",
-   *      // In case the `right` placement overflows the viewport,
-   *      // the placement will fallback to the `bottom` or `top`,
-   *      // in that order, depending on where it fits.
-   *      flip: "bottom top",
-   *  });
+   * ```jsx
+   * usePopoverState({
+   *   placement: "right",
+   *   // In case the `right` placement overflows the viewport, the placement
+   *   // will fallback to the `bottom` or `top`, in that order, depending on
+   *   // where it fits.
+   *   flip: "bottom top",
+   * });
    * ```
    * @default true
    */

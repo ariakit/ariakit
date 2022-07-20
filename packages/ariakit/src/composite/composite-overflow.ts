@@ -18,8 +18,8 @@ const hiddenStyle: CSSProperties = {
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a popover that will contain the overflow items in a
- * composite collection.
+ * Ariakit component to render a popover that will contain the overflow items in
+ * a composite collection.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx

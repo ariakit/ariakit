@@ -363,9 +363,9 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
    *   - `true` wraps between rows and columns.
    *   - `horizontal` wraps only between rows.
    *   - `vertical` wraps only between columns.
-   *   - If `focusLoop` matches the value of `focusWrap`, it'll wrap between the last
-   * item in the last row or column and the first item in the first row or
-   * column and vice-versa.
+   *   - If `focusLoop` matches the value of `focusWrap`, it'll wrap between the
+   *     last item in the last row or column and the first item in the first row
+   *     or column and vice-versa.
    * @default false
    */
   focusWrap: boolean | Orientation;
