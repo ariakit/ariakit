@@ -96,7 +96,7 @@ export default function MarkdownPage(props) {
               aria-hidden
               height="36"
               viewBox="0 0 48 48"
-              className="fill-primary-2 dark:fill-primary-2-dark-foreground"
+              className="fill-primary-2-foreground dark:fill-primary-2-dark-foreground"
             >
               <circle cx="29" cy="24" r="5" />
               <path
@@ -163,7 +163,14 @@ export default function MarkdownPage(props) {
         </button>
       </div>
       <div
-        className={`${styles["wrapper"]} relative w-full max-w-5xl gap-6 px-3 py-24 sm:px-4 md:px-8`}
+        className={cx(
+          styles["wrapper"],
+          "relative w-full max-w-5xl gap-8 px-3 py-24 sm:px-4 md:px-8",
+          // links
+          "[&_a]:rounded-sm [&_a:focus-visible]:ariakit-outline",
+          "[&_a]:underline [&_a:hover]:decoration-[3px] [&_a]:[text-decoration-skip-ink:none]",
+          "[&_a]:text-link dark:[&_a]:text-link-dark"
+        )}
       >
         {renderAst(tree)}
       </div>

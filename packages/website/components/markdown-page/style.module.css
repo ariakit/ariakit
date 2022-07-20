@@ -13,7 +13,5 @@
 }
 
 .wrapper h1 {
-  font-size: 3.5em;
-  font-weight: normal;
-  margin: 0;
+  @apply text-5xl font-bold;
 }

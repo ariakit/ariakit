@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   Form,
   FormError,
@@ -19,10 +18,6 @@ export default function Example() {
   form.useSubmit(() => {
     alert(JSON.stringify(form.values));
   });
-
-  useEffect(() => {
-    form.validate();
-  }, [form.validate]);
 
   return (
     <Form state={form} className="form">

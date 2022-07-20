@@ -18,12 +18,13 @@ import {
   CompositeOverflowDisclosure,
   useCompositeOverflowState,
 } from "ariakit/composite";
-import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
+import { TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
 import useOverflowList from "packages/website/utils/use-overflow-list";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
+import { PlaygroundTab } from "./playground-tab";
 
 const theme = css`
   ${vscodeTheme}
@@ -138,22 +139,14 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   const renderTab = (file: string, hidden = false) => (
-    <Tab
-      className={cx(
-        hidden ? "rounded-sm" : "rounded-md sm:rounded",
-        "h-10 whitespace-nowrap bg-transparent px-4 text-base sm:h-8 sm:px-3 sm:text-sm border-b-4 border-[transparent] aria-selected:border-[color:theme(colors.primary-2.DEFAULT)] aria-selected:rounded-b-none",
-        "text-black/75 hover:bg-black/5 ",
-        "aria-selected:text-black",
-        "dark:text-white/75 dark:hover:bg-white/5",
-        "dark:aria-selected:text-white",
-        "flex-start flex items-center focus-visible:ariakit-outline"
-      )}
+    <PlaygroundTab
+      hidden={hidden}
       key={file}
       id={getTabId(file, baseId)}
       onClick={() => setExpanded(true)}
     >
       {file}
-    </Tab>
+    </PlaygroundTab>
   );
 
   return (
@@ -164,7 +157,7 @@ export default function Playground(props: PlaygroundProps) {
       >
         <div
           className={
-            "relative rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full"
+            "relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full"
           }
         >
           <PlaygroundPreview
@@ -173,11 +166,12 @@ export default function Playground(props: PlaygroundProps) {
             className="relative flex min-h-[300px] items-center justify-center rounded-lg p-4 md:p-6"
           />
         </div>
-        <div className="relative w-full max-w-3xl rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-md dark:drop-shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
-          <div className="flex justify-between p-3 pb-1 text-sm">
+        {/* TODO: Test forced dark mode */}
+        <div className="relative w-full max-w-3xl rounded-lg sm:rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-md dark:drop-shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
+          <div className="flex justify-between p-2 pb-1">
             <TabList
               state={tab}
-              className="flex w-full flex-row gap-2 overflow-x-auto p-1"
+              className="flex w-full flex-row gap-2 overflow-x-auto p-2"
             >
               {visibleTabs.map((file) => renderTab(file))}
               {!!hiddenTabs.length && (
@@ -199,7 +193,7 @@ export default function Playground(props: PlaygroundProps) {
                 </>
               )}
             </TabList>
-            <div className="flex gap-2 p-1">
+            <div className="flex gap-2 p-2">
               <OpenInCodeSandbox />
             </div>
           </div>
