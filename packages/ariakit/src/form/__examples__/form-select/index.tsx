@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Form,
   FormError,
@@ -10,11 +11,18 @@ import { Select, SelectItem } from "./select";
 import "./style.css";
 
 export default function Example() {
-  const form = useFormState({ defaultValues: { fruit: "" } });
+  const form = useFormState({
+    defaultValues: { fruit: "" },
+    defaultTouched: { fruit: true },
+  });
 
   form.useSubmit(() => {
     alert(JSON.stringify(form.values));
   });
+
+  useEffect(() => {
+    form.validate();
+  }, [form.validate]);
 
   return (
     <Form state={form} className="form">

@@ -94,7 +94,7 @@ export default function Home() {
               aria-hidden
               height="36"
               viewBox="0 0 48 48"
-              className="fill-primary-2 dark:fill-primary-3-dark"
+              className="fill-primary-2 dark:fill-primary-2-dark-foreground"
             >
               <circle cx="29" cy="24" r="5" />
               <path

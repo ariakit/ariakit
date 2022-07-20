@@ -15,7 +15,6 @@ import Link from "next/link";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
 import button from "../../styles/button";
-import popup from "../../styles/popup";
 import Playground from "../playground";
 import SEO from "../seo";
 import styles from "./style.module.css";
@@ -97,7 +96,7 @@ export default function MarkdownPage(props) {
               aria-hidden
               height="36"
               viewBox="0 0 48 48"
-              className="fill-primary-2 dark:fill-primary-3-dark"
+              className="fill-primary-2 dark:fill-primary-2-dark-foreground"
             >
               <circle cx="29" cy="24" r="5" />
               <path

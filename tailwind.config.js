@@ -99,14 +99,14 @@ module.exports = {
         },
       },
       "primary-1": {
-        DEFAULT: "hsl(204 100% 80% / 0.5)",
-        hover: "hsl(204 100% 72% / 0.5)",
-        border: "hsl(204 100% 54% / 0.5)",
+        DEFAULT: "hsl(204 100% 90%)",
+        hover: "hsl(204 100% 86%)",
+        border: "hsl(204 100% 72%)",
         text: "hsl(204 100% 30%)",
         dark: {
-          DEFAULT: "hsl(204 25% 34% / 0.5)",
-          hover: "hsl(204 25% 42% / 0.5)",
-          border: "hsl(204 25% 54% / 0.5)",
+          DEFAULT: "hsl(204 25% 23%)",
+          hover: "hsl(204 25% 27%)",
+          border: "hsl(204 25% 36%)",
           text: "hsl(204 100% 85%)",
         },
       },
@@ -114,71 +114,65 @@ module.exports = {
         DEFAULT: "hsl(204 100% 40%)",
         hover: "hsl(204 100% 32%)",
         border: "hsl(204 100% 30%)",
+        foreground: "hsl(204 100% 35%)",
         text: white,
         dark: {
           DEFAULT: "hsl(204 100% 40%)",
           hover: "hsl(204 100% 32%)",
           border: "hsl(204 100% 80%)",
+          foreground: "hsl(204 100% 58%)",
           text: white,
         },
       },
-      "primary-3": {
-        DEFAULT: "hsl(204 100% 35%)",
-        hover: "hsl(204 100% 27%)",
-        border: "hsl(204 100% 25%)",
-        text: white,
-        dark: {
-          DEFAULT: "hsl(204 100% 58%)",
-          hover: "hsl(204 100% 50%)",
-          border: "hsl(204 100% 92%)",
-          text: black,
-        },
-      },
       "danger-1": {
-        DEFAULT: "hsl(357, 56%, 90%)",
-        hover: "hsl(357, 56%, 86%)",
-        border: "hsl(357, 56%, 72%)",
-        text: "hsl(357, 100%, 30%)",
+        DEFAULT: "hsl(357 56% 90%)",
+        hover: "hsl(357 56% 86%)",
+        border: "hsl(357 56% 72%)",
+        text: "hsl(357 100% 30%)",
         dark: {
-          DEFAULT: "hsl(357, 25%, 25%)",
-          hover: "hsl(357, 25%, 29%)",
-          border: "hsl(357, 25%, 38%)",
-          text: "hsl(357, 100%, 90%)",
+          DEFAULT: "hsl(357 25% 25%)",
+          hover: "hsl(357 25% 29%)",
+          border: "hsl(357 25% 38%)",
+          text: "hsl(357 100% 90%)",
         },
       },
       "danger-2": {
-        DEFAULT: "hsl(357, 56%, 50%)",
-        hover: "hsl(357, 56%, 42%)",
-        border: "hsl(357, 56%, 30%)",
+        DEFAULT: "hsl(357 56% 50%)",
+        hover: "hsl(357 56% 42%)",
+        border: "hsl(357 56% 30%)",
+        foreground: "hsl(357 70% 48%)",
         text: white,
         dark: {
-          DEFAULT: "hsl(357, 56%, 50%)",
-          hover: "hsl(357, 56%, 42%)",
-          border: "hsl(357, 56%, 80%)",
+          DEFAULT: "hsl(357 56% 50%)",
+          hover: "hsl(357 56% 42%)",
+          border: "hsl(357 56% 80%)",
+          foreground: "hsl(357 80% 68%)",
           text: white,
         },
       },
       "warn-1": {
-        DEFAULT: "hsl(43, 91%, 86%)",
-        hover: "hsl(43, 91%, 81%)",
-        border: "hsl(43, 91%, 55%)",
-        text: "hsl(43, 100%, 20%)",
+        DEFAULT: "hsl(43 91% 86%)",
+        hover: "hsl(43 91% 81%)",
+        border: "hsl(43 91% 55%)",
+        text: "hsl(43 100% 20%)",
         dark: {
-          DEFAULT: "hsl(43, 25%, 23%)",
-          hover: "hsl(43, 25%, 27%)",
-          border: "hsl(43, 25%, 36%)",
-          text: "hsl(43, 100%, 90%)",
+          DEFAULT: "hsl(43 25% 23%)",
+          hover: "hsl(43 25% 27%)",
+          border: "hsl(43 25% 36%)",
+          text: "hsl(43 100% 90%)",
         },
       },
       "warn-2": {
-        DEFAULT: "hsl(43, 91%, 62%)",
-        hover: "hsl(43, 91%, 54%)",
-        border: "hsl(43, 91%, 42%)",
+        DEFAULT: "hsl(43 91% 62%)",
+        hover: "hsl(43 91% 54%)",
+        border: "hsl(43 91% 42%)",
+        foreground: "hsl(43 4% 42%)",
         text: black,
         dark: {
-          DEFAULT: "hsl(43, 75%, 50%)",
-          hover: "hsl(43, 75%, 60%)",
-          border: "hsl(43, 91%, 90%)",
+          DEFAULT: "hsl(43 75% 50%)",
+          hover: "hsl(43 75% 60%)",
+          border: "hsl(43 91% 90%)",
+          foreground: "hsl(43 75% 50%)",
           text: black,
         },
       },
@@ -200,8 +194,18 @@ module.exports = {
       const textColor = Object.entries(colors).reduce((acc, [key, color]) => {
         acc[key] = {
           DEFAULT: color.text,
-          dark: color.dark && color.dark.text,
         };
+        if (color.foreground) {
+          acc[key].foreground = color.foreground;
+        }
+        if (color.dark) {
+          acc[key].dark = {
+            DEFAULT: color.dark.text,
+          };
+          if (color.dark.foreground) {
+            acc[key].dark.foreground = color.dark.foreground;
+          }
+        }
         return acc;
       }, {});
 

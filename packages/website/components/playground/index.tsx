@@ -173,7 +173,7 @@ export default function Playground(props: PlaygroundProps) {
             className="relative flex min-h-[300px] items-center justify-center rounded-lg p-4 md:p-6"
           />
         </div>
-        <div className="relative w-full max-w-3xl rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-sm dark:drop-shadow-sm-dark bg-canvas-5 dark:bg-canvas-1-dark">
+        <div className="relative w-full max-w-3xl rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-md dark:drop-shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
           <div className="flex justify-between p-3 pb-1 text-sm">
             <TabList
               state={tab}
