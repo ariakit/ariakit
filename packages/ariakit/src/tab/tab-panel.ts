@@ -45,12 +45,26 @@ export const useTabPanel = createHook<TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    useEffect(() => {
+    const watchForTabbableChildren = useCallback(() => {
       const element = ref.current;
       if (!element) return;
       const tabbable = getAllTabbableIn(element);
       setHasTabbableChildren(!!tabbable.length);
     }, []);
+
+    useEffect(() => {
+      watchForTabbableChildren();
+
+      const observer = new MutationObserver(watchForTabbableChildren);
+      const element = ref.current;
+      if (!element) return;
+      observer.observe(element, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+      return () => observer.disconnect();
+    }, [watchForTabbableChildren]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
