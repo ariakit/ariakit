@@ -12,7 +12,7 @@ import {
   useLiveRef,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
-import { cx, hasOwnProperty } from "ariakit-utils/misc";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import {
   CompositeOverflow,
   CompositeOverflowDisclosure,
@@ -31,10 +31,6 @@ const theme = css`
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
   max-height: min(max(calc(100vh - 640px), 480px), 800px);
-
-  .cm-scroller {
-    padding-top: 0.5rem;
-  }
 `;
 
 const errorProps = { as: PlaygroundError };
@@ -155,18 +151,13 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div
-          className={
-            "relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full"
-          }
-        >
+        <div className="relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full">
           <PlaygroundPreview
             getModule={getModule}
             errorProps={errorProps}
             className="relative flex min-h-[300px] items-center justify-center rounded-lg p-4 md:p-6"
           />
         </div>
-        {/* TODO: Test forced dark mode */}
         <div className="relative w-full max-w-3xl rounded-lg sm:rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-md dark:drop-shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
           <div className="flex justify-between p-2 pb-1">
             <TabList

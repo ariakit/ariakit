@@ -16,7 +16,7 @@ export const PlaygroundTab = forwardRef<HTMLButtonElement, PlaygroundTabProps>(
           hidden ? "rounded-sm" : "rounded-md sm:rounded",
           "relative h-10 sm:h-8 px-4 sm:px-2 text-base sm:text-sm whitespace-nowrap",
           "after:absolute after:top-full after:translate-y-1 after:left-0 after:w-full after:h-1",
-          "after:bg-transparent aria-selected:after:bg-primary-2 dark:aria-selected:after:bg-primary-2-dark",
+          "after:bg-transparent after:aria-selected:bg-primary-2 after:dark:aria-selected:bg-primary-2-dark",
           "text-black/75 dark:text-white/75",
           "aria-selected:text-black dark:aria-selected:text-white",
           "bg-transparent hover:bg-black/5 dark:hover:bg-white/5",
