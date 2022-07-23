@@ -79,6 +79,7 @@ function appendEditorProps(editor: EditorView, file: string) {
   if (!element) return;
   element.tabIndex = -1;
   element.setAttribute("aria-label", file);
+  element.setAttribute("data-gramm", "false");
 }
 
 const prismjsClassNames = HighlightStyle.define([

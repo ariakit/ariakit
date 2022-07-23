@@ -156,10 +156,10 @@ module.exports = {
         border: "hsl(43 91% 55%)",
         text: "hsl(43 100% 20%)",
         dark: {
-          DEFAULT: "hsl(43 25% 23%)",
-          hover: "hsl(43 25% 27%)",
-          border: "hsl(43 25% 36%)",
-          text: "hsl(43 100% 90%)",
+          DEFAULT: "hsl(35 25% 20%)",
+          hover: "hsl(35 25% 24%)",
+          border: "hsl(35 25% 33%)",
+          text: "hsl(35 100% 90%)",
         },
       },
       "warn-2": {
@@ -248,7 +248,7 @@ module.exports = {
       dark: "0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)",
       md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
       "md-dark":
-        "0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.23",
+        "0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.23)",
       lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
       "lg-dark":
         "0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)",
@@ -318,6 +318,7 @@ module.exports = {
       addVariant("enter", "&[data-enter]");
       addVariant("leave", "&[data-leave]");
       addVariant("active-item", "&[data-active-item]");
+      addVariant("group-active-item", ":merge(.group)[data-active-item] &");
 
       addVariant("active", ["&:active", "&[data-active]"]);
       addVariant("ariakit-focus-visible", "&[data-focus-visible]");

@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "next": "12.2.2",
-    "rehype-react": "7.1.1"
+    "rehype-react": "7.1.1",
+    "swr": "1.3.0"
   },
   "devDependencies": {
     "autoprefixer": "10.4.7",

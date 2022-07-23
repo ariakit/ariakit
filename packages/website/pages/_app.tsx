@@ -1,7 +1,9 @@
 import "../styles/globals.css";
+import { cx } from "ariakit-utils/misc";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
+import Header from "../components/header";
 import SEO from "../components/seo";
 
 // https://github.com/vercel/next.js/discussions/13387#discussioncomment-101564
@@ -50,7 +52,28 @@ function MyApp({ Component, pageProps }: AppProps) {
           dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
         />
       )}
-      <Component {...pageProps} />
+      <div>
+        <Header />
+        <div className="flex flex-col items-center">
+          <div
+            className={cx(
+              "mx-3 sm:mx-4 p-4 px-8 max-w-[1366px]",
+              "rounded-lg",
+              "bg-warn-1 dark:bg-warn-1-dark"
+            )}
+          >
+            The Ariakit docs are still under construction. You can{" "}
+            <a
+              href="https://newsletter.ariakit.org"
+              className="rounded-lg text-link dark:text-link-dark underline hover:decoration-[3px] [text-decoration-skip-ink:none]"
+            >
+              subscribe to our newsletter
+            </a>{" "}
+            to get major updates.
+          </div>
+        </div>
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }

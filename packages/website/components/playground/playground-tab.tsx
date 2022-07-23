@@ -14,7 +14,7 @@ export const PlaygroundTab = forwardRef<HTMLButtonElement, PlaygroundTabProps>(
         {...props}
         className={cx(
           hidden ? "rounded-sm" : "rounded-md sm:rounded",
-          "relative h-10 sm:h-8 px-4 sm:px-2 text-base sm:text-sm whitespace-nowrap",
+          "relative h-10 sm:h-8 px-4 sm:px-2 text-base sm:text-sm tracking-tight whitespace-nowrap",
           "after:absolute after:top-full after:translate-y-1 after:left-0 after:w-full after:h-1",
           "after:bg-transparent after:aria-selected:bg-primary-2 after:dark:aria-selected:bg-primary-2-dark",
           "text-black/75 dark:text-white/75",
