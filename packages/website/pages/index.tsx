@@ -1,18 +1,9 @@
 import React from "react";
 import { cx } from "ariakit-utils/misc";
-import { Button } from "ariakit/button";
-import {
-  Menu,
-  MenuButton,
-  MenuButtonArrow,
-  MenuItem,
-  useMenuState,
-} from "ariakit/menu";
 import Link from "next/link";
 import shapes from "../components/home-shapes.svg";
 
 export default function Home() {
-  const menu = useMenuState({ defaultOpen: true, gutter: 4, flip: false });
   return (
     <div
       style={{ backgroundImage: `url(${shapes.src})` }}
@@ -67,44 +58,6 @@ export default function Home() {
           </a>
         </Link>
         <Link href="/components">Explore components</Link>
-      </div>
-      <div
-        className={cx(
-          "w-full max-w-7xl grid grid-cols-8 grid-rows-[repeat(9,80px)] gap-4",
-          "[&>*]:bg-canvas-1 dark:[&>*]:bg-canvas-1-dark [&>*]:rounded-xl",
-          "[&>*]:flex [&>*]:items-center [&>*]:justify-center"
-        )}
-      >
-        <div className="[grid-area:1/1/4/3] py-14 px-20 !justify-start">
-          <MenuButton
-            state={menu}
-            className="flex self-start h-8 text-sm items-center cursor-pointer gap-1 whitespace-nowrap justify-center border-none bg-primary-1 dark:bg-primary-1-dark px-3 rounded-md"
-          >
-            Actions <MenuButtonArrow />
-          </MenuButton>
-          <Menu
-            state={menu}
-            hideOnInteractOutside={false}
-            className="flex flex-col min-w-[140px] bg-canvas-2 dark:bg-canvas-3-dark p-2 rounded-md border border-solid border-canvas-2 dark:border-canvas-2-dark shadow-md dark:shadow-md-dark [&>*]:p-2 [&>*]:text-sm"
-          >
-            <MenuItem>Edit</MenuItem>
-            <MenuItem>Share</MenuItem>
-            <MenuItem>Delete</MenuItem>
-          </Menu>
-        </div>
-        <div className="[grid-area:1/3/4/5]"></div>
-        <div className="[grid-area:1/5/4/9]"></div>
-        <div className="[grid-area:4/1/6/3]">
-          <Button className="text-sm h-7 rounded bg-primary-2 dark:bg-primary-2 px-2">
-            Button
-          </Button>
-        </div>
-        <div className="[grid-area:6/1/10/3]"></div>
-        <div className="[grid-area:4/3/7/7]"></div>
-        <div className="[grid-area:7/3/10/5]"></div>
-        <div className="[grid-area:7/5/10/7]"></div>
-        <div className="[grid-area:4/7/7/9]"></div>
-        <div className="[grid-area:7/7/10/9]"></div>
       </div>
     </div>
   );
