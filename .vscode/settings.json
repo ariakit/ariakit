@@ -7,7 +7,6 @@
   "files.insertFinalNewline": true,
   "css.validate": false,
   "stylelint.enable": true,
-  "tailwindCSS.classAttributes": ["class", "className", ".*Class"],
   "editor.codeActionsOnSave": {
     "source.fixAll.stylelint": true
   },
