@@ -10,10 +10,7 @@ import { Select, SelectItem } from "./select";
 import "./style.css";
 
 export default function Example() {
-  const form = useFormState({
-    defaultValues: { fruit: "" },
-    defaultTouched: { fruit: true },
-  });
+  const form = useFormState({ defaultValues: { fruit: "" } });
 
   form.useSubmit(() => {
     alert(JSON.stringify(form.values));

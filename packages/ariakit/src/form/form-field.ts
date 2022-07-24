@@ -24,9 +24,6 @@ function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
   if (!element) return null;
   if (element.name !== name) {
     if (element.form) {
-      // requestAnimationFrame(() => {
-      //   console.log({ ...element.form.elements[0]?.attributes });
-      // });
       return element.form.elements.namedItem(name) as HTMLInputElement | null;
     } else {
       const document = getDocument(element);
