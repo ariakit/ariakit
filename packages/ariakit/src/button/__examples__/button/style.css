@@ -23,10 +23,9 @@
 
 .secondary {
   @apply
-    text-alpha-2
-    bg-alpha-2
-    hover:bg-alpha-2-hover
-    dark:text-alpha-2-dark
-    dark:bg-alpha-2-dark
-    dark:hover:bg-alpha-2-dark-hover;
+    text-current
+    bg-transparent
+    dark:bg-transparent
+    hover:bg-black/5
+    dark:hover:bg-white/5;
 }

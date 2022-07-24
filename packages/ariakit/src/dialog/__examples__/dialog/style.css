@@ -44,14 +44,5 @@
 }
 
 .button.dismiss {
-  @apply
-    w-10
-    h-10
-    p-0
-    bg-alpha-2
-    text-alpha-2
-    hover:bg-alpha-2-hover
-    dark:bg-alpha-2-dark
-    dark:text-alpha-2-dark
-    dark:hover:bg-alpha-2-dark-hover;
+  @apply w-10 h-10 p-0;
 }

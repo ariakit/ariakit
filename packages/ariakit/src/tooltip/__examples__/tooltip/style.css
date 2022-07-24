@@ -1,24 +1,4 @@
-.button {
-  @apply
-    flex
-    h-10
-    cursor-pointer
-    items-center
-    justify-center
-    gap-2
-    rounded-lg
-    border-none
-    px-4
-    focus-visible:ariakit-outline
-    aria-disabled:opacity-50
-    text-base
-    bg-alpha-2
-    text-alpha-2
-    hover:bg-alpha-2-hover
-    dark:bg-alpha-2-dark
-    dark:text-alpha-2-dark
-    dark:hover:bg-alpha-2-dark-hover;
-}
+@import "../../../button/__examples__/button/style.css";
 
 .tooltip {
   @apply

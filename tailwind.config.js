@@ -31,6 +31,15 @@ module.exports = {
         DEFAULT: whiteFade,
         text: whiteFade,
       },
+      current: {
+        DEFAULT: "currentColor",
+        border: "currentColor",
+        text: "currentColor",
+      },
+      transparent: {
+        DEFAULT: "transparent",
+        border: "transparent",
+      },
       link: {
         text: "hsl(204, 100%, 38%)",
         dark: {

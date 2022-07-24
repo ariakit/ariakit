@@ -6,7 +6,7 @@ export default function Example() {
   const tooltip = useTooltipState();
   return (
     <>
-      <TooltipAnchor state={tooltip} as={Button} className="button">
+      <TooltipAnchor state={tooltip} as={Button} className="button secondary">
         Hover or focus on me
       </TooltipAnchor>
       <Tooltip state={tooltip} className="tooltip">

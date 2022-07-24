@@ -25,19 +25,15 @@
     gap-2
     rounded-md
     border-none
-    bg-alpha-2
     px-4
     text-base
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
-    text-alpha-2
-    hover:bg-alpha-2-hover
+    hover:bg-black/5
     aria-selected:bg-primary-2
     aria-selected:text-primary-2
     aria-selected:hover:bg-primary-2-hover
-    dark:bg-alpha-2-dark
-    dark:text-alpha-2-dark
-    dark:hover:bg-alpha-2-dark-hover
+    dark:hover:bg-white/5
     dark:aria-selected:bg-primary-2-dark
     dark:aria-selected:text-primary-2-dark
     dark:aria-selected:hover:bg-primary-2-dark-hover;

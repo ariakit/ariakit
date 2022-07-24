@@ -5,11 +5,11 @@
 }
 
 .anchor {
-  text-decoration-skip-ink: none;
   @apply
     underline
     font-medium
     hover:decoration-[3px]
+    [text-decoration-skip-ink:none]
     text-link
     dark:text-link-dark;
 }
