@@ -1,5 +1,15 @@
 # ariakit
 
+## 2.0.0-next.36
+
+### Minor Changes
+
+- The `name` prop is now always passed down when using `FormField` with custom components. ([#1646](https://github.com/ariakit/ariakit/pull/1646))
+
+### Patch Changes
+
+- Updated dependency `@floating-ui/dom` to v1. ([#1644](https://github.com/ariakit/ariakit/pull/1644))
+
 ## 2.0.0-next.35
 
 ### Patch Changes

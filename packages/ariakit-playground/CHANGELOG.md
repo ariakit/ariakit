@@ -1,5 +1,15 @@
 # ariakit-playground
 
+## 0.17.0-next.36
+
+### Patch Changes
+
+- Disabled grammarly extension on the playground editor.
+
+* Added new `ariakit-playground/themes/vscode` entry that has both light and dark versions that are dynamically applied in light/dark mode.
+
+* Updated dependencies: `ariakit@2.0.0-next.36`.
+
 ## 0.17.0-next.35
 
 ### Patch Changes
