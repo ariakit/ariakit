@@ -48,36 +48,35 @@ export default function VersionSelect() {
   const renderItem = (version: string, tag: string) => {
     const url = tag === "v1" ? "https://reakit.io" : "";
 
-    const item = (
+    return (
       <SelectItem
-        as="a"
+        key={version}
         value={version}
-        onClick={select.hide}
         className={cx(
           "flex group gap-1 p-2 font-medium items-center rounded cursor-pointer",
           "active-item:text-primary-2 dark:active-item:text-primary-2-dark",
           "active-item:bg-primary-2 dark:active-item:bg-primary-2-dark"
         )}
       >
-        <SelectItemCheck />
-        <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
-        <span
-          className={cx(
-            "text-xs rounded-full p-1 px-2",
-            "text-canvas-1/70 dark:text-canvas-1-dark/70",
-            "bg-canvas-1 dark:bg-canvas-1-dark",
-            "group-active-item:bg-white/60 dark:group-active-item:bg-black/60"
-          )}
-        >
-          {tag === "latest" ? "next" : tag}
-        </span>
+        {(props) => (
+          <Link href={url}>
+            <a {...props}>
+              <SelectItemCheck />
+              <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
+              <span
+                className={cx(
+                  "text-xs rounded-full p-1 px-2",
+                  "text-canvas-1/70 dark:text-canvas-1-dark/70",
+                  "bg-canvas-1 dark:bg-canvas-1-dark",
+                  "group-active-item:bg-white/60 dark:group-active-item:bg-black/60"
+                )}
+              >
+                {tag === "latest" ? "next" : tag}
+              </span>
+            </a>
+          </Link>
+        )}
       </SelectItem>
-    );
-
-    return (
-      <Link key={version} href={url} passHref>
-        {item}
-      </Link>
     );
   };
 
@@ -90,7 +89,7 @@ export default function VersionSelect() {
         state={select}
         className={cx(
           "flex items-center justify-center border-none rounded-lg",
-          "gap-1 px-2 h-8 mr-2",
+          "gap-1 px-3 h-8 mr-2",
           "text-xs font-semibold whitespace-nowrap tracking-tight",
           "text-black/80 dark:text-white/80",
           "bg-black/5 dark:bg-white/5",

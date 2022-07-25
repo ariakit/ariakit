@@ -37,9 +37,15 @@ export default function Header() {
 
   const links = (
     <div className="flex gap-8 ml-8">
-      <Link href="/guide">Guide</Link>
-      <Link href="/components">Components</Link>
-      <Link href="/examples">Examples</Link>
+      <Link href="/guide">
+        <a className="hover:underline">Guide</a>
+      </Link>
+      <Link href="/components">
+        <a className="hover:underline">Components</a>
+      </Link>
+      <Link href="/examples">
+        <a className="hover:underline">Examples</a>
+      </Link>
     </div>
   );
 

@@ -88,6 +88,7 @@ export default function MarkdownPage(props) {
           "[&_a]:text-link dark:[&_a]:text-link-dark",
           // h1
           "sm:[&_h1]:mb-4",
+          "[&_h1]:scroll-mt-[72px]",
           "[&_h1]:text-4xl sm:[&_h1]:text-5xl md:[&_h1]:text-6xl",
           "[&_h1]:font-extrabold dark:[&_h1]:font-bold",
           // h2
