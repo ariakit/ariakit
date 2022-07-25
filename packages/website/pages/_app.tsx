@@ -57,9 +57,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <div className="flex flex-col items-center">
           <div
             className={cx(
-              "mx-3 sm:mx-4 p-4 px-8 max-w-[1366px]",
+              "mx-3 sm:mx-4 p-3 sm:py-4 sm:px-8 max-w-[1408px]",
               "rounded-lg",
-              "bg-warn-1 dark:bg-warn-1-dark"
+              "text-canvas-1 dark:text-canvas-5-dark",
+              "bg-canvas-1 dark:bg-canvas-5-dark"
             )}
           >
             The Ariakit docs are still under construction. You can{" "}

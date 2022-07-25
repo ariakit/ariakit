@@ -52,7 +52,7 @@ export default function Header() {
         "backdrop-blur supports-backdrop-blur:bg-canvas-2/80 dark:supports-backdrop-blur:bg-canvas-2-dark/80"
       )}
     >
-      <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1366px]">
+      <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1440px]">
         <Link href="/">
           <a
             className={cx(
