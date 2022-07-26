@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const babel = require("@babel/core");
+const { ensureFileSync } = require("fs-extra");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
@@ -336,14 +337,36 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
 }
 
 /**
+ * @param {string} filename
+ */
+async function getPageMeta(filename) {
+  const { visit } = await import("unist-util-visit");
+  const tree = await getPageTreeFromFile(filename);
+  const { toString } = await import("hast-util-to-string");
+  const slug = getPageName(filename);
+  let title = "";
+  let description = "";
+  visit(tree, "element", (node) => {
+    if (node.tagName === "h1" && !title) {
+      title = toString(node);
+    }
+    if (node.tagName === "p" && !description) {
+      description = toString(node);
+    }
+  });
+  return { slug, title, description };
+}
+
+/**
  * @param {object} options
  * @param {string} options.filename The filename that will be used as a source
  * to write the page.
  * @param {string} options.dest The directory where the page will be written.
  * @param {string} options.componentPath The path to the component that will be
  * used to render the page.
+ * @param {string} [options.metaPath] The path to the meta file.
  */
-async function writePage({ filename, dest, componentPath }) {
+async function writePage({ filename, dest, componentPath, metaPath }) {
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
@@ -354,6 +377,30 @@ async function writePage({ filename, dest, componentPath }) {
     pagePath,
     await getPageContent({ filename, dest, componentPath })
   );
+
+  if (metaPath) {
+    ensureFileSync(metaPath);
+    const category = path.basename(dest);
+    const { default: existingMeta } = await import(metaPath);
+    const meta = await getPageMeta(filename);
+    if (!existingMeta[category]) {
+      existingMeta[category] = [];
+    }
+    const index = existingMeta[category].findIndex(
+      // @ts-ignore
+      (item) => item.slug === meta.slug
+    );
+    if (index !== -1) {
+      existingMeta[category][index] = meta;
+    } else {
+      existingMeta[category].push(meta);
+    }
+    const contents = prettier.format(
+      `export default ${JSON.stringify(existingMeta)}`,
+      { parser: "babel" }
+    );
+    fs.writeFileSync(metaPath, contents);
+  }
 }
 
 /**
@@ -461,6 +508,8 @@ function writeSymlinks(pageName, buildDir, pagesDir) {
   fs.symlinkSync(relativeBuildPath, symlinkPath);
 }
 
+// async function writePageMeta(filename, )
+
 module.exports = {
   pathToPosix,
   getPageName,
@@ -470,6 +519,7 @@ module.exports = {
   getPageImports,
   getPageContent,
   getReadmePathFromIndex,
+  getPageMeta,
   writePage,
   getFiles,
   getPagesDir,

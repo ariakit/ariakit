@@ -1,7 +1,24 @@
 import { cx } from "ariakit-utils/misc";
+import {
+  Menu,
+  MenuBar,
+  MenuButton,
+  MenuItem,
+  useMenuBarState,
+  useMenuState,
+} from "ariakit/menu";
+import {
+  Select,
+  SelectItem,
+  SelectList,
+  SelectPopover,
+  useSelectState,
+} from "ariakit/select";
 import { VisuallyHidden } from "ariakit/visually-hidden";
+import startCase from "lodash/startCase";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import meta from "../../meta";
 import button from "../../styles/button";
 import Logo from "../logo";
 import VersionSelect from "../version-select";
@@ -11,17 +28,70 @@ const separator = <div className="opacity-30 font-semibold">/</div>;
 export default function Header() {
   const router = useRouter();
   const isHome = router.pathname === "/";
+  const [, category, page] = router.asPath.split("/");
+  const menubar = useMenuBarState();
+  const categorySelect = useSelectState({ defaultValue: category });
+  const pageSelect = useSelectState({ defaultValue: page });
+  const categoryMenu = useMenuState(categorySelect);
+  const pageMenu = useMenuState(pageSelect);
 
-  const breadcrumbs = (
+  const breadcrumbs = category ? (
     <>
       {separator}
-      <button
+      <MenuBar state={menubar} className="flex gap-1 items-center">
+        <Select state={categorySelect}>
+          {(props) => (
+            <MenuButton as={MenuItem} {...props} state={categoryMenu}>
+              {startCase(categorySelect.value)}
+            </MenuButton>
+          )}
+        </Select>
+        {categorySelect.mounted && (
+          <SelectPopover portal state={categorySelect}>
+            {(props) => (
+              <Menu state={categoryMenu} {...props}>
+                {Object.keys(meta)?.map((key) => (
+                  <SelectItem key={key} value={key}>
+                    {startCase(key)}
+                  </SelectItem>
+                ))}
+              </Menu>
+            )}
+          </SelectPopover>
+        )}
+        {page && (
+          <>
+            {separator}
+            <Select state={pageSelect}>
+              {(props) => (
+                <MenuButton as={MenuItem} {...props} state={pageMenu}>
+                  {startCase(pageSelect.value)}
+                </MenuButton>
+              )}
+            </Select>
+            {pageSelect.mounted && (
+              <SelectPopover portal state={pageSelect}>
+                {(props) => (
+                  <Menu state={pageMenu} {...props}>
+                    {meta[category]?.map((item) => (
+                      <SelectItem key={item.slug} value={item.slug}>
+                        {item.title}
+                      </SelectItem>
+                    ))}
+                  </Menu>
+                )}
+              </SelectPopover>
+            )}
+          </>
+        )}
+      </MenuBar>
+      {/* <button
         className={cx(
           button(),
           "rounded-lg h-8 px-2 focus-visible:ariakit-outline-input"
         )}
       >
-        Examples
+        {startCase(category)}
       </button>
       {separator}
       <button
@@ -30,10 +100,10 @@ export default function Header() {
           "rounded-lg h-8 px-2 focus-visible:ariakit-outline-input"
         )}
       >
-        Form with Select
-      </button>
+        {meta[category]?.find(({ slug }) => slug === page)?.title}
+      </button> */}
     </>
-  );
+  ) : null;
 
   const links = (
     <div className="flex gap-8 ml-8">
