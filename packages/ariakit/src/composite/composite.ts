@@ -134,6 +134,7 @@ export const useComposite = createHook<CompositeOptions>(
 
     // Focus on the active item element.
     useSafeLayoutEffect(() => {
+      if (!composite) return;
       if (!focusOnMove) return;
       if (!state.moves) return;
       const itemElement = activeItemRef.current?.ref.current;
@@ -142,7 +143,7 @@ export const useComposite = createHook<CompositeOptions>(
       // event on each item to be triggered before the state changes can
       // propagate to them.
       scheduleFocus();
-    }, [focusOnMove, state.moves]);
+    }, [composite, focusOnMove, state.moves]);
 
     // When virtualFocus is enabled, calling composite.move(null) will not fire
     // a blur event on the active item. So we need to do it manually.
