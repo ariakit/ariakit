@@ -121,7 +121,11 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       </MenuButton>
     );
 
-    const wrapperProps = isSubmenu ? {} : { className: "menu-wrapper" };
+    const wrapperProps = {
+      // This is necessary so Chrome scrolls the submenu into view.
+      style: { left: "auto" },
+      className: !isSubmenu ? "menu-wrapper" : "",
+    };
 
     return (
       <>
