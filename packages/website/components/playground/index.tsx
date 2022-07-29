@@ -151,7 +151,7 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark/80 w-full">
+        <div className="relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark w-full">
           <PlaygroundPreview
             getModule={getModule}
             errorProps={errorProps}

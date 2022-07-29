@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { cx } from "ariakit-utils/misc";
 import {
   Menu,
   MenuBar,
   MenuButton,
   MenuItem,
+  MenuList,
   useMenuBarState,
   useMenuState,
 } from "ariakit/menu";
@@ -21,7 +23,8 @@ import { useRouter } from "next/router";
 import meta from "../../meta";
 import button from "../../styles/button";
 import Logo from "../logo";
-import VersionSelect from "../version-select";
+import { PageMenu, PageMenuItem } from "./page-menu";
+import VersionSelect from "./version-select";
 
 const separator = <div className="opacity-30 font-semibold">/</div>;
 
@@ -30,10 +33,14 @@ export default function Header() {
   const isHome = router.pathname === "/";
   const [, category, page] = router.asPath.split("/");
   const menubar = useMenuBarState();
-  const categorySelect = useSelectState({ defaultValue: category });
-  const pageSelect = useSelectState({ defaultValue: page });
+  const categorySelect = useSelectState({
+    fixed: true,
+    value: category,
+  });
+  const pageSelect = useSelectState({ fixed: true, value: page });
   const categoryMenu = useMenuState(categorySelect);
   const pageMenu = useMenuState(pageSelect);
+  const [matches, setMatches] = useState<string[]>([]);
 
   const breadcrumbs = category ? (
     <>
@@ -41,21 +48,36 @@ export default function Header() {
       <MenuBar state={menubar} className="flex gap-1 items-center">
         <Select state={categorySelect}>
           {(props) => (
-            <MenuButton as={MenuItem} {...props} state={categoryMenu}>
+            <MenuButton
+              as={MenuItem}
+              {...props}
+              showOnHover={false}
+              focusOnHover={false}
+              state={categoryMenu}
+            >
               {startCase(categorySelect.value)}
             </MenuButton>
           )}
         </Select>
         {categorySelect.mounted && (
-          <SelectPopover portal state={categorySelect}>
+          <SelectPopover
+            portal
+            state={categorySelect}
+            className={cx(
+              "max-h-[var(--popover-available-height)] overflow-auto",
+              "flex flex-col z-50 bg-canvas-5 dark:bg-canvas-5-dark",
+              "rounded-lg drop-shadow-lg dark:drop-shadow-lg-dark",
+              "p-2 border border-solid border-canvas-5 dark:border-canvas-5-dark"
+            )}
+          >
             {(props) => (
-              <Menu state={categoryMenu} {...props}>
+              <MenuList state={categoryMenu} {...props}>
                 {Object.keys(meta)?.map((key) => (
-                  <SelectItem key={key} value={key}>
+                  <PageMenuItem key={key} value={key} href={`/${key}`}>
                     {startCase(key)}
-                  </SelectItem>
+                  </PageMenuItem>
                 ))}
-              </Menu>
+              </MenuList>
             )}
           </SelectPopover>
         )}
@@ -64,44 +86,76 @@ export default function Header() {
             {separator}
             <Select state={pageSelect}>
               {(props) => (
-                <MenuButton as={MenuItem} {...props} state={pageMenu}>
-                  {startCase(pageSelect.value)}
+                <MenuButton
+                  as={MenuItem}
+                  {...props}
+                  showOnHover={false}
+                  focusOnHover={false}
+                  state={pageMenu}
+                >
+                  {
+                    meta[category]?.find(
+                      (item) => item.slug === pageSelect.value
+                    )?.title
+                  }
                 </MenuButton>
               )}
             </Select>
             {pageSelect.mounted && (
-              <SelectPopover portal state={pageSelect}>
+              <SelectPopover
+                portal
+                state={pageSelect}
+                className={cx(
+                  "max-h-[var(--popover-available-height)] overflow-auto",
+                  "flex flex-col z-50 bg-canvas-5 dark:bg-canvas-5-dark",
+                  "rounded-lg drop-shadow-lg dark:drop-shadow-lg-dark",
+                  "p-2 border border-solid border-canvas-5 dark:border-canvas-5-dark"
+                )}
+              >
                 {(props) => (
-                  <Menu state={pageMenu} {...props}>
+                  <MenuList state={pageMenu} {...props}>
                     {meta[category]?.map((item) => (
-                      <SelectItem key={item.slug} value={item.slug}>
+                      <PageMenuItem
+                        key={item.slug}
+                        value={item.slug}
+                        href={`/${category}/${item.slug}`}
+                      >
                         {item.title}
-                      </SelectItem>
+                      </PageMenuItem>
                     ))}
-                  </Menu>
+                  </MenuList>
                 )}
               </SelectPopover>
+            )}
+
+            {page && (
+              <>
+                {separator}
+                <PageMenu
+                  defaultList={meta[category]?.map((item) => item.title)}
+                  onMatch={setMatches}
+                  value={page}
+                >
+                  {matches.map((value) => {
+                    const item = meta[category]?.find(
+                      (item) => item.title === value
+                    );
+                    return (
+                      <PageMenuItem
+                        key={item.slug}
+                        value={item.slug}
+                        href={`/${category}/${item.slug}`}
+                      >
+                        {item.title}
+                      </PageMenuItem>
+                    );
+                  })}
+                </PageMenu>
+              </>
             )}
           </>
         )}
       </MenuBar>
-      {/* <button
-        className={cx(
-          button(),
-          "rounded-lg h-8 px-2 focus-visible:ariakit-outline-input"
-        )}
-      >
-        {startCase(category)}
-      </button>
-      {separator}
-      <button
-        className={cx(
-          button(),
-          "rounded-lg h-8 px-2 focus-visible:ariakit-outline-input"
-        )}
-      >
-        {meta[category]?.find(({ slug }) => slug === page)?.title}
-      </button> */}
     </>
   ) : null;
 

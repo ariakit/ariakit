@@ -25,7 +25,7 @@ import { SelectListOptions, useSelectList } from "./select-list";
  * ```
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
-  ({ state, ...props }) => {
+  ({ state, autoFocusOnShow = true, ...props }) => {
     const values = toArray(state.value);
     const value = values[values.length - 1] ?? "";
     const [item, setItem] = useState<Item | null>(null);
@@ -52,6 +52,14 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
       state,
       initialFocusRef: item?.ref || state.baseRef,
       ...props,
+      autoFocusOnShow: (element) => {
+        if (!autoFocusOnShow) return false;
+        if (typeof autoFocusOnShow === "function") {
+          return autoFocusOnShow(element);
+        }
+        element.focus();
+        return false;
+      },
     });
 
     return props;

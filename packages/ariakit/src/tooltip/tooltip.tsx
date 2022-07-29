@@ -77,6 +77,8 @@ export const useTooltip = createHook<TooltipOptions>(
           {...wrapperProps}
           style={{
             position: state.fixed ? "fixed" : "absolute",
+            top: 0,
+            left: 0,
             ...wrapperProps?.style,
           }}
           ref={popoverRef}

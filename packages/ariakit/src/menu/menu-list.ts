@@ -91,7 +91,6 @@ export const useMenuList = createHook<MenuListOptions>(
         }
       }
       if (parentMenuBar) {
-        console.log("lol", parentMenuBar);
         const keyMap = {
           ArrowRight: () => {
             if (!isMenuBarHorizontal) return;
