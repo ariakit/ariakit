@@ -230,10 +230,10 @@ export const useHovercard = createHook<HovercardOptions>(
         }
         if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
-        hideTimeoutRef.current = window.setTimeout(
-          state.hide,
-          state.hideTimeout
-        );
+        hideTimeoutRef.current = window.setTimeout(() => {
+          hideTimeoutRef.current = 0;
+          state.hide();
+        }, state.hideTimeout);
       };
       return addGlobalEventListener("mousemove", onMouseMove, true);
     }, [
