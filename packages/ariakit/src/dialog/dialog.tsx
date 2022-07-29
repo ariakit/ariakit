@@ -18,7 +18,6 @@ import {
 import { addGlobalEventListener, queueBeforeEvent } from "ariakit-utils/events";
 import {
   focusIfNeeded,
-  focusIntoView,
   getFirstTabbableIn,
   isFocusable,
 } from "ariakit-utils/focus";
@@ -306,7 +305,7 @@ export const useDialog = createHook<DialogOptions>(
         if (activeElement && contains(dialog, activeElement)) return;
       }
       if (!autoFocusOnShowProp(element)) return;
-      focusIntoView(element);
+      element.focus();
     }, [
       openStable,
       mayAutoFocusOnShow,
@@ -365,7 +364,7 @@ export const useDialog = createHook<DialogOptions>(
             }
           }
           if (!autoFocusOnHideProp(element)) return;
-          focusIntoView(element);
+          element.focus();
         }
       };
       if (!state.open) {
