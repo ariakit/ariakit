@@ -127,6 +127,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       className: !isSubmenu ? "menu-wrapper" : "",
     };
 
+    const autoFocus = (element: HTMLElement) => {
+      if (!isSubmenu) return true;
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ block: "nearest", inline: "start" });
+      return false;
+    };
+
     return (
       <>
         {isSubmenu ? (
@@ -152,12 +159,8 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
             portal={isSubmenu}
             portalElement={parent?.getWrapper}
             wrapperProps={wrapperProps}
-            autoFocusOnShow={(element) => {
-              if (!isSubmenu) return true;
-              element.focus({ preventScroll: true });
-              element.scrollIntoView({ block: "nearest", inline: "start" });
-              return false;
-            }}
+            autoFocusOnShow={autoFocus}
+            autoFocusOnHide={autoFocus}
           >
             <MenuContext.Provider value={contextValue}>
               {isSubmenu && (
