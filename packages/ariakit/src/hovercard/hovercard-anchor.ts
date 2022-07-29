@@ -1,6 +1,11 @@
 import { MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useBooleanEvent, useEvent, useForkRef } from "ariakit-utils/hooks";
+import {
+  useBooleanEvent,
+  useEvent,
+  useForkRef,
+  useIsMouseMoving,
+} from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -9,10 +14,6 @@ import {
 import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable";
 import { HovercardState } from "./hovercard-state";
-
-function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
-  return event.movementX || event.movementY || process.env.NODE_ENV === "test";
-}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -56,6 +57,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     const onMouseMoveProp = props.onMouseMove;
     const showOnHoverProp = useBooleanEvent(showOnHover);
+    const isMouseMoving = useIsMouseMoving();
 
     const onMouseMove = useEvent(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
@@ -64,7 +66,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         if (disabled) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
-        if (!hasMouseMovement(event)) return;
+        if (!isMouseMoving()) return;
         if (!showOnHoverProp(event)) return;
         showTimeoutRef.current = window.setTimeout(() => {
           showTimeoutRef.current = 0;
