@@ -14,6 +14,7 @@ import {
   useEvent,
   useForceUpdate,
   useForkRef,
+  useId,
   useSafeLayoutEffect,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
@@ -328,7 +329,12 @@ export const useCombobox = createHook<ComboboxOptions>(
       }
     );
 
+    // This is necessary so other components like ComboboxCancel can reference
+    // the combobox input in their aria-controls attribute.
+    const id = useId(props.id);
+
     props = {
+      id,
       role: "combobox",
       "aria-autocomplete": autoComplete,
       "aria-haspopup": getPopupRole(state.contentElement, "listbox"),
