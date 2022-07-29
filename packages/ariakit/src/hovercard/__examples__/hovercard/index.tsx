@@ -19,7 +19,7 @@ export default function Example() {
       </HovercardAnchor>
       <Hovercard state={hovercard} className="hovercard">
         <img
-          src="https://pbs.twimg.com/profile_images/1116178840467005440/cwXwfYjW_400x400.png"
+          src="https://pbs.twimg.com/profile_images/1547936373243490306/dSn6Am0o_400x400.jpg"
           alt="Ariakit"
           className="avatar"
         />
