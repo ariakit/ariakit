@@ -26,6 +26,7 @@ export default function Example() {
         <div className="combobox-wrapper">
           <Combobox
             state={combobox}
+            autoSelect
             placeholder="e.g., Apple"
             className="combobox"
           />

@@ -72,3 +72,15 @@ test("clear input with keyboard after typing", async () => {
   expect(getCombobox()).toHaveFocus();
   expect(getPopover()).toBeVisible();
 });
+
+test("https://github.com/ariakit/ariakit/issues/1652", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("a");
+  await press.Tab();
+  await press.Enter();
+  expect(getOption("Apple")).not.toHaveFocus();
+  await type("a");
+  await click(getCancelButton());
+  expect(getOption("Apple")).not.toHaveFocus();
+});
