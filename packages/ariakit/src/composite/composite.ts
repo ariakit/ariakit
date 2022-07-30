@@ -12,10 +12,11 @@ import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import { getActiveElement } from "ariakit-utils/dom";
 import {
   fireBlurEvent,
+  fireFocusEvent,
   fireKeyboardEvent,
   isSelfTarget,
 } from "ariakit-utils/events";
-import { focusIntoView } from "ariakit-utils/focus";
+import { focusIntoView, hasFocus } from "ariakit-utils/focus";
 import {
   useEvent,
   useForkRef,
@@ -37,13 +38,13 @@ import {
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
+  silentlyFocused,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
   if (!isSelfTarget(event)) return false;
   if (event.metaKey) return false;
-  if (event.key === "Tab") return false;
   // If the propagation of the event has been prevented, we don't want to proxy
   // this event to the active item element. For example, on a combobox, the Home
   // and End keys shouldn't propagate to the active item, but move the caret on
@@ -145,29 +146,38 @@ export const useComposite = createHook<CompositeOptions>(
       scheduleFocus();
     }, [composite, focusOnMove, state.moves]);
 
-    // When virtualFocus is enabled, calling composite.move(null) will not fire
-    // a blur event on the active item. So we need to do it manually.
-    useEffect(() => {
+    // If composite.move(null) has been called, the composite container (this
+    // element) should receive focus.
+    useSafeLayoutEffect(() => {
       if (!composite) return;
       if (!state.moves) return;
       if (!isSelfAciveRef.current) return;
       const element = ref.current;
+      if (!element) return;
       const previousElement = previousElementRef.current;
       // We have to clean up the previous element ref so an additional blur
       // event is not fired on it, for example, when looping through items while
       // includesBaseElement is true.
       previousElementRef.current = null;
       if (previousElement) {
+        // We fire a blur event on the previous active item before moving focus
+        // to the composite element so the events are dispatched in the right
+        // order (blur, then focus).
         fireBlurEvent(previousElement, { relatedTarget: element });
       }
-      // If composite.move(null) has been called, the composite container (this
-      // element) should receive focus.
-      element?.focus();
+      // If the composite element is already focused, we still need to fire a
+      // focus event on it so consumer props like onFocus are called.
+      if (hasFocus(element)) {
+        fireFocusEvent(element, { relatedTarget: previousElement });
+      } else {
+        element.focus();
+      }
     }, [composite, state.moves]);
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
-    // so we do it here.
+    // so we do it here. This will be the scenario when moving through items, in
+    // which case the onFocusCapture below event will stop propgation.
     useSafeLayoutEffect(() => {
       if (!virtualFocus) return;
       if (!composite) return;
@@ -198,11 +208,8 @@ export const useComposite = createHook<CompositeOptions>(
       if (event.defaultPrevented) return;
       if (!virtualFocus) return;
       const previousActiveElement = event.relatedTarget as HTMLElement | null;
-      const previousActiveElementWasItem = isItem(
-        state.items,
-        previousActiveElement
-      );
-      if (isSelfTarget(event) && previousActiveElementWasItem) {
+      const isSilentlyFocused = silentlyFocused(event.currentTarget);
+      if (isSelfTarget(event) && isSilentlyFocused) {
         // Composite has been focused as a result of an item receiving focus.
         // The composite item will move focus back to the composite container.
         // In this case, we don't want to propagate this additional event nor
@@ -228,7 +235,7 @@ export const useComposite = createHook<CompositeOptions>(
         // element. In this case, we want to trigger focus on the item, just
         // like it would happen with roving tabindex. When it receives focus,
         // the composite item will move focus back to the composite element.
-        if (isSelfTarget(event)) {
+        if (isSelfTarget(event) && !isItem(state.items, event.relatedTarget)) {
           // By queueing a microtask, we ensure the scheduleFocus effect will be
           // triggered after all the other effects that might have changed the
           // active item. This also accounts for when the composite container is
@@ -263,6 +270,8 @@ export const useComposite = createHook<CompositeOptions>(
       const activeElement = activeItem?.ref.current || null;
       const nextActiveElement = event.relatedTarget;
       const nextActiveElementIsItem = isItem(state.items, nextActiveElement);
+      const previousElement = previousElementRef.current;
+      previousElementRef.current = null;
       // This is an intermediate blur event: blurring the composite container
       // to focus on an item (nextActiveElement).
       if (isSelfTarget(event) && nextActiveElementIsItem) {
@@ -277,7 +286,6 @@ export const useComposite = createHook<CompositeOptions>(
         //     than the active one doesn't end up here as the activeItem state
         //     will be updated only after that.
         if (nextActiveElement === activeElement) {
-          const previousElement = previousElementRef.current;
           // If there's a previous active item and it's not a click action, then
           // we fire a blur event on it so it will work just like if it had DOM
           // focus before (like when using roving tabindex).
