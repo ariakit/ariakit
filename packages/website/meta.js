@@ -155,6 +155,11 @@ export default {
     { slug: "popover", title: "popover", description: "Example" },
     { slug: "popover-flip", title: "popover-flip", description: "Example" },
     {
+      slug: "popover-focus-within",
+      title: "popover-focus-within",
+      description: "Example",
+    },
+    {
       slug: "popover-responsive",
       title: "popover-responsive",
       description: "Example",
