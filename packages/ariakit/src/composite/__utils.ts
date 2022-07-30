@@ -236,6 +236,21 @@ export function silentlyFocused(element: FocusSilentlyElement) {
   return isSilentlyFocused;
 }
 
+/**
+ * Determines whether the element is a composite item.
+ */
+export function isItem(
+  items: Item[],
+  element?: Element | null,
+  exclude?: Element
+) {
+  if (!element) return false;
+  return items.some((item) => {
+    if (exclude && item.ref.current === exclude) return false;
+    return item.ref.current === element;
+  });
+}
+
 export const CompositeContext = createStoreContext<CompositeState>();
 
 type ItemContext =

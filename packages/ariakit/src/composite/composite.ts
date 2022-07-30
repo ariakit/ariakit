@@ -38,6 +38,7 @@ import {
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
+  isItem,
   silentlyFocused,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
@@ -88,11 +89,6 @@ function findFirstEnabledItemInTheLastRow(items: Item[]) {
   return findFirstEnabledItem(
     flatten2DArray(reverseArray(groupItemsByRows(items)))
   );
-}
-
-function isItem(items: Item[], element?: Element | EventTarget | null) {
-  if (!element) return false;
-  return items.some((item) => item.ref.current === element);
 }
 
 function useScheduleFocus(activeItem?: Item) {

@@ -35,6 +35,7 @@ import {
   findEnabledItemById,
   focusSilently,
   getContextId,
+  isItem,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
@@ -121,18 +122,10 @@ function useItem(items?: Item[], id?: string) {
   }, [items, id]);
 }
 
-function isItem(element: Element | null, items: Item[], exclude?: Element) {
-  if (!element) return false;
-  return items.some((item) => {
-    if (exclude && item.ref.current === exclude) return false;
-    return item.ref.current === element;
-  });
-}
-
 function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
   if (isSelfTarget(event)) return false;
   const target = event.target as HTMLElement;
-  return isItem(target, items, event.currentTarget);
+  return isItem(items, target, event.currentTarget);
 }
 
 function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
@@ -249,7 +242,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       // to it when navigating through the items.
       const fromComposite =
         event.relatedTarget === composite ||
-        isItem(event.relatedTarget, state.items);
+        isItem(state.items, event.relatedTarget);
       if (fromComposite) {
         focusSilently(composite);
       }
