@@ -19,7 +19,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-utils/hooks";
-import { setRef } from "ariakit-utils/misc";
+import { queueMicrotask, setRef } from "ariakit-utils/misc";
 import {
   createComponent,
   createElement,
@@ -51,6 +51,12 @@ function getRandomId(prefix = "id") {
   return `${prefix ? `${prefix}-` : ""}${Math.random()
     .toString(36)
     .substr(2, 6)}`;
+}
+
+function queueFocus(element?: HTMLElement | null) {
+  queueMicrotask(() => {
+    element?.focus();
+  });
 }
 
 /**
@@ -174,9 +180,9 @@ export const usePortal = createHook<PortalOptions>(
                 ref={beforeInsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    getNextTabbable()?.focus();
+                    queueFocus(getNextTabbable());
                   } else {
-                    beforeOutsideRef.current?.focus();
+                    queueFocus(beforeOutsideRef.current);
                   }
                 }}
               />
@@ -187,9 +193,9 @@ export const usePortal = createHook<PortalOptions>(
                 ref={afterInsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    getPreviousTabbable()?.focus();
+                    queueFocus(getPreviousTabbable());
                   } else {
-                    afterOutsideRef.current?.focus();
+                    queueFocus(afterOutsideRef.current);
                   }
                 }}
               />
@@ -208,9 +214,9 @@ export const usePortal = createHook<PortalOptions>(
                 ref={beforeOutsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    beforeInsideRef.current?.focus();
+                    queueFocus(beforeInsideRef.current);
                   } else {
-                    getPreviousTabbable()?.focus();
+                    queueFocus(getPreviousTabbable());
                   }
                 }}
               />
@@ -226,9 +232,9 @@ export const usePortal = createHook<PortalOptions>(
                 ref={afterOutsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    afterInsideRef.current?.focus();
+                    queueFocus(afterInsideRef.current);
                   } else {
-                    getNextTabbable()?.focus();
+                    queueFocus(getNextTabbable());
                   }
                 }}
               />

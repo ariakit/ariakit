@@ -3,6 +3,7 @@ import {
   DependencyList,
   EffectCallback,
   MutableRefObject,
+  MouseEvent as ReactMouseEvent,
   Ref,
   RefCallback,
   RefObject,
@@ -16,6 +17,7 @@ import {
 } from "react";
 import * as React from "react";
 import { canUseDOM } from "./dom";
+import { addGlobalEventListener } from "./events";
 import { applyState, setRef } from "./misc";
 import { AnyFunction, SetState, WrapElement } from "./types";
 
@@ -358,4 +360,46 @@ export function usePortalRef(
   const portalRef = useForkRef(setPortalNode, portalRefProp);
   const domReady = !portalProp || portalNode;
   return { portalRef, portalNode, domReady };
+}
+
+/**
+ * Returns a function that checks whether the mouse is moving.
+ */
+export function useIsMouseMoving() {
+  useEffect(() => {
+    // We're not returning the event listener cleanup function here because we
+    // may lose some events if this component is unmounted, but others are
+    // still mounted.
+    addGlobalEventListener("mousemove", setMouseMoving, true);
+    // See https://github.com/ariakit/ariakit/issues/1137
+    addGlobalEventListener("mousedown", resetMouseMoving, true);
+    addGlobalEventListener("mouseup", resetMouseMoving, true);
+    addGlobalEventListener("keydown", resetMouseMoving, true);
+    addGlobalEventListener("scroll", resetMouseMoving, true);
+  }, []);
+
+  const isMouseMoving = useEvent(() => mouseMoving);
+
+  return isMouseMoving;
+}
+
+let mouseMoving = false;
+let previousScreenX = 0;
+let previousScreenY = 0;
+
+function hasMouseMovement(event: ReactMouseEvent | MouseEvent) {
+  const movementX = event.movementX || event.screenX - previousScreenX;
+  const movementY = event.movementY || event.screenY - previousScreenY;
+  previousScreenX = event.screenX;
+  previousScreenY = event.screenY;
+  return movementX || movementY || process.env.NODE_ENV === "test";
+}
+
+function setMouseMoving(event: MouseEvent) {
+  if (!hasMouseMovement(event)) return;
+  mouseMoving = true;
+}
+
+function resetMouseMoving() {
+  mouseMoving = false;
 }

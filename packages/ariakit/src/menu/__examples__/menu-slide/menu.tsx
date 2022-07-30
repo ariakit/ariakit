@@ -121,7 +121,18 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       </MenuButton>
     );
 
-    const wrapperProps = isSubmenu ? {} : { className: "menu-wrapper" };
+    const wrapperProps = {
+      // This is necessary so Chrome scrolls the submenu into view.
+      style: { left: "auto" },
+      className: !isSubmenu ? "menu-wrapper" : "",
+    };
+
+    const autoFocus = (element: HTMLElement) => {
+      if (!isSubmenu) return true;
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ block: "nearest", inline: "start" });
+      return false;
+    };
 
     return (
       <>
@@ -148,12 +159,8 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
             portal={isSubmenu}
             portalElement={parent?.getWrapper}
             wrapperProps={wrapperProps}
-            autoFocusOnShow={(element) => {
-              if (!isSubmenu) return true;
-              element.focus({ preventScroll: true });
-              element.scrollIntoView({ block: "nearest", inline: "start" });
-              return false;
-            }}
+            autoFocusOnShow={autoFocus}
+            autoFocusOnHide={autoFocus}
           >
             <MenuContext.Provider value={contextValue}>
               {isSubmenu && (

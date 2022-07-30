@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   CompositionEvent,
   MouseEvent,
+  FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   useEffect,
   useMemo,
@@ -14,6 +15,7 @@ import {
   useEvent,
   useForceUpdate,
   useForkRef,
+  useId,
   useSafeLayoutEffect,
   useUpdateEffect,
 } from "ariakit-utils/hooks";
@@ -328,7 +330,20 @@ export const useCombobox = createHook<ComboboxOptions>(
       }
     );
 
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      hasInsertedTextRef.current = false;
+    });
+
+    // This is necessary so other components like ComboboxCancel can reference
+    // the combobox input in their aria-controls attribute.
+    const id = useId(props.id);
+
     props = {
+      id,
       role: "combobox",
       "aria-autocomplete": autoComplete,
       "aria-haspopup": getPopupRole(state.contentElement, "listbox"),
@@ -343,6 +358,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       onClick,
       onKeyDownCapture,
       onKeyDown,
+      onBlur,
     };
 
     props = useComposite({ state, focusable, ...props });
