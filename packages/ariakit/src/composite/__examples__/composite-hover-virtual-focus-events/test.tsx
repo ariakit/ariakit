@@ -11,9 +11,32 @@ function expectCalls(mock: jest.SpyInstance) {
 }
 
 test("events", async () => {
-  render(<Example />);
+  render(
+    <>
+      <Example />
+      <button>External button</button>
+    </>
+  );
 
   const log = jest.spyOn(console, "log").mockImplementation(() => {});
+
+  await press.Tab();
+  await press.Tab();
+
+  expectCalls(log).toMatchInlineSnapshot(`
+    [
+      "focus | toolbar | toolbar",
+      "focus | item-1 | item-1",
+      "focus | toolbar | item-1",
+      "keyup | item-1 | item-1",
+      "keyup | toolbar | item-1",
+      "keydown | item-1 | item-1",
+      "keydown | toolbar | item-1",
+      "blur | item-1 | item-1",
+      "blur | toolbar | item-1",
+      "blur | toolbar | toolbar",
+    ]
+  `);
 
   await hover(getButton("item-3"));
 

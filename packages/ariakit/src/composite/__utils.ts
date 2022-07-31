@@ -196,6 +196,9 @@ export function getContextId(
     : undefined;
 }
 
+/**
+ * Selects text field contents even if it's a content editable element.
+ */
 export function selectTextField(element: HTMLElement, collapseToEnd = false) {
   if (isTextField(element)) {
     element.setSelectionRange(
@@ -209,6 +212,43 @@ export function selectTextField(element: HTMLElement, collapseToEnd = false) {
       selection?.collapseToEnd();
     }
   }
+}
+
+const FOCUS_SILENTLY = Symbol("FOCUS_SILENTLY");
+type FocusSilentlyElement = HTMLElement & { [FOCUS_SILENTLY]?: boolean };
+
+/**
+ * Focus an element with a flag. The `silentlyFocused` function needs to be
+ * called later to check if the focus was silenced and to reset this state.
+ */
+export function focusSilently(element: FocusSilentlyElement) {
+  element[FOCUS_SILENTLY] = true;
+  element.focus();
+}
+
+/**
+ * Checks whether the element has been focused with the `focusSilently` function
+ * and resets the state.
+ */
+export function silentlyFocused(element: FocusSilentlyElement) {
+  const isSilentlyFocused = element[FOCUS_SILENTLY];
+  delete element[FOCUS_SILENTLY];
+  return isSilentlyFocused;
+}
+
+/**
+ * Determines whether the element is a composite item.
+ */
+export function isItem(
+  items: Item[],
+  element?: Element | null,
+  exclude?: Element
+) {
+  if (!element) return false;
+  return items.some((item) => {
+    if (exclude && item.ref.current === exclude) return false;
+    return item.ref.current === element;
+  });
 }
 
 export const CompositeContext = createStoreContext<CompositeState>();

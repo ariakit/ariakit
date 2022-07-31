@@ -46,6 +46,19 @@ export function fireBlurEvent(element: Element, eventInit?: FocusEventInit) {
 }
 
 /**
+ * Creates and dispatches a focus event.
+ * @example
+ * fireFocusEvent(document.getElementById("id"));
+ */
+export function fireFocusEvent(element: Element, eventInit?: FocusEventInit) {
+  const event = new FocusEvent("focus", eventInit);
+  const defaultAllowed = element.dispatchEvent(event);
+  const bubbleInit = { ...eventInit, bubbles: true };
+  element.dispatchEvent(new FocusEvent("focusin", bubbleInit));
+  return defaultAllowed;
+}
+
+/**
  * Creates and dispatches a keyboard event.
  * @example
  * fireKeyboardEvent(document.getElementById("id"), "keydown", {

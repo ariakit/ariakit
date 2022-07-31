@@ -33,7 +33,9 @@ import {
   CompositeRowContext,
   Item,
   findEnabledItemById,
+  focusSilently,
   getContextId,
+  isItem,
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
@@ -123,14 +125,7 @@ function useItem(items?: Item[], id?: string) {
 function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
   if (isSelfTarget(event)) return false;
   const target = event.target as HTMLElement;
-  const { compositeItemId } = target.dataset;
-  for (const item of items) {
-    if (item.ref.current === event.currentTarget) continue;
-    if (item.ref.current === target || compositeItemId === item.id) {
-      return true;
-    }
-  }
-  return false;
+  return isItem(items, target, event.currentTarget);
 }
 
 function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
@@ -240,7 +235,23 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       const composite = state.baseRef.current;
       if (!composite) return;
       hasFocusedComposite.current = true;
-      composite.focus();
+      // If the previously focused element is a composite or composite item
+      // component, we'll transfer focus silently to the composite element.
+      // That's because this is just a transition event, the composite element
+      // was likely already focused, so we're just immediately returning focus
+      // to it when navigating through the items.
+      const fromComposite =
+        event.relatedTarget === composite ||
+        isItem(state.items, event.relatedTarget);
+      if (fromComposite) {
+        focusSilently(composite);
+      }
+      // Otherwise, the composite element is likely not focused, so we need this
+      // focus event to propagate so consumers can use the onFocus prop on
+      // <Composite>.
+      else {
+        composite.focus();
+      }
     });
 
     const onBlurCaptureProp = props.onBlurCapture;

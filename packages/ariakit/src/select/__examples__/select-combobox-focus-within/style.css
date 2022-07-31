@@ -1,0 +1,31 @@
+@import "../select-combobox/style.css";
+@import "../../../button/__examples__/button/style.css";
+
+.wrapper {
+  @apply p-4 border-l-4 border-transparent;
+}
+
+.focus-within {
+  @apply border-primary-1 dark:border-primary-1-dark;
+}
+
+.combobox {
+  @apply pr-10;
+}
+
+.combobox-cancel {
+  @apply
+    opacity-0
+    pointer-events-none
+    absolute
+    h-8
+    w-8
+    p-0
+    top-3
+    right-1
+    rounded;
+}
+
+.combobox-cancel[data-visible] {
+  @apply opacity-100 pointer-events-auto;
+}
