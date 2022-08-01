@@ -9,14 +9,20 @@
     "website": "0.0.0"
   },
   "changesets": [
+    "combobox-cancel-auto-select",
+    "combobox-cancel-hide-popover",
     "combobox-popover-modal",
+    "composite-focus-blur-events",
+    "composite-focus-item",
     "composite-item-scroll-into-view",
     "dialog-auto-focus-on-show",
+    "dialog-auto-focus",
     "dialog-scroll-into-view",
     "fix-react-17-webpack-error-again",
     "floating-ui",
     "form-field-aria-invalid",
     "form-field-name",
+    "hovercard-hide-after-scroll",
     "menu-button-autofocus",
     "menu-list-role",
     "playground-grammarly",
@@ -24,13 +30,17 @@
     "popover-arrow-flash",
     "popover-disclosure-arrow-placement",
     "popover-portal-scroll-jump",
+    "popover-tooltip-relative-placement",
+    "portal-blur-event-order",
     "select-focus-firefox",
     "select-modal-click-outside",
     "select-popover-composite-attributes",
     "select-scroll-on-space",
     "tooltip-position",
     "utils-ensure-focus",
+    "utils-fire-focus-event",
     "utils-focus-into-view",
+    "utils-use-is-mouse-moving",
     "utils-use-portal-ref"
   ]
 }

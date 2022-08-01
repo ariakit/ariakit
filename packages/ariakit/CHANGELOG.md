@@ -1,5 +1,29 @@
 # ariakit
 
+## 2.0.0-next.37
+
+### Minor Changes
+
+- Improved `focus` and `blur` events on `Composite` components. ([#1691](https://github.com/ariakit/ariakit/pull/1691))
+
+* The `Dialog` component doesn't modify the scroll behavior when auto focusing elements on show/hide anymore. ([#1687](https://github.com/ariakit/ariakit/pull/1687))
+
+### Patch Changes
+
+- Fixed `autoSelect` behavior Combobox loses focus. ([#1679](https://github.com/ariakit/ariakit/pull/1679))
+
+* Fixed `ComboboxPopover` hiding when the `ComboboxCancel` component gets focused. ([#1677](https://github.com/ariakit/ariakit/pull/1677))
+
+- Fixed double focus on `CompositeItem` when combining multiple `Composite` components. ([#1689](https://github.com/ariakit/ariakit/pull/1689))
+
+* Fixed `Hovercard` not hiding after scroll. ([#1680](https://github.com/ariakit/ariakit/pull/1680))
+
+- Fixed `Popover` and `Tooltip` initial placement when inside an element with `position: relative`. ([#1676](https://github.com/ariakit/ariakit/pull/1676))
+
+* Fixed the order that blur events are fired on `Portal` with `preserveTabOrder` set to `true`. ([#1681](https://github.com/ariakit/ariakit/pull/1681))
+
+* Updated dependencies: `ariakit-utils@0.17.0-next.24`.
+
 ## 2.0.0-next.36
 
 ### Minor Changes
