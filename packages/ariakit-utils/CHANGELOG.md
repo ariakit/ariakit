@@ -1,5 +1,13 @@
 # ariakit-utils
 
+## 0.17.0-next.24
+
+### Patch Changes
+
+- Added `fireFocusEvent` function. ([#1691](https://github.com/ariakit/ariakit/pull/1691))
+
+* Added `useIsMouseMoving` function. ([#1680](https://github.com/ariakit/ariakit/pull/1680))
+
 ## 0.17.0-next.23
 
 ### Minor Changes
