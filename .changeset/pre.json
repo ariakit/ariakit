@@ -8,29 +8,5 @@
     "ariakit-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": [
-    "combobox-popover-modal",
-    "composite-item-scroll-into-view",
-    "dialog-auto-focus-on-show",
-    "dialog-scroll-into-view",
-    "fix-react-17-webpack-error-again",
-    "floating-ui",
-    "form-field-aria-invalid",
-    "form-field-name",
-    "menu-button-autofocus",
-    "menu-list-role",
-    "playground-grammarly",
-    "playground-vscode-theme",
-    "popover-arrow-flash",
-    "popover-disclosure-arrow-placement",
-    "popover-portal-scroll-jump",
-    "select-focus-firefox",
-    "select-modal-click-outside",
-    "select-popover-composite-attributes",
-    "select-scroll-on-space",
-    "tooltip-position",
-    "utils-ensure-focus",
-    "utils-focus-into-view",
-    "utils-use-portal-ref"
-  ]
+  "changesets": []
 }
