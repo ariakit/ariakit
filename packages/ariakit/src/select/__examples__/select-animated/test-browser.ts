@@ -61,7 +61,11 @@ test("show/hide", async ({ page }) => {
 test("https://github.com/ariakit/ariakit/issues/1684", async ({ page }) => {
   await page.goto("/examples/select-animated");
   await getButton(page).focus();
-  await page.keyboard.press("Enter");
-  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.down("Shift");
+  await page.keyboard.down("Enter");
+  await page.keyboard.down("Tab");
+  await page.keyboard.up("Enter");
+  await page.keyboard.up("Tab");
+  await page.keyboard.up("Shift");
   await expect(getPopover(page)).not.toBeVisible();
 });
