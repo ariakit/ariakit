@@ -1,7 +1,6 @@
 import {
   MutableRefObject,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -38,19 +37,6 @@ export function useDisclosureState({
   if (animated && !animating && prevOpen !== open) {
     setAnimating(true);
   }
-
-  useEffect(() => {
-    if (typeof animated === "number" && animating) {
-      const timeout = setTimeout(() => setAnimating(false), animated);
-      return () => clearTimeout(timeout);
-    }
-    // TODO: warn when 8 seconds have been passed
-    return;
-    // We're also listening to the open state here although it's not used in
-    // the effect. This is so we can clear previous timeouts and avoid hiding
-    // the content when the disclosure button gets clicked several times in
-    // sequence.
-  }, [animated, animating, open]);
 
   const show = useCallback(() => setOpen(true), [setOpen]);
   const hide = useCallback(() => setOpen(false), [setOpen]);

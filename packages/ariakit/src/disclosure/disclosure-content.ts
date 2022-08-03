@@ -1,21 +1,40 @@
-import {
-  AnimationEvent,
-  SyntheticEvent,
-  TransitionEvent,
-  useEffect,
-  useState,
-} from "react";
-import { isSelfTarget } from "ariakit-utils/events";
-import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
+import { useState } from "react";
+import { useForkRef, useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-utils/system";
 import { As, Options, Props } from "ariakit-utils/types";
+import { flushSync } from "react-dom";
 import { DisclosureState } from "./disclosure-state";
 
 type TransitionState = "enter" | "leave" | null;
+
+function afterTimeout(timeoutMs: number, cb: () => void) {
+  const timeoutId = setTimeout(cb, timeoutMs);
+  return () => clearTimeout(timeoutId);
+}
+
+function afterPaint(cb: () => void) {
+  let raf = requestAnimationFrame(() => {
+    raf = requestAnimationFrame(cb);
+  });
+  return () => cancelAnimationFrame(raf);
+}
+
+function parseCSSTime(...times: string[]) {
+  return times
+    .join(", ")
+    .split(", ")
+    .reduce((longestTime, currentTimeString) => {
+      const currentTime = parseFloat(currentTimeString || "0s") * 1000;
+      // When multiple times are specified, we want to use the longest one so we
+      // wait until the longest transition has finished.
+      if (currentTime > longestTime) return currentTime;
+      return longestTime;
+    }, 0);
+}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -34,54 +53,65 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     const id = useId(props.id);
     const [transition, setTransition] = useState<TransitionState>(null);
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!state.animated) return;
       // When the disclosure content element is rendered in a portal, we need to
       // wait for the portal to be mounted and connected to the DOM before we
       // can start the animation.
-      if (!state.contentElement?.isConnected) return;
-      if (state.open) {
-        // Double requestAnimationFrame is necessary here to avoid potential
-        // bugs when the data attribute is added before the element is fully
-        // rendered in the DOM, which wouldn't trigger the animation.
-        let raf = requestAnimationFrame(() => {
-          raf = requestAnimationFrame(() => {
-            setTransition("enter");
-          });
-        });
-        return () => cancelAnimationFrame(raf);
-      }
-      setTransition(state.animating ? "leave" : null);
-      return () => {
+      if (!state.contentElement?.isConnected) {
         setTransition(null);
-      };
-    }, [state.animated, state.contentElement, state.open, state.animating]);
-
-    const onEnd = (event: SyntheticEvent) => {
-      if (event.defaultPrevented) return;
-      if (!isSelfTarget(event)) return;
-      if (!state.animating) return;
-      // Ignores number animated
-      if (state.animated === true) {
-        state.stopAnimation();
+        return;
       }
-    };
+      // Double requestAnimationFrame is necessary here to avoid potential bugs
+      // when the data attribute is added before the element is fully rendered
+      // in the DOM, which wouldn't trigger the animation.
+      return afterPaint(() => {
+        setTransition(state.open ? "enter" : "leave");
+      });
+    }, [state.animated, state.contentElement, state.open]);
 
-    const onTransitionEndProp = props.onTransitionEnd;
-
-    const onTransitionEnd = useEvent(
-      (event: TransitionEvent<HTMLDivElement>) => {
-        onTransitionEndProp?.(event);
-        onEnd(event);
+    useSafeLayoutEffect(() => {
+      if (!state.animated) return;
+      if (!state.contentElement) return;
+      if (!transition) return;
+      if (transition === "enter" && !state.open) return;
+      if (transition === "leave" && state.open) return;
+      // When the animated state is a number, the user has manually set the
+      // animation timeout, so we just respect it.
+      if (typeof state.animated === "number") {
+        const timeoutMs = state.animated;
+        return afterTimeout(timeoutMs, () => flushSync(state.stopAnimation));
       }
-    );
-
-    const onAnimationEndProp = props.onAnimationEnd;
-
-    const onAnimationEnd = useEvent((event: AnimationEvent<HTMLDivElement>) => {
-      onAnimationEndProp?.(event);
-      onEnd(event);
-    });
+      // Otherwise, we need to parse the CSS transition/animation duration and
+      // delay to know when the animation ends. This is safer than relying on
+      // the transitionend/animationend events because it's not guaranteed that
+      // these events will fire. For example, if the element is removed from the
+      // DOM before the animation ends or if the animation wasn't triggered in
+      // the first place, the events won't fire.
+      const {
+        transitionDuration,
+        animationDuration,
+        transitionDelay,
+        animationDelay,
+      } = getComputedStyle(state.contentElement);
+      const delay = parseCSSTime(transitionDelay, animationDelay);
+      const duration = parseCSSTime(transitionDuration, animationDuration);
+      const timeoutMs = delay + duration;
+      // If the animation/transition delay and duration are 0, this means the
+      // element is not animated with CSS (they may be using framer-motion,
+      // react-spring, or something else). In this case, the user is responsible
+      // for calling `stopAnimation` when the animation ends.
+      if (!timeoutMs) return;
+      // TODO: We should probably warn if `stopAnimation` hasn't been called
+      // after X seconds.
+      return afterTimeout(timeoutMs, () => flushSync(state.stopAnimation));
+    }, [
+      state.animated,
+      state.contentElement,
+      transition,
+      state.open,
+      state.stopAnimation,
+    ]);
 
     const style =
       state.mounted || props.hidden === false
@@ -95,8 +125,6 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       hidden: !state.mounted,
       ...props,
       ref: useForkRef(id ? state.setContentElement : null, props.ref),
-      onTransitionEnd,
-      onAnimationEnd,
       style,
     };
 
