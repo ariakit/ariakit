@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { cx } from "ariakit-utils/misc";
+import { ComboboxItem } from "ariakit/combobox";
+import { CompositeGroup, CompositeGroupLabel } from "ariakit/composite";
 import {
   Menu,
   MenuBar,
@@ -9,6 +11,7 @@ import {
   useMenuBarState,
   useMenuState,
 } from "ariakit/menu";
+import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import {
   Select,
   SelectItem,
@@ -17,6 +20,7 @@ import {
   useSelectState,
 } from "ariakit/select";
 import { VisuallyHidden } from "ariakit/visually-hidden";
+import groupBy from "lodash/groupBy";
 import startCase from "lodash/startCase";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -32,152 +36,129 @@ export default function Header() {
   const router = useRouter();
   const isHome = router.pathname === "/";
   const [, category, page] = router.asPath.split("/");
-  const menubar = useMenuBarState();
-  const categorySelect = useSelectState({
-    fixed: true,
-    value: category,
-  });
-  const pageSelect = useSelectState({ fixed: true, value: page });
-  const categoryMenu = useMenuState(categorySelect);
-  const pageMenu = useMenuState(pageSelect);
-  const [matches, setMatches] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState("");
 
   const breadcrumbs = category ? (
     <>
       {separator}
-      <MenuBar state={menubar} className="flex gap-1 items-center">
-        <Select state={categorySelect}>
-          {(props) => (
-            <MenuButton
-              as={MenuItem}
-              {...props}
-              showOnHover={false}
-              focusOnHover={false}
-              state={categoryMenu}
-            >
-              {startCase(categorySelect.value)}
-            </MenuButton>
-          )}
-        </Select>
-        {categorySelect.mounted && (
-          <SelectPopover
-            portal
-            state={categorySelect}
-            className={cx(
-              "max-h-[var(--popover-available-height)] overflow-auto",
-              "flex flex-col z-50 bg-canvas-5 dark:bg-canvas-5-dark",
-              "rounded-lg drop-shadow-lg dark:drop-shadow-lg-dark",
-              "p-2 border border-solid border-canvas-5 dark:border-canvas-5-dark"
-            )}
-          >
-            {(props) => (
-              <MenuList state={categoryMenu} {...props}>
-                {Object.keys(meta)?.map((key) => (
-                  <PageMenuItem key={key} value={key} href={`/${key}`}>
-                    {startCase(key)}
-                  </PageMenuItem>
-                ))}
-              </MenuList>
-            )}
-          </SelectPopover>
-        )}
-        {page && (
-          <>
-            {separator}
-            <Select state={pageSelect}>
-              {(props) => (
-                <MenuButton
-                  as={MenuItem}
-                  {...props}
-                  showOnHover={false}
-                  focusOnHover={false}
-                  state={pageMenu}
-                >
-                  {
-                    meta[category]?.find(
-                      (item) => item.slug === pageSelect.value
-                    )?.title
-                  }
-                </MenuButton>
-              )}
-            </Select>
-            {pageSelect.mounted && (
-              <SelectPopover
-                portal
-                state={pageSelect}
-                className={cx(
-                  "max-h-[var(--popover-available-height)] overflow-auto",
-                  "flex flex-col z-50 bg-canvas-5 dark:bg-canvas-5-dark",
-                  "rounded-lg drop-shadow-lg dark:drop-shadow-lg-dark",
-                  "p-2 border border-solid border-canvas-5 dark:border-canvas-5-dark"
-                )}
-              >
-                {(props) => (
-                  <MenuList state={pageMenu} {...props}>
-                    {meta[category]?.map((item) => (
-                      <PageMenuItem
-                        key={item.slug}
-                        value={item.slug}
-                        href={`/${category}/${item.slug}`}
-                      >
-                        {item.title}
-                      </PageMenuItem>
-                    ))}
-                  </MenuList>
-                )}
-              </SelectPopover>
-            )}
+      <PageMenu
+        searchPlaceholder="Search"
+        searchValue={searchValue}
+        onSearch={setSearchValue}
+        value={category}
+        size={searchValue ? "lg" : "sm"}
+      >
+        {Object.keys(meta)?.map((key) => (
+          <PageMenuItem key={key} value={key} href={`/${key}`}>
+            {startCase(key)}
+          </PageMenuItem>
+        ))}
+      </PageMenu>
 
-            {page && (
-              <>
-                {separator}
-                <PageMenu
-                  defaultList={meta[category]?.map((item) => item.title)}
-                  onMatch={setMatches}
-                  value={page}
-                >
-                  {matches.map((value) => {
-                    const item = meta[category]?.find(
-                      (item) => item.title === value
-                    );
+      {page && (
+        <>
+          {separator}
+          <PageMenu
+            searchPlaceholder={`Search ${category}`}
+            searchValue={searchValue}
+            onSearch={setSearchValue}
+            value={page}
+            size="lg"
+          >
+            {Object.entries(groupBy(meta[category], "group")).map(
+              ([group, pages]) => (
+                <CompositeGroup key={group} className="bg-[color:inherit]">
+                  <CompositeGroupLabel className="cursor-default p-2 pt-3 text-sm font-medium text-black/70 dark:text-white/70 bg-[color:inherit] sticky top-12 z-40">
+                    {group}
+                  </CompositeGroupLabel>
+                  {pages.map((item, i) => {
                     return (
                       <PageMenuItem
-                        key={item.slug}
+                        key={item.slug + i}
                         value={item.slug}
                         href={`/${category}/${item.slug}`}
+                        className="flex !pr-4 !gap-4 !items-start group !scroll-mt-[88px] scroll-mb-14"
                       >
-                        {item.title}
+                        <div
+                          className={cx(
+                            "flex items-center justify-center flex-none w-16 h-16 rounded-sm",
+                            "bg-canvas-1 dark:bg-canvas-2-dark",
+                            "group-active-item:bg-white/50 dark:group-active-item:bg-black/70"
+                          )}
+                        >
+                          <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
+                            <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold">{item.title}</span>
+                          <span className="text-sm opacity-70 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                            {item.description}
+                          </span>
+                        </div>
                       </PageMenuItem>
                     );
                   })}
-                </PageMenu>
-              </>
+                </CompositeGroup>
+              )
             )}
-          </>
-        )}
-      </MenuBar>
+            <div
+              role="presentation"
+              className="sticky bottom-0 translate-y-2 py-2 bg-[color:inherit] z-40"
+            >
+              <PageMenuItem
+                className="grid h-10 grid-cols-[theme(spacing.14)_auto_theme(spacing.14)] bg-canvas-1 dark:bg-canvas-5-dark"
+                onClick={() => {
+                  // categorySelect.show();
+                }}
+              >
+                <PopoverDisclosureArrow placement="left" />
+                <span className="text-center">
+                  {searchValue ? "Search" : "Browse"} all pages
+                </span>
+                {/* <div
+                  className={cx(
+                    "text-xs text-right rounded-full p-1 px-2",
+                    "text-canvas-1/70 dark:text-canvas-1-dark/70"
+                  )}
+                >
+                  <abbr title="Command" className="no-underline">
+                    ⌘
+                  </abbr>
+                  <span> K</span>
+                </div> */}
+              </PageMenuItem>
+            </div>
+          </PageMenu>
+        </>
+      )}
     </>
   ) : null;
 
   const links = (
-    <div className="flex gap-8 ml-8">
-      <Link href="/guide">
-        <a className="hover:underline">Guide</a>
-      </Link>
-      <Link href="/components">
-        <a className="hover:underline">Components</a>
-      </Link>
-      <Link href="/examples">
-        <a className="hover:underline">Examples</a>
-      </Link>
-    </div>
+    <>
+      {separator}
+      <PageMenu
+        label="Browse"
+        searchPlaceholder="Search"
+        searchValue={searchValue}
+        onSearch={setSearchValue}
+        size={searchValue ? "lg" : "sm"}
+      >
+        {Object.keys(meta)?.map((key) => (
+          <PageMenuItem key={key} value={key} href={`/${key}`}>
+            {startCase(key)}
+          </PageMenuItem>
+        ))}
+      </PageMenu>
+    </>
   );
 
   return (
     <div
       className={cx(
         "sticky top-0 left-0 w-full z-40",
-        "flex pr-[var(--scrollbar-width)] justify-center",
+        "flex justify-center",
         "bg-canvas-2 dark:bg-canvas-2-dark",
         "backdrop-blur supports-backdrop-blur:bg-canvas-2/80 dark:supports-backdrop-blur:bg-canvas-2-dark/80"
       )}

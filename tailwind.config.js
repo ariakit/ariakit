@@ -268,6 +268,14 @@ module.exports = {
       "2xl-dark": "0 25px 50px -12px rgb(0 0 0 / 0.75)",
       inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
       "inner-dark": "inset 0 2px 4px 0 rgb(0 0 0 / 0.15)",
+      button:
+        "0 1px 0 0 rgb(0 0 0 / 0.1), inset 0 1px 0 0 rgb(255 255 255 / 0.15)",
+      "button-dark":
+        "0 1px 2px 0 rgb(0 0 0 / 0.05), inset 0 1px 0 0 rgb(255 255 255 / 0.05)",
+      input:
+        "inset 0 0 0 1px rgba(0 0 0 / 0.05), inset 0 -1px 0 0 rgba(255 255 255 / 0.15), inset 0 2px 5px 0 rgba(0 0 0 / 0.05)",
+      "input-dark":
+        "inset 0 0 0 1px rgba(255 255 255 / 0.12), inset 0 -1px 0 0 rgba(255 255 255 / 0.05), inset 0 2px 5px 0 rgba(0 0 0 / 0.15)",
       none: "0 0 #0000",
     },
     fontFamily: {

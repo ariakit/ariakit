@@ -5,8 +5,7 @@
 }
 
 .combobox-wrapper {
-  background-color: inherit;
-  @apply sticky top-0 pt-2 mb-2 w-fit;
+  @apply sticky bg-[color:inherit] top-0 pt-2 mb-2 w-fit;
 }
 
 .combobox {

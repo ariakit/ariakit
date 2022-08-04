@@ -365,8 +365,15 @@ async function getPageMeta(filename) {
  * @param {string} options.componentPath The path to the component that will be
  * used to render the page.
  * @param {string} [options.metaPath] The path to the meta file.
+ * @param {(filename: string) => string | null} [options.getGroup]
  */
-async function writePage({ filename, dest, componentPath, metaPath }) {
+async function writePage({
+  filename,
+  dest,
+  componentPath,
+  metaPath,
+  getGroup,
+}) {
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
@@ -383,6 +390,14 @@ async function writePage({ filename, dest, componentPath, metaPath }) {
     const category = path.basename(dest);
     const { default: existingMeta } = await import(metaPath);
     const meta = await getPageMeta(filename);
+    const group = getGroup?.(filename);
+    if (group) {
+      // @ts-ignore
+      meta.group = group;
+    } else {
+      // @ts-ignore
+      delete meta.group;
+    }
     if (!existingMeta[category]) {
       existingMeta[category] = [];
     }
@@ -396,7 +411,7 @@ async function writePage({ filename, dest, componentPath, metaPath }) {
       existingMeta[category].push(meta);
     }
     const contents = prettier.format(
-      `export default ${JSON.stringify(existingMeta)}`,
+      `module.exports = ${JSON.stringify(existingMeta)}`,
       { parser: "babel" }
     );
     fs.writeFileSync(metaPath, contents);

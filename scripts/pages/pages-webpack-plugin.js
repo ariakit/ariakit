@@ -21,12 +21,16 @@ class PagesWebpackPlugin {
    * be used to render the page.
    * @param {string} [options.buildDir] The directory where the build files
    * should be placed.
+   * @param {string} [options.metaPath] The path of the meta file.
+   * @param {(filename: string) => string | null} [options.getGroup]
    */
   constructor(options) {
     this.name = options.name;
     this.sourceContext = options.sourceContext;
     this.sourceRegExp = options.sourceRegExp;
     this.componentPath = options.componentPath;
+    this.metaPath = options.metaPath;
+    this.getGroup = options.getGroup;
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
   }
@@ -47,6 +51,8 @@ class PagesWebpackPlugin {
         name: this.name,
         buildDir: this.buildDir,
         componentPath: this.componentPath,
+        metaPath: this.metaPath,
+        getGroup: this.getGroup,
       },
     });
 

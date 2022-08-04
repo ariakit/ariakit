@@ -73,7 +73,7 @@ export default function MarkdownPage(props) {
   }, [props.markdown, props.defaultValues, props.deps]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex items-start justify-center">
       <SEO title={`${title} - Ariakit`} />
       <div
         className={cx(
@@ -87,7 +87,6 @@ export default function MarkdownPage(props) {
           "[&_a]:underline [&_a:hover]:decoration-[3px] [&_a]:[text-decoration-skip-ink:none]",
           "[&_a]:text-link dark:[&_a]:text-link-dark",
           // h1
-          "sm:[&_h1]:mb-4",
           "[&_h1]:scroll-mt-[72px]",
           "[&_h1]:text-4xl sm:[&_h1]:text-5xl md:[&_h1]:text-6xl",
           "[&_h1]:font-extrabold dark:[&_h1]:font-bold",
@@ -96,11 +95,23 @@ export default function MarkdownPage(props) {
           "[&_h2]:text-2xl sm:[&_h2]:text-3xl md:[&_h2]:text-4xl",
           "[&_h2]:font-semibold dark:[&_h2]:font-medium",
           "[&_h2]:text-black/75 dark:[&_h2]:text-white/75",
+          // description
+          "[&>p.description]:text-lg",
+          "[&>p.description]:text-canvas-1/70 dark:[&>p.description]:text-canvas-1-dark/70",
           // p
           "[&_p]:tracking-tight"
         )}
       >
         {renderAst(tree)}
+      </div>
+      <div className="sticky top-24 mt-20">
+        <div>On this page</div>
+        <ul>
+          <li>Form with Select</li>
+          <li>Features</li>
+          <li>Related components</li>
+          <li>Other examples</li>
+        </ul>
       </div>
     </div>
   );

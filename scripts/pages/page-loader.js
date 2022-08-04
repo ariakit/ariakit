@@ -9,6 +9,7 @@ const { writePage } = require("./utils");
  * @property {string} options.buildDir
  * @property {string} options.componentPath
  * @property {string} [options.metaPath]
+ * @property {(filename: string) => string | null} [options.getGroup]
  */
 
 /**
@@ -18,10 +19,11 @@ const { writePage } = require("./utils");
  */
 async function pageLoader(source) {
   const filename = this.resourcePath;
-  const { name, buildDir, componentPath, metaPath } = this.getOptions();
+  const { name, buildDir, componentPath, metaPath, getGroup } =
+    this.getOptions();
   const dest = path.join(buildDir, name);
 
-  await writePage({ filename, dest, componentPath, metaPath });
+  await writePage({ filename, dest, componentPath, metaPath, getGroup });
 
   if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.

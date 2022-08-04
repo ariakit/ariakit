@@ -12,7 +12,6 @@ export default function Example() {
     sameWidth: true,
     animated: true,
   });
-
   return (
     <div>
       <label className="label">

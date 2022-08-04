@@ -25,6 +25,7 @@ const {
  * @property {string} [metaPath]
  * @property {string} [buildDir]
  * @property {string} [pagesDir]
+ * @property {(filename: string) => string | null} [getGroup]
  */
 
 /** @type {Page[]} */
@@ -84,6 +85,7 @@ pages.forEach(async (page) => {
       dest,
       componentPath: page.componentPath,
       metaPath: page.metaPath,
+      getGroup: page.getGroup,
     });
   }
 
