@@ -31,15 +31,12 @@ module.exports = {
       transparent: {
         DEFAULT: "transparent",
         border: "transparent",
+        text: "transparent",
       },
       current: {
         DEFAULT: "currentColor",
         border: "currentColor",
         text: "currentColor",
-      },
-      transparent: {
-        DEFAULT: "transparent",
-        border: "transparent",
       },
       link: {
         text: "hsl(204 100% 32%)",
@@ -273,7 +270,7 @@ module.exports = {
       "button-dark":
         "0 1px 2px 0 rgb(0 0 0 / 0.05), inset 0 1px 0 0 rgb(255 255 255 / 0.05)",
       input:
-        "inset 0 0 0 1px rgba(0 0 0 / 0.05), inset 0 -1px 0 0 rgba(255 255 255 / 0.15), inset 0 2px 5px 0 rgba(0 0 0 / 0.05)",
+        "inset 0 0 0 1px rgba(0 0 0 / 0.1), inset 0 2px 5px 0 rgba(0 0 0 / 0.05)",
       "input-dark":
         "inset 0 0 0 1px rgba(255 255 255 / 0.12), inset 0 -1px 0 0 rgba(255 255 255 / 0.05), inset 0 2px 5px 0 rgba(0 0 0 / 0.15)",
       none: "0 0 #0000",

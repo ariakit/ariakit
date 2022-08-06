@@ -1,5 +1,4 @@
 import "../styles/globals.css";
-import { cx } from "ariakit-utils/misc";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
@@ -54,27 +53,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       )}
       <div>
         <Header />
-        <div className="flex flex-col items-center mx-3 sm:mx-4">
-          <div
-            className={cx(
-              "text-sm p-3 sm:px-8 w-full max-w-[1408px]",
-              "rounded-lg flex justify-center",
-              "text-canvas-1 dark:text-canvas-5-dark",
-              "bg-canvas-1 dark:bg-canvas-5-dark"
-            )}
-          >
-            <div>
-              The Ariakit docs are still under construction. You can{" "}
-              <a
-                href="https://newsletter.ariakit.org"
-                className="rounded-lg text-link dark:text-link-dark underline hover:decoration-[3px] [text-decoration-skip-ink:none]"
-              >
-                subscribe to our newsletter
-              </a>{" "}
-              to get major updates.
-            </div>
-          </div>
-        </div>
         <Component {...pageProps} />
       </div>
     </>

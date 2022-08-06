@@ -261,6 +261,11 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (event.button) return;
       if (event.ctrlKey) return;
       if (!showOnMouseDownProp(event)) return;
+      // TODO: Test this
+      state.setActiveId(null);
+      if (setValueOnClickProp(event)) {
+        state.setValue(value);
+      }
       queueBeforeEvent(event.currentTarget, "mouseup", state.show);
     });
 

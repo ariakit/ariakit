@@ -2,63 +2,87 @@ import React from "react";
 import { cx } from "ariakit-utils/misc";
 import Link from "next/link";
 import shapes from "../components/home-shapes.svg";
+import Notification from "../components/notification";
+import tw from "../utils/tw";
 
 export default function Home() {
   return (
-    <div
-      style={{ backgroundImage: `url(${shapes.src})` }}
-      className={cx(
-        "bg-no-repeat bg-top",
-        "flex px-3 sm:px-4 md:px-8 flex-col items-center gap-8 p-5"
-      )}
-    >
+    <>
+      <div className="flex justify-center p-3 sm:p-4">
+        <Notification />
+      </div>
       <div
+        style={{ backgroundImage: `url(${shapes.src})` }}
         className={cx(
-          "flex flex-col items-center gap-8 w-full max-w-5xl mt-4 sm:mt-10 md:mt-20"
+          "bg-no-repeat bg-top",
+          "flex px-3 sm:px-4 md:px-8 flex-col items-center gap-8 p-5"
         )}
       >
-        <h1
+        <div
           className={cx(
-            "text-center text-5xl sm:text-6xl md:text-7xl",
-            "tracking-[-0.035em] dark:tracking-[-0.015em]",
-            "font-extrabold dark:font-bold"
+            "flex flex-col items-center gap-8 w-full max-w-5xl mt-4 sm:mt-10 md:mt-20"
           )}
         >
-          Build accessible web apps with React
-        </h1>
-        <p className="max-w-3xl text-center text-lg opacity-75">
-          Ariakit is an open source library that provides lower-level React
-          components and hooks for building accessible web apps, design systems,
-          and other component libraries.
-        </p>
-      </div>
-      <div className="flex gap-8 mb-20 items-center">
-        <Link href="/guide/get-started">
-          <a
+          <h1
             className={cx(
-              "flex gap-2 h-12 items-center whitespace-nowrap justify-center text-lg px-4 rounded-lg",
-              "text-primary-2 dark:text-primary-2-dark",
-              "bg-primary-2 dark:bg-primary-2-dark",
-              "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover"
+              "text-center text-5xl sm:text-6xl md:text-7xl",
+              "tracking-[-0.035em] dark:tracking-[-0.015em]",
+              "font-extrabold dark:font-bold text-transparent",
+              "bg-gradient-to-br bg-clip-text",
+              "from-[hsl(175_100%_35%)] to-[hsl(204_100%_35%)]",
+              "dark:from-[hsl(175_100%_60%)] dark:to-[hsl(204_100%_58%)]"
             )}
           >
-            Get Started
-            <svg
-              aria-hidden
-              className="h-6 w-6"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+            Build accessible web apps with React
+          </h1>
+          <p className="max-w-3xl text-center text-lg text-canvas-1/70 dark:text-canvas-1-dark/70">
+            Ariakit is an open source library that provides lower-level React
+            components and hooks for building accessible web apps, design
+            systems, and other component libraries.
+          </p>
+        </div>
+        <div className="flex gap-4 mb-20 items-center flex-col sm:flex-row">
+          <Link href="/guide/get-started">
+            <a
+              className={cx(
+                "flex gap-2 h-12 items-center whitespace-nowrap justify-center text-lg px-8 rounded-lg",
+                "text-primary-2 dark:text-primary-2-dark",
+                "bg-primary-2 dark:bg-primary-2-dark",
+                "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
+                "shadow-lg dark:shadow-lg-dark"
+              )}
             >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </a>
-        </Link>
-        <Link href="/components">Explore components</Link>
+              Get started
+            </a>
+          </Link>
+          <Link href="/components">
+            <a
+              className={tw`
+              flex items-center justify-center whitespace-nowrap
+              gap-2 h-12 px-8
+              rounded-lg
+              hover:bg-canvas-1 dark:hover:bg-canvas-4-dark
+            `}
+            >
+              Components{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -14,7 +14,7 @@ import VersionSelect from "./version-select";
 
 const separator = <div className="opacity-30 font-semibold">/</div>;
 
-export default function Header() {
+export default function Nav() {
   const router = useRouter();
   const isHome = router.pathname === "/";
   const [, category, page] = router.asPath.split("/");

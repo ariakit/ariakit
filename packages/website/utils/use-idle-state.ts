@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
+import whenIdle from "./when-idle";
 
 export default function useIdle(timeout?: number) {
   const [idle, setIdle] = useState(true);
 
   useEffect(() => {
-    if (!window.requestIdleCallback) {
-      setIdle(true);
-      return;
-    }
-    const id = requestIdleCallback(() => setIdle(true), { timeout });
-    return () => cancelIdleCallback(id);
+    return whenIdle(() => setIdle(true), timeout);
   }, [timeout]);
 
   return idle;
