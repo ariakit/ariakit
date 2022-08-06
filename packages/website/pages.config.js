@@ -23,9 +23,9 @@ module.exports = [
      * @param {string} filename
      */
     getGroup: (filename) => {
-      const component = path.basename(filename);
+      const component = path.basename(path.dirname(filename));
       if (["command"].includes(component)) {
-        return "Abstract components";
+        return "Abstract Components";
       }
       return null;
     },

@@ -230,49 +230,63 @@ module.exports = {
     dropShadow: {
       sm: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))",
       "sm-dark": "drop-shadow(0 1px 1px rgb(0 0 0 / 0.15))",
+
       DEFAULT:
         "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
-      dark: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.3)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.18))",
+      dark: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.3)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
+
       md: "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
       "md-dark":
-        "drop-shadow(0 4px 3px rgb(0 0 0 / 0.21)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.18))",
+        "drop-shadow(0 4px 3px rgb(0 0 0 / 0.21)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+
       lg: "drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
       "lg-dark":
-        "drop-shadow(0 10px 8px rgb(0 0 0 / 0.12)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.3))",
-      xl: "drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08))",
+        "drop-shadow(0 10px 8px rgb(0 0 0 / 0.12)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
+
+      xl: "drop-shadow(0 18px 10px rgb(0 0 0 / 0.04)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
       "xl-dark":
-        "drop-shadow(0 20px 13px rgb(0 0 0 / 0.09)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.24))",
-      "2xl": "drop-shadow(0 25px 25px rgb(0 0 0 / 0.15))",
-      "2xl-dark": "drop-shadow(0 25px 25px rgb(0 0 0 / 0.45))",
+        "drop-shadow(0 18px 10px rgb(0 0 0 / 0.12)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
+
+      "2xl": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.15))",
+      "2xl-dark": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.34))",
+
       none: "drop-shadow(0 0 #0000)",
     },
 
     boxShadow: {
       sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
       "sm-dark": "0 1px 2px 0 rgb(0 0 0 / 0.15)",
+
       DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-      dark: "0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)",
+      dark: "0 1px 3px 0 rgb(0 0 0 / 0.25), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+
       md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
       "md-dark":
-        "0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.23)",
+        "0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+
       lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
       "lg-dark":
-        "0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)",
-      xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        "0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+
+      xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
       "xl-dark":
-        "0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3)",
+        "0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
+
       "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
       "2xl-dark": "0 25px 50px -12px rgb(0 0 0 / 0.75)",
+
       inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
       "inner-dark": "inset 0 2px 4px 0 rgb(0 0 0 / 0.15)",
-      button:
-        "0 1px 0 0 rgb(0 0 0 / 0.1), inset 0 1px 0 0 rgb(255 255 255 / 0.15)",
+
+      button: "inset 0 -1px 2px 0 rgb(0 0 0 / 0.05)",
       "button-dark":
-        "0 1px 2px 0 rgb(0 0 0 / 0.05), inset 0 1px 0 0 rgb(255 255 255 / 0.05)",
+        "0 1px 2px 0 rgb(0 0 0 / 0.15), inset 0 1px 0 0 rgb(255 255 255 / 0.05)",
+
       input:
         "inset 0 0 0 1px rgba(0 0 0 / 0.1), inset 0 2px 5px 0 rgba(0 0 0 / 0.05)",
       "input-dark":
         "inset 0 0 0 1px rgba(255 255 255 / 0.12), inset 0 -1px 0 0 rgba(255 255 255 / 0.05), inset 0 2px 5px 0 rgba(0 0 0 / 0.15)",
+
       none: "0 0 #0000",
     },
     fontFamily: {

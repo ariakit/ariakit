@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import meta from "../../meta";
 import button from "../../styles/button";
 import Logo from "../logo";
+import Nav from "./nav";
 import { PageMenu, PageMenuGroup, PageMenuItem } from "./page-menu";
 import VersionSelect from "./version-select";
 
@@ -188,7 +189,7 @@ export default function Header() {
         </Link>
         <div className="flex gap-1 items-center">
           <VersionSelect />
-          {isHome ? links : breadcrumbs}
+          <Nav />
         </div>
         <button
           className={cx(button(), "ml-auto")}

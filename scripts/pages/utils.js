@@ -351,7 +351,7 @@ async function getPageMeta(filename) {
       title = toString(node);
     }
     if (node.tagName === "p" && !description) {
-      description = toString(node);
+      description = toString(node).trim();
     }
   });
   return { slug, title, description };

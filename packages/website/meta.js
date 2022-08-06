@@ -3,7 +3,12 @@ module.exports = {
   components: [
     { slug: "button", title: "Button", description: "Example" },
     { slug: "checkbox", title: "Checkbox", description: "Example" },
-    { slug: "command", title: "Command", description: "Example" },
+    {
+      slug: "command",
+      title: "Command",
+      description: "Example",
+      group: "Abstract components",
+    },
     {
       slug: "dialog",
       title: "Dialog",
@@ -197,7 +202,7 @@ module.exports = {
       slug: "form-select",
       title: "Form with Select",
       description:
-        "\n  A Select component rendered as a FormField using the built-in browser validation.\n",
+        "A Select component rendered as a FormField using the built-in browser validation.",
       group: "Form",
     },
     { slug: "group", title: "group", description: "Example", group: "Group" },

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { cx } from "ariakit-utils/misc";
+import { ReactNode, memo, useMemo, useState } from "react";
+import { useEvent } from "ariakit-utils/hooks";
+import { cx, normalizeString } from "ariakit-utils/misc";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import groupBy from "lodash/groupBy";
@@ -8,18 +9,251 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import meta from "../../meta";
 import button from "../../styles/button";
+import tw from "../../utils/tw";
+import ArrowRight from "../icons/arrow-right";
 import Logo from "../logo";
-import { PageMenu, PageMenuGroup, PageMenuItem } from "./page-menu";
+import {
+  PageMenu,
+  PageMenuGroup,
+  PageMenuItem,
+  PageMenuSeparator,
+} from "./page-menu";
 import VersionSelect from "./version-select";
 
+const style = {
+  itemIcon: tw`
+    w-4 h-4
+    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
+  `,
+};
+
 const separator = <div className="opacity-30 font-semibold">/</div>;
+
+const categoryTitles: Record<string, string> = {
+  guide: "Guide",
+  components: "Components",
+  examples: "Examples",
+  blog: "Blog",
+  api: "API Reference",
+};
+
+const searchTitles: Record<string, string> = {
+  guide: "Search guide",
+  components: "Search components",
+  examples: "Search examples",
+  blog: "Search blog",
+  api: "Search API",
+};
+
+type SubNavProps = {
+  category: string;
+  pages: typeof meta[keyof typeof meta];
+  label?: ReactNode;
+  searchPlaceholder?: string;
+  onSelect?: (item: SubNavProps["pages"][number]) => void;
+};
+
+function SubNav({
+  category,
+  label,
+  searchPlaceholder,
+  pages,
+  onSelect,
+}: SubNavProps) {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const [items, groups] = useMemo(() => {
+    const normalizedSearchValue = normalizeString(searchValue).toLowerCase();
+    const filteredPages = pages.filter(
+      (page) =>
+        normalizeString(page.title.toLowerCase()).includes(
+          normalizedSearchValue
+        ) ||
+        normalizeString(page.description.toLowerCase()).includes(
+          normalizedSearchValue
+        )
+    );
+    const groups = groupBy(filteredPages, "group");
+    const items = groups.undefined;
+    delete groups.undefined;
+    return [items, groups];
+  }, [pages, searchValue]);
+
+  const onSelectProp = useEvent(onSelect);
+
+  const elements = useMemo(() => {
+    if (!items && !Object.keys(groups).length) {
+      return <div>No results found</div>;
+    }
+    return (
+      <>
+        {!searchValue && (
+          <PageMenuItem
+            href={`/${category}`}
+            onClick={() => {
+              setOpen(false);
+              onSelectProp();
+            }}
+            className="grid grid-cols-[theme(spacing.6)_auto_theme(spacing.6)]"
+          >
+            <span />
+            <span className="text-center font-semibold">
+              {categoryTitles[category]}
+            </span>
+            <ArrowRight className="h-6 w-6" />
+          </PageMenuItem>
+        )}
+        <PageMenuSeparator />
+        {items?.map((item, i) => (
+          <PageMenuItem
+            key={item.slug + i}
+            value={item.slug}
+            href={`/${category}/${item.slug}`}
+            description={item.description}
+            onClick={() => {
+              setOpen(false);
+              onSelectProp(item);
+            }}
+            thumbnail={
+              (category === "components" || category === "examples") && (
+                <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
+                  <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                </div>
+              )
+            }
+          >
+            {item.title}
+          </PageMenuItem>
+        ))}
+        {Object.entries(groups).map(([group, pages]) => (
+          <PageMenuGroup key={group} label={group}>
+            {pages.map((item, i) => (
+              <PageMenuItem
+                key={item.slug + i}
+                value={item.slug}
+                href={`/${category}/${item.slug}`}
+                description={item.description}
+                onClick={() => {
+                  setOpen(false);
+                  onSelectProp(item);
+                }}
+                thumbnail={
+                  (category === "components" || category === "examples") && (
+                    <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
+                      <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                    </div>
+                  )
+                }
+              >
+                {item.title}
+              </PageMenuItem>
+            ))}
+          </PageMenuGroup>
+        ))}
+      </>
+    );
+  }, [category, items, groups, onSelectProp]);
+
+  return (
+    <PageMenu
+      open={open}
+      onToggle={setOpen}
+      label={label}
+      searchPlaceholder={searchPlaceholder}
+      searchValue={searchValue}
+      onSearch={setSearchValue}
+    >
+      {elements}
+    </PageMenu>
+  );
+
+  // <PageMenu
+  //       key={key}
+  //       label={categoryTitles[key]}
+  //       searchPlaceholder={searchTitles[key]}
+  //       searchValue={searchValue2}
+  //       onSearch={setSearchValue2}
+  //     />
+  // Object.entries(groupBy(meta[key], "group")).map(([group, pages]) => (
+  //   <PageMenuGroup key={group} label={group}>
+  //     {pages.map((item, i) => {
+  //       return (
+  //         <PageMenuItem
+  //           key={item.slug + i}
+  //           value={item.slug}
+  //           href={`/${category}/${item.slug}`}
+  //           description={item.description}
+  //           thumbnail={
+  //             <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
+  //               <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+  //             </div>
+  //           }
+  //         >
+  //           {item.title}
+  //         </PageMenuItem>
+  //       );
+  //     })}
+  //   </PageMenuGroup>
+  // ));
+}
 
 export default function Nav() {
   const router = useRouter();
   const isHome = router.pathname === "/";
   const [, category, page] = router.asPath.split("/");
+
   const [searchValue, setSearchValue] = useState("");
-  const [searchValue2, setSearchValue2] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const categoryTitle = category ? categoryTitles[category] : "Browse";
+
+  const categoryElements = useMemo(
+    () =>
+      Object.keys(meta).map((key) => {
+        const pages = meta[key as keyof typeof meta];
+        if (!pages) return null;
+        return (
+          <SubNav
+            key={key}
+            category={key}
+            label={categoryTitles[key]}
+            searchPlaceholder={searchTitles[key]}
+            pages={pages}
+            onSelect={() => setOpen(false)}
+          />
+        );
+      }),
+    []
+  );
+
+  return (
+    <>
+      {separator}
+      <PageMenu
+        open={open}
+        onToggle={setOpen}
+        label={categoryTitle}
+        searchPlaceholder="Search"
+        searchValue={searchValue}
+        onSearch={setSearchValue}
+        value={category}
+        size="sm"
+      >
+        {categoryElements}
+        <PageMenuSeparator />
+        <PageMenuItem href="https://github.com/ariakit/ariakit">
+          GitHub
+        </PageMenuItem>
+        <PageMenuItem href="https://github.com/ariakit/ariakit/discussions">
+          Discussions
+        </PageMenuItem>
+        <PageMenuItem href="https://newsletter.ariakit.org">
+          Newsletter
+        </PageMenuItem>
+      </PageMenu>
+    </>
+  );
 
   const breadcrumbs = category ? (
     <>

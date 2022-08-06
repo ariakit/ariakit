@@ -40,9 +40,10 @@ import {
   useSelectState,
 } from "ariakit/select";
 import Link from "next/link";
-import afterTimeout from "packages/website/utils/after-timeout";
 import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle-state";
+import whenIdle from "../../utils/when-idle";
+import NewWindow from "../icons/new-window";
 
 const style = {
   button: tw`
@@ -76,6 +77,8 @@ const style = {
     rounded-b
     bg-[color:inherit]
     z-50
+    [&:not(:focus-within)+*>[aria-expanded="true"]]:bg-black/[7.5%]
+    dark:[&:not(:focus-within)+*>[aria-expanded="true"]]:bg-white/[7.5%]
   `,
   combobox: tw`
     h-10 px-4 w-full
@@ -122,6 +125,10 @@ const style = {
     rounded-sm
     bg-canvas-1 dark:bg-canvas-2-dark
     group-active-item:bg-white/50 dark:group-active-item:bg-black/70
+  `,
+  itemIcon: tw`
+    w-4 h-4
+    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
   `,
   separator: tw`
     w-full my-2 h-0
@@ -181,7 +188,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = useComboboxState({
-      gutter: 8,
+      gutter: 4,
       open,
       setOpen: (open) => {
         if (open !== combobox.open && onToggle) {
@@ -224,7 +231,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     useEffect(() => {
       if (combobox.value === searchValue) return;
-      return afterTimeout(250, () => onSearchProp(combobox.value));
+      return whenIdle(() => onSearchProp(combobox.value), 500);
     }, [combobox.value, searchValue, onSearchProp]);
 
     const footerElement = footer && (
@@ -374,24 +381,34 @@ type PageMenuItemProps = HTMLAttributes<HTMLElement> & {
 };
 
 export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
-  ({ children, value, href, thumbnail, description, ...props }, ref) => {
+  ({ children, value, thumbnail, description, ...props }, ref) => {
     const select = useContext(SelectContext);
     const combobox = useContext(ComboboxContext);
     const group = useContext(GroupContext);
     const footer = useContext(FooterContext);
 
     type Props = HTMLAttributes<HTMLElement> & RefAttributes<any>;
+    const href = props.href;
 
     const renderItem = (props: Props) => {
+      const isLink = !!href;
+      const isExternalLink = isLink && href?.startsWith("http");
+
+      const linkProps = {
+        ...props,
+        target: isExternalLink ? "_blank" : undefined,
+      };
+
       const item = (
         <Role
           as={href ? "a" : "div"}
-          {...props}
+          {...linkProps}
           className={cx(
             style.item,
             combobox && (group ? "scroll-mt-[88px]" : "scroll-mt-14"),
             !!thumbnail && "!pr-4 !gap-4 !items-start",
             !!footer && "scroll-mb-14",
+            isExternalLink && "justify-between",
             props.className
           )}
         >
@@ -402,16 +419,15 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
               <span className={style.itemDescription}>{description}</span>
             </div>
           ) : (
-            children
+            <>
+              {children}
+              {isExternalLink && <NewWindow className={style.itemIcon} />}
+            </>
           )}
         </Role>
       );
-      if (href) {
-        return (
-          <Link href={href} passHref>
-            {item}
-          </Link>
-        );
+      if (isLink && !isExternalLink) {
+        return <Link href={href}>{item}</Link>;
       }
       return item;
     };

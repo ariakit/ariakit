@@ -2,6 +2,7 @@ import React from "react";
 import { cx } from "ariakit-utils/misc";
 import Link from "next/link";
 import shapes from "../components/home-shapes.svg";
+import ArrowRight from "../components/icons/arrow-right";
 import Notification from "../components/notification";
 import tw from "../utils/tw";
 
@@ -38,7 +39,7 @@ export default function Home() {
           <p className="max-w-3xl text-center text-lg text-canvas-1/70 dark:text-canvas-1-dark/70">
             Ariakit is an open source library that provides lower-level React
             components and hooks for building accessible web apps, design
-            systems, and other component libraries.
+            systems, and component libraries.
           </p>
         </div>
         <div className="flex gap-4 mb-20 items-center flex-col sm:flex-row">
@@ -49,36 +50,24 @@ export default function Home() {
                 "text-primary-2 dark:text-primary-2-dark",
                 "bg-primary-2 dark:bg-primary-2-dark",
                 "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
-                "shadow-lg dark:shadow-lg-dark"
+                "shadow-xl"
               )}
             >
-              Get started
+              Get Started
             </a>
           </Link>
           <Link href="/components">
             <a
               className={tw`
+              group
               flex items-center justify-center whitespace-nowrap
-              gap-2 h-12 px-8
+              gap-2 h-12 px-6
               rounded-lg
               hover:bg-canvas-1 dark:hover:bg-canvas-4-dark
             `}
             >
-              Components{" "}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
+              Explore Components{" "}
+              <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
             </a>
           </Link>
         </div>
