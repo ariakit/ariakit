@@ -91,6 +91,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      if (event.metaKey) return;
       if (setValueOnClickProp(event) && value != null) {
         state?.setValue((prevValue) => {
           if (!Array.isArray(prevValue)) return value;

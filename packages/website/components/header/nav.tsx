@@ -46,7 +46,7 @@ const searchTitles: Record<string, string> = {
 };
 
 type SubNavProps = {
-  category: string;
+  category?: string;
   pages: typeof meta[keyof typeof meta];
   label?: ReactNode;
   searchPlaceholder?: string;
@@ -88,7 +88,7 @@ function SubNav({
     }
     return (
       <>
-        {!searchValue && (
+        {!searchValue && category && (
           <>
             <PageMenuItem
               href={`/${category}`}
@@ -170,35 +170,6 @@ function SubNav({
       {elements}
     </PageMenu>
   );
-
-  // <PageMenu
-  //       key={key}
-  //       label={categoryTitles[key]}
-  //       searchPlaceholder={searchTitles[key]}
-  //       searchValue={searchValue2}
-  //       onSearch={setSearchValue2}
-  //     />
-  // Object.entries(groupBy(meta[key], "group")).map(([group, pages]) => (
-  //   <PageMenuGroup key={group} label={group}>
-  //     {pages.map((item, i) => {
-  //       return (
-  //         <PageMenuItem
-  //           key={item.slug + i}
-  //           value={item.slug}
-  //           href={`/${category}/${item.slug}`}
-  //           description={item.description}
-  //           thumbnail={
-  //             <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-  //               <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
-  //             </div>
-  //           }
-  //         >
-  //           {item.title}
-  //         </PageMenuItem>
-  //       );
-  //     })}
-  //   </PageMenuGroup>
-  // ));
 }
 
 export default function Nav() {
@@ -209,7 +180,13 @@ export default function Nav() {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
 
+  const categoryMeta = meta[category as keyof typeof meta];
+
   const categoryTitle = category ? categoryTitles[category] : "Browse";
+  const pageMeta =
+    page && categoryMeta
+      ? categoryMeta.find(({ slug }) => slug === page)
+      : null;
 
   const categoryElements = useMemo(
     () =>
@@ -228,6 +205,22 @@ export default function Nav() {
         );
       }),
     []
+  );
+
+  const element = useMemo(
+    () =>
+      pageMeta ? (
+        <SubNav
+          category={category}
+          label={pageMeta.title}
+          searchPlaceholder={
+            searchTitles[category as keyof typeof searchTitles]
+          }
+          pages={meta[category as keyof typeof meta]}
+          onSelect={() => setOpen(false)}
+        />
+      ) : null,
+    [pageMeta, category]
   );
 
   return (
@@ -255,6 +248,12 @@ export default function Nav() {
           Newsletter
         </PageMenuItem>
       </PageMenu>
+      {element && (
+        <>
+          {separator}
+          {element}
+        </>
+      )}
     </>
   );
 

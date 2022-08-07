@@ -7,7 +7,7 @@ module.exports = {
       slug: "command",
       title: "Command",
       description: "Example",
-      group: "Abstract components",
+      group: "Abstract Components",
     },
     {
       slug: "dialog",

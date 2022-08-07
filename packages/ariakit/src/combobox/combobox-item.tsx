@@ -78,6 +78,8 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      // TODO:
+      if (event.metaKey) return;
       if (value != null && setValueOnClickProp(event)) {
         state?.setValue(value);
       }

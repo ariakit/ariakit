@@ -44,6 +44,12 @@ import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle-state";
 import whenIdle from "../../utils/when-idle";
 import NewWindow from "../icons/new-window";
+import {
+  itemIconStyle,
+  popoverScrollerStyle,
+  popoverStyle,
+  separatorStyle,
+} from "./style";
 
 const style = {
   button: tw`
@@ -53,23 +59,7 @@ const style = {
     border-none rounded-lg
     hover:bg-black/5 dark:hover:bg-white/5
     aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
-    focus-visible:ariakit-outline-input
-  `,
-  popover: tw`
-    flex flex-col
-    overflow-hidden
-    max-h-[min(var(--popover-available-height,600px),600px)]
-    shadow-lg dark:shadow-lg-dark
-    rounded-lg border border-solid border-canvas-4 dark:border-canvas-4-dark
-    bg-canvas-4 dark:bg-canvas-4-dark
-    transition-[width]
-    z-50
-  `,
-  popoverScroller: tw`
-    flex flex-col
-    p-2
-    overflow-auto overscroll-contain
-    bg-[color:inherit]
+    [&:focus-visible]:ariakit-outline-input
   `,
   comboboxWrapper: tw`
     sticky top-0
@@ -125,14 +115,6 @@ const style = {
     rounded-sm
     bg-canvas-1 dark:bg-canvas-2-dark
     group-active-item:bg-white/50 dark:group-active-item:bg-black/70
-  `,
-  itemIcon: tw`
-    w-4 h-4
-    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
-  `,
-  separator: tw`
-    w-full my-2 h-0
-    border-t border-canvas-4 dark:border-canvas-4-dark
   `,
   footer: tw`
     sticky bottom-0
@@ -194,6 +176,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = useComboboxState({
+      overlap: true,
       gutter: 4,
       open,
       setOpen: (open) => {
@@ -262,14 +245,14 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       <div
         {...props}
         className={cx(
-          style.popover,
+          popoverStyle,
           combobox.value ? popoverSizes["lg"] : popoverSizes[size]
         )}
       >
         <div
           role="presentation"
           className={cx(
-            style.popoverScroller,
+            popoverScrollerStyle,
             searchable && "pt-0",
             !!footer && "pb-0"
           )}
@@ -431,7 +414,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           ) : (
             <>
               {children}
-              {isExternalLink && <NewWindow className={style.itemIcon} />}
+              {isExternalLink && <NewWindow className={itemIconStyle} />}
             </>
           )}
         </Role>
@@ -478,7 +461,7 @@ export const PageMenuSeparator = forwardRef<HTMLHRElement, PageMenuSeparator>(
       <CompositeSeparator
         {...props}
         ref={ref}
-        className={cx(style.separator, props.className)}
+        className={cx(separatorStyle, props.className)}
       />
     );
   }

@@ -16,6 +16,12 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import tw from "../../utils/tw";
 import NewWindow from "../icons/new-window";
+import {
+  itemIconStyle,
+  popoverScrollerStyle,
+  popoverStyle,
+  separatorStyle,
+} from "./style";
 
 const style = {
   select: tw`
@@ -30,15 +36,6 @@ const style = {
     aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
     shadow-button dark:shadow-button-dark
     focus-visible:ariakit-outline-input
-  `,
-  popover: tw`
-    flex flex-col
-    p-2
-    rounded-lg border border-solid border-canvas-4 dark:border-canvas-4-dark
-    text-sm text-canvas-4 dark:text-canvas-4-dark
-    bg-canvas-4 dark:bg-canvas-4-dark
-    shadow-md dark:shadow-md-dark
-    outline-none
   `,
   item: tw`
     group
@@ -56,14 +53,6 @@ const style = {
     bg-canvas-1 dark:bg-canvas-1-dark
     group-active-item:bg-white/50 dark:group-active-item:bg-black/70
   `,
-  separator: tw`
-    w-full my-2 h-0
-    border-t border-canvas-4 dark:border-canvas-4-dark
-  `,
-  itemIcon: tw`
-    w-4 h-4
-    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
-  `,
 };
 
 const fetcher = (...args: Parameters<typeof fetch>) =>
@@ -74,12 +63,19 @@ function getDisplayValue(version: string) {
 }
 
 export default function VersionSelect() {
-  const { data } = useSWR<Record<"dist-tags", Record<string, string>>>(
-    "https://registry.npmjs.org/ariakit",
-    fetcher
-  );
+  const { data: ariakitData } = useSWR<
+    Record<"dist-tags", Record<string, string>>
+  >("https://registry.npmjs.org/ariakit", fetcher);
 
-  const tags = data?.["dist-tags"] || { latest: pkg.version };
+  const { data: reakitData } = useSWR<
+    Record<"dist-tags", Record<string, string>>
+  >("https://registry.npmjs.org/reakit", fetcher);
+
+  const tags = ariakitData?.["dist-tags"] || { latest: pkg.version };
+
+  if (reakitData) {
+    Object.assign(tags, { v1: reakitData["dist-tags"].latest });
+  }
 
   const select = useSelectState({
     gutter: 4,
@@ -122,22 +118,26 @@ export default function VersionSelect() {
         <SelectArrow />
       </Select>
       {select.mounted && (
-        <SelectPopover state={select} className={style.popover}>
-          {Object.entries(tags).map(([tag, version]) =>
-            renderItem(version, tag)
-          )}
-          {renderItem("1.3.10", "v1")}
-          <SelectSeparator className={style.separator} />
-          <SelectItem
-            as="a"
-            href="https://github.com/ariakit/ariakit/blob/main/packages/ariakit/CHANGELOG.md"
-            target="_blank"
-            hideOnClick
-            className={cx(style.item, "justify-between font-normal pl-[26px]")}
-          >
-            Changelog
-            <NewWindow className={style.itemIcon} />
-          </SelectItem>
+        <SelectPopover state={select} className={cx(popoverStyle, "text-sm")}>
+          <div role="presentation" className={popoverScrollerStyle}>
+            {Object.entries(tags).map(([tag, version]) =>
+              renderItem(version, tag)
+            )}
+            <SelectSeparator className={separatorStyle} />
+            <SelectItem
+              as="a"
+              href="https://github.com/ariakit/ariakit/blob/main/packages/ariakit/CHANGELOG.md"
+              target="_blank"
+              hideOnClick
+              className={cx(
+                style.item,
+                "justify-between font-normal pl-[26px]"
+              )}
+            >
+              Changelog
+              <NewWindow className={itemIconStyle} />
+            </SelectItem>
+          </div>
         </SelectPopover>
       )}
     </>

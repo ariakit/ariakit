@@ -43,9 +43,17 @@ import {
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
+function canProxyKeyboardEvent(
+  event: ReactKeyboardEvent,
+  activeElement: HTMLElement
+) {
   if (!isSelfTarget(event)) return false;
-  if (event.metaKey) return false;
+  if (
+    event.metaKey &&
+    (activeElement.tagName !== "A" || event.key !== "Enter")
+  ) {
+    return false;
+  }
   // If the propagation of the event has been prevented, we don't want to proxy
   // this event to the active item element. For example, on a combobox, the Home
   // and End keys shouldn't propagate to the active item, but move the caret on
@@ -62,9 +70,9 @@ function useKeyboardEventProxy(
   return useEvent((event: ReactKeyboardEvent) => {
     onKeyboardEvent?.(event);
     if (event.defaultPrevented) return;
-    if (!canProxyKeyboardEvent(event)) return;
     const activeElement = activeItem?.ref.current;
     if (!activeElement) return;
+    if (!canProxyKeyboardEvent(event, activeElement)) return;
     const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
     // If the active item element is not the previous element, this means that

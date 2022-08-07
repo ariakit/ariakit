@@ -53,6 +53,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      if (event.metaKey) return;
       if (!hideMenu) return;
       // If this item is also a menu button, we don't want to hide the menu.
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
