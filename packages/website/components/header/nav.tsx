@@ -89,22 +89,24 @@ function SubNav({
     return (
       <>
         {!searchValue && (
-          <PageMenuItem
-            href={`/${category}`}
-            onClick={() => {
-              setOpen(false);
-              onSelectProp();
-            }}
-            className="grid grid-cols-[theme(spacing.6)_auto_theme(spacing.6)]"
-          >
-            <span />
-            <span className="text-center font-semibold">
-              {categoryTitles[category]}
-            </span>
-            <ArrowRight className="h-6 w-6" />
-          </PageMenuItem>
+          <>
+            <PageMenuItem
+              href={`/${category}`}
+              onClick={() => {
+                setOpen(false);
+                onSelectProp();
+              }}
+              className="grid grid-cols-[theme(spacing.6)_auto_theme(spacing.6)]"
+            >
+              <span />
+              <span className="text-center font-semibold">
+                {categoryTitles[category]}
+              </span>
+              <ArrowRight className="h-6 w-6" />
+            </PageMenuItem>
+            <PageMenuSeparator />
+          </>
         )}
-        <PageMenuSeparator />
         {items?.map((item, i) => (
           <PageMenuItem
             key={item.slug + i}
@@ -163,6 +165,7 @@ function SubNav({
       searchPlaceholder={searchPlaceholder}
       searchValue={searchValue}
       onSearch={setSearchValue}
+      buttonValue={category}
     >
       {elements}
     </PageMenu>

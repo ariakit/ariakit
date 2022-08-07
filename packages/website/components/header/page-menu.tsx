@@ -154,7 +154,10 @@ const ParentContext = createContext<RefObject<HTMLElement> | null>(null);
 const GroupContext = createContext<string | boolean>(false);
 const FooterContext = createContext(false);
 
-type PageMenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type PageMenuProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "value" | "onChange"
+> & {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
@@ -165,6 +168,8 @@ type PageMenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   searchPlaceholder?: string;
   size?: "sm" | "md" | "lg";
   footer?: ReactNode;
+  // TODO:
+  buttonValue?: string;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -181,6 +186,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       searchPlaceholder,
       size = "md",
       footer,
+      buttonValue,
       ...props
     },
     ref
@@ -238,9 +244,13 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       <div className={style.footer}>{footer}</div>
     );
 
-    const renderButton = ({ role, ...props }: HTMLAttributes<HTMLElement>) =>
+    const renderButton = (props: HTMLAttributes<HTMLElement>) =>
       parent ? (
-        <PageMenuItem {...props} className="justify-between">
+        <PageMenuItem
+          {...props}
+          value={buttonValue}
+          className="justify-between"
+        >
           {props.children}
           <MenuButtonArrow />
         </PageMenuItem>
@@ -433,7 +443,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
     };
 
     const renderSelectItem = (props: Props) => (
-      <SelectItem {...props} value={value}>
+      <SelectItem {...props} hideOnClick={false} value={value}>
         {renderItem}
       </SelectItem>
     );
