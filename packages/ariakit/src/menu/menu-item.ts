@@ -1,4 +1,5 @@
 import { MouseEvent } from "react";
+import { getPopupItemRole } from "ariakit-utils/dom";
 import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -61,8 +62,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
       hideMenu();
     });
 
+    const role = getPopupItemRole(
+      state && "contentElement" in state ? state.contentElement : null,
+      "menuitem"
+    );
+
     props = {
-      role: "menuitem",
+      role,
       ...props,
       onClick,
     };

@@ -1,4 +1,4 @@
-import { AriaAttributes } from "react";
+import { AriaAttributes, AriaRole } from "react";
 
 /**
  * It's `true` if it is running in a browser environment or `false` if it is not
@@ -196,6 +196,7 @@ export function getPopupRole(
   element?: Element | null,
   fallback?: AriaAttributes["aria-haspopup"]
 ) {
+  const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
   const role = element?.getAttribute("role");
   if (role && allowedPopupRoles.indexOf(role) !== -1) {
     return role as "dialog" | "menu" | "listbox" | "tree" | "grid";
@@ -203,7 +204,24 @@ export function getPopupRole(
   return fallback;
 }
 
-const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
+/**
+ * Returns the item role attribute based on the popup's role.
+ */
+export function getPopupItemRole(
+  element?: Element | null,
+  fallback?: AriaRole
+) {
+  const itemRoleByPopupRole = {
+    menu: "menuitem",
+    listbox: "option",
+    tree: "treeitem",
+    grid: "gridcell",
+  };
+  const popupRole = getPopupRole(element);
+  if (!popupRole) return fallback;
+  const key = popupRole as keyof typeof itemRoleByPopupRole;
+  return itemRoleByPopupRole[key] ?? fallback;
+}
 
 /**
  * Returns the start and end offsets of the selection in the element.
