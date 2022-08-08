@@ -78,12 +78,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
 
     props = useFocusable({ focusable: !hasTabbableChildren, ...props });
     props = useDisclosureContent({ state: disclosure, ...props });
-    props = useCollectionItem({
-      state: state.panels,
-      ...props,
-      getItem,
-      shouldRegisterItem: !!id ? props.shouldRegisterItem : false,
-    });
+    props = useCollectionItem({ state: state.panels, ...props, getItem });
 
     return props;
   }
