@@ -93,7 +93,6 @@ function SubNav({
             <PageMenuItem
               href={`/${category}`}
               onClick={() => {
-                setOpen(false);
                 onSelectProp();
               }}
               className="grid grid-cols-[theme(spacing.6)_auto_theme(spacing.6)]"
@@ -113,8 +112,8 @@ function SubNav({
             value={item.slug}
             href={`/${category}/${item.slug}`}
             description={item.description}
-            onClick={() => {
-              setOpen(false);
+            onClick={(event) => {
+              console.log(event);
               onSelectProp(item);
             }}
             thumbnail={
@@ -137,7 +136,6 @@ function SubNav({
                 href={`/${category}/${item.slug}`}
                 description={item.description}
                 onClick={() => {
-                  setOpen(false);
                   onSelectProp(item);
                 }}
                 thumbnail={
@@ -165,7 +163,7 @@ function SubNav({
       searchPlaceholder={searchPlaceholder}
       searchValue={searchValue}
       onSearch={setSearchValue}
-      buttonValue={category}
+      itemValue={category}
     >
       {elements}
     </PageMenu>
@@ -233,7 +231,7 @@ export default function Nav() {
         searchPlaceholder="Search"
         searchValue={searchValue}
         onSearch={setSearchValue}
-        value={category}
+        value={category || undefined}
         size="sm"
       >
         {categoryElements}

@@ -151,7 +151,7 @@ type PageMenuProps = Omit<
   size?: "sm" | "md" | "lg";
   footer?: ReactNode;
   // TODO:
-  buttonValue?: string;
+  itemValue?: string;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -168,7 +168,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       searchPlaceholder,
       size = "md",
       footer,
-      buttonValue,
+      itemValue,
       ...props
     },
     ref
@@ -176,7 +176,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = useComboboxState({
-      overlap: true,
+      fitViewport: true,
       gutter: 4,
       open,
       setOpen: (open) => {
@@ -231,7 +231,8 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       parent ? (
         <PageMenuItem
           {...props}
-          value={buttonValue}
+          value={itemValue}
+          hideOnClick={false}
           className="justify-between"
         >
           {props.children}
@@ -371,10 +372,14 @@ type PageMenuItemProps = HTMLAttributes<HTMLElement> & {
   value?: string;
   thumbnail?: ReactNode;
   description?: ReactNode;
+  hideOnClick?: boolean;
 };
 
 export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
-  ({ children, value, thumbnail, description, ...props }, ref) => {
+  (
+    { children, value, thumbnail, description, hideOnClick = true, ...props },
+    ref
+  ) => {
     const select = useContext(SelectContext);
     const combobox = useContext(ComboboxContext);
     const group = useContext(GroupContext);
@@ -426,13 +431,13 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
     };
 
     const renderSelectItem = (props: Props) => (
-      <SelectItem {...props} hideOnClick={false} value={value}>
+      <SelectItem {...props} hideOnClick={hideOnClick} value={value}>
         {renderItem}
       </SelectItem>
     );
 
     const renderComboboxItem = (props: Props) => (
-      <ComboboxItem {...props} focusOnHover>
+      <ComboboxItem {...props} hideOnClick={hideOnClick} focusOnHover>
         {select ? renderSelectItem : renderItem}
       </ComboboxItem>
     );
