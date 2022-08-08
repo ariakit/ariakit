@@ -1,5 +1,13 @@
 # ariakit
 
+## 2.0.0-next.38
+
+### Minor Changes
+
+- Updated the `backdrop` prop type on `Dialog` so it accepts elements with a legacy `ref` prop type. ([#1703](https://github.com/ariakit/ariakit/pull/1703))
+
+* The logic behind animations on `Disclosure` and derived components (`Dialog`, `Menu`, `Popover`, etc.) has been refactored and is more reliable. ([#1699](https://github.com/ariakit/ariakit/pull/1699))
+
 ## 2.0.0-next.37
 
 ### Minor Changes
