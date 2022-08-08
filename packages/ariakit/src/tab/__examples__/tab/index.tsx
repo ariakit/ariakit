@@ -7,20 +7,20 @@ export default function Example() {
   return (
     <div className="wrapper">
       <TabList state={tab} className="tab-list" aria-label="Groceries">
+        <Tab className="tab">Fruits</Tab>
         <Tab className="tab" id={defaultSelectedId}>
-          Fruits
+          Vegetables
         </Tab>
-        <Tab className="tab">Vegetables</Tab>
         <Tab className="tab">Meat</Tab>
       </TabList>
-      <TabPanel state={tab} tabId={defaultSelectedId}>
+      <TabPanel state={tab}>
         <ul>
           <li>🍎 Apple</li>
           <li>🍇 Grape</li>
           <li>🍊 Orange</li>
         </ul>
       </TabPanel>
-      <TabPanel state={tab}>
+      <TabPanel state={tab} tabId={defaultSelectedId}>
         <ul>
           <li>🥕 Carrot</li>
           <li>🧅 Onion</li>
