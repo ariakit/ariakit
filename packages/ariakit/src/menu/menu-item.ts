@@ -43,8 +43,11 @@ export const useMenuItem = createHook<MenuItemOptions>(
     // Use MenuBar state as a fallback.
     const menuBarState = useStore(state || MenuBarContext, ["items"]);
     state =
-      useStore(state || (MenuContext as any), ["move", "hideAll"]) ||
-      menuBarState;
+      useStore(state || (MenuContext as any), [
+        "move",
+        "hideAll",
+        "contentElement",
+      ]) || menuBarState;
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
