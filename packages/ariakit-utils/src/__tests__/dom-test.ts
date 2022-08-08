@@ -5,6 +5,7 @@ import {
   contains,
   getActiveElement,
   getDocument,
+  getPopupItemRole,
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
@@ -280,6 +281,31 @@ test("getPopupRole", () => {
   expect(getPopupRole(div6, true)).toBe(true);
   expect(getPopupRole(div7)).toBe(undefined);
   expect(getPopupRole(div7, "dialog")).toBe("dialog");
+});
+
+test("getPopupItemRole", () => {
+  document.body.innerHTML = `
+    <div id="testNode2" role="menu" />
+    <div id="testNode3" role="listbox" />
+    <div id="testNode4" role="tree" />
+    <div id="testNode5" role="grid" />
+    <div id="testNode6" role="unsupported" />
+    <div id="testNode7" />
+  `;
+  const div2 = getById("testNode2");
+  const div3 = getById("testNode3");
+  const div4 = getById("testNode4");
+  const div5 = getById("testNode5");
+  const div6 = getById("testNode6");
+  const div7 = getById("testNode7");
+
+  expect(getPopupItemRole(div2)).toBe("menuitem");
+  expect(getPopupItemRole(div3)).toBe("option");
+  expect(getPopupItemRole(div4)).toBe("treeitem");
+  expect(getPopupItemRole(div5)).toBe("gridcell");
+  expect(getPopupItemRole(div6)).toBe(undefined);
+  expect(getPopupItemRole(div6, "menuitem")).toBe("menuitem");
+  expect(getPopupItemRole(div7, "menuitem")).toBe("menuitem");
 });
 
 test("getTextboxSelection", () => {

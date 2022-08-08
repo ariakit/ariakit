@@ -5,7 +5,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { getPopupRole } from "ariakit-utils/dom";
+import { getPopupItemRole, getPopupRole } from "ariakit-utils/dom";
 import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
 import { useStore } from "ariakit-utils/store";
 import {
@@ -59,7 +59,11 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
 export const useMenuButton = createHook<MenuButtonOptions>(
   ({ state, focusable, accessibleWhenDisabled, showOnHover, ...props }) => {
     const ref = useRef<HTMLElement>(null);
-    const parentMenu = useStore(MenuContext, ["items", "move"]);
+    const parentMenu = useStore(MenuContext, [
+      "items",
+      "move",
+      "contentElement",
+    ]);
     const parentMenuBar = useStore(MenuBarContext, ["items", "move"]);
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
@@ -148,9 +152,17 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     // We'll use this id to render the aria-labelledby attribute on the menu.
     const id = useId(props.id);
 
+    // When the menu button is rendered inside another menu, we set the role
+    // attribute here so it doesn't get overridden by the button component with
+    // role="button".
+    const role =
+      hasParentMenu || parentIsMenuBar
+        ? getPopupItemRole(parentMenu?.contentElement, "menuitem")
+        : undefined;
+
     props = {
       id,
-      role: hasParentMenu || parentIsMenuBar ? "menuitem" : undefined,
+      role,
       "aria-haspopup": getPopupRole(state.contentElement, "menu"),
       ...props,
       ref: useForkRef(ref, props.ref),
