@@ -7,7 +7,11 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, sameWidth: true });
+  const combobox = useComboboxState({
+    gutter: 8,
+    sameWidth: true,
+  });
+
   return (
     <div>
       <label className="label">
@@ -16,8 +20,11 @@ export default function Example() {
           state={combobox}
           placeholder="e.g., Apple"
           className="combobox"
+          showOnMouseDown={false}
+          showOnKeyDown={false}
         />
       </label>
+
       <ComboboxPopover state={combobox} className="popover">
         <ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
