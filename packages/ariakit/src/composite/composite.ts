@@ -45,7 +45,6 @@ import { CompositeState } from "./composite-state";
 
 function canProxyKeyboardEvent(event: ReactKeyboardEvent) {
   if (!isSelfTarget(event)) return false;
-  if (event.metaKey) return false;
   // If the propagation of the event has been prevented, we don't want to proxy
   // this event to the active item element. For example, on a combobox, the Home
   // and End keys shouldn't propagate to the active item, but move the caret on
