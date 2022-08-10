@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import { getPopupItemRole } from "ariakit-utils/dom";
+import { isOpeningInNewTab } from "ariakit-utils/events";
 import { useBooleanEvent, useEvent } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -57,6 +58,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      if (isOpeningInNewTab(event)) return;
       if (!hideMenu) return;
       // If this item is also a menu button, we don't want to hide the menu.
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
