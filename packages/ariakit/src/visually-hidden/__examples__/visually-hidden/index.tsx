@@ -1,11 +1,13 @@
+import { Button } from "ariakit/button";
 import { VisuallyHidden } from "ariakit/visually-hidden";
+import { undo } from "./icons";
+import "./style.css";
 
 export default function Example() {
   return (
-    <>
-      <p>Inspect the DOM below me to see the hidden element</p>
-
-      <VisuallyHidden>You should not see me</VisuallyHidden>
-    </>
+    <Button className="button">
+      {undo}
+      <VisuallyHidden>Undo</VisuallyHidden>
+    </Button>
   );
 }
