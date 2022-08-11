@@ -4,7 +4,7 @@ const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.locator(`role=button[name^='Add to list ${count}']`);
 
 const getMenu = (locator: Page | Locator) =>
-  locator.locator(`role=menu[name^='Add to list']`);
+  locator.locator(`role=menu[name='Lists']`);
 
 const getMenuItem = (
   locator: Page | Locator,

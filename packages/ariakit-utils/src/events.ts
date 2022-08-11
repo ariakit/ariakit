@@ -1,5 +1,10 @@
-import { FocusEvent as ReactFocusEvent, SyntheticEvent } from "react";
+import {
+  FocusEvent as ReactFocusEvent,
+  MouseEvent as ReactMouseEvent,
+  SyntheticEvent,
+} from "react";
 import { contains } from "./dom";
+import { isApple } from "./platform";
 
 /**
  * Returns `true` if `event` has been fired within a React Portal element.
@@ -13,6 +18,26 @@ export function isPortalEvent(event: SyntheticEvent): boolean {
  */
 export function isSelfTarget(event: SyntheticEvent | Event): boolean {
   return event.target === event.currentTarget;
+}
+
+/**
+ * Checks whether the user event is triggering a page navigation in a new tab.
+ */
+export function isOpeningInNewTab(event: MouseEvent | ReactMouseEvent) {
+  const target = event.target as
+    | HTMLAnchorElement
+    | HTMLButtonElement
+    | HTMLInputElement
+    | null;
+  if (!target) return null;
+  const isAppleDevice = isApple();
+  if (isAppleDevice && !event.metaKey) return false;
+  if (!isAppleDevice && !event.ctrlKey) return false;
+  const tagName = target.tagName.toLowerCase();
+  if (tagName === "a") return true;
+  if (tagName === "button" && target.type === "submit") return true;
+  if (tagName === "input" && target.type === "submit") return true;
+  return false;
 }
 
 /**
@@ -81,10 +106,7 @@ export function fireKeyboardEvent(
  * fireClickEvent(document.getElementById("id"));
  */
 export function fireClickEvent(element: Element, eventInit?: PointerEventInit) {
-  const event =
-    typeof PointerEvent !== "undefined"
-      ? new PointerEvent("click", eventInit)
-      : new MouseEvent("click", eventInit);
+  const event = new MouseEvent("click", eventInit);
   return element.dispatchEvent(event);
 }
 

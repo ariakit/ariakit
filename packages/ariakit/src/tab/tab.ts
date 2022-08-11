@@ -38,7 +38,11 @@ export const useTab = createHook<TabOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const id = useId(props.id);
+    // Keep a reference to the default id so we can wait before all tabs have
+    // been assigned an id before registering them in the state. See
+    // https://github.com/ariakit/ariakit/issues/1721
+    const defaultId = useId();
+    const id = props.id || defaultId;
 
     state = useStore(state || TabContext, [
       useCallback((s: TabState) => id && s.selectedId === id, [id]),
@@ -83,6 +87,7 @@ export const useTab = createHook<TabOptions>(
       ...props,
       accessibleWhenDisabled,
       getItem,
+      shouldRegisterItem: !!defaultId ? props.shouldRegisterItem : false,
     });
 
     return props;

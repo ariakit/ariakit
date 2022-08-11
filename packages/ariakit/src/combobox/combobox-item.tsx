@@ -1,5 +1,6 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
-import { getPopupRole, isTextField } from "ariakit-utils/dom";
+import { getPopupItemRole, isTextField } from "ariakit-utils/dom";
+import { isOpeningInNewTab } from "ariakit-utils/events";
 import { hasFocus } from "ariakit-utils/focus";
 import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
@@ -16,18 +17,6 @@ import {
 } from "../composite/composite-item";
 import { ComboboxContext, ComboboxItemValueContext } from "./__utils";
 import { ComboboxState } from "./combobox-state";
-
-const itemRoleByPopupRole = {
-  listbox: "option",
-  tree: "treeitem",
-  grid: "gridcell",
-};
-
-function getItemRole(contentElement?: HTMLElement | null) {
-  const popupRole = getPopupRole(contentElement);
-  if (!popupRole) return;
-  return itemRoleByPopupRole[popupRole as keyof typeof itemRoleByPopupRole];
-}
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
@@ -78,8 +67,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      // TODO:
-      if (event.metaKey) return;
+      if (isOpeningInNewTab(event)) return;
       if (value != null && setValueOnClickProp(event)) {
         state?.setValue(value);
       }
@@ -129,7 +117,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     props = {
-      role: getItemRole(state?.contentElement),
+      role: getPopupItemRole(state?.contentElement),
       children: value,
       ...props,
       onClick,

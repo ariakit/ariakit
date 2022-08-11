@@ -68,10 +68,18 @@ export const useMenu = createHook<MenuOptions>(
       onKeyDown,
     };
 
-    props = useMenuList({
-      state,
-      ...props,
-    });
+    // The aria-labelledby prop on MenuList defaults to the MenuButton's id. On
+    // Dialog/Popover/Hovercard/Menu, we need to consider MenuHeading as well
+    // and it should take precedence. That's why we need to destructure this
+    // prop here and check if aria-labelledby is set later.
+    const { "aria-labelledby": ariaLabelledBy, ...menuListProps } = useMenuList(
+      {
+        state,
+        ...props,
+      }
+    );
+
+    props = menuListProps;
 
     const [initialFocusRef, setInitialFocusRef] =
       useState<RefObject<HTMLElement>>();
@@ -145,6 +153,11 @@ export const useMenu = createHook<MenuOptions>(
       // be closed.
       hideOnEscape: hasParentMenu ? false : hideOnEscape,
     });
+
+    props = {
+      "aria-labelledby": ariaLabelledBy,
+      ...props,
+    };
 
     return props;
   }

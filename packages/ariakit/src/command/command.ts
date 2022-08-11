@@ -65,11 +65,6 @@ export const useCommand = createHook<CommandOptions>(
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
       if (props.disabled) return;
-      if (
-        event.metaKey &&
-        (event.target.tagName !== "A" || event.key !== "Enter")
-      )
-        return;
       if (!isSelfTarget(event)) return;
       if (isTextField(element)) return;
       if (element.isContentEditable) return;

@@ -5,11 +5,12 @@ import {
   RefObject,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
-import { getActiveElement } from "ariakit-utils/dom";
+import { getActiveElement, isTextField } from "ariakit-utils/dom";
 import {
   fireBlurEvent,
   fireFocusEvent,
@@ -43,26 +44,42 @@ import {
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
+function isGrid(items: Item[]) {
+  return items.some((item) => !!item.rowId);
+}
+
+function isPrintableKey(event: ReactKeyboardEvent): boolean {
+  return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+}
+
 function canProxyKeyboardEvent(
   event: ReactKeyboardEvent,
-  activeElement: HTMLElement
+  state: CompositeState
 ) {
   if (!isSelfTarget(event)) return false;
-  if (
-    event.metaKey &&
-    (activeElement.tagName !== "A" || event.key !== "Enter")
-  ) {
-    return false;
+  const target = event.target as Element;
+  if (!target) return true;
+  if (isTextField(target)) {
+    // Printable characters shouldn't perform actions on the composite items if
+    // the composite widget is a combobox.
+    if (isPrintableKey(event)) return false;
+    const grid = isGrid(state.items);
+    const focusingInputOnly = state.activeId === null;
+    // Pressing Home or End keys on the text field should only be allowed when
+    // the widget has rows and the input is not the only element with focus.
+    // That is, the aria-activedescendant has no value.
+    const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
+    const isHomeOrEnd = event.key === "Home" || event.key === "End";
+    // If there are no rows or the input is the only focused element, then we
+    // should stop the event propagation so no action is performed on the
+    // composite items, but only on the input, like moving the caret/selection.
+    if (!allowHorizontalNavigationOnItems && isHomeOrEnd) return false;
   }
-  // If the propagation of the event has been prevented, we don't want to proxy
-  // this event to the active item element. For example, on a combobox, the Home
-  // and End keys shouldn't propagate to the active item, but move the caret on
-  // the combobox input instead.
-  if (event.isPropagationStopped()) return false;
-  return true;
+  return !event.isPropagationStopped();
 }
 
 function useKeyboardEventProxy(
+  state: CompositeState,
   activeItem?: Item,
   onKeyboardEvent?: KeyboardEventHandler,
   previousElementRef?: RefObject<HTMLElement | null>
@@ -72,7 +89,7 @@ function useKeyboardEventProxy(
     if (event.defaultPrevented) return;
     const activeElement = activeItem?.ref.current;
     if (!activeElement) return;
-    if (!canProxyKeyboardEvent(event, activeElement)) return;
+    if (!canProxyKeyboardEvent(event, state)) return;
     const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
     // If the active item element is not the previous element, this means that
@@ -130,7 +147,10 @@ export const useComposite = createHook<CompositeOptions>(
   ({ state, composite = true, focusOnMove = composite, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
-    const activeItem = findEnabledItemById(state.items, state.activeId);
+    const activeItem = useMemo(
+      () => findEnabledItemById(state.items, state.activeId),
+      [state.items, state.activeId]
+    );
     const activeItemRef = useLiveRef(activeItem);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const isSelfActive = state.activeId === null;
@@ -194,12 +214,14 @@ export const useComposite = createHook<CompositeOptions>(
     }, [virtualFocus, composite, state.activeId]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
+      state,
       activeItem,
       props.onKeyDownCapture,
       previousElementRef
     );
 
     const onKeyUpCapture = useKeyboardEventProxy(
+      state,
       activeItem,
       props.onKeyUpCapture,
       previousElementRef
@@ -331,9 +353,9 @@ export const useComposite = createHook<CompositeOptions>(
       if (activeItemRef.current) return;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      const isGrid = !!findFirstEnabledItem(state.items)?.rowId;
+      const grid = isGrid(state.items);
       const up = () => {
-        if (isGrid) {
+        if (grid) {
           const item =
             state.items && findFirstEnabledItemInTheLastRow(state.items);
           return item?.id;
@@ -341,10 +363,10 @@ export const useComposite = createHook<CompositeOptions>(
         return state.last();
       };
       const keyMap = {
-        ArrowUp: (isGrid || isVertical) && up,
-        ArrowRight: (isGrid || isHorizontal) && state.first,
-        ArrowDown: (isGrid || isVertical) && state.first,
-        ArrowLeft: (isGrid || isHorizontal) && state.last,
+        ArrowUp: (grid || isVertical) && up,
+        ArrowRight: (grid || isHorizontal) && state.first,
+        ArrowDown: (grid || isVertical) && state.first,
+        ArrowLeft: (grid || isHorizontal) && state.last,
         Home: state.first,
         End: state.last,
         PageUp: state.first,

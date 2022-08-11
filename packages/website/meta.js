@@ -114,6 +114,12 @@ module.exports = {
       group: "Combobox",
     },
     {
+      slug: "combobox-links",
+      title: "combobox-links",
+      description: "Example",
+      group: "Combobox",
+    },
+    {
       slug: "combobox-matches",
       title: "combobox-matches",
       description: "Example",
@@ -424,6 +430,12 @@ module.exports = {
       title: "tooltip-timeout",
       description: "Example",
       group: "Tooltip",
+    },
+    {
+      slug: "visually-hidden",
+      title: "visually-hidden",
+      description: "Example",
+      group: "VisuallyHidden",
     },
     { slug: "playground", title: "playground", description: "Example" },
     {

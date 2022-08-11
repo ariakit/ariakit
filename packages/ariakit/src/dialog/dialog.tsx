@@ -1,5 +1,5 @@
 import {
-  ComponentPropsWithRef,
+  ComponentProps,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
@@ -555,10 +555,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * <Dialog backdrop={StyledBackdrop} />
      * ```
      */
-    backdrop?:
-      | boolean
-      | ElementType<ComponentPropsWithRef<"div">>
-      | ElementType<JSX.IntrinsicElements["div"]>;
+    backdrop?: boolean | ElementType<ComponentProps<"div">>;
     /**
      * Props that will be passed to the backdrop element if `backdrop` is
      * `true`.

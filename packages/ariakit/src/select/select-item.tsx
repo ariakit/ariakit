@@ -1,5 +1,6 @@
 import { MouseEvent, useCallback } from "react";
-import { getPopupRole } from "ariakit-utils/dom";
+import { getPopupItemRole } from "ariakit-utils/dom";
+import { isOpeningInNewTab } from "ariakit-utils/events";
 import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { createMemoComponent, useStore } from "ariakit-utils/store";
 import { createElement, createHook } from "ariakit-utils/system";
@@ -16,12 +17,6 @@ import {
 import { SelectContext, SelectItemCheckedContext } from "./__utils";
 import { SelectState } from "./select-state";
 
-const itemRoleByPopupRole = {
-  listbox: "option",
-  tree: "treeitem",
-  grid: "gridcell",
-};
-
 function isSelected(stateValue?: string | string[], itemValue?: string) {
   if (stateValue == null) return false;
   if (itemValue == null) return false;
@@ -29,12 +24,6 @@ function isSelected(stateValue?: string | string[], itemValue?: string) {
     return stateValue.includes(itemValue);
   }
   return stateValue === itemValue;
-}
-
-function getItemRole(contentElement?: HTMLElement | null) {
-  const popupRole = getPopupRole(contentElement);
-  if (!popupRole) return;
-  return itemRoleByPopupRole[popupRole as keyof typeof itemRoleByPopupRole];
 }
 
 /**
@@ -91,7 +80,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      if (event.metaKey) return;
+      if (isOpeningInNewTab(event)) return;
       if (setValueOnClickProp(event) && value != null) {
         state?.setValue((prevValue) => {
           if (!Array.isArray(prevValue)) return value;
@@ -119,7 +108,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     props = {
-      role: getItemRole(state?.contentElement),
+      role: getPopupItemRole(state?.contentElement),
       "aria-selected": selected,
       children: value,
       ...props,

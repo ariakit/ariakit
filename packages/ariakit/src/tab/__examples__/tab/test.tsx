@@ -17,17 +17,13 @@ test("a11y", async () => {
 
 test("default selected tab", () => {
   render(<Example />);
-  expect(getTab("Fruits")).toHaveAttribute("aria-selected", "true");
-  expect(getPanel("Fruits")).toBeVisible();
+  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
+  expect(getPanel("Vegetables")).toBeVisible();
 });
 
 test("select with keyboard", async () => {
   render(<Example />);
   await press.Tab();
-  await press.ArrowRight();
-  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Vegetables")).toHaveFocus();
-  expect(getPanel("Vegetables")).toBeVisible();
   await press.ArrowRight();
   expect(getTab("Meat")).toHaveAttribute("aria-selected", "true");
   expect(getTab("Meat")).toHaveFocus();
@@ -44,16 +40,16 @@ test("select with keyboard", async () => {
 
 test("select with mouse", async () => {
   render(<Example />);
-  await click(getTab("Vegetables"));
-  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Vegetables")).toHaveFocus();
-  expect(getPanel("Vegetables")).toBeVisible();
+  await click(getTab("Meat"));
+  expect(getTab("Meat")).toHaveAttribute("aria-selected", "true");
+  expect(getTab("Meat")).toHaveFocus();
+  expect(getPanel("Meat")).toBeVisible();
 });
 
 test("do not select with focus (e.g., screen reader focus)", async () => {
   render(<Example />);
-  await focus(getTab("Vegetables"));
-  expect(getTab("Fruits")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Vegetables")).toHaveFocus();
-  expect(getPanel("Fruits")).toBeVisible();
+  await focus(getTab("Fruits"));
+  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
+  expect(getTab("Fruits")).toHaveFocus();
+  expect(getPanel("Vegetables")).toBeVisible();
 });

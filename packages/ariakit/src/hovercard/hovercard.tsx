@@ -212,9 +212,7 @@ export const useHovercard = createHook<HovercardOptions>(
         // element.
         if (enterPoint) {
           const currentPoint = getEventPoint(event);
-          const placement = state.currentPlacement;
-          const elementPolygon = getElementPolygon(element, placement);
-          const polygon = [enterPoint, ...elementPolygon];
+          const polygon = getElementPolygon(element, enterPoint);
           // If the current's event mouse position is inside the transit
           // polygon, this means that the mouse is moving toward the hover card,
           // so we disable this event. This is necessary because the mousemove
@@ -243,7 +241,6 @@ export const useHovercard = createHook<HovercardOptions>(
       mayDisablePointerEvents,
       state.anchorRef,
       nestedHovercards,
-      state.currentPlacement,
       disablePointerEventsProp,
       hideOnHoverOutsideProp,
       state.hide,
@@ -262,9 +259,7 @@ export const useHovercard = createHook<HovercardOptions>(
         if (!element) return;
         const enterPoint = enterPointRef.current;
         if (!enterPoint) return;
-        const placement = state.currentPlacement;
-        const elementPolygon = getElementPolygon(element, placement);
-        const polygon = [enterPoint, ...elementPolygon];
+        const polygon = getElementPolygon(element, enterPoint);
         if (isPointInPolygon(getEventPoint(event), polygon)) {
           if (!disablePointerEventsProp(event)) return;
           event.preventDefault();
@@ -282,7 +277,6 @@ export const useHovercard = createHook<HovercardOptions>(
       domReady,
       state.mounted,
       mayDisablePointerEvents,
-      state.currentPlacement,
       disablePointerEventsProp,
     ]);
 
