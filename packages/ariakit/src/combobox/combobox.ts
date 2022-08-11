@@ -57,10 +57,6 @@ function isInputEvent(event: Event): event is InputEvent {
   return event.type === "input";
 }
 
-function isPrintableKey(event: ReactKeyboardEvent): boolean {
-  return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
-}
-
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a combobox input.
@@ -278,34 +274,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       }
     });
 
-    const onKeyDownCaptureProp = props.onKeyDownCapture;
-
-    const onKeyDownCapture = useEvent(
-      (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        onKeyDownCaptureProp?.(event);
-        if (event.defaultPrevented) return;
-        if (isPrintableKey(event)) {
-          // Printable characters shouldn't perform actions on the combobox
-          // items, only on the combobox input.
-          return event.stopPropagation();
-        }
-        const hasRows = state.items.some((item) => !!item.rowId);
-        const focusingInputOnly = state.activeId === null;
-        // Pressing Home or End keys on the combobox should only be allowed when
-        // the widget has rows and the combobox input is not the only element
-        // with focus. That is, the aria-activedescendant has no value.
-        const allowHorizontalNavigationOnItems = hasRows && !focusingInputOnly;
-        const isHomeOrEnd = event.key === "Home" || event.key === "End";
-        // If there are no rows or the combobox input is the only focused
-        // element, then we should stop the event propagation so no action is
-        // performed on the combobox items, but only on the combobox input, like
-        // moving the caret/selection.
-        if (!allowHorizontalNavigationOnItems && isHomeOrEnd) {
-          event.stopPropagation();
-        }
-      }
-    );
-
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
@@ -356,7 +324,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       onCompositionEnd,
       onMouseDown,
       onClick,
-      onKeyDownCapture,
       onKeyDown,
       onBlur,
     };
