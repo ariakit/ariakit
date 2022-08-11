@@ -2,14 +2,13 @@ import { getByRole, getByText, render } from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 
-test("ally", async () => {
+test("a11y", async () => {
   const { container } = render(<Example />);
   expect(await axe(container)).toHaveNoViolations();
 });
 
 test("render properly", () => {
   render(<Example />);
-
   expect(getByRole("button", { name: "Undo" })).toBeInTheDocument();
   expect(getByText("Undo")).toMatchInlineSnapshot(`
     <span
