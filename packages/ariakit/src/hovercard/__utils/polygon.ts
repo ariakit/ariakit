@@ -1,5 +1,3 @@
-import { HovercardState } from "../hovercard-state";
-
 export type Point = [number, number];
 export type Polygon = Point[];
 
@@ -23,45 +21,38 @@ export function isPointInPolygon(point: Point, polygon: Polygon) {
   return isInside;
 }
 
-export function getElementPolygon(
-  element: Element,
-  placement: HovercardState["placement"]
-): Polygon {
-  const { top, right, bottom, left } = element.getBoundingClientRect();
-  const [basePlacement] = placement.split("-");
-  switch (basePlacement) {
-    case "top": {
-      return [
-        [left, bottom],
-        [left, top],
-        [right, top],
-        [right, bottom],
-      ];
+function getEnterPointPlacement(enterPoint: Point, rect: DOMRect) {
+  const { top, right, bottom, left } = rect;
+  const [x, y] = enterPoint;
+  const placementX = x < left ? "left" : x > right ? "right" : null;
+  const placementY = y < top ? "top" : y > bottom ? "bottom" : null;
+  return [placementX, placementY] as const;
+}
+
+export function getElementPolygon(element: Element, enterPoint: Point) {
+  const rect = element.getBoundingClientRect();
+  const { top, right, bottom, left } = rect;
+  const [x, y] = getEnterPointPlacement(enterPoint, rect);
+  const polygon = [enterPoint];
+  if (x) {
+    if (y !== "top") {
+      polygon.push([x === "left" ? left : right, top]);
     }
-    case "right": {
-      return [
-        [left, top],
-        [right, top],
-        [right, bottom],
-        [left, bottom],
-      ];
+    polygon.push([x === "left" ? right : left, top]);
+    polygon.push([x === "left" ? right : left, bottom]);
+    if (y !== "bottom") {
+      polygon.push([x === "left" ? left : right, bottom]);
     }
-    case "bottom": {
-      return [
-        [left, top],
-        [left, bottom],
-        [right, bottom],
-        [right, top],
-      ];
-    }
-    case "left":
-    default: {
-      return [
-        [right, top],
-        [left, top],
-        [left, bottom],
-        [right, bottom],
-      ];
-    }
+  } else if (y === "top") {
+    polygon.push([left, top]);
+    polygon.push([left, bottom]);
+    polygon.push([right, bottom]);
+    polygon.push([right, top]);
+  } else {
+    polygon.push([left, bottom]);
+    polygon.push([left, top]);
+    polygon.push([right, top]);
+    polygon.push([right, bottom]);
   }
+  return polygon;
 }
