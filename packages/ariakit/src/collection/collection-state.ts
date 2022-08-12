@@ -26,7 +26,7 @@ function findDOMIndex(items: Item[], item: Item) {
       return length + 1;
     }
   }
-  return -1;
+  return 0;
 }
 
 function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
