@@ -3,6 +3,7 @@ import {
   OpenInCodeSandboxProps as ActionProps,
 } from "ariakit-playground/actions/open-in-code-sandbox";
 import { cx } from "ariakit-utils/misc";
+import NewWindow from "../icons/new-window";
 import TooltipButton, { TooltipButtonOptions } from "../tooltip-button";
 
 export type OpenInCodeSandboxProps = ActionProps &
@@ -18,7 +19,12 @@ export default function OpenInCodeSandbox(props: OpenInCodeSandboxProps) {
   return (
     <TooltipButton
       as={Action}
-      title="Open in CodeSandbox"
+      title={
+        <span className="flex items-center gap-1">
+          Open in CodeSandbox
+          <NewWindow className="stroke-current h-[1em] w-[1em]" />
+        </span>
+      }
       {...props}
       className={cx(
         "h-10 rounded-md px-4 text-base sm:h-8 sm:rounded sm:px-3 sm:text-sm",

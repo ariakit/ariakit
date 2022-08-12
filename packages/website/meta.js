@@ -1,8 +1,32 @@
 module.exports = {
-  guide: [{ slug: "get-started", title: "Get started", description: "" }],
+  guide: [
+    { slug: "getting-started", title: "Getting Started", description: "" },
+  ],
   components: [
-    { slug: "button", title: "Button", description: "Example" },
-    { slug: "checkbox", title: "Checkbox", description: "Example" },
+    {
+      slug: "button",
+      title: "Button",
+      description:
+        "Trigger an action or event, such as submitting a Form, opening a Dialog, canceling an action, or performing a delete operation. This component follows the WAI-ARIA Button Pattern.",
+    },
+    {
+      slug: "checkbox",
+      title: "Checkbox",
+      description:
+        "Select one or more options in a list, toggle a single option, or indicate agreement with a statement. This component follows the WAI-ARIA Checkbox Pattern.",
+    },
+    {
+      slug: "collection",
+      title: "Collection",
+      description:
+        "Track a collection of DOM elements in the exact order they're rendered in the DOM and watch the DOM for any change to their order.",
+    },
+    {
+      slug: "combobox",
+      title: "Combobox",
+      description:
+        "Fill in the input field or filter and select a value from a collection of suggested values. This component follows the WAI-ARIA Combobox Pattern.",
+    },
     {
       slug: "command",
       title: "Command",
@@ -31,8 +55,9 @@ module.exports = {
     },
     {
       slug: "button-as-div",
-      title: "button-as-div",
-      description: "Example",
+      title: "Button as div",
+      description:
+        "Rendering a Button as a div element, while providing the same accessibility features as a native button.",
       group: "Button",
     },
     {
@@ -49,32 +74,37 @@ module.exports = {
     },
     {
       slug: "checkbox-as-button",
-      title: "checkbox-as-button",
-      description: "Example",
+      title: "Checkbox as button",
+      description:
+        "Rendering a Checkbox as a button element, while keeping it accessible to screen reader and keyboard users.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-controlled",
-      title: "checkbox-controlled",
-      description: "Example",
+      title: "Controlled Checkbox",
+      description:
+        "Using controlled props, such as checked and onChange, with the Checkbox component.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-custom",
-      title: "checkbox-custom",
-      description: "Example",
+      title: "Custom Checkbox",
+      description:
+        "Rendering a visually hidden Checkbox using the VisuallyHidden component to show a custom checkbox presentation.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-group",
-      title: "checkbox-group",
-      description: "Example",
+      title: "Checkbox group",
+      description:
+        "Rendering multiple Checkbox components as a group and storing the selected values in an array provided by the useCheckboxState hook.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-state",
-      title: "checkbox-state",
-      description: "Example",
+      title: "Checkbox state",
+      description:
+        "Using the useCheckboxState hook to control the state of the Checkbox component.",
       group: "Checkbox",
     },
     {

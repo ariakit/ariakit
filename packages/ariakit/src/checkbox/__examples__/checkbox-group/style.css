@@ -1,5 +1,15 @@
 @import "../checkbox/style.css";
 
 .wrapper {
-  @apply flex flex-col;
+  @apply
+    min-w-[240px]
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark;
 }

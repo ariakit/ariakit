@@ -1,32 +1,21 @@
-.checkbox {
+@import "../../../button/__examples__/button/style.css";
+
+.button {
   @apply
-    flex
-    h-10
-    cursor-pointer
-    items-center
-    justify-center
-    gap-1
-    rounded-lg
-    border-none
-    px-4
-    text-base
-    focus-visible:ariakit-outline
-    /* Base Unchecked */
+    /* Unchecked */
     bg-primary-1
     text-primary-1
     hover:bg-primary-1-hover
-    /* Base Dark Unchecked */
+    /* Dark Unchecked */
     dark:bg-primary-1-dark
     dark:text-primary-1-dark
     dark:hover:bg-primary-1-dark-hover
-    /* Base Checked */
+    /* Checked */
     aria-checked:bg-primary-2
     aria-checked:text-primary-2
     aria-checked:hover:bg-primary-2-hover
-    /* Base Dark Checked */
+    /* Dark Checked */
     dark:aria-checked:bg-primary-2-dark
     dark:aria-checked:text-primary-2-dark
-    dark:aria-checked:hover:bg-primary-2-dark-hover
-    /* disabled */
-    aria-disabled:opacity-50;
+    dark:aria-checked:hover:bg-primary-2-dark-hover;
 }

@@ -18,6 +18,11 @@ body {
     dark:text-canvas-2-dark;
 }
 
+button:not([type="submit"]),
+[role="button"] {
+  @apply cursor-default;
+}
+
 .dark {
   color-scheme: dark;
 }

@@ -2,7 +2,13 @@ import { SVGAttributes } from "react";
 
 export default function NewWindow(props: SVGAttributes<SVGSVGElement>) {
   return (
-    <svg aria-hidden fill="none" viewBox="0 0 24 24" strokeWidth={2} {...props}>
+    <svg
+      aria-label="Opens in New Tab"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      {...props}
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

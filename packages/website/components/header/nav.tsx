@@ -173,7 +173,7 @@ function SubNav({
 export default function Nav() {
   const router = useRouter();
   const isHome = router.pathname === "/";
-  const [, category, page] = router.asPath.split("/");
+  const [, category, page] = router.pathname.split("/");
 
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);

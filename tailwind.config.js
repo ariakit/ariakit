@@ -39,7 +39,7 @@ module.exports = {
         text: "currentColor",
       },
       link: {
-        text: "hsl(204 100% 32%)",
+        text: "hsl(204 100% 36%)",
         dark: {
           text: "hsl(204 100% 64%)",
         },

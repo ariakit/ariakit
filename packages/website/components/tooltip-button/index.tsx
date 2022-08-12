@@ -1,4 +1,4 @@
-import { ElementType } from "react";
+import { ElementType, ReactNode } from "react";
 import { cx } from "ariakit-utils/misc";
 import { createComponent } from "ariakit-utils/system";
 import { Button } from "ariakit/button";
@@ -14,7 +14,7 @@ export type TooltipButtonOptions<T extends ElementType = "button"> = Omit<
   TooltipAnchorOptions<T>,
   "state"
 > & {
-  title: string;
+  title: ReactNode;
   tooltipProps?: Omit<TooltipProps, "state">;
 };
 

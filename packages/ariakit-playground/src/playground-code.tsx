@@ -53,7 +53,11 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     const ref = useRef<HTMLDivElement>(null);
     const value = valueProp ?? getValue(state, file);
 
-    const [collapsible, setCollapsible] = useState(false);
+    const length = value ? value.split("\n").length : 0;
+    // TODO: Make this a prop?
+    const [collapsible, setCollapsible] = useState(
+      maxHeight ? length >= (maxHeight - 32) / 21 : false
+    );
 
     const [expanded, setExpanded] = useControlledState(
       defaultExpanded ?? !maxHeight,
@@ -88,7 +92,6 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
       return highlight(value, languageObj, language);
     }, [shouldHighlight, language, value]);
 
-    const length = value ? value.split("\n").length : 0;
     const lines = Array.from({ length }, (_, i) => i + 1);
 
     const numbers = useMemo(

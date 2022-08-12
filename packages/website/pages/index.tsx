@@ -43,7 +43,7 @@ export default function Home() {
           </p>
         </div>
         <div className="flex gap-4 mb-20 items-center flex-col sm:flex-row">
-          <Link href="/guide/get-started">
+          <Link href="/guide/getting-started">
             <a
               className={cx(
                 "flex gap-2 h-12 items-center whitespace-nowrap justify-center text-lg px-8 rounded-lg",
