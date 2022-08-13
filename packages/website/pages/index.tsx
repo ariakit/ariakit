@@ -16,6 +16,10 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/combobox-cancel", label: "Combobox cancel" },
   { href: "/examples/combobox-disclosure", label: "Combobox disclosure" },
   {
+    href: "/examples/combobox-highlighted-text",
+    label: "Combobox with highlighted items text",
+  },
+  {
     href: "/examples/combobox-inline-autocomplete",
     label: "Combobox with inline autocomplete",
   },
