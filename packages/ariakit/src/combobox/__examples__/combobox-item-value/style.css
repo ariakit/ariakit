@@ -1,0 +1,5 @@
+@import "../combobox/style.css";
+
+[data-user-value] {
+  color: palevioletred;
+}
