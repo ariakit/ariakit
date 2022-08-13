@@ -1,5 +1,9 @@
 @import "../combobox/style.css";
 
-[data-user-value] {
-  color: palevioletred;
+.combobox-item[data-user-value] {
+  @apply
+    font-semibold
+    text-primary-1
+    dark:text-primary-1-dark
+  ;
 }
