@@ -6,11 +6,16 @@ import {
 } from "ariakit/combobox";
 import "./style.css";
 
-export default function Example() {
+export default function Example({ defaultValue }: { defaultValue?: string }) {
   const combobox = useComboboxState({
     gutter: 8,
     sameWidth: true,
+    defaultValue,
   });
+
+  if (combobox.open && combobox.value.length < 1) {
+    combobox.setOpen(false);
+  }
 
   return (
     <div>
@@ -20,8 +25,6 @@ export default function Example() {
           state={combobox}
           placeholder="e.g., Apple"
           className="combobox"
-          showOnMouseDown={false}
-          showOnKeyDown={false}
         />
       </label>
 
