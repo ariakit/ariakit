@@ -17,7 +17,6 @@ export default function Example() {
           placeholder="e.g., Apple"
           className="combobox"
           autoComplete="inline"
-          autoSelect
         />
       </label>
       <ComboboxPopover state={combobox} className="popover">
