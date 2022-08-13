@@ -4,7 +4,7 @@ const getAnchor = (page: Page) => page.locator("role=link[name='@ariakitjs']");
 const getHovercard = (page: Page) =>
   page.locator("role=dialog[name='Ariakit']");
 
-test("show/hide hovercard", async ({ page }) => {
+test("show/hide hovercard after scrolling", async ({ page }) => {
   await page.goto("/examples/hovercard");
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
