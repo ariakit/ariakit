@@ -11,38 +11,34 @@ test("a11y", async () => {
   expect(await axe(container)).toHaveNoViolations();
 });
 
-describe("combobox is pristine", () => {
-  test("does not show on click", async () => {
-    render(<Example />);
-    expect(getPopover()).not.toBeVisible();
-    await click(getCombobox());
-    expect(getPopover()).not.toBeVisible();
-  });
-
-  test("does not show on arrow down key", async () => {
-    render(<Example />);
-    await press.Tab();
-    expect(getPopover()).not.toBeVisible();
-    await press.ArrowDown();
-    expect(getPopover()).not.toBeVisible();
-  });
+test("popover is not shown on click when combobox is pristine", async () => {
+  render(<Example />);
+  expect(getPopover()).not.toBeVisible();
+  await click(getCombobox());
+  expect(getPopover()).not.toBeVisible();
 });
 
-describe("combobox is dirty", () => {
-  test("show on click", async () => {
-    render(<Example defaultValue="a" />);
-    expect(getPopover()).not.toBeVisible();
-    await click(getCombobox());
-    expect(getPopover()).toBeVisible();
-    expect(getOption("🍎 Apple")).not.toHaveFocus();
-  });
+test("popover is not shown on arrow down key when combobox is pristine", async () => {
+  render(<Example />);
+  await press.Tab();
+  expect(getPopover()).not.toBeVisible();
+  await press.ArrowDown();
+  expect(getPopover()).not.toBeVisible();
+});
 
-  test("show on arrow down key", async () => {
-    render(<Example defaultValue="a" />);
-    await press.Tab();
-    expect(getPopover()).not.toBeVisible();
-    await press.ArrowDown();
-    expect(getPopover()).toBeVisible();
-    expect(getOption("🍎 Apple")).not.toHaveFocus();
-  });
+test("popover is shown on click when combobox is dirty", async () => {
+  render(<Example defaultValue="a" />);
+  expect(getPopover()).not.toBeVisible();
+  await click(getCombobox());
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍎 Apple")).not.toHaveFocus();
+});
+
+test("popover is shown on arrow down key when combobox is dirty", async () => {
+  render(<Example defaultValue="a" />);
+  await press.Tab();
+  expect(getPopover()).not.toBeVisible();
+  await press.ArrowDown();
+  expect(getPopover()).toBeVisible();
+  expect(getOption("🍎 Apple")).not.toHaveFocus();
 });
