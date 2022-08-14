@@ -191,21 +191,21 @@ module.exports = {
       slug: "combobox-matches",
       title: "Filterable Combobox",
       description:
-        "Filtering the items in a Combobox using the list prop from the useComboboxState hook.",
+        "Filtering the suggestions in a Combobox using the list prop from the useComboboxState hook.",
       group: "Combobox",
     },
     {
       slug: "combobox-multiple",
       title: "Multi-selectable Combobox",
       description:
-        "Combining Combobox and Select to create an accessible multi-selectable search input.",
+        "Combining Combobox and Select to create an accessible multi-selectable search input in React.",
       group: "Combobox",
     },
     {
       slug: "combobox-textarea",
       title: "Textarea with inline Combobox",
       description:
-        "Using Combobox as a textarea element to create an accessible multiline input that shows a popup with dynamic suggestions based on the inserted trigger character.",
+        "Rendering Combobox as a textarea element to create an accessible multiline textbox in React. Inserting specific characters triggers a popup with dynamic suggestions.",
       group: "Combobox",
     },
     {
