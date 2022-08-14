@@ -1,7 +1,7 @@
 # Animated Dialog
 
 <p class="description">
-  <a href="/guide/animating">Animating</a> a modal <a href="/components/dialog">Dialog</a> and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog.
+  <a href="/guide/animating">Animating</a> a modal <a href="/components/dialog">Dialog</a> and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
 </p>
 
 The [`animated`](/api-reference/dialog-state#animated) prop on the [`useDialogState`](/api-reference/dialog-state) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the dialog.

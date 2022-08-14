@@ -55,7 +55,7 @@ const { Compiler: renderAst } = new RehypeReact({
             rel="nofollow noopener noreferrer"
             className="inline-flex items-center gap-1"
           >
-            {props.children}
+            <span>{props.children}</span>
             <NewWindow className="stroke-black/60 dark:stroke-white/60 h-[1em] w-[1em]" />
           </a>
         );
@@ -162,7 +162,7 @@ export default function MarkdownPage(props) {
           "dark:[&>p]:text-white/80",
           "[&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em] [&>p]:leading-7",
           // code
-          "[&_p_code]:p-1 [&_p_code]:text-[15px] [&_p_code]:rounded",
+          "[&_p_code]:p-1 [&_p_code]:text-[0.9375em] [&_p_code]:rounded",
           "[&_p_code]:bg-black/[6.5%] dark:[&_p_code]:bg-white/[6.5%]",
           "[&_p_code]:font-monospace"
         )}

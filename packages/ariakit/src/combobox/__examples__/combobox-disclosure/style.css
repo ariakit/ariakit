@@ -6,5 +6,5 @@
 }
 
 .disclosure {
-  @apply absolute h-8 w-8 p-0 top-1 right-1 rounded;
+  @apply absolute h-8 w-8 p-0 top-1 right-1 rounded-sm;
 }

@@ -1,7 +1,7 @@
 # Animated Combobox
 
 <p class="description">
-  Animating a <a href="/components/combobox">Combobox</a> using CSS transitions. The component waits for the transition to finish before completely hiding the popover.
+  Animating a <a href="/components/combobox">Combobox</a> using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
 </p>
 
 <a href="./index.tsx" data-playground>Example</a>
@@ -21,4 +21,4 @@ Use the `data-enter` and `data-leave` attributes to animate the popover:
 }
 ```
 
-Learn more in [Styling](/guide/styling#animations).
+Learn more in [Animating](/guide/animating).

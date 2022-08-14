@@ -8,7 +8,7 @@ import "./style.css";
 
 export default function Example() {
   const combobox = useComboboxState({
-    gutter: 8,
+    gutter: 4,
     sameWidth: true,
     animated: true,
   });

@@ -1,12 +1,32 @@
 .wrapper {
-  @apply flex w-full max-w-md flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    w-[500px]
+    max-w-full
+    self-start
+    mt-7
+    p-4
+    gap-4
+    rounded-lg
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark;
 }
 
 .button {
   @apply
+    text-left
     cursor-pointer
     text-lg
     font-semibold
+    rounded
+    underline-offset-2
     hover:underline
     focus-visible:ariakit-outline;
+}
+
+.content {
+  @apply flex flex-col gap-4;
 }

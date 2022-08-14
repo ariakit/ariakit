@@ -8,7 +8,7 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ sameWidth: true, gutter: 8 });
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
   return (
     <div className="wrapper">
       <label className="label">

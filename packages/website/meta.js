@@ -12,13 +12,13 @@ module.exports = {
       slug: "button",
       title: "Button",
       description:
-        "Trigger an action or event, such as submitting a Form, opening a Dialog, canceling an action, or performing a delete operation. This component follows the WAI-ARIA Button Pattern.",
+        "Trigger an action or event, such as submitting a Form, opening a Dialog, canceling an action, or performing a delete operation in React. This component follows the WAI-ARIA Button Pattern.",
     },
     {
       slug: "checkbox",
       title: "Checkbox",
       description:
-        "Select one or more options in a list, toggle a single option, or indicate agreement with a statement. This component follows the WAI-ARIA Checkbox Pattern.",
+        "Select one or more options in a list or toggle a single option using a native or custom checkbox in React. This component follows the WAI-ARIA Checkbox Pattern.",
     },
     {
       slug: "collection",
@@ -30,7 +30,7 @@ module.exports = {
       slug: "combobox",
       title: "Combobox",
       description:
-        "Fill in an input field with autocomplete and autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component follows the WAI-ARIA Combobox Pattern.",
+        "Fill in a React input field with autocomplete & autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component follows the WAI-ARIA Combobox Pattern.",
     },
     {
       slug: "command",
@@ -50,7 +50,20 @@ module.exports = {
       slug: "dialog",
       title: "Dialog",
       description:
-        "Open a new window that can be either modal or non-modal and optionally rendered in a portal element. This component follows the WAI-ARIA Dialog Pattern.",
+        "Open a new window that can be either modal or non-modal and optionally rendered in a React portal. This component follows the WAI-ARIA Dialog Pattern.",
+    },
+    {
+      slug: "disclosure",
+      title: "Disclosure",
+      description:
+        "Click on a button to show (expand, open) or hide (collapse, close) a content element in React. This component follows the WAI-ARIA Disclosure Pattern.",
+    },
+    {
+      slug: "focus-trap",
+      title: "FocusTrap",
+      description:
+        "Click on a button to show (expand, open) or hide (collapse, close) a content element in React. This component follows the WAI-ARIA Disclosure Pattern.",
+      group: "Abstract components",
     },
     { slug: "form", title: "Form", description: "Example" },
     { slug: "heading", title: "Heading", description: "Example" },
@@ -59,6 +72,12 @@ module.exports = {
     { slug: "separator", title: "Separator", description: "example" },
     { slug: "tab", title: "Tab", description: "Example" },
     { slug: "tooltip", title: "Tooltip", description: "Example" },
+    {
+      slug: "focusable",
+      title: "Focusable",
+      description:
+        "Click or press Tab to move focus to any React element using this abstract component that normalizes the focus behavior across browsers.",
+    },
   ],
   examples: [
     {
@@ -90,28 +109,28 @@ module.exports = {
       slug: "checkbox-as-button",
       title: "Checkbox as button",
       description:
-        "Rendering a Checkbox as a button element, while keeping it accessible to screen reader and keyboard users.",
+        "Rendering a custom Checkbox as a button element in React, while keeping it accessible to screen reader and keyboard users.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-controlled",
       title: "Controlled Checkbox",
       description:
-        "Using controlled props, such as checked and onChange, with the Checkbox component.",
+        "Using controlled props, such as checked and onChange, with a native Checkbox component in React.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-custom",
       title: "Custom Checkbox",
       description:
-        "Rendering a visually hidden Checkbox using the VisuallyHidden component to show a custom checkbox presentation.",
+        "Rendering a visually hidden Checkbox using the VisuallyHidden component to show a custom checkbox presentation in React.",
       group: "Checkbox",
     },
     {
       slug: "checkbox-group",
       title: "Checkbox group",
       description:
-        "Rendering multiple Checkbox components as a group and storing the selected values in an array provided by the useCheckboxState hook.",
+        "Rendering multiple Checkbox elements in React to form a group of checkboxes. The selected values are stored in an array provided by the useCheckboxState hook.",
       group: "Checkbox",
     },
     {
@@ -137,7 +156,7 @@ module.exports = {
       slug: "combobox-animated",
       title: "Animated Combobox",
       description:
-        "Animating a Combobox using CSS transitions. The component waits for the transition to finish before completely hiding the popover.",
+        "Animating a Combobox using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.",
       group: "Combobox",
     },
     {
@@ -158,14 +177,14 @@ module.exports = {
       slug: "combobox-group",
       title: "ComboboxGroup",
       description:
-        "Organizing combobox items into labelled groups using the ComboboxGroup and ComboboxGroupLabel components.",
+        "Organizing combobox items into labelled groups using the ComboboxGroup and ComboboxGroupLabel components in React.",
       group: "Combobox",
     },
     {
       slug: "combobox-links",
-      title: "Combobox with link items",
+      title: "Combobox with links",
       description:
-        "Using a Combobox with items rendered as links that can be clicked with keyboard and mouse. This is useful for creating an accessible page search input.",
+        "Using a Combobox with items rendered as links that can be clicked with keyboard and mouse. This is useful for creating an accessible page search input in React.",
       group: "Combobox",
     },
     {
@@ -223,14 +242,14 @@ module.exports = {
       slug: "dialog-animated",
       title: "Animated Dialog",
       description:
-        "Animating a modal Dialog and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog.",
+        "Animating a modal Dialog and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.",
       group: "Dialog",
     },
     {
       slug: "dialog-details",
       title: "Dialog with details & summary",
       description:
-        "Combining Dialog with the native details element so users can interact with it before JavaScript finishes loading.",
+        "Combining Dialog with the native details element in React so users can interact with it before JavaScript finishes loading.",
       group: "Dialog",
     },
     {

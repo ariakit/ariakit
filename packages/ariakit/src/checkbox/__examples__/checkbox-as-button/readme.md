@@ -1,7 +1,7 @@
 # Checkbox as button
 
 <p class="description">
-  Rendering a <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element, while keeping it accessible to screen reader and keyboard users.
+  Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
 </p>
 
 <a href="./index.tsx" data-playground>Example</a>
