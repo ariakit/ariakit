@@ -4,7 +4,8 @@ import Example from ".";
 
 const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });
-const getOption = (name: string) => getByRole("option", { name, exact: false });
+const getOption = (name: string) =>
+  getByRole("option", { name: (_content, node) => node.textContent == name });
 
 test("a11y", async () => {
   const { container } = render(<Example />);
