@@ -1,5 +1,10 @@
 @import "../combobox/style.css";
 
 .combobox-item {
-  @apply cursor-pointer;
+  @apply
+    cursor-pointer
+    font-normal
+    text-current
+    dark:text-current
+    no-underline;
 }

@@ -89,12 +89,13 @@ export default function Example() {
   };
 
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Comment
         <Combobox
           ref={ref}
           as="textarea"
+          placeholder="Type @, # or :"
           state={combobox}
           rows={5}
           autoSelect

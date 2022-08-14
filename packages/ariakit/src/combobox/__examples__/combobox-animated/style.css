@@ -1,18 +1,11 @@
 @import "../combobox/style.css";
 
 .popover {
-  transform: translateY(-5%);
   @apply
-    ease-in
+    ease-in-out
     duration-200
-    opacity-0;
-}
-
-.popover[data-enter] {
-  transform: translateY(0%);
-  @apply opacity-100;
-}
-
-.popover[data-leave] {
-  @apply ease-in-out;
+    opacity-0
+    [transform:translateY(-5%)]
+    enter:opacity-100
+    enter:[transform:translateY(0%)];
 }

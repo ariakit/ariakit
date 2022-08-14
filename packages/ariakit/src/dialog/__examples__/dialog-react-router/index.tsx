@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Button } from "ariakit/button";
 import {
   Dialog,
@@ -5,6 +6,7 @@ import {
   DialogHeading,
   useDialogState,
 } from "ariakit/dialog";
+import { VisuallyHidden } from "ariakit/visually-hidden";
 import {
   Link,
   MemoryRouter,
@@ -15,7 +17,8 @@ import {
 } from "react-router-dom";
 import "./style.css";
 
-function Login() {
+function Tweet() {
+  const initialFocusRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const dialog = useDialogState({
     open: true,
@@ -29,23 +32,25 @@ function Login() {
     <Dialog
       state={dialog}
       portal={typeof window !== "undefined"}
+      initialFocusRef={initialFocusRef}
       className="dialog"
     >
-      <header className="header">
-        <DialogHeading className="heading">Log in</DialogHeading>
-        <DialogDismiss as={Link} to="/" className="button dismiss" />
-      </header>
+      <DialogDismiss as={Link} to="/" className="button secondary dismiss" />
+      <DialogHeading hidden className="heading">
+        Tweet
+      </DialogHeading>
       <form className="form">
-        <label className="label">
-          Username
-          <input className="input" type="text" />
-        </label>
-        <label className="label">
-          Password
-          <input className="input" type="password" />
+        <label>
+          <VisuallyHidden>Tweet text</VisuallyHidden>
+          <textarea
+            ref={initialFocusRef}
+            placeholder="What's happening?"
+            className="input"
+            rows={5}
+          />
         </label>
         <Button onClick={dialog.toggle} className="button">
-          Log in
+          Tweet
         </Button>
       </form>
     </Dialog>
@@ -55,8 +60,8 @@ function Login() {
 function Home() {
   return (
     <>
-      <Link to="/login" className="button">
-        Log in
+      <Link to="/tweet" className="button">
+        Tweet
       </Link>
       <Outlet />
     </>
@@ -68,7 +73,7 @@ export default function Example() {
     <MemoryRouter>
       <Routes>
         <Route path="/" element={<Home />}>
-          <Route path="/login" element={<Login />} />
+          <Route path="/tweet" element={<Tweet />} />
         </Route>
       </Routes>
     </MemoryRouter>

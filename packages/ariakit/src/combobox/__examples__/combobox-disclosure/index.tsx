@@ -10,7 +10,7 @@ import "./style.css";
 export default function Example() {
   const combobox = useComboboxState({ sameWidth: true, gutter: 8 });
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite food
         <div className="combobox-wrapper">

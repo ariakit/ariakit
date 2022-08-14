@@ -7,6 +7,9 @@ const withTranspileModules = transpileModules(["ariakit"]);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+  experimental: {
+    scrollRestoration: true,
+  },
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,

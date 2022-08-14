@@ -57,7 +57,24 @@ function MyApp({ Component, pageProps }: AppProps) {
         <div className="flex mt-auto">
           <footer className="flex justify-center w-full mt-32 bg-canvas-1 dark:bg-canvas-1-dark">
             <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1440px]">
-              Footer
+              <div>
+                Site licensed under{" "}
+                <a
+                  rel="license noreferrer"
+                  target="_blank"
+                  href="http://creativecommons.org/licenses/by/4.0/"
+                >
+                  CC 4.0
+                </a>
+                . Library and examples licensed under{" "}
+                <a
+                  rel="license noreferrer"
+                  target="_blank"
+                  href="https://opensource.org/licenses/MIT"
+                >
+                  MIT
+                </a>
+              </div>
             </div>
           </footer>
         </div>

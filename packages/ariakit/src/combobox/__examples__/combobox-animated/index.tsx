@@ -13,7 +13,7 @@ export default function Example() {
     animated: true,
   });
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite fruit
         <Combobox

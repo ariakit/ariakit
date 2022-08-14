@@ -24,8 +24,8 @@ module.exports = [
      */
     getGroup: (filename) => {
       const component = path.basename(path.dirname(filename));
-      if (["command"].includes(component)) {
-        return "Abstract Components";
+      if (["command", "composite"].includes(component)) {
+        return "Abstract components";
       }
       return null;
     },

@@ -5,7 +5,11 @@
 </p>
 
 <div class="warning">
-  When using the <code>Button</code> component, always prefer to use a native <code>button</code> element instead of a <code>div</code>. This example is provided for cases where a native button element is not possible, such as when using a third-party library that doesn't let you change the underlying element.
+
+### Before you use this example
+
+When using the `Button` component, always prefer to use a native `button` element instead of a `div`. This example is provided for cases where a native button element is not possible, such as when using a third-party library that doesn't let you change the underlying element.
+
 </div>
 
 <a href="./index.tsx" data-playground>Example</a>

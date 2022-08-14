@@ -33,7 +33,7 @@ const { Compiler: renderAst } = new RehypeReact({
             theme={theme}
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
-            className="bg-canvas-1 dark:bg-canvas-1-dark rounded-xl"
+            className="bg-canvas-1 dark:bg-canvas-1-dark rounded-xl !max-w-[800px]"
           />
         );
       }
@@ -96,57 +96,78 @@ export default function MarkdownPage(props) {
   }, [props.markdown, props.defaultValues, props.deps]);
 
   return (
-    <div className="flex items-start justify-center">
+    <div className="flex flex-col md:flex-row-reverse items-start justify-center">
       <SEO title={`${title} - Ariakit`} />
+      <div className="md:sticky md:top-24 md:mt-[100px] flex flex-col gap-4 p-4 w-[240px]">
+        <div className="uppercase text-xs font-bold text-black/60 dark:text-white/50">
+          On this page
+        </div>
+        <ul className="flex flex-col gap-2 text-sm [&>li]:opacity-80">
+          <li>
+            <a href="#">Combobox</a>
+          </li>
+          <li className="font-bold !opacity-100">Installation</li>
+          <li>Features</li>
+          <li>API</li>
+          <li>Examples</li>
+          <li>Other components</li>
+        </ul>
+      </div>
       <div
         className={cx(
-          "flex flex-col gap-8 items-center",
-          "relative w-full max-w-5xl mt-8 sm:mt-12 px-3 sm:px-4 md:px-8",
-          "tracking-[-0.035em] dark:tracking-[-0.015em]",
+          "flex min-w-[1px] flex-col gap-8 items-center",
+          "relative w-full max-w-5xl mt-8 sm:mt-12 px-3 sm:px-4 lg:px-8",
           // all
           "[&>*]:w-full [&>*]:max-w-3xl",
           // links
-          "[&_a]:rounded-sm [&_a:focus-visible]:ariakit-outline [&_a:focus-visible]:no-underline",
+          "[&_a]:rounded-sm [&_a:focus-visible]:ariakit-outline-input [&_a:focus-visible]:no-underline",
           "[&_a]:underline [&_a:hover]:decoration-[3px] [&_a]:[text-decoration-skip-ink:none]",
+          "[&_a]:underline-offset-[0.125em]",
           "[&_a]:font-medium dark:[&_a]:font-normal",
           "[&_a]:text-link dark:[&_a]:text-link-dark",
           // h1
           "[&_h1]:scroll-mt-[120px]",
-          "[&_h1]:text-4xl sm:[&_h1]:text-5xl md:[&_h1]:text-6xl",
+          "[&_h1]:text-4xl sm:[&_h1]:text-5xl",
           "[&_h1]:font-extrabold dark:[&_h1]:font-bold",
+          "[&_h1]:tracking-[-0.035em] dark:[&_h1]:tracking-[-0.015em]",
           // h2
           "[&_h2]:mt-6",
-          "[&_h2]:scroll-mt-[96px]",
-          "[&_h2]:text-2xl sm:[&_h2]:text-3xl md:[&_h2]:text-4xl",
+          "[&_h2]:scroll-mt-24",
+          "[&_h2]:text-2xl sm:[&_h2]:text-3xl",
           "[&_h2]:font-semibold dark:[&_h2]:font-medium",
-          "[&_h2]:text-black/75 dark:[&_h2]:text-white/75",
+          "[&_h2]:text-black/70 dark:[&_h2]:text-white/60",
+          "[&_h2]:tracking-[-0.035em] dark:[&_h2]:tracking-[-0.015em]",
+          // h3
+          "[&_h3]:mt-2",
+          "[&_h3]:scroll-mt-20",
+          "[&_h3]:text-xl",
+          "[&_h3]:font-semibold dark:[&_h3]:font-medium",
+          "[&_h3]:text-black dark:[&_h3]:text-white",
+          "[&_h3]:tracking-[-0.035em] dark:[&_h3]:tracking-[-0.015em]",
           // description
+          "[&>p.description]:-translate-y-4",
           "[&>p.description]:text-lg",
-          "[&>p.description]:text-canvas-1/70 dark:[&>p.description]:text-canvas-1-dark/70",
+          "[&>p.description]:text-black/70 dark:[&>p.description]:text-white/60",
+          "[&>p.description]:!tracking-tight",
           // warning
-          "[&>div.warning]:p-4",
-          "[&>div.warning]:rounded-xl",
-          "[&>div.warning]:border-l-4 [&>div.warning]:border-warn-1 dark:[&>div.warning]:border-warn-1-dark",
-          "[&>div.warning]:bg-warn-1 dark:[&>div.warning]:bg-warn-1-dark",
+          "[&>div.warning]:relative [&>div.warning]:p-4 [&>div.warning]:pl-8",
+          "[&>div.warning]:rounded-xl [&>div.warning]:text-black/80 dark:[&>div.warning]:text-white/80",
+          "[&>div.warning]:border [&>div.warning]:border-canvas-5 dark:[&>div.warning]:border-canvas-2-dark",
+          "[&>div.warning]:shadow dark:[&>div.warning]:shadow-dark",
+          "[&>div.warning]:bg-canvas-5 dark:[&>div.warning]:bg-canvas-3-dark",
+          "[&>div.warning>h2]:m-0 [&>div.warning>h2]:text-xl [&>div.warning>h2]:mb-4",
+          "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:w-1.5 dark:[&>div.warning]:before:w-1.5 [&>div.warning]:before:bottom-2 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-warn-2 dark:[&>div.warning]:before:bg-warn-2-dark",
+          "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:font-medium [&>div.warning>h3]:text-lg [&>div.warning>h3]:text-warn-1 dark:[&>div.warning>h3]:text-warn-1-dark",
           // p
-          // "[&_p]:tracking-tight",
+          "dark:[&>p]:text-white/80",
+          "[&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em] [&>p]:leading-7",
           // code
-          "[&_p_code]:px-2 [&_p_code]:py-1 [&_p_code]:rounded",
-          // "[&_p_code]:border [&_p_code]:border-black/10",
-          "[&_p_code]:bg-black/10 dark:[&_p_code]:bg-white/10",
+          "[&_p_code]:p-1 [&_p_code]:text-[15px] [&_p_code]:rounded",
+          "[&_p_code]:bg-black/[6.5%] dark:[&_p_code]:bg-white/[6.5%]",
           "[&_p_code]:font-monospace"
         )}
       >
         {renderAst(tree)}
-      </div>
-      <div className="sticky top-24 mt-20">
-        <div>On this page</div>
-        <ul>
-          <li>Form with Select</li>
-          <li>Features</li>
-          <li>Related components</li>
-          <li>Other examples</li>
-        </ul>
       </div>
     </div>
   );

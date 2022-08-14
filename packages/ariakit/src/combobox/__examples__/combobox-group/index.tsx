@@ -26,7 +26,7 @@ export default function Example() {
   }, [combobox.matches]);
 
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite food
         <Combobox

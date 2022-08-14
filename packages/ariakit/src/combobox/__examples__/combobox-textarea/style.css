@@ -2,8 +2,7 @@
 @import "../../../button/__examples__/button/style.css";
 
 .combobox {
-  width: 380px;
-  @apply h-auto p-2;
+  @apply w-[380px] h-auto p-2;
 }
 
 .combobox-description {
@@ -11,10 +10,12 @@
 }
 
 .popover {
-  min-width: 180px;
-  max-width: 280px;
-  max-height: min(var(--popover-available-height, 186px), 186px);
-  @apply p-1 rounded-md;
+  @apply
+    [max-height:min(var(--popover-available-height,186px),186px)]
+    min-w-[180px]
+    max-w-[280px]
+    p-1
+    rounded-md;
 }
 
 .combobox-item {

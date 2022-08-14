@@ -27,7 +27,7 @@ export default function Example() {
     sameWidth: true,
   });
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Links
         <Combobox

@@ -1,3 +1,23 @@
 # Command
 
+<p class="description">
+  Click with a mouse or keyboard to trigger an action. This abstract component is inspired by the <a href="https://w3c.github.io/aria/#command">WAI-ARIA Command Role</a>.
+</p>
+
 <a href="./__examples__/command/index.tsx" data-playground>Example</a>
+
+## Installation
+
+```sh
+npm install ariakit
+```
+
+Learn more in [Getting started](/guide/getting-started).
+
+## Command vs. Button
+
+In short, if you need a semantic button element, you should use the [Button](/components/button) component.
+
+The `Button` component uses `Command` underneath and inherits all its features, but `Button` automatically adds the `role="button"` attribute when necessary (for example, when [rendering a non-native button](/examples/button-as-div)).
+
+If you need a clickable element with a different semantic role (e.g., `menuitem`), and you're not using the specific Ariakit component (e.g., [`MenuItem`](/api-reference/menu-item)), you can use `Command`.

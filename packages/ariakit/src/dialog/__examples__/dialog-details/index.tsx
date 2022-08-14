@@ -12,7 +12,8 @@ export default function Example() {
   const ref = useRef<HTMLDetailsElement>(null);
   const dialog = useDialogState();
 
-  // Consider clicks before the JavaScript has loaded.
+  // Hydrate the dialog state. This is necessary because the user may have
+  // opened the dialog before JavaScript has loaded.
   useEffect(() => dialog.setOpen(!!ref.current?.open), [dialog.setOpen]);
 
   return (
@@ -22,38 +23,28 @@ export default function Example() {
       onToggle={(event) => dialog.setOpen(event.currentTarget.open)}
     >
       <Button as="summary" className="button">
-        View details
+        Show modal
       </Button>
       <Dialog
         state={dialog}
+        // We're setting the modal prop to true only when the dialog is open and
+        // JavaScript is enabled. This means that the dialog will initially have
+        // a non-modal state with no backdrop element, allowing users to
+        // interact with the content behind. This is necessary because, before
+        // JavaScript finishes loading, we can't automatically move focus to the
+        // dialog.
         modal={dialog.mounted}
         hidden={false}
         className="dialog"
       >
-        <header className="header">
-          <DialogHeading className="heading">Apples</DialogHeading>
-          <DialogDismiss className="button dismiss" />
-        </header>
-        <ul>
-          <li>
-            <strong>Calories:</strong> 95
-          </li>
-          <li>
-            <strong>Carbs:</strong> 25 grams
-          </li>
-          <li>
-            <strong>Fibers:</strong> 4 grams
-          </li>
-          <li>
-            <strong>Vitamin C:</strong> 14% of the Reference Daily Intake (RDI)
-          </li>
-          <li>
-            <strong>Potassium:</strong> 6% of the RDI
-          </li>
-          <li>
-            <strong>Vitamin K:</strong> 5% of the RDI
-          </li>
-        </ul>
+        <DialogHeading className="heading">Success</DialogHeading>
+        <p className="description">
+          Your payment has been successfully processed. We have emailed your
+          receipt.
+        </p>
+        <div>
+          <DialogDismiss className="button">OK</DialogDismiss>
+        </div>
       </Dialog>
     </details>
   );

@@ -12,4 +12,4 @@
 npm install ariakit
 ```
 
-Learn more in [Getting Started](/guide/getting-started).
+Learn more in [Getting started](/guide/getting-started).

@@ -1,8 +1,8 @@
 const path = require("path");
 const plugin = require("tailwindcss/plugin");
 
-const black = "hsl(204, 10%, 10%)";
-const white = "hsl(204, 20%, 100%)";
+const black = "hsl(204 10% 10%)";
+const white = "hsl(204 20% 100%)";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
@@ -69,7 +69,7 @@ module.exports = {
         },
       },
       "canvas-3": {
-        DEFAULT: white,
+        DEFAULT: "rgb(255 255 255)",
         hover: "hsl(204 20% 96%)",
         border: "hsl(204 20% 88%)",
         text: black,
@@ -81,7 +81,7 @@ module.exports = {
         },
       },
       "canvas-4": {
-        DEFAULT: white,
+        DEFAULT: "rgb(255 255 255)",
         hover: "hsl(204 20% 96%)",
         border: "hsl(204 20% 88%)",
         text: black,
@@ -93,7 +93,7 @@ module.exports = {
         },
       },
       "canvas-5": {
-        DEFAULT: white,
+        DEFAULT: "rgb(255 255 255)",
         hover: "hsl(204 20% 96%)",
         border: "hsl(204 20% 88%)",
         text: black,

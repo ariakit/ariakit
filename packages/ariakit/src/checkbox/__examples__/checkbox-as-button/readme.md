@@ -16,3 +16,5 @@ When rendering the `Checkbox` component as a non-native `input` element, the `:c
   color: hsl(204, 20%, 100%);
 }
 ```
+
+Learn more in [Styling](/guide/styling).

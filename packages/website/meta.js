@@ -1,6 +1,11 @@
 module.exports = {
   guide: [
-    { slug: "getting-started", title: "Getting Started", description: "" },
+    {
+      slug: "getting-started",
+      title: "Getting started",
+      description:
+        "Ariakit is an open source library that provides lower-level React components and hooks for building accessible web apps, design systems, and component libraries.",
+    },
   ],
   components: [
     {
@@ -25,18 +30,27 @@ module.exports = {
       slug: "combobox",
       title: "Combobox",
       description:
-        "Fill in the input field or filter and select a value from a collection of suggested values. This component follows the WAI-ARIA Combobox Pattern.",
+        "Fill in an input field with autocomplete and autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component follows the WAI-ARIA Combobox Pattern.",
     },
     {
       slug: "command",
       title: "Command",
-      description: "Example",
-      group: "Abstract Components",
+      description:
+        "Click with a mouse or keyboard to trigger an action. This abstract component is inspired by the WAI-ARIA Command Role.",
+      group: "Abstract components",
+    },
+    {
+      slug: "composite",
+      title: "Composite",
+      description:
+        "Provide a single tab stop on the page and navigate through the focusable descendants with arrow keys. This abstract component is inspired by the WAI-ARIA Composite Role.",
+      group: "Abstract components",
     },
     {
       slug: "dialog",
       title: "Dialog",
-      description: "Example\ndialog animated",
+      description:
+        "Open a new window that can be either modal or non-modal and optionally rendered in a portal element. This component follows the WAI-ARIA Dialog Pattern.",
     },
     { slug: "form", title: "Form", description: "Example" },
     { slug: "heading", title: "Heading", description: "Example" },
@@ -102,7 +116,7 @@ module.exports = {
     },
     {
       slug: "checkbox-state",
-      title: "Checkbox state",
+      title: "useCheckboxState",
       description:
         "Using the useCheckboxState hook to control the state of the Checkbox component.",
       group: "Checkbox",
@@ -121,50 +135,58 @@ module.exports = {
     },
     {
       slug: "combobox-animated",
-      title: "combobox-animated",
-      description: "Example",
+      title: "Animated Combobox",
+      description:
+        "Animating a Combobox using CSS transitions. The component waits for the transition to finish before completely hiding the popover.",
       group: "Combobox",
     },
     {
       slug: "combobox-cancel",
-      title: "combobox-cancel",
-      description: "Example",
+      title: "ComboboxCancel",
+      description:
+        "Reseting the value of a Combobox with a button rendered next to it using the ComboboxCancel component.",
       group: "Combobox",
     },
     {
       slug: "combobox-disclosure",
-      title: "combobox-disclosure",
-      description: "Example",
+      title: "ComboboxDisclosure",
+      description:
+        "Opening and closing a Combobox with the help of a button rendered next to it using the ComboboxDisclosure component.",
       group: "Combobox",
     },
     {
       slug: "combobox-group",
-      title: "combobox-group",
-      description: "Example",
+      title: "ComboboxGroup",
+      description:
+        "Organizing combobox items into labelled groups using the ComboboxGroup and ComboboxGroupLabel components.",
       group: "Combobox",
     },
     {
       slug: "combobox-links",
-      title: "combobox-links",
-      description: "Example",
+      title: "Combobox with link items",
+      description:
+        "Using a Combobox with items rendered as links that can be clicked with keyboard and mouse. This is useful for creating an accessible page search input.",
       group: "Combobox",
     },
     {
       slug: "combobox-matches",
-      title: "combobox-matches",
-      description: "Example",
+      title: "Filterable Combobox",
+      description:
+        "Filtering the items in a Combobox using the list prop from the useComboboxState hook.",
       group: "Combobox",
     },
     {
       slug: "combobox-multiple",
-      title: "combobox-multiple",
-      description: "Example",
+      title: "Multi-selectable Combobox",
+      description:
+        "Combining Combobox and Select to create an accessible multi-selectable search input.",
       group: "Combobox",
     },
     {
       slug: "combobox-textarea",
-      title: "combobox-textarea",
-      description: "Example",
+      title: "Textarea with inline Combobox",
+      description:
+        "Using Combobox as a textarea element to create an accessible multiline input that shows a popup with dynamic suggestions based on the inserted trigger character.",
       group: "Combobox",
     },
     {
@@ -199,20 +221,23 @@ module.exports = {
     },
     {
       slug: "dialog-animated",
-      title: "dialog-animated",
-      description: "Example",
+      title: "Animated Dialog",
+      description:
+        "Animating a modal Dialog and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog.",
       group: "Dialog",
     },
     {
       slug: "dialog-details",
-      title: "dialog-details",
-      description: "Example",
+      title: "Dialog with details & summary",
+      description:
+        "Combining Dialog with the native details element so users can interact with it before JavaScript finishes loading.",
       group: "Dialog",
     },
     {
       slug: "dialog-react-router",
-      title: "dialog-react-router",
-      description: "Example",
+      title: "Dialog with React Router",
+      description:
+        "Using React Router to create a modal Dialog that's triggered with a link and works with the browser's back and forward buttons.",
       group: "Dialog",
     },
     {
