@@ -12,26 +12,22 @@ test("a11y", async () => {
 
 test("autocomplete on arrow down key", async () => {
   render(<Example />);
-  const combobox = getCombobox();
-  const popover = getPopover();
   await press.Tab();
-  expect(popover).not.toBeVisible();
-  expect(combobox).toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
   await type("a");
-  expect(popover).toBeVisible();
+  expect(getPopover()).toBeVisible();
   await press.ArrowDown();
-  expect(combobox).toHaveValue("Apple");
+  expect(getCombobox()).toHaveValue("Apple");
 });
 
 test("autocomplete on arrow up key", async () => {
   render(<Example />);
-  const combobox = getCombobox();
-  const popover = getPopover();
   await press.Tab();
-  expect(popover).not.toBeVisible();
-  expect(combobox).toHaveFocus();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
   await type("w");
-  expect(popover).toBeVisible();
+  expect(getPopover()).toBeVisible();
   await press.ArrowUp();
-  expect(combobox).toHaveValue("Watermelon");
+  expect(getCombobox()).toHaveValue("Watermelon");
 });
