@@ -6,11 +6,10 @@ import {
 } from "ariakit/combobox";
 import "./style.css";
 
-export default function Example({ defaultValue }: { defaultValue?: string }) {
+export default function Example() {
   const combobox = useComboboxState({
     gutter: 8,
     sameWidth: true,
-    defaultValue,
   });
 
   if (combobox.open && combobox.value.length < 1) {

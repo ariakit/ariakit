@@ -1,4 +1,4 @@
-import { click, getByRole, press, render } from "ariakit-test";
+import { click, getByRole, press, render, type } from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 
@@ -27,7 +27,10 @@ test("popover is not shown on arrow down key when combobox is pristine", async (
 });
 
 test("popover is shown on click when combobox is dirty", async () => {
-  render(<Example defaultValue="a" />);
+  render(<Example />);
+  await press.Tab();
+  await type("a");
+  await press.Escape();
   expect(getPopover()).not.toBeVisible();
   await click(getCombobox());
   expect(getPopover()).toBeVisible();
@@ -35,8 +38,10 @@ test("popover is shown on click when combobox is dirty", async () => {
 });
 
 test("popover is shown on arrow down key when combobox is dirty", async () => {
-  render(<Example defaultValue="a" />);
+  render(<Example />);
   await press.Tab();
+  await type("a");
+  await press.Escape();
   expect(getPopover()).not.toBeVisible();
   await press.ArrowDown();
   expect(getPopover()).toBeVisible();
