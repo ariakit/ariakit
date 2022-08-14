@@ -11,7 +11,7 @@ test("a11y", async () => {
   expect(await axe(container)).toHaveNoViolations();
 });
 
-test.only("show on click", async () => {
+test("show on click", async () => {
   render(<Example />);
   expect(getPopover()).not.toBeVisible();
   await click(getCombobox());
