@@ -1,6 +1,6 @@
 @import "../combobox/style.css";
 
-.combobox-item[data-user-value] {
+.combobox-item [data-user-value] {
   @apply
     font-semibold
     text-primary-1
