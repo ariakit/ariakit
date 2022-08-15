@@ -6,7 +6,7 @@ const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
 
-test("ally", async () => {
+test("a11y", async () => {
   const { container } = render(<Example />);
   expect(await axe(container)).toHaveNoViolations();
 });
