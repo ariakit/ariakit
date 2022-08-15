@@ -27,7 +27,6 @@ export default function Example({ defaultValue }: { defaultValue?: string }) {
           className="combobox"
         />
       </label>
-
       <ComboboxPopover state={combobox} className="popover">
         <ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
