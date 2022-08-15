@@ -1,5 +1,13 @@
 # ariakit-playground
 
+## 0.17.0-next.39
+
+### Patch Changes
+
+- Updated dependency ranges to allow deduplication. ([#1727](https://github.com/ariakit/ariakit/pull/1727))
+
+- Updated dependencies: `ariakit@2.0.0-next.39`, `ariakit-utils@0.17.0-next.25`.
+
 ## 0.17.0-next.38
 
 ### Patch Changes
