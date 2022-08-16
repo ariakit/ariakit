@@ -16,32 +16,9 @@ test("show highlighted text", async () => {
   await type("a");
   await press.ArrowDown();
   expect(getOption("Apple")).toHaveFocus();
-  expect(getOption("Apple")).toMatchInlineSnapshot(`
-    <div
-      aria-selected="true"
-      class="combobox-item"
-      data-active-item=""
-      data-command=""
-      data-composite-hover=""
-      data-focus-visible=""
-      id=":rr:"
-      role="option"
-      tabindex="-1"
-    >
-      <span>
-        <span
-          data-user-value=""
-        >
-          A
-        </span>
-        <span
-          data-autocomplete-value=""
-        >
-          pple
-        </span>
-      </span>
-    </div>
-  `);
+  expect(getOption("Apple").innerHTML).toMatchInlineSnapshot(
+    `"<span><span data-user-value=\\"\\">A</span><span data-autocomplete-value=\\"\\">pple</span></span>"`
+  );
   await press.Enter();
   expect(getByRole("combobox")).toHaveValue("Apple");
 });
