@@ -19,6 +19,11 @@ const waitForHovercardToShow = (timeout = 600) =>
 const waitForHovercardToHide = (timeout = 600) =>
   waitFor(expect(getHovercard()).not.toBeVisible, { timeout });
 
+const hoverOutside = async () => {
+  await hover(document.body);
+  await hover(document.body, { clientX: 10, clientY: 10 });
+};
+
 test("a11y", async () => {
   const { container } = render(<Example />);
   expect(await axe(container)).toHaveNoViolations();
@@ -33,33 +38,33 @@ test("show hovercard on hover after timeout", async () => {
 });
 
 test("hide hovercard on hover outside after timeout", async () => {
-  const { baseElement } = render(<Example />);
+  render(<Example />);
   await hover(getAnchor());
   await waitForHovercardToShow();
-  await hover(baseElement);
+  await hoverOutside();
   expect(getHovercard()).toBeVisible();
   await waitForHovercardToHide();
 });
 
 test("keep hovercard open when it has focus", async () => {
-  const { baseElement } = render(<Example />);
+  render(<Example />);
   await hover(getAnchor());
   await waitForHovercardToShow();
   await click(getHovercard());
-  await hover(baseElement);
+  await hoverOutside();
   await sleep(600);
   await expect(getHovercard()).toBeVisible();
 });
 
 test("keep hovercard open when hovering out and in quickly", async () => {
-  const { baseElement } = render(<Example />);
+  render(<Example />);
   await hover(getAnchor());
   await waitForHovercardToShow();
-  await hover(baseElement);
+  await hoverOutside();
   await sleep(200);
   await hover(getAnchor());
   await expect(getHovercard()).toBeVisible();
-  await hover(baseElement);
+  await hoverOutside();
   await sleep(200);
   await hover(getHovercard());
   await sleep(600);
