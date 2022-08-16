@@ -1,6 +1,6 @@
 # Button
 
-<p class="description">
+<p data-description>
   Trigger an action or event, such as submitting a <a href="/components/form">Form</a>, opening a <a href="/components/dialog">Dialog</a>, canceling an action, or performing a delete operation in React. This component follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/">WAI-ARIA Button Pattern</a>.
 </p>
 

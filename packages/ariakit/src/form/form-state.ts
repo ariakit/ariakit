@@ -35,6 +35,10 @@ type Item = CollectionState["items"][number] & {
   id?: string;
 };
 
+function nextFrame() {
+  return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 /**
  * Provides state for the `Form` component.
  * @example
@@ -177,7 +181,9 @@ export function useFormState<V = AnyObject>(
     try {
       const callbacks = [...validateCallbacks];
       const results = callbacks.map((callback) => callback());
-      await Promise.all(results);
+      // TODO: Explain we need to wait for the errors state to be populated on
+      // async validate handlers.
+      await Promise.all(results).then(nextFrame);
       return !hasMessages(errorsRef.current);
     } finally {
       setValidating(false);
@@ -193,7 +199,7 @@ export function useFormState<V = AnyObject>(
       if (await validate()) {
         const callbacks = [...submitCallbacks];
         const results = callbacks.map((callback) => callback());
-        await Promise.all(results);
+        await Promise.all(results).then(nextFrame);
         if (!hasMessages(errorsRef.current)) {
           setSubmitSucceed((value) => value + 1);
           return true;

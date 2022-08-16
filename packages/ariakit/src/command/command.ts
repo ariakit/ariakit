@@ -1,11 +1,8 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "ariakit-utils/dom";
-import {
-  fireClickEvent,
-  isSelfTarget,
-  queueBeforeEvent,
-} from "ariakit-utils/events";
+import { fireClickEvent, isSelfTarget } from "ariakit-utils/events";
 import { useEvent, useForkRef, useTagName } from "ariakit-utils/hooks";
+import { queueMicrotask } from "ariakit-utils/misc";
 import {
   createComponent,
   createElement,
@@ -85,11 +82,7 @@ export const useCommand = createHook<CommandOptions>(
           if (!nativeClick) {
             event.preventDefault();
             const { view, ...eventInit } = event;
-            queueBeforeEvent(element, "keyup", () =>
-              // Fire a click event instead of calling element.click() directly
-              // so we can pass the modifier state to the click event.
-              fireClickEvent(element, eventInit)
-            );
+            queueMicrotask(() => fireClickEvent(element, eventInit));
           }
         } else if (isSpace) {
           activeRef.current = true;
@@ -119,7 +112,7 @@ export const useCommand = createHook<CommandOptions>(
           setActive(false);
           const element = event.currentTarget;
           const { view, ...eventInit } = event;
-          requestAnimationFrame(() => fireClickEvent(element, eventInit));
+          queueMicrotask(() => fireClickEvent(element, eventInit));
         }
       }
     });

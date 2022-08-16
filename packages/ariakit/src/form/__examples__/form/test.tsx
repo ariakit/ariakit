@@ -80,12 +80,16 @@ test("reset form on reset", async () => {
   expect(getInput("Name")).toHaveValue("");
 });
 
-test("submit form", async () => {
+test.only("submit form", async () => {
   render(<Example />);
   await press.Tab();
   await type("John");
+  await press.Tab();
+  await type("john@example.com");
   await press.Enter();
-  expect(alert).toHaveBeenCalledWith(JSON.stringify({ name: "John" }));
+  expect(alert).toHaveBeenCalledWith(
+    JSON.stringify({ name: "John", email: "john@example.com" })
+  );
 });
 
 test("reset form on submit", async () => {

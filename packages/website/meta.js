@@ -36,14 +36,14 @@ module.exports = {
       slug: "command",
       title: "Command",
       description:
-        "Click with a mouse or keyboard to trigger an action. This abstract component is inspired by the WAI-ARIA Command Role.",
+        "Click with a mouse or keyboard to trigger an action. This abstract component is based on the WAI-ARIA Command Role.",
       group: "Abstract components",
     },
     {
       slug: "composite",
       title: "Composite",
       description:
-        "Provide a single tab stop on the page and navigate through the focusable descendants with arrow keys. This abstract component is inspired by the WAI-ARIA Composite Role.",
+        "Provide a single tab stop on the page and navigate through the focusable descendants with arrow keys. This abstract component is based on the WAI-ARIA Composite Role.",
       group: "Abstract components",
     },
     {
@@ -59,25 +59,23 @@ module.exports = {
         "Click on a button to show (expand, open) or hide (collapse, close) a content element in React. This component follows the WAI-ARIA Disclosure Pattern.",
     },
     {
-      slug: "focus-trap",
-      title: "FocusTrap",
+      slug: "focusable",
+      title: "Focusable",
       description:
-        "Click on a button to show (expand, open) or hide (collapse, close) a content element in React. This component follows the WAI-ARIA Disclosure Pattern.",
-      group: "Abstract components",
+        "Click or press Tab to move focus to any React element using this abstract component that normalizes the focus behavior across browsers.",
     },
-    { slug: "form", title: "Form", description: "Example" },
+    {
+      slug: "form",
+      title: "Form",
+      description:
+        "Submit information with accessible interactive controls in React. Take advantage of the browser's built-in validation with screen reader support. This component is based on the WAI-ARIA Form Role.",
+    },
     { slug: "heading", title: "Heading", description: "Example" },
     { slug: "menu", title: "Menu", description: "Example" },
     { slug: "radio", title: "Radio", description: "Example" },
     { slug: "separator", title: "Separator", description: "example" },
     { slug: "tab", title: "Tab", description: "Example" },
     { slug: "tooltip", title: "Tooltip", description: "Example" },
-    {
-      slug: "focusable",
-      title: "Focusable",
-      description:
-        "Click or press Tab to move focus to any React element using this abstract component that normalizes the focus behavior across browsers.",
-    },
   ],
   examples: [
     {
@@ -88,9 +86,8 @@ module.exports = {
     },
     {
       slug: "button-as-div",
-      title: "Button as div",
-      description:
-        "Rendering a Button as a div element, while providing the same accessibility features as a native button.",
+      title: "button-as-div",
+      description: "Example",
       group: "Button",
     },
     {
@@ -282,7 +279,7 @@ module.exports = {
       slug: "form-select",
       title: "Form with Select",
       description:
-        "A Select component rendered as a FormField using the built-in browser validation.",
+        "Combining Select and FormField to create an accessible custom select widget that works with the browser's built-in validation and native form submission.",
       group: "Form",
     },
     { slug: "group", title: "group", description: "Example", group: "Group" },

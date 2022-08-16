@@ -1,6 +1,6 @@
 # useCheckboxState
 
-<p class="description">
+<p data-description>
   Using the <a href="/api-reference/checkbox-state"><code>useCheckboxState</code></a> hook to control the state of the <a href="/components/checkbox">Checkbox</a> component.
 </p>
 

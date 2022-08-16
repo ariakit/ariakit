@@ -1,4 +1,9 @@
-import { ButtonHTMLAttributes, HTMLAttributes, forwardRef } from "react";
+import {
+  ButtonHTMLAttributes,
+  HTMLAttributes,
+  forwardRef,
+  useRef,
+} from "react";
 import {
   Select as BaseSelect,
   SelectItem as BaseSelectItem,
@@ -18,18 +23,14 @@ export type SelectProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(
   ({ children, value, setValue, defaultValue, onTouch, ...props }, ref) => {
+    const portalRef = useRef<HTMLDivElement>(null);
     const select = useSelectState({
+      gutter: 4,
       value,
       setValue,
       defaultValue,
       sameWidth: true,
-      setOpen: (open) => {
-        if (select.open !== open && !open) {
-          onTouch?.();
-        }
-      },
     });
-
     return (
       <>
         <BaseSelect
@@ -42,6 +43,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             if (event.defaultPrevented) return;
             const popover = select.popoverRef.current;
             if (popover?.contains(event.relatedTarget)) return;
+            console.log(event.relatedTarget);
             onTouch?.();
           }}
         >
@@ -51,10 +53,12 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         <SelectPopover
           state={select}
           modal
+          portalRef={portalRef}
           className="popover"
           onBlur={(event) => {
+            const portal = portalRef.current;
             const disclosure = select.disclosureRef.current;
-            if (event.currentTarget.contains(event.relatedTarget)) return;
+            if (portal?.contains(event.relatedTarget)) return;
             if (disclosure?.contains(event.relatedTarget)) return;
             onTouch?.();
           }}

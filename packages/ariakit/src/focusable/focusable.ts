@@ -16,7 +16,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { focusIfNeeded, isFocusable } from "ariakit-utils/focus";
+import { focusIfNeeded, hasFocus, isFocusable } from "ariakit-utils/focus";
 import {
   useEvent,
   useForkRef,
@@ -313,15 +313,20 @@ export const useFocusable = createHook<FocusableOptions>(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
         onKeyDownCaptureProp?.(event);
         if (!focusable) return;
+        if (focusVisible) return;
         if (event.metaKey) return;
         if (event.altKey) return;
         if (event.ctrlKey) return;
         if (!isSelfTarget(event)) return;
-        if (!focusVisible && !event.defaultPrevented) {
-          // Triggers onFocusVisible when the element has initially received
-          // non-keyboard focus, but then a key has been pressed.
-          onFocusVisibleEvent(event);
-        }
+        if (event.defaultPrevented) return;
+        // TODO: Explain 1password
+        queueMicrotask(() => {
+          if (hasFocus(event.currentTarget)) {
+            // Triggers onFocusVisible when the element has initially received
+            // non-keyboard focus, but then a key has been pressed.
+            onFocusVisibleEvent(event);
+          }
+        });
       }
     );
 

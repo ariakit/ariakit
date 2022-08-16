@@ -290,7 +290,7 @@ module.exports = {
       none: "0 0 #0000",
     },
     fontFamily: {
-      mono: ["Menlo", "monospace"],
+      mono: ["Menlo", "Consolas", "Courier New", "monospace"],
     },
   },
   corePlugins: {

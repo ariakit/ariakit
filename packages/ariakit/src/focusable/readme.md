@@ -1,6 +1,6 @@
 # Focusable
 
-<p class="description">
+<p data-description>
   Click or press <kbd>Tab</kbd> to move focus to any React element using this abstract component that normalizes the focus behavior across browsers.
 </p>
 

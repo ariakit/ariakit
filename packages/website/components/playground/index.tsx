@@ -148,7 +148,7 @@ export default function Playground(props: PlaygroundProps) {
             />
           </Suspense>
         </div>
-        <div className="relative w-full max-w-3xl rounded-lg sm:rounded-xl border border-canvas-5 dark:border-canvas-1-dark drop-shadow-md dark:drop-shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
+        <div className="relative w-full max-w-3xl rounded-lg sm:rounded-xl border border-canvas-5 dark:border-canvas-1-dark shadow-md dark:shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
           <Suspense>
             <div className="flex justify-between p-2 pb-1">
               <TabList

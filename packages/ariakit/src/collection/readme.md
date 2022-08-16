@@ -1,6 +1,6 @@
 # Collection
 
-<p class="description">
+<p data-description>
   Track a collection of DOM elements in the exact order they're rendered in the DOM and watch the DOM for any change to their order.
 </p>
 

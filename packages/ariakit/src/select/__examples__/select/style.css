@@ -3,22 +3,26 @@
 }
 
 .select {
-  width: 200px;
   @apply
     flex
+    w-[200px]
     h-10
     cursor-default
     items-center
     justify-between
     gap-1
-    rounded-lg
+    rounded-md
     px-4
     text-base
     whitespace-nowrap
-    bg-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
+    bg-black/[7.5%]
+    hover:bg-black/[11.25%]
+    aria-expanded:bg-black/[11.25%]
+    dark:bg-white/[7.5%]
+    dark:hover:bg-white/[11.25%]
+    dark:aria-expanded:bg-white/[11.25%]
+    shadow-button
+    dark:shadow-button-dark
     focus-visible:ariakit-outline-input
     aria-disabled:opacity-50;
 }

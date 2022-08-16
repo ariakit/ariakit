@@ -1,6 +1,6 @@
 # Checkbox as button
 
-<p class="description">
+<p data-description>
   Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
 </p>
 

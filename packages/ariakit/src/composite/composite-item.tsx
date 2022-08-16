@@ -10,7 +10,11 @@ import {
   useState,
 } from "react";
 import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
-import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
+import {
+  isOpeningInNewTab,
+  isPortalEvent,
+  isSelfTarget,
+} from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
@@ -323,6 +327,16 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       }
     });
 
+    const onClickProp = props.onClick;
+
+    const onClick = useEvent((event) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!isOpeningInNewTab(event)) return;
+      event.preventDefault();
+      window.open(event.currentTarget.href);
+    });
+
     const providerValue = useMemo(
       () => ({ id, baseRef: state?.baseRef }),
       [id, state?.baseRef]
@@ -372,6 +386,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       onFocus,
       onBlurCapture,
       onKeyDown,
+      onClick,
     };
 
     props = useCommand(props);

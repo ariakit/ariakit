@@ -15,6 +15,15 @@ function getKeyFromChar(key: string) {
   return key;
 }
 
+function workAroundEmailInput(element: Element) {
+  const input = element as HTMLInputElement;
+  if (input.tagName !== "INPUT" || input.type !== "email") return () => {};
+  input.type = "text";
+  return () => {
+    input.type = "email";
+  };
+}
+
 export async function type(
   text: string,
   element?: (DirtiableElement & HTMLElement) | null,
@@ -30,6 +39,8 @@ export async function type(
 
   // Set element dirty so blur() can dispatch a change event
   element.dirty = true;
+
+  const restoreEmailInput = workAroundEmailInput(element);
 
   for (const char of text) {
     const key = getKeyFromChar(char);
@@ -107,4 +118,6 @@ export async function type(
 
     await sleep();
   }
+
+  restoreEmailInput();
 }

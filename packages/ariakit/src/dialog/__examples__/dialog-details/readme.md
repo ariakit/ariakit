@@ -1,6 +1,6 @@
 # Dialog with details &amp; summary
 
-<p class="description">
+<p data-description>
   Combining <a href="/components/dialog">Dialog</a> with the native <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details element</a> in React so users can interact with it before JavaScript finishes loading.
 </p>
 

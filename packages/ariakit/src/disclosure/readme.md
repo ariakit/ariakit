@@ -1,6 +1,6 @@
 # Disclosure
 
-<p class="description">
+<p data-description>
   Click on a button to <a href="/api-reference/disclosure-state#show"><code>show</code></a> (expand, open) or <a href="/api-reference/disclosure-state#hide"><code>hide</code></a> (collapse, close) a content element in React. This component follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/">WAI-ARIA Disclosure Pattern</a>.
 </p>
 

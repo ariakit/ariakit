@@ -1,16 +1,12 @@
 @import "../../../button/__examples__/button/style.css";
 
 .wrapper {
-  min-height: 320px;
-  @apply flex flex-col items-center justify-center;
-}
-
-.form {
-  width: 320px;
   @apply
     flex
     flex-col
-    gap-4
+    gap-6
+    w-[320px]
+    max-w-full
     p-4
     rounded-lg
     bg-canvas-4
@@ -19,25 +15,40 @@
     dark:shadow-dark;
 }
 
+.heading {
+  @apply
+    m-0
+    text-xl
+    mt-2
+    font-semibold
+    text-black
+    dark:text-white;
+}
+
 .field {
   @apply flex flex-col gap-2;
 }
 
 .field input {
   @apply
-    w-full
     h-10
-    rounded-lg
-    border-none
     px-4
     text-base
-    focus-visible:ariakit-outline-input
-    bg-canvas-1
+    w-full
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
     text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+    bg-canvas-1/40
+    dark:bg-canvas-1-dark
+    hover:bg-canvas-1
+    dark:hover:bg-canvas-1-dark-hover
+    shadow-input
+    dark:shadow-input-dark
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .error:empty {
@@ -46,7 +57,8 @@
 
 .error:not(:empty) {
   @apply
-    rounded-lg
+    w-fit
+    rounded-md
     border
     border-danger-1
     bg-danger-1
@@ -56,4 +68,24 @@
     dark:border-danger-1-dark
     dark:bg-danger-1-dark
     dark:text-danger-1-dark;
+}
+
+.buttons {
+  @apply flex gap-4 pt-4;
+}
+
+.button {
+  @apply rounded-md flex-1;
+}
+
+.button.reset {
+  @apply
+    font-semibold
+    text-black/70
+    dark:text-white/70
+    border
+    border-solid
+    border-black/[15%]
+    dark:border-white/[15%]
+  ;
 }

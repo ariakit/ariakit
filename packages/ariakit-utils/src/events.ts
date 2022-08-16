@@ -24,19 +24,19 @@ export function isSelfTarget(event: SyntheticEvent | Event): boolean {
  * Checks whether the user event is triggering a page navigation in a new tab.
  */
 export function isOpeningInNewTab(event: MouseEvent | ReactMouseEvent) {
-  const target = event.target as
+  const element = event.currentTarget as
     | HTMLAnchorElement
     | HTMLButtonElement
     | HTMLInputElement
     | null;
-  if (!target) return null;
+  if (!element) return false;
   const isAppleDevice = isApple();
   if (isAppleDevice && !event.metaKey) return false;
   if (!isAppleDevice && !event.ctrlKey) return false;
-  const tagName = target.tagName.toLowerCase();
+  const tagName = element.tagName.toLowerCase();
   if (tagName === "a") return true;
-  if (tagName === "button" && target.type === "submit") return true;
-  if (tagName === "input" && target.type === "submit") return true;
+  if (tagName === "button" && element.type === "submit") return true;
+  if (tagName === "input" && element.type === "submit") return true;
   return false;
 }
 

@@ -59,6 +59,27 @@ const { Compiler: renderAst } = new RehypeReact({
             <NewWindow className="stroke-black/60 dark:stroke-white/60 h-[1em] w-[1em]" />
           </a>
         );
+      } else if (href?.startsWith("#")) {
+        return (
+          <Link href={href}>
+            <a {...props} className="inline-flex flex-row-reverse items-center">
+              <span>{props.children}</span>
+              <svg
+                className="stroke-black/60 dark:stroke-white/60 h-[1em] w-[1em]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                />
+              </svg>
+            </a>
+          </Link>
+        );
       } else if (href) {
         return (
           <Link href={href}>
@@ -145,10 +166,10 @@ export default function MarkdownPage(props) {
           "[&_h3]:text-black dark:[&_h3]:text-white",
           "[&_h3]:tracking-[-0.035em] dark:[&_h3]:tracking-[-0.015em]",
           // description
-          "[&>p.description]:-translate-y-4",
-          "[&>p.description]:text-lg",
-          "[&>p.description]:text-black/70 dark:[&>p.description]:text-white/60",
-          "[&>p.description]:!tracking-tight",
+          "[&>p[data-description]]:-translate-y-4",
+          "[&>p[data-description]]:text-lg",
+          "[&>p[data-description]]:text-black/70 dark:[&>p[data-description]]:text-white/60",
+          "[&>p[data-description]]:!tracking-tight",
           // warning
           "[&>div.warning]:relative [&>div.warning]:p-4 [&>div.warning]:pl-8",
           "[&>div.warning]:rounded-xl [&>div.warning]:text-black/80 dark:[&>div.warning]:text-white/80",

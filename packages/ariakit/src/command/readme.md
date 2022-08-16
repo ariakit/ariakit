@@ -1,7 +1,7 @@
 # Command
 
-<p class="description">
-  Click with a mouse or keyboard to trigger an action. This abstract component is inspired by the <a href="https://w3c.github.io/aria/#command">WAI-ARIA Command Role</a>.
+<p data-description>
+  Click with a mouse or keyboard to trigger an action. This abstract component is based on the <a href="https://w3c.github.io/aria/#command">WAI-ARIA Command Role</a>.
 </p>
 
 <a href="./__examples__/command/index.tsx" data-playground>Example</a>
