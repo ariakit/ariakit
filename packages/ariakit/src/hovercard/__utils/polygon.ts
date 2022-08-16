@@ -5,20 +5,52 @@ export function getEventPoint(event: MouseEvent): Point {
   return [event.clientX, event.clientY];
 }
 
+// Based on https://github.com/metafloor/pointinpoly
 export function isPointInPolygon(point: Point, polygon: Polygon) {
   const [x, y] = point;
-  let isInside = false;
+  let inside = false;
   const length = polygon.length;
-  for (let i = 0, j = length - 1; i < length; j = i++) {
-    const [xi, yi] = polygon[i] || [0, 0];
-    const [xj, yj] = polygon[j] || [0, 0];
-    const intersect =
-      yi >= y !== yj >= y && x <= ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-    if (intersect) {
-      isInside = !isInside;
+  for (let l = length, i = 0, j = l - 1; i < l; j = i++) {
+    const [xi, yi] = polygon[i] as Point;
+    const [xj, yj] = polygon[j] as Point;
+    const [, vy] = polygon[j === 0 ? l - 1 : j - 1] || [0, 0];
+    const where = (yi - yj) * (x - xi) - (xi - xj) * (y - yi);
+    if (yj < yi) {
+      if (y >= yj && y < yi) {
+        // point on the line
+        if (where === 0) return true;
+        if (where > 0) {
+          if (y === yj) {
+            // ray intersects vertex
+            if (y > vy) {
+              inside = !inside;
+            }
+          } else {
+            inside = !inside;
+          }
+        }
+      }
+    } else if (yi < yj) {
+      if (y > yi && y <= yj) {
+        // point on the line
+        if (where === 0) return true;
+        if (where < 0) {
+          if (y === yj) {
+            // ray intersects vertex
+            if (y < vy) {
+              inside = !inside;
+            }
+          } else {
+            inside = !inside;
+          }
+        }
+      }
+    } else if (y == yi && ((x >= xj && x <= xi) || (x >= xi && x <= xj))) {
+      // point on horizontal edge
+      return true;
     }
   }
-  return isInside;
+  return inside;
 }
 
 function getEnterPointPlacement(enterPoint: Point, rect: DOMRect) {
