@@ -1,0 +1,33 @@
+import { getByRole, press, render, type } from "ariakit-test";
+import { axe } from "jest-axe";
+import Example from ".";
+
+const getCombobox = () => getByRole("combobox");
+const getPopover = () => getByRole("listbox", { hidden: true });
+
+test("a11y", async () => {
+  const { container } = render(<Example />);
+  expect(await axe(container)).toHaveNoViolations();
+});
+
+test("autocomplete on arrow down key", async () => {
+  render(<Example />);
+  await press.Tab();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
+  await type("a");
+  expect(getPopover()).toBeVisible();
+  await press.ArrowDown();
+  expect(getCombobox()).toHaveValue("Apple");
+});
+
+test("autocomplete on arrow up key", async () => {
+  render(<Example />);
+  await press.Tab();
+  expect(getPopover()).not.toBeVisible();
+  expect(getCombobox()).toHaveFocus();
+  await type("w");
+  expect(getPopover()).toBeVisible();
+  await press.ArrowUp();
+  expect(getCombobox()).toHaveValue("Watermelon");
+});

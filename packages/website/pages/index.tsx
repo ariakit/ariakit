@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 
 const links: Array<{ href: string; label: string }> = [
@@ -16,6 +15,10 @@ const links: Array<{ href: string; label: string }> = [
   { href: "/examples/combobox-animated", label: "Combobox animated" },
   { href: "/examples/combobox-cancel", label: "Combobox cancel" },
   { href: "/examples/combobox-disclosure", label: "Combobox disclosure" },
+  {
+    href: "/examples/combobox-inline-autocomplete",
+    label: "Combobox with inline autocomplete",
+  },
   { href: "/examples/combobox-matches", label: "Combobox matches" },
   { href: "/examples/combobox-multiple", label: "Combobox multiple" },
   { href: "/examples/command", label: "Command" },
