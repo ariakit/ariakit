@@ -60,7 +60,7 @@ test("click on link with cmd/ctrl + enter", async ({
   await page.goto("/examples/combobox-links");
   await getCombobox(page).click();
   const modifier = await getClickModifier(page);
-  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowUp");
   // Safari doesn't support Cmd+Enter to open a link in a new tab
   // programmatically.
   if (browserName === "webkit") {
@@ -83,9 +83,9 @@ test("click on target blank link", async ({ page, context }) => {
   await expect(getCombobox(page)).toHaveValue("");
   const [newPage] = await Promise.all([
     context.waitForEvent("page"),
-    getOption(page, "Twitter").click(),
+    getOption(page, "Twitter Opens in New Tab").click(),
   ]);
   await expect(getPopover(page)).not.toBeVisible();
-  await expect(getCombobox(page)).toHaveValue("Twitter");
+  await expect(getCombobox(page)).toHaveValue("");
   await expect(newPage).toHaveURL(/https:\/\/twitter.com\/ariakitjs/);
 });

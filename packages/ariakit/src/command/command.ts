@@ -6,6 +6,8 @@ import {
   queueBeforeEvent,
 } from "ariakit-utils/events";
 import { useEvent, useForkRef, useTagName } from "ariakit-utils/hooks";
+import { queueMicrotask } from "ariakit-utils/misc";
+import { isFirefox } from "ariakit-utils/platform";
 import {
   createComponent,
   createElement,
@@ -85,11 +87,17 @@ export const useCommand = createHook<CommandOptions>(
           if (!nativeClick) {
             event.preventDefault();
             const { view, ...eventInit } = event;
-            queueBeforeEvent(element, "keyup", () =>
-              // Fire a click event instead of calling element.click() directly
-              // so we can pass the modifier state to the click event.
-              fireClickEvent(element, eventInit)
-            );
+            // Fire a click event instead of calling element.click() directly
+            // so we can pass along the modifier state.
+            const click = () => fireClickEvent(element, eventInit);
+            // If this element is a link with target="_blank", Firefox will
+            // block the "popup" if the click event is dispatched synchronously
+            // or in a microtask. Queueing the event asynchronously fixes that.
+            if (isFirefox()) {
+              queueBeforeEvent(element, "keyup", click);
+            } else {
+              queueMicrotask(click);
+            }
           }
         } else if (isSpace) {
           activeRef.current = true;
@@ -119,7 +127,7 @@ export const useCommand = createHook<CommandOptions>(
           setActive(false);
           const element = event.currentTarget;
           const { view, ...eventInit } = event;
-          requestAnimationFrame(() => fireClickEvent(element, eventInit));
+          queueMicrotask(() => fireClickEvent(element, eventInit));
         }
       }
     });
