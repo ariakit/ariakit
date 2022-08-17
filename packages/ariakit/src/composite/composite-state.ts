@@ -304,9 +304,9 @@ export type CompositeState<T extends Item = Item> = CollectionState<T> & {
   baseRef: RefObject<HTMLElement>;
   /**
    * If enabled, the composite element will act as an
-   * [aria-activedescendant](https://www.w3.org/TR/wai-aria-practices-1.1/#kbd_focus_activedescendant)
+   * [aria-activedescendant](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_focus_activedescendant)
    * container instead of [roving
-   * tabindex](https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex).
+   * tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
    * DOM focus will remain on the composite while its items receive virtual
    * focus.
    * @default false
