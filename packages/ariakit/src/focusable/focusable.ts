@@ -31,7 +31,6 @@ import {
   createHook,
 } from "ariakit-utils/system";
 import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
-import { flushSync } from "react-dom";
 
 const isSafariBrowser = isSafari();
 
@@ -313,7 +312,7 @@ export const useFocusable = createHook<FocusableOptions>(
       // autofill and immediately moves focus to the next field. That's why we
       // need to check if the current element is still focused.
       if (!hasFocus(element)) return;
-      flushSync(() => setFocusVisible(true));
+      setFocusVisible(true);
     };
 
     const onKeyDownCaptureProp = props.onKeyDownCapture;
