@@ -1,6 +1,6 @@
 import { KeyboardEvent, MouseEvent, useCallback } from "react";
 import { getPopupItemRole, isTextField } from "ariakit-utils/dom";
-import { isOpeningInNewTab } from "ariakit-utils/events";
+import { isDownloading, isOpeningInNewTab } from "ariakit-utils/events";
 import { hasFocus } from "ariakit-utils/focus";
 import { useBooleanEvent, useEvent, useWrapElement } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
@@ -67,6 +67,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
       if (value != null && setValueOnClickProp(event)) {
         state?.setValue(value);

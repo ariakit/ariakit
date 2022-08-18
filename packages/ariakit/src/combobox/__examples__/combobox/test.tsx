@@ -143,3 +143,14 @@ test("re-open listbox when deleting content", async () => {
   await type("\b");
   expect(getPopover()).toBeVisible();
 });
+
+test("clicking on combobox input removes focus from item", async () => {
+  render(<Example />);
+  await press.Tab();
+  await press.ArrowDown();
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(getOption("🍇 Grape")).toHaveFocus();
+  await click(getCombobox());
+  expect(getOption("🍇 Grape")).not.toHaveFocus();
+});
