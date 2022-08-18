@@ -4,8 +4,8 @@ import {
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
-import "./style.css";
 import { NewWindow } from "./icons";
+import "./style.css";
 
 const links = [
   {
