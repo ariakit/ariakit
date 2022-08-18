@@ -1,4 +1,4 @@
-import { getByRole, press, render, type } from "ariakit-test";
+import { click, getByRole, press, render, type } from "ariakit-test";
 import { axe } from "jest-axe";
 import Example from ".";
 
@@ -29,5 +29,14 @@ test("autocomplete on arrow up key", async () => {
   await type("w");
   expect(getPopover()).toBeVisible();
   await press.ArrowUp();
+  expect(getCombobox()).toHaveValue("Watermelon");
+});
+
+test("clicking on combobox input makes the inline autocomplete the value", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("w");
+  await press.ArrowUp();
+  await click(getCombobox());
   expect(getCombobox()).toHaveValue("Watermelon");
 });
