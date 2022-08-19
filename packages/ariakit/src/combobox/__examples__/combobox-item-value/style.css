@@ -1,0 +1,10 @@
+@import "../combobox/style.css";
+
+.combobox-item [data-user-value] {
+  @apply
+    bg-warn-2
+    text-warn-2
+    dark:bg-warn-2
+    dark:text-warn-2
+  ;
+}
