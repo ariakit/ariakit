@@ -201,6 +201,11 @@ export const useSelect = createHook<SelectOptions>(
             required={required}
             value={state.value}
             multiple={multiSelectable}
+            // Even though this element is visually hidden and is not tabbable,
+            // it's still focusable. Some autofill extensions like 1password
+            // will move focus to the next form element on autofill. In this
+            // case, we want to move focus to our custom select element.
+            onFocus={() => state.selectRef.current?.focus()}
             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               nativeSelectChangedRef.current = true;
               setAutofill(true);
@@ -228,6 +233,7 @@ export const useSelect = createHook<SelectOptions>(
         required,
         state.value,
         multiSelectable,
+        state.selectRef,
         state.setValue,
         values,
       ]
