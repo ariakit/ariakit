@@ -87,9 +87,9 @@ function useKeyboardEventProxy(
   return useEvent((event: ReactKeyboardEvent) => {
     onKeyboardEvent?.(event);
     if (event.defaultPrevented) return;
-    if (!canProxyKeyboardEvent(event, state)) return;
     const activeElement = activeItem?.ref.current;
     if (!activeElement) return;
+    if (!canProxyKeyboardEvent(event, state)) return;
     const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
     // If the active item element is not the previous element, this means that
