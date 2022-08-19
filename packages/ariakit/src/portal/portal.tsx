@@ -285,7 +285,7 @@ export type PortalOptions<T extends As = "div"> = Options<T> & {
    * const [portalElement, setPortalElement] = useState(null);
    * <Portal portalRef={setPortalElement} />;
    */
-  portalRef?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement>;
+  portalRef?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>;
   /**
    * Determines whether the element should be rendered as a React Portal.
    * @default true
