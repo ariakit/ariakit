@@ -2,8 +2,9 @@
 
 .combobox-item [data-user-value] {
   @apply
-    font-semibold
-    text-primary-1
-    dark:text-primary-1-dark
+    bg-warn-2
+    text-warn-2
+    dark:bg-warn-2
+    dark:text-warn-2
   ;
 }
