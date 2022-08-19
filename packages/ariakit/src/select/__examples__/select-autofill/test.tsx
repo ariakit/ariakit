@@ -4,7 +4,7 @@ import {
   getAllByLabelText,
   getByRole,
   render,
-  sleep,
+  waitFor,
 } from "ariakit-test";
 import Example from ".";
 
@@ -22,6 +22,5 @@ test("focusing on native select moves focus to custom select", async () => {
   render(<Example />);
   expect(getSelect()).not.toHaveFocus();
   focus(getNativeSelect());
-  await sleep();
-  expect(getSelect()).toHaveFocus();
+  await waitFor(expect(getSelect()).toHaveFocus);
 });
