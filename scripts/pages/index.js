@@ -14,17 +14,7 @@ const {
   getReadmePathFromIndex,
 } = require("./utils");
 
-/**
- * @typedef Page
- * @property {string} name
- * @property {string} sourceContext
- * @property {RegExp} sourceRegExp
- * @property {string} componentPath
- * @property {string} [buildDir]
- * @property {string} [pagesDir]
- */
-
-/** @type {Page[]} */
+/** @type {import("./types").Pages} */
 const pages = require(path.join(process.cwd(), "pages.config.js"));
 
 /**
@@ -70,11 +60,12 @@ pages.forEach(async (page) => {
   }
 
   for await (const filename of files) {
-    const dest = path.join(buildDir, page.name);
     await writePage({
       filename,
-      dest,
+      buildDir,
+      name: page.name,
       componentPath: page.componentPath,
+      getGroup: page.getGroup,
     });
   }
 

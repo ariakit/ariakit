@@ -3,6 +3,9 @@ const path = require("path");
 
 const componentPath = path.join(__dirname, "components/markdown-page");
 
+/**
+ * @type {import("../../scripts/pages/types").Pages}
+ */
 module.exports = [
   {
     name: "guide",
