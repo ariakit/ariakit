@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const babel = require("@babel/core");
-const { ensureFileSync } = require("fs-extra");
+const matter = require("gray-matter");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
@@ -58,10 +58,11 @@ function pathToPosix(path) {
  * @param {string} filename
  */
 function getPageName(filename) {
-  if (/(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)) {
-    return `${path.basename(path.dirname(filename))}`;
-  }
-  return `${path.basename(filename, path.extname(filename))}`;
+  const name = /(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)
+    ? `${path.basename(path.dirname(filename))}`
+    : `${path.basename(filename, path.extname(filename))}`;
+  // Remove leading digits.
+  return name.replace(/^\d+\-/, "");
 }
 
 /**
@@ -69,6 +70,27 @@ function getPageName(filename) {
  */
 function getPageFilename(filename, extension = ".js") {
   return `${getPageName(filename)}${extension}`;
+}
+
+/**
+ * @param {import('hast').Element | import('hast').ElementContent} node
+ * @returns {node is import("hast").Element}
+ */
+function isPlaygroundNode(node) {
+  if (!("tagName" in node)) return false;
+  if (node.tagName !== "a") return false;
+  if (!node.properties) return false;
+  return "dataPlayground" in node.properties;
+}
+
+/**
+ * @param {import('hast').Element} node
+ */
+function isPlaygroundParagraphNode(node) {
+  if (node.tagName !== "p") return false;
+  const [child] = node.children;
+  if (!child) return false;
+  return isPlaygroundNode(child);
 }
 
 /**
@@ -200,9 +222,35 @@ function createPageContent(filename) {
 async function getPageTreeFromContent(content) {
   const { unified } = await import("unified");
   const { default: rehypeParse } = await import("rehype-parse");
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
+
+  const { data, content: contentWithoutMatter } = matter(content);
+
   const tree = unified()
     .use(rehypeParse, { fragment: true })
-    .parse(marked(content));
+    .parse(marked(contentWithoutMatter));
+
+  tree.data = { ...data, ...tree.data, tableOfContents: [] };
+
+  visit(tree, "element", (node) => {
+    /** @type any */
+    const tableOfContents = tree.data?.tableOfContents;
+    if (node.tagName === "h2") {
+      const id = node.properties?.id;
+      const text = toString(node);
+      tableOfContents.push({ id, text });
+    }
+    if (node.tagName === "h3") {
+      const lastH2 = tableOfContents[tableOfContents.length - 1];
+      if (!lastH2) return;
+      const id = node.properties?.id;
+      const text = toString(node);
+      lastH2.children = lastH2.children || [];
+      lastH2.children.push({ id, text });
+    }
+  });
+
   return tree;
 }
 
@@ -237,9 +285,8 @@ async function getPageContent({ filename, dest, componentPath }) {
   const tree = await getPageTreeFromFile(filename);
 
   visit(tree, "element", (node) => {
-    if (node.tagName !== "a") return;
-    if (!node.properties || !("dataPlayground" in node.properties)) return;
-    const href = node.properties.href;
+    if (!isPlaygroundNode(node)) return;
+    const href = node.properties?.href;
     if (typeof href !== "string") return;
     const nextFilename = path.resolve(path.dirname(filename), href);
     imports[href] = getPageImports({
@@ -338,42 +385,113 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
 
 /**
  * @param {string} filename
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ * @param {import("hast").Root} [tree]
+ * @returns {Promise<import("./types").PageIndexDetail>}
  */
-async function getPageMeta(filename) {
-  const { visit } = await import("unist-util-visit");
-  const tree = await getPageTreeFromFile(filename);
-  const { toString } = await import("hast-util-to-string");
+async function getPageMeta(filename, getGroup, tree) {
+  tree = tree || (await getPageTreeFromFile(filename));
   const slug = getPageName(filename);
   let title = "";
-  let description = "";
+  let content = "";
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
   visit(tree, "element", (node) => {
     if (node.tagName === "h1" && !title) {
-      title = toString(node);
+      title = toString(node).trim();
     }
-    if (node.tagName === "p" && !description) {
-      description = toString(node).trim();
+    if (node.tagName === "p" && !content) {
+      content = toString(node).trim();
     }
   });
-  return { slug, title, description };
+  const group = getGroup?.(filename) || null;
+  return { group, slug, title, content };
+}
+
+/**
+ * @param {string} filename
+ * @param {string} category
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ */
+async function getPageSections(filename, category, getGroup) {
+  const tree = await getPageTreeFromFile(filename);
+  const meta = await getPageMeta(filename, getGroup, tree);
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
+  /** @type {string | null} */
+  let parentSection = null;
+  /** @type {string | null} */
+  let section = null;
+  /** @type {string | null} */
+  let id = null;
+  const pageMeta = {
+    ...meta,
+    category,
+    /** @type {Array<import("./types").PageContent>} */
+    sections: [],
+  };
+  visit(tree, "element", (node) => {
+    if (node.tagName === "h2") {
+      parentSection = null;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "h3") {
+      parentSection = section;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "p") {
+      if (isPlaygroundParagraphNode(node)) return;
+      const content = toString(node).trim();
+      const existingSection = pageMeta.sections.find((s) => s.id === id);
+      if (existingSection) {
+        existingSection.content += `\n\n${content}`;
+      } else {
+        pageMeta.sections.push({
+          ...meta,
+          category,
+          parentSection,
+          section,
+          id,
+          content,
+        });
+      }
+    }
+  });
+  return pageMeta;
+}
+
+/**
+ * @param {string} buildDir
+ */
+function getPageIndexPath(buildDir) {
+  return path.join(buildDir, "index.json");
+}
+
+/**
+ * @param {string} buildDir
+ */
+function getPageContentsPath(buildDir) {
+  return path.join(buildDir, "contents.json");
 }
 
 /**
  * @param {object} options
- * @param {string} options.filename The filename that will be used as a source
- * to write the page.
- * @param {string} options.dest The directory where the page will be written.
- * @param {string} options.componentPath The path to the component that will be
- * used to render the page.
- * @param {string} [options.metaPath] The path to the meta file.
- * @param {(filename: string) => string | null} [options.getGroup]
+ * @param {string} options.filename
+ * @param {string} options.name
+ * @param {string} options.buildDir
+ * @param {string} options.componentPath
+ * @param {import("./types").Page["getGroup"]} [options.getGroup]
  */
 async function writePage({
   filename,
-  dest,
+  name,
+  buildDir,
   componentPath,
-  metaPath,
   getGroup,
 }) {
+  const dest = path.join(buildDir, name);
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
@@ -385,37 +503,46 @@ async function writePage({
     await getPageContent({ filename, dest, componentPath })
   );
 
-  if (metaPath) {
-    ensureFileSync(metaPath);
-    const category = path.basename(dest);
-    const { default: existingMeta } = await import(metaPath);
-    const meta = await getPageMeta(filename);
-    const group = getGroup?.(filename);
-    if (group) {
-      // @ts-ignore
-      meta.group = group;
-    } else {
-      // @ts-ignore
-      delete meta.group;
-    }
-    if (!existingMeta[category]) {
-      existingMeta[category] = [];
-    }
-    const index = existingMeta[category].findIndex(
-      // @ts-ignore
-      (item) => item.slug === meta.slug
-    );
-    if (index !== -1) {
-      existingMeta[category][index] = meta;
-    } else {
-      existingMeta[category].push(meta);
-    }
-    const contents = prettier.format(
-      `module.exports = ${JSON.stringify(existingMeta)}`,
-      { parser: "babel" }
-    );
-    fs.writeFileSync(metaPath, contents);
+  const ext = path.extname(filename);
+
+  if (ext !== ".md") return;
+
+  const indexPath = getPageIndexPath(buildDir);
+  const contentsPath = getPageContentsPath(buildDir);
+
+  if (!fs.existsSync(indexPath)) {
+    fs.writeFileSync(indexPath, "{}");
   }
+  if (!fs.existsSync(contentsPath)) {
+    fs.writeFileSync(contentsPath, "[]");
+  }
+
+  /** @type {import("./types").PageIndex} */
+  const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+  /** @type {import("./types").PageContents} */
+  const contents = JSON.parse(fs.readFileSync(contentsPath, "utf8"));
+
+  const { sections, category, ...meta } = await getPageSections(
+    filename,
+    name,
+    getGroup
+  );
+
+  index[name] = index[name] || [];
+  const categoryIndex = index[name] || [];
+  const i = categoryIndex.findIndex((page) => page.slug === meta.slug);
+
+  if (i !== -1) {
+    categoryIndex[i] = meta;
+  } else {
+    categoryIndex.push(meta);
+  }
+
+  const nextContents = contents.filter((page) => page.slug !== meta.slug);
+  nextContents.push(...sections);
+
+  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+  fs.writeFileSync(contentsPath, JSON.stringify(nextContents, null, 2));
 }
 
 /**
@@ -477,6 +604,15 @@ function resetBuildDir(pageName, buildDir, entryPath) {
   }
   if (fs.existsSync(entryPath)) {
     fs.rmSync(entryPath);
+  }
+
+  const indexPath = getPageIndexPath(buildDir);
+  const contentsPath = getPageContentsPath(buildDir);
+  if (fs.existsSync(indexPath)) {
+    fs.rmSync(indexPath);
+  }
+  if (fs.existsSync(contentsPath)) {
+    fs.rmSync(contentsPath);
   }
 
   if (!fs.readdirSync(buildDir).length) {

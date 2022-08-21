@@ -30,7 +30,9 @@ body:
   - type: textarea
     attributes:
       label: Workaround
-      description: If you have fixed this issue in userland, please describe your solution here to help others.
+      description: >
+        If you have fixed this issue in userland, please describe your solution here to help others.
+        [Why are workarounds important?](https://twitter.com/diegohaz/status/1551476114027069441)
   - type: textarea
     attributes:
       label: Possible solutions

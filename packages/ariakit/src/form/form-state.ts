@@ -181,8 +181,7 @@ export function useFormState<V = AnyObject>(
     try {
       const callbacks = [...validateCallbacks];
       const results = callbacks.map((callback) => callback());
-      // TODO: Explain we need to wait for the errors state to be populated on
-      // async validate handlers.
+      // Wait for the next frame to allow the errors to be set on the state.
       await Promise.all(results).then(nextFrame);
       return !hasMessages(errorsRef.current);
     } finally {
@@ -199,6 +198,7 @@ export function useFormState<V = AnyObject>(
       if (await validate()) {
         const callbacks = [...submitCallbacks];
         const results = callbacks.map((callback) => callback());
+        // Wait for the next frame to allow the errors to be set on the state.
         await Promise.all(results).then(nextFrame);
         if (!hasMessages(errorsRef.current)) {
           setSubmitSucceed((value) => value + 1);

@@ -296,37 +296,39 @@ export const useFocusable = createHook<FocusableOptions>(
       });
     });
 
-    const onFocusVisibleProp = onFocusVisible;
-
-    const onFocusVisibleEvent = useEvent(
-      (event: SyntheticEvent<HTMLDivElement>) => {
-        onFocusVisibleProp?.(event);
-        if (event.defaultPrevented) return;
-        if (!focusable) return;
-        setFocusVisible(true);
+    const handleFocusVisible = (
+      event: SyntheticEvent<HTMLDivElement>,
+      currentTarget?: HTMLDivElement
+    ) => {
+      if (currentTarget) {
+        event.currentTarget = currentTarget;
       }
-    );
+      onFocusVisible?.(event);
+      if (event.defaultPrevented) return;
+      if (!focusable) return;
+      const element = event.currentTarget;
+      if (!element) return;
+      // Some extensions like 1password dispatches some keydown events on
+      // autofill and immediately moves focus to the next field. That's why we
+      // need to check if the current element is still focused.
+      if (!hasFocus(element)) return;
+      setFocusVisible(true);
+    };
 
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
     const onKeyDownCapture = useEvent(
       (event: ReactKeyboardEvent<HTMLDivElement>) => {
         onKeyDownCaptureProp?.(event);
+        if (event.defaultPrevented) return;
         if (!focusable) return;
         if (focusVisible) return;
         if (event.metaKey) return;
         if (event.altKey) return;
         if (event.ctrlKey) return;
         if (!isSelfTarget(event)) return;
-        if (event.defaultPrevented) return;
-        // TODO: Explain 1password
-        queueMicrotask(() => {
-          if (hasFocus(event.currentTarget)) {
-            // Triggers onFocusVisible when the element has initially received
-            // non-keyboard focus, but then a key has been pressed.
-            onFocusVisibleEvent(event);
-          }
-        });
+        const element = event.currentTarget;
+        queueMicrotask(() => handleFocusVisible(event, element));
       }
     );
 
@@ -340,14 +342,14 @@ export const useFocusable = createHook<FocusableOptions>(
         setFocusVisible(false);
         return;
       }
+      const element = event.currentTarget;
+      const applyFocusVisible = () => handleFocusVisible(event, element);
       if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
-        onFocusVisibleEvent(event);
+        queueMicrotask(applyFocusVisible);
       }
       // See https://github.com/ariakit/ariakit/issues/1257
       else if (isAlwaysFocusVisibleDelayed(event.target)) {
-        queueBeforeEvent(event.target, "focusout", () =>
-          onFocusVisibleEvent(event)
-        );
+        queueBeforeEvent(event.target, "focusout", applyFocusVisible);
       } else {
         setFocusVisible(false);
       }

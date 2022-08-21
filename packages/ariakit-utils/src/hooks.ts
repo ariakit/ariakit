@@ -354,7 +354,9 @@ export function useWrapElement<P>(
  */
 export function usePortalRef(
   portalProp = false,
-  portalRefProp?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement>
+  portalRefProp?:
+    | RefCallback<HTMLElement>
+    | MutableRefObject<HTMLElement | null>
 ) {
   const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
   const portalRef = useForkRef(setPortalNode, portalRefProp);

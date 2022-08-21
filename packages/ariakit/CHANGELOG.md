@@ -1,5 +1,29 @@
 # ariakit
 
+## 2.0.0-next.39
+
+### Minor Changes
+
+- Improved support for `CompositeItem` rendered as a link. This includes `ComboboxItem`, `MenuItem`, and `SelectItem` components. ([#1736](https://github.com/ariakit/ariakit/pull/1736))
+
+  Now clicking on `<a>` items with a mouse or keyboard while pressing `metaKey` (macOS) or `ctrlKey` (PC) opens the link in a new tab as expected. Popovers won't close and `Select`/`Combobox` values won't change when clicking with those modifiers.
+
+* The `role` attribute on `MenuButton`, when inside another menu, is now based on the popover role instead of being always `menuitem`. ([#1728](https://github.com/ariakit/ariakit/pull/1728))
+
+### Patch Changes
+
+- Fixed `Collection` items order when adding items from start. ([#1748](https://github.com/ariakit/ariakit/pull/1748))
+
+* Fixed `Combobox` not calling the `onKeyDown` prop when pressing printable keys. ([#1739](https://github.com/ariakit/ariakit/pull/1739))
+
+- Fixed `Hovercard` prematurely hiding when moving mouse to it when the card is positioned diagonally to the anchor. ([#1742](https://github.com/ariakit/ariakit/pull/1742))
+
+* Fixed `aria-labelledby` attribute on `Menu` not pointing to the correct element when using `MenuHeading`. ([#1737](https://github.com/ariakit/ariakit/pull/1737))
+
+- Fixed `Tab` with `defaultSelectedId` on React 17. ([#1724](https://github.com/ariakit/ariakit/pull/1724))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.25`.
+
 ## 2.0.0-next.38
 
 ### Minor Changes

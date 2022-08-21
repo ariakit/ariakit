@@ -11,28 +11,16 @@ const {
 
 class PagesWebpackPlugin {
   /**
-   * @param {object} options
-   * @param {string} options.name The name of the pages secion.
-   * @param {string} options.sourceContext The directory where the sources are
-   * located.
-   * @param {RegExp} options.sourceRegExp The regular expression to match the
-   * source files.
-   * @param {string} options.componentPath The path of the component that will
-   * be used to render the page.
-   * @param {string} [options.buildDir] The directory where the build files
-   * should be placed.
-   * @param {string} [options.metaPath] The path of the meta file.
-   * @param {(filename: string) => string | null} [options.getGroup]
+   * @param {import("./types").Page} options
    */
   constructor(options) {
     this.name = options.name;
     this.sourceContext = options.sourceContext;
     this.sourceRegExp = options.sourceRegExp;
     this.componentPath = options.componentPath;
-    this.metaPath = options.metaPath;
-    this.getGroup = options.getGroup;
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
+    this.getGroup = options.getGroup;
   }
 
   /**
@@ -51,7 +39,6 @@ class PagesWebpackPlugin {
         name: this.name,
         buildDir: this.buildDir,
         componentPath: this.componentPath,
-        metaPath: this.metaPath,
         getGroup: this.getGroup,
       },
     });
@@ -61,7 +48,7 @@ class PagesWebpackPlugin {
       for (const file of compiler.removedFiles) {
         if (test(file)) {
           // TODO: Save index.[jt]sx file if the removed page is a readme.md
-          // file.
+          // file and clean up index.json and contents.json.
           const pagePath = path.join(
             this.buildDir,
             this.name,

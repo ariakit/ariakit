@@ -9,7 +9,17 @@
     "website": "0.0.0"
   },
   "changesets": [
+    "collection-items-order",
+    "combobox-links",
+    "combobox-on-key-down",
     "dialog-backdrop-type",
-    "disclosure-animated"
+    "disclosure-animated",
+    "hovercard-polygon",
+    "menu-button-role",
+    "menu-heading-aria-labelledby",
+    "playground-deps",
+    "tab-default-id-react17",
+    "utils-get-popup-item-role",
+    "utils-is-opening-in-new-tab"
   ]
 }

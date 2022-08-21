@@ -104,7 +104,7 @@ export const useFormField = createHook<FormFieldOptions>(
     state?.useValidate(async () => {
       const element = getNamedElement(ref, name);
       if (!element) return;
-      // TODO: 1password autofill
+      // Flush microtasks to make sure the validity state is up to date
       await Promise.resolve();
       if ("validity" in element && !element.validity.valid) {
         state?.setError(name, element.validationMessage);

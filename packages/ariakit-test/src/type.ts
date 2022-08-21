@@ -15,6 +15,9 @@ function getKeyFromChar(key: string) {
   return key;
 }
 
+// Email inputs are not considered text fields. They don't work well with the
+// input events dispatched by the type method. So we temporarily make them text
+// inputs.
 function workAroundEmailInput(element: Element) {
   const input = element as HTMLInputElement;
   if (input.tagName !== "INPUT" || input.type !== "email") return () => {};

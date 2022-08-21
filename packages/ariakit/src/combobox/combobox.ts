@@ -249,6 +249,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
 
     const onMouseDownProp = props.onMouseDown;
+    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLInputElement>) => {
@@ -256,26 +257,12 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (event.defaultPrevented) return;
       if (event.button) return;
       if (event.ctrlKey) return;
-      if (!showOnMouseDownProp(event)) return;
-      // TODO: Test this
       state.setActiveId(null);
       if (setValueOnClickProp(event)) {
         state.setValue(value);
       }
-      queueBeforeEvent(event.currentTarget, "mouseup", state.show);
-    });
-
-    const onClickProp = props.onClick;
-    const setValueOnClickProp = useBooleanEvent(setValueOnClick);
-
-    // When clicking on the combobox input, we should make sure the current
-    // input value is set on the state and focus is set on the input only.
-    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
-      onClickProp?.(event);
-      if (event.defaultPrevented) return;
-      state.setActiveId(null);
-      if (setValueOnClickProp(event)) {
-        state.setValue(value);
+      if (showOnMouseDownProp(event)) {
+        queueBeforeEvent(event.currentTarget, "mouseup", state.show);
       }
     });
 
@@ -328,7 +315,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       onChange,
       onCompositionEnd,
       onMouseDown,
-      onClick,
       onKeyDown,
       onBlur,
     };

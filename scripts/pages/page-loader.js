@@ -4,12 +4,7 @@ const markdownLoader = require("./markdown-loader");
 const { writePage } = require("./utils");
 
 /**
- * @typedef {object} Options
- * @property {string} options.name
- * @property {string} options.buildDir
- * @property {string} options.componentPath
- * @property {string} [options.metaPath]
- * @property {(filename: string) => string | null} [options.getGroup]
+ * @typedef {Required<import("./types").Page>} Options
  */
 
 /**
@@ -19,11 +14,9 @@ const { writePage } = require("./utils");
  */
 async function pageLoader(source) {
   const filename = this.resourcePath;
-  const { name, buildDir, componentPath, metaPath, getGroup } =
-    this.getOptions();
-  const dest = path.join(buildDir, name);
+  const { name, buildDir, componentPath, getGroup } = this.getOptions();
 
-  await writePage({ filename, dest, componentPath, metaPath, getGroup });
+  await writePage({ filename, name, buildDir, componentPath, getGroup });
 
   if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.

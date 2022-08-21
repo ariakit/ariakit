@@ -41,6 +41,24 @@ export function isOpeningInNewTab(event: MouseEvent | ReactMouseEvent) {
 }
 
 /**
+ * Checks whether the user event is triggering a download.
+ */
+export function isDownloading(event: MouseEvent | ReactMouseEvent) {
+  const element = event.currentTarget as
+    | HTMLAnchorElement
+    | HTMLButtonElement
+    | HTMLInputElement
+    | null;
+  if (!element) return false;
+  const tagName = element.tagName.toLowerCase();
+  if (!event.altKey) return false;
+  if (tagName === "a") return true;
+  if (tagName === "button" && element.type === "submit") return true;
+  if (tagName === "input" && element.type === "submit") return true;
+  return false;
+}
+
+/**
  * Creates and dispatches an event.
  * @example
  * fireEvent(document.getElementById("id"), "blur", {

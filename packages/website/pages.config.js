@@ -5,6 +5,9 @@ const { camelCase, upperFirst } = require("lodash");
 const componentPath = path.join(__dirname, "components/markdown-page");
 const metaPath = path.join(__dirname, "meta.js");
 
+/**
+ * @type {import("../../scripts/pages/types").Pages}
+ */
 module.exports = [
   {
     name: "guide",

@@ -1,5 +1,13 @@
 # ariakit-utils
 
+## 0.17.0-next.25
+
+### Patch Changes
+
+- Added `getPopupItemRole` function. ([#1728](https://github.com/ariakit/ariakit/pull/1728))
+
+* Added `isOpeningInNewTab` function. ([#1736](https://github.com/ariakit/ariakit/pull/1736))
+
 ## 0.17.0-next.24
 
 ### Patch Changes

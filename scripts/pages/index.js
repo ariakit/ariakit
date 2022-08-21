@@ -1,5 +1,4 @@
 // @ts-check
-const { existsSync, rmSync } = require("fs");
 const path = require("path");
 const { uniq } = require("lodash");
 const {
@@ -13,22 +12,9 @@ const {
   getFiles,
   getPageName,
   getReadmePathFromIndex,
-  getPageMeta,
 } = require("./utils");
 
-/**
- * @typedef Page
- * @property {string} name
- * @property {string} sourceContext
- * @property {RegExp} sourceRegExp
- * @property {string} componentPath
- * @property {string} [metaPath]
- * @property {string} [buildDir]
- * @property {string} [pagesDir]
- * @property {(filename: string) => string | null} [getGroup]
- */
-
-/** @type {Page[]} */
+/** @type {import("./types").Pages} */
 const pages = require(path.join(process.cwd(), "pages.config.js"));
 
 /**
@@ -60,10 +46,6 @@ pages.forEach(async (page) => {
 
   resetBuildDir(page.name, buildDir, entryPath);
 
-  if (page.metaPath && existsSync(page.metaPath)) {
-    rmSync(page.metaPath, { recursive: true, force: true });
-  }
-
   const files = getFiles(page.sourceContext, page.sourceRegExp).filter(
     filterOutIndexFilesWithReadme
   );
@@ -78,13 +60,11 @@ pages.forEach(async (page) => {
   }
 
   for await (const filename of files) {
-    await getPageMeta(filename);
-    const dest = path.join(buildDir, page.name);
     await writePage({
       filename,
-      dest,
+      buildDir,
+      name: page.name,
       componentPath: page.componentPath,
-      metaPath: page.metaPath,
       getGroup: page.getGroup,
     });
   }
