@@ -11,10 +11,6 @@ import { PlaygroundState } from "./playground-state";
 export const usePlayground = createHook<PlaygroundOptions>(
   ({ state, ...props }) => {
     props = useStoreProvider({ state, ...props }, PlaygroundContext);
-    props = {
-      suppressHydrationWarning: true,
-      ...props,
-    };
     return props;
   }
 );

@@ -2,6 +2,7 @@
 
 .combobox-item {
   @apply
+    justify-between
     cursor-pointer
     font-normal
     text-current

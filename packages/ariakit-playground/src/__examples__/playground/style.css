@@ -13,7 +13,6 @@
   height: 250px;
   max-height: 250px;
   @apply
-    tracking-normal
     border-r
     border-canvas-3
     dark:border-canvas-3-dark;
