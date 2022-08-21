@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "fast-fuzzy": "1.11.2",
     "next": "12.2.5",
     "rehype-react": "7.1.1"
   },

@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const babel = require("@babel/core");
+const matter = require("gray-matter");
 const { uniq } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
@@ -57,10 +58,11 @@ function pathToPosix(path) {
  * @param {string} filename
  */
 function getPageName(filename) {
-  if (/(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)) {
-    return `${path.basename(path.dirname(filename))}`;
-  }
-  return `${path.basename(filename, path.extname(filename))}`;
+  const name = /(index\.[jt]sx?|readme\.mdx?)$/i.test(filename)
+    ? `${path.basename(path.dirname(filename))}`
+    : `${path.basename(filename, path.extname(filename))}`;
+  // Remove leading digits.
+  return name.replace(/^\d+\-/, "");
 }
 
 /**
@@ -199,9 +201,35 @@ function createPageContent(filename) {
 async function getPageTreeFromContent(content) {
   const { unified } = await import("unified");
   const { default: rehypeParse } = await import("rehype-parse");
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
+
+  const { data, content: contentWithoutMatter } = matter(content);
+
   const tree = unified()
     .use(rehypeParse, { fragment: true })
-    .parse(marked(content));
+    .parse(marked(contentWithoutMatter));
+
+  tree.data = { ...data, ...tree.data, tableOfContents: [] };
+
+  visit(tree, "element", (node) => {
+    /** @type any */
+    const tableOfContents = tree.data?.tableOfContents;
+    if (node.tagName === "h2") {
+      const id = node.properties?.id;
+      const text = toString(node);
+      tableOfContents.push({ id, text });
+    }
+    if (node.tagName === "h3") {
+      const lastH2 = tableOfContents[tableOfContents.length - 1];
+      if (!lastH2) return;
+      const id = node.properties?.id;
+      const text = toString(node);
+      lastH2.children = lastH2.children || [];
+      lastH2.children.push({ id, text });
+    }
+  });
+
   return tree;
 }
 
@@ -336,14 +364,128 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
 }
 
 /**
- * @param {object} options
- * @param {string} options.filename The filename that will be used as a source
- * to write the page.
- * @param {string} options.dest The directory where the page will be written.
- * @param {string} options.componentPath The path to the component that will be
- * used to render the page.
+ * @param {string} filename
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ * @param {Awaited<ReturnType<typeof getPageTreeFromFile>>} [tree]
  */
-async function writePage({ filename, dest, componentPath }) {
+async function getPageMeta(filename, getGroup, tree) {
+  tree = tree || (await getPageTreeFromFile(filename));
+  const slug = getPageName(filename);
+  let title = "";
+  let description = "";
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
+  visit(tree, "element", (node) => {
+    if (node.tagName === "h1" && !title) {
+      title = toString(node).trim();
+    }
+    if (node.tagName === "p" && !description) {
+      description = toString(node).trim();
+    }
+  });
+  const group = getGroup?.(filename) || null;
+  return { group, slug, title, description };
+}
+
+/**
+ * @param {string} filename
+ * @param {string} [category]
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ */
+async function getPageSections(filename, category, getGroup) {
+  const tree = await getPageTreeFromFile(filename);
+  const meta = await getPageMeta(filename, getGroup, tree);
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
+  /** @type {string | null} */
+  let parentSection = null;
+  /** @type {string | null} */
+  let section = null;
+  /** @type {string | null} */
+  let id = null;
+  const pageMeta = {
+    ...meta,
+    category,
+    /** @type {any[]} */
+    sections: [],
+  };
+  visit(tree, "element", (node) => {
+    if (node.tagName === "h2") {
+      parentSection = null;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "h3") {
+      parentSection = section;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "p") {
+      if (
+        node.children[0] &&
+        "tagName" in node.children[0] &&
+        node.children[0].tagName === "a" &&
+        node.children[0].properties &&
+        "dataPlayground" in node.children[0].properties
+      ) {
+        return;
+      }
+      const content = toString(node).trim();
+      // @ts-ignore
+      const sec = pageMeta.sections.find((s) => s.id === id);
+      if (sec) {
+        sec.content += `\n\n${content}`;
+      } else {
+        pageMeta.sections.push({
+          category,
+          group: meta.group,
+          slug: meta.slug,
+          title: meta.title,
+          id,
+          parentSection,
+          section,
+          content,
+        });
+      }
+    }
+  });
+  return pageMeta;
+}
+
+// getPageSections(
+//   path.join(__dirname, "../../packages/ariakit/src/form/readme.md")
+// ).then(console.log);
+
+/**
+ * @param {string} buildDir
+ */
+function getPageIndexPath(buildDir) {
+  return path.join(buildDir, "index.json");
+}
+
+/**
+ * @param {string} buildDir
+ */
+function getPageContentsPath(buildDir) {
+  return path.join(buildDir, "contents.json");
+}
+
+/**
+ * @param {object} options
+ * @param {string} options.filename
+ * @param {string} options.name
+ * @param {string} options.buildDir
+ * @param {string} options.componentPath
+ * @param {import("./types").Page["getGroup"]} [options.getGroup]
+ */
+async function writePage({
+  filename,
+  name,
+  buildDir,
+  componentPath,
+  getGroup,
+}) {
+  const dest = path.join(buildDir, name);
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
@@ -354,6 +496,45 @@ async function writePage({ filename, dest, componentPath }) {
     pagePath,
     await getPageContent({ filename, dest, componentPath })
   );
+
+  const ext = path.extname(filename);
+
+  if (ext !== ".md") return;
+
+  const indexPath = getPageIndexPath(buildDir);
+  const contentsPath = getPageContentsPath(buildDir);
+
+  if (!fs.existsSync(indexPath)) {
+    fs.writeFileSync(indexPath, "{}");
+  }
+  if (!fs.existsSync(contentsPath)) {
+    fs.writeFileSync(contentsPath, "[]");
+  }
+
+  const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+  const contents = JSON.parse(fs.readFileSync(contentsPath, "utf8"));
+
+  const { sections, category, ...meta } = await getPageSections(
+    filename,
+    name,
+    getGroup
+  );
+
+  index[name] = index[name] || [];
+  // @ts-ignore
+  const i = index[name].findIndex((page) => page.slug === meta.slug);
+  if (i !== -1) {
+    index[name][i] = meta;
+  } else {
+    index[name].push(meta);
+  }
+
+  // @ts-ignore
+  const nextContents = contents.filter((page) => page.slug !== meta.slug);
+  nextContents.push(...sections);
+
+  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+  fs.writeFileSync(contentsPath, JSON.stringify(nextContents, null, 2));
 }
 
 /**
@@ -415,6 +596,15 @@ function resetBuildDir(pageName, buildDir, entryPath) {
   }
   if (fs.existsSync(entryPath)) {
     fs.rmSync(entryPath);
+  }
+
+  const indexPath = getPageIndexPath(buildDir);
+  const contentsPath = getPageContentsPath(buildDir);
+  if (fs.existsSync(indexPath)) {
+    fs.rmSync(indexPath);
+  }
+  if (fs.existsSync(contentsPath)) {
+    fs.rmSync(contentsPath);
   }
 
   if (!fs.readdirSync(buildDir).length) {
