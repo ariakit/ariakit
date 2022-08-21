@@ -35,3 +35,5 @@ export type Page = {
 };
 
 export type Pages = Page[];
+
+// TODO: Add index.json and contents.json types here.

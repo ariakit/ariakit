@@ -421,6 +421,7 @@ async function getPageSections(filename, category, getGroup) {
       id = `${node.properties?.id}`;
     }
     if (node.tagName === "p") {
+      // TODO: Refactor
       if (
         node.children[0] &&
         "tagName" in node.children[0] &&

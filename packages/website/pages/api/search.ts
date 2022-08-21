@@ -1,5 +1,5 @@
 import { Searcher, search } from "fast-fuzzy";
-import { groupBy } from "lodash";
+import groupBy from "lodash/groupBy";
 import type { NextRequest } from "next/server";
 import contents from "../../pages.contents";
 
