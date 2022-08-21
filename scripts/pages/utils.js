@@ -659,8 +659,6 @@ function writeSymlinks(pageName, buildDir, pagesDir) {
   fs.symlinkSync(relativeBuildPath, symlinkPath);
 }
 
-// async function writePageMeta(filename, )
-
 module.exports = {
   pathToPosix,
   getPageName,
@@ -670,7 +668,6 @@ module.exports = {
   getPageImports,
   getPageContent,
   getReadmePathFromIndex,
-  getPageMeta,
   writePage,
   getFiles,
   getPagesDir,
