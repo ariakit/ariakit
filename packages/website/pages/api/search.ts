@@ -1,5 +1,5 @@
 import { Searcher, search } from "fast-fuzzy";
-import type { NextRequest } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 import contents from "../../pages.contents";
 
 const searcherOptions = {
@@ -67,24 +67,26 @@ function truncate(
   return final + suffix;
 }
 
-export const config = {
-  runtime: "experimental-edge",
-};
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const query = Array.isArray(req.query.q)
+    ? req.query.q.join(" ")
+    : req.query.q || null;
+  const category = Array.isArray(req.query.category)
+    ? req.query.category[0] || null
+    : req.query.category || null;
 
-export default async function handler(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const query = searchParams.get("q");
-  const category = searchParams.get("category");
-  const responseInit = {
-    status: 200,
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "public, s-maxage=1200, stale-while-revalidate=600",
-    },
-  };
+  res.setHeader(
+    "cache-control",
+    "public, s-maxage=1200, stale-while-revalidate=600"
+  );
+
   if (!query) {
-    return new Response("[]", responseInit);
+    return res.status(400).json([]);
   }
+
   const searchTerm = removeConnectors(query);
   const results =
     category && Object.prototype.hasOwnProperty.call(searchers, category)
@@ -115,5 +117,5 @@ export default async function handler(req: NextRequest) {
       keywords: keywords.slice(0, 3),
     };
   });
-  return new Response(JSON.stringify(items), responseInit);
+  res.status(200).json(items);
 }
