@@ -36,4 +36,46 @@ export type Page = {
 
 export type Pages = Page[];
 
-// TODO: Add index.json and contents.json types here.
+export type PageIndexDetail = {
+  /**
+   * The name of the group that the page belongs to. This string is returned by
+   * the getGroup function.
+   */
+  group: string | null;
+  /**
+   * The slug of the page to be used in the URL.
+   */
+  slug: string;
+  /**
+   * The title of the page.
+   */
+  title: string;
+  /**
+   * The content of the page or section.
+   */
+  content: string;
+};
+
+export type PageIndex = Record<string, PageIndexDetail[]>;
+
+export type PageContent = PageIndexDetail & {
+  /**
+   * The category that the page belongs to (e.g., "components", "examples").
+   */
+  category: string;
+  /**
+   * If the content is a section of another page, this is the id of the section
+   * heading that can be used to link to the section.
+   */
+  id: string | null;
+  /**
+   * The parent section title if any.
+   */
+  parentSection: string | null;
+  /**
+   * The section title if any.
+   */
+  section: string | null;
+};
+
+export type PageContents = PageContent[];

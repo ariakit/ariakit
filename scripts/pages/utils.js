@@ -73,6 +73,27 @@ function getPageFilename(filename, extension = ".js") {
 }
 
 /**
+ * @param {import('hast').Element | import('hast').ElementContent} node
+ * @returns {node is import("hast").Element}
+ */
+function isPlaygroundNode(node) {
+  if (!("tagName" in node)) return false;
+  if (node.tagName !== "a") return false;
+  if (!node.properties) return false;
+  return "dataPlayground" in node.properties;
+}
+
+/**
+ * @param {import('hast').Element} node
+ */
+function isPlaygroundParagraphNode(node) {
+  if (node.tagName !== "p") return false;
+  const [child] = node.children;
+  if (!child) return false;
+  return isPlaygroundNode(child);
+}
+
+/**
  * @param {object} options
  * @param {string} options.filename The filename of the file that contains the
  * imports.
@@ -264,9 +285,8 @@ async function getPageContent({ filename, dest, componentPath }) {
   const tree = await getPageTreeFromFile(filename);
 
   visit(tree, "element", (node) => {
-    if (node.tagName !== "a") return;
-    if (!node.properties || !("dataPlayground" in node.properties)) return;
-    const href = node.properties.href;
+    if (!isPlaygroundNode(node)) return;
+    const href = node.properties?.href;
     if (typeof href !== "string") return;
     const nextFilename = path.resolve(path.dirname(filename), href);
     imports[href] = getPageImports({
@@ -366,30 +386,31 @@ function getReadmePathFromIndex(filename, exists = fs.existsSync) {
 /**
  * @param {string} filename
  * @param {import("./types").Page["getGroup"]} [getGroup]
- * @param {Awaited<ReturnType<typeof getPageTreeFromFile>>} [tree]
+ * @param {import("hast").Root} [tree]
+ * @returns {Promise<import("./types").PageIndexDetail>}
  */
 async function getPageMeta(filename, getGroup, tree) {
   tree = tree || (await getPageTreeFromFile(filename));
   const slug = getPageName(filename);
   let title = "";
-  let description = "";
+  let content = "";
   const { visit } = await import("unist-util-visit");
   const { toString } = await import("hast-util-to-string");
   visit(tree, "element", (node) => {
     if (node.tagName === "h1" && !title) {
       title = toString(node).trim();
     }
-    if (node.tagName === "p" && !description) {
-      description = toString(node).trim();
+    if (node.tagName === "p" && !content) {
+      content = toString(node).trim();
     }
   });
   const group = getGroup?.(filename) || null;
-  return { group, slug, title, description };
+  return { group, slug, title, content };
 }
 
 /**
  * @param {string} filename
- * @param {string} [category]
+ * @param {string} category
  * @param {import("./types").Page["getGroup"]} [getGroup]
  */
 async function getPageSections(filename, category, getGroup) {
@@ -406,7 +427,7 @@ async function getPageSections(filename, category, getGroup) {
   const pageMeta = {
     ...meta,
     category,
-    /** @type {any[]} */
+    /** @type {Array<import("./types").PageContent>} */
     sections: [],
   };
   visit(tree, "element", (node) => {
@@ -421,30 +442,18 @@ async function getPageSections(filename, category, getGroup) {
       id = `${node.properties?.id}`;
     }
     if (node.tagName === "p") {
-      // TODO: Refactor
-      if (
-        node.children[0] &&
-        "tagName" in node.children[0] &&
-        node.children[0].tagName === "a" &&
-        node.children[0].properties &&
-        "dataPlayground" in node.children[0].properties
-      ) {
-        return;
-      }
+      if (isPlaygroundParagraphNode(node)) return;
       const content = toString(node).trim();
-      // @ts-ignore
-      const sec = pageMeta.sections.find((s) => s.id === id);
-      if (sec) {
-        sec.content += `\n\n${content}`;
+      const existingSection = pageMeta.sections.find((s) => s.id === id);
+      if (existingSection) {
+        existingSection.content += `\n\n${content}`;
       } else {
         pageMeta.sections.push({
+          ...meta,
           category,
-          group: meta.group,
-          slug: meta.slug,
-          title: meta.title,
-          id,
           parentSection,
           section,
+          id,
           content,
         });
       }
@@ -452,10 +461,6 @@ async function getPageSections(filename, category, getGroup) {
   });
   return pageMeta;
 }
-
-// getPageSections(
-//   path.join(__dirname, "../../packages/ariakit/src/form/readme.md")
-// ).then(console.log);
 
 /**
  * @param {string} buildDir
@@ -512,7 +517,9 @@ async function writePage({
     fs.writeFileSync(contentsPath, "[]");
   }
 
+  /** @type {import("./types").PageIndex} */
   const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+  /** @type {import("./types").PageContents} */
   const contents = JSON.parse(fs.readFileSync(contentsPath, "utf8"));
 
   const { sections, category, ...meta } = await getPageSections(
@@ -522,15 +529,15 @@ async function writePage({
   );
 
   index[name] = index[name] || [];
-  // @ts-ignore
-  const i = index[name].findIndex((page) => page.slug === meta.slug);
+  const categoryIndex = index[name] || [];
+  const i = categoryIndex.findIndex((page) => page.slug === meta.slug);
+
   if (i !== -1) {
-    index[name][i] = meta;
+    categoryIndex[i] = meta;
   } else {
-    index[name].push(meta);
+    categoryIndex.push(meta);
   }
 
-  // @ts-ignore
   const nextContents = contents.filter((page) => page.slug !== meta.slug);
   nextContents.push(...sections);
 
