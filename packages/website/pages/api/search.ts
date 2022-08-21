@@ -1,5 +1,4 @@
 import { Searcher, search } from "fast-fuzzy";
-import groupBy from "lodash/groupBy";
 import type { NextRequest } from "next/server";
 import contents from "../../pages.contents";
 
@@ -19,7 +18,18 @@ const searcherOptions = {
 const searcher = new Searcher(contents, searcherOptions);
 const searchers: Record<string, typeof searcher> = {};
 
-const categories = groupBy(contents, "category");
+const categories = contents.reduce<Record<string, typeof contents>>(
+  (acc, curr) => {
+    const category = curr.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category]?.push(curr);
+    return acc;
+  },
+  {}
+);
+
 const entries = Object.entries(categories);
 
 for (const [category, contents] of entries) {
