@@ -13,7 +13,7 @@ const fontFaces = `
   font-display: swap;
   font-style: normal;
   font-named-instance: 'Regular';
-  src: url("/fonts/Inter-roman.var.woff2?v=3.19") format("woff2");
+  src: url("/fonts/Inter-roman.var.woff2") format("woff2");
 }
 @font-face {
   font-family: Inter;
@@ -21,7 +21,7 @@ const fontFaces = `
   font-display: swap;
   font-style: italic;
   font-named-instance: 'Italic';
-  src: url("/fonts/Inter-italic.var.woff2?v=3.19") format("woff2");
+  src: url("/fonts/Inter-italic.var.woff2") format("woff2");
 }`;
 
 const darkModeScript = `
@@ -52,7 +52,7 @@ class MyDocument extends Document {
           <link
             rel="preload"
             crossOrigin="anonymous"
-            href="/fonts/Inter-roman.var.woff2?v=3.19"
+            href="/fonts/Inter-roman.var.woff2"
             type="font/woff2"
             as="font"
           />
