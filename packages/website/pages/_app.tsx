@@ -1,9 +1,12 @@
 import "../styles/globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
 import Header from "../components/header";
 import SEO from "../components/seo";
+
+const queryClient = new QueryClient();
 
 // https://github.com/vercel/next.js/discussions/13387#discussioncomment-101564
 const noOverlayWorkaroundScript = `
@@ -17,7 +20,7 @@ const noOverlayWorkaroundScript = `
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Head>
         <link
           rel="apple-touch-icon"
@@ -79,7 +82,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </footer>
         </div>
       </div>
-    </>
+    </QueryClientProvider>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { cx } from "ariakit-utils/misc";
 import pkg from "ariakit/package.json";
 import {
@@ -13,7 +14,6 @@ import {
 } from "ariakit/select";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 import tw from "../../utils/tw";
 import NewWindow from "../icons/new-window";
 import {
@@ -55,26 +55,28 @@ const style = {
   `,
 };
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
+async function getDistTags(packageName: string) {
+  const res = await fetch(`https://registry.npmjs.com/${packageName}`);
+  const data = await res.json();
+  return data["dist-tags"] as Record<string, string>;
+}
 
 function getDisplayValue(version: string) {
   return `v${version}`;
 }
 
 export default function VersionSelect() {
-  const { data: ariakitData } = useSWR<
-    Record<"dist-tags", Record<string, string>>
-  >("https://registry.npmjs.org/ariakit", fetcher);
+  const { data: ariakitTags } = useQuery(["versions", "ariakit"], () =>
+    getDistTags("ariakit")
+  );
+  const { data: reakitTags } = useQuery(["versions", "reakit"], () =>
+    getDistTags("reakit")
+  );
 
-  const { data: reakitData } = useSWR<
-    Record<"dist-tags", Record<string, string>>
-  >("https://registry.npmjs.org/reakit", fetcher);
+  const tags = ariakitTags || { latest: pkg.version };
 
-  const tags = ariakitData?.["dist-tags"] || { latest: pkg.version };
-
-  if (reakitData) {
-    Object.assign(tags, { v1: reakitData["dist-tags"].latest });
+  if (reakitTags) {
+    Object.assign(tags, { v1: reakitTags.latest });
   }
 
   const select = useSelectState({
