@@ -1,4 +1,5 @@
-import { ReactNode, memo, useMemo, useState } from "react";
+import { ReactNode, memo, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useEvent } from "ariakit-utils/hooks";
 import { cx, normalizeString } from "ariakit-utils/misc";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
@@ -7,7 +8,7 @@ import groupBy from "lodash/groupBy";
 import startCase from "lodash/startCase";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import meta from "../../meta";
+import meta from "../../pages.index";
 import button from "../../styles/button";
 import tw from "../../utils/tw";
 import ArrowRight from "../icons/arrow-right";
@@ -70,13 +71,13 @@ function SubNav({
         normalizeString(page.title.toLowerCase()).includes(
           normalizedSearchValue
         ) ||
-        normalizeString(page.description.toLowerCase()).includes(
+        normalizeString(page.content.toLowerCase()).includes(
           normalizedSearchValue
         )
     );
     const groups = groupBy(filteredPages, "group");
-    const items = groups.undefined;
-    delete groups.undefined;
+    const items = groups.null;
+    delete groups.null;
     return [items, groups];
   }, [pages, searchValue]);
 
@@ -111,7 +112,7 @@ function SubNav({
             key={item.slug + i}
             value={item.slug}
             href={`/${category}/${item.slug}`}
-            description={item.description}
+            description={item.content}
             onClick={(event) => {
               console.log(event);
               onSelectProp(item);
@@ -134,7 +135,7 @@ function SubNav({
                 key={item.slug + i}
                 value={item.slug}
                 href={`/${category}/${item.slug}`}
-                description={item.description}
+                description={item.content}
                 onClick={() => {
                   onSelectProp(item);
                 }}
@@ -177,6 +178,23 @@ export default function Nav() {
 
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
+  const url = `/api/search?q=${searchValue}`;
+  const { data } = useQuery([url], () => fetch(url).then((res) => res.json()), {
+    staleTime: Infinity,
+  });
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+        ref.current?.click();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   const categoryMeta = meta[category as keyof typeof meta];
 
@@ -225,6 +243,7 @@ export default function Nav() {
     <>
       {separator}
       <PageMenu
+        ref={ref}
         open={open}
         onToggle={setOpen}
         label={categoryTitle}
@@ -303,7 +322,7 @@ export default function Nav() {
                         key={item.slug + i}
                         value={item.slug}
                         href={`/${category}/${item.slug}`}
-                        description={item.description}
+                        description={item.content}
                         thumbnail={
                           <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
                             <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
@@ -360,7 +379,7 @@ export default function Nav() {
                         key={item.slug + i}
                         value={item.slug}
                         href={`/${category}/${item.slug}`}
-                        description={item.description}
+                        description={item.content}
                         thumbnail={
                           <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
                             <div className="w-4 h-1 bg-white/75 rounded-[1px]" />

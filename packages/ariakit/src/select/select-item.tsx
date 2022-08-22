@@ -164,6 +164,10 @@ export const SelectItem = createMemoComponent<SelectItemOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectItem.displayName = "SelectItem";
+}
+
 export type SelectItemOptions<T extends As = "div"> = Omit<
   CompositeItemOptions<T>,
   "state" | "preventScrollOnKeyDown"
