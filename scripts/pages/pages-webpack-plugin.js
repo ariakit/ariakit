@@ -20,6 +20,7 @@ class PagesWebpackPlugin {
     this.componentPath = options.componentPath;
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
+    this.getGroup = options.getGroup;
   }
 
   /**
@@ -38,6 +39,7 @@ class PagesWebpackPlugin {
         name: this.name,
         buildDir: this.buildDir,
         componentPath: this.componentPath,
+        getGroup: this.getGroup,
       },
     });
 

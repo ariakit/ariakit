@@ -517,16 +517,16 @@ async function writePage({
     fs.writeFileSync(contentsPath, "[]");
   }
 
-  /** @type {import("./types").PageIndex} */
-  const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
-  /** @type {import("./types").PageContents} */
-  const contents = JSON.parse(fs.readFileSync(contentsPath, "utf8"));
-
   const { sections, category, ...meta } = await getPageSections(
     filename,
     name,
     getGroup
   );
+
+  /** @type {import("./types").PageIndex} */
+  const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+  /** @type {import("./types").PageContents} */
+  const contents = JSON.parse(fs.readFileSync(contentsPath, "utf8"));
 
   index[name] = index[name] || [];
   const categoryIndex = index[name] || [];
@@ -606,15 +606,6 @@ function resetBuildDir(pageName, buildDir, entryPath) {
     fs.rmSync(entryPath);
   }
 
-  const indexPath = getPageIndexPath(buildDir);
-  const contentsPath = getPageContentsPath(buildDir);
-  if (fs.existsSync(indexPath)) {
-    fs.rmSync(indexPath);
-  }
-  if (fs.existsSync(contentsPath)) {
-    fs.rmSync(contentsPath);
-  }
-
   if (!fs.readdirSync(buildDir).length) {
     fs.rmdirSync(buildDir);
     fs.mkdirSync(buildDir, { recursive: true });
@@ -668,6 +659,8 @@ module.exports = {
   getPageImports,
   getPageContent,
   getReadmePathFromIndex,
+  getPageIndexPath,
+  getPageContentsPath,
   writePage,
   getFiles,
   getPagesDir,
