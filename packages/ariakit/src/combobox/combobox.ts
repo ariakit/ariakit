@@ -345,6 +345,10 @@ export const Combobox = createComponent<ComboboxOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Combobox.displayName = "Combobox";
+}
+
 export type ComboboxOptions<T extends As = "input"> = Omit<
   CompositeOptions<T>,
   "state"

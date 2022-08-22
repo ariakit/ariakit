@@ -82,6 +82,10 @@ export const ComboboxList = createComponent<ComboboxListOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxList.displayName = "ComboboxList";
+}
+
 export type ComboboxListOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useComboboxState` hook.

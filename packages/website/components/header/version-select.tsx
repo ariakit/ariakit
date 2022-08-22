@@ -55,10 +55,8 @@ const style = {
   `,
 };
 
-async function getDistTags(packageName: string) {
-  const res = await fetch(`https://registry.npmjs.com/${packageName}`);
-  const data = await res.json();
-  return data["dist-tags"] as Record<string, string>;
+async function fetchTags(): Promise<Record<string, string>> {
+  return fetch("/api/versions").then((res) => res.json());
 }
 
 function getDisplayValue(version: string) {
@@ -66,18 +64,9 @@ function getDisplayValue(version: string) {
 }
 
 export default function VersionSelect() {
-  const { data: ariakitTags } = useQuery(["versions", "ariakit"], () =>
-    getDistTags("ariakit")
-  );
-  const { data: reakitTags } = useQuery(["versions", "reakit"], () =>
-    getDistTags("reakit")
-  );
+  const { data } = useQuery(["versions", "ariakit"], fetchTags);
 
-  const tags = ariakitTags || { latest: pkg.version };
-
-  if (reakitTags) {
-    Object.assign(tags, { v1: reakitTags.latest });
-  }
+  const tags = data || { latest: pkg.version };
 
   const select = useSelectState({
     gutter: 4,

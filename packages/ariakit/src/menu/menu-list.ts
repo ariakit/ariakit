@@ -170,6 +170,10 @@ export const MenuList = createComponent<MenuListOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuList.displayName = "MenuList";
+}
+
 export type MenuListOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"

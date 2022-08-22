@@ -7,6 +7,7 @@ import {
   RefObject,
   createContext,
   forwardRef,
+  startTransition,
   useContext,
   useEffect,
   useRef,
@@ -220,7 +221,10 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     useEffect(() => {
       if (combobox.value === searchValue) return;
-      return whenIdle(() => onSearchProp(combobox.value), 500);
+      return whenIdle(
+        () => startTransition(() => onSearchProp(combobox.value)),
+        500
+      );
     }, [combobox.value, searchValue, onSearchProp]);
 
     const footerElement = footer && (
