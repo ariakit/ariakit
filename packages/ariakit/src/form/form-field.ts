@@ -190,6 +190,10 @@ export const FormField = createMemoComponent<FormFieldOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormField.displayName = "FormField";
+}
+
 export type FormFieldOptions<T extends As = "input"> = Omit<
   CollectionItemOptions<T>,
   "state"

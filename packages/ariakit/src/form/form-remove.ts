@@ -123,6 +123,10 @@ export const FormRemove = createComponent<FormRemoveOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormRemove.displayName = "FormRemove";
+}
+
 export type FormRemoveOptions<T extends As = "button"> = ButtonOptions<T> & {
   /**
    * Object returned by the `useFormState` hook. If not provided, the parent

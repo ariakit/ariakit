@@ -46,6 +46,10 @@ export const PopoverDismiss = createComponent<PopoverDismissOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverDismiss.displayName = "PopoverDismiss";
+}
+
 export type PopoverDismissOptions<T extends As = "button"> = Omit<
   DialogDismissOptions<T>,
   "state"

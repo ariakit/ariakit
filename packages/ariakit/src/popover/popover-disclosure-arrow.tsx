@@ -96,6 +96,10 @@ export const PopoverDisclosureArrow =
     return createElement("span", htmlProps);
   });
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverDisclosureArrow.displayName = "PopoverDisclosureArrow";
+}
+
 export type PopoverDisclosureArrowOptions<T extends As = "span"> =
   Options<T> & {
     /**

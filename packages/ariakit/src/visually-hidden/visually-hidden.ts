@@ -56,6 +56,10 @@ export const VisuallyHidden = createComponent<VisuallyHiddenOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  VisuallyHidden.displayName = "VisuallyHidden";
+}
+
 export type VisuallyHiddenOptions<T extends As = "span"> = Options<T>;
 
 export type VisuallyHiddenProps<T extends As = "span"> = Props<

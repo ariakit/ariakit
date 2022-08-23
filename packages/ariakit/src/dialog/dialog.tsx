@@ -522,6 +522,10 @@ export const Dialog = createComponent<DialogOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Dialog.displayName = "Dialog";
+}
+
 export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
   PortalOptions<T> &
   Omit<DisclosureContentOptions<T>, "state"> & {

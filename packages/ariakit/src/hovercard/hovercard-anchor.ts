@@ -105,6 +105,10 @@ export const HovercardAnchor = createComponent<HovercardAnchorOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardAnchor.displayName = "HovercardAnchor";
+}
+
 export type HovercardAnchorOptions<T extends As = "a"> = FocusableOptions<T> & {
   /**
    * Object returned by the `useHovercardState` hook.

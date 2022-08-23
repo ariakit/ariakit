@@ -50,6 +50,10 @@ export const HovercardHeading = createComponent<HovercardHeadingOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardHeading.displayName = "HovercardHeading";
+}
+
 export type HovercardHeadingOptions<T extends As = "h1"> = Omit<
   PopoverHeadingOptions<T>,
   "state"

@@ -43,6 +43,10 @@ export const DialogDisclosure = createComponent<DialogDisclosureOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  DialogDisclosure.displayName = "DialogDisclosure";
+}
+
 export type DialogDisclosureOptions<T extends As = "button"> = Omit<
   DisclosureOptions<T>,
   "state"

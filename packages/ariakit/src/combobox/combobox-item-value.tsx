@@ -120,6 +120,10 @@ export const ComboboxItemValue = createComponent<ComboboxItemValueOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxItemValue.displayName = "ComboboxItemValue";
+}
+
 export type ComboboxItemValueOptions<T extends As = "span"> = Options<T> & {
   /**
    * Object returned by the `useComboboxState` hook. If not provided, the parent

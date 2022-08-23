@@ -117,6 +117,10 @@ export const CompositeHover = createMemoComponent<CompositeHoverOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeHover.displayName = "CompositeHover";
+}
+
 export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

@@ -61,6 +61,10 @@ export const DialogDescription = createComponent<DialogDescriptionOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  DialogDescription.displayName = "DialogDescription";
+}
+
 export type DialogDescriptionOptions<T extends As = "p"> = Options<T> & {
   /**
    * Object returned by the `useDialogState` hook. If not provided, the parent

@@ -55,6 +55,10 @@ export const GroupLabel = createComponent<GroupLabelOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  GroupLabel.displayName = "GroupLabel";
+}
+
 export type GroupLabelOptions<T extends As = "div"> = Options<T>;
 
 export type GroupLabelProps<T extends As = "div"> = Props<GroupLabelOptions<T>>;

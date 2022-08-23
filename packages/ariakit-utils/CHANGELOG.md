@@ -1,5 +1,13 @@
 # ariakit-utils
 
+## 0.17.0-next.26
+
+### Patch Changes
+
+- Fixed `portalRef` prop type on `Portal` not accepting mutable refs with initial value set to `null`.
+
+* Added `isDownloading` function. ([#1771](https://github.com/ariakit/ariakit/pull/1771))
+
 ## 0.17.0-next.25
 
 ### Patch Changes

@@ -97,6 +97,10 @@ export const Disclosure = createComponent<DisclosureOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Disclosure.displayName = "Disclosure";
+}
+
 export type DisclosureOptions<T extends As = "button"> = ButtonOptions<T> & {
   /**
    * Object returned by the `useDisclosureState` hook.

@@ -75,6 +75,10 @@ export const PopoverDisclosure = createComponent<PopoverDisclosureOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverDisclosure.displayName = "PopoverDisclosure";
+}
+
 export type PopoverDisclosureOptions<T extends As = "button"> = Omit<
   DialogDisclosureOptions<T>,
   "state"

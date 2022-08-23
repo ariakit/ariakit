@@ -44,6 +44,10 @@ export const MenuDismiss = createComponent<MenuDismissOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuDismiss.displayName = "MenuDismiss";
+}
+
 export type MenuDismissOptions<T extends As = "button"> = Omit<
   HovercardDismissOptions<T>,
   "state"

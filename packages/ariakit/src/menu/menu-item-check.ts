@@ -62,6 +62,10 @@ export const MenuItemCheck = createComponent<MenuItemCheckOptions>((props) => {
   return createElement("span", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuItemCheck.displayName = "MenuItemCheck";
+}
+
 export type MenuItemCheckOptions<T extends As = "span"> = Omit<
   CheckboxCheckOptions<T>,
   "state"

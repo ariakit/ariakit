@@ -52,6 +52,10 @@ export const ToolbarSeparator = createComponent<ToolbarSeparatorOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ToolbarSeparator.displayName = "ToolbarSeparator";
+}
+
 export type ToolbarSeparatorOptions<T extends As = "hr"> = Omit<
   CompositeSeparatorOptions<T>,
   "state"

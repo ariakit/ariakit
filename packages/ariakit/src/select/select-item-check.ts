@@ -61,6 +61,10 @@ export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  SelectItemCheck.displayName = "SelectItemCheck";
+}
+
 export type SelectItemCheckOptions<T extends As = "span"> = Omit<
   CheckboxCheckOptions<T>,
   "state" | "checked"

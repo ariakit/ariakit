@@ -140,6 +140,10 @@ export const FormPush = createComponent<FormPushOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormPush.displayName = "FormPush";
+}
+
 export type FormPushOptions<T extends As = "button"> = ButtonOptions<T> &
   Omit<CollectionItemOptions<T>, "state"> & {
     /**

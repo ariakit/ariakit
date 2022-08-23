@@ -163,6 +163,10 @@ export const Checkbox = createComponent<CheckboxOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Checkbox.displayName = "Checkbox";
+}
+
 export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
   /**
    * Object returned by the `useCheckboxState` hook. If not provided, the

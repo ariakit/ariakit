@@ -95,6 +95,10 @@ export const ComboboxCancel = createComponent<ComboboxCancelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxCancel.displayName = "ComboboxCancel";
+}
+
 export type ComboboxCancelOptions<T extends As = "button"> =
   ButtonOptions<T> & {
     /**

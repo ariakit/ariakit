@@ -85,6 +85,10 @@ export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  MenuItemCheckbox.displayName = "MenuItemCheckbox";
+}
+
 export type MenuItemCheckboxOptions<T extends As = "div"> = Omit<
   MenuItemOptions<T>,
   "state" | "hideOnClick"
