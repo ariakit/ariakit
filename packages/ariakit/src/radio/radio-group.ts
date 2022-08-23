@@ -55,6 +55,10 @@ export const RadioGroup = createComponent<RadioGroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  RadioGroup.displayName = "RadioGroup";
+}
+
 export type RadioGroupOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"

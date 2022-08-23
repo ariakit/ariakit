@@ -181,6 +181,10 @@ export const Menu = createComponent<MenuOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Menu.displayName = "Menu";
+}
+
 export type MenuOptions<T extends As = "div"> = MenuListOptions<T> &
   Omit<HovercardOptions<T>, "state">;
 

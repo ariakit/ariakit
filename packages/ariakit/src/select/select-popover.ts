@@ -78,6 +78,10 @@ export const SelectPopover = createComponent<SelectPopoverOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectPopover.displayName = "SelectPopover";
+}
+
 export type SelectPopoverOptions<T extends As = "div"> = SelectListOptions<T> &
   Omit<PopoverOptions<T>, "state">;
 

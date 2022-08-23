@@ -51,6 +51,10 @@ export const CompositeGroupLabel = createComponent<CompositeGroupLabelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeGroupLabel.displayName = "CompositeGroupLabel";
+}
+
 export type CompositeGroupLabelOptions<T extends As = "div"> =
   GroupLabelOptions<T> & {
     /**

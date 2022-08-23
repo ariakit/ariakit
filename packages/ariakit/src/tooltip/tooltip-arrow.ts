@@ -53,6 +53,10 @@ export const TooltipArrow = createComponent<TooltipArrowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  TooltipArrow.displayName = "TooltipArrow";
+}
+
 export type TooltipArrowOptions<T extends As = "div"> = Omit<
   PopoverArrowOptions<T>,
   "state"

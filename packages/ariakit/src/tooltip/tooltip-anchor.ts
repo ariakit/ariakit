@@ -106,6 +106,10 @@ export const TooltipAnchor = createComponent<TooltipAnchorOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  TooltipAnchor.displayName = "TooltipAnchor";
+}
+
 export type TooltipAnchorOptions<T extends As = "div"> = Omit<
   PopoverAnchorOptions<T>,
   "state"

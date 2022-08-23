@@ -152,6 +152,10 @@ export const Form = createComponent<FormOptions>((props) => {
   return createElement("form", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Form.displayName = "Form";
+}
+
 export type FormOptions<T extends As = "form"> = Options<T> & {
   /**
    * Object returned by the `useFormState` hook.

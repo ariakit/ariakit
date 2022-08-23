@@ -62,6 +62,10 @@ export const DialogHeading = createComponent<DialogHeadingOptions>((props) => {
   return createElement("h1", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  DialogHeading.displayName = "DialogHeading";
+}
+
 export type DialogHeadingOptions<T extends As = "h1"> = HeadingOptions<T> & {
   /**
    * Object returned by the `useDialogState` hook. If not provided, the parent

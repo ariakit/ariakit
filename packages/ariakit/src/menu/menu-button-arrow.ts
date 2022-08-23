@@ -60,6 +60,10 @@ export const MenuButtonArrow = createComponent<MenuButtonArrowOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  MenuButtonArrow.displayName = "MenuButtonArrow";
+}
+
 export type MenuButtonArrowOptions<T extends As = "span"> = Omit<
   PopoverDisclosureArrowOptions<T>,
   "state"

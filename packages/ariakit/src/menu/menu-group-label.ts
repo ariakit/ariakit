@@ -53,6 +53,10 @@ export const MenuGroupLabel = createComponent<MenuGroupLabelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  MenuGroupLabel.displayName = "MenuGroupLabel";
+}
+
 export type MenuGroupLabelOptions<T extends As = "div"> = Omit<
   CompositeGroupLabelOptions<T>,
   "state"

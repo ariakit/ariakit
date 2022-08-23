@@ -269,6 +269,10 @@ export const Portal = createComponent<PortalOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Portal.displayName = "Portal";
+}
+
 export type PortalOptions<T extends As = "div"> = Options<T> & {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the

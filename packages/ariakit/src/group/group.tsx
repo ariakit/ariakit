@@ -53,6 +53,10 @@ export const Group = createComponent<GroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Group.displayName = "Group";
+}
+
 export type GroupOptions<T extends As = "div"> = Options<T>;
 
 export type GroupProps<T extends As = "div"> = Props<GroupOptions<T>>;

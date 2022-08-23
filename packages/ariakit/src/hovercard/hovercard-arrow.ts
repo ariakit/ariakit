@@ -46,6 +46,10 @@ export const HovercardArrow = createComponent<HovercardArrowOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardArrow.displayName = "HovercardArrow";
+}
+
 export type HovercardArrowOptions<T extends As = "div"> = Omit<
   PopoverArrowOptions<T>,
   "state"

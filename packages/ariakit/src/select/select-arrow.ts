@@ -58,6 +58,10 @@ export const SelectArrow = createComponent<SelectArrowOptions>((props) => {
   return createElement("span", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectArrow.displayName = "SelectArrow";
+}
+
 export type SelectArrowOptions<T extends As = "span"> = Omit<
   PopoverDisclosureArrowOptions<T>,
   "state"

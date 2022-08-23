@@ -42,6 +42,10 @@ export const MenuArrow = createComponent<MenuArrowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuArrow.displayName = "MenuArrow";
+}
+
 export type MenuArrowOptions<T extends As = "div"> = Omit<
   PopoverArrowOptions<T>,
   "state"

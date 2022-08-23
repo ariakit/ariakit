@@ -239,6 +239,10 @@ export const CompositeContainer =
     return createElement("div", htmlProps);
   });
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeContainer.displayName = "CompositeContainer";
+}
+
 export type CompositeContainerOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

@@ -126,6 +126,10 @@ export const Tooltip = createComponent<TooltipOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Tooltip.displayName = "Tooltip";
+}
+
 export type TooltipOptions<T extends As = "div"> = Omit<
   DisclosureContentOptions<T>,
   "state"

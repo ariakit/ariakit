@@ -55,6 +55,10 @@ export const ComboboxSeparator = createComponent<ComboboxSeparatorOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxSeparator.displayName = "ComboboxSeparator";
+}
+
 export type ComboboxSeparatorOptions<T extends As = "hr"> = Omit<
   CompositeSeparatorOptions<T>,
   "state"

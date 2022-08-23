@@ -110,6 +110,10 @@ export const ComboboxDisclosure = createComponent<ComboboxDisclosureOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxDisclosure.displayName = "ComboboxDisclosure";
+}
+
 export type ComboboxDisclosureOptions<T extends As = "button"> = Omit<
   DialogDisclosureOptions<T>,
   "state"

@@ -58,6 +58,10 @@ export const Button = createComponent<ButtonOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Button.displayName = "Button";
+}
+
 export type ButtonOptions<T extends As = "button"> = CommandOptions<T>;
 
 export type ButtonProps<T extends As = "button"> = Props<ButtonOptions<T>>;

@@ -46,6 +46,10 @@ export const ToolbarInput = createMemoComponent<ToolbarInputOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ToolbarInput.displayName = "ToolbarInput";
+}
+
 export type ToolbarInputOptions<T extends As = "input"> = Omit<
   CompositeInputOptions<T>,
   "state"

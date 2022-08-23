@@ -92,6 +92,10 @@ export const CompositeOverflowDisclosure =
     return createElement("button", htmlProps);
   });
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeOverflowDisclosure.displayName = "CompositeOverflowDisclosure";
+}
+
 export type CompositeOverflowDisclosureOptions<T extends As = "button"> = Omit<
   PopoverDisclosureOptions<T>,
   "state"

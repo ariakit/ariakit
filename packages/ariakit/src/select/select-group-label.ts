@@ -60,6 +60,10 @@ export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  SelectGroupLabel.displayName = "SelectGroupLabel";
+}
+
 export type SelectGroupLabelOptions<T extends As = "div"> = Omit<
   CompositeGroupLabelOptions<T>,
   "state"

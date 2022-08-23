@@ -149,6 +149,10 @@ export const DisclosureContent = createComponent<DisclosureContentOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  DisclosureContent.displayName = "DisclosureContent";
+}
+
 export type DisclosureContentOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useDisclosureState` hook.

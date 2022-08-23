@@ -57,6 +57,10 @@ export const CompositeSeparator = createComponent<CompositeSeparatorOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeSeparator.displayName = "CompositeSeparator";
+}
+
 export type CompositeSeparatorOptions<T extends As = "hr"> =
   SeparatorOptions<T> & {
     /**

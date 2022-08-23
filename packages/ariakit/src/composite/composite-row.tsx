@@ -87,6 +87,10 @@ export const CompositeRow = createComponent<CompositeRowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeRow.displayName = "CompositeRow";
+}
+
 export type CompositeRowOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

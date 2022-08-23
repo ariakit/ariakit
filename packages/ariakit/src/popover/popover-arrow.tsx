@@ -112,6 +112,10 @@ export const PopoverArrow = createComponent<PopoverArrowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverArrow.displayName = "PopoverArrow";
+}
+
 export type PopoverArrowOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `usePopoverState` hook. If not provided, the parent

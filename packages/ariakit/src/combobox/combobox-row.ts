@@ -68,6 +68,10 @@ export const ComboboxRow = createComponent<ComboboxRowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxRow.displayName = "ComboboxRow";
+}
+
 export type ComboboxRowOptions<T extends As = "div"> = Omit<
   CompositeRowOptions<T>,
   "state"

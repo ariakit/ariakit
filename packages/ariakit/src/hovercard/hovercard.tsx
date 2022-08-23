@@ -362,6 +362,10 @@ export const Hovercard = createComponent<HovercardOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Hovercard.displayName = "Hovercard";
+}
+
 export type HovercardOptions<T extends As = "div"> = Omit<
   PopoverOptions<T>,
   "state"

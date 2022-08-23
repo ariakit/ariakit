@@ -160,6 +160,10 @@ export const CompositeTypeahead = createComponent<CompositeTypeaheadOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeTypeahead.displayName = "CompositeTypeahead";
+}
+
 export type CompositeTypeaheadOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

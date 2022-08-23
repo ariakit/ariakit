@@ -54,6 +54,10 @@ export const MenuGroup = createComponent<MenuGroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuGroup.displayName = "MenuGroup";
+}
+
 export type MenuGroupOptions<T extends As = "div"> = Omit<
   CompositeGroupOptions<T>,
   "state"

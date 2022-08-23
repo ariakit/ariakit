@@ -86,6 +86,10 @@ export const DialogDismiss = createComponent<DialogDismissOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  DialogDismiss.displayName = "DialogDismiss";
+}
+
 export type DialogDismissOptions<T extends As = "button"> = ButtonOptions<T> & {
   /**
    * Object returned by the `useDialogState` hook.

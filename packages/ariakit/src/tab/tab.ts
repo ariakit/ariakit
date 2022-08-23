@@ -114,6 +114,10 @@ export const Tab = createMemoComponent<TabOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Tab.displayName = "Tab";
+}
+
 export type TabOptions<T extends As = "button"> = Omit<
   CompositeItemOptions<T>,
   "state"

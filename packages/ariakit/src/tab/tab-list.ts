@@ -60,6 +60,10 @@ export const TabList = createComponent<TabListOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  TabList.displayName = "TabList";
+}
+
 export type TabListOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"

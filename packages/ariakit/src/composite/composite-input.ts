@@ -101,6 +101,10 @@ export const CompositeInput = createComponent<CompositeInputOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeInput.displayName = "CompositeInput";
+}
+
 export type CompositeInputOptions<T extends As = "input"> = Options<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

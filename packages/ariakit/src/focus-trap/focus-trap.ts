@@ -49,6 +49,10 @@ export const FocusTrap = createComponent<FocusTrapOptions>((props) => {
   return createElement("span", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FocusTrap.displayName = "FocusTrap";
+}
+
 export type FocusTrapOptions<T extends As = "span"> = VisuallyHiddenOptions<T>;
 
 export type FocusTrapProps<T extends As = "span"> = Props<FocusTrapOptions<T>>;

@@ -65,6 +65,10 @@ export const Toolbar = createComponent<ToolbarOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Toolbar.displayName = "Toolbar";
+}
+
 export type ToolbarOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"
