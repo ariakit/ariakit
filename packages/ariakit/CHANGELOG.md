@@ -1,5 +1,35 @@
 # ariakit
 
+## 2.0.0-next.40
+
+### Minor Changes
+
+- Activating `CompositeItem` elements rendered as links with <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Enter</kbd> now correctly opens the new tab in the background instead of bringing it to front. ([#1771](https://github.com/ariakit/ariakit/pull/1771))
+
+* Added support for clicking on `CompositeItem` elements rendered as links with <kbd>Alt</kbd>+<kbd>Enter</kbd> to start a download. ([#1771](https://github.com/ariakit/ariakit/pull/1771))
+
+- Improved `CompositeTypeahead` runtime performance. ([#1792](https://github.com/ariakit/ariakit/pull/1792))
+
+* Added `displayName` to components in development. ([#1791](https://github.com/ariakit/ariakit/pull/1791))
+
+### Patch Changes
+
+- Fixed `Combobox` with `autoComplete="inline"` or `autoComplete="both"` not allowing text selection in some cases. ([#1773](https://github.com/ariakit/ariakit/pull/1773))
+
+* Fixed `onFocusVisible` timing on the `Focusable` component so it waits for any logic in focus/keydown events to be performed before applying the `data-focus-visible` attribute. ([#1774](https://github.com/ariakit/ariakit/pull/1774))
+
+- Fixed stale validity state on `FormField`. ([#1778](https://github.com/ariakit/ariakit/pull/1778))
+
+* Fixed nested `Menu` prematurely hiding when moving the mouse to it on Safari. ([#1764](https://github.com/ariakit/ariakit/pull/1764))
+
+- Fixed `Popover` blurred pixels when trying to fit viewport. ([#1793](https://github.com/ariakit/ariakit/pull/1793))
+
+* Fixed `portalRef` prop type on `Portal` not accepting mutable refs with initial value set to `null`.
+
+- Fixed `Select` not getting focus when some browser extensions (like 1password) automatically moves focus to the next form element. ([#1777](https://github.com/ariakit/ariakit/pull/1777))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.26`.
+
 ## 2.0.0-next.39
 
 ### Minor Changes
