@@ -8,31 +8,5 @@
     "ariakit-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": [
-    "collection-items-order",
-    "combobox-links",
-    "combobox-on-key-down",
-    "combobox-set-value-on-mouse-down",
-    "composite-item-new-tab-background",
-    "composite-link-download",
-    "composite-typeahead-use-store",
-    "dialog-backdrop-type",
-    "disclosure-animated",
-    "display-name",
-    "focusable-focus-visible-timing",
-    "form-field-validity-state",
-    "hovercard-polygon-safari",
-    "hovercard-polygon",
-    "menu-button-role",
-    "menu-heading-aria-labelledby",
-    "playground-deps",
-    "popover-size-available",
-    "portal-portal-ref",
-    "select-autofill-focus",
-    "tab-default-id-react17",
-    "test-type-email-input",
-    "utils-get-popup-item-role",
-    "utils-is-downloading",
-    "utils-is-opening-in-new-tab"
-  ]
+  "changesets": []
 }
