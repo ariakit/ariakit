@@ -49,6 +49,10 @@ export const HovercardDescription =
     return createElement("p", htmlProps);
   });
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardDescription.displayName = "HovercardDescription";
+}
+
 export type HovercardDescriptionOptions<T extends As = "p"> = Omit<
   PopoverDescriptionOptions<T>,
   "state"

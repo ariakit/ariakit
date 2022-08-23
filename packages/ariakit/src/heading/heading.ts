@@ -63,6 +63,10 @@ export const Heading = createComponent<HeadingOptions>((props) => {
   return createElement("h1", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Heading.displayName = "Heading";
+}
+
 export type HeadingOptions<T extends As = HeadingElements> = Options<T>;
 
 export type HeadingProps<T extends As = HeadingElements> = Props<

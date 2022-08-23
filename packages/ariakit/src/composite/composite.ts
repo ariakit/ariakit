@@ -423,6 +423,10 @@ export const Composite = createComponent<CompositeOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Composite.displayName = "Composite";
+}
+
 export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
   /**
    * Object returned by the `useCompositeState` hook.

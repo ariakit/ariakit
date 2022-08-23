@@ -103,6 +103,10 @@ export const TabPanel = createComponent<TabPanelOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  TabPanel.displayName = "TabPanel";
+}
+
 export type TabPanelOptions<T extends As = "div"> = FocusableOptions<T> &
   Omit<CollectionItemOptions, "state"> &
   Omit<DisclosureContentOptions<T>, "state"> & {

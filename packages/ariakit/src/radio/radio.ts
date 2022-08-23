@@ -152,6 +152,10 @@ export const Radio = createMemoComponent<RadioOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Radio.displayName = "Radio";
+}
+
 export type RadioOptions<T extends As = "input"> = Omit<
   CompositeItemOptions<T>,
   "state"

@@ -86,6 +86,10 @@ export const FormRadio = createMemoComponent<FormRadioOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormRadio.displayName = "FormRadio";
+}
+
 export type FormRadioOptions<T extends As = "input"> = FormFieldOptions<T> &
   Omit<RadioOptions<T>, "state">;
 

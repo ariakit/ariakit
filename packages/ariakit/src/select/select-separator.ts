@@ -55,6 +55,10 @@ export const SelectSeparator = createComponent<SelectSeparatorOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  SelectSeparator.displayName = "SelectSeparator";
+}
+
 export type SelectSeparatorOptions<T extends As = "hr"> = Omit<
   CompositeSeparatorOptions<T>,
   "state"

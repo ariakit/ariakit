@@ -53,6 +53,10 @@ export const CompositeGroup = createComponent<CompositeGroupOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeGroup.displayName = "CompositeGroup";
+}
+
 export type CompositeGroupOptions<T extends As = "div"> = GroupOptions<T> & {
   /**
    * Object returned by the `useCompositeState` hook. If not provided, the

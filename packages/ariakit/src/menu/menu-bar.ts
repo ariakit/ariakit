@@ -86,6 +86,10 @@ export const MenuBar = createComponent<MenuBarOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuBar.displayName = "MenuBar";
+}
+
 export type MenuBarOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"

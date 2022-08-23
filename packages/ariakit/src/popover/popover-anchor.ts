@@ -46,6 +46,10 @@ export const PopoverAnchor = createComponent<PopoverAnchorOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverAnchor.displayName = "PopoverAnchor";
+}
+
 export type PopoverAnchorOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `usePopoverState` hook.

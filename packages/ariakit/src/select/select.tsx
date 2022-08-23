@@ -284,6 +284,10 @@ export const Select = createComponent<SelectOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Select.displayName = "Select";
+}
+
 export type SelectOptions<T extends As = "button"> = Omit<
   PopoverDisclosureOptions<T>,
   "state" | "toggleOnClick"

@@ -223,6 +223,10 @@ export const MenuButton = createComponent<MenuButtonOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuButton.displayName = "MenuButton";
+}
+
 export type MenuButtonOptions<T extends As = "button" | "div"> = Omit<
   HovercardAnchorOptions<T>,
   "state"

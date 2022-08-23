@@ -97,6 +97,10 @@ export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  MenuItemRadio.displayName = "MenuItemRadio";
+}
+
 export type MenuItemRadioOptions<T extends As = "div"> = Omit<
   MenuItemOptions<T>,
   "hideOnClick"

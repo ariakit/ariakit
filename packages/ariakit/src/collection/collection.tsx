@@ -60,6 +60,10 @@ export const Collection = createComponent<CollectionOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Collection.displayName = "Collection";
+}
+
 export type CollectionOptions<T extends As = "div"> = Options<T> & {
   /**
    * Object returned by the `useCollectionState` hook.

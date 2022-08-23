@@ -50,6 +50,10 @@ export const PopoverDescription = createComponent<PopoverDescriptionOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverDescription.displayName = "PopoverDescription";
+}
+
 export type PopoverDescriptionOptions<T extends As = "p"> = Omit<
   DialogDescriptionOptions<T>,
   "state"

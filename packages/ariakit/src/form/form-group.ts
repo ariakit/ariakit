@@ -56,6 +56,10 @@ export const FormGroup = createComponent<FormGroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormGroup.displayName = "FormGroup";
+}
+
 export type FormGroupOptions<T extends As = "div"> = GroupOptions<T> & {
   /**
    * Object returned by the `useFormState` hook. If not provided, the parent

@@ -94,6 +94,10 @@ export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxPopover.displayName = "ComboboxPopover";
+}
+
 export type ComboboxPopoverOptions<T extends As = "div"> =
   ComboboxListOptions<T> & Omit<PopoverOptions<T>, "state" | "modal">;
 
