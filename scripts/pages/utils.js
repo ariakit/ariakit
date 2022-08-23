@@ -437,7 +437,7 @@ async function getPageSections(filename, category, getGroup) {
       id = `${node.properties?.id}`;
     }
     if (node.tagName === "h3") {
-      parentSection = section;
+      parentSection = parentSection || section;
       section = toString(node).trim();
       id = `${node.properties?.id}`;
     }
