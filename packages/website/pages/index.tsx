@@ -15,20 +15,20 @@ export default function Home() {
       <div
         style={{ backgroundImage: `url(${shapes.src})` }}
         className={cx(
-          "bg-no-repeat bg-top",
-          "flex px-3 sm:px-4 md:px-8 flex-col items-center gap-8 p-5"
+          "bg-top bg-no-repeat",
+          "flex flex-col items-center gap-8 p-5 px-3 sm:px-4 md:px-8"
         )}
       >
         <div
           className={cx(
-            "flex flex-col items-center gap-8 w-full max-w-5xl mt-4 sm:mt-10 md:mt-20"
+            "mt-4 flex w-full max-w-5xl flex-col items-center gap-8 sm:mt-10 md:mt-20"
           )}
         >
           <h1
             className={cx(
               "text-center text-5xl sm:text-6xl md:text-7xl",
               "tracking-[-0.035em] dark:tracking-[-0.015em]",
-              "font-extrabold dark:font-bold text-transparent",
+              "font-extrabold text-transparent dark:font-bold",
               "bg-gradient-to-br bg-clip-text",
               "from-[hsl(175_100%_35%)] to-[hsl(204_100%_35%)]",
               "dark:from-[hsl(175_100%_60%)] dark:to-[hsl(204_100%_58%)]"
@@ -42,11 +42,11 @@ export default function Home() {
             systems, and component libraries.
           </p>
         </div>
-        <div className="flex gap-4 mb-20 items-center flex-col sm:flex-row">
+        <div className="mb-20 flex flex-col items-center gap-4 sm:flex-row">
           <Link href="/guide/getting-started">
             <a
               className={cx(
-                "flex gap-2 h-12 items-center whitespace-nowrap justify-center text-lg px-8 rounded-lg",
+                "flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-lg",
                 "text-primary-2 dark:text-primary-2-dark",
                 "bg-primary-2 dark:bg-primary-2-dark",
                 "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
@@ -60,9 +60,9 @@ export default function Home() {
             <a
               className={tw`
               group
-              flex items-center justify-center whitespace-nowrap
-              gap-2 h-12 px-6
-              rounded-lg
+              flex h-12 items-center justify-center
+              gap-2 whitespace-nowrap rounded-lg
+              px-6
               hover:bg-canvas-1 dark:hover:bg-canvas-4-dark
             `}
             >

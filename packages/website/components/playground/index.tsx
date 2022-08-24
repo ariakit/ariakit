@@ -139,7 +139,7 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="relative rounded-lg sm:rounded-xl bg-canvas-1 dark:bg-canvas-1-dark w-full">
+        <div className="relative w-full rounded-lg bg-canvas-1 dark:bg-canvas-1-dark sm:rounded-xl">
           <Suspense>
             <PlaygroundPreview
               getModule={getModule}
@@ -148,7 +148,7 @@ export default function Playground(props: PlaygroundProps) {
             />
           </Suspense>
         </div>
-        <div className="relative w-full max-w-3xl rounded-lg sm:rounded-xl border border-canvas-5 dark:border-canvas-1-dark shadow-md dark:shadow-md-dark bg-canvas-5 dark:bg-canvas-1-dark">
+        <div className="relative w-full max-w-3xl rounded-lg border border-canvas-5 bg-canvas-5 shadow-md dark:border-canvas-1-dark dark:bg-canvas-1-dark dark:shadow-md-dark sm:rounded-xl">
           <Suspense>
             <div className="flex justify-between p-2 pb-1">
               <TabList
@@ -160,7 +160,7 @@ export default function Playground(props: PlaygroundProps) {
                   <>
                     <CompositeOverflowDisclosure
                       state={overflow}
-                      className="h-10 rounded px-4 text-base text-black/75 focus-visible:ariakit-outline-input hover:bg-black/5 dark:hover:bg-white/5 aria-expanded:bg-black/10 dark:aria-expanded:bg-black dark:text-white/75 sm:h-8 sm:px-3 sm:text-sm"
+                      className="h-10 rounded px-4 text-base text-black/75 hover:bg-black/5 focus-visible:ariakit-outline-input aria-expanded:bg-black/10 dark:text-white/75 dark:hover:bg-white/5 dark:aria-expanded:bg-black sm:h-8 sm:px-3 sm:text-sm"
                     >
                       +{hiddenTabs.length}
                     </CompositeOverflowDisclosure>
@@ -193,7 +193,7 @@ export default function Playground(props: PlaygroundProps) {
                     <div {...props}>
                       <PlaygroundEditor
                         lineNumbers
-                        className="focus-visible:ariakit-outline-input bg-[color:inherit]"
+                        className="bg-[color:inherit] focus-visible:ariakit-outline-input"
                         state={playground}
                         file={file}
                         theme={theme}

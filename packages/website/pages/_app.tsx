@@ -54,12 +54,12 @@ function MyApp({ Component, pageProps }: AppProps) {
           dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
         />
       )}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <Header />
         <Component {...pageProps} />
-        <div className="flex mt-auto">
-          <footer className="flex justify-center w-full mt-32 bg-canvas-1 dark:bg-canvas-1-dark">
-            <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1440px]">
+        <div className="mt-auto flex">
+          <footer className="mt-32 flex w-full justify-center bg-canvas-1 dark:bg-canvas-1-dark">
+            <div className="flex w-full max-w-[1440px] items-center gap-4 p-3 sm:p-4">
               <div>
                 Site licensed under{" "}
                 <a

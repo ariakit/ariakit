@@ -22,7 +22,7 @@ export default function OpenInCodeSandbox(props: OpenInCodeSandboxProps) {
       title={
         <span className="flex items-center gap-1">
           Open in CodeSandbox
-          <NewWindow className="stroke-current h-[1em] w-[1em]" />
+          <NewWindow className="h-[1em] w-[1em] stroke-current" />
         </span>
       }
       {...props}

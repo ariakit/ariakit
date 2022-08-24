@@ -28,7 +28,7 @@ const TooltipButton = createComponent<TooltipButtonOptions>(
           {...tooltipProps}
           state={tooltip}
           className={cx(
-            "py-1 px-2 rounded-md text-sm",
+            "rounded-md py-1 px-2 text-sm",
             "drop-shadow-sm dark:drop-shadow-sm-dark",
             "bg-canvas-1 dark:bg-canvas-4-dark",
             "text-canvas-1 dark:text-canvas-4-dark",

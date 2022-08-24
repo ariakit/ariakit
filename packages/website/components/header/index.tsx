@@ -13,7 +13,7 @@ import Nav from "./nav";
 import { PageMenu, PageMenuGroup, PageMenuItem } from "./page-menu";
 import VersionSelect from "./version-select";
 
-const separator = <div className="opacity-30 font-semibold">/</div>;
+const separator = <div className="font-semibold opacity-30">/</div>;
 
 export default function Header() {
   const router = useRouter();
@@ -44,7 +44,7 @@ export default function Header() {
               <PopoverDismiss
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
-                  "items-center h-10 p-2 w-full rounded",
+                  "h-10 w-full items-center rounded p-2",
                   "bg-canvas-1 dark:bg-canvas-5-dark",
                   "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
                   "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
@@ -72,8 +72,8 @@ export default function Header() {
                         href={`/${category}/${item.slug}`}
                         description={item.description}
                         thumbnail={
-                          <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                            <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                          <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                            <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                           </div>
                         }
                       >
@@ -101,7 +101,7 @@ export default function Header() {
               <PopoverDismiss
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
-                  "items-center h-10 p-2 w-full rounded",
+                  "h-10 w-full items-center rounded p-2",
                   "bg-canvas-1 dark:bg-canvas-5-dark",
                   "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
                   "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
@@ -129,8 +129,8 @@ export default function Header() {
                         href={`/${category}/${item.slug}`}
                         description={item.description}
                         thumbnail={
-                          <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                            <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                          <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                            <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                           </div>
                         }
                       >
@@ -169,13 +169,13 @@ export default function Header() {
   return (
     <div
       className={cx(
-        "sticky top-0 left-0 w-full z-40",
+        "sticky top-0 left-0 z-40 w-full",
         "flex justify-center",
         "bg-canvas-2 dark:bg-canvas-2-dark",
         "backdrop-blur supports-backdrop-blur:bg-canvas-2/80 dark:supports-backdrop-blur:bg-canvas-2-dark/80"
       )}
     >
-      <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1440px]">
+      <div className="flex w-full max-w-[1440px] items-center gap-4 p-3 sm:p-4">
         <Link href="/">
           <a
             className={cx(
@@ -187,7 +187,7 @@ export default function Header() {
             <Logo iconOnly={!isHome} />
           </a>
         </Link>
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-1">
           <VersionSelect />
           <Nav />
         </div>
