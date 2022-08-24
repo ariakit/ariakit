@@ -43,15 +43,15 @@ const style = {
     p-2
     rounded
     font-medium
-    active-item:bg-primary-1 dark:active-item:bg-primary-2-dark/25
-    active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25
+    active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
+    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
   `,
   itemBadge: tw`
     p-1 px-2
     text-xs text-canvas-1/70 dark:text-canvas-1-dark/70
     rounded-full
     bg-canvas-1 dark:bg-canvas-1-dark
-    group-active-item:bg-white/50 dark:group-active-item:bg-black/70
+    group-active-item:bg-black/5 dark:group-active-item:bg-black/70
   `,
 };
 
@@ -122,7 +122,7 @@ export default function VersionSelect() {
               hideOnClick
               className={cx(
                 style.item,
-                "justify-between font-normal pl-[26px]"
+                "justify-between pl-[26px] font-normal"
               )}
             >
               Changelog

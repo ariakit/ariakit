@@ -1,13 +1,23 @@
-import { ReactNode, memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEvent } from "ariakit-utils/hooks";
 import { cx, normalizeString } from "ariakit-utils/misc";
+import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import { VisuallyHidden } from "ariakit/visually-hidden";
+import { partition } from "lodash";
 import groupBy from "lodash/groupBy";
 import startCase from "lodash/startCase";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { PageContents } from "../../pages.contents";
 import meta from "../../pages.index";
 import button from "../../styles/button";
 import tw from "../../utils/tw";
@@ -28,7 +38,7 @@ const style = {
   `,
 };
 
-const separator = <div className="opacity-30 font-semibold">/</div>;
+const separator = <div className="font-semibold opacity-30">/</div>;
 
 const categoryTitles: Record<string, string> = {
   guide: "Guide",
@@ -52,7 +62,59 @@ type SubNavProps = {
   label?: ReactNode;
   searchPlaceholder?: string;
   onSelect?: (item: SubNavProps["pages"][number]) => void;
+  showOnHover?: boolean;
+  onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
 };
+
+function splitValue(itemValue: string, userValues: string[]) {
+  userValues = userValues
+    .filter(Boolean)
+    .map((value) => normalizeString(value).toLowerCase());
+  let [index, userValue] = userValues.reduce(
+    ([index, prevUserValue], userValue) =>
+      index !== -1
+        ? [index, prevUserValue]
+        : [
+            normalizeString(itemValue).toLowerCase().indexOf(userValue),
+            userValue,
+          ],
+    [-1, ""]
+  );
+  const parts: JSX.Element[] = [];
+  while (index !== -1) {
+    if (index !== 0) {
+      parts.push(
+        <span data-autocomplete-value="" key={parts.length}>
+          {itemValue.substr(0, index)}
+        </span>
+      );
+    }
+    parts.push(
+      <span data-user-value="" key={parts.length}>
+        {itemValue.substr(index, userValue.length)}
+      </span>
+    );
+    itemValue = itemValue.substr(index + userValue.length);
+    [index, userValue] = userValues.reduce(
+      ([index, prevUserValue], userValue) =>
+        index !== -1
+          ? [index, prevUserValue]
+          : [
+              normalizeString(itemValue).toLowerCase().indexOf(userValue),
+              userValue,
+            ],
+      [-1, ""]
+    );
+  }
+  if (itemValue) {
+    parts.push(
+      <span data-autocomplete-value="" key={parts.length}>
+        {itemValue}
+      </span>
+    );
+  }
+  return parts;
+}
 
 function SubNav({
   category,
@@ -60,6 +122,8 @@ function SubNav({
   searchPlaceholder,
   pages,
   onSelect,
+  showOnHover,
+  onClick,
 }: SubNavProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -119,8 +183,8 @@ function SubNav({
             }}
             thumbnail={
               (category === "components" || category === "examples") && (
-                <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                  <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                  <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                 </div>
               )
             }
@@ -141,8 +205,8 @@ function SubNav({
                 }}
                 thumbnail={
                   (category === "components" || category === "examples") && (
-                    <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                      <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                    <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                      <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                     </div>
                   )
                 }
@@ -165,6 +229,8 @@ function SubNav({
       searchValue={searchValue}
       onSearch={setSearchValue}
       itemValue={category}
+      showOnHover={showOnHover}
+      onClick={onClick}
     >
       {elements}
     </PageMenu>
@@ -179,20 +245,40 @@ export default function Nav() {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const url = `/api/search?q=${searchValue}`;
-  const { data } = useQuery([url], () => fetch(url).then((res) => res.json()), {
-    staleTime: Infinity,
-  });
+  const { data, isLoading } = useQuery<PageContents>(
+    [url],
+    () => fetch(url).then((res) => res.json()),
+    {
+      staleTime: Infinity,
+      enabled: open,
+      keepPreviousData: true,
+    }
+  );
   const ref = useRef<HTMLButtonElement>(null);
+
+  if (!open && searchValue) {
+    setSearchValue("");
+  }
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
-        ref.current?.click();
+        setOpen(true);
       }
     };
-    window.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onRouteChange = () => {
+      setSearchValue("");
+    };
+    router.events.on("routeChangeComplete", onRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", onRouteChange);
     };
   }, []);
 
@@ -223,21 +309,131 @@ export default function Nav() {
     []
   );
 
+  // const filteredCategoryElements = useMemo(() => {
+  //   if (!searchValue) return null;
+  //   const keys = Object.keys(meta).filter((key) =>
+  //     key.toLowerCase().startsWith(searchValue.toLowerCase())
+  //   );
+  //   if (!keys.length) return null;
+  //   return keys.map((key) => {
+  //     const pages = meta[key as keyof typeof meta];
+  //     if (!pages) return null;
+  //     return (
+  //       <SubNav
+  //         key={key}
+  //         category={key}
+  //         label={categoryTitles[key]}
+  //         searchPlaceholder={searchTitles[key]}
+  //         pages={pages}
+  //         showOnHover={false}
+  //         onSelect={() => setOpen(false)}
+  //       />
+  //     );
+  //   });
+  // }, [searchValue]);
+
+  const command = (
+    <span className="mx-1 flex gap-0.5 text-black/[62.5%] dark:text-white/70">
+      {isApple() ? (
+        <abbr title="Command" className="no-underline">
+          ⌘
+        </abbr>
+      ) : (
+        <abbr title="Control" className="no-underline">
+          Ctrl
+        </abbr>
+      )}
+      <span className={cx(!isApple() && "font-bold")}>K</span>
+    </span>
+  );
+
   const element = useMemo(
     () =>
-      pageMeta ? (
+      pageMeta && categoryMeta ? (
         <SubNav
           category={category}
-          label={pageMeta.title}
+          label={
+            <>
+              {pageMeta.title}
+              {command}
+            </>
+          }
           searchPlaceholder={
             searchTitles[category as keyof typeof searchTitles]
           }
-          pages={meta[category as keyof typeof meta]}
+          pages={categoryMeta}
           onSelect={() => setOpen(false)}
         />
       ) : null,
-    [pageMeta, category]
+    [pageMeta, category, categoryMeta]
   );
+
+  const results = useMemo(() => {
+    if (!data?.length) return null;
+    const newData = groupBy(data, "slug");
+    const nextData: typeof data = [];
+    Object.keys(newData).forEach((key) => {
+      const category = newData[key][0]!.category;
+      const primary =
+        newData[key]!.find((item) => item.slug === key && !item.section) ||
+        (newData[key]!.length > 1
+          ? {
+              ...meta[category]?.find((item) => item.slug === key),
+              category,
+              parent: !!newData[key]?.length,
+              keywords: [],
+            }
+          : null);
+      if (primary) {
+        nextData.push({
+          parent: newData[key]!.length > 1,
+          ...primary,
+        });
+      }
+      nextData.push(
+        ...newData[key]
+          ?.filter((item) => item !== primary)
+          .map((item) => ({
+            ...item,
+            nested: !!primary,
+          }))
+          .slice(0, primary ? 3 : undefined)
+      );
+    });
+    const renderItem = (item, i) => (
+      <PageMenuItem
+        key={item.title + i}
+        value={item.slug}
+        href={`/${item.category}/${item.slug}${item.id ? `#${item.id}` : ""}`}
+        path={[
+          categoryTitles[item.category] &&
+            splitValue(categoryTitles[item.category], item.keywords),
+          item.group && splitValue(item.group, item.keywords),
+          !item.parent &&
+            item.section &&
+            item.title &&
+            splitValue(item.title, item.keywords),
+          item.parentSection && splitValue(item.parentSection, item.keywords),
+          !item.nested &&
+            item.section &&
+            splitValue(item.section, item.keywords),
+        ]}
+        nested={item.nested}
+        description={splitValue(item.content, item.keywords)}
+        title={item.nested ? item.section || item.title : item.title}
+        thumbnail={
+          item.category === "components" || item.category === "examples" ? (
+            <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+              <div className="h-1 w-4 rounded-[1px] bg-white/75" />
+            </div>
+          ) : (
+            <div className="h-6 w-6 rounded-full bg-primary-2" />
+          )
+        }
+      />
+    );
+    return <>{nextData.map(renderItem)}</>;
+  }, [data]);
 
   return (
     <>
@@ -246,24 +442,43 @@ export default function Nav() {
         ref={ref}
         open={open}
         onToggle={setOpen}
-        label={categoryTitle}
+        label={
+          element ? (
+            categoryTitle
+          ) : (
+            <>
+              {categoryTitle}
+              {command}
+            </>
+          )
+        }
         searchPlaceholder="Search"
         searchValue={searchValue}
         onSearch={setSearchValue}
         value={category || undefined}
-        size="sm"
+        size={data?.length ? "xl" : "sm"}
       >
-        {categoryElements}
-        <PageMenuSeparator />
-        <PageMenuItem href="https://github.com/ariakit/ariakit">
-          GitHub
-        </PageMenuItem>
-        <PageMenuItem href="https://github.com/ariakit/ariakit/discussions">
-          Discussions
-        </PageMenuItem>
-        <PageMenuItem href="https://newsletter.ariakit.org">
-          Newsletter
-        </PageMenuItem>
+        {searchValue.length ? (
+          !!data?.length ? (
+            results
+          ) : isLoading ? (
+            <div>Loading...</div>
+          ) : null
+        ) : (
+          <>
+            {categoryElements}
+            <PageMenuSeparator />
+            <PageMenuItem href="https://github.com/ariakit/ariakit">
+              GitHub
+            </PageMenuItem>
+            <PageMenuItem href="https://github.com/ariakit/ariakit/discussions">
+              Discussions
+            </PageMenuItem>
+            <PageMenuItem href="https://newsletter.ariakit.org">
+              Newsletter
+            </PageMenuItem>
+          </>
+        )}
       </PageMenu>
       {element && (
         <>
@@ -296,7 +511,7 @@ export default function Nav() {
               <PopoverDismiss
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
-                  "items-center h-10 p-2 w-full rounded",
+                  "h-10 w-full items-center rounded p-2",
                   "bg-canvas-1 dark:bg-canvas-5-dark",
                   "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
                   "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
@@ -324,8 +539,8 @@ export default function Nav() {
                         href={`/${category}/${item.slug}`}
                         description={item.content}
                         thumbnail={
-                          <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                            <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                          <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                            <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                           </div>
                         }
                       >
@@ -353,7 +568,7 @@ export default function Nav() {
               <PopoverDismiss
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
-                  "items-center h-10 p-2 w-full rounded",
+                  "h-10 w-full items-center rounded p-2",
                   "bg-canvas-1 dark:bg-canvas-5-dark",
                   "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
                   "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
@@ -381,8 +596,8 @@ export default function Nav() {
                         href={`/${category}/${item.slug}`}
                         description={item.content}
                         thumbnail={
-                          <div className="flex items-center justify-center h-4 w-8 bg-primary-2 rounded-sm shadow-sm">
-                            <div className="w-4 h-1 bg-white/75 rounded-[1px]" />
+                          <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
+                            <div className="h-1 w-4 rounded-[1px] bg-white/75" />
                           </div>
                         }
                       >
@@ -421,13 +636,13 @@ export default function Nav() {
   return (
     <div
       className={cx(
-        "sticky top-0 left-0 w-full z-40",
+        "sticky top-0 left-0 z-40 w-full",
         "flex justify-center",
         "bg-canvas-2 dark:bg-canvas-2-dark",
         "backdrop-blur supports-backdrop-blur:bg-canvas-2/80 dark:supports-backdrop-blur:bg-canvas-2-dark/80"
       )}
     >
-      <div className="flex items-center gap-4 p-3 sm:p-4 w-full max-w-[1440px]">
+      <div className="flex w-full max-w-[1440px] items-center gap-4 p-3 sm:p-4">
         <Link href="/">
           <a
             className={cx(
@@ -439,7 +654,7 @@ export default function Nav() {
             <Logo iconOnly={!isHome} />
           </a>
         </Link>
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-1">
           <VersionSelect />
           {isHome ? links : breadcrumbs}
         </div>

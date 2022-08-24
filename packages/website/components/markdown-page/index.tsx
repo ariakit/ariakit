@@ -1,5 +1,5 @@
 // TODO: Refactor this entire page
-import { Fragment, createElement, useMemo } from "react";
+import { Fragment, createElement, useEffect, useMemo, useState } from "react";
 import { PlaygroundCode } from "ariakit-playground/playground-code";
 import theme from "ariakit-playground/themes/vscode";
 import { cx } from "ariakit-utils/misc";
@@ -33,7 +33,11 @@ const { Compiler: renderAst } = new RehypeReact({
             theme={theme}
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
-            className="bg-canvas-1 dark:bg-canvas-1-dark rounded-xl !max-w-[800px]"
+            className={cx(
+              "!max-w-[832px] rounded-xl bg-canvas-1 dark:bg-canvas-1-dark md:[&_.cm-scroller]:!p-8",
+              child.props.children[0].trim().split(`\n`).length === 1 &&
+                "md:[&_.cm-scroller]:!py-4"
+            )}
           />
         );
       }
@@ -56,7 +60,7 @@ const { Compiler: renderAst } = new RehypeReact({
             className="inline-flex items-center gap-1"
           >
             <span>{props.children}</span>
-            <NewWindow className="stroke-black/60 dark:stroke-white/60 h-[1em] w-[1em]" />
+            <NewWindow className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
           </a>
         );
       } else if (href?.startsWith("#")) {
@@ -65,7 +69,7 @@ const { Compiler: renderAst } = new RehypeReact({
             <a {...props} className="inline-flex flex-row-reverse items-center">
               <span>{props.children}</span>
               <svg
-                className="stroke-black/60 dark:stroke-white/60 h-[1em] w-[1em]"
+                className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -116,33 +120,86 @@ export default function MarkdownPage(props) {
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
 
+  const { tableOfContents } = tree.data;
+
+  const [activeId, setActiveId] = useState("");
+
+  useEffect(() => {
+    const onScroll = () => {
+      const ids = tableOfContents
+        .map((item) => [
+          item.id,
+          ...(item.children?.map((child) => child.id) || []),
+        ])
+        .flat()
+        .reverse();
+      const activeId = ids.find((id) => {
+        const element = document.getElementById(id);
+        if (!element) return false;
+        const { top } = element.getBoundingClientRect();
+        const { scrollMarginTop } = getComputedStyle(element);
+        return top - parseInt(scrollMarginTop) <= 0;
+      });
+
+      setActiveId(activeId);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [tableOfContents]);
+
   return (
-    <div className="flex flex-col md:flex-row-reverse items-start justify-center">
+    <div className="flex flex-col items-start justify-center md:flex-row-reverse">
       <SEO title={`${title} - Ariakit`} />
-      <div className="md:sticky md:top-24 md:mt-[100px] flex flex-col gap-4 p-4 w-[240px]">
-        <div className="uppercase text-xs font-bold text-black/60 dark:text-white/50">
-          On this page
-        </div>
-        <ul className="flex flex-col gap-2 text-sm [&>li]:opacity-80">
-          <li>
-            <a href="#">Combobox</a>
-          </li>
-          <li className="font-bold !opacity-100">Installation</li>
-          <li>Features</li>
-          <li>API</li>
-          <li>Examples</li>
-          <li>Other components</li>
-        </ul>
-      </div>
+      {tableOfContents && (
+        <nav className="flex w-[240px] flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
+          <div className="text-xs font-bold uppercase text-black/60 dark:text-white/50">
+            On this page
+          </div>
+          <ul className="flex flex-col gap-2 text-sm [&>li]:opacity-80">
+            <li className={cx(!activeId && "font-bold !opacity-100")}>
+              <Link href="#">Introduction</Link>
+            </li>
+            {tableOfContents.map((item) => (
+              <li
+                key={item.id}
+                className={cx(activeId === item.id && "font-bold !opacity-100")}
+              >
+                <Link href={`#${item.id}`}>{item.text}</Link>
+                {item.children && (
+                  <ul className="mt-2 flex flex-col gap-2 pl-4">
+                    {item.children.map((item) => (
+                      <li
+                        key={item.id}
+                        className={cx(
+                          activeId === item.id
+                            ? "font-bold !opacity-100"
+                            : "!font-normal !opacity-80"
+                        )}
+                      >
+                        <Link href={`#${item.id}`}>{item.text}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+            {/* <li className="font-bold !opacity-100">Installation</li> */}
+            {/* <li>Features</li>
+            <li>API</li>
+            <li>Examples</li>
+            <li>Other components</li> */}
+          </ul>
+        </nav>
+      )}
       <div
         className={cx(
-          "flex min-w-[1px] flex-col gap-8 items-center",
-          "relative w-full max-w-5xl mt-8 sm:mt-12 px-3 sm:px-4 lg:px-8",
+          "flex min-w-[1px] flex-col items-center gap-8",
+          "relative mt-8 w-full max-w-5xl px-3 sm:mt-12 sm:px-4 lg:px-8",
           // all
           "[&>*]:w-full [&>*]:max-w-3xl",
           // links
-          "[&_a]:rounded-sm [&_a:focus-visible]:ariakit-outline-input [&_a:focus-visible]:no-underline",
-          "[&_a]:underline [&_a:hover]:decoration-[3px] [&_a]:[text-decoration-skip-ink:none]",
+          "[&_a]:rounded-sm [&_a:focus-visible]:no-underline [&_a:focus-visible]:ariakit-outline-input",
+          "[&_a]:underline [&_a]:[text-decoration-skip-ink:none] [&_a:hover]:decoration-[3px]",
           "[&_a]:underline-offset-[0.125em]",
           "[&_a]:font-medium dark:[&_a]:font-normal",
           "[&_a]:text-link dark:[&_a]:text-link-dark",
@@ -160,7 +217,7 @@ export default function MarkdownPage(props) {
           "[&_h2]:tracking-[-0.035em] dark:[&_h2]:tracking-[-0.015em]",
           // h3
           "[&_h3]:mt-2",
-          "[&_h3]:scroll-mt-20",
+          "[&_h3]:scroll-mt-24",
           "[&_h3]:text-xl",
           "[&_h3]:font-semibold dark:[&_h3]:font-medium",
           "[&_h3]:text-black dark:[&_h3]:text-white",
@@ -176,14 +233,14 @@ export default function MarkdownPage(props) {
           "[&>div.warning]:border [&>div.warning]:border-canvas-5 dark:[&>div.warning]:border-canvas-2-dark",
           "[&>div.warning]:shadow dark:[&>div.warning]:shadow-dark",
           "[&>div.warning]:bg-canvas-5 dark:[&>div.warning]:bg-canvas-3-dark",
-          "[&>div.warning>h2]:m-0 [&>div.warning>h2]:text-xl [&>div.warning>h2]:mb-4",
-          "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:w-1.5 dark:[&>div.warning]:before:w-1.5 [&>div.warning]:before:bottom-2 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-warn-2 dark:[&>div.warning]:before:bg-warn-2-dark",
-          "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:font-medium [&>div.warning>h3]:text-lg [&>div.warning>h3]:text-warn-1 dark:[&>div.warning>h3]:text-warn-1-dark",
+          "[&>div.warning>h2]:m-0 [&>div.warning>h2]:mb-4 [&>div.warning>h2]:text-xl",
+          "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:bottom-2 [&>div.warning]:before:w-1.5 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-warn-2 dark:[&>div.warning]:before:w-1.5 dark:[&>div.warning]:before:bg-warn-2-dark",
+          "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:text-lg [&>div.warning>h3]:font-medium [&>div.warning>h3]:text-warn-1 dark:[&>div.warning>h3]:text-warn-1-dark",
           // p
           "dark:[&>p]:text-white/80",
-          "[&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em] [&>p]:leading-7",
+          "[&>p]:leading-7 [&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em]",
           // code
-          "[&_p_code]:p-1 [&_p_code]:text-[0.9375em] [&_p_code]:rounded",
+          "[&_p_code]:rounded [&_p_code]:p-1 [&_p_code]:text-[0.9375em]",
           "[&_p_code]:bg-black/[6.5%] dark:[&_p_code]:bg-white/[6.5%]",
           "[&_p_code]:font-monospace"
         )}

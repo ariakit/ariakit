@@ -78,34 +78,36 @@ export default async function handler(
     ? req.query.category[0] || null
     : req.query.category || null;
 
-  res.setHeader(
-    "cache-control",
-    "public, s-maxage=1200, stale-while-revalidate=600"
-  );
-
-  if (!query) {
-    return res.status(400).json([]);
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader(
+      "cache-control",
+      "public, s-maxage=1200, stale-while-revalidate=600"
+    );
   }
 
-  const searchTerm = removeConnectors(query);
+  if (!query) {
+    return res.status(200).json([]);
+  }
+
+  const searchTerm = query;
   const results =
     category && Object.prototype.hasOwnProperty.call(searchers, category)
       ? searchers[category]!.search(searchTerm)
       : searcher.search(searchTerm);
   const items = results.map((result) => {
-    const { item, original, match } = result;
+    const { item, original, match, score } = result;
     const key = getKeyFromOriginal(item, original);
-    const maxContentLength = 60;
+    const maxContentLength = 90;
     const content =
       key !== "content"
         ? truncate(item.content, 0, maxContentLength)
         : truncate(
             item.content,
-            Math.max(0, match.index - (maxContentLength + match.length) / 2),
+            Math.max(0, match.index - (maxContentLength - match.length) / 2),
             maxContentLength
           );
     const value = [item.title, item.section, item.category, content].join(" ");
-    const words = value.split(/\p{Punctuation}*\s/u);
+    const words = removeConnectors(value).split(/\p{P}*\s\p{P}*/u);
     const terms = searchTerm.split(" ");
     const keywords = terms
       .map((term) => search(term, words, { threshold: 0.8 }))
@@ -114,8 +116,9 @@ export default async function handler(
       ...item,
       content,
       key,
+      score,
       keywords: keywords.slice(0, 3),
     };
   });
-  res.status(200).json(items);
+  res.status(200).json(items.slice(0, 15));
 }

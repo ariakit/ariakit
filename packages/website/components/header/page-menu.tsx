@@ -1,6 +1,7 @@
 import {
   ButtonHTMLAttributes,
   ComponentPropsWithRef,
+  Fragment,
   HTMLAttributes,
   ReactNode,
   RefAttributes,
@@ -44,6 +45,7 @@ import Link from "next/link";
 import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle-state";
 import whenIdle from "../../utils/when-idle";
+import ChevronRight from "../icons/chevron-right";
 import NewWindow from "../icons/new-window";
 import {
   itemIconStyle,
@@ -102,20 +104,22 @@ const style = {
     p-2 scroll-m-2
     cursor-default [a&]:cursor-pointer
     rounded outline-none
-    active-item:bg-primary-1 dark:active-item:bg-primary-2-dark/25
-    active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25
+    active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
+    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
   `,
   itemDescription: tw`
-    text-sm opacity-70
+    text-sm text-black/70 dark:text-white/70
     overflow-hidden
     [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]
+    dark:[&_[data-autocomplete-value]]:text-white/[56%]
+    [&_[data-user-value]]:font-semibold [&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white
   `,
   itemThumbnail: tw`
     flex items-center justify-center flex-none
     w-16 h-16
     rounded-sm
     bg-canvas-1 dark:bg-canvas-2-dark
-    group-active-item:bg-white/50 dark:group-active-item:bg-black/70
+    group-active-item:bg-black/5 dark:group-active-item:bg-black/70
   `,
   footer: tw`
     sticky bottom-0
@@ -129,6 +133,7 @@ const popoverSizes = {
   sm: tw`w-[240px]`,
   md: tw`w-[320px]`,
   lg: tw`w-[480px]`,
+  xl: tw`w-[640px]`,
 };
 
 const SelectContext = createContext(false);
@@ -149,10 +154,10 @@ type PageMenuProps = Omit<
   searchValue?: string;
   onSearch?: (value: string) => void;
   searchPlaceholder?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   footer?: ReactNode;
-  // TODO:
   itemValue?: string;
+  showOnHover?: boolean;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -207,7 +212,13 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
         return anchor.getBoundingClientRect();
       },
     });
+
     const idle = useIdle();
+
+    if (!parent && menu.open && !menu.autoFocusOnShow) {
+      menu.setAutoFocusOnShow(true);
+      menu.setInitialFocus("first");
+    }
 
     const selectable = value != null || !!onChange;
     const searchable = searchValue != null || !!onSearch;
@@ -221,10 +232,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     useEffect(() => {
       if (combobox.value === searchValue) return;
-      return whenIdle(
-        () => startTransition(() => onSearchProp(combobox.value)),
-        500
-      );
+      return whenIdle(() => onSearchProp(combobox.value), 500);
     }, [combobox.value, searchValue, onSearchProp]);
 
     const footerElement = footer && (
@@ -247,13 +255,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
-      <div
-        {...props}
-        className={cx(
-          popoverStyle,
-          combobox.value ? popoverSizes["lg"] : popoverSizes[size]
-        )}
-      >
+      <div {...props} className={cx(popoverStyle, popoverSizes[size])}>
         <div
           role="presentation"
           className={cx(
@@ -318,17 +320,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     ) : (
       <SelectContext.Provider value={false}>
         {(idle || menu.mounted) && (
-          <Menu
-            state={menu}
-            ref={popoverRef}
-            portal
-            composite={!searchable}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                event.stopPropagation();
-              }
-            }}
-          >
+          <Menu state={menu} ref={popoverRef} portal composite={!searchable}>
             {renderPopover}
           </Menu>
         )}
@@ -374,14 +366,27 @@ export const PageMenuGroup = forwardRef<HTMLDivElement, PageMenuGroupProps>(
 type PageMenuItemProps = HTMLAttributes<HTMLElement> & {
   href?: string;
   value?: string;
+  title?: string;
   thumbnail?: ReactNode;
   description?: ReactNode;
+  path?: ReactNode[];
+  nested?: boolean;
   hideOnClick?: boolean;
 };
 
 export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
   (
-    { children, value, thumbnail, description, hideOnClick = true, ...props },
+    {
+      children,
+      value,
+      title,
+      thumbnail,
+      description,
+      path,
+      nested,
+      hideOnClick = true,
+      ...props
+    },
     ref
   ) => {
     const select = useContext(SelectContext);
@@ -408,23 +413,52 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           className={cx(
             style.item,
             combobox && (group ? "scroll-mt-[88px]" : "scroll-mt-14"),
-            !!thumbnail && "!pr-4 !gap-4 !items-start",
+            !!thumbnail && "!items-start !gap-4 !pr-4",
             !!footer && "scroll-mb-14",
             isExternalLink && "justify-between",
             props.className
           )}
         >
-          {thumbnail && <div className={style.itemThumbnail}>{thumbnail}</div>}
+          {children}
+          {!nested && thumbnail && (
+            <div className={style.itemThumbnail}>{thumbnail}</div>
+          )}
+          {nested && (
+            <div className="flex h-16 w-16 flex-none flex-col items-center justify-center">
+              <div className="h-2 w-2 rounded-full bg-primary-2 dark:bg-primary-2-dark" />
+            </div>
+          )}
           {description || thumbnail ? (
-            <div className="flex flex-col">
-              <span className="font-semibold">{children}</span>
-              <span className={style.itemDescription}>{description}</span>
+            <div className="flex min-w-0 flex-col">
+              <span className="font-semibold tracking-wide">{title}</span>
+              {path && (
+                <span className="flex items-center text-sm">
+                  {path.map(
+                    (item, i) =>
+                      item && (
+                        <Fragment key={i}>
+                          {i > 0 && (
+                            <ChevronRight className="h-3 w-3 opacity-50" />
+                          )}
+                          <span
+                            key={i}
+                            className="truncate text-link dark:text-link-dark [&_[data-user-value]]:font-semibold [&_[data-user-value]]:text-primary-1 dark:[&_[data-user-value]]:text-primary-1-dark"
+                          >
+                            {item}
+                          </span>
+                        </Fragment>
+                      )
+                  )}
+                </span>
+              )}
+              <span
+                className={cx(style.itemDescription, path && "!block truncate")}
+              >
+                {description}
+              </span>
             </div>
           ) : (
-            <>
-              {children}
-              {isExternalLink && <NewWindow className={itemIconStyle} />}
-            </>
+            isExternalLink && <NewWindow className={itemIconStyle} />
           )}
         </Role>
       );
