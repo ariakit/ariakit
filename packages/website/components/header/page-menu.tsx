@@ -46,6 +46,7 @@ import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle-state";
 import whenIdle from "../../utils/when-idle";
 import ChevronRight from "../icons/chevron-right";
+import Hashtag from "../icons/hashtag";
 import NewWindow from "../icons/new-window";
 import {
   itemIconStyle,
@@ -119,7 +120,7 @@ const style = {
     w-16 h-16
     rounded-sm
     bg-canvas-1 dark:bg-canvas-2-dark
-    group-active-item:bg-black/5 dark:group-active-item:bg-black/70
+    group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
   `,
   footer: tw`
     sticky bottom-0
@@ -183,6 +184,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const parent = useContext(ParentContext);
     const combobox = useComboboxState({
       fitViewport: true,
+      includesBaseElement: false,
       gutter: 4,
       open,
       setOpen: (open) => {
@@ -270,7 +272,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
                 <Combobox
                   state={combobox}
                   placeholder={searchPlaceholder}
-                  autoSelect
+                  autoSelect="always"
                   className={style.combobox}
                 />
               </div>
@@ -413,7 +415,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           className={cx(
             style.item,
             combobox && (group ? "scroll-mt-[88px]" : "scroll-mt-14"),
-            !!thumbnail && "!items-start !gap-4 !pr-4",
+            !!thumbnail && "!items-start !gap-4 !p-4",
             !!footer && "scroll-mb-14",
             isExternalLink && "justify-between",
             props.className
@@ -424,8 +426,8 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
             <div className={style.itemThumbnail}>{thumbnail}</div>
           )}
           {nested && (
-            <div className="flex h-16 w-16 flex-none flex-col items-center justify-center">
-              <div className="h-2 w-2 rounded-full bg-primary-2 dark:bg-primary-2-dark" />
+            <div className="relative flex h-16 w-16 flex-none flex-col items-center justify-center">
+              <div className="absolute -top-4 h-24 w-0.5 bg-black/10 dark:bg-white/10" />
             </div>
           )}
           {description || thumbnail ? (

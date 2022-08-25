@@ -2,33 +2,37 @@ import { Searcher, search } from "fast-fuzzy";
 import { NextApiRequest, NextApiResponse } from "next";
 import contents from "../../pages.contents";
 
+const contentsWithoutInstallation = contents.filter(
+  (page) => page.title === "Getting started" || page.section !== "Installation"
+);
+
 const searcherOptions = {
   keySelector: (obj: typeof contents[number]) => [
     obj.title || "",
+    obj.parentSection || "",
     obj.section || "",
     obj.content || "",
     obj.category || "",
-    [obj.title, obj.section, obj.category].join(" "),
+    [obj.title, obj.parentSection, obj.section, obj.category].join(" "),
   ],
   useSellers: true,
   useDamerau: true,
   returnMatchData: true,
 } as const;
 
-const searcher = new Searcher(contents, searcherOptions);
+const searcher = new Searcher(contentsWithoutInstallation, searcherOptions);
 const searchers: Record<string, typeof searcher> = {};
 
-const categories = contents.reduce<Record<string, typeof contents>>(
-  (acc, curr) => {
-    const category = curr.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category]?.push(curr);
-    return acc;
-  },
-  {}
-);
+const categories = contentsWithoutInstallation.reduce<
+  Record<string, typeof contents>
+>((acc, curr) => {
+  const category = curr.category;
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category]?.push(curr);
+  return acc;
+}, {});
 
 const entries = Object.entries(categories);
 
@@ -37,7 +41,7 @@ for (const [category, contents] of entries) {
 }
 
 function removeConnectors(string: string) {
-  return string.replace(/\b(a|an|and|the)\b/gi, "$3");
+  return string.replace(/\b(a|an|and|the|on|in|at|to)\b/gi, "$3");
 }
 
 function getKeyFromOriginal(item: typeof contents[number], original: string) {
@@ -106,9 +110,15 @@ export default async function handler(
             Math.max(0, match.index - (maxContentLength - match.length) / 2),
             maxContentLength
           );
-    const value = [item.title, item.section, item.category, content].join(" ");
+    const value = [
+      item.title,
+      item.parentSection,
+      item.section,
+      item.category,
+      content,
+    ].join(" ");
     const words = removeConnectors(value).split(/\p{P}*\s\p{P}*/u);
-    const terms = searchTerm.split(" ");
+    const terms = removeConnectors(searchTerm).split(" ");
     const keywords = terms
       .map((term) => search(term, words, { threshold: 0.8 }))
       .flat();

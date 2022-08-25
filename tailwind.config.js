@@ -39,8 +39,12 @@ module.exports = {
         text: "currentColor",
       },
       link: {
+        DEFAULT: "hsl(204 100% 36%)",
+        border: "hsl(204 100% 36%)",
         text: "hsl(204 100% 36%)",
         dark: {
+          DEFAULT: "hsl(204 100% 64%)",
+          border: "hsl(204 100% 64%)",
           text: "hsl(204 100% 64%)",
         },
       },

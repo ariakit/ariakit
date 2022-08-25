@@ -6,6 +6,7 @@ import { cx } from "ariakit-utils/misc";
 import Link from "next/link";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";
+import Hashtag from "../icons/hashtag";
 import NewWindow from "../icons/new-window";
 import Playground from "../playground";
 import SEO from "../seo";
@@ -68,19 +69,7 @@ const { Compiler: renderAst } = new RehypeReact({
           <Link href={href}>
             <a {...props} className="inline-flex flex-row-reverse items-center">
               <span>{props.children}</span>
-              <svg
-                className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                />
-              </svg>
+              <Hashtag className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
             </a>
           </Link>
         );

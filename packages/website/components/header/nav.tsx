@@ -12,7 +12,6 @@ import { cx, normalizeString } from "ariakit-utils/misc";
 import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import { VisuallyHidden } from "ariakit/visually-hidden";
-import { partition } from "lodash";
 import groupBy from "lodash/groupBy";
 import startCase from "lodash/startCase";
 import Link from "next/link";
@@ -247,7 +246,7 @@ export default function Nav() {
   const url = `/api/search?q=${searchValue}`;
   const { data, isLoading } = useQuery<PageContents>(
     [url],
-    () => fetch(url).then((res) => res.json()),
+    ({ signal }) => fetch(url, { signal }).then((res) => res.json()),
     {
       staleTime: Infinity,
       enabled: open,
@@ -334,7 +333,7 @@ export default function Nav() {
 
   const command = (
     <span className="mx-1 flex gap-0.5 text-black/[62.5%] dark:text-white/70">
-      {isApple() ? (
+      {true ? (
         <abbr title="Command" className="no-underline">
           ⌘
         </abbr>
@@ -343,7 +342,7 @@ export default function Nav() {
           Ctrl
         </abbr>
       )}
-      <span className={cx(!isApple() && "font-bold")}>K</span>
+      <span className={cx(!true && "font-bold")}>K</span>
     </span>
   );
 

@@ -18,6 +18,7 @@ import {
   useId,
   useSafeLayoutEffect,
   useUpdateEffect,
+  useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
@@ -93,7 +94,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
     // first item on every keypress.
-    autoSelect = !!autoSelect && state.virtualFocus;
+    autoSelect = state.virtualFocus && autoSelect;
 
     const inline = autoComplete === "inline" || autoComplete === "both";
 
@@ -158,10 +159,10 @@ export const useCombobox = createHook<ComboboxOptions>(
     // change was a text insertion, we automatically focus on the first
     // suggestion. This effect runs both when the value changes and when the
     // items change so we also catch async items.
-    useUpdateEffect(() => {
+    useUpdateLayoutEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
-      if (!hasInsertedTextRef.current) return;
+      if (autoSelect === true && !hasInsertedTextRef.current) return;
       state.move(state.first());
     }, [
       valueUpdated,
@@ -224,7 +225,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // inline completion effect will be fired.
         forceValueUpdate();
       }
-      if (!autoSelect || !hasInsertedTextRef.current) {
+      if (!autoSelect || (autoSelect === true && !hasInsertedTextRef.current)) {
         // If autoSelect is not set or it's not an insertion of text, focus on
         // the combobox input after changing the value.
         state.setActiveId(null);
@@ -371,7 +372,7 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      *     doesn't change.
      * @default false
      */
-    autoSelect?: boolean;
+    autoSelect?: boolean | "always";
     /**
      * Whether the items will be filtered based on `value` and whether the input
      * value will temporarily change based on the active item. If `defaultList`
