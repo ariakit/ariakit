@@ -41,7 +41,17 @@ function RenameForm({ initialName = "", onRename }: Props) {
 
 export default function DialogWithForm() {
   const [name, setName] = React.useState("Name");
-  const dialog = useDialogState();
+  const dialog = useDialogState({ modal: true });
+  React.useEffect(() => {
+    const script = document.createElement("script");
+    script.innerHTML = `
+      document.getElementById('candy');
+      candy.addEventListener('click', () => {
+        console.log('candy');
+      });
+    `;
+    document.head.append(script);
+  }, []);
   return (
     <>
       {name}
@@ -50,7 +60,11 @@ export default function DialogWithForm() {
           ✏️
         </span>
       </DialogDisclosure>
-      <Dialog {...dialog} aria-label="Choose a new name">
+      <Dialog
+        {...dialog}
+        aria-label="Choose a new name"
+        hideOnClickOutside={false}
+      >
         <RenameForm
           initialName={name}
           onRename={(newName: string) => {
@@ -59,6 +73,13 @@ export default function DialogWithForm() {
           }}
         />
       </Dialog>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: `
+          <button id="candy">Candy</button>
+          `,
+        }}
+      />
     </>
   );
 }
