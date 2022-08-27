@@ -54,10 +54,6 @@ function hasCompletionString(value?: string, activeValue?: string) {
   );
 }
 
-function isInputEvent(event: Event): event is InputEvent {
-  return event.type === "input";
-}
-
 /**
  * A component hook that returns props that can be passed to `Role` or any other
  * Ariakit component to render a combobox input.
@@ -89,7 +85,7 @@ export const useCombobox = createHook<ComboboxOptions>(
   }) => {
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
-    const hasInsertedTextRef = useRef(false);
+    const valueChangedRef = useRef(false);
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
@@ -152,7 +148,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // try to auto select an item after the popover closes.
     useSafeLayoutEffect(() => {
       if (state.open) return;
-      hasInsertedTextRef.current = false;
+      valueChangedRef.current = false;
     }, [state.open]);
 
     // Auto select the first item on type. If autoSelect is true and the last
@@ -162,7 +158,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     useUpdateLayoutEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
-      if (autoSelect === true && !hasInsertedTextRef.current) return;
+      if (!valueChangedRef.current) return;
       state.move(state.first());
     }, [
       valueUpdated,
@@ -204,10 +200,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      const nativeEvent = event.nativeEvent;
-      if (isInputEvent(nativeEvent)) {
-        hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
-      }
+      valueChangedRef.current = true;
       if (showOnChangeProp(event)) {
         state.show();
       }
@@ -225,7 +218,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // inline completion effect will be fired.
         forceValueUpdate();
       }
-      if (!autoSelect || (autoSelect === true && !hasInsertedTextRef.current)) {
+      if (!autoSelect || !valueChangedRef.current) {
         // If autoSelect is not set or it's not an insertion of text, focus on
         // the combobox input after changing the value.
         state.setActiveId(null);
@@ -243,7 +236,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       (event: CompositionEvent<HTMLInputElement>) => {
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
-        hasInsertedTextRef.current = true;
+        valueChangedRef.current = true;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -273,7 +266,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
         onKeyDownProp?.(event);
-        hasInsertedTextRef.current = false;
+        valueChangedRef.current = false;
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;
         if (event.altKey) return;
@@ -296,7 +289,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      hasInsertedTextRef.current = false;
+      valueChangedRef.current = false;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
@@ -372,7 +365,7 @@ export type ComboboxOptions<T extends As = "input"> = Omit<
      *     doesn't change.
      * @default false
      */
-    autoSelect?: boolean | "always";
+    autoSelect?: boolean;
     /**
      * Whether the items will be filtered based on `value` and whether the input
      * value will temporarily change based on the active item. If `defaultList`

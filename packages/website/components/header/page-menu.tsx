@@ -8,7 +8,6 @@ import {
   RefObject,
   createContext,
   forwardRef,
-  startTransition,
   useContext,
   useEffect,
   useRef,
@@ -46,7 +45,6 @@ import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle-state";
 import whenIdle from "../../utils/when-idle";
 import ChevronRight from "../icons/chevron-right";
-import Hashtag from "../icons/hashtag";
 import NewWindow from "../icons/new-window";
 import {
   itemIconStyle,
@@ -110,10 +108,9 @@ const style = {
   `,
   itemDescription: tw`
     text-sm text-black/70 dark:text-white/70
-    overflow-hidden
-    [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]
     dark:[&_[data-autocomplete-value]]:text-white/[56%]
-    [&_[data-user-value]]:font-semibold [&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white
+    [&_[data-user-value]]:font-semibold
+    [&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white
   `,
   itemThumbnail: tw`
     flex items-center justify-center flex-none
@@ -121,6 +118,17 @@ const style = {
     rounded-sm
     bg-canvas-1 dark:bg-canvas-2-dark
     group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
+  `,
+  itemNestedThumbnail: tw`
+    relative
+    flex flex-col flex-none items-center justify-center
+    w-16 h-16
+    after:absolute after:-top-4 after:h-24 after:w-0.5 after:bg-black/10 after:dark:bg-white/10
+  `,
+  itemPathSegment: tw`
+    truncate text-link dark:text-link-dark
+    [&_[data-user-value]]:font-semibold
+    [&_[data-user-value]]:text-primary-1 dark:[&_[data-user-value]]:text-primary-1-dark
   `,
   footer: tw`
     sticky bottom-0
@@ -158,7 +166,7 @@ type PageMenuProps = Omit<
   size?: "sm" | "md" | "lg" | "xl";
   footer?: ReactNode;
   itemValue?: string;
-  showOnHover?: boolean;
+  autoSelect?: boolean;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -176,6 +184,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       size = "md",
       footer,
       itemValue,
+      autoSelect,
       ...props
     },
     ref
@@ -272,7 +281,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
                 <Combobox
                   state={combobox}
                   placeholder={searchPlaceholder}
-                  autoSelect="always"
+                  autoSelect={autoSelect}
                   className={style.combobox}
                 />
               </div>
@@ -309,10 +318,16 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
           <SelectPopover
             ref={popoverRef}
             state={select}
+            typeahead={!searchable}
             composite={!searchable}
           >
             {(props) => (
-              <MenuList {...props} state={menu} composite={false}>
+              <MenuList
+                {...props}
+                state={menu}
+                typeahead={false}
+                composite={false}
+              >
                 {renderPopover}
               </MenuList>
             )}
@@ -322,7 +337,13 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     ) : (
       <SelectContext.Provider value={false}>
         {(idle || menu.mounted) && (
-          <Menu state={menu} ref={popoverRef} portal composite={!searchable}>
+          <Menu
+            state={menu}
+            ref={popoverRef}
+            portal
+            typeahead={!searchable}
+            composite={!searchable}
+          >
             {renderPopover}
           </Menu>
         )}
@@ -425,11 +446,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           {!nested && thumbnail && (
             <div className={style.itemThumbnail}>{thumbnail}</div>
           )}
-          {nested && (
-            <div className="relative flex h-16 w-16 flex-none flex-col items-center justify-center">
-              <div className="absolute -top-4 h-24 w-0.5 bg-black/10 dark:bg-white/10" />
-            </div>
-          )}
+          {nested && <div className={style.itemNestedThumbnail} />}
           {description || thumbnail ? (
             <div className="flex min-w-0 flex-col">
               <span className="font-semibold tracking-wide">{title}</span>
@@ -442,10 +459,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
                           {i > 0 && (
                             <ChevronRight className="h-3 w-3 opacity-50" />
                           )}
-                          <span
-                            key={i}
-                            className="truncate text-link dark:text-link-dark [&_[data-user-value]]:font-semibold [&_[data-user-value]]:text-primary-1 dark:[&_[data-user-value]]:text-primary-1-dark"
-                          >
+                          <span key={i} className={style.itemPathSegment}>
                             {item}
                           </span>
                         </Fragment>
@@ -454,7 +468,10 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
                 </span>
               )}
               <span
-                className={cx(style.itemDescription, path && "!block truncate")}
+                className={cx(
+                  style.itemDescription,
+                  path ? "truncate" : "truncate-[2]"
+                )}
               >
                 {description}
               </span>

@@ -305,7 +305,7 @@ module.exports = {
     boxShadow: false,
   },
   plugins: [
-    plugin(({ addUtilities, addVariant, theme }) => {
+    plugin(({ addUtilities, matchUtilities, addVariant, theme }) => {
       const dropShadow = theme("dropShadow");
       const dropShadowUtils = Object.entries(dropShadow).reduce(
         (acc, [key, shadow]) => {
@@ -341,6 +341,21 @@ module.exports = {
           outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
         },
       });
+
+      matchUtilities(
+        {
+          truncate: (value) =>
+            value === 1
+              ? null
+              : {
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  "-webkit-box-orient": "vertical",
+                  "-webkit-line-clamp": value,
+                },
+        },
+        { values: { DEFAULT: 1 } }
+      );
 
       addVariant(
         "supports-backdrop-blur",

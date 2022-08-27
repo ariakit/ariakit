@@ -25,7 +25,7 @@ import {
 
 const style = {
   select: tw`
-    flex items-center justify-center gap-1
+    hidden sm:flex items-center justify-center gap-1
     cursor-default
     px-3 h-8 mr-2
     rounded-lg border-none

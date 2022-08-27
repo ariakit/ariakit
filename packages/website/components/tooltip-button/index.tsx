@@ -24,20 +24,22 @@ const TooltipButton = createComponent<TooltipButtonOptions>(
     return (
       <>
         <TooltipAnchor as={Button} {...props} state={tooltip} />
-        <Tooltip
-          {...tooltipProps}
-          state={tooltip}
-          className={cx(
-            "rounded-md py-1 px-2 text-sm",
-            "drop-shadow-sm dark:drop-shadow-sm-dark",
-            "bg-canvas-1 dark:bg-canvas-4-dark",
-            "text-canvas-1 dark:text-canvas-4-dark",
-            "border border-canvas-1 dark:border-canvas-4-dark",
-            tooltipProps?.className
-          )}
-        >
-          {title}
-        </Tooltip>
+        {tooltip.mounted && (
+          <Tooltip
+            {...tooltipProps}
+            state={tooltip}
+            className={cx(
+              "z-40 rounded-md py-1 px-2 text-sm",
+              "drop-shadow-sm dark:drop-shadow-sm-dark",
+              "bg-canvas-1 dark:bg-canvas-4-dark",
+              "text-canvas-1 dark:text-canvas-4-dark",
+              "border border-canvas-1 dark:border-canvas-4-dark",
+              tooltipProps?.className
+            )}
+          >
+            {title}
+          </Tooltip>
+        )}
       </>
     );
   }

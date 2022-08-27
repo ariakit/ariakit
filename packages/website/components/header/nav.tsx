@@ -6,21 +6,24 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { useEvent } from "ariakit-utils/hooks";
 import { cx, normalizeString } from "ariakit-utils/misc";
-import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import groupBy from "lodash/groupBy";
 import startCase from "lodash/startCase";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { PageContents } from "../../pages.contents";
-import meta from "../../pages.index";
+import { PageContent } from "../../pages.contents";
+import pageIndex from "../../pages.index";
 import button from "../../styles/button";
 import tw from "../../utils/tw";
 import ArrowRight from "../icons/arrow-right";
+import Blog from "../icons/blog";
+import Components from "../icons/components";
+import Examples from "../icons/examples";
+import Guide from "../icons/guide";
 import Logo from "../logo";
 import {
   PageMenu,
@@ -30,11 +33,29 @@ import {
 } from "./page-menu";
 import VersionSelect from "./version-select";
 
+type Data = Array<
+  PageContent & {
+    keywords: string[];
+    score?: number;
+    key?: string;
+  }
+>;
+
+type SearchData = Array<
+  Data[number] & {
+    nested?: boolean;
+  }
+>;
+
 const style = {
-  itemIcon: tw`
-    w-4 h-4
-    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
-  `,
+  thumbnail: tw`w-7 h-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground`,
+};
+
+const thumbnails = {
+  guide: <Guide className={style.thumbnail} />,
+  components: <Components className={style.thumbnail} />,
+  examples: <Examples className={style.thumbnail} />,
+  blog: <Blog className={style.thumbnail} />,
 };
 
 const separator = <div className="font-semibold opacity-30">/</div>;
@@ -55,65 +76,102 @@ const searchTitles: Record<string, string> = {
   api: "Search API",
 };
 
-type SubNavProps = {
-  category?: string;
-  pages: typeof meta[keyof typeof meta];
-  label?: ReactNode;
-  searchPlaceholder?: string;
-  onSelect?: (item: SubNavProps["pages"][number]) => void;
-  showOnHover?: boolean;
-  onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
-};
+function getSearchParentPageData(items: Data): SearchData[number] | null {
+  const parentPage = items?.find((item) => !item.section);
+  if (parentPage) return parentPage;
+  if (items.length <= 1) return null;
+  const { category, slug } = items[0]!;
+  if (!category) return null;
+  if (!slug) return null;
+  const page = pageIndex[category]?.find((item) => item.slug === slug);
+  if (!page) return null;
+  return {
+    ...page,
+    id: null,
+    section: null,
+    parentSection: null,
+    category,
+    keywords: [],
+  };
+}
 
-function splitValue(itemValue: string, userValues: string[]) {
-  userValues = userValues
-    .filter(Boolean)
-    .map((value) => normalizeString(value).toLowerCase());
-  let [index, userValue] = userValues.reduce(
-    ([index, prevUserValue], userValue) =>
-      index !== -1
-        ? [index, prevUserValue]
-        : [
-            normalizeString(itemValue).toLowerCase().indexOf(userValue),
-            userValue,
-          ],
+function parseSearchData(data: Data) {
+  const dataBySlug = groupBy(data, "slug");
+  const searchData: SearchData = [];
+  const slugs = Object.keys(dataBySlug);
+  slugs.forEach((slug) => {
+    const items = dataBySlug[slug];
+    if (!items) return;
+    const parentPage = getSearchParentPageData(items);
+    if (parentPage) {
+      searchData.push(parentPage);
+    }
+    const itemsWithoutParentPage = items.filter((item) => item !== parentPage);
+    searchData.push(
+      ...itemsWithoutParentPage
+        .slice(0, parentPage ? 3 : undefined)
+        .map((item) => ({ ...item, nested: !!parentPage }))
+    );
+  });
+  return searchData;
+}
+
+function normalizeValue(value: string) {
+  return normalizeString(value).toLowerCase();
+}
+
+function getUserValueIndex(itemValue: string, userValues: string[]) {
+  return userValues.reduce<[number, string]>(
+    ([index, prevUserValue], userValue) => {
+      if (index !== -1) {
+        return [index, prevUserValue];
+      }
+      return [normalizeValue(itemValue).indexOf(userValue), userValue];
+    },
     [-1, ""]
   );
+}
+
+function highlightValue(itemValue: string, userValues: string[]) {
+  userValues = userValues.filter(Boolean).map(normalizeValue);
   const parts: JSX.Element[] = [];
+  const wrap = (value: string, autocomplete = false) => (
+    <span
+      key={parts.length}
+      data-autocomplete-value={autocomplete ? "" : undefined}
+      data-user-value={autocomplete ? undefined : ""}
+    >
+      {value}
+    </span>
+  );
+  let [index, userValue] = getUserValueIndex(itemValue, userValues);
   while (index !== -1) {
     if (index !== 0) {
-      parts.push(
-        <span data-autocomplete-value="" key={parts.length}>
-          {itemValue.substr(0, index)}
-        </span>
-      );
+      parts.push(wrap(itemValue.slice(0, index), true));
     }
-    parts.push(
-      <span data-user-value="" key={parts.length}>
-        {itemValue.substr(index, userValue.length)}
-      </span>
-    );
-    itemValue = itemValue.substr(index + userValue.length);
-    [index, userValue] = userValues.reduce(
-      ([index, prevUserValue], userValue) =>
-        index !== -1
-          ? [index, prevUserValue]
-          : [
-              normalizeString(itemValue).toLowerCase().indexOf(userValue),
-              userValue,
-            ],
-      [-1, ""]
-    );
+    parts.push(wrap(itemValue.slice(index, index + userValue.length)));
+    itemValue = itemValue.slice(index + userValue.length);
+    [index, userValue] = getUserValueIndex(itemValue, userValues);
   }
   if (itemValue) {
-    parts.push(
-      <span data-autocomplete-value="" key={parts.length}>
-        {itemValue}
-      </span>
-    );
+    parts.push(wrap(itemValue, true));
   }
   return parts;
 }
+
+function queryFetch({ queryKey, signal }: QueryFunctionContext) {
+  const [url] = queryKey as [string];
+  return fetch(url, { signal }).then((response) => response.json());
+}
+
+type SubNavProps = {
+  category?: string;
+  pages: typeof pageIndex[keyof typeof pageIndex];
+  label?: ReactNode;
+  searchPlaceholder?: string;
+  onSelect?: (item: SubNavProps["pages"][number]) => void;
+  onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
+};
 
 function SubNav({
   category,
@@ -121,7 +179,6 @@ function SubNav({
   searchPlaceholder,
   pages,
   onSelect,
-  showOnHover,
   onClick,
 }: SubNavProps) {
   const [open, setOpen] = useState(false);
@@ -228,7 +285,6 @@ function SubNav({
       searchValue={searchValue}
       onSearch={setSearchValue}
       itemValue={category}
-      showOnHover={showOnHover}
       onClick={onClick}
     >
       {elements}
@@ -244,15 +300,11 @@ export default function Nav() {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
   const url = `/api/search?q=${searchValue}`;
-  const { data, isLoading } = useQuery<PageContents>(
-    [url],
-    ({ signal }) => fetch(url, { signal }).then((res) => res.json()),
-    {
-      staleTime: Infinity,
-      enabled: open,
-      keepPreviousData: true,
-    }
-  );
+  const { data, isFetching } = useQuery<Data>([url], queryFetch, {
+    staleTime: Infinity,
+    enabled: open,
+    keepPreviousData: true,
+  });
   const ref = useRef<HTMLButtonElement>(null);
 
   if (!open && searchValue) {
@@ -271,17 +323,7 @@ export default function Nav() {
     };
   }, []);
 
-  useEffect(() => {
-    const onRouteChange = () => {
-      setSearchValue("");
-    };
-    router.events.on("routeChangeComplete", onRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", onRouteChange);
-    };
-  }, []);
-
-  const categoryMeta = meta[category as keyof typeof meta];
+  const categoryMeta = pageIndex[category as keyof typeof pageIndex];
 
   const categoryTitle = category ? categoryTitles[category] : "Browse";
   const pageMeta =
@@ -291,8 +333,8 @@ export default function Nav() {
 
   const categoryElements = useMemo(
     () =>
-      Object.keys(meta).map((key) => {
-        const pages = meta[key as keyof typeof meta];
+      Object.keys(pageIndex).map((key) => {
+        const pages = pageIndex[key as keyof typeof pageIndex];
         if (!pages) return null;
         return (
           <SubNav
@@ -307,29 +349,6 @@ export default function Nav() {
       }),
     []
   );
-
-  // const filteredCategoryElements = useMemo(() => {
-  //   if (!searchValue) return null;
-  //   const keys = Object.keys(meta).filter((key) =>
-  //     key.toLowerCase().startsWith(searchValue.toLowerCase())
-  //   );
-  //   if (!keys.length) return null;
-  //   return keys.map((key) => {
-  //     const pages = meta[key as keyof typeof meta];
-  //     if (!pages) return null;
-  //     return (
-  //       <SubNav
-  //         key={key}
-  //         category={key}
-  //         label={categoryTitles[key]}
-  //         searchPlaceholder={searchTitles[key]}
-  //         pages={pages}
-  //         showOnHover={false}
-  //         onSelect={() => setOpen(false)}
-  //       />
-  //     );
-  //   });
-  // }, [searchValue]);
 
   const command = (
     <span className="mx-1 flex gap-0.5 text-black/[62.5%] dark:text-white/70">
@@ -369,36 +388,7 @@ export default function Nav() {
 
   const results = useMemo(() => {
     if (!data?.length) return null;
-    const newData = groupBy(data, "slug");
-    const nextData: typeof data = [];
-    Object.keys(newData).forEach((key) => {
-      const category = newData[key][0]!.category;
-      const primary =
-        newData[key]!.find((item) => item.slug === key && !item.section) ||
-        (newData[key]!.length > 1
-          ? {
-              ...meta[category]?.find((item) => item.slug === key),
-              category,
-              parent: !!newData[key]?.length,
-              keywords: [],
-            }
-          : null);
-      if (primary) {
-        nextData.push({
-          parent: newData[key]!.length > 1,
-          ...primary,
-        });
-      }
-      nextData.push(
-        ...newData[key]
-          ?.filter((item) => item !== primary)
-          .map((item) => ({
-            ...item,
-            nested: !!primary,
-          }))
-          .slice(0, primary ? 3 : undefined)
-      );
-    });
+    const nextData = parseSearchData(data);
     const renderItem = (item, i) => (
       <PageMenuItem
         key={item.title + i}
@@ -406,26 +396,22 @@ export default function Nav() {
         href={`/${item.category}/${item.slug}${item.id ? `#${item.id}` : ""}`}
         path={[
           categoryTitles[item.category] &&
-            splitValue(categoryTitles[item.category], item.keywords),
-          item.group && splitValue(item.group, item.keywords),
-          !item.parent &&
-            item.section &&
+            highlightValue(categoryTitles[item.category], item.keywords),
+          item.group && highlightValue(item.group, item.keywords),
+          item.section &&
             item.title &&
-            splitValue(item.title, item.keywords),
-          item.parentSection && splitValue(item.parentSection, item.keywords),
+            highlightValue(item.title, item.keywords),
+          item.parentSection &&
+            highlightValue(item.parentSection, item.keywords),
           !item.nested &&
             item.section &&
-            splitValue(item.section, item.keywords),
+            highlightValue(item.section, item.keywords),
         ]}
         nested={item.nested}
-        description={splitValue(item.content, item.keywords)}
+        description={highlightValue(item.content, item.keywords)}
         title={item.nested ? item.section || item.title : item.title}
         thumbnail={
-          item.category === "components" || item.category === "examples" ? (
-            <div className="flex h-4 w-8 items-center justify-center rounded-sm bg-primary-2 shadow-sm">
-              <div className="h-1 w-4 rounded-[1px] bg-white/75" />
-            </div>
-          ) : (
+          thumbnails[item.category] || (
             <div className="h-6 w-6 rounded-full bg-primary-2" />
           )
         }
@@ -454,15 +440,14 @@ export default function Nav() {
         searchPlaceholder="Search"
         searchValue={searchValue}
         onSearch={setSearchValue}
+        autoSelect={!!data?.length}
         value={category || undefined}
         size={data?.length ? "xl" : "sm"}
       >
-        {searchValue.length ? (
-          !!data?.length ? (
-            results
-          ) : isLoading ? (
-            <div>Loading...</div>
-          ) : null
+        {searchValue.length && !!data?.length ? (
+          results
+        ) : searchValue.length && !data?.length && !isFetching ? (
+          <div>No results for &ldquo;{searchValue}&rdquo;</div>
         ) : (
           <>
             {categoryElements}
@@ -498,7 +483,7 @@ export default function Nav() {
         value={category}
         size="sm"
       >
-        {Object.keys(meta)?.map((key) => (
+        {Object.keys(pageIndex)?.map((key) => (
           <PageMenu
             key={key}
             searchPlaceholder={`Search ${key}`}
@@ -527,7 +512,7 @@ export default function Nav() {
               </PopoverDismiss>
             }
           >
-            {Object.entries(groupBy(meta[key], "group")).map(
+            {Object.entries(groupBy(pageIndex[key], "group")).map(
               ([group, pages]) => (
                 <PageMenuGroup key={group} label={group}>
                   {pages.map((item, i) => {
@@ -584,7 +569,7 @@ export default function Nav() {
               </PopoverDismiss>
             }
           >
-            {Object.entries(groupBy(meta[category], "group")).map(
+            {Object.entries(groupBy(pageIndex[category], "group")).map(
               ([group, pages]) => (
                 <PageMenuGroup key={group} label={group}>
                   {pages.map((item, i) => {
@@ -623,7 +608,7 @@ export default function Nav() {
         onSearch={setSearchValue}
         size={searchValue ? "lg" : "sm"}
       >
-        {Object.keys(meta)?.map((key) => (
+        {Object.keys(pageIndex)?.map((key) => (
           <PageMenuItem key={key} value={key} href={`/${key}`}>
             {startCase(key)}
           </PageMenuItem>
