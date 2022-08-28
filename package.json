@@ -74,7 +74,7 @@
     "eslint": "8.23.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jest": "27.0.0",
+    "eslint-plugin-jest": "27.0.1",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.31.1",
     "framer-motion": "7.2.1",
