@@ -65,9 +65,13 @@ function truncate(
   const initial =
     minStart === 0
       ? string
-      : string.substring(firstEmptyIndex === -1 ? 0 : firstEmptyIndex + 1);
-  const lastEmptyIndex = initial.lastIndexOf(" ", maxLength - suffix.length);
-  const final = initial.substring(0, lastEmptyIndex);
+      : string.slice(firstEmptyIndex === -1 ? 0 : firstEmptyIndex + 1);
+  const minEnd = Math.min(initial.length, maxLength - suffix.length);
+  const lastEmptyIndex = initial.indexOf(" ", minEnd);
+  if (lastEmptyIndex === -1) {
+    return initial + suffix;
+  }
+  const final = initial.slice(0, lastEmptyIndex);
   return final + suffix;
 }
 

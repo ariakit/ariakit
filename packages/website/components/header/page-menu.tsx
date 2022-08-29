@@ -3,6 +3,7 @@ import {
   ComponentPropsWithRef,
   Fragment,
   HTMLAttributes,
+  MouseEvent,
   ReactNode,
   RefAttributes,
   RefObject,
@@ -150,6 +151,7 @@ const ComboboxContext = createContext(false);
 const ParentContext = createContext<RefObject<HTMLElement> | null>(null);
 const GroupContext = createContext<string | boolean>(false);
 const FooterContext = createContext(false);
+const HideAllContext = createContext<(() => void) | null>(null);
 
 type PageMenuProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -252,12 +254,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     const renderButton = (props: HTMLAttributes<HTMLElement>) =>
       parent ? (
-        <PageMenuItem
-          {...props}
-          value={itemValue}
-          hideOnClick={false}
-          className="justify-between"
-        >
+        <PageMenuItem {...props} value={itemValue} className="justify-between">
           {props.children}
           <MenuButtonArrow />
         </PageMenuItem>
@@ -352,10 +349,12 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     return (
       <FooterContext.Provider value={!!footer}>
-        <ParentContext.Provider value={popoverRef}>
-          {button}
-          {popover}
-        </ParentContext.Provider>
+        <HideAllContext.Provider value={menu.hideAll}>
+          <ParentContext.Provider value={popoverRef}>
+            {button}
+            {popover}
+          </ParentContext.Provider>
+        </HideAllContext.Provider>
       </FooterContext.Provider>
     );
   }
@@ -394,24 +393,14 @@ type PageMenuItemProps = HTMLAttributes<HTMLElement> & {
   description?: ReactNode;
   path?: ReactNode[];
   nested?: boolean;
-  hideOnClick?: boolean;
 };
 
 export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
   (
-    {
-      children,
-      value,
-      title,
-      thumbnail,
-      description,
-      path,
-      nested,
-      hideOnClick = true,
-      ...props
-    },
+    { children, value, title, thumbnail, description, path, nested, ...props },
     ref
   ) => {
+    const hideAll = useContext(HideAllContext);
     const select = useContext(SelectContext);
     const combobox = useContext(ComboboxContext);
     const group = useContext(GroupContext);
@@ -485,6 +474,14 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
         return <Link href={href}>{item}</Link>;
       }
       return item;
+    };
+
+    const hideOnClick = (event: MouseEvent) => {
+      const popupType = event.currentTarget.getAttribute("aria-haspopup");
+      if (popupType === "dialog") return false;
+      if (!hideAll) return true;
+      hideAll();
+      return false;
     };
 
     const renderSelectItem = (props: Props) => (
