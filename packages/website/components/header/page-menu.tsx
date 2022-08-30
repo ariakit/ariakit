@@ -233,6 +233,15 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       menu.setInitialFocus("first");
     }
 
+    useEffect(() => {
+      if (!parent) {
+        menu.disclosureRef.current =
+          select.disclosureRef.current =
+          combobox.disclosureRef.current =
+            menu.anchorRef.current;
+      }
+    });
+
     const selectable = value != null || !!onChange;
     const searchable = searchValue != null || !!onSearch;
     const onSearchProp = useEvent(onSearch);

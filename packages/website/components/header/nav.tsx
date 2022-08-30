@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { useEvent, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { cx, normalizeString } from "ariakit-utils/misc";
 import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
@@ -165,7 +166,7 @@ function queryFetch({ queryKey, signal }: QueryFunctionContext) {
 
 function Shortcut() {
   const [platform, setPlatform] = useState<"mac" | "pc" | null>(null);
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     setPlatform(isApple() ? "mac" : "pc");
   }, []);
   if (!platform) return null;
@@ -227,20 +228,39 @@ const NavItem = memo(({ item, category, onClick }: NavItemProps) => {
 });
 
 type NavMenuProps = {
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
   category?: string;
   label?: ReactNode;
   value?: string;
   footer?: boolean;
+  shortcut?: boolean;
   children?: ReactNode;
+  searchValue?: string;
+  onBrowseAllPages?: (value: string) => void;
   size?: "sm" | "md" | "lg" | "xl";
 };
 
 const NavMenuContext = createContext(false);
 
 const NavMenu = memo(
-  ({ category, label, value, footer, children, size = "lg" }: NavMenuProps) => {
+  ({
+    open: openProp,
+    setOpen: setOpenProp,
+    category,
+    label,
+    value,
+    footer,
+    shortcut,
+    children,
+    searchValue: searchValueProp,
+    onBrowseAllPages,
+    size = "lg",
+  }: NavMenuProps) => {
     const isSubNav = useContext(NavMenuContext);
-    const [open, setOpen] = useState(false);
+    const [_open, _setOpen] = useState(false);
+    const open = openProp ?? _open;
+    const setOpen = setOpenProp ?? _setOpen;
     const [searchValue, setSearchValue] = useState("");
 
     if (!open && searchValue) {
@@ -248,17 +268,11 @@ const NavMenu = memo(
     }
 
     useEffect(() => {
-      if (isSubNav) return;
-      const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
-          setOpen(true);
-        }
-      };
-      document.addEventListener("keydown", onKeyDown);
-      return () => {
-        document.removeEventListener("keydown", onKeyDown);
-      };
-    }, [isSubNav]);
+      console.log(searchValueProp);
+      if (searchValueProp) {
+        setSearchValue(searchValueProp);
+      }
+    }, [searchValueProp]);
 
     const url = `/api/search?q=${searchValue}${
       category ? `&category=${category}` : ""
@@ -317,7 +331,12 @@ const NavMenu = memo(
         <PageMenu
           open={open}
           onToggle={setOpen}
-          label={label}
+          label={
+            <>
+              {label}
+              {shortcut && <Shortcut />}
+            </>
+          }
           searchPlaceholder={category ? searchTitles[category] : "Search"}
           searchValue={searchValue}
           onSearch={setSearchValue}
@@ -338,7 +357,7 @@ const NavMenu = memo(
                   "focus-visible:ariakit-outline-input"
                 )}
                 onClick={() => {
-                  // categorySelect.show();
+                  onBrowseAllPages?.(searchValue);
                 }}
               >
                 <PopoverDisclosureArrow placement="left" />
@@ -372,6 +391,35 @@ const NavMenu = memo(
 export default function Nav() {
   const router = useRouter();
   const [, category, page] = router.pathname.split("/");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [pageOpen, setPageOpen] = useState(false);
+  const [categorySearchValue, setCategorySearchValue] = useState<string>();
+
+  useEffect(() => {
+    if (categorySearchValue) {
+      setCategorySearchValue(undefined);
+    }
+  }, [categorySearchValue]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+        if (categoryOpen) {
+          setPageOpen(true);
+        } else if (pageOpen) {
+          setCategoryOpen(true);
+        } else if (page) {
+          setPageOpen(true);
+        } else {
+          setCategoryOpen(true);
+        }
+      }
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [categoryOpen, pageOpen, page]);
 
   const categoryMeta = pageIndex[category as keyof typeof pageIndex];
 
@@ -391,41 +439,9 @@ export default function Nav() {
     []
   );
 
-  const element = useMemo(
-    () =>
-      pageMeta && categoryMeta && category ? (
-        <NavMenu
-          category={category}
-          footer
-          label={
-            <>
-              {pageMeta.title}
-              <Shortcut />
-            </>
-          }
-          value={page}
-        />
-      ) : null,
-    [pageMeta, category, categoryMeta]
-  );
-
-  return (
-    <>
-      {separator}
-      <NavMenu
-        label={
-          element ? (
-            categoryTitle
-          ) : (
-            <>
-              {categoryTitle}
-              <Shortcut />
-            </>
-          )
-        }
-        value={category || undefined}
-        size="sm"
-      >
+  const children = useMemo(
+    () => (
+      <>
         {categoryElements}
         <PageMenuSeparator />
         <PageMenuItem href="https://github.com/ariakit/ariakit">
@@ -437,12 +453,46 @@ export default function Nav() {
         <PageMenuItem href="https://newsletter.ariakit.org">
           Newsletter
         </PageMenuItem>
+      </>
+    ),
+    [categoryElements]
+  );
+
+  const element = !!pageMeta && !!category;
+
+  const onBrowseAllPages = useEvent((value: string) => {
+    setCategorySearchValue(value);
+    setCategoryOpen(true);
+  });
+
+  return (
+    <>
+      {separator}
+      <NavMenu
+        key={element ? "category" : "page"}
+        open={categoryOpen}
+        setOpen={setCategoryOpen}
+        shortcut={!element}
+        label={categoryTitle}
+        searchValue={categorySearchValue}
+        value={category || undefined}
+        size="sm"
+      >
+        {children}
       </NavMenu>
+      {element && separator}
       {element && (
-        <>
-          {separator}
-          {element}
-        </>
+        <NavMenu
+          key="page"
+          open={pageOpen}
+          setOpen={setPageOpen}
+          category={category}
+          footer
+          shortcut
+          onBrowseAllPages={onBrowseAllPages}
+          label={pageMeta.title}
+          value={page}
+        />
       )}
     </>
   );

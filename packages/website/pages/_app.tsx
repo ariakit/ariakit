@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
+import Footer from "../components/footer";
 import Header from "../components/header";
 import SEO from "../components/seo";
 
@@ -58,28 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Header />
         <Component {...pageProps} />
         <div className="mt-auto flex">
-          <footer className="mt-32 flex w-full justify-center bg-canvas-1 dark:bg-canvas-1-dark">
-            <div className="flex w-full max-w-[1440px] items-center gap-4 p-3 sm:p-4">
-              <div>
-                Site licensed under{" "}
-                <a
-                  rel="license noreferrer"
-                  target="_blank"
-                  href="http://creativecommons.org/licenses/by/4.0/"
-                >
-                  CC 4.0
-                </a>
-                . Library and examples licensed under{" "}
-                <a
-                  rel="license noreferrer"
-                  target="_blank"
-                  href="https://opensource.org/licenses/MIT"
-                >
-                  MIT
-                </a>
-              </div>
-            </div>
-          </footer>
+          <Footer />
         </div>
       </div>
     </QueryClientProvider>

@@ -73,6 +73,8 @@ const { Compiler: renderAst } = new RehypeReact({
             </a>
           </Link>
         );
+      } else if (href?.startsWith("/api-reference")) {
+        return props.children;
       } else if (href) {
         return (
           <Link href={href}>
@@ -140,7 +142,7 @@ export default function MarkdownPage(props) {
     <div className="flex flex-col items-start justify-center md:flex-row-reverse">
       <SEO title={`${title} - Ariakit`} />
       {tableOfContents && (
-        <nav className="flex w-[240px] flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
+        <nav className="flex w-[256px] flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
           <div className="text-xs font-bold uppercase text-black/60 dark:text-white/50">
             On this page
           </div>
@@ -172,11 +174,6 @@ export default function MarkdownPage(props) {
                 )}
               </li>
             ))}
-            {/* <li className="font-bold !opacity-100">Installation</li> */}
-            {/* <li>Features</li>
-            <li>API</li>
-            <li>Examples</li>
-            <li>Other components</li> */}
           </ul>
         </nav>
       )}

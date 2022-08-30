@@ -2,6 +2,7 @@ import { cx } from "ariakit-utils/misc";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import GlobalNotification from "../global-notification";
 import Logo from "../logo";
 import Nav from "./nav";
 import ThemeSwitch from "./theme-switch";
@@ -35,7 +36,9 @@ export default function Header() {
           <VersionSelect />
           <Nav />
         </div>
-        <ThemeSwitch className="ml-auto" />
+        <div className="flex-1" />
+        {!isHome && <GlobalNotification size="sm" />}
+        <ThemeSwitch />
       </div>
     </div>
   );
