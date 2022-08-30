@@ -14,6 +14,7 @@ import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import groupBy from "lodash/groupBy";
 import { useRouter } from "next/router";
+import { flushSync } from "react-dom";
 import { PageContent } from "../../pages.contents";
 import pageIndex, { PageIndexDetail } from "../../pages.index";
 import tw from "../../utils/tw";
@@ -267,8 +268,7 @@ const NavMenu = memo(
       setSearchValue("");
     }
 
-    useEffect(() => {
-      console.log(searchValueProp);
+    useSafeLayoutEffect(() => {
       if (searchValueProp) {
         setSearchValue(searchValueProp);
       }
@@ -337,7 +337,9 @@ const NavMenu = memo(
               {shortcut && <Shortcut />}
             </>
           }
-          searchPlaceholder={category ? searchTitles[category] : "Search"}
+          searchPlaceholder={
+            category ? searchTitles[category] : "Search all pages"
+          }
           searchValue={searchValue}
           onSearch={setSearchValue}
           itemValue={category}
@@ -404,9 +406,20 @@ export default function Nav() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        const value = category
+          ? document.querySelector<HTMLInputElement>(
+              `[role=combobox][placeholder='${searchTitles[category]}']`
+            )?.value
+          : "";
+        flushSync(() => {
+          setCategoryOpen(false);
+          setPageOpen(false);
+        });
         if (categoryOpen) {
           setPageOpen(true);
         } else if (pageOpen) {
+          setCategorySearchValue(value);
           setCategoryOpen(true);
         } else if (page) {
           setPageOpen(true);
@@ -419,7 +432,7 @@ export default function Nav() {
     return () => {
       document.removeEventListener("keydown", onKeyDown, true);
     };
-  }, [categoryOpen, pageOpen, page]);
+  }, [categoryOpen, pageOpen, category, page]);
 
   const categoryMeta = pageIndex[category as keyof typeof pageIndex];
 
