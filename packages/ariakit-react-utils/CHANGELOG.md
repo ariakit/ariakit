@@ -1,5 +1,5 @@
 # ariakit-react-utils
 
-## 0.0.1-next.0
+## 0.17.0-next.26
 
 - Copied over from `ariakit-utils`
