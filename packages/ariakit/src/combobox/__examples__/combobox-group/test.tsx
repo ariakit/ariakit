@@ -54,6 +54,26 @@ test("auto select with inline autocomplete on arrow down", async () => {
   expect(getCombobox()).toHaveValue("Apple");
 });
 
+test("auto select with inline autocomplete on typing + arrow down", async () => {
+  render(<Example />);
+  await press.Tab();
+  await type("av");
+  expect(getCombobox()).toHaveValue("avocado");
+  expect(getSelectionValue(getCombobox())).toBe("ocado");
+  await type("\b");
+  expect(getCombobox()).toHaveValue("av");
+  expect(getOption("Avocado")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("");
+  await type("\b");
+  expect(getCombobox()).toHaveValue("a");
+  expect(getOption("Apple")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("");
+  await press.ArrowDown();
+  expect(getCombobox()).toHaveValue("Avocado");
+  expect(getOption("Avocado")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("");
+});
+
 test("blur input after autocomplete", async () => {
   render(<Example />);
   await press.Tab();

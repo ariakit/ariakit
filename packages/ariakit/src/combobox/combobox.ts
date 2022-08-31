@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { getPopupRole } from "ariakit-utils/dom";
 import { isFocusEventOutside, queueBeforeEvent } from "ariakit-utils/events";
@@ -17,7 +18,7 @@ import {
   useForkRef,
   useId,
   useSafeLayoutEffect,
-  useUpdateEffect,
+  useUpdateLayoutEffect,
 } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
 import {
@@ -83,12 +84,13 @@ export const useCombobox = createHook<ComboboxOptions>(
     showOnMouseDown = true,
     setValueOnClick = true,
     showOnKeyDown = true,
+    moveOnKeyPress = true,
     autoComplete = state.list.length ? "list" : "none",
     ...props
   }) => {
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
-    const hasInsertedTextRef = useRef(false);
+    const valueChangedRef = useRef(false);
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
@@ -96,6 +98,16 @@ export const useCombobox = createHook<ComboboxOptions>(
     autoSelect = !!autoSelect && state.virtualFocus;
 
     const inline = autoComplete === "inline" || autoComplete === "both";
+    // The inline autocomplete should only happen in certain circumstances. We
+    // control this state here.
+    const [canInline, setCanInline] = useState(inline);
+
+    // If the inline autocomplete is enabled in a update, we need to update the
+    // canInline state to reflect this.
+    useUpdateLayoutEffect(() => {
+      if (!inline) return;
+      setCanInline(true);
+    }, [inline]);
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -103,9 +115,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     // item value if it's the first item and it's been auto selected. This will
     // only affect the element's value, not the combobox state.
     const value = useMemo(() => {
-      if (!inline) {
-        return state.value;
-      }
+      if (!inline) return state.value;
+      if (!canInline) return state.value;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         state.items,
         state.activeValue,
@@ -122,11 +133,32 @@ export const useCombobox = createHook<ComboboxOptions>(
         return state.value;
       }
       return state.activeValue || state.value;
-    }, [inline, state.value, state.items, autoSelect, state.activeValue]);
+    }, [
+      inline,
+      state.value,
+      canInline,
+      state.items,
+      autoSelect,
+      state.activeValue,
+    ]);
+
+    // Listen to the combobox-item-move event that's dispacthed the ComboboxItem
+    // component so we can enable the inline autocomplete when the user moves
+    // the focus to an item using the keyboard.
+    useEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+      const onCompositeItemMove = () => setCanInline(true);
+      element.addEventListener("combobox-item-move", onCompositeItemMove);
+      return () => {
+        element.removeEventListener("combobox-item-move", onCompositeItemMove);
+      };
+    }, []);
 
     // Highlights the completion string
     useEffect(() => {
       if (!inline) return;
+      if (!canInline) return;
       if (!state.activeValue) return;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         state.items,
@@ -141,27 +173,36 @@ export const useCombobox = createHook<ComboboxOptions>(
     }, [
       valueUpdated,
       inline,
+      canInline,
       state.activeValue,
       state.items,
       autoSelect,
       state.value,
     ]);
 
-    // Resets the inserted text flag when the popover is not open so we don't
-    // try to auto select an item after the popover closes.
+    // Set the changed flag to true whenever the combobox value changes and is
+    // not empty. We're doing this here in addition to in the onChange handler
+    // because the value may change programmatically.
+    useUpdateLayoutEffect(() => {
+      if (!state.value) return;
+      valueChangedRef.current = true;
+    }, [state.value]);
+
+    // Reset the changed flag when the popover is not open so we don't try to
+    // auto select an item after the popover closes (for example, in the middle
+    // of an animation).
     useSafeLayoutEffect(() => {
       if (state.open) return;
-      hasInsertedTextRef.current = false;
+      valueChangedRef.current = false;
     }, [state.open]);
 
-    // Auto select the first item on type. If autoSelect is true and the last
-    // change was a text insertion, we automatically focus on the first
-    // suggestion. This effect runs both when the value changes and when the
-    // items change so we also catch async items.
-    useUpdateEffect(() => {
+    // Auto select the first item on type. This effect runs both when the value
+    // changes and when the items change so we also catch async items. This
+    // needs to be a layout effect to avoid a flash of unselected content.
+    useUpdateLayoutEffect(() => {
       if (!autoSelect) return;
       if (!state.items.length) return;
-      if (!hasInsertedTextRef.current) return;
+      if (!valueChangedRef.current) return;
       state.move(state.first());
     }, [
       valueUpdated,
@@ -173,7 +214,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     ]);
 
     // Focus on the combobox input on type.
-    useUpdateEffect(() => {
+    useSafeLayoutEffect(() => {
       if (autoSelect) return;
       state.setActiveId(null);
     }, [valueUpdated, autoSelect, state.setActiveId]);
@@ -204,8 +245,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       const nativeEvent = event.nativeEvent;
-      if (isInputEvent(nativeEvent)) {
-        hasInsertedTextRef.current = nativeEvent.inputType === "insertText";
+      valueChangedRef.current = true;
+      if (isInputEvent(nativeEvent) && inline) {
+        setCanInline(nativeEvent.inputType === "insertText");
       }
       if (showOnChangeProp(event)) {
         state.show();
@@ -224,7 +266,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // inline completion effect will be fired.
         forceValueUpdate();
       }
-      if (!autoSelect || !hasInsertedTextRef.current) {
+      if (!autoSelect || !valueChangedRef.current) {
         // If autoSelect is not set or it's not an insertion of text, focus on
         // the combobox input after changing the value.
         state.setActiveId(null);
@@ -242,7 +284,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       (event: CompositionEvent<HTMLInputElement>) => {
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
-        hasInsertedTextRef.current = true;
+        valueChangedRef.current = true;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -272,8 +314,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
         onKeyDownProp?.(event);
-        hasInsertedTextRef.current = false;
         if (event.defaultPrevented) return;
+        valueChangedRef.current = false;
         if (event.ctrlKey) return;
         if (event.altKey) return;
         if (event.shiftKey) return;
@@ -295,7 +337,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      hasInsertedTextRef.current = false;
+      valueChangedRef.current = false;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
@@ -319,7 +361,21 @@ export const useCombobox = createHook<ComboboxOptions>(
       onBlur,
     };
 
-    props = useComposite({ state, focusable, ...props });
+    const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
+
+    props = useComposite({
+      state,
+      focusable,
+      ...props,
+      // Enable inline autocomplete when the user moves from the combobox input
+      // to an item.
+      moveOnKeyPress: (event) => {
+        if (!moveOnKeyPressProp(event)) return false;
+        if (inline) setCanInline(true);
+        return true;
+      },
+    });
+
     props = usePopoverAnchor({ state, ...props });
 
     return { autoComplete: "off", ...props };

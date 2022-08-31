@@ -56,7 +56,6 @@ test("typing on the textarea", async () => {
   await expect(getPopover()).not.toBeInTheDocument();
   await type("\b");
   await expect(getPopover()).toBeVisible();
-  await press.ArrowUp();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1018 t");
+  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1253 t");
 });
