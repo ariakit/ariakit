@@ -19,6 +19,7 @@ import {
 } from "ariakit-utils/events";
 import { focusIntoView, hasFocus } from "ariakit-utils/focus";
 import {
+  useBooleanEvent,
   useEvent,
   useForkRef,
   useLiveRef,
@@ -31,7 +32,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
@@ -144,7 +145,13 @@ function useScheduleFocus(activeItem?: Item) {
  * ```
  */
 export const useComposite = createHook<CompositeOptions>(
-  ({ state, composite = true, focusOnMove = composite, ...props }) => {
+  ({
+    state,
+    composite = true,
+    focusOnMove = composite,
+    moveOnKeyPress = true,
+    ...props
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
     const virtualFocus = composite && state.virtualFocus;
     const activeItem = useMemo(
@@ -345,6 +352,7 @@ export const useComposite = createHook<CompositeOptions>(
     });
 
     const onKeyDownProp = props.onKeyDown;
+    const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLDivElement>) => {
       onKeyDownProp?.(event);
@@ -376,6 +384,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (action) {
         const id = action();
         if (id !== undefined) {
+          if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
           state.move(id);
         }
@@ -461,6 +470,12 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * @default true
    */
   focusOnMove?: boolean;
+  /**
+   * Whether the composite widget should move focus to an item when pressing
+   * arrow keys.
+   * @default true
+   */
+  moveOnKeyPress?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
 };
 
 export type CompositeProps<T extends As = "div"> = Props<CompositeOptions<T>>;

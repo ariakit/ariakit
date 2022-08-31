@@ -45,11 +45,11 @@ export default function Example() {
                 <ComboboxGroupLabel className="group-label">
                   {type}
                 </ComboboxGroupLabel>
-                {items.map((item) => (
+                {items.map((item, i) => (
                   <ComboboxItem
-                    focusOnHover
-                    key={item.name}
+                    key={item.name + i}
                     value={item.name}
+                    focusOnHover
                     className="combobox-item"
                   />
                 ))}
