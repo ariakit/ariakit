@@ -19,6 +19,7 @@ import {
   createElement,
   createHook,
 } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { isButton } from "ariakit-utils/dom";
 import {
   addGlobalEventListener,
@@ -30,7 +31,7 @@ import {
 import { focusIfNeeded, hasFocus, isFocusable } from "ariakit-utils/focus";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { isSafari } from "ariakit-utils/platform";
-import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
+import { BivariantCallback } from "ariakit-utils/types";
 
 const isSafariBrowser = isSafari();
 

@@ -11,6 +11,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-react-utils/hooks";
+import { setRef } from "ariakit-react-utils/misc";
 import {
   createComponent,
   createElement,
@@ -25,7 +26,7 @@ import {
   getPreviousTabbable,
   restoreFocusIn,
 } from "ariakit-utils/focus";
-import { queueMicrotask, setRef } from "ariakit-utils/misc";
+import { queueMicrotask } from "ariakit-utils/misc";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap";
 import { PortalContext } from "./portal-context";

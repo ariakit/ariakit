@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForceUpdate } from "ariakit-utils/hooks";
+import { useForceUpdate } from "ariakit-react-utils/hooks";
 
 type OverflowListProps<T> = {
   list: T[];

@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useSafeLayoutEffect } from "ariakit-react-utils/hooks";
-import { WrapElement } from "ariakit-utils/types";
+import { WrapElement } from "ariakit-react-utils/types";
 import { DialogOptions } from "../dialog";
 
 type DialogRef = RefObject<HTMLElement>;
