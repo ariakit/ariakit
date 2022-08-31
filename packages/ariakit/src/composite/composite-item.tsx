@@ -171,6 +171,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     state,
     rowId: rowIdProp,
     preventScrollOnKeyDown = false,
+    moveOnKeyPress = true,
     getItem: getItemProp,
     ...props
   }) => {
@@ -271,6 +272,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const onKeyDownProp = props.onKeyDown;
     const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
+    const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
     const item = useItem(state?.items, id);
     const isGrid = !!item?.rowId;
 
@@ -317,6 +319,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (action) {
         const nextId = action();
         if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
+          if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
           state?.move(nextId);
         }
@@ -429,6 +432,11 @@ export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
      * @default false
      */
     preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+    /**
+     * Whether pressing arrow keys should move the focus to a different item.
+     * @default true
+     */
+    moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   };
 
 export type CompositeItemProps<T extends As = "button"> = Props<
