@@ -2,33 +2,37 @@ import { Searcher, search } from "fast-fuzzy";
 import { NextApiRequest, NextApiResponse } from "next";
 import contents from "../../pages.contents";
 
+const contentsWithoutInstallation = contents.filter(
+  (page) => page.title === "Getting started" || page.section !== "Installation"
+);
+
 const searcherOptions = {
   keySelector: (obj: typeof contents[number]) => [
     obj.title || "",
+    obj.parentSection || "",
     obj.section || "",
     obj.content || "",
     obj.category || "",
-    [obj.title, obj.section, obj.category].join(" "),
+    [obj.title, obj.parentSection, obj.section, obj.category].join(" "),
   ],
   useSellers: true,
   useDamerau: true,
   returnMatchData: true,
 } as const;
 
-const searcher = new Searcher(contents, searcherOptions);
+const searcher = new Searcher(contentsWithoutInstallation, searcherOptions);
 const searchers: Record<string, typeof searcher> = {};
 
-const categories = contents.reduce<Record<string, typeof contents>>(
-  (acc, curr) => {
-    const category = curr.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category]?.push(curr);
-    return acc;
-  },
-  {}
-);
+const categories = contentsWithoutInstallation.reduce<
+  Record<string, typeof contents>
+>((acc, curr) => {
+  const category = curr.category;
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category]?.push(curr);
+  return acc;
+}, {});
 
 const entries = Object.entries(categories);
 
@@ -37,7 +41,7 @@ for (const [category, contents] of entries) {
 }
 
 function removeConnectors(string: string) {
-  return string.replace(/\b(a|an|and|the)\b/gi, "$3");
+  return string.replace(/\b(a|an|and|the|on|in|at|to)\b/gi, "$3");
 }
 
 function getKeyFromOriginal(item: typeof contents[number], original: string) {
@@ -61,9 +65,13 @@ function truncate(
   const initial =
     minStart === 0
       ? string
-      : string.substring(firstEmptyIndex === -1 ? 0 : firstEmptyIndex + 1);
-  const lastEmptyIndex = initial.lastIndexOf(" ", maxLength - suffix.length);
-  const final = initial.substring(0, lastEmptyIndex);
+      : string.slice(firstEmptyIndex === -1 ? 0 : firstEmptyIndex + 1);
+  const minEnd = Math.min(initial.length, maxLength - suffix.length);
+  const lastEmptyIndex = initial.indexOf(" ", minEnd);
+  if (lastEmptyIndex === -1) {
+    return initial + suffix;
+  }
+  const final = initial.slice(0, lastEmptyIndex);
   return final + suffix;
 }
 
@@ -78,35 +86,43 @@ export default async function handler(
     ? req.query.category[0] || null
     : req.query.category || null;
 
-  res.setHeader(
-    "cache-control",
-    "public, s-maxage=1200, stale-while-revalidate=600"
-  );
-
-  if (!query) {
-    return res.status(400).json([]);
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader(
+      "cache-control",
+      "public, s-maxage=1200, stale-while-revalidate=600"
+    );
   }
 
-  const searchTerm = removeConnectors(query);
+  if (!query) {
+    return res.status(200).json([]);
+  }
+
+  const searchTerm = query;
   const results =
     category && Object.prototype.hasOwnProperty.call(searchers, category)
       ? searchers[category]!.search(searchTerm)
       : searcher.search(searchTerm);
   const items = results.map((result) => {
-    const { item, original, match } = result;
+    const { item, original, match, score } = result;
     const key = getKeyFromOriginal(item, original);
-    const maxContentLength = 60;
+    const maxContentLength = 90;
     const content =
       key !== "content"
         ? truncate(item.content, 0, maxContentLength)
         : truncate(
             item.content,
-            Math.max(0, match.index - (maxContentLength + match.length) / 2),
+            Math.max(0, match.index - (maxContentLength - match.length) / 2),
             maxContentLength
           );
-    const value = [item.title, item.section, item.category, content].join(" ");
-    const words = value.split(/\p{Punctuation}*\s/u);
-    const terms = searchTerm.split(" ");
+    const value = [
+      item.title,
+      item.parentSection,
+      item.section,
+      item.category,
+      content,
+    ].join(" ");
+    const words = removeConnectors(value).split(/\p{P}*\s\p{P}*/u);
+    const terms = removeConnectors(searchTerm).split(" ");
     const keywords = terms
       .map((term) => search(term, words, { threshold: 0.8 }))
       .flat();
@@ -114,8 +130,9 @@ export default async function handler(
       ...item,
       content,
       key,
+      score,
       keywords: keywords.slice(0, 3),
     };
   });
-  res.status(200).json(items);
+  res.status(200).json(items.slice(0, 15));
 }
