@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { WrapElement } from "ariakit-utils/types";
 import { DialogOptions } from "../dialog";
 

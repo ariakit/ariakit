@@ -42,7 +42,8 @@
   ],
   "dependencies": {
     "@floating-ui/dom": "^1.0.0",
-    "ariakit-utils": "0.17.0-next.26"
+    "ariakit-react-utils": "0.0.1-next.0",
+    "ariakit-utils": "0.18.0-next.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

@@ -14,7 +14,7 @@ import {
   useEvent,
   useForceUpdate,
   useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 import { flushSync } from "react-dom";
 import {

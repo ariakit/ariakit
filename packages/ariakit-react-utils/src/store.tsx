@@ -8,17 +8,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { toArray } from "./array";
+import { toArray } from "ariakit-utils/array";
+import { shallowEqual } from "ariakit-utils/misc";
+import { BivariantCallback } from "ariakit-utils/types";
 import {
   useInitialValue,
   useLazyValue,
   useSafeLayoutEffect,
   useWrapElement,
 } from "./hooks";
-import { shallowEqual } from "./misc";
 import { createComponent } from "./system";
-import { BivariantCallback, Options, Props, WrapElement } from "./types";
-
+import { Options, Props, WrapElement } from "./types";
 const GET_STATE = Symbol("getState");
 const SUBSCRIBE = Symbol("subscribe");
 const TIMESTAMP = Symbol("timestamp");

@@ -2,8 +2,8 @@ import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { PopoverArrowOptions, usePopoverArrow } from "../popover/popover-arrow";
 import { HovercardState } from "./hovercard-state";
 

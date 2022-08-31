@@ -1,5 +1,5 @@
 import { ElementType, ReactElement, forwardRef } from "react";
-import { hasOwnProperty } from "./misc";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import {
   Component,
   HTMLProps,

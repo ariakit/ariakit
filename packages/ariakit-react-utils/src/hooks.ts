@@ -16,10 +16,12 @@ import {
   useState,
 } from "react";
 import * as React from "react";
-import { canUseDOM } from "./dom";
-import { addGlobalEventListener } from "./events";
-import { applyState, setRef } from "./misc";
-import { AnyFunction, SetState, WrapElement } from "./types";
+import { canUseDOM } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
+import { applyState } from "ariakit-utils/misc";
+import { AnyFunction, SetState } from "ariakit-utils/types";
+import { setRef } from "./misc";
+import { WrapElement } from "./types";
 
 // @ts-ignore Access React v18 hooks using string concatenation in order to
 // prevent Webpack from inferring that they are not present in React v17. For

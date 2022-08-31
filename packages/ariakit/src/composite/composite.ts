@@ -9,6 +9,20 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  useBooleanEvent,
+  useEvent,
+  useForkRef,
+  useLiveRef,
+  useSafeLayoutEffect,
+} from "ariakit-react-utils/hooks";
+import { useStoreProvider } from "ariakit-react-utils/store";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import { getActiveElement, isTextField } from "ariakit-utils/dom";
 import {
@@ -18,21 +32,7 @@ import {
   isSelfTarget,
 } from "ariakit-utils/events";
 import { focusIntoView, hasFocus } from "ariakit-utils/focus";
-import {
-  useBooleanEvent,
-  useEvent,
-  useForkRef,
-  useLiveRef,
-  useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
-import { useStoreProvider } from "ariakit-utils/store";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,

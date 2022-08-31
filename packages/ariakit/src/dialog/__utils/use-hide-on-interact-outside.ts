@@ -1,7 +1,7 @@
 import { RefObject, useEffect } from "react";
+import { useEvent, useLiveRef } from "ariakit-react-utils/hooks";
 import { contains, getDocument } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
-import { useEvent, useLiveRef } from "ariakit-utils/hooks";
 import { DialogOptions } from "../dialog";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref";
 

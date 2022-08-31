@@ -6,6 +6,10 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { useEvent, useForkRef } from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { isButton, isTextField } from "ariakit-utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
@@ -13,11 +17,7 @@ import {
   getFirstTabbableIn,
   restoreFocusIn,
 } from "ariakit-utils/focus";
-import { useEvent, useForkRef } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
 import { CompositeContext, selectTextField } from "./__utils";
 import { CompositeState } from "./composite-state";
 

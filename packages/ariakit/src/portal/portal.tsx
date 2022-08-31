@@ -6,6 +6,17 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  useForkRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "ariakit-react-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { getDocument } from "ariakit-utils/dom";
 import { isFocusEventOutside } from "ariakit-utils/events";
 import {
@@ -14,18 +25,7 @@ import {
   getPreviousTabbable,
   restoreFocusIn,
 } from "ariakit-utils/focus";
-import {
-  useForkRef,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "ariakit-utils/hooks";
 import { queueMicrotask, setRef } from "ariakit-utils/misc";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap";
 import { PortalContext } from "./portal-context";

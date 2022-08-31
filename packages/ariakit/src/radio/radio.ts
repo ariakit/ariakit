@@ -12,9 +12,9 @@ import {
   useId,
   useLiveRef,
   useTagName,
-} from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
 import { As, BivariantCallback, Props } from "ariakit-utils/types";
 import {
   CompositeItemOptions,

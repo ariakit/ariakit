@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useControlledState } from "ariakit-react-utils/hooks";
 import { addItemToArray } from "ariakit-utils/array";
 import { getDocument } from "ariakit-utils/dom";
-import { useControlledState } from "ariakit-utils/hooks";
 import { BivariantCallback, SetState } from "ariakit-utils/types";
 import { Item } from "./__utils";
 

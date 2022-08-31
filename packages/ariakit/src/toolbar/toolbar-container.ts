@@ -1,6 +1,6 @@
-import { createMemoComponent } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { createMemoComponent } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import {
   CompositeContainerOptions,
   useCompositeContainer,

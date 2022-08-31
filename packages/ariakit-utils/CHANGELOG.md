@@ -1,5 +1,11 @@
 # ariakit-utils
 
+## 0.18.0-next.0
+
+### Minor Changes
+
+- Move React specific utilities into `ariakit-react-utils`
+
 ## 0.17.0-next.26
 
 ### Patch Changes

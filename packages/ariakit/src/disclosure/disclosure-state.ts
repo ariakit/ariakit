@@ -5,7 +5,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { useControlledState, usePreviousValue } from "ariakit-utils/hooks";
+import {
+  useControlledState,
+  usePreviousValue,
+} from "ariakit-react-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 
 /**
