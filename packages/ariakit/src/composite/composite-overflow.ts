@@ -109,6 +109,10 @@ export const CompositeOverflow = createComponent<CompositeOverflowOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeOverflow.displayName = "CompositeOverflow";
+}
+
 export type CompositeOverflowOptions<T extends As = "div"> = Omit<
   PopoverOptions<T>,
   "state"

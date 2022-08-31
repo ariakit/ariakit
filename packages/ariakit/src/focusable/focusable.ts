@@ -433,6 +433,10 @@ export const Focusable = createComponent<FocusableOptions>((props) => {
   return createElement("div", props);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Focusable.displayName = "Focusable";
+}
+
 export type FocusableOptions<T extends As = "div"> = Options<T> & {
   /**
    * Determines whether the focusable element is disabled. If the focusable

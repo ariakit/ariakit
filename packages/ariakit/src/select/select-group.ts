@@ -54,6 +54,10 @@ export const SelectGroup = createComponent<SelectGroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectGroup.displayName = "SelectGroup";
+}
+
 export type SelectGroupOptions<T extends As = "div"> = Omit<
   CompositeGroupOptions<T>,
   "state"

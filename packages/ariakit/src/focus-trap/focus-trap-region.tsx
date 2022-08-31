@@ -89,6 +89,10 @@ export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  FocusTrapRegion.displayName = "FocusTrapRegion";
+}
+
 export type FocusTrapRegionOptions<T extends As = "div"> = Options<T> & {
   /**
    * If true, it will trap the focus in the region.

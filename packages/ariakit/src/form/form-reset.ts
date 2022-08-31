@@ -51,8 +51,12 @@ export const useFormReset = createHook<FormResetOptions>(
  */
 export const FormReset = createComponent<FormResetOptions>((props) => {
   const htmlProps = useFormReset(props);
-  return createElement(`button`, htmlProps);
+  return createElement("button", htmlProps);
 });
+
+if (process.env.NODE_ENV !== "production") {
+  FormReset.displayName = "FormReset";
+}
 
 export type FormResetOptions<T extends As = "button"> = ButtonOptions<T> & {
   /**

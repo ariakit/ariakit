@@ -1,4 +1,5 @@
 // @ts-check
+const fs = require("fs");
 const path = require("path");
 const { uniq } = require("lodash");
 const {
@@ -12,19 +13,11 @@ const {
   getFiles,
   getPageName,
   getReadmePathFromIndex,
+  getPageIndexPath,
+  getPageContentsPath,
 } = require("./utils");
 
-/**
- * @typedef Page
- * @property {string} name
- * @property {string} sourceContext
- * @property {RegExp} sourceRegExp
- * @property {string} componentPath
- * @property {string} [buildDir]
- * @property {string} [pagesDir]
- */
-
-/** @type {Page[]} */
+/** @type {import("./types").Pages} */
 const pages = require(path.join(process.cwd(), "pages.config.js"));
 
 /**
@@ -49,35 +42,53 @@ function filterOutIndexFilesWithReadme(file, index, array) {
   );
 }
 
-pages.forEach(async (page) => {
+// Reset index/contents paths
+for (const page of pages) {
   const buildDir = getBuildDir(page.buildDir);
-  const pagesDir = getPagesDir(page.pagesDir);
-  const entryPath = getEntryPath(page.name, buildDir);
+  const indexPath = getPageIndexPath(buildDir);
+  const contentsPath = getPageContentsPath(buildDir);
+  if (fs.existsSync(indexPath)) {
+    fs.rmSync(indexPath);
+  }
+  if (fs.existsSync(contentsPath)) {
+    fs.rmSync(contentsPath);
+  }
+}
 
-  resetBuildDir(page.name, buildDir, entryPath);
+async function run() {
+  for (const page of pages) {
+    const buildDir = getBuildDir(page.buildDir);
+    const pagesDir = getPagesDir(page.pagesDir);
+    const entryPath = getEntryPath(page.name, buildDir);
 
-  const files = getFiles(page.sourceContext, page.sourceRegExp).filter(
-    filterOutIndexFilesWithReadme
-  );
+    resetBuildDir(page.name, buildDir, entryPath);
 
-  const duplicates = getDuplicates(files.map(getPageName));
-
-  if (duplicates.length) {
-    const names = duplicates.join(", ");
-    throw new Error(
-      `Duplicate page names found: ${names}. Please make sure that all page names are unique.`
+    const files = getFiles(page.sourceContext, page.sourceRegExp).filter(
+      filterOutIndexFilesWithReadme
     );
-  }
 
-  for await (const filename of files) {
-    const dest = path.join(buildDir, page.name);
-    await writePage({
-      filename,
-      dest,
-      componentPath: page.componentPath,
-    });
-  }
+    const duplicates = getDuplicates(files.map(getPageName));
 
-  writeEntryFile(page.sourceContext, page.sourceRegExp, entryPath);
-  writeSymlinks(page.name, buildDir, pagesDir);
-});
+    if (duplicates.length) {
+      const names = duplicates.join(", ");
+      throw new Error(
+        `Duplicate page names found: ${names}. Please make sure that all page names are unique.`
+      );
+    }
+
+    for (const filename of files) {
+      await writePage({
+        filename,
+        buildDir,
+        name: page.name,
+        componentPath: page.componentPath,
+        getGroup: page.getGroup,
+      });
+    }
+
+    writeEntryFile(page.sourceContext, page.sourceRegExp, entryPath);
+    writeSymlinks(page.name, buildDir, pagesDir);
+  }
+}
+
+run();

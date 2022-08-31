@@ -54,6 +54,10 @@ export const ComboboxGroup = createComponent<ComboboxGroupOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxGroup.displayName = "ComboboxGroup";
+}
+
 export type ComboboxGroupOptions<T extends As = "div"> = Omit<
   CompositeGroupOptions<T>,
   "state"

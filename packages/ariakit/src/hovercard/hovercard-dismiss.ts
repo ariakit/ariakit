@@ -48,6 +48,10 @@ export const HovercardDismiss = createComponent<HovercardDismissOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardDismiss.displayName = "HovercardDismiss";
+}
+
 export type HovercardDismissOptions<T extends As = "button"> = Omit<
   PopoverDismissOptions<T>,
   "state"

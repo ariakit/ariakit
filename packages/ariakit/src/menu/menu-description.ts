@@ -50,6 +50,10 @@ export const MenuDescription = createComponent<MenuDescriptionOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  MenuDescription.displayName = "MenuDescription";
+}
+
 export type MenuDescriptionOptions<T extends As = "p"> = Omit<
   HovercardDescriptionOptions<T>,
   "state"

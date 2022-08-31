@@ -58,6 +58,10 @@ export const FormGroupLabel = createComponent<FormGroupLabelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  FormGroupLabel.displayName = "FormGroupLabel";
+}
+
 export type FormGroupLabelOptions<T extends As = "div"> =
   GroupLabelOptions<T> & {
     /**

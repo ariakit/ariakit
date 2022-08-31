@@ -55,6 +55,10 @@ export const FormRadioGroup = createComponent<FormRadioGroupOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  FormRadioGroup.displayName = "FormRadioGroup";
+}
+
 export type FormRadioGroupOptions<T extends As = "div"> = FormGroupOptions<T>;
 
 export type FormRadioGroupProps<T extends As = "div"> = Props<

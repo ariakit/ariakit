@@ -52,6 +52,10 @@ export const MenuSeparator = createComponent<MenuSeparatorOptions>((props) => {
   return createElement("hr", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuSeparator.displayName = "MenuSeparator";
+}
+
 export type MenuSeparatorOptions<T extends As = "hr"> = Omit<
   CompositeSeparatorOptions<T>,
   "state"

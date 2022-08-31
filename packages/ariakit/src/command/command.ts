@@ -163,6 +163,10 @@ export const Command = createComponent<CommandOptions>((props) => {
   return createElement("button", props);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Command.displayName = "Command";
+}
+
 export type CommandOptions<T extends As = "button"> = FocusableOptions<T> & {
   /**
    * If true, pressing the enter key will trigger a click on the button.

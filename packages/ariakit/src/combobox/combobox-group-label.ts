@@ -55,6 +55,10 @@ export const ComboboxGroupLabel = createComponent<ComboboxGroupLabelOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxGroupLabel.displayName = "ComboboxGroupLabel";
+}
+
 export type ComboboxGroupLabelOptions<T extends As = "div"> = Omit<
   CompositeGroupLabelOptions<T>,
   "state"

@@ -86,6 +86,10 @@ export const FormCheckbox = createMemoComponent<FormCheckboxOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  FormCheckbox.displayName = "FormCheckbox";
+}
+
 export type FormCheckboxOptions<T extends As = "input"> = FormFieldOptions<T> &
   Omit<CheckboxOptions<T>, "state">;
 

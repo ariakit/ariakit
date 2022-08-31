@@ -1,5 +1,13 @@
 # ariakit-test
 
+## 0.17.0-next.30
+
+### Patch Changes
+
+- Added support for email inputs on `type`. ([#1766](https://github.com/ariakit/ariakit/pull/1766))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.26`.
+
 ## 0.17.0-next.29
 
 ### Patch Changes

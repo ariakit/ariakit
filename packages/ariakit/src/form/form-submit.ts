@@ -54,6 +54,10 @@ export const FormSubmit = createComponent<FormSubmitOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  FormSubmit.displayName = "FormSubmit";
+}
+
 export type FormSubmitOptions<T extends As = "button"> = ButtonOptions<T> & {
   /**
    * Object returned by the `useFormState` hook. If not provided, the parent

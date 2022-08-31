@@ -136,6 +136,10 @@ export const Popover = createComponent<PopoverOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Popover.displayName = "Popover";
+}
+
 export type PopoverOptions<T extends As = "div"> = Omit<
   DialogOptions<T>,
   "state"

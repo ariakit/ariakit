@@ -46,6 +46,10 @@ export const MenuHeading = createComponent<MenuHeadingOptions>((props) => {
   return createElement("h1", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MenuHeading.displayName = "MenuHeading";
+}
+
 export type MenuHeadingOptions<T extends As = "h1"> = Omit<
   HovercardHeadingOptions<T>,
   "state"

@@ -43,6 +43,10 @@ export const ToolbarItem = createMemoComponent<ToolbarItemOptions>((props) => {
   return createElement("button", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  ToolbarItem.displayName = "ToolbarItem";
+}
+
 export type ToolbarItemOptions<T extends As = "button"> = Omit<
   CompositeItemOptions<T>,
   "state"

@@ -406,6 +406,10 @@ export const CompositeItem = createMemoComponent<CompositeItemOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  CompositeItem.displayName = "CompositeItem";
+}
+
 export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
   Omit<CollectionItemOptions<T>, "state"> & {
     /**

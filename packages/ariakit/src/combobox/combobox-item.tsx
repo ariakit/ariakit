@@ -166,6 +166,10 @@ export const ComboboxItem = createMemoComponent<ComboboxItemOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  ComboboxItem.displayName = "ComboboxItem";
+}
+
 export type ComboboxItemOptions<T extends As = "div"> = Omit<
   CompositeItemOptions<T>,
   "state"

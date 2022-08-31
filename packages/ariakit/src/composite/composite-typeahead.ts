@@ -1,8 +1,9 @@
-import { KeyboardEvent, useContext, useRef } from "react";
+import { KeyboardEvent, useRef } from "react";
 import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
 import { useEvent } from "ariakit-utils/hooks";
 import { normalizeString } from "ariakit-utils/misc";
+import { useStore } from "ariakit-utils/store";
 import {
   createComponent,
   createElement,
@@ -90,8 +91,7 @@ function getSameInitialItems(
  */
 export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
   ({ state, typeahead = true, ...props }) => {
-    const context = useContext(CompositeContext);
-    state = state || context;
+    state = useStore(state || CompositeContext, ["items", "activeId", "move"]);
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const cleanupTimeoutRef = useRef(0);
 
@@ -159,6 +159,10 @@ export const CompositeTypeahead = createComponent<CompositeTypeaheadOptions>(
     return createElement("div", htmlProps);
   }
 );
+
+if (process.env.NODE_ENV !== "production") {
+  CompositeTypeahead.displayName = "CompositeTypeahead";
+}
 
 export type CompositeTypeaheadOptions<T extends As = "div"> = Options<T> & {
   /**

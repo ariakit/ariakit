@@ -161,6 +161,10 @@ export const HovercardDisclosure = createComponent<HovercardDisclosureOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  HovercardDisclosure.displayName = "HovercardDisclosure";
+}
+
 export type HovercardDisclosureOptions<T extends As = "button"> = Omit<
   DialogDisclosureOptions<T>,
   "state"

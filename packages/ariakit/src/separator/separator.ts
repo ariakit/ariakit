@@ -39,6 +39,10 @@ export const Separator = createComponent<SeparatorOptions>((props) => {
   return createElement("hr", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Separator.displayName = "Separator";
+}
+
 export type SeparatorOptions<T extends As = "hr"> = Options<T> & {
   /**
    * The orientation of the separator.

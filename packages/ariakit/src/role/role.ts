@@ -35,6 +35,10 @@ export const Role = createComponent<RoleOptions>((props) => {
   return createElement("div", props);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  Role.displayName = "Role";
+}
+
 export type RoleOptions<T extends As = "div"> = Options<T>;
 
 export type RoleProps<T extends As = "div"> = Props<RoleOptions<T>>;

@@ -148,6 +148,10 @@ export const MyComponent = createComponent<MyComponentOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  MyComponent.displayName = "MyComponent";
+}
+
 export type MyComponentOptions<T extends As = "div"> = Options<T> & {
   /**
    * Description for custom prop.

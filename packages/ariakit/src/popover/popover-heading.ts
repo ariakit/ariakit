@@ -48,6 +48,10 @@ export const PopoverHeading = createComponent<PopoverHeadingOptions>(
   }
 );
 
+if (process.env.NODE_ENV !== "production") {
+  PopoverHeading.displayName = "PopoverHeading";
+}
+
 export type PopoverHeadingOptions<T extends As = "h1"> = Omit<
   DialogHeadingOptions<T>,
   "state"

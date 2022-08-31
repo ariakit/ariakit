@@ -65,6 +65,10 @@ export const SelectRow = createComponent<SelectRowOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectRow.displayName = "SelectRow";
+}
+
 export type SelectRowOptions<T extends As = "div"> = Omit<
   CompositeRowOptions<T>,
   "state"

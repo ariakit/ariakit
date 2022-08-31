@@ -134,6 +134,10 @@ export const SelectList = createComponent<SelectListOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
+if (process.env.NODE_ENV !== "production") {
+  SelectList.displayName = "SelectList";
+}
+
 export type SelectListOptions<T extends As = "div"> = Omit<
   CompositeOptions<T>,
   "state"
