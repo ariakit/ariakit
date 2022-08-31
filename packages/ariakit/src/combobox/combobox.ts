@@ -244,16 +244,19 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
+      const { target } = event;
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
       if (isInputEvent(nativeEvent) && inline) {
-        setCanInline(nativeEvent.inputType === "insertText");
+        const textInserted = nativeEvent.inputType === "insertText";
+        const caretAtEnd = target.selectionStart === target.value.length;
+        setCanInline(textInserted && caretAtEnd);
       }
       if (showOnChangeProp(event)) {
         state.show();
       }
       if (setValueOnChangeProp(event)) {
-        state.setValue(event.target.value);
+        state.setValue(target.value);
       }
       if (inline && autoSelect) {
         // The state.setValue(event.target.value) above may not trigger a state

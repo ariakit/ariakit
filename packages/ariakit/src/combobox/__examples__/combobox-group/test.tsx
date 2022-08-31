@@ -72,6 +72,24 @@ test("auto select with inline autocomplete on typing + arrow down", async () => 
   expect(getCombobox()).toHaveValue("Avocado");
   expect(getOption("Avocado")).toHaveFocus();
   expect(getSelectionValue(getCombobox())).toBe("");
+  for (const _ of "Avocado") {
+    await press.ArrowLeft(null, { shiftKey: true });
+  }
+  await type("p");
+  expect(getCombobox()).toHaveValue("papaya");
+  expect(getOption("Papaya")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("apaya");
+  await type("\b");
+  await press.ArrowLeft();
+  await type("a");
+  expect(getCombobox()).toHaveValue("ap");
+  expect(getOption("Apple")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("");
+  await press.ArrowRight();
+  await type("p");
+  expect(getCombobox()).toHaveValue("apple");
+  expect(getOption("Apple")).toHaveFocus();
+  expect(getSelectionValue(getCombobox())).toBe("le");
 });
 
 test("blur input after autocomplete", async () => {
