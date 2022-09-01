@@ -33,6 +33,7 @@ import {
 } from "ariakit-utils/events";
 import { focusIntoView, hasFocus } from "ariakit-utils/focus";
 import { queueMicrotask } from "ariakit-utils/misc";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
