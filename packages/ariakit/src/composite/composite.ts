@@ -53,11 +53,21 @@ function isPrintableKey(event: ReactKeyboardEvent): boolean {
   return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
 }
 
+function isModifierKey(event: ReactKeyboardEvent) {
+  return (
+    event.key === "Shift" ||
+    event.key === "Control" ||
+    event.key === "Alt" ||
+    event.key === "Meta"
+  );
+}
+
 function canProxyKeyboardEvent(
   event: ReactKeyboardEvent,
   state: CompositeState
 ) {
   if (!isSelfTarget(event)) return false;
+  if (isModifierKey(event)) return false;
   const target = event.target as Element;
   if (!target) return true;
   if (isTextField(target)) {
