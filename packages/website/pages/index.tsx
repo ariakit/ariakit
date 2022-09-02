@@ -36,6 +36,7 @@ const links: Array<{ href: string; label: string }> = [
   },
   { href: "/examples/menu-context-menu", label: "Context menu" },
   { href: "/examples/dialog", label: "Dialog" },
+  { href: "/examples/dialog-backdrop", label: "Dialog backdrop" },
   { href: "/examples/dialog-animated", label: "Dialog animated" },
   { href: "/examples/dialog-details", label: "Dialog details" },
   { href: "/examples/dialog-react-router", label: "Dialog react-router" },
