@@ -1,5 +1,23 @@
 # ariakit
 
+## 2.0.0-next.41
+
+### Minor Changes
+
+- Improved `Combobox` with `autoSelect` behavior. ([#1821](https://github.com/ariakit/ariakit/pull/1821))
+
+  Before, when `autoSelect` was enabled, the first item would be selected only on text insertion. That is, deleting or pasting text was ignored. Now, the first item is selected on any change to the input value, including programmatic changes.
+
+- Updated the behavior of `autoComplete="inline"` and `autoComplete="both"` on `Combobox` so the completion string is only appended and highlighted when the caret is at the end of the input. ([#1823](https://github.com/ariakit/ariakit/pull/1823))
+
+- Added `moveOnKeyPress` prop to `CompositeItem`. ([#1821](https://github.com/ariakit/ariakit/pull/1821))
+
+- Added `moveOnKeyPress` prop to `Composite`. ([#1821](https://github.com/ariakit/ariakit/pull/1821))
+
+### Patch Changes
+
+- Fixed scroll jump on `Combobox` when pressing modifier keys. ([#1826](https://github.com/ariakit/ariakit/pull/1826))
+
 ## 2.0.0-next.40
 
 ### Minor Changes
