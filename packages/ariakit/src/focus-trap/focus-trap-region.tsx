@@ -1,12 +1,12 @@
 import { useRef } from "react";
-import { getAllTabbableIn } from "ariakit-utils/focus";
-import { useForkRef, useWrapElement } from "ariakit-utils/hooks";
+import { useForkRef, useWrapElement } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { getAllTabbableIn } from "ariakit-utils/focus";
 import { FocusTrap } from "./focus-trap";
 
 /**

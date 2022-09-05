@@ -1,17 +1,18 @@
 import { MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
-import { addGlobalEventListener } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useIsMouseMoving,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { addGlobalEventListener } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable";
 import { HovercardState } from "./hovercard-state";
 

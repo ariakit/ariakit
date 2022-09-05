@@ -1,11 +1,11 @@
 import { useContext, useMemo, useRef } from "react";
-import { useForkRef, useTagName } from "ariakit-utils/hooks";
+import { useForkRef, useTagName } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { HeadingContext, HeadingLevels } from "./__utils";
 
 type HeadingElements = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";

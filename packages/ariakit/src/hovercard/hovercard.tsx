@@ -7,9 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { contains } from "ariakit-utils/dom";
-import { addGlobalEventListener } from "ariakit-utils/events";
-import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useBooleanEvent,
   useEvent,
@@ -18,14 +15,18 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { chain } from "ariakit-utils/misc";
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { contains } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
+import { hasFocusWithin } from "ariakit-utils/focus";
+import { chain } from "ariakit-utils/misc";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import {
   Point,

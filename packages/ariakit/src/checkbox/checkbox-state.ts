@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useControlledState } from "ariakit-utils/hooks";
+import { useControlledState } from "ariakit-react-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 
 type Value = boolean | string | number | Array<string | number>;

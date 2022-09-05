@@ -1,0 +1,40 @@
+{
+  "name": "ariakit-react-utils",
+  "version": "0.17.0-next.26",
+  "description": "Ariakit React utils",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://ariakit.org",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-react-utils.min.js",
+  "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-react-utils"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "keywords": [
+    "ariakit",
+    "react",
+    "utils"
+  ],
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "@types/react": "^17.0.0 || ^18.0.0"
+  }
+}

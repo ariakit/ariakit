@@ -1,11 +1,11 @@
 import { useContext, useMemo, useRef } from "react";
-import { useForkRef, useId, useWrapElement } from "ariakit-utils/hooks";
+import { useForkRef, useId, useWrapElement } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { CompositeContext, CompositeRowContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 

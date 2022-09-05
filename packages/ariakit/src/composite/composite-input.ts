@@ -1,16 +1,16 @@
 import { FocusEvent, KeyboardEvent } from "react";
+import { useEvent } from "ariakit-react-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import {
   getDocument,
   getTextboxSelection,
   isTextField,
 } from "ariakit-utils/dom";
-import { useEvent } from "ariakit-utils/hooks";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
 import { selectTextField } from "./__utils";
 import { CompositeState } from "./composite-state";
 

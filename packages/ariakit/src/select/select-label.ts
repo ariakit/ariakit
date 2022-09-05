@@ -1,9 +1,9 @@
 import { MouseEvent } from "react";
-import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
+import { useEvent, useForkRef, useId } from "ariakit-react-utils/hooks";
+import { createMemoComponent } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { queueMicrotask } from "ariakit-utils/misc";
-import { createMemoComponent } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
 import { SelectState } from "./select-state";
 
 /**

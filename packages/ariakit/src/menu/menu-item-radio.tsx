@@ -1,8 +1,8 @@
 import { ChangeEvent, useCallback } from "react";
-import { useWrapElement } from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { useWrapElement } from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { RadioOptions, useRadio } from "../radio/radio";
 import { MenuContext, MenuItemCheckedContext } from "./__utils";
 import { MenuItemOptions, useMenuItem } from "./menu-item";

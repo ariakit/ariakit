@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useControlledState } from "ariakit-utils/hooks";
-import { useStorePublisher } from "ariakit-utils/store";
+import { useControlledState } from "ariakit-react-utils/hooks";
+import { useStorePublisher } from "ariakit-react-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CompositeState,

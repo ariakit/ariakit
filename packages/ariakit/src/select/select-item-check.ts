@@ -3,8 +3,8 @@ import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import {
   CheckboxCheckOptions,
   useCheckboxCheck,

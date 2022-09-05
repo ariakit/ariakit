@@ -8,17 +8,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { toArray } from "./array";
+import { toArray } from "ariakit-utils/array";
+import { shallowEqual } from "ariakit-utils/misc";
+import { BivariantCallback } from "ariakit-utils/types";
 import {
   useInitialValue,
   useLazyValue,
   useSafeLayoutEffect,
   useWrapElement,
 } from "./hooks";
-import { shallowEqual } from "./misc";
 import { createComponent } from "./system";
-import { BivariantCallback, Options, Props, WrapElement } from "./types";
-
+import { Options, Props, WrapElement } from "./types";
 const GET_STATE = Symbol("getState");
 const SUBSCRIBE = Symbol("subscribe");
 const TIMESTAMP = Symbol("timestamp");
@@ -121,7 +121,7 @@ export function createStoreContext<T>() {
  * `React.forwardRef` and `React.memo`.
  *
  * @example
- * import { Options, createMemoComponent } from "ariakit-utils/store";
+ * import { Options, createMemoComponent } from "ariakit-react-utils/store";
  *
  * type Props = Options<"div"> & {
  *   state?: { customProp: boolean };
@@ -153,7 +153,7 @@ export function createMemoComponent<O extends Options & { state?: unknown }>(
  * React Context Provider that provides a store context to consumers.
  * @example
  * import * as React from "react";
- * import { useStoreProvider } from "ariakit-utils/store";
+ * import { useStoreProvider } from "ariakit-react-utils/store";
  *
  * const StoreContext = createStoreContext();
  *
@@ -196,7 +196,7 @@ export function useStoreProvider<P, S>(
  * Adds publishing capabilities to state so it can be passed to `useStore` or
  * `useStoreProvider` later.
  * @example
- * import { useStorePublisher } from "ariakit-utils/store";
+ * import { useStorePublisher } from "ariakit-react-utils/store";
  *
  * function useComponentState() {
  *   const state = React.useMemo(() => ({ a: "a" }), []);
@@ -229,7 +229,7 @@ export function useStorePublisher<T>(state: T) {
  * Handles state updates on the state or context state passed as the first
  * argument based on the filter argument.
  * @example
- * import { useStore } from "ariakit-utils/store";
+ * import { useStore } from "ariakit-react-utils/store";
  *
  * const ContextState = createContextState();
  *

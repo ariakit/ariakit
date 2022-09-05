@@ -11,7 +11,7 @@ import {
   useLazyValue,
   useLiveRef,
   useUpdateEffect,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
 import { cx, hasOwnProperty } from "ariakit-utils/misc";
 import {
   CompositeOverflow,
