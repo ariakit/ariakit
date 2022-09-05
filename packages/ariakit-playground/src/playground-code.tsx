@@ -14,11 +14,11 @@ import {
   useEvent,
   useForkRef,
   useWrapElement,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { cx } from "ariakit-utils/misc";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";

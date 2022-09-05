@@ -1,10 +1,10 @@
-import { matches } from "ariakit-utils/dom";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { matches } from "ariakit-utils/dom";
 import { PopoverOptions, usePopover } from "../popover/popover";
 import { ComboboxListOptions, useComboboxList } from "./combobox-list";
 

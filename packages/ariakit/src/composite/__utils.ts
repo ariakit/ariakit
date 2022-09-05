@@ -1,6 +1,6 @@
 import { RefObject, createContext } from "react";
+import { createStoreContext } from "ariakit-react-utils/store";
 import { getDocument, isTextField } from "ariakit-utils/dom";
-import { createStoreContext } from "ariakit-utils/store";
 import { CompositeState } from "./composite-state";
 
 const NULL_ITEM = { id: null, ref: { current: null } };

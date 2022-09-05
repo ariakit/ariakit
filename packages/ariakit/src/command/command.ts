@@ -1,19 +1,19 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEvent, useForkRef, useTagName } from "ariakit-react-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { isButton, isTextField } from "ariakit-utils/dom";
 import {
   fireClickEvent,
   isSelfTarget,
   queueBeforeEvent,
 } from "ariakit-utils/events";
-import { useEvent, useForkRef, useTagName } from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { isFirefox } from "ariakit-utils/platform";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable";
 
 function isNativeClick(event: KeyboardEvent) {

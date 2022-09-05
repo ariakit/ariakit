@@ -1,11 +1,11 @@
 import { FocusEvent, MouseEvent } from "react";
-import { useEvent } from "ariakit-utils/hooks";
+import { useEvent } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import {
   PopoverAnchorOptions,
   usePopoverAnchor,

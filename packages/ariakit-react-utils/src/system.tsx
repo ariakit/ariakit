@@ -1,5 +1,5 @@
 import { ElementType, ReactElement, forwardRef } from "react";
-import { hasOwnProperty } from "./misc";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import {
   Component,
   HTMLProps,
@@ -17,7 +17,7 @@ function isRenderProp(children: any): children is RenderProp {
  * Creates a type-safe component with the `as` prop and `React.forwardRef`.
  *
  * @example
- * import { createComponent } from "ariakit-utils/system";
+ * import { createComponent } from "ariakit-react-utils/system";
  *
  * type Props = {
  *   as?: "div";
@@ -43,7 +43,7 @@ export function createComponent<O extends Options>(
  * function (render props) and a `wrapElement` function.
  *
  * @example
- * import { createElement } from "ariakit-utils/system";
+ * import { createElement } from "ariakit-react-utils/system";
  *
  * function Component() {
  *   const props = {
@@ -78,7 +78,7 @@ export function createElement(Type: ElementType, props: HTMLProps<Options>) {
  * passed to a React element.
  *
  * @example
- * import { Options, createHook } from "ariakit-utils/system";
+ * import { Options, createHook } from "ariakit-react-utils/system";
  *
  * type Props = Options<"div"> & {
  *   customProp?: boolean;

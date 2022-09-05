@@ -1,8 +1,8 @@
 import { useCallback, useRef } from "react";
-import { useForkRef, useId } from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+import { useForkRef, useId } from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,

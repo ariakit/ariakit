@@ -1,14 +1,15 @@
 import { MouseEvent as ReactMouseEvent } from "react";
-import { closest, contains } from "ariakit-utils/dom";
-import { hasFocusWithin } from "ariakit-utils/focus";
 import {
   useBooleanEvent,
   useEvent,
   useIsMouseMoving,
-} from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, BooleanOrCallback, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { closest, contains } from "ariakit-utils/dom";
+import { hasFocusWithin } from "ariakit-utils/focus";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";
 

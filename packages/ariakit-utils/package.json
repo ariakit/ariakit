@@ -30,10 +30,6 @@
   },
   "keywords": [
     "ariakit",
-    "react",
     "utils"
-  ],
-  "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0"
-  }
+  ]
 }

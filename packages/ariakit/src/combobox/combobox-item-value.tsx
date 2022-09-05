@@ -1,12 +1,12 @@
 import { useContext, useMemo } from "react";
-import { normalizeString } from "ariakit-utils/misc";
-import { useStore } from "ariakit-utils/store";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { normalizeString } from "ariakit-utils/misc";
 import { ComboboxContext, ComboboxItemValueContext } from "./__utils";
 import { ComboboxState } from "./combobox-state";
 

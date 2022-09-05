@@ -8,6 +8,18 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  useEvent,
+  useForkRef,
+  useSafeLayoutEffect,
+  useTagName,
+} from "ariakit-react-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { isButton } from "ariakit-utils/dom";
 import {
   addGlobalEventListener,
@@ -17,20 +29,9 @@ import {
   queueBeforeEvent,
 } from "ariakit-utils/events";
 import { focusIfNeeded, hasFocus, isFocusable } from "ariakit-utils/focus";
-import {
-  useEvent,
-  useForkRef,
-  useSafeLayoutEffect,
-  useTagName,
-} from "ariakit-utils/hooks";
 import { queueMicrotask } from "ariakit-utils/misc";
 import { isSafari } from "ariakit-utils/platform";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, BivariantCallback, Options, Props } from "ariakit-utils/types";
+import { BivariantCallback } from "ariakit-utils/types";
 
 const isSafariBrowser = isSafari();
 

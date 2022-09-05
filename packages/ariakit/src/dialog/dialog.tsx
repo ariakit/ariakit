@@ -10,6 +10,21 @@ import {
   useState,
 } from "react";
 import {
+  useBooleanEvent,
+  useForkRef,
+  useId,
+  useLiveRef,
+  usePortalRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "ariakit-react-utils/hooks";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import {
   closest,
   contains,
   getActiveElement,
@@ -22,23 +37,9 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "ariakit-utils/focus";
-import {
-  useBooleanEvent,
-  useForkRef,
-  useId,
-  useLiveRef,
-  usePortalRef,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import { isSafari } from "ariakit-utils/platform";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
