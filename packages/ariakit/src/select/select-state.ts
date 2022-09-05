@@ -1,11 +1,11 @@
 import { RefObject, useEffect, useMemo, useRef } from "react";
-import { toArray } from "ariakit-utils/array";
 import {
   useControlledState,
   useInitialValue,
   useLiveRef,
-} from "ariakit-utils/hooks";
-import { useStorePublisher } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStorePublisher } from "ariakit-react-utils/store";
+import { toArray } from "ariakit-utils/array";
 import { SetState } from "ariakit-utils/types";
 import {
   CompositeState,

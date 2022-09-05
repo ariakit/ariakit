@@ -34,7 +34,6 @@ import {
   scrollPastEnd,
 } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
-import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import {
   useControlledState,
   useEvent,
@@ -43,14 +42,15 @@ import {
   useInitialValue,
   useSafeLayoutEffect,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { useStore } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
 import { CommandOptions, useCommand } from "ariakit/command";
 import { Role, RoleProps } from "ariakit/role";
 import { getExtension } from "./__utils/get-extension";

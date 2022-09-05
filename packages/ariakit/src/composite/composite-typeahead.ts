@@ -1,15 +1,15 @@
 import { KeyboardEvent, useRef } from "react";
-import { isTextField } from "ariakit-utils/dom";
-import { isSelfTarget } from "ariakit-utils/events";
-import { useEvent } from "ariakit-utils/hooks";
-import { normalizeString } from "ariakit-utils/misc";
-import { useStore } from "ariakit-utils/store";
+import { useEvent } from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { isTextField } from "ariakit-utils/dom";
+import { isSelfTarget } from "ariakit-utils/events";
+import { normalizeString } from "ariakit-utils/misc";
 import { CompositeContext, Item, flipItems } from "./__utils";
 import { CompositeState } from "./composite-state";
 

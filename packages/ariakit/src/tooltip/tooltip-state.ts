@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useControlledState } from "ariakit-utils/hooks";
+import { useControlledState } from "ariakit-react-utils/hooks";
 import {
   PopoverState,
   PopoverStateProps,

@@ -1,6 +1,6 @@
 import { ElementType } from "react";
+import { createComponent } from "ariakit-react-utils/system";
 import { cx } from "ariakit-utils/misc";
-import { createComponent } from "ariakit-utils/system";
 import { Button } from "ariakit/button";
 import {
   Tooltip,

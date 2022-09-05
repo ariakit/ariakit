@@ -1,10 +1,10 @@
-import { useWrapElement } from "ariakit-utils/hooks";
+import { useWrapElement } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
 import { ToolbarContext } from "./__utils";
 import { ToolbarState } from "./toolbar-state";

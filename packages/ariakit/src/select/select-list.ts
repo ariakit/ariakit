@@ -1,19 +1,20 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
-import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useId,
   useRefId,
-} from "ariakit-utils/hooks";
-import { useStoreProvider } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStoreProvider } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { isSelfTarget } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { CompositeOptions, useComposite } from "../composite/composite";
 import {
   CompositeTypeaheadOptions,

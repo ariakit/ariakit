@@ -1,7 +1,7 @@
 // Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
 import { RefObject } from "react";
+import { useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { getDocument, getWindow } from "ariakit-utils/dom";
-import { useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { chain } from "ariakit-utils/misc";
 import { isApple, isMac } from "ariakit-utils/platform";
 import { useChampionDialog } from "./use-champion-dialog";
