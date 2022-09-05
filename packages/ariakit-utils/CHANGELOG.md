@@ -92,7 +92,7 @@
 
 - Renamed `useLazyRef` function to `useLazyValue`.
 
-- Added `usePreviousValue` function to `ariakit-react-utils/hooks`. ([#1219](https://github.com/ariakit/ariakit/pull/1219))
+- Added `usePreviousValue` function to `ariakit-utils/hooks`. ([#1219](https://github.com/ariakit/ariakit/pull/1219))
 
 ## 0.17.0-next.15
 
