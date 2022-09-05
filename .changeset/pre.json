@@ -9,5 +9,11 @@
     "ariakit-react-utils": "0.16.0",
     "website": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "combobox-auto-select",
+    "combobox-inline-caret-at-end",
+    "composite-item-move-on-key-press copy",
+    "composite-move-on-key-press",
+    "composite-proxy-event-modifier-keys"
+  ]
 }
