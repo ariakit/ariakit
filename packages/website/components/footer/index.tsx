@@ -1,4 +1,4 @@
-import { useId } from "ariakit-utils/hooks";
+import { useId } from "ariakit-react-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import Link from "next/link";
 import tw from "packages/website/utils/tw";

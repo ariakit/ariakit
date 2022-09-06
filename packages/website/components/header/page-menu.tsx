@@ -13,7 +13,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useEvent, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useEvent, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import {
   Combobox,

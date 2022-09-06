@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
-import { useEvent, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useEvent, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { cx, normalizeString } from "ariakit-utils/misc";
 import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
