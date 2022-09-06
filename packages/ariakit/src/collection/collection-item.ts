@@ -1,12 +1,12 @@
 import { useContext, useRef } from "react";
-import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
-import { useStore } from "ariakit-utils/store";
+import { useForkRef, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { CollectionItemContext, Item } from "./__utils";
 import { CollectionState } from "./collection-state";
 

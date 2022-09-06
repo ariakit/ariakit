@@ -4,10 +4,10 @@ import {
   useDeferredValue,
   usePreviousValue,
   useUpdateLayoutEffect,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
+import { useStorePublisher } from "ariakit-react-utils/store";
 import { normalizeString } from "ariakit-utils/misc";
 import { isSafari, isTouchDevice } from "ariakit-utils/platform";
-import { useStorePublisher } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CompositeState,

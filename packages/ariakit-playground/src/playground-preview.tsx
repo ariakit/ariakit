@@ -12,10 +12,10 @@ import {
   useLiveRef,
   useUpdateEffect,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { PortalContext } from "ariakit/portal";
 import { Role, RoleProps } from "ariakit/role";
 import { compileComponent } from "./__utils/compile-component";

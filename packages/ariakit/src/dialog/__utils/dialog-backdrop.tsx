@@ -1,12 +1,12 @@
 import { KeyboardEvent, MouseEvent, ReactNode, useRef } from "react";
 import { useMemo } from "react";
-import { isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
+import { isSelfTarget } from "ariakit-utils/events";
 import { noop } from "ariakit-utils/misc";
 import { useDisclosureContent } from "../../disclosure/disclosure-content";
 import { DialogProps } from "../dialog";

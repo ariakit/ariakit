@@ -1,10 +1,10 @@
-import { useStore } from "ariakit-utils/store";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { SeparatorOptions, useSeparator } from "../separator/separator";
 import { CompositeContext } from "./__utils";
 import { CompositeState } from "./composite-state";

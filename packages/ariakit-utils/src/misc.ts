@@ -1,5 +1,9 @@
-import { MutableRefObject, ReducerWithoutAction, RefCallback } from "react";
-import { AnyFunction, AnyObject, SetStateAction } from "./types";
+import {
+  AnyFunction,
+  AnyObject,
+  BivariantCallback,
+  SetStateAction,
+} from "./types";
 
 /**
  * Empty function.
@@ -56,26 +60,12 @@ export function applyState<T>(
 
 function isUpdater<T>(
   argument: SetStateAction<T>
-): argument is ReducerWithoutAction<T> {
+): argument is BivariantCallback<(prevState: T) => T> {
   return typeof argument === "function";
 }
 
 function isLazyValue<T>(value: any): value is () => T {
   return typeof value === "function";
-}
-
-/**
- * Sets both a function and object React ref.
- */
-export function setRef<T>(
-  ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
-  value: T
-) {
-  if (typeof ref === "function") {
-    ref(value);
-  } else if (ref) {
-    ref.current = value;
-  }
 }
 
 /**

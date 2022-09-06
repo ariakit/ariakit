@@ -1,29 +1,33 @@
-import {
-  FocusEvent as ReactFocusEvent,
-  MouseEvent as ReactMouseEvent,
-  SyntheticEvent,
-} from "react";
 import { contains } from "./dom";
 import { isApple } from "./platform";
 
 /**
  * Returns `true` if `event` has been fired within a React Portal element.
  */
-export function isPortalEvent(event: SyntheticEvent): boolean {
-  return !contains(event.currentTarget, event.target as Element);
+export function isPortalEvent(
+  event: Pick<Event, "currentTarget" | "target">
+): boolean {
+  return Boolean(
+    event.currentTarget &&
+      !contains(event.currentTarget as Node, event.target as Element)
+  );
 }
 
 /**
  * Returns `true` if `event.target` and `event.currentTarget` are the same.
  */
-export function isSelfTarget(event: SyntheticEvent | Event): boolean {
+export function isSelfTarget(
+  event: Pick<Event, "target" | "currentTarget">
+): boolean {
   return event.target === event.currentTarget;
 }
 
 /**
  * Checks whether the user event is triggering a page navigation in a new tab.
  */
-export function isOpeningInNewTab(event: MouseEvent | ReactMouseEvent) {
+export function isOpeningInNewTab(
+  event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">
+) {
   const element = event.currentTarget as
     | HTMLAnchorElement
     | HTMLButtonElement
@@ -43,7 +47,9 @@ export function isOpeningInNewTab(event: MouseEvent | ReactMouseEvent) {
 /**
  * Checks whether the user event is triggering a download.
  */
-export function isDownloading(event: MouseEvent | ReactMouseEvent) {
+export function isDownloading(
+  event: Pick<MouseEvent, "altKey" | "currentTarget">
+) {
   const element = event.currentTarget as
     | HTMLAnchorElement
     | HTMLButtonElement
@@ -140,7 +146,7 @@ export function fireClickEvent(element: Element, eventInit?: PointerEventInit) {
  * });
  */
 export function isFocusEventOutside(
-  event: ReactFocusEvent | FocusEvent,
+  event: Pick<FocusEvent, "currentTarget" | "relatedTarget">,
   container?: Element | null
 ) {
   const containerElement = container || (event.currentTarget as Element);

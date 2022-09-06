@@ -2,8 +2,8 @@ import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

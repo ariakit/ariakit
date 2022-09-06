@@ -9,8 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
-import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
@@ -18,10 +16,13 @@ import {
   useId,
   useSafeLayoutEffect,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
+import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,

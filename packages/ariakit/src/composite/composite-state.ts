@@ -1,11 +1,11 @@
 import { RefObject, useCallback, useMemo, useRef } from "react";
-import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import {
   useControlledState,
   useInitialValue,
   useLiveRef,
-} from "ariakit-utils/hooks";
-import { useStorePublisher } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStorePublisher } from "ariakit-react-utils/store";
+import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import { SetState } from "ariakit-utils/types";
 import {
   CollectionState,

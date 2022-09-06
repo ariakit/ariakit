@@ -8,22 +8,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { getPopupRole } from "ariakit-utils/dom";
-import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useRefId,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { useStoreProvider } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStoreProvider } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { getPopupRole } from "ariakit-utils/dom";
+import { queueBeforeEvent } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,

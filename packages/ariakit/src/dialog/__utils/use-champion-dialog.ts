@@ -1,6 +1,6 @@
 import { RefObject, useCallback } from "react";
+import { useForceUpdate, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { getDocument } from "ariakit-utils/dom";
-import { useForceUpdate, useSafeLayoutEffect } from "ariakit-utils/hooks";
 import { flushSync } from "react-dom";
 
 /**

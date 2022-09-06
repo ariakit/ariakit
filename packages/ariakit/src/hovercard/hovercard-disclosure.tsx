@@ -4,15 +4,15 @@ import {
   useEffect,
   useState,
 } from "react";
-import { contains } from "ariakit-utils/dom";
-import { addGlobalEventListener } from "ariakit-utils/events";
-import { useEvent, useForkRef } from "ariakit-utils/hooks";
+import { useEvent, useForkRef } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { contains } from "ariakit-utils/dom";
+import { addGlobalEventListener } from "ariakit-utils/events";
 import {
   DialogDisclosureOptions,
   useDialogDisclosure,

@@ -4,13 +4,14 @@ import {
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
-} from "ariakit-utils/hooks";
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import { ButtonOptions, useButton } from "../button/button";
 import { DisclosureState } from "./disclosure-state";
 
