@@ -1,7 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../config/typescript/tsconfig.react.json",
   "compilerOptions": {
     "outDir": "ts"
   },
-  "include": ["src"]
+  "references": [
+    { "path": "../ariakit-utils" },
+    { "path": "../ariakit-test" },
+  ],
+  "include": ["./src"]
 }

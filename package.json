@@ -25,7 +25,7 @@
     "postcoverage": "open-cli coverage/lcov-report/index.html",
     "lint": "eslint . --ext js,ts,tsx",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc -p tsconfig.json --noEmit",
     "build": "lerna exec --scope ariakit* -- npm run build",
     "build-website": "npm run build --prefix packages/website",
     "clean": "npm run clean -ws --if-present",

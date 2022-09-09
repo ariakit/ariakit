@@ -1,13 +1,21 @@
 # Automatically generated
 /aria-types
+/aria-types.d
 /array
+/array.d
 /cjs
 /dom
+/dom.d
 /esm
 /events
+/events.d
 /focus
+/focus.d
 /misc
+/misc.d
 /platform
+/platform.d
 /ts
 /types
+/types.d
 /umd

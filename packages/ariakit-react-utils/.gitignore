@@ -2,9 +2,14 @@
 /cjs
 /esm
 /hooks
+/hooks.d
 /misc
+/misc.d
 /store
+/store.d
 /system
+/system.d
 /ts
 /types
+/types.d
 /umd

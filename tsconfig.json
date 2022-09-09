@@ -1,24 +1,11 @@
 {
-  "extends": "./tsconfig.prod.json",
-  "compilerOptions": {
-    "paths": {
-      "ariakit": ["packages/ariakit/src"],
-      "ariakit/*": ["packages/ariakit/src/*"],
-
-      "ariakit-playground": ["packages/ariakit-playground/src"],
-      "ariakit-playground/*": ["packages/ariakit-playground/src/*"],
-
-      "ariakit-test": ["packages/ariakit-test/src"],
-      "ariakit-test/*": ["packages/ariakit-test/src/*"],
-
-      "ariakit-utils": ["packages/ariakit-utils/src"],
-      "ariakit-utils/*": ["packages/ariakit-utils/src/*"],
-
-      "ariakit-react-utils": ["packages/ariakit-react-utils/src"],
-      "ariakit-react-utils/*": ["packages/ariakit-react-utils/src/*"],
-
-      "ariakit-vue": ["packages/ariakit-vue/src"],
-      "ariakit-vue/*": ["packages/ariakit-vue/src/*"]
-    }
-  }
+  "references":[
+    { "path": "packages/ariakit" },
+    { "path": "packages/ariakit-playground" },
+    { "path": "packages/ariakit-react-utils" },
+    { "path": "packages/ariakit-test" },
+    { "path": "packages/ariakit-utils" },
+    { "path": "packages/ariakit-vue" },
+    // { "path": "packages/website" },
+  ]
 }

@@ -4,5 +4,10 @@
     "noEmit": true,
     "skipLibCheck": true
   },
+  "references": [
+    { "path": "../ariakit-react-utils" },
+    { "path": "../ariakit-utils" },
+    { "path": "../ariakit-test" },
+  ],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
 }
