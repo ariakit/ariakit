@@ -17,7 +17,7 @@ console.warn = (...args) => {
 };
 
 /** @type {import("@babel/core").ParserOptions} */
-module.exports = {
+module.exports = () => ({
   presets: [
     [
       "@babel/preset-env",
@@ -30,7 +30,6 @@ module.exports = {
             },
       },
     ],
-    ["@babel/preset-react", { runtime: "automatic" }],
     "@babel/preset-typescript",
   ],
   plugins: [
@@ -43,4 +42,4 @@ module.exports = {
       },
     ],
   ].filter(Boolean),
-};
+});

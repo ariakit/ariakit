@@ -1,10 +1,7 @@
 # Automatically generated
 /cjs
 /esm
-/hooks
-/misc
-/store
-/system
+/heading
 /ts
-/types
 /umd
+/utils

@@ -1,13 +1,13 @@
 {
-  "name": "ariakit-react-utils",
+  "name": "ariakit-vue",
   "version": "0.17.0-next.26",
-  "description": "Ariakit React utils",
+  "description": "Ariakit Vue",
   "sideEffects": false,
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "main": "cjs/index.js",
   "module": "esm/index.js",
-  "unpkg": "umd/ariakit-react-utils.min.js",
+  "unpkg": "umd/ariakit-vue.min.js",
   "types": "ts/index.d.ts",
   "publishConfig": {
     "tag": "latest"
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-react-utils"
+    "directory": "packages/ariakit-vue"
   },
   "author": {
     "name": "Diego Haz",
@@ -24,20 +24,27 @@
   },
   "scripts": {
     "test": "jest",
-    "lint": "eslint . --ext js,ts,tsx",
+    "lint": "eslint . --ext js,ts",
     "build": "node ../../scripts/build",
     "clean": "node ../../scripts/build/clean.js"
   },
   "keywords": [
     "ariakit",
-    "react",
-    "utils"
+    "vue"
   ],
   "dependencies": {
-    "ariakit-utils": "0.17.0-next.26"
+    "vue-demi": "^0.13.11"
+  },
+  "devDependencies": {
+    "vue": ">=3.0.0"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "@types/react": "^17.0.0 || ^18.0.0"
+    "@vue/composition-api": "^1.7.0",
+    "vue": "^2.7 || >=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
   }
 }

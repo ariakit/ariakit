@@ -15,7 +15,10 @@
       "ariakit-utils/*": ["packages/ariakit-utils/src/*"],
 
       "ariakit-react-utils": ["packages/ariakit-react-utils/src"],
-      "ariakit-react-utils/*": ["packages/ariakit-react-utils/src/*"]
+      "ariakit-react-utils/*": ["packages/ariakit-react-utils/src/*"],
+
+      "ariakit-vue": ["packages/ariakit-vue/src"],
+      "ariakit-vue/*": ["packages/ariakit-vue/src/*"]
     }
   }
 }

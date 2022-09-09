@@ -16,6 +16,8 @@ module.exports = {
   collectCoverageFrom: [
     "packages/ariakit/src/**/*.{js,ts,tsx}",
     "packages/ariakit-utils/src/**/*.{js,ts,tsx}",
+    "packages/ariakit-react-utils/src/**/*.{js,ts,tsx}",
+    "packages/ariakit-vue-utils/src/**/*.{js,ts,tsx}",
     "!**/__examples__/**",
     "!**/*test.{js,ts,tsx}",
     "!**/test-*.{js,ts}",
