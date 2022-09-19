@@ -53,7 +53,7 @@
     "@rollup/plugin-commonjs": "22.0.2",
     "@rollup/plugin-node-resolve": "14.1.0",
     "@rollup/plugin-replace": "4.0.0",
-    "@testing-library/dom": "8.18.0",
+    "@testing-library/dom": "8.18.1",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "13.4.0",
     "@types/fs-extra": "9.0.13",
