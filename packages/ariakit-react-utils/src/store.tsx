@@ -25,27 +25,26 @@ const TIMESTAMP = Symbol("timestamp");
 const INITIAL_CONTEXT = Symbol("initialContext");
 
 type Listener<T> = (state: T) => any;
-type GetState<T> = () => T;
 type Subscribe<T> = (listener: Listener<T>) => () => any;
 type StateFilterFn<T> = BivariantCallback<(nextState: T) => unknown>;
 type StateFilterDeps<T> = Array<StateFilterFn<T> | keyof NonNullable<T>>;
 type StateFilter<T> = StateFilterDeps<T> | StateFilterFn<T>;
 
-function getState<T>(state: T & { [GET_STATE]?: GetState<T> }) {
+function getState<T>(state: T) {
   if (!state) return state;
-  const fn = state[GET_STATE];
+  const fn = (state as any)[GET_STATE];
   if (fn) return fn();
   return state;
 }
 
-function hasSubscribe<T>(state: T & { [SUBSCRIBE]?: Subscribe<T> }) {
+function hasSubscribe<T>(state: T) {
   if (!state) return false;
-  return !!state[SUBSCRIBE];
+  return !!(state as any)[SUBSCRIBE];
 }
 
-function getSubscribe<T>(state: T & { [SUBSCRIBE]?: Subscribe<T> }) {
+function getSubscribe<T>(state: T) {
   if (!state) return;
-  return state[SUBSCRIBE];
+  return (state as any)[SUBSCRIBE] as Subscribe<T>;
 }
 
 function getLatest<T>(
@@ -82,7 +81,7 @@ function defineTimestamp<T>(state: T) {
   }
 }
 
-function patchState<T>(state: T & { [TIMESTAMP]?: number }) {
+function patchState<T>(state: T) {
   Object.defineProperty(state, TIMESTAMP, {
     value: Date.now(),
     writable: true,

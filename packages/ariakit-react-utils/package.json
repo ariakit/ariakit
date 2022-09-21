@@ -33,6 +33,9 @@
     "react",
     "utils"
   ],
+  "dependencies": {
+    "ariakit-utils": "0.17.0-next.26"
+  },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
     "@types/react": "^17.0.0 || ^18.0.0"

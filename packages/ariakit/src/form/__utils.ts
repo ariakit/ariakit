@@ -39,7 +39,11 @@ export function set<T extends AnyObject | unknown[]>(
   const key = k as keyof T;
   const isIntegerKey = isInteger(key);
   const nextValues = isIntegerKey ? values || [] : values || {};
-  const result = rest.length ? set(nextValues[key], rest, value) : value;
+  const nestedValues = nextValues[key];
+  const result =
+    rest.length && (Array.isArray(nestedValues) || isObject(nestedValues))
+      ? set(nestedValues, rest, value)
+      : value;
   if (isIntegerKey) {
     const index = Number(key);
     if (values) {
