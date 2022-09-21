@@ -1,6 +1,5 @@
 {
   "extends": ["config:base"],
-  "rangeStrategy": "update-lockfile",
   "semanticCommits": false,
   "packageRules": [
     {
