@@ -17,6 +17,7 @@ import { useEvent, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import {
   Combobox,
+  ComboboxCancel,
   ComboboxItem,
   ComboboxList,
   useComboboxState,
@@ -34,6 +35,7 @@ import {
   MenuList,
   useMenuState,
 } from "ariakit/menu";
+import { PopoverDismiss } from "ariakit/popover";
 import { Role } from "ariakit/role";
 import {
   Select,
@@ -41,6 +43,7 @@ import {
   SelectPopover,
   useSelectState,
 } from "ariakit/select";
+import { VisuallyHidden } from "ariakit/visually-hidden";
 import Link from "next/link";
 import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle";
@@ -79,7 +82,7 @@ const style = {
     absolute top-3 left-2 h-4 w-4 opacity-50
   `,
   combobox: tw`
-    h-10 px-4 pl-[30px] w-full
+    h-10 pl-[30px] pr-[50px] w-full
     text-base
     placeholder-black/60 dark:placeholder-white/[46%]
     rounded border-none
@@ -87,6 +90,18 @@ const style = {
     bg-canvas-1/40 dark:bg-canvas-1-dark
     hover:bg-canvas-1 dark:hover:bg-canvas-1-dark-hover
     shadow-input dark:shadow-input-dark
+    focus-visible:ariakit-outline-input
+  `,
+  comboboxCancel: tw`
+    absolute top-2 right-2
+    flex items-center justify-center
+    h-6 p-2
+    cursor-default
+    border-none rounded-sm
+    text-[10px]
+    text-black/80 dark:text-white/80
+    bg-black/10 dark:bg-white/10
+    hover:bg-black/20 dark:hover:bg-white/20
     focus-visible:ariakit-outline-input
   `,
   comboboxList: tw`
@@ -309,6 +324,14 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
                     autoSelect={autoSelect}
                     className={style.combobox}
                   />
+                  <ComboboxCancel
+                    state={combobox}
+                    as={PopoverDismiss}
+                    className={style.comboboxCancel}
+                  >
+                    <VisuallyHidden>Cancel</VisuallyHidden>
+                    <span aria-hidden>ESC</span>
+                  </ComboboxCancel>
                 </div>
               </div>
               <ComboboxContext.Provider value={true}>

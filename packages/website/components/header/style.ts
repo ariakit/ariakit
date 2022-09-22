@@ -3,7 +3,7 @@ import tw from "../../utils/tw";
 export const popoverStyle = tw`
   flex flex-col
   overflow-hidden
-  max-h-[min(var(--popover-available-height,640px),640px)]
+  max-h-[min(var(--popover-available-height,800px),800px)]
   shadow-lg dark:shadow-lg-dark
   text-canvas-4 dark:text-canvas-4-dark
   rounded-lg border border-canvas-4 dark:border-canvas-4-dark
