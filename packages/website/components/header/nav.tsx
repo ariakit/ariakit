@@ -285,9 +285,22 @@ const NavMenu = memo(
     };
     const { data, isFetching } = useQuery<Data>([url], queryFetch, options);
 
-    const loading = useDelayedValue(isFetching);
+    const allUrl = `/api/search?q=${searchValue}`;
+    const { data: allData, isFetching: allIsFetching } = useQuery<Data>(
+      [allUrl],
+      queryFetch,
+      options
+    );
+
+    const loading = useDelayedValue(isFetching || allIsFetching);
     const searchData = useMemo(() => data && parseSearchData(data), [data]);
+    const searchAllData = useMemo(
+      () => (category && allData && parseSearchData(allData)) || undefined,
+      [category, allData]
+    );
+
     const noResults = !!searchData && !searchData.length;
+
     const pages = category ? pageIndex[category] : null;
 
     const [items, groups] = useMemo(() => {
@@ -326,6 +339,13 @@ const NavMenu = memo(
       );
     }, [noResults, items, groups, category]);
 
+    const otherItemElements = useMemo(() => {
+      if (!searchAllData?.length) return null;
+      return searchAllData
+        .filter((item) => item.category !== category)
+        .map((item, i) => <NavItem key={getItemKey(item, i)} item={item} />);
+    }, [searchAllData, category]);
+
     const categoryTitle = category ? categoryTitles[category] : null;
 
     return (
@@ -347,8 +367,12 @@ const NavMenu = memo(
           onSearch={setSearchValue}
           itemValue={category}
           value={value}
-          size={searchData?.length ? "xl" : size}
-          autoSelect={!!searchData?.length}
+          size={
+            searchData?.length || !!searchAllData?.length || noResults
+              ? "xl"
+              : size
+          }
+          autoSelect={!!searchData?.length || !!searchAllData?.length}
           footer={
             !isSubNav &&
             footer && (
@@ -374,19 +398,50 @@ const NavMenu = memo(
             )
           }
         >
-          {category && !searchData?.length && (
+          {category && !searchData?.length && !noResults && (
             <>
               <PageMenuItem
                 value={category}
                 href={`/${category}`}
-                className="justify-center font-semibold"
+                className="justify-center font-medium"
               >
                 {categoryTitle}
               </PageMenuItem>
               <PageMenuSeparator />
             </>
           )}
-          {itemElements || children}
+          {itemElements || (!noResults && children)}
+          {noResults && (
+            <div
+              role="presentation"
+              className={cx(
+                "p-10 text-center text-lg text-black/60 dark:text-white/50",
+                !otherItemElements && "py-20"
+              )}
+            >
+              <div className="truncate">
+                No results for &quot;
+                <span className="text-black dark:text-white">
+                  {searchValue}
+                </span>
+                &quot;
+              </div>
+              {!!category && (
+                <div>
+                  in{" "}
+                  <span className="text-black dark:text-white">{category}</span>
+                </div>
+              )}
+            </div>
+          )}
+          {otherItemElements && (
+            <>
+              <PageMenuSeparator />
+              <PageMenuGroup label="Other results">
+                {otherItemElements}
+              </PageMenuGroup>
+            </>
+          )}
         </PageMenu>
       </NavMenuContext.Provider>
     );

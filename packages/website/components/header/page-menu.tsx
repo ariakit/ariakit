@@ -279,7 +279,11 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
-      <div {...props} className={cx(popoverStyle, popoverSizes[size])}>
+      <div
+        {...props}
+        aria-busy={loading}
+        className={cx(popoverStyle, popoverSizes[size])}
+      >
         <div
           role="presentation"
           className={cx(
