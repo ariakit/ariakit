@@ -14,11 +14,33 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  webpack: (config) => {
+  webpack(config) {
     const plugins = pages.map((page) => new PagesWebpackPlugin(page));
     config.plugins.unshift(...plugins);
     config.module.exprContextCritical = false;
     return config;
+  },
+  async headers() {
+    return [
+      {
+        source: "/fonts/Inter-roman.var.woff2",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/fonts/Inter-italic.var.woff2",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
 };
 

@@ -43,10 +43,12 @@ import {
 } from "ariakit/select";
 import Link from "next/link";
 import tw from "../../utils/tw";
-import useIdle from "../../utils/use-idle-state";
+import useIdle from "../../utils/use-idle";
 import whenIdle from "../../utils/when-idle";
 import ChevronRight from "../icons/chevron-right";
 import NewWindow from "../icons/new-window";
+import Search from "../icons/search";
+import Spinner from "../icons/spinner";
 import {
   itemIconStyle,
   popoverScrollerStyle,
@@ -73,8 +75,11 @@ const style = {
     [&:not(:focus-within)+*>[aria-expanded="true"]]:bg-black/[7.5%]
     dark:[&:not(:focus-within)+*>[aria-expanded="true"]]:bg-white/[7.5%]
   `,
+  comboboxIcon: tw`
+    absolute top-3 left-2 h-4 w-4 opacity-50
+  `,
   combobox: tw`
-    h-10 px-4 w-full
+    h-10 px-4 pl-[30px] w-full
     text-base
     placeholder-black/60 dark:placeholder-white/[46%]
     rounded border-none
@@ -169,6 +174,7 @@ type PageMenuProps = Omit<
   footer?: ReactNode;
   itemValue?: string;
   autoSelect?: boolean;
+  loading?: boolean;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -187,6 +193,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       footer,
       itemValue,
       autoSelect,
+      loading = false,
       ...props
     },
     ref
@@ -284,12 +291,21 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
           {searchable ? (
             <>
               <div className={style.comboboxWrapper}>
-                <Combobox
-                  state={combobox}
-                  placeholder={searchPlaceholder}
-                  autoSelect={autoSelect}
-                  className={style.combobox}
-                />
+                <div className="relative">
+                  {loading ? (
+                    <Spinner
+                      className={cx(style.comboboxIcon, "animate-spin")}
+                    />
+                  ) : (
+                    <Search className={style.comboboxIcon} />
+                  )}
+                  <Combobox
+                    state={combobox}
+                    placeholder={searchPlaceholder}
+                    autoSelect={autoSelect}
+                    className={style.combobox}
+                  />
+                </div>
               </div>
               <ComboboxContext.Provider value={true}>
                 <ComboboxList state={combobox} className={style.comboboxList}>

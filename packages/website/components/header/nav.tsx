@@ -18,6 +18,7 @@ import { flushSync } from "react-dom";
 import { PageContent } from "../../pages.contents";
 import pageIndex, { PageIndexDetail } from "../../pages.index";
 import tw from "../../utils/tw";
+import useDelayedValue from "../../utils/use-delayed-value";
 import Blog from "../icons/blog";
 import Components from "../icons/components";
 import Examples from "../icons/examples";
@@ -282,8 +283,9 @@ const NavMenu = memo(
       enabled: open && !!searchValue,
       keepPreviousData: open && !!searchValue,
     };
-    const { data } = useQuery<Data>([url], queryFetch, options);
+    const { data, isFetching } = useQuery<Data>([url], queryFetch, options);
 
+    const loading = useDelayedValue(isFetching);
     const searchData = useMemo(() => data && parseSearchData(data), [data]);
     const noResults = !!searchData && !searchData.length;
     const pages = category ? pageIndex[category] : null;
@@ -337,6 +339,7 @@ const NavMenu = memo(
               {shortcut && <Shortcut />}
             </>
           }
+          loading={loading}
           searchPlaceholder={
             category ? searchTitles[category] : "Search all pages"
           }

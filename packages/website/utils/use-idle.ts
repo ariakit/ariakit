@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import whenIdle from "./when-idle";
 
 export default function useIdle(timeout?: number) {
-  const [idle, setIdle] = useState(true);
+  const [idle, setIdle] = useState(false);
 
   useEffect(() => {
     return whenIdle(() => setIdle(true), timeout);
