@@ -94,7 +94,14 @@
 }
 
 .heading {
-  @apply text-center font-medium;
+  @apply
+    m-0
+    text-base
+    text-center
+    font-medium
+    text-black
+    dark:text-white
+  ;
 }
 
 .group-label {
