@@ -43,7 +43,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             if (event.defaultPrevented) return;
             const popover = select.popoverRef.current;
             if (popover?.contains(event.relatedTarget)) return;
-            console.log(event.relatedTarget);
             onTouch?.();
           }}
         >

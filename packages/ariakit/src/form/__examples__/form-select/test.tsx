@@ -3,8 +3,9 @@ import {
   getByRole,
   getByText,
   press,
-  queryByText,
+  queryAllByText,
   render,
+  type,
 } from "ariakit-test";
 import Example from ".";
 
@@ -13,7 +14,7 @@ const getLabel = () => getByText("Favorite fruit");
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
 const getList = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
-const getError = () => queryByText("Constraints not satisfied");
+const getErrors = () => queryAllByText("Constraints not satisfied");
 
 const spyOnAlert = () =>
   jest.spyOn(window, "alert").mockImplementation(() => {});
@@ -37,39 +38,46 @@ test("click on label", async () => {
 
 test("show error on tabbing through select button", async () => {
   render(<Example />);
-  await press.Tab();
+  await press.ShiftTab();
+  await press.ShiftTab();
   expect(getSelect()).toHaveFocus();
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Tab();
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(1);
 });
 
-test("show error on close", async () => {
+test("show error only on blur both the select button and the popover", async () => {
   render(<Example />);
   await click(getSelect());
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Escape();
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Space();
   await press.ArrowDown();
   await press.Enter();
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Enter();
   await click(getOption("Select an item"));
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
+  await press.Tab();
+  expect(getErrors()).toHaveLength(1);
 });
 
 test("submit failed", async () => {
   render(<Example />);
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
+  await press.Tab();
+  await type("John");
   await click(getSubmit());
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(1);
   expect(getSelect()).toHaveFocus();
   expect(getList()).not.toBeVisible();
 });
 
 test("submit succeed", async () => {
   render(<Example />);
+  await press.Tab();
+  await type("John");
   await click(getSelect());
   await click(getOption("Banana"));
   expect(alert).not.toHaveBeenCalled();
@@ -81,6 +89,7 @@ test("submit succeed", async () => {
   await press.Enter();
   expect(alert).toHaveBeenCalledWith(
     JSON.stringify({
+      name: "John",
       fruit: "Banana",
     })
   );
