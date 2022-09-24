@@ -11,6 +11,12 @@ import NewWindow from "../icons/new-window";
 import Playground from "../playground";
 import SEO from "../seo";
 
+type TableOfContents = Array<{
+  id: string;
+  text: string;
+  children?: TableOfContents;
+}>;
+
 // @ts-ignore
 const { Compiler: renderAst } = new RehypeReact({
   createElement,
@@ -74,7 +80,7 @@ const { Compiler: renderAst } = new RehypeReact({
           </Link>
         );
       } else if (href?.startsWith("/api-reference")) {
-        return props.children;
+        return <span>{props.children}</span>;
       } else if (href) {
         return (
           <Link href={href}>
@@ -111,7 +117,7 @@ export default function MarkdownPage(props) {
     return props.markdown;
   }, [props.markdown, props.defaultValues, props.deps]);
 
-  const { tableOfContents } = tree.data;
+  const tableOfContents = tree.data.tableOfContents as TableOfContents;
 
   const [activeId, setActiveId] = useState("");
 
@@ -131,8 +137,9 @@ export default function MarkdownPage(props) {
         const { scrollMarginTop } = getComputedStyle(element);
         return top - parseInt(scrollMarginTop) <= 0;
       });
-
-      setActiveId(activeId);
+      if (activeId) {
+        setActiveId(activeId);
+      }
     };
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
