@@ -234,6 +234,7 @@ type NavMenuProps = {
   setOpen?: (open: boolean) => void;
   category?: string;
   label?: ReactNode;
+  contentLabel?: string;
   value?: string;
   footer?: boolean;
   shortcut?: boolean;
@@ -251,6 +252,7 @@ const NavMenu = memo(
     setOpen: setOpenProp,
     category,
     label,
+    contentLabel,
     value,
     footer,
     shortcut,
@@ -359,6 +361,7 @@ const NavMenu = memo(
               {shortcut && <Shortcut />}
             </>
           }
+          contentLabel={contentLabel}
           loading={loading}
           searchPlaceholder={
             category ? searchTitles[category] : "Search all pages"
@@ -545,6 +548,7 @@ export default function Nav() {
         setOpen={setCategoryOpen}
         shortcut={!element}
         label={categoryTitle}
+        contentLabel="Pages"
         searchValue={categorySearchValue}
         value={category || undefined}
         size="sm"
@@ -562,6 +566,7 @@ export default function Nav() {
           shortcut
           onBrowseAllPages={onBrowseAllPages}
           label={pageMeta.title}
+          contentLabel={categoryTitle}
           value={page}
         />
       )}

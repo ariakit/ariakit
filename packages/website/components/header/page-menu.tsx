@@ -13,7 +13,11 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useEvent, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
+import {
+  useEvent,
+  useId,
+  useSafeLayoutEffect,
+} from "ariakit-react-utils/hooks";
 import { cx } from "ariakit-utils/misc";
 import {
   Combobox,
@@ -123,7 +127,7 @@ const style = {
     flex items-center gap-2
     p-2 scroll-m-2
     cursor-default [a&]:cursor-pointer
-    rounded outline-none
+    rounded focus-visible:!outline-none
     active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
     active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
   `,
@@ -190,6 +194,7 @@ type PageMenuProps = Omit<
   itemValue?: string;
   autoSelect?: boolean;
   loading?: boolean;
+  contentLabel?: string;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -209,6 +214,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       itemValue,
       autoSelect,
       loading = false,
+      contentLabel,
       ...props
     },
     ref
@@ -296,6 +302,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
       <div
         {...props}
+        aria-label={contentLabel}
         aria-busy={loading}
         className={cx(popoverStyle, popoverSizes[size])}
       >
@@ -327,15 +334,19 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
                   <ComboboxCancel
                     state={combobox}
                     as={PopoverDismiss}
+                    aria-label="Cancel search"
                     className={style.comboboxCancel}
                   >
-                    <VisuallyHidden>Cancel</VisuallyHidden>
-                    <span aria-hidden>ESC</span>
+                    ESC
                   </ComboboxCancel>
                 </div>
               </div>
               <ComboboxContext.Provider value={true}>
-                <ComboboxList state={combobox} className={style.comboboxList}>
+                <ComboboxList
+                  state={combobox}
+                  aria-label={contentLabel}
+                  className={style.comboboxList}
+                >
                   {children}
                 </ComboboxList>
               </ComboboxContext.Provider>
@@ -452,6 +463,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
     { children, value, title, thumbnail, description, path, nested, ...props },
     ref
   ) => {
+    const id = useId();
     const hideAll = useContext(HideAllContext);
     const select = useContext(SelectContext);
     const combobox = useContext(ComboboxContext);
@@ -474,6 +486,8 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
         <Role
           as={href ? "a" : "div"}
           {...linkProps}
+          aria-labelledby={`${id}-label`}
+          aria-describedby={`${id}-path ${id}-description`}
           className={cx(
             style.item,
             combobox && (group ? "scroll-mt-[88px]" : "scroll-mt-14"),
@@ -485,20 +499,32 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
         >
           {children}
           {!nested && thumbnail && (
-            <div className={style.itemThumbnail}>{thumbnail}</div>
+            <div aria-hidden className={style.itemThumbnail}>
+              {thumbnail}
+            </div>
           )}
           {nested && <div className={style.itemNestedThumbnail} />}
           {description || thumbnail ? (
             <div className="flex min-w-0 flex-col">
-              <span className="font-semibold tracking-wide">{title}</span>
+              <span id={`${id}-label`} className="font-semibold tracking-wide">
+                {title}
+              </span>
               {path && (
-                <span className="flex items-center text-sm">
+                <span
+                  id={`${id}-path`}
+                  aria-hidden
+                  className="flex items-center text-sm"
+                >
+                  <VisuallyHidden>In </VisuallyHidden>
                   {path.map(
                     (item, i) =>
                       item && (
                         <Fragment key={i}>
                           {i > 0 && (
-                            <ChevronRight className="h-3 w-3 opacity-50" />
+                            <ChevronRight
+                              aria-label="/"
+                              className="h-3 w-3 opacity-50"
+                            />
                           )}
                           <span key={i} className={style.itemPathSegment}>
                             {item}
@@ -506,9 +532,12 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
                         </Fragment>
                       )
                   )}
+                  <VisuallyHidden>.</VisuallyHidden>
                 </span>
               )}
               <span
+                id={`${id}-description`}
+                aria-hidden
                 className={cx(
                   style.itemDescription,
                   path ? "truncate" : "truncate-[2]"
