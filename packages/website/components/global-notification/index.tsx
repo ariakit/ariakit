@@ -17,7 +17,7 @@ export default function GlobalNotification({ size = "md" }: Props) {
       >
         <div className="h-3 w-3 flex-none rounded-full bg-warn-2 dark:bg-warn-2-dark" />
         <div className="flex min-w-0 gap-2">
-          <span className="truncate">This site is under construction.</span>
+          <span className="truncate">This site is under construction:</span>
           <span
             className="flex items-center gap-2 font-medium text-link underline
             underline-offset-[0.125em] [text-decoration-skip-ink:none]
@@ -42,7 +42,7 @@ export default function GlobalNotification({ size = "md" }: Props) {
     >
       <div className="h-3 w-3 flex-none rounded-full bg-warn-2 dark:bg-warn-2-dark" />
       <div className="flex min-w-0 gap-2">
-        This site is under construction.
+        This site is under construction:
         <span
           className="flex items-center gap-1 font-medium text-link underline
           underline-offset-[0.125em] [text-decoration-skip-ink:none]
