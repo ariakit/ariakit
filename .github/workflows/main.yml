@@ -309,11 +309,9 @@ jobs:
         id: test
         run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
-        with:
-          name: test-results
-          path: test-results
+        run: npx argos upload test-results
 
   test-macos:
     name: Test macOS
@@ -367,8 +365,6 @@ jobs:
           --project safari
           --workers ${{ steps.cpu-cores.outputs.count }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
-        with:
-          name: test-results
-          path: test-results
+        run: npx argos upload test-results
