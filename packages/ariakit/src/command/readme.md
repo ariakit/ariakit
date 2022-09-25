@@ -14,6 +14,12 @@ npm install ariakit
 
 Learn more in [Getting started](/guide/getting-started).
 
+## API
+
+<pre data-api>
+&lt;<a href="/reference/command">Command</a> /&gt;
+</pre>
+
 ## Command vs. Button
 
 In short, if you need a semantic button element, you should use the [Button](/components/button) component.

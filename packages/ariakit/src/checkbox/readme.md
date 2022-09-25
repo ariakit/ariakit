@@ -13,3 +13,13 @@ npm install ariakit
 ```
 
 Learn more in [Getting started](/guide/getting-started).
+
+## API
+
+<pre data-api>
+<a href="/api-reference/checkbox-state">useCheckboxState</a>()
+
+&lt;<a href="/api-reference/checkbox">Checkbox</a>&gt;
+  &lt;<a href="/api-reference/checkbox-check">CheckboxCheck</a> /&gt;
+&lt;/Checkbox&gt;
+</pre>

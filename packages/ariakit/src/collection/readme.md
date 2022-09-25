@@ -13,3 +13,13 @@ npm install ariakit
 ```
 
 Learn more in [Getting started](/guide/getting-started).
+
+## API
+
+<pre data-api>
+<a href="/api-reference/collection-state">useCollectionState</a>()
+
+&lt;<a href="/api-reference/collection">Collection</a>&gt;
+  &lt;<a href="/api-reference/collection-item">CollectionItem</a> /&gt;
+&lt;/Collection&gt;
+</pre>

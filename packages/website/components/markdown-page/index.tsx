@@ -235,7 +235,10 @@ export default function MarkdownPage(props) {
           // code
           "[&_p_code]:rounded [&_p_code]:p-1 [&_p_code]:text-[0.9375em]",
           "[&_p_code]:bg-black/[6.5%] dark:[&_p_code]:bg-white/[6.5%]",
-          "[&_p_code]:font-monospace"
+          "[&_p_code]:font-monospace",
+          // api
+          "[&_[data-api]]:leading-8 [&_[data-api]]:tracking-wide",
+          "[&_[data-api]]:text-black/60 dark:[&_[data-api]]:text-white/60"
         )}
       >
         {renderAst(tree)}

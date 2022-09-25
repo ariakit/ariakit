@@ -11,3 +11,23 @@ npm install ariakit
 ```
 
 Learn more in [Getting started](/guide/getting-started).
+
+## API
+
+<pre data-api>
+<a href="/api-reference/composite-state">useCompositeState</a>()
+
+&lt;<a href="/api-reference/composite">Composite</a>&gt;
+  &lt;<a href="/api-reference/composite-group">CompositeGroup</a>&gt;
+    &lt;<a href="/api-reference/composite-group-label">CompositeGroupLabel</a> /&gt;
+    &lt;<a href="/api-reference/composite-row">CompositeRow</a>&gt;
+      &lt;<a href="/api-reference/composite-container">CompositeContainer</a> /&gt;
+      &lt;<a href="/api-reference/composite-hover">CompositeHover</a> /&gt;
+      &lt;<a href="/api-reference/composite-input">CompositeInput</a> /&gt;
+      &lt;<a href="/api-reference/composite-item">CompositeItem</a> /&gt;
+      &lt;<a href="/api-reference/composite-separator">CompositeSeparator</a> /&gt;
+    &lt;/CompositeRow&gt;
+  &lt;/CompositeGroup&gt;
+&lt;/Composite&gt;
+&lt;<a href="/api-reference/composite-typeahead">CompositeTypeahead</a> /&gt;
+</pre>

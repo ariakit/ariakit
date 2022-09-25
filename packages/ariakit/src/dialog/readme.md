@@ -14,6 +14,19 @@ npm install ariakit
 
 Learn more in [Getting started](/guide/getting-started).
 
+## API
+
+<pre data-api>
+<a href="/api-reference/dialog-state">useDialogState</a>()
+
+&lt;<a href="/api-reference/dialog-disclosure">DialogDisclosure</a> /&gt;
+&lt;<a href="/api-reference/dialog">Dialog</a>&gt;
+  &lt;<a href="/api-reference/dialog-dismiss">DialogDismiss</a> /&gt;
+  &lt;<a href="/api-reference/dialog-heading">DialogHeading</a> /&gt;
+  &lt;<a href="/api-reference/dialog-description">DialogDescription</a> /&gt;
+&lt;/Dialog&gt;
+</pre>
+
 ## Styling
 
 ### Styling the backdrop

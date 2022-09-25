@@ -14,6 +14,15 @@ npm install ariakit
 
 Learn more in [Getting started](/guide/getting-started).
 
+## API
+
+<pre data-api>
+<a href="/api-reference/disclosure-state">useDisclosureState</a>()
+
+&lt;<a href="/api-reference/disclosure">Disclosure</a> /&gt;
+&lt;<a href="/api-reference/disclosure-content">DisclosureContent</a> /&gt;
+</pre>
+
 ## Styling
 
 ### Styling the expanded state

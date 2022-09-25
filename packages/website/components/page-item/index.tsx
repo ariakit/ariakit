@@ -7,7 +7,7 @@ import tw from "packages/website/utils/tw";
 const style = {
   wrapper: tw`
     group
-    flex items-center gap-2 p-2
+    flex items-center
     rounded-lg
     hover:bg-primary-1/70 dark:hover:bg-primary-2-dark/25
     active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
@@ -54,7 +54,13 @@ export default function PageItem({
         aria-labelledby={title && `${id}-title`}
         aria-describedby={description ? `${id}-description` : undefined}
         {...props}
-        className={cx(style.wrapper, props.className)}
+        className={cx(
+          style.wrapper,
+          props.className,
+          size === "sm" && "gap-2 p-2",
+          size === "md" && "gap-3 p-3",
+          size === "lg" && "gap-4 p-4"
+        )}
       >
         {props.children}
         {thumbnail && (
@@ -70,14 +76,7 @@ export default function PageItem({
           </div>
         )}
         {title && (
-          <div
-            className={cx(
-              style.textWrapper,
-              size === "sm" && "px-0",
-              size === "md" && "px-2",
-              size === "lg" && "px-2"
-            )}
-          >
+          <div className={style.textWrapper}>
             <span
               id={`${id}-title`}
               className={cx(

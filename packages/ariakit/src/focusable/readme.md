@@ -12,6 +12,12 @@ npm install ariakit
 
 Learn more in [Getting started](/guide/getting-started).
 
+## API
+
+<pre data-api>
+&lt;<a href="/api-reference/focusable">Focusable</a> /&gt;
+</pre>
+
 ## Styling
 
 ### Styling the focus-visible state
