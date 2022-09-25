@@ -314,6 +314,8 @@ jobs:
       - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
         run: npx argos upload test-results
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
 
   test-macos:
     name: Test macOS
@@ -372,3 +374,5 @@ jobs:
       - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
         run: npx argos upload test-results
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
