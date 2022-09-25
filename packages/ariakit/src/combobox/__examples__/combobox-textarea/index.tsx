@@ -19,7 +19,6 @@ export default function Example() {
   const combobox = useComboboxState({
     limit: 10,
     fitViewport: true,
-    gutter: 8,
     getAnchorRect: () => {
       const textarea = ref.current;
       if (!textarea) return null;
