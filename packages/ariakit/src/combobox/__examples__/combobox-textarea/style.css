@@ -2,7 +2,7 @@
 @import "../../../button/__examples__/button/style.css";
 
 .combobox {
-  @apply font-[Arial] w-[380px] h-auto p-2;
+  @apply w-[380px] h-auto p-2;
 }
 
 .combobox-description {
