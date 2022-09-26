@@ -266,6 +266,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -309,11 +311,11 @@ jobs:
         id: test
         run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
-        with:
-          name: test-results
-          path: test-results
+        run: npx argos upload test-results
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
 
   test-macos:
     name: Test macOS
@@ -323,6 +325,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -367,8 +371,8 @@ jobs:
           --project safari
           --workers ${{ steps.cpu-cores.outputs.count }}
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload test results
         if: failure() && steps.test.outcome == 'failure'
-        with:
-          name: test-results
-          path: test-results
+        run: npx argos upload test-results
+        env:
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
