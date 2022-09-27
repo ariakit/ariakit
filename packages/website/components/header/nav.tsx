@@ -412,7 +412,9 @@ const NavMenu = memo(
                   "focus-visible:ariakit-outline-input"
                 )}
                 onClick={() => {
-                  onBrowseAllPages?.(searchValue);
+                  requestAnimationFrame(() => {
+                    onBrowseAllPages?.(searchValue);
+                  });
                 }}
               >
                 <PopoverDisclosureArrow placement="left" />

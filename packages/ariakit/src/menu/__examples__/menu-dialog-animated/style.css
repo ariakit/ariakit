@@ -3,7 +3,10 @@
 @import "../../../form/__examples__/form/style.css";
 
 .button {
-  @apply gap-2;
+  @apply
+    gap-2
+    flex-none
+  ;
 }
 
 .badge {

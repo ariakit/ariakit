@@ -127,7 +127,7 @@ export default async function handler(
     const words = removeConnectors(value)
       .split(/\p{P}*\s\p{P}*/u)
       .filter(Boolean);
-    const terms = removeConnectors(searchTerm).split(" ");
+    const terms = searchTerm.split(" ");
     const keywords = terms
       .map((term) => search(term, words, { threshold: 0.8 }))
       .flat();

@@ -526,7 +526,10 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           {nested && <div className={style.itemNestedThumbnail} />}
           {description || thumbnail ? (
             <div className="flex min-w-0 flex-col">
-              <span id={`${id}-label`} className="font-semibold tracking-wide">
+              <span
+                id={`${id}-label`}
+                className="truncate font-semibold tracking-wide"
+              >
                 {title}
               </span>
               {path && (
@@ -546,7 +549,13 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
                               className="h-3 w-3 opacity-50"
                             />
                           )}
-                          <span key={i} className={style.itemPathSegment}>
+                          <span
+                            key={i}
+                            className={cx(
+                              style.itemPathSegment,
+                              i === path.length - 1 && "flex-none"
+                            )}
+                          >
                             {item}
                           </span>
                         </Fragment>
