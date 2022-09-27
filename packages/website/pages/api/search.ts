@@ -13,6 +13,8 @@ const searcherOptions = {
     obj.section || "",
     obj.content || "",
     obj.category || "",
+    obj.slug || "",
+    [obj.title, obj.category].join(" "),
     [obj.title, obj.parentSection, obj.section, obj.category].join(" "),
   ],
   useSellers: true,
@@ -41,15 +43,16 @@ for (const [category, contents] of entries) {
 }
 
 function removeConnectors(string: string) {
-  return string.replace(/\b(a|an|and|the|on|in|at|to)\b/gi, "$3");
+  return string.replace(/\b(a|an|and|the|on|in|at|to|or|for)\b/gi, "");
 }
 
 function getKeyFromOriginal(item: typeof contents[number], original: string) {
-  const { title, section, content, category } = item;
+  const { title, section, content, category, slug } = item;
   if (original === title) return "title";
   if (original === section) return "section";
   if (original === content) return "content";
   if (original === category) return "category";
+  if (original === slug) return "slug";
   return null;
 }
 
@@ -121,7 +124,9 @@ export default async function handler(
       item.category,
       content,
     ].join(" ");
-    const words = removeConnectors(value).split(/\p{P}*\s\p{P}*/u);
+    const words = removeConnectors(value)
+      .split(/\p{P}*\s\p{P}*/u)
+      .filter(Boolean);
     const terms = removeConnectors(searchTerm).split(" ");
     const keywords = terms
       .map((term) => search(term, words, { threshold: 0.8 }))
@@ -131,7 +136,7 @@ export default async function handler(
       content,
       key,
       score,
-      keywords: keywords.slice(0, 3),
+      keywords: Array.from(new Set(keywords.slice(0, 5))),
     };
   });
   res.status(200).json(items.slice(0, 15));

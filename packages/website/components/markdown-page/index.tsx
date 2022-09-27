@@ -232,6 +232,8 @@ export default function MarkdownPage(props) {
           // p
           "dark:[&>p]:text-white/80",
           "[&>p]:leading-7 [&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em]",
+          // p strong
+          "[&>p>strong]:font-semibold dark:[&>p>strong]:text-white",
           // code
           "[&_p_code]:rounded [&_p_code]:p-1 [&_p_code]:text-[0.9375em]",
           "[&_p_code]:bg-black/[6.5%] dark:[&_p_code]:bg-white/[6.5%]",

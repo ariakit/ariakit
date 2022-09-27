@@ -21,8 +21,8 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark;
+    shadow-lg
+    dark:shadow-lg-dark;
 }
 
 .menu-item {

@@ -9,7 +9,7 @@ import {
 } from "react";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { useEvent, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
-import { cx, normalizeString } from "ariakit-utils/misc";
+import { cx } from "ariakit-utils/misc";
 import { isApple } from "ariakit-utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover";
 import groupBy from "lodash/groupBy";
@@ -114,20 +114,20 @@ function getItemKey(item: PageIndexDetail | SearchData[number], index: number) {
   return category + item.slug + section + index;
 }
 
-function normalizeValue(value: string) {
-  return normalizeString(value).toLowerCase();
-}
-
-function getUserValueIndex(itemValue: string, userValues: string[]) {
-  return userValues.reduce<[number, string]>(
-    ([index, prevUserValue], userValue) => {
+function getAllIndexes(string: string, values: string[]) {
+  const indexes = [] as Array<[number, number]>;
+  for (const value of values) {
+    let pos = 0;
+    const length = value.length;
+    while (string.indexOf(value, pos) != -1) {
+      const index = string.indexOf(value, pos);
       if (index !== -1) {
-        return [index, prevUserValue];
+        indexes.push([index, length]);
       }
-      return [normalizeValue(itemValue).indexOf(userValue), userValue];
-    },
-    [-1, ""]
-  );
+      pos = index + 1;
+    }
+  }
+  return indexes;
 }
 
 function highlightValue(
@@ -135,8 +135,9 @@ function highlightValue(
   userValues: string[]
 ) {
   if (!itemValue) return itemValue;
-  userValues = userValues.filter(Boolean).map(normalizeValue);
+  userValues = userValues.filter(Boolean);
   const parts: JSX.Element[] = [];
+
   const wrap = (value: string, autocomplete = false) => (
     <span
       key={parts.length}
@@ -146,18 +147,41 @@ function highlightValue(
       {value}
     </span>
   );
-  let [index, userValue] = getUserValueIndex(itemValue, userValues);
-  while (index !== -1) {
-    if (index !== 0) {
-      parts.push(wrap(itemValue.slice(0, index), true));
-    }
-    parts.push(wrap(itemValue.slice(index, index + userValue.length)));
-    itemValue = itemValue.slice(index + userValue.length);
-    [index, userValue] = getUserValueIndex(itemValue, userValues);
-  }
-  if (itemValue) {
+
+  const allIndexes = getAllIndexes(itemValue, userValues)
+    .filter(
+      ([index, length], i, arr) =>
+        index !== -1 &&
+        !arr.some(
+          ([idx, l], j) => j !== i && idx <= index && idx + l >= index + length
+        )
+    )
+    .sort(([a], [b]) => a - b);
+
+  if (!allIndexes.length) {
     parts.push(wrap(itemValue, true));
+    return parts;
   }
+
+  const [firstIndex] = allIndexes[0]!;
+
+  const values = [
+    itemValue.slice(0, firstIndex),
+    ...allIndexes
+      .map(([index, length], i) => {
+        const value = itemValue.slice(index, index + length);
+        const nextIndex = allIndexes[i + 1]?.[0];
+        const nextValue = itemValue.slice(index + length, nextIndex);
+        return [value, nextValue];
+      })
+      .flat(),
+  ];
+
+  values.forEach((value, i) => {
+    if (value) {
+      parts.push(wrap(value, i % 2 === 0));
+    }
+  });
   return parts;
 }
 
@@ -281,7 +305,7 @@ const NavMenu = memo(
       category ? `&category=${category}` : ""
     }`;
     const options = {
-      staleTime: Infinity,
+      staleTime: process.env.NODE_ENV === "production" ? Infinity : 0,
       enabled: open && !!searchValue,
       keepPreviousData: open && !!searchValue,
     };
@@ -300,10 +324,10 @@ const NavMenu = memo(
       () => (category && allData && parseSearchData(allData)) || undefined,
       [category, allData]
     );
-
     const noResults = !!searchData && !searchData.length;
-
     const pages = category ? pageIndex[category] : null;
+    const categoryTitle = category ? categoryTitles[category] : null;
+    const hasTitle = !!category && !searchData?.length && !noResults;
 
     const [items, groups] = useMemo(() => {
       if (searchData) return [searchData, {}];
@@ -348,8 +372,6 @@ const NavMenu = memo(
         .map((item, i) => <NavItem key={getItemKey(item, i)} item={item} />);
     }, [searchAllData, category]);
 
-    const categoryTitle = category ? categoryTitles[category] : null;
-
     return (
       <NavMenuContext.Provider value={true}>
         <PageMenu
@@ -370,12 +392,13 @@ const NavMenu = memo(
           onSearch={setSearchValue}
           itemValue={category}
           value={value}
+          hasTitle={hasTitle}
           size={
             searchData?.length || !!searchAllData?.length || noResults
               ? "xl"
               : size
           }
-          autoSelect={!!searchData?.length || !!searchAllData?.length}
+          autoSelect={!!searchData?.length}
           footer={
             !isSubNav &&
             footer && (
@@ -401,17 +424,20 @@ const NavMenu = memo(
             )
           }
         >
-          {category && !searchData?.length && !noResults && (
-            <>
+          {hasTitle && (
+            <div
+              role="presentation"
+              className="sticky top-14 z-20 bg-[color:inherit]"
+            >
               <PageMenuItem
                 value={category}
                 href={`/${category}`}
-                className="justify-center font-medium"
+                className="scroll-mt-0 justify-center font-medium"
               >
                 {categoryTitle}
               </PageMenuItem>
               <PageMenuSeparator />
-            </>
+            </div>
           )}
           {itemElements || (!noResults && children)}
           {noResults && (

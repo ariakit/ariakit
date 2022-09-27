@@ -116,7 +116,7 @@ const style = {
     bg-[color:inherit]
   `,
   groupLabel: tw`
-    sticky top-12
+    sticky
     p-2 pt-3
     text-sm font-medium text-black/60 dark:text-white/50
     bg-[color:inherit]
@@ -176,6 +176,7 @@ const ParentContext = createContext<RefObject<HTMLElement> | null>(null);
 const GroupContext = createContext<string | boolean>(false);
 const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
+const HasTitleContext = createContext(false);
 
 type PageMenuProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -195,6 +196,7 @@ type PageMenuProps = Omit<
   autoSelect?: boolean;
   loading?: boolean;
   contentLabel?: string;
+  hasTitle?: boolean;
 };
 
 export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
@@ -215,6 +217,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       autoSelect,
       loading = false,
       contentLabel,
+      hasTitle,
       ...props
     },
     ref
@@ -223,6 +226,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const parent = useContext(ParentContext);
     const combobox = useComboboxState({
       fitViewport: true,
+      focusLoop: false,
       includesBaseElement: false,
       gutter: 4,
       open,
@@ -414,8 +418,10 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       <FooterContext.Provider value={!!footer}>
         <HideAllContext.Provider value={menu.hideAll}>
           <ParentContext.Provider value={popoverRef}>
-            {button}
-            {popover}
+            <HasTitleContext.Provider value={!!hasTitle}>
+              {button}
+              {popover}
+            </HasTitleContext.Provider>
           </ParentContext.Provider>
         </HideAllContext.Provider>
       </FooterContext.Provider>
@@ -429,6 +435,7 @@ type PageMenuGroupProps = HTMLAttributes<HTMLDivElement> & {
 
 export const PageMenuGroup = forwardRef<HTMLDivElement, PageMenuGroupProps>(
   ({ children, label, ...props }, ref) => {
+    const hasTitle = useContext(HasTitleContext);
     return (
       <GroupContext.Provider value={label || true}>
         <CompositeGroup
@@ -437,7 +444,12 @@ export const PageMenuGroup = forwardRef<HTMLDivElement, PageMenuGroupProps>(
           className={cx(style.group, props.className)}
         >
           {label && (
-            <CompositeGroupLabel className={style.groupLabel}>
+            <CompositeGroupLabel
+              className={cx(
+                style.groupLabel,
+                hasTitle ? "top-[105px]" : "top-12"
+              )}
+            >
               {label}
             </CompositeGroupLabel>
           )}
@@ -464,6 +476,7 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
     ref
   ) => {
     const id = useId();
+    const hasTitle = useContext(HasTitleContext);
     const hideAll = useContext(HideAllContext);
     const select = useContext(SelectContext);
     const combobox = useContext(ComboboxContext);
@@ -490,7 +503,14 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
           aria-describedby={`${id}-path ${id}-description`}
           className={cx(
             style.item,
-            combobox && (group ? "scroll-mt-[88px]" : "scroll-mt-14"),
+            combobox &&
+              (group
+                ? hasTitle
+                  ? "scroll-mt-[145px]"
+                  : "scroll-mt-[88px]"
+                : hasTitle
+                ? "scroll-mt-[113px]"
+                : "scroll-mt-14"),
             !!thumbnail && "!items-start !gap-4 !p-4",
             !!footer && "scroll-mb-14",
             isExternalLink && "justify-between",
