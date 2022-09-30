@@ -21,58 +21,116 @@
     bg-primary-1
     text-primary-1
     dark:bg-primary-1-dark
-    dark:text-primary-1-dark;
+    dark:text-primary-1-dark
+  ;
 }
 
 .menu {
-  transform: translate3d(0, -16px, 0);
   @apply
     min-h-min
     overflow-visible
     opacity-0
-    transition-[opacity,transform];
+    [transform:translate3d(0,-16px,0)]
+    transition-[opacity,transform]
+  ;
 }
 
 .menu[data-enter] {
-  transform: translate3d(0, 0, 0);
-  @apply opacity-100;
+  @apply
+    [transform:translate3d(0,0,0)]
+    opacity-100
+  ;
 }
 
 .header {
   @apply
+    flex
+    justify-between
+    items-center
     pb-2
     mb-2
     border-b
     border-canvas-4
-    dark:border-canvas-4-dark;
+    dark:border-canvas-4-dark
+  ;
+}
+
+.heading {
+  @apply
+    text-lg
+    font-semibold
+    text-canvas-1
+    dark:text-canvas-1-dark
+  ;
 }
 
 .menu .heading {
-  @apply text-base pl-2;
+  @apply
+    text-base
+    m-0
+    pl-2
+  ;
 }
 
 .scroller {
-  @apply overflow-auto;
+  @apply
+    overflow-auto
+  ;
+}
+
+.dialog {
+  @apply
+    fixed
+    top-0
+    left-1/2
+  ;
 }
 
 .dialog:not([data-animated]) {
-  transform: translate3d(-50%, 64px, 0);
-  @apply top-0;
+  @apply
+    [transform:translate3d(-50%,64px,0)]
+  ;
 }
 
 .dialog[data-animated] {
-  transform: translate3d(-50%, 32px, 0);
   @apply
     top-0
     opacity-0
-    transition-[opacity,transform];
+    [transform:translate3d(-50%,32px,0)]
+    transition-[opacity,transform]
+  ;
 }
 
 .dialog[data-enter] {
-  transform: translate3d(-50%, 64px, 0);
-  @apply opacity-100;
+  @apply
+    opacity-100
+    [transform:translate3d(-50%,64px,0)]
+  ;
+}
+
+.dialog .heading {
+  @apply
+    text-2xl
+    font-medium
+    m-0
+  ;
+}
+
+.dialog .dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+  ;
 }
 
 .form {
-  @apply min-h-0 w-auto p-0;
+  @apply
+    flex
+    flex-col
+    gap-4
+    min-h-0
+    w-auto
+    p-0
+  ;
 }

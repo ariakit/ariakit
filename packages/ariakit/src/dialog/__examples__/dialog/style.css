@@ -8,7 +8,8 @@
     md:items-start
     [backdrop-filter:blur(4px)]
     bg-black/10
-    dark:bg-black/50;
+    dark:bg-black/50
+  ;
 }
 
 .dialog {
@@ -38,9 +39,14 @@
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
     shadow-2xl
-    focus-visible:ariakit-outline;
+    focus-visible:ariakit-outline
+  ;
 }
 
 .heading {
-  @apply m-0 text-xl font-semibold;
+  @apply
+    m-0
+    text-xl
+    font-semibold
+  ;
 }
