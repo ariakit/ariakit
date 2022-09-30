@@ -93,7 +93,7 @@
     "lodash": "4.17.21",
     "marked": "4.1.0",
     "open-cli": "7.0.1",
-    "postcss": "8.4.16",
+    "postcss": "8.4.17",
     "postcss-combine-duplicated-selectors": "10.0.3",
     "postcss-import": "15.0.0",
     "postcss-loader": "7.0.1",
