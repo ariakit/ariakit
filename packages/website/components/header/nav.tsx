@@ -330,7 +330,9 @@ const NavMenu = memo(
     const hasTitle = !!category && !searchData?.length && !noResults;
 
     const [items, groups] = useMemo(() => {
-      if (searchData) return [searchData, {}];
+      if (searchData) {
+        return [[], { [categoryTitle || "Search results"]: searchData }];
+      }
       if (!pages) return [[], {}];
       const groups = groupBy(pages, "group");
       const items = groups.null || [];
@@ -363,7 +365,7 @@ const NavMenu = memo(
           ))}
         </>
       );
-    }, [noResults, items, groups, category]);
+    }, [noResults, items, groups, category, categoryTitle]);
 
     const otherItemElements = useMemo(() => {
       if (!searchAllData?.length) return null;
