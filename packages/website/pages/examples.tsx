@@ -24,9 +24,7 @@ export default function ExamplesPage() {
               href={`/examples/${page.slug}`}
               title={page.title}
               description={page.content}
-              thumbnail={
-                <Examples className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
-              }
+              thumbnail={<Examples />}
             />
           ))}
         </div>
@@ -43,9 +41,7 @@ export default function ExamplesPage() {
                 href={`/examples/${page.slug}`}
                 title={page.title}
                 description={page.content}
-                thumbnail={
-                  <Examples className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
-                }
+                thumbnail={<Examples />}
               />
             ))}
           </div>
