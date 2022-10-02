@@ -4,6 +4,7 @@
   @apply
     flex
     rounded-lg
+    p-0.5
     bg-canvas-3
     dark:bg-canvas-4-dark
     shadow
@@ -20,7 +21,7 @@
   @apply
     px-4
     h-10
-    rounded-lg
+    rounded-md
     hover:bg-primary-1
     dark:hover:bg-primary-2-dark/40
     active:bg-primary-2-hover

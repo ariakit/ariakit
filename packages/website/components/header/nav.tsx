@@ -467,7 +467,7 @@ const NavMenu = memo(
               )}
             </div>
           )}
-          {otherItemElements && (
+          {!!otherItemElements?.length && (
             <>
               <PageMenuSeparator />
               <PageMenuGroup label="Other results">

@@ -1,6 +1,7 @@
 import React from "react";
 import GlobalNotification from "../components/global-notification";
 import Hero from "../components/hero";
+import Showcase from "../components/showcase";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
         <GlobalNotification />
       </div>
       <Hero />
+      <Showcase />
     </>
   );
 }

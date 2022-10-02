@@ -1,4 +1,4 @@
-# Menu Bar
+# MenuBar
 
 <p data-description>
   Rendering a visually persistent menu similar to those found near the top of the window in desktop applications. This example follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Bar Pattern</a>.

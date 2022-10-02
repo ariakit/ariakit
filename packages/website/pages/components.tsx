@@ -22,9 +22,7 @@ export default function ComponentsPage() {
               title={page.title}
               description={page.content}
               size="lg"
-              thumbnail={
-                <Components className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
-              }
+              thumbnail={<Components size="lg" />}
             />
           ))}
         </div>
@@ -42,9 +40,7 @@ export default function ComponentsPage() {
                 title={page.title}
                 description={page.content}
                 size="lg"
-                thumbnail={
-                  <Components className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
-                }
+                thumbnail={<Components size="lg" />}
               />
             ))}
           </div>

@@ -1,12 +1,59 @@
-import { SVGAttributes } from "react";
+type Props = {
+  size?: "md" | "lg";
+};
 
-export default function Examples(props: SVGAttributes<SVGSVGElement>) {
+export default function Examples({ size = "md" }: Props) {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" {...props}>
-      <path
-        fillRule="evenodd"
-        d="M2.5 3A1.5 1.5 0 001 4.5v4A1.5 1.5 0 002.5 10h6A1.5 1.5 0 0010 8.5v-4A1.5 1.5 0 008.5 3h-6zm11 2A1.5 1.5 0 0012 6.5v7a1.5 1.5 0 001.5 1.5h4a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0017.5 5h-4zm-10 7A1.5 1.5 0 002 13.5v2A1.5 1.5 0 003.5 17h6a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 009.5 12h-6z"
-        clipRule="evenodd"
+    <svg
+      width={size === "md" ? 48 : 72}
+      height={size === "md" ? 48 : 72}
+      viewBox="0 0 48 48"
+      fill="none"
+    >
+      <rect
+        x="4"
+        y="2"
+        width="24"
+        height="8"
+        rx="2"
+        className="fill-primary-2 dark:fill-primary-2-dark"
+      />
+      <rect
+        x="2"
+        y="12"
+        width="44"
+        height="34"
+        rx="2"
+        strokeWidth={size === "md" ? 1 : 2 / 3}
+        className="fill-canvas-5 stroke-black/10 dark:fill-canvas-5-dark dark:stroke-white/5"
+      />
+      <rect
+        x="6"
+        y="17"
+        width="20"
+        height="2"
+        className="fill-black/60 dark:fill-white/50"
+      />
+      <rect
+        x="6"
+        y="24"
+        width="16"
+        height="2"
+        className="fill-link dark:fill-link-dark"
+      />
+      <rect
+        x="6"
+        y="31"
+        width="28"
+        height="2"
+        className="fill-black/60 dark:fill-white/50"
+      />
+      <rect
+        x="6"
+        y="38"
+        width="20"
+        height="2"
+        className="fill-black/60 dark:fill-white/50"
       />
     </svg>
   );

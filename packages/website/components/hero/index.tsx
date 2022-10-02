@@ -44,7 +44,7 @@ export default function Hero() {
               "text-primary-2 dark:text-primary-2-dark",
               "bg-primary-2 dark:bg-primary-2-dark",
               "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
-              "shadow-xl"
+              "shadow-xl focus-visible:ariakit-outline"
             )}
           >
             Get started
@@ -57,7 +57,8 @@ export default function Hero() {
               flex h-12 items-center justify-center
               gap-2 whitespace-nowrap rounded-lg
               px-6
-              hover:bg-canvas-1 dark:hover:bg-canvas-4-dark
+              hover:bg-canvas-1 focus-visible:ariakit-outline-input
+              dark:hover:bg-canvas-4-dark
             `}
           >
             Explore components{" "}
