@@ -47,8 +47,8 @@ const separator = <div className="font-semibold opacity-30">/</div>;
 
 const thumbnails: Record<string, ReactNode> = {
   guide: <Guide className={style.thumbnail} />,
-  components: <Components className={style.thumbnail} />,
-  examples: <Examples className={style.thumbnail} />,
+  components: <Components />,
+  examples: <Examples />,
   blog: <Blog className={style.thumbnail} />,
 };
 
