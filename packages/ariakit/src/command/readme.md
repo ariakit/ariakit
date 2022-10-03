@@ -17,7 +17,7 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/reference/command">Command</a> /&gt;
+&lt;<a href="/api-reference/command">Command</a> /&gt;
 </pre>
 
 ## Command vs. Button

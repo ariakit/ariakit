@@ -1,9 +1,16 @@
 @import "../popover/style.css";
 
 .wrapper {
-  @apply p-4 border-l-4 border-transparent;
+  @apply
+    p-4
+    border-l-4
+    border-transparent
+  ;
 }
 
 .focus-within {
-  @apply border-primary-1 dark:border-primary-1-dark;
+  @apply
+    border-primary-1
+    dark:border-primary-1-dark
+  ;
 }

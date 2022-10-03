@@ -34,6 +34,9 @@ module.exports = [
           "composite",
           "focus-trap",
           "focusable",
+          "portal",
+          "role",
+          "separator",
         ].includes(component)
       ) {
         return "Abstract components";

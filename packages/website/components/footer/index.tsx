@@ -115,7 +115,7 @@ export default function Footer() {
               href="http://creativecommons.org/licenses/by/4.0/"
               target="_blank"
               rel="license noreferrer"
-              className={cx(style.link, "font-semibold dark:text-white/90")}
+              className={cx(style.link, "font-semibold dark:text-white/70")}
             >
               CC BY 4.0
             </a>
@@ -124,7 +124,7 @@ export default function Footer() {
               href="https://opensource.org/licenses/MIT"
               target="_blank"
               rel="license noreferrer"
-              className={cx(style.link, "font-semibold dark:text-white/90")}
+              className={cx(style.link, "font-semibold dark:text-white/70")}
             >
               MIT
             </a>
