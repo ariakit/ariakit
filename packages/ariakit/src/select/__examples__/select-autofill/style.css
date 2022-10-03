@@ -1,9 +1,9 @@
 @import "../select/style.css";
 
 .input {
-  width: 200px;
   @apply
     h-10
+    w-[200px]
     rounded-lg
     border-none
     px-4
@@ -14,13 +14,13 @@
     hover:bg-canvas-1-hover
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+    dark:hover:bg-canvas-1-dark-hover
+  ;
 }
 
-.select[data-autofill] {
-  background-color: rgb(219 237 255);
-}
-
-.dark .select[data-autofill] {
-  background-color: rgb(36 107 179);
+.select {
+  @apply
+    [&[data-autofill]]:bg-[rgb(219_237_255)]
+    [&[data-autofill]]:dark:bg-[rgb(36_107_179)]
+  ;
 }

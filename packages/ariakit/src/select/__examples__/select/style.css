@@ -1,5 +1,15 @@
 .wrapper {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark
+  ;
 }
 
 .select {
@@ -24,11 +34,11 @@
     shadow-button
     dark:shadow-button-dark
     focus-visible:ariakit-outline-input
-    aria-disabled:opacity-50;
+    aria-disabled:opacity-50
+  ;
 }
 
 .popover {
-  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
     z-50
     flex
@@ -45,13 +55,14 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    drop-shadow-2xl
-    dark:drop-shadow-2xl-dark
-    focus-visible:ariakit-outline-input;
+    shadow-lg
+    dark:shadow-lg-dark
+    focus-visible:ariakit-outline-input
+    max-h-[min(var(--popover-available-height,300px),300px)]
+  ;
 }
 
 .select-item {
-  outline: none !important;
   @apply
     flex
     gap-2
@@ -60,9 +71,11 @@
     cursor-default
     rounded
     p-2
+    !outline-none
     aria-disabled:opacity-50
     active-item:bg-primary-2
     active-item:text-primary-2
     dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark;
+    dark:active-item:text-primary-2-dark
+  ;
 }

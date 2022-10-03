@@ -8,11 +8,16 @@
     bg-canvas-4
     dark:bg-canvas-4-dark
     shadow
-    dark:shadow-dark;
+    dark:shadow-dark
+  ;
 }
 
 .label {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
 }
 
 .combobox {
@@ -33,7 +38,8 @@
     dark:hover:bg-canvas-1-dark-hover
     shadow-input
     dark:shadow-input-dark
-    focus-visible:ariakit-outline-input;
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .popover {
@@ -57,7 +63,8 @@
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
     drop-shadow-lg
-    dark:drop-shadow-lg-dark;
+    dark:drop-shadow-lg-dark
+  ;
 }
 
 .combobox-item {
@@ -75,5 +82,6 @@
     active-item:bg-primary-2
     active-item:text-primary-2
     active-item:dark:bg-primary-2-dark
-    active-item:dark:text-primary-2-dark;
+    active-item:dark:text-primary-2-dark
+  ;
 }

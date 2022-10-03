@@ -1,7 +1,7 @@
 # Dialog
 
 <p data-description>
-  Open a new window that can be either <a href="/api-reference/dialog#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/api-reference/dialog#portal"><code>portal</code></a>. This component follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/">WAI-ARIA Dialog Pattern</a>.
+  Open a new window that can be either <a href="/api-reference/dialog#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/api-reference/dialog#portal"><code>portal</code></a>. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/">WAI-ARIA Dialog Pattern</a>.
 </p>
 
 <a href="./__examples__/dialog/index.tsx" data-playground>Example</a>

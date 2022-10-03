@@ -1,7 +1,7 @@
 # Menu
 
 <p data-description>
-  Access a set of commands within a menu bar or dropdown menu. This component follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
+  Access a set of commands within a menu bar or dropdown menu. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
 </p>
 
 <a href="./__examples__/menu/index.tsx" data-playground>Example</a>
@@ -46,7 +46,7 @@ Learn more in [Getting started](/guide/getting-started).
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/api-reference/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/api-reference/menu-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .menu-item[data-active-item] {
