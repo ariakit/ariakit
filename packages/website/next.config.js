@@ -23,7 +23,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/fonts/Inter-roman.var.woff2",
+        source: "/fonts/Inter-roman.var.woff2?v=3.19",
         headers: [
           {
             key: "Cache-Control",
@@ -32,7 +32,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/fonts/Inter-italic.var.woff2",
+        source: "/fonts/Inter-italic.var.woff2?v=3.19",
         headers: [
           {
             key: "Cache-Control",
