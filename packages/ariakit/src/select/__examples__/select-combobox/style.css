@@ -1,11 +1,20 @@
 @import "../select/style.css";
 
 .popover {
-  @apply pt-0;
+  @apply
+    pt-0
+  ;
 }
 
 .combobox-wrapper {
-  @apply sticky bg-[color:inherit] top-0 pt-2 mb-2 w-fit;
+  @apply
+    sticky
+    bg-[color:inherit]
+    top-0
+    pt-2
+    mb-2
+    w-fit
+  ;
 }
 
 .combobox {
@@ -22,9 +31,12 @@
     dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
     dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline-input;
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .select-item {
-  @apply scroll-mt-14;
+  @apply
+    scroll-mt-14
+  ;
 }

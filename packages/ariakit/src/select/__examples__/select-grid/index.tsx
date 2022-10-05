@@ -27,7 +27,7 @@ export default function Example() {
         // When the mouse leaves the item, we don't want to unset the active
         // item.
         if (event.type === "mouseleave") return false;
-        // By default,hovering over an item doesn't focus it, nor does it set
+        // By default, hovering over an item doesn't focus it, nor does it set
         // the value. So we need to manually "move" to the item so it gets
         // focused and the value is set.
         select.move(event.currentTarget.id);
