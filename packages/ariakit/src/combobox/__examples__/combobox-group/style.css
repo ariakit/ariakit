@@ -1,4 +1,5 @@
 @import "../combobox/style.css";
+@import "../../../separator/__examples__/separator/style.css";
 
 .group-label {
   @apply
@@ -6,14 +7,13 @@
     p-2
     font-medium
     opacity-60
-    cursor-default;
-}
-
-.separator {
-  border-color: currentcolor;
-  @apply my-2 h-0 border-t opacity-25;
+    cursor-default
+  ;
 }
 
 .no-results {
-  @apply gap-2 p-2;
+  @apply
+    gap-2
+    p-2
+  ;
 }

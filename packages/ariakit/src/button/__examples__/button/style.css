@@ -17,7 +17,8 @@
     hover:bg-primary-2-hover
     dark:bg-primary-2-dark
     dark:text-primary-2-dark
-    dark:hover:bg-primary-2-dark-hover;
+    dark:hover:bg-primary-2-dark-hover
+  ;
 }
 
 .secondary {
@@ -26,5 +27,6 @@
     bg-transparent
     dark:bg-transparent
     hover:bg-black/5
-    dark:hover:bg-white/5;
+    dark:hover:bg-white/5
+  ;
 }

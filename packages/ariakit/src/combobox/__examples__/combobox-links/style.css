@@ -12,9 +12,15 @@
 }
 
 .combobox-item-icon {
-  @apply w-4 h-4;
+  @apply
+    w-4
+    h-4
+  ;
 }
 
 .no-results {
-  @apply gap-2 p-2;
+  @apply
+    gap-2
+    p-2
+  ;
 }

@@ -17,5 +17,6 @@
     /* Dark Checked */
     dark:aria-checked:bg-primary-2-dark
     dark:aria-checked:text-primary-2-dark
-    dark:aria-checked:hover:bg-primary-2-dark-hover;
+    dark:aria-checked:hover:bg-primary-2-dark-hover
+  ;
 }

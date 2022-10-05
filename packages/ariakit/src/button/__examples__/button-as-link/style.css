@@ -2,9 +2,10 @@
   @apply
     cursor-pointer
     text-base
-    text-primary-1
     underline
     hover:no-underline
+    text-primary-1
+    dark:text-primary-1-dark
     focus-visible:ariakit-outline
-    dark:text-primary-1-dark;
+  ;
 }

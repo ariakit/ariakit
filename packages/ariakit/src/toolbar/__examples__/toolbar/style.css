@@ -13,7 +13,8 @@
     bg-canvas-4
     border-canvas-4
     dark:bg-canvas-4-dark
-    dark:border-canvas-4-dark;
+    dark:border-canvas-4-dark
+  ;
 }
 
 .button {
@@ -27,7 +28,8 @@
     dark:text-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:hover:bg-canvas-2-dark-hover
-    dark:active:bg-canvas-1-dark-hover;
+    dark:active:bg-canvas-1-dark-hover
+  ;
 }
 
 .separator {
@@ -35,5 +37,6 @@
     h-8
     border-r
     border-canvas-4
-    dark:border-canvas-4-dark;
+    dark:border-canvas-4-dark
+  ;
 }
