@@ -1,11 +1,18 @@
 @import "../dialog/style.css";
 
 .dialog {
-  @apply gap-0 sm:p-4;
+  @apply
+    gap-0
+    sm:p-4
+  ;
 }
 
 .form {
-  @apply flex flex-col gap-4;
+  @apply
+    flex
+    flex-col
+    gap-4
+  ;
 }
 
 .input {
@@ -26,13 +33,15 @@
     dark:hover:bg-canvas-1-dark-hover
     shadow-input
     dark:shadow-input-dark
-    focus-visible:ariakit-outline-input;
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .dismiss {
   @apply
-    [transform:translate(-8px,-8px)]
     w-10
     h-10
-    p-0;
+    p-0
+    [transform:translate(-8px,-8px)]
+  ;
 }

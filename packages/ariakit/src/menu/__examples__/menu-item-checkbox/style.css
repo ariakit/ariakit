@@ -1,7 +1,10 @@
 @import "../menu/style.css";
 
 .menu {
-  @apply max-h-max overflow-visible;
+  @apply
+    max-h-max
+    overflow-visible
+  ;
 }
 
 .menu-arrow svg {
@@ -9,5 +12,6 @@
     fill-canvas-4
     stroke-canvas-4
     dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark;
+    dark:stroke-canvas-4-dark
+  ;
 }

@@ -8,7 +8,8 @@
     bg-canvas-4
     dark:bg-canvas-4-dark
     shadow
-    dark:shadow-dark;
+    dark:shadow-dark
+  ;
 }
 
 .button {
@@ -25,9 +26,16 @@
     rounded-lg
     underline-offset-2
     hover:underline
-    focus-visible:ariakit-outline-input;
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .content {
-  @apply flex flex-col p-4 pt-0 gap-4;
+  @apply
+    flex
+    flex-col
+    p-4
+    pt-0
+    gap-4
+  ;
 }

@@ -12,7 +12,8 @@
     bg-canvas-4
     dark:bg-canvas-4-dark
     shadow
-    dark:shadow-dark;
+    dark:shadow-dark
+  ;
 }
 
 .heading {
@@ -22,11 +23,16 @@
     mt-2
     font-semibold
     text-black
-    dark:text-white;
+    dark:text-white
+  ;
 }
 
 .field {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
 }
 
 .field input {
@@ -52,7 +58,9 @@
 }
 
 .error:empty {
-  @apply absolute;
+  @apply
+    absolute
+  ;
 }
 
 .error:not(:empty) {
@@ -67,15 +75,23 @@
     text-danger-1
     dark:border-danger-1-dark
     dark:bg-danger-1-dark
-    dark:text-danger-1-dark;
+    dark:text-danger-1-dark
+  ;
 }
 
 .buttons {
-  @apply flex gap-4 pt-4;
+  @apply
+    flex
+    gap-4
+    pt-4
+  ;
 }
 
 .button {
-  @apply rounded-md flex-1;
+  @apply
+    rounded-md
+    flex-1
+  ;
 }
 
 .button.reset {

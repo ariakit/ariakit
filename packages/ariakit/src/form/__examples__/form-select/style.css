@@ -2,5 +2,7 @@
 @import "../form/style.css";
 
 .select {
-  @apply w-full;
+  @apply
+    w-full
+  ;
 }

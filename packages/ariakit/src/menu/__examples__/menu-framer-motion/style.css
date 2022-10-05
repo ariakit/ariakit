@@ -1,7 +1,10 @@
 @import "../menu/style.css";
 
 .menu {
-  @apply max-h-max overflow-visible;
+  @apply
+    max-h-max
+    overflow-visible
+  ;
 }
 
 .menu[data-placement^="bottom"] {
@@ -17,11 +20,13 @@
     fill-canvas-4
     stroke-canvas-4
     dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark;
+    dark:stroke-canvas-4-dark
+  ;
 }
 
 .menu-item {
   @apply
     aria-disabled:text-disabled
-    dark:aria-disabled:text-disabled-dark;
+    dark:aria-disabled:text-disabled-dark
+  ;
 }
