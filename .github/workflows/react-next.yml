@@ -40,7 +40,7 @@ jobs:
         run: npm ci --no-audit
 
   react-next:
-    name: Test React 17 (${{ matrix.shard }})
+    name: Test React Next (${{ matrix.shard }})
     needs: install
     runs-on: ubuntu-latest
     strategy:
