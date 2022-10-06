@@ -3,10 +3,14 @@ name: react-next
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+    - cron: "0 0 * * *" # Runs at 00:00 UTC every day
 
 jobs:
   install:
+    # Prevent workflow from running on forks.
+    # Because the test job depends on install, preventing install also prevents the test from being run.
+    if: github.repository == 'ariakit/ariakit'
+
     name: Install node modules
     runs-on: ubuntu-latest
 
