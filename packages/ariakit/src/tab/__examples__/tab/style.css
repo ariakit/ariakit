@@ -2,17 +2,21 @@
   @apply
     flex
     flex-col
-    gap-4
+    p-2
+    gap-2
     rounded-lg
-    p-4
-    drop-shadow-lg
-    dark:drop-shadow-lg-dark
-    bg-canvas-3
-    dark:bg-canvas-4-dark;
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark
+  ;
 }
 
 .tab-list {
-  @apply flex gap-2;
+  @apply
+    flex
+    gap-2
+  ;
 }
 
 .tab {
@@ -22,7 +26,7 @@
     items-center
     justify-center
     gap-2
-    rounded-md
+    rounded
     border-none
     px-4
     text-base
@@ -35,5 +39,12 @@
     dark:hover:bg-white/5
     dark:aria-selected:bg-primary-2-dark
     dark:aria-selected:text-primary-2-dark
-    dark:aria-selected:hover:bg-primary-2-dark-hover;
+    dark:aria-selected:hover:bg-primary-2-dark-hover
+  ;
+}
+
+.panels {
+  @apply
+    p-2
+  ;
 }

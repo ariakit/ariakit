@@ -13,27 +13,29 @@ export default function Example() {
         </Tab>
         <Tab className="tab">Meat</Tab>
       </TabList>
-      <TabPanel state={tab}>
-        <ul>
-          <li>🍎 Apple</li>
-          <li>🍇 Grape</li>
-          <li>🍊 Orange</li>
-        </ul>
-      </TabPanel>
-      <TabPanel state={tab} tabId={defaultSelectedId}>
-        <ul>
-          <li>🥕 Carrot</li>
-          <li>🧅 Onion</li>
-          <li>🥔 Potato</li>
-        </ul>
-      </TabPanel>
-      <TabPanel state={tab}>
-        <ul>
-          <li>🥩 Beef</li>
-          <li>🍗 Chicken</li>
-          <li>🥓 Pork</li>
-        </ul>
-      </TabPanel>
+      <div className="panels">
+        <TabPanel state={tab}>
+          <ul>
+            <li>🍎 Apple</li>
+            <li>🍇 Grape</li>
+            <li>🍊 Orange</li>
+          </ul>
+        </TabPanel>
+        <TabPanel state={tab} tabId={defaultSelectedId}>
+          <ul>
+            <li>🥕 Carrot</li>
+            <li>🧅 Onion</li>
+            <li>🥔 Potato</li>
+          </ul>
+        </TabPanel>
+        <TabPanel state={tab}>
+          <ul>
+            <li>🥩 Beef</li>
+            <li>🍗 Chicken</li>
+            <li>🥓 Pork</li>
+          </ul>
+        </TabPanel>
+      </div>
     </div>
   );
 }

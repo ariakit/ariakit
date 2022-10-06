@@ -55,23 +55,23 @@ const links = [
 export default function Footer() {
   const id = useId();
   return (
-    <footer className="mt-32 flex w-full justify-center bg-canvas-1 text-sm text-black/80 dark:bg-canvas-1-dark dark:text-white/80">
-      <div className="grid w-full max-w-6xl grid-cols-4 gap-8 gap-y-16 p-3 sm:p-4 sm:py-16">
-        <div>
+    <footer className="mt-32 flex w-full justify-center bg-canvas-1 text-black/80 dark:bg-canvas-1-dark dark:text-white/80 sm:text-sm">
+      <div className="grid w-full max-w-6xl gap-8 p-4 py-8 sm:grid-cols-4 sm:gap-y-16 sm:py-16">
+        <div className="hidden sm:block">
           <div className="flex items-center gap-2">
             <Logo />
           </div>
         </div>
         {links.map((group, i) => (
           <nav
-            aria-labelledby={`${id}-${i}`}
             key={group.title}
-            className="flex flex-col gap-4"
+            aria-labelledby={`${id}-${i}`}
+            className="flex flex-col gap-6 sm:gap-4"
           >
             <h3 id={`${id}-${i}`} className="font-semibold">
               {group.title}
             </h3>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-4 sm:gap-2">
               {group.links.map((link) => (
                 <li key={link.title}>
                   {link.href.startsWith("http") ? (
@@ -95,7 +95,7 @@ export default function Footer() {
           </nav>
         ))}
 
-        <div>
+        <div className="flex justify-center whitespace-nowrap text-sm sm:block">
           <a
             href="https://www.vercel.com/?utm_source=ariakit&utm_campaign=oss"
             target="_blank"
@@ -108,7 +108,7 @@ export default function Footer() {
             </svg>
           </a>
         </div>
-        <div className="col-span-3 dark:text-white/60">
+        <div className="text-center text-sm dark:text-white/60 sm:col-span-3 sm:text-left">
           <p>
             © 2017-{year} Diego Haz. This site is licensed under{" "}
             <a
