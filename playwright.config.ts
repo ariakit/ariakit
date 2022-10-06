@@ -22,7 +22,7 @@ const config: PlaywrightTestConfig = {
   },
   use: {
     screenshot: "only-on-failure",
-    trace: "retain-on-failure",
+    trace: "on-first-retry",
   },
   reporter: process.env.CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
