@@ -14,6 +14,7 @@
     shadow-lg
     dark:shadow-lg-dark
     [scroll-snap-type:x_mandatory]
+    [scroll-snap-stop:always]
     [scrollbar-width:none]
     border-canvas-4
     bg-canvas-4
