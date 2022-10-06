@@ -5,7 +5,7 @@
   @apply
     max-h-[var(--popover-available-height)]
     min-w-[180px]
-    !outline-none
+    ![outline:none]
     relative
     z-50
     p-2
@@ -29,7 +29,7 @@
 
 .menu-item {
   @apply
-    !outline-none
+    ![outline:none]
     flex
     cursor-default
     scroll-m-2

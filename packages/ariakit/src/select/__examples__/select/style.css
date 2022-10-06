@@ -71,7 +71,7 @@
     cursor-default
     rounded
     p-2
-    !outline-none
+    ![outline:none]
     aria-disabled:opacity-50
     active-item:bg-primary-2
     active-item:text-primary-2
