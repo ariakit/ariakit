@@ -13,5 +13,12 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse) {
     v1: reakitData["dist-tags"].latest,
   };
 
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader(
+      "cache-control",
+      "public, s-maxage=1200, stale-while-revalidate=600"
+    );
+  }
+
   res.status(200).json(versions);
 }

@@ -64,7 +64,9 @@ function getDisplayValue(version: string) {
 }
 
 export default function VersionSelect() {
-  const { data } = useQuery(["versions", "ariakit"], fetchTags);
+  const { data } = useQuery(["versions", "ariakit"], fetchTags, {
+    staleTime: process.env.NODE_ENV === "production" ? Infinity : 0,
+  });
 
   const tags = data || { latest: pkg.version };
 
