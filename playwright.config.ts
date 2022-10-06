@@ -25,11 +25,11 @@ const config: PlaywrightTestConfig = {
     trace: "retain-on-failure",
   },
   reporter: process.env.CI ? [["github"], ["dot"]] : [["list"]],
+  retries: 1,
   projects: [
     {
       name: "chrome",
       testMatch: [/\/test[^\/]*\-chrome/, /\/test[^\/]*\-browser/],
-      retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {
@@ -41,7 +41,6 @@ const config: PlaywrightTestConfig = {
     {
       name: "safari",
       testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
-      retries: 1,
       use: { ...devices["Desktop Safari"], launchOptions },
     },
   ],
