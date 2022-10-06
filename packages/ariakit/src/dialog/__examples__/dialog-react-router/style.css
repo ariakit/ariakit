@@ -1,30 +1,47 @@
 @import "../dialog/style.css";
 
 .dialog {
-  @apply sm:w-[320px] max-w-[320px];
+  @apply
+    gap-0
+    sm:p-4
+  ;
 }
 
 .form {
-  @apply flex flex-col gap-4;
-}
-
-.label {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-4
+  ;
 }
 
 .input {
   @apply
+    block
+    p-4
     w-full
-    h-10
-    rounded-lg
-    border-none
-    px-4
     text-base
-    focus-visible:ariakit-outline-input
-    bg-canvas-1
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
     text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+    bg-canvas-1/40
+    dark:bg-canvas-1-dark
+    hover:bg-canvas-1
+    dark:hover:bg-canvas-1-dark-hover
+    shadow-input
+    dark:shadow-input-dark
+    focus-visible:ariakit-outline-input
+  ;
+}
+
+.dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+    [transform:translate(-8px,-8px)]
+  ;
 }

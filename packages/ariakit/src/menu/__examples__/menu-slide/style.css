@@ -2,8 +2,6 @@
 @import "../../../separator/__examples__/separator/style.css";
 
 .menu-wrapper {
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
   @apply
     z-50
     rounded-lg
@@ -13,24 +11,29 @@
     overflow-x-scroll
     overscroll-contain
     scroll-smooth
-    drop-shadow
-    dark:drop-shadow-dark
+    shadow-lg
+    dark:shadow-lg-dark
+    [scroll-snap-type:x_mandatory]
+    [scrollbar-width:none]
     border-canvas-4
     bg-canvas-4
     text-canvas-4
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark;
+    dark:text-canvas-4-dark
+  ;
 }
 
 .menu-wrapper::-webkit-scrollbar {
-  display: none;
+  @apply
+    hidden
+  ;
 }
 
 .menu {
-  width: 320px;
-  height: min(320px, var(--popover-available-height));
   @apply
+    w-[320px]
+    h-[min(320px,var(--popover-available-height))]
     p-2
     z-50
     flex
@@ -41,11 +44,11 @@
     outline-none
     leave:z-0
     bg-canvas-4
-    dark:bg-canvas-4-dark;
+    dark:bg-canvas-4-dark
+  ;
 }
 
 .menu-item {
-  outline: none !important;
   @apply
     flex
     scroll-m-2
@@ -55,13 +58,15 @@
     gap-2
     rounded
     p-2
+    ![outline:none]
     aria-disabled:opacity-25
     ariakit-focus-visible:active-item:bg-primary-2
     ariakit-focus-visible:active-item:text-primary-2
     ariakit-focus-visible:dark:active-item:bg-primary-2-dark
     ariakit-focus-visible:dark:active-item:text-primary-2-dark
     [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
-    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")];
+    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")]
+  ;
 }
 
 @media (any-hover: hover) {
@@ -72,29 +77,43 @@
       dark:hover:bg-primary-1-dark-hover
       active:bg-primary-2
       active:text-primary-2
-      dark:active:bg-primary-2-dark-hover;
+      dark:active:bg-primary-2-dark-hover
+    ;
   }
 }
 
 .menu-item .label {
-  @apply flex-1;
+  @apply
+    flex-1
+  ;
 }
 
 .header {
-  --header-size: theme("spacing.10");
-
-  grid-template-columns: var(--header-size) auto var(--header-size);
-  @apply grid items-center;
+  @apply
+    [--header-size:theme("spacing.10")]
+    grid
+    items-center
+    grid-cols-[var(--header-size)_auto_var(--header-size)]
+  ;
 }
 
 .header .menu-item {
-  width: var(--header-size);
-  height: var(--header-size);
-  @apply justify-center;
+  @apply
+    justify-center
+    w-[var(--header-size)]
+    h-[var(--header-size)]
+  ;
 }
 
 .heading {
-  @apply text-center font-medium;
+  @apply
+    m-0
+    text-base
+    text-center
+    font-medium
+    text-black
+    dark:text-white
+  ;
 }
 
 .group-label {
@@ -103,5 +122,6 @@
     p-2
     font-medium
     opacity-60
-    cursor-default;
+    cursor-default
+  ;
 }

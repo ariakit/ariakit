@@ -9,19 +9,19 @@ test("markup", () => {
       class="wrapper"
     >
       <h1>
-        Lacus Et Semper Turpis Massa Commodo Cum
+        Heading 1
       </h1>
       <p>
         Torquent penatibus ipsum nascetur cursus primis lobortis
       </p>
       <h2>
-        Ac Nullam
+        Heading 2
       </h2>
       <p>
         Volutpat metus id purus dignissim fusce Tellus egestas.
       </p>
       <h2>
-        Quis Placerat
+        Heading 2
       </h2>
       <p>
         Platea justo lectus. Praesent. Et sodales pellentesque

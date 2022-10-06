@@ -15,7 +15,7 @@ import "./style.css";
 const list = food.map((item) => item.name);
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, sameWidth: true, list });
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true, list });
 
   // Transform combobox.matches into groups of objects.
   const matches = useMemo(() => {
@@ -26,7 +26,7 @@ export default function Example() {
   }, [combobox.matches]);
 
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite food
         <Combobox

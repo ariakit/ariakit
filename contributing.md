@@ -294,7 +294,7 @@ This is my component.
 npm install ariakit
 ```
 
-Learn more on [Get started](/guide/get-started).
+Learn more on [Getting Started](/guide/getting-started).
 ````
 
 Now open http://localhost:3000/components/my-component to see the component documentation.

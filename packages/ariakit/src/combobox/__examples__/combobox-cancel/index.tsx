@@ -18,9 +18,9 @@ const list = [
 ];
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, sameWidth: true });
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite food
         <div className="combobox-wrapper">

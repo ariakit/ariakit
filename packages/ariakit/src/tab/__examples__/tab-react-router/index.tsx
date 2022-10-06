@@ -28,9 +28,11 @@ function Tabs() {
           Meat
         </TabLink>
       </TabLinkList>
-      <TabLinkPanel state={tab} tabId={tab.selectedId || undefined}>
-        <Outlet />
-      </TabLinkPanel>
+      <div className="panels">
+        <TabLinkPanel state={tab} tabId={tab.selectedId || undefined}>
+          <Outlet />
+        </TabLinkPanel>
+      </div>
     </div>
   );
 }

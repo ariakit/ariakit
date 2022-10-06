@@ -1,9 +1,17 @@
 @import "../popover/style.css";
 
 .popover {
-  @apply flex-row p-1 gap-0;
+  @apply
+    flex-row
+    p-1
+    gap-0
+  ;
 }
 
 .button {
-  @apply rounded px-2 h-8;
+  @apply
+    rounded
+    px-2
+    h-8
+  ;
 }

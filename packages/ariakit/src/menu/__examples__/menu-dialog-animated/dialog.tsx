@@ -47,7 +47,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       >
         <header className="header">
           <DialogHeading className="heading">{title}</DialogHeading>
-          <DialogDismiss className="button dismiss" />
+          <DialogDismiss className="button secondary dismiss" />
         </header>
         {props.children}
       </BaseDialog>

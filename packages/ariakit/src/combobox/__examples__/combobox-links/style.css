@@ -1,13 +1,26 @@
 @import "../combobox/style.css";
 
 .combobox-item {
-  @apply cursor-pointer justify-between;
+  @apply
+    justify-between
+    cursor-pointer
+    font-normal
+    text-current
+    dark:text-current
+    no-underline
+  ;
 }
 
 .combobox-item-icon {
-  @apply w-4 h-4;
+  @apply
+    w-4
+    h-4
+  ;
 }
 
 .no-results {
-  @apply gap-2 p-2;
+  @apply
+    gap-2
+    p-2
+  ;
 }

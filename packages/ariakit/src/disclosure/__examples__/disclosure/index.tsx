@@ -12,7 +12,7 @@ export default function Example() {
       <Disclosure state={disclosure} className="button">
         What are vegetables?
       </Disclosure>
-      <DisclosureContent state={disclosure}>
+      <DisclosureContent state={disclosure} className="content">
         <p>
           Vegetables are parts of plants that are consumed by humans or other
           animals as food. The original meaning is still commonly used and is

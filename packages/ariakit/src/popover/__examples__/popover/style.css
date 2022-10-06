@@ -1,7 +1,6 @@
 @import "../../../button/__examples__/button/style.css";
 
 .popover {
-  max-width: min(calc(100vw - 16px), 320px);
   @apply
     z-50
     flex
@@ -11,15 +10,17 @@
     border
     border-solid
     p-4
+    max-w-[min(calc(100vw-16px),320px)]
+    shadow-lg
+    dark:shadow-lg-dark
+    focus-visible:ariakit-outline
     border-canvas-4
     bg-canvas-4
     text-canvas-4
-    drop-shadow
-    focus-visible:ariakit-outline
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    dark:drop-shadow-dark;
+  ;
 }
 
 .arrow svg {
@@ -27,9 +28,14 @@
     fill-canvas-4
     stroke-canvas-4
     dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark;
+    dark:stroke-canvas-4-dark
+  ;
 }
 
 .heading {
-  @apply m-0 text-xl font-medium;
+  @apply
+    m-0
+    text-xl
+    font-medium
+  ;
 }

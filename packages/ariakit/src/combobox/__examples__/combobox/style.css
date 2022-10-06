@@ -1,27 +1,50 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-canvas-4
+    dark:bg-canvas-4-dark
+    shadow
+    dark:shadow-dark
+  ;
+}
+
 .label {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
 }
 
 .combobox {
-  width: 250px;
   @apply
     h-10
     px-4
-    rounded-lg
-    border-none
+    w-[250px]
     text-base
-    focus-visible:ariakit-outline-input
-    bg-canvas-1
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
     text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
     dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+    bg-canvas-1/40
+    dark:bg-canvas-1-dark
+    hover:bg-canvas-1
+    dark:hover:bg-canvas-1-dark-hover
+    shadow-input
+    dark:shadow-input-dark
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .popover {
-  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
+    max-h-[min(var(--popover-available-height,300px),300px)]
     relative
     flex
     flex-col
@@ -39,13 +62,14 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark;
+    drop-shadow-lg
+    dark:drop-shadow-lg-dark
+  ;
 }
 
 .combobox-item {
-  outline: none !important;
   @apply
+    ![outline:none]
     flex
     gap-2
     p-2
@@ -54,9 +78,10 @@
     items-center
     rounded
     hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover
+    dark:hover:bg-primary-2-dark/25
     active-item:bg-primary-2
     active-item:text-primary-2
     active-item:dark:bg-primary-2-dark
-    active-item:dark:text-primary-2-dark;
+    active-item:dark:text-primary-2-dark
+  ;
 }

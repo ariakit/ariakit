@@ -2,6 +2,7 @@ import {
   Form,
   FormError,
   FormField,
+  FormInput,
   FormLabel,
   FormSubmit,
   useFormState,
@@ -10,14 +11,19 @@ import { Select, SelectItem } from "./select";
 import "./style.css";
 
 export default function Example() {
-  const form = useFormState({ defaultValues: { fruit: "" } });
+  const form = useFormState({ defaultValues: { name: "", fruit: "" } });
 
   form.useSubmit(() => {
     alert(JSON.stringify(form.values));
   });
 
   return (
-    <Form state={form} className="form">
+    <Form state={form} className="wrapper">
+      <div className="field">
+        <FormLabel name={form.names.name}>Name</FormLabel>
+        <FormInput name={form.names.name} required placeholder="John Doe" />
+        <FormError name={form.names.name} className="error" />
+      </div>
       <div className="field">
         <FormLabel name={form.names.fruit}>Favorite fruit</FormLabel>
         <FormField
@@ -36,7 +42,9 @@ export default function Example() {
         </FormField>
         <FormError name={form.names.fruit} className="error" />
       </div>
-      <FormSubmit className="button">Submit</FormSubmit>
+      <div className="buttons">
+        <FormSubmit className="button">Submit</FormSubmit>
+      </div>
     </Form>
   );
 }

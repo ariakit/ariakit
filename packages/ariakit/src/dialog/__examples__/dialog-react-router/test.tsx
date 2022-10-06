@@ -1,16 +1,17 @@
 import { click, getByRole, press, queryByRole, render } from "ariakit-test";
 import Example from ".";
 
-const getDisclosure = () => getByRole("link", { name: "Log in" });
-const getDialog = () => queryByRole("dialog", { name: "Log in" });
-const getDismiss = () => getByRole("link", { name: "Dismiss popup" });
+const getDisclosure = () => getByRole("link", { name: "Tweet" });
+const getDialog = () => queryByRole("dialog", { name: "Tweet" });
+const getInput = () => queryByRole("textbox", { name: "Tweet text" });
 
 test("show/hide on disclosure click", async () => {
   render(<Example />);
   expect(getDialog()).not.toBeInTheDocument();
   await click(getDisclosure());
   expect(getDialog()).toBeVisible();
-  expect(getDismiss()).toHaveFocus();
+  expect(getInput()).toHaveFocus();
+  await press.ShiftTab();
   await press.Enter();
   expect(getDialog()).not.toBeInTheDocument();
   expect(getDisclosure()).toHaveFocus();

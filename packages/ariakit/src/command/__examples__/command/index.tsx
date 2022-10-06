@@ -5,10 +5,11 @@ export default function Example() {
   return (
     <Command
       as="div"
+      role="button"
       className="button"
       onClick={() => alert("Accessible button clicked")}
     >
-      Accessible button
+      Button
     </Command>
   );
 }

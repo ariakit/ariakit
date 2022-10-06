@@ -1,27 +1,35 @@
 @import "../../../button/__examples__/button/style.css";
 
 [data-backdrop] {
-  background-color: rgb(0 0 0 / 10%);
+  @apply
+    flex
+    justify-center
+    items-center
+    md:items-start
+    [backdrop-filter:blur(4px)]
+    bg-black/10
+    dark:bg-black/50
+  ;
 }
 
 .dialog {
-  max-width: calc(100% - 32px);
-  max-height: calc(100% - 32px);
-  transform: translate(-50%, -50%);
   @apply
-    fixed
     w-full
-    sm:w-[480px]
-    sm:ml-[calc(var(--scrollbar-width,0)*-0.5)]
-    z-50
-    top-1/2
-    left-1/2
+    max-w-[calc(100%-theme("spacing.4")*2)]
+    max-h-[calc(100%-theme("spacing.4")*2)]
+    md:max-h-[calc(100%-theme("spacing.24")*2)]
+    h-fit
+    sm:w-[420px]
+    my-4
+    md:my-24
     overflow-auto
+    z-50
     flex
     flex-col
     gap-4
     p-4
-    rounded-lg
+    sm:p-6
+    rounded-2xl
     border
     border-solid
     border-canvas-4
@@ -30,19 +38,15 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    drop-shadow-lg
-    dark:drop-shadow-lg-dark
-    focus-visible:ariakit-outline;
-}
-
-.header {
-  @apply flex items-center justify-between;
+    shadow-2xl
+    focus-visible:ariakit-outline
+  ;
 }
 
 .heading {
-  @apply m-0 text-2xl font-medium;
-}
-
-.button.dismiss {
-  @apply w-10 h-10 p-0;
+  @apply
+    m-0
+    text-xl
+    font-semibold
+  ;
 }

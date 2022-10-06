@@ -2,13 +2,25 @@
 @import "../../../button/__examples__/button/style.css";
 
 .combobox-wrapper {
-  @apply relative;
+  @apply
+    relative
+  ;
 }
 
 .combobox {
-  @apply pr-10;
+  @apply
+    pr-10
+  ;
 }
 
 .combobox-cancel {
-  @apply absolute h-8 w-8 p-0 top-1 right-1 rounded;
+  @apply
+    absolute
+    h-8
+    w-8
+    p-0
+    top-1
+    right-1
+    rounded-sm
+  ;
 }

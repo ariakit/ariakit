@@ -1,7 +1,13 @@
 @import "../../../button/__examples__/button/style.css";
 
 .button {
-  @apply absolute top-4 right-4 rounded-full font-semibold;
+  @apply
+    absolute
+    top-4
+    right-4
+    rounded-full
+    font-semibold
+  ;
 }
 
 .anchor {
@@ -9,9 +15,11 @@
     underline
     font-medium
     hover:decoration-[3px]
+    underline-offset-[0.25em]
     [text-decoration-skip-ink:none]
     text-link
-    dark:text-link-dark;
+    dark:text-link-dark
+  ;
 }
 
 .hovercard {
@@ -24,7 +32,7 @@
     gap-2
     rounded-lg
     p-4
-    drop-shadow
+    shadow-lg
     focus-visible:ariakit-outline
     border
     border-solid
@@ -34,13 +42,20 @@
     dark:border-canvas-4-dark
     dark:bg-canvas-4-dark
     dark:text-canvas-4-dark
-    dark:drop-shadow-dark;
+    dark:shadow-lg-dark
+  ;
 }
 
 .avatar {
-  @apply w-16 rounded-full;
+  @apply
+    w-16
+    rounded-full
+  ;
 }
 
 .username {
-  @apply text-lg font-semibold;
+  @apply
+    text-lg
+    font-semibold
+  ;
 }

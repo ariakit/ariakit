@@ -1,7 +1,14 @@
 .label {
-  @apply flex flex-row items-center gap-2;
+  @apply
+    flex
+    flex-row
+    items-center
+    gap-2
+  ;
 }
 
 .checkbox {
-  @apply focus-visible:ariakit-outline;
+  @apply
+    focus-visible:ariakit-outline
+  ;
 }
