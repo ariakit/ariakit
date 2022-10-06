@@ -317,6 +317,13 @@ jobs:
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
 
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-chrome
+          path: playwright-report
+          retention-days: 30
+
   test-macos:
     name: Test macOS
     needs: website
@@ -376,3 +383,10 @@ jobs:
         run: npx argos upload test-results
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report-macos
+          path: playwright-report
+          retention-days: 30

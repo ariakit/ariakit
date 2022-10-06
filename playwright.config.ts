@@ -23,7 +23,9 @@ const config: PlaywrightTestConfig = {
   use: {
     screenshot: "only-on-failure",
   },
-  reporter: process.env.CI ? [["github"], ["dot"]] : "list",
+  reporter: process.env.CI
+    ? [["github"], ["dot"], ["html", { open: "never" }]]
+    : [["list"], ["html", { open: "on-failure" }]],
   projects: [
     {
       name: "chrome",
