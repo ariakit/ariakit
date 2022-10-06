@@ -33,7 +33,9 @@ const theme = css`
 
 const errorProps = { as: PlaygroundError };
 
-const PlaygroundEditor = dynamic(() => import("./playground-editor"));
+const PlaygroundEditor = dynamic(() => import("./playground-editor"), {
+  suspense: true,
+});
 
 const PlaygroundPreview = dynamic(() => import("./playground-preview"), {
   suspense: true,
