@@ -92,9 +92,10 @@ test("create list", async ({ page }) => {
   await getTextbox(page).click();
   await page.keyboard.press("Enter");
   await expect(getError(page)).toBeVisible();
-  await getTextbox(page).type("F");
+  await page.keyboard.type("F");
   await expect(getError(page)).not.toBeVisible();
-  await getTextbox(page).type("avorites");
+  await page.keyboard.type("avorites");
+  await expect(getTextbox(page)).toHaveValue("Favorites");
   await page.keyboard.press("Enter");
   await expect(getDialog(page, "Create list")).not.toBeVisible();
   await expect(getMenu(page)).toBeVisible();
