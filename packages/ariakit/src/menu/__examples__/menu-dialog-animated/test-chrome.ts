@@ -91,9 +91,15 @@ test("create list", async ({ page }) => {
   await getMenuItem(page, "Create list").click();
   await getTextbox(page).click();
   await page.keyboard.press("Enter");
+  // Wait for the submission to complete.
+  await expect(getButton(page, "Create")).not.toHaveAttribute(
+    "aria-disabled",
+    "true"
+  );
   await expect(getError(page)).toBeVisible();
-  await page.keyboard.type("Favorites");
+  await page.keyboard.type("F");
   await expect(getError(page)).not.toBeVisible();
+  await page.keyboard.type("avorites");
   await expect(getTextbox(page)).toHaveValue("Favorites");
   await page.keyboard.press("Enter");
   await expect(getDialog(page, "Create list")).not.toBeVisible();
