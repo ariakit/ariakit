@@ -1,9 +1,9 @@
 import { Locator, Page, expect, test } from "@playwright/test";
 
 const getButton = (page: Page | Locator, name: string) =>
-  page.locator(`role=button[name='${name}']`);
+  page.getByRole("button", { name });
 const getPopover = (page: Page | Locator) =>
-  page.locator("role=dialog[name='Team meeting']");
+  page.getByRole("dialog", { name: "Team meeting" });
 
 test("do not scroll when opening the popover", async ({ page }) => {
   await page.goto("/examples/popover-standalone");

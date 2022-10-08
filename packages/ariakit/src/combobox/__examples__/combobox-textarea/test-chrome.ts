@@ -6,7 +6,7 @@ test("popover is positioned correctly", async ({
 }, testInfo) => {
   testInfo.snapshotSuffix = "";
   await page.goto("/examples/combobox-textarea");
-  const textarea = await page.locator("role=combobox[name='Comment']");
+  const textarea = await page.getByRole("combobox", { name: "Comment" });
   await textarea.click({ position: { x: 10, y: 10 } });
   await textarea.type("Hello @a");
   const popover = await page.locator(".popover[role='listbox']");

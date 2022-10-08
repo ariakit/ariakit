@@ -458,8 +458,8 @@ import { expect, test } from "@playwright/test";
 
 test("my component", async ({ page }) => {
   await page.goto("/examples/my-component");
-  const element = await page.locator("text=My component");
-  await expect(eleemnt).toBeVisible();
+  const element = await page.getByText("My component");
+  await expect(element).toBeVisible();
 });
 ```
 
