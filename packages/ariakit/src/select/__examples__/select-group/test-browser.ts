@@ -1,10 +1,10 @@
 import { Page, expect, test } from "@playwright/test";
 
 const getButton = (page: Page) =>
-  page.locator("role=combobox[name='Favorite food']");
+  page.getByRole("combobox", { name: "Favorite food" });
 
 const getPopover = (page: Page) =>
-  page.locator(`role=listbox[name='Favorite food']`);
+  page.getByRole("listbox", { name: "Favorite food" });
 
 const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());

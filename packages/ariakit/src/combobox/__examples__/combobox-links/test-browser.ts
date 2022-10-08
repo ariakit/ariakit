@@ -1,9 +1,10 @@
 import { Page, expect, test } from "@playwright/test";
 
-const getCombobox = (page: Page) => page.locator("role=combobox[name='Links']");
+const getCombobox = (page: Page) =>
+  page.getByRole("combobox", { name: "Links" });
 const getPopover = (page: Page) => page.locator(".popover[role='listbox']");
 const getOption = (page: Page, name: string) =>
-  getPopover(page).locator(`role=option[name='${name}']`);
+  getPopover(page).getByRole("option", { name });
 
 const getClickModifier = async (page: Page) => {
   const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));

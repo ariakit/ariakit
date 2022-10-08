@@ -1,7 +1,5 @@
 import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
 
-process.env.PLAYWRIGHT_EXPERIMENTAL_FEATURES = "1";
-
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
 }

@@ -1,8 +1,8 @@
 import { Page, expect, test } from "@playwright/test";
 
 const getSelect = (page: Page) =>
-  page.locator("role=combobox[name='Favorite fruit']");
-const getList = (page: Page) => page.locator("role=listbox");
+  page.getByRole("combobox", { name: "Favorite fruit" });
+const getList = (page: Page) => page.getByRole("listbox");
 
 test("show/hide with click", async ({ page }) => {
   await page.goto("/examples/form-select");

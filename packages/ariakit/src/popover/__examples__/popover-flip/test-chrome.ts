@@ -1,13 +1,15 @@
 import { Page, devices, expect, test } from "@playwright/test";
 
 const getPreview = (page: Page) =>
-  page.locator("role=button[name='Accept invite'] >> xpath=..");
+  page.getByRole("button", { name: "Accept invite" }).locator("..");
 
 test("popover flip", async ({ page, headless }, testInfo) => {
   testInfo.snapshotSuffix = "";
   await page.goto("/examples/popover-flip");
-  await page.locator("role=button[name='Accept invite']").click();
-  await expect(page.locator("role=dialog[name='Team meeting']")).toBeVisible();
+  await page.getByRole("button", { name: "Accept invite" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Team meeting" })
+  ).toBeVisible();
   if (!headless) return;
   // Expect the popover to be placed on the right
   expect(await getPreview(page).screenshot()).toMatchSnapshot();

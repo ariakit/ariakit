@@ -1,8 +1,8 @@
 import { Page, expect, test } from "@playwright/test";
 
-const getDialog = (page: Page) => page.locator("role=dialog[name='Success']");
+const getDialog = (page: Page) => page.getByRole("dialog", { name: "Success" });
 const getButton = (page: Page, name: string) =>
-  page.locator(`role=button[name='${name}']`);
+  page.getByRole("button", { name });
 
 const createTransition = (duration = 100) => {
   const then = performance.now();

@@ -1,10 +1,10 @@
 import { Page, expect, test } from "@playwright/test";
 
 const getCombobox = (page: Page) =>
-  page.locator("role=combobox[name='Your favorite fruit']");
-const getListbox = (page: Page) => page.locator("role=listbox");
+  page.getByRole("combobox", { name: "Your favorite fruit" });
+const getListbox = (page: Page) => page.getByRole("listbox");
 const getOption = (page: Page, name: string) =>
-  page.locator(`role=option[name='${name}']`);
+  page.getByRole("option", { name });
 
 test("combobox show/hide animation", async ({ page }) => {
   await page.goto("/examples/combobox-animated");
