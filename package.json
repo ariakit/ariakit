@@ -80,7 +80,7 @@
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jest": "27.1.1",
     "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-react": "7.31.8",
+    "eslint-plugin-react": "7.31.9",
     "framer-motion": "7.5.3",
     "fs-extra": "10.1.0",
     "gray-matter": "4.0.3",
