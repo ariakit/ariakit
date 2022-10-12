@@ -91,7 +91,7 @@
     "jest-environment-jsdom": "29.1.2",
     "jest-fail-on-console": "3.0.2",
     "jest-matcher-utils": "29.1.2",
-    "lerna": "5.6.2",
+    "lerna": "6.0.0",
     "lint-staged": "13.0.3",
     "lodash": "4.17.21",
     "marked": "4.1.1",
