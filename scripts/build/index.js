@@ -26,6 +26,10 @@ if (hasTSConfig(cwd)) {
   spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
 }
 
-spawn.sync("rollup", ["-c", join(__dirname, "rollup.config.js")], {
-  stdio: "inherit",
-});
+spawn.sync(
+  "rollup",
+  ["-c", join(__dirname, "rollup.config.js"), "--bundleConfigAsCjs"],
+  {
+    stdio: "inherit",
+  }
+);
