@@ -89,7 +89,7 @@
     "jest": "29.1.2",
     "jest-axe": "6.0.0",
     "jest-environment-jsdom": "29.1.2",
-    "jest-fail-on-console": "3.0.1",
+    "jest-fail-on-console": "3.0.2",
     "jest-matcher-utils": "29.1.2",
     "lerna": "5.6.2",
     "lint-staged": "13.0.3",
