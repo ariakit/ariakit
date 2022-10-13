@@ -16,7 +16,7 @@ export default function GlobalNotification({ size = "md" }: Props) {
         bg-black/5 px-2 text-sm hover:bg-black/10 focus-visible:ariakit-outline-input
         dark:bg-white/5 dark:hover:bg-white/10"
       >
-        <div className="h-3 w-3 flex-none rounded-full bg-warn-2 dark:bg-warn-2-dark" />
+        <div className="h-3 w-3 flex-none rounded-full bg-yellow-500" />
         <div className="min-w-0">
           This site is under construction{" "}
           <ChevronRight className="inline-block h-4 fill-black/40 dark:fill-white/40" />{" "}
@@ -39,7 +39,7 @@ export default function GlobalNotification({ size = "md" }: Props) {
       rel="noopener noreferrer"
       className="group flex h-10 items-center gap-2 truncate rounded-lg bg-black/5 px-4 hover:bg-black/10 focus-visible:ariakit-outline-input dark:bg-white/5 dark:hover:bg-white/10"
     >
-      <div className="h-3 w-3 flex-none rounded-full bg-warn-2 dark:bg-warn-2-dark" />
+      <div className="h-3 w-3 flex-none rounded-full bg-yellow-500" />
       <div className="min-w-0">
         This site is under construction{" "}
         <ChevronRight className="inline-block h-4 fill-black/40 dark:fill-white/40" />{" "}

@@ -12,7 +12,7 @@ const fruits = ["Apple", "Grape", "Orange", "Strawberry", "Watermelon"];
 export default function Example() {
   const combobox = useComboboxState({ gutter: 8, sameWidth: true });
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Your favorite fruit
         <Combobox

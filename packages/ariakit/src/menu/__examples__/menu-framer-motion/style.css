@@ -21,7 +21,7 @@
 
 .menu-item {
   @apply
-    aria-disabled:text-disabled
-    dark:aria-disabled:text-disabled-dark
+    aria-disabled:text-black/30
+    dark:aria-disabled:text-white/30
   ;
 }

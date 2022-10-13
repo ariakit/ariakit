@@ -14,8 +14,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // black,
-        // white,
+        inherit: "inherit",
+        black,
+        white,
         gray: {
           50: "hsl(204 20% 99%)",
           100: "hsl(204 20% 96%)",
@@ -48,141 +49,20 @@ module.exports = {
           800: "hsl(204 100% 32%)",
           900: "hsl(204 100% 30%)",
         },
-      },
-    },
-    colors: {
-      black: {
-        DEFAULT: black,
-        border: black,
-        text: black,
-      },
-      white: {
-        DEFAULT: white,
-        border: white,
-        text: white,
-      },
-      current: {
-        DEFAULT: "currentColor",
-        border: "currentColor",
-        text: "currentColor",
-      },
-      transparent: {
-        DEFAULT: "transparent",
-        border: "transparent",
-        text: "transparent",
-      },
-      inherit: {
-        DEFAULT: "inherit",
-        border: "inherit",
-        text: "inherit",
-      },
-      current: {
-        DEFAULT: "currentColor",
-        border: "currentColor",
-        text: "currentColor",
-      },
-      "danger-1": {
-        DEFAULT: "hsl(357 56% 90%)",
-        hover: "hsl(357 56% 86%)",
-        border: "hsl(357 56% 72%)",
-        text: "hsl(357 100% 30%)",
-        dark: {
-          DEFAULT: "hsl(357 25% 25%)",
-          hover: "hsl(357 25% 29%)",
-          border: "hsl(357 25% 38%)",
-          text: "hsl(357 100% 90%)",
-        },
-      },
-      "danger-2": {
-        DEFAULT: "hsl(357 56% 50%)",
-        hover: "hsl(357 56% 42%)",
-        border: "hsl(357 56% 30%)",
-        foreground: "hsl(357 70% 48%)",
-        text: white,
-        dark: {
-          DEFAULT: "hsl(357 56% 50%)",
-          hover: "hsl(357 56% 42%)",
-          border: "hsl(357 56% 80%)",
-          foreground: "hsl(357 80% 68%)",
-          text: white,
-        },
-      },
-      "warn-1": {
-        DEFAULT: "hsl(43 91% 86%)",
-        hover: "hsl(43 91% 81%)",
-        border: "hsl(43 91% 55%)",
-        text: "hsl(43 100% 20%)",
-        dark: {
-          DEFAULT: "hsl(35 25% 20%)",
-          hover: "hsl(35 25% 24%)",
-          border: "hsl(35 25% 33%)",
-          text: "hsl(35 100% 90%)",
-        },
-      },
-      "warn-2": {
-        DEFAULT: "hsl(43 91% 62%)",
-        hover: "hsl(43 91% 54%)",
-        border: "hsl(43 91% 42%)",
-        foreground: "hsl(43 4% 42%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(43 75% 50%)",
-          hover: "hsl(43 75% 60%)",
-          border: "hsl(43 91% 90%)",
-          foreground: "hsl(43 75% 50%)",
-          text: black,
+        red: {
+          50: "hsl(357 100% 90%)",
+          100: "hsl(357 56% 90%)",
+          200: "hsl(357 56% 86%)",
+          300: "hsl(357 56% 80%)",
+          400: "hsl(357 56% 72%)",
+          500: "hsl(357 56% 64%)",
+          600: "hsl(357 56% 50%)",
+          700: "hsl(357 56% 42%)",
+          800: "hsl(357 100% 30%)",
+          900: "hsl(357 56% 30%)",
         },
       },
     },
-
-    borderColor: (theme) => {
-      const colors = theme("colors");
-      return {
-        ...Object.entries(colors).reduce((acc, [key, color]) => {
-          acc[key] = {
-            DEFAULT: color.border,
-            dark: color.dark && color.dark.border,
-          };
-          return acc;
-        }, {}),
-        gray: colors.gray,
-        blue: colors.blue,
-      };
-    },
-
-    textColor: (theme) => {
-      const colors = theme("colors");
-      const textColor = Object.entries(colors).reduce((acc, [key, color]) => {
-        acc[key] = {
-          DEFAULT: color.text,
-        };
-        if (color.foreground) {
-          acc[key].foreground = color.foreground;
-        }
-        if (color.dark) {
-          acc[key].dark = {
-            DEFAULT: color.dark.text,
-          };
-          if (color.dark.foreground) {
-            acc[key].dark.foreground = color.dark.foreground;
-          }
-        }
-        return acc;
-      }, {});
-
-      return {
-        ...textColor,
-        gray: colors.gray,
-        blue: colors.blue,
-        disabled: {
-          DEFAULT: "hsla(204, 10%, 10%, 30%)",
-          dark: "hsla(0, 0%, 100%, 30%)",
-        },
-      };
-    },
-
-    fill: (theme) => theme("colors"),
-    stroke: (theme) => theme("borderColor"),
 
     dropShadow: {
       sm: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))",
@@ -246,6 +126,7 @@ module.exports = {
 
       none: "0 0 #0000",
     },
+
     fontFamily: {
       mono: ["Menlo", "Consolas", "Courier New", "monospace"],
     },
@@ -287,11 +168,11 @@ module.exports = {
 
       addUtilities({
         ".ariakit-outline": {
-          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+          outline: `2px solid ${theme("colors.blue.600")}`,
           outlineOffset: "2px",
         },
         ".ariakit-outline-input": {
-          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+          outline: `2px solid ${theme("colors.blue.600")}`,
         },
       });
 

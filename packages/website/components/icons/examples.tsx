@@ -39,7 +39,7 @@ export default function Examples({ size = "md" }: Props) {
         y="24"
         width="16"
         height="2"
-        className="fill-link dark:fill-link-dark"
+        className="fill-blue-700 dark:fill-blue-500"
       />
       <rect
         x="6"

@@ -1,7 +1,6 @@
 .wrapper {
   @apply
-    bg-danger-2
+    bg-red-600
     text-white
-    dark:bg-danger-2-dark
   ;
 }

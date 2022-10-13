@@ -227,8 +227,8 @@ export default function MarkdownPage(props) {
           "[&>div.warning]:shadow dark:[&>div.warning]:shadow-dark",
           "[&>div.warning]:bg-white dark:[&>div.warning]:bg-gray-750",
           "[&>div.warning>h2]:m-0 [&>div.warning>h2]:mb-4 [&>div.warning>h2]:text-xl",
-          "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:bottom-2 [&>div.warning]:before:w-1.5 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-warn-2 dark:[&>div.warning]:before:w-1.5 dark:[&>div.warning]:before:bg-warn-2-dark",
-          "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:text-lg [&>div.warning>h3]:font-medium [&>div.warning>h3]:text-warn-1 dark:[&>div.warning>h3]:text-warn-1-dark",
+          "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:bottom-2 [&>div.warning]:before:w-1.5 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-yellow-500 dark:[&>div.warning]:before:w-1.5",
+          "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:text-lg [&>div.warning>h3]:font-medium",
           // p
           "dark:[&>p]:text-white/80",
           "[&>p]:leading-7 [&>p]:tracking-[-0.02em] dark:[&>p]:tracking-[-0.01em]",
