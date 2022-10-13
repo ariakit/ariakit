@@ -7,11 +7,11 @@
   ;
 }
 
-.menu-arrow svg {
+.menu-arrow {
   @apply
-    fill-canvas-4
-    stroke-canvas-4
-    dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark
+    [&>svg]:fill-white
+    [&>svg]:stroke-gray-250
+    [&>svg]:dark:fill-gray-700
+    [&>svg]:dark:stroke-gray-600
   ;
 }

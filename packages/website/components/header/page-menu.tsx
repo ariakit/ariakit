@@ -90,9 +90,9 @@ const style = {
     text-base
     placeholder-black/60 dark:placeholder-white/[46%]
     rounded border-none
-    text-canvas-1 dark:text-canvas-1-dark
-    bg-canvas-1/40 dark:bg-canvas-1-dark
-    hover:bg-canvas-1 dark:hover:bg-canvas-1-dark-hover
+    text-black dark:text-white
+    bg-gray-150/40 dark:bg-gray-850
+    hover:bg-gray-150 dark:hover:bg-gray-900
     shadow-input dark:shadow-input-dark
     focus-visible:ariakit-outline-input
   `,
@@ -141,7 +141,7 @@ const style = {
     flex items-center justify-center flex-none
     w-16 h-16
     rounded-sm
-    bg-canvas-1 dark:bg-canvas-2-dark
+    bg-gray-150 dark:bg-gray-800
     group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
   `,
   itemNestedThumbnail: tw`

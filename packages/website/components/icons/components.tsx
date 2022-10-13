@@ -25,7 +25,7 @@ export default function Components({ size = "md" }: Props) {
         height="34"
         rx="2"
         strokeWidth={size === "md" ? 1 : 2 / 3}
-        className="fill-canvas-5 stroke-black/10 dark:fill-canvas-5-dark dark:stroke-white/5"
+        className="fill-white stroke-black/10 dark:fill-gray-650 dark:stroke-white/5"
       />
       <rect
         x="6"

@@ -27,7 +27,7 @@ export default function Example() {
   const files = Object.keys(playground.values);
   return (
     <Playground state={playground} className="playground">
-      <div className="editor">
+      <div>
         <TabList state={tab} className="tab-list">
           {files.map((file) => (
             <Tab key={file} id={`tab-${file}`} className="tab">
@@ -36,8 +36,8 @@ export default function Example() {
           ))}
         </TabList>
         {files.map((file) => (
-          <TabPanel state={tab} tabId={`tab-${file}`} key={file}>
-            <PlaygroundEditor theme={theme} file={file} />
+          <TabPanel state={tab} key={file} tabId={`tab-${file}`}>
+            <PlaygroundEditor theme={theme} file={file} className="editor" />
           </TabPanel>
         ))}
       </div>

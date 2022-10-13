@@ -408,7 +408,7 @@ const NavMenu = memo(
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
                   "h-10 w-full items-center rounded p-2",
-                  "bg-canvas-1 dark:bg-canvas-5-dark",
+                  "bg-gray-150 dark:bg-gray-650",
                   "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
                   "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
                   "focus-visible:ariakit-outline-input"

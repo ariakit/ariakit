@@ -50,8 +50,8 @@
     pb-2
     mb-2
     border-b
-    border-canvas-4
-    dark:border-canvas-4-dark
+    border-gray-250
+    dark:border-gray-500
   ;
 }
 
@@ -59,8 +59,8 @@
   @apply
     text-lg
     font-semibold
-    text-canvas-1
-    dark:text-canvas-1-dark
+    text-black
+    dark:text-white
   ;
 }
 

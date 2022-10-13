@@ -41,7 +41,7 @@ const { Compiler: renderAst } = new RehypeReact({
             value={child.props.children[0]}
             language={child.props.className?.replace("language-", "")}
             className={cx(
-              "!max-w-[832px] rounded-xl bg-canvas-1 dark:bg-canvas-1-dark md:[&_.cm-scroller]:!p-8",
+              "!max-w-[832px] rounded-xl bg-gray-150 dark:bg-gray-850 md:[&_.cm-scroller]:!p-8",
               child.props.children[0].trim().split(`\n`).length === 1 &&
                 "md:[&_.cm-scroller]:!py-4"
             )}
@@ -223,9 +223,9 @@ export default function MarkdownPage(props) {
           // warning
           "[&>div.warning]:relative [&>div.warning]:p-4 [&>div.warning]:pl-8",
           "[&>div.warning]:rounded-xl [&>div.warning]:text-black/80 dark:[&>div.warning]:text-white/80",
-          "[&>div.warning]:border [&>div.warning]:border-canvas-5 dark:[&>div.warning]:border-canvas-2-dark",
+          "[&>div.warning]:border [&>div.warning]:border-gray-250 dark:[&>div.warning]:border-gray-600",
           "[&>div.warning]:shadow dark:[&>div.warning]:shadow-dark",
-          "[&>div.warning]:bg-canvas-5 dark:[&>div.warning]:bg-canvas-3-dark",
+          "[&>div.warning]:bg-white dark:[&>div.warning]:bg-gray-750",
           "[&>div.warning>h2]:m-0 [&>div.warning>h2]:mb-4 [&>div.warning>h2]:text-xl",
           "[&>div.warning]:before:absolute [&>div.warning]:before:top-2 [&>div.warning]:before:left-2 [&>div.warning]:before:bottom-2 [&>div.warning]:before:w-1.5 [&>div.warning]:before:rounded-lg [&>div.warning]:before:bg-warn-2 dark:[&>div.warning]:before:w-1.5 dark:[&>div.warning]:before:bg-warn-2-dark",
           "[&>div.warning>h3]:mb-2 [&>div.warning>h3]:text-lg [&>div.warning>h3]:font-medium [&>div.warning>h3]:text-warn-1 dark:[&>div.warning>h3]:text-warn-1-dark",

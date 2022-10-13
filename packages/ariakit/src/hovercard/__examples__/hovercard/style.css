@@ -36,12 +36,12 @@
     focus-visible:ariakit-outline
     border
     border-solid
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
     dark:shadow-lg-dark
   ;
 }

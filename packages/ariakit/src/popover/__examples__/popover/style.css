@@ -14,21 +14,21 @@
     shadow-lg
     dark:shadow-lg-dark
     focus-visible:ariakit-outline
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
+    border-gray-250
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
   ;
 }
 
-.arrow svg {
+.arrow {
   @apply
-    fill-canvas-4
-    stroke-canvas-4
-    dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark
+    [&>svg]:fill-white
+    [&>svg]:stroke-gray-250
+    [&>svg]:dark:fill-gray-700
+    [&>svg]:dark:stroke-gray-600
   ;
 }
 

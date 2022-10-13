@@ -12,6 +12,32 @@ module.exports = {
   ],
   darkMode: "class",
   theme: {
+    extend: {
+      colors: {
+        // black,
+        // white,
+        gray: {
+          50: "hsl(204 20% 99%)",
+          100: "hsl(204 20% 96%)",
+          150: "hsl(204 20% 94%)",
+          200: "hsl(204 20% 91%)",
+          250: "hsl(204 20% 88%)",
+          300: "hsl(204 20% 82%)",
+          350: "hsl(204 10% 70%)",
+          400: "hsl(204 10% 50%)",
+          450: "hsl(204 3% 34%)",
+          500: "hsl(204 3% 30%)",
+          550: "hsl(204 3% 28%)",
+          600: "hsl(204 3% 26%)",
+          650: "hsl(204 3% 22%)",
+          700: "hsl(204 3% 18%)",
+          750: "hsl(204 3% 16%)",
+          800: "hsl(204 3% 14%)",
+          850: "hsl(204 3% 12%)",
+          900: "hsl(204 3% 10%)",
+        },
+      },
+    },
     colors: {
       black: {
         DEFAULT: black,
@@ -33,6 +59,11 @@ module.exports = {
         border: "transparent",
         text: "transparent",
       },
+      inherit: {
+        DEFAULT: "inherit",
+        border: "inherit",
+        text: "inherit",
+      },
       current: {
         DEFAULT: "currentColor",
         border: "currentColor",
@@ -46,66 +77,6 @@ module.exports = {
           DEFAULT: "hsl(204 100% 64%)",
           border: "hsl(204 100% 64%)",
           text: "hsl(204 100% 64%)",
-        },
-      },
-      "canvas-1": {
-        DEFAULT: "hsl(204 20% 94%)",
-        hover: "hsl(204 20% 91%)",
-        border: "hsl(204 20% 82%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204 3% 12%)",
-          hover: "hsl(204 3% 10%)",
-          border: "hsl(204 3% 22%)",
-          text: white,
-        },
-      },
-      "canvas-2": {
-        DEFAULT: "hsl(204 20% 99%)",
-        hover: "hsl(204 20% 95%)",
-        border: "hsl(204 20% 87%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204 3% 14%)",
-          hover: "hsl(204 3% 12%)",
-          border: "hsl(204 3% 26%)",
-          text: white,
-        },
-      },
-      "canvas-3": {
-        DEFAULT: "rgb(255 255 255)",
-        hover: "hsl(204 20% 96%)",
-        border: "hsl(204 20% 88%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204 3% 16%)",
-          hover: "hsl(204 3% 14%)",
-          border: "hsl(204 3% 28%)",
-          text: white,
-        },
-      },
-      "canvas-4": {
-        DEFAULT: "rgb(255 255 255)",
-        hover: "hsl(204 20% 96%)",
-        border: "hsl(204 20% 88%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204 3% 18%)",
-          hover: "hsl(204 3% 16%)",
-          border: "hsl(204 3% 30%)",
-          text: white,
-        },
-      },
-      "canvas-5": {
-        DEFAULT: "rgb(255 255 255)",
-        hover: "hsl(204 20% 96%)",
-        border: "hsl(204 20% 88%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204 3% 22%)",
-          hover: "hsl(204 3% 18%)",
-          border: "hsl(204 3% 34%)",
-          text: white,
         },
       },
       "primary-1": {
@@ -190,13 +161,16 @@ module.exports = {
 
     borderColor: (theme) => {
       const colors = theme("colors");
-      return Object.entries(colors).reduce((acc, [key, color]) => {
-        acc[key] = {
-          DEFAULT: color.border,
-          dark: color.dark && color.dark.border,
-        };
-        return acc;
-      }, {});
+      return {
+        ...Object.entries(colors).reduce((acc, [key, color]) => {
+          acc[key] = {
+            DEFAULT: color.border,
+            dark: color.dark && color.dark.border,
+          };
+          return acc;
+        }, {}),
+        gray: colors.gray,
+      };
     },
 
     textColor: (theme) => {

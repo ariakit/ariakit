@@ -5,8 +5,8 @@
     p-2
     gap-2
     rounded-lg
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;

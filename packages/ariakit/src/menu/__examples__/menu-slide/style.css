@@ -16,18 +16,13 @@
     [scroll-snap-type:x_mandatory]
     [scroll-snap-stop:always]
     [scrollbar-width:none]
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-  ;
-}
-
-.menu-wrapper::-webkit-scrollbar {
-  @apply
-    hidden
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    [&::-webkit-scrollbar]:hidden
   ;
 }
 
@@ -44,8 +39,7 @@
     overflow-y-auto
     outline-none
     leave:z-0
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-inherit
   ;
 }
 

@@ -4,23 +4,18 @@
   @apply
     max-h-max
     overflow-visible
+    [--menu-origin-inline:calc(var(--popover-anchor-width)/2)]
+    [&[data-placement^="bottom"]]:origin-[var(--menu-origin-inline)_-11px]
+    [&[data-placement^="top"]]:origin-[var(--menu-origin-inline)_calc(100%+11px)]
   ;
 }
 
-.menu[data-placement^="bottom"] {
-  transform-origin: calc(var(--popover-anchor-width) / 2) -11px;
-}
-
-.menu[data-placement^="top"] {
-  transform-origin: calc(var(--popover-anchor-width) / 2) calc(100% + 11px);
-}
-
-.menu-arrow svg {
+.menu-arrow {
   @apply
-    fill-canvas-4
-    stroke-canvas-4
-    dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark
+    [&>svg]:fill-white
+    [&>svg]:stroke-gray-250
+    [&>svg]:dark:fill-gray-700
+    [&>svg]:dark:stroke-gray-600
   ;
 }
 

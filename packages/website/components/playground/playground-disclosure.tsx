@@ -39,9 +39,9 @@ const PlaygroundDisclosure = forwardRef<
         "cursor-pointer hover:underline focus-visible:ariakit-outline-input",
         expanded && "absolute top-full rounded bg-none p-2",
         !expanded &&
-          "bg-gradient-to-b from-canvas-5/0 to-[theme(colors.canvas-5.DEFAULT)_3.25em] dark:from-canvas-1-dark/0 dark:to-[theme(colors.canvas-1.dark.DEFAULT)_3.25em]",
+          "bg-gradient-to-b from-white/0 to-[theme(colors.white.DEFAULT)_3.25em] dark:from-gray-850/0 dark:to-[theme(colors.gray.850)_3.25em]",
         !expanded &&
-          "absolute bottom-0 rounded-bl-[inherit] rounded-br-[inherit] p-4 pt-12 text-canvas-1 dark:text-canvas-1-dark",
+          "absolute bottom-0 rounded-bl-[inherit] rounded-br-[inherit] p-4 pt-12 text-black dark:text-white",
         buttonProps.className
       )}
     >

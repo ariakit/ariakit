@@ -5,8 +5,8 @@
     p-4
     gap-2
     rounded-lg
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;
@@ -49,12 +49,12 @@
     overflow-auto
     overscroll-contain
     border-solid
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
+    border-gray-250
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
     shadow-lg
     dark:shadow-lg-dark
     focus-visible:ariakit-outline-input

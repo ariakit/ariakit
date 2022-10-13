@@ -48,9 +48,9 @@ const style = {
   `,
   itemBadge: tw`
     p-1 px-2
-    text-xs text-canvas-1/70 dark:text-canvas-1-dark/70
+    text-xs text-black/70 dark:text-white/70
     rounded-full
-    bg-canvas-1 dark:bg-canvas-1-dark
+    bg-gray-150 dark:bg-gray-850
     group-active-item:bg-black/5 dark:group-active-item:bg-black/70
   `,
 };

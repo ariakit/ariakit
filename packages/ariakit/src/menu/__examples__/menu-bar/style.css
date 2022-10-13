@@ -5,8 +5,8 @@
     flex
     rounded-lg
     p-0.5
-    bg-canvas-3
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;
