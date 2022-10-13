@@ -43,8 +43,8 @@ const style = {
     p-2
     rounded
     font-medium
-    active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
-    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
+    active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25
+    active:bg-blue-200/70 dark:active:bg-blue-800/25
   `,
   itemBadge: tw`
     p-1 px-2

@@ -55,12 +55,9 @@
     p-2
     ![outline:none]
     aria-disabled:opacity-25
-    ariakit-focus-visible:active-item:bg-primary-2
-    ariakit-focus-visible:active-item:text-primary-2
-    ariakit-focus-visible:dark:active-item:bg-primary-2-dark
-    ariakit-focus-visible:dark:active-item:text-primary-2-dark
-    [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
-    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")]
+    ariakit-focus-visible:active-item:bg-blue-600
+    ariakit-focus-visible:active-item:text-white
+    [-webkit-tap-highlight-color:theme("colors.blue.600")]
   ;
 }
 
@@ -68,11 +65,11 @@
   .menu-item {
     @apply
       cursor-default
-      hover:bg-primary-1
-      dark:hover:bg-primary-1-dark-hover
-      active:bg-primary-2
-      active:text-primary-2
-      dark:active:bg-primary-2-dark-hover
+      hover:bg-blue-200/40
+      dark:hover:bg-blue-600/25
+      active:text-white
+      active-item:active:bg-blue-800
+      dark:active:bg-blue-600
     ;
   }
 }

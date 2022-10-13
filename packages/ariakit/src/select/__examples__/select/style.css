@@ -73,9 +73,7 @@
     p-2
     ![outline:none]
     aria-disabled:opacity-50
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark
+    active-item:text-white
+    active-item:bg-blue-600
   ;
 }

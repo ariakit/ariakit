@@ -17,8 +17,8 @@
     hover:decoration-[3px]
     underline-offset-[0.25em]
     [text-decoration-skip-ink:none]
-    text-link
-    dark:text-link-dark
+    text-blue-700
+    dark:text-blue-400
   ;
 }
 

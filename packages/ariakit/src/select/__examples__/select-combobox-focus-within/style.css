@@ -11,8 +11,8 @@
 
 .focus-within {
   @apply
-    border-primary-1
-    dark:border-primary-1-dark
+    border-blue-200
+    dark:border-blue-600/40
   ;
 }
 

@@ -128,8 +128,8 @@ const style = {
     p-2 scroll-m-2
     cursor-default [a&]:cursor-pointer
     rounded focus-visible:!outline-none
-    active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
-    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
+    active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25
+    active:bg-blue-200/70 dark:active:bg-blue-800/25
   `,
   itemDescription: tw`
     text-sm text-black/70 dark:text-white/70
@@ -151,9 +151,9 @@ const style = {
     after:absolute after:-top-4 after:h-24 after:w-0.5 after:bg-black/10 after:dark:bg-white/10
   `,
   itemPathSegment: tw`
-    truncate text-link dark:text-link-dark
+    truncate text-blue-700 dark:text-blue-400
     [&_[data-user-value]]:font-semibold
-    [&_[data-user-value]]:text-primary-1 dark:[&_[data-user-value]]:text-primary-1-dark
+    [&_[data-user-value]]:text-blue-900 dark:[&_[data-user-value]]:text-blue-100
   `,
   footer: tw`
     sticky bottom-0

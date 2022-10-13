@@ -22,7 +22,7 @@ export default function GuidePage() {
               title={page.title}
               description={page.content}
               thumbnail={
-                <Guide className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
+                <Guide className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />
               }
             />
           ))}
@@ -41,7 +41,7 @@ export default function GuidePage() {
                 title={page.title}
                 description={page.content}
                 thumbnail={
-                  <Guide className="h-7 w-7 fill-primary-2-foreground dark:fill-primary-2-dark-foreground" />
+                  <Guide className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />
                 }
               />
             ))}

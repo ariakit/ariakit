@@ -17,11 +17,10 @@
     h-5
     px-2
     text-xs
+    font-medium
     rounded-full
-    bg-primary-1
-    text-primary-1
-    dark:bg-primary-1-dark
-    dark:text-primary-1-dark
+    bg-blue-50/80
+    text-blue-900
   ;
 }
 

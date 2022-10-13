@@ -36,6 +36,18 @@ module.exports = {
           850: "hsl(204 3% 12%)",
           900: "hsl(204 3% 10%)",
         },
+        blue: {
+          50: "hsl(204 100% 90%)",
+          100: "hsl(204 100% 86%)",
+          200: "hsl(204 100% 80%)",
+          300: "hsl(204 100% 72%)",
+          400: "hsl(204 100% 64%)",
+          500: "hsl(204 100% 58%)",
+          600: "hsl(204 100% 40%)",
+          700: "hsl(204 100% 35%)",
+          800: "hsl(204 100% 32%)",
+          900: "hsl(204 100% 30%)",
+        },
       },
     },
     colors: {
@@ -68,42 +80,6 @@ module.exports = {
         DEFAULT: "currentColor",
         border: "currentColor",
         text: "currentColor",
-      },
-      link: {
-        DEFAULT: "hsl(204 100% 36%)",
-        border: "hsl(204 100% 36%)",
-        text: "hsl(204 100% 36%)",
-        dark: {
-          DEFAULT: "hsl(204 100% 64%)",
-          border: "hsl(204 100% 64%)",
-          text: "hsl(204 100% 64%)",
-        },
-      },
-      "primary-1": {
-        DEFAULT: "hsl(204 100% 90%)",
-        hover: "hsl(204 100% 86%)",
-        border: "hsl(204 100% 72%)",
-        text: "hsl(204 100% 30%)",
-        dark: {
-          DEFAULT: "hsl(204 25% 23%)",
-          hover: "hsl(204 25% 27%)",
-          border: "hsl(204 25% 36%)",
-          text: "hsl(204 100% 85%)",
-        },
-      },
-      "primary-2": {
-        DEFAULT: "hsl(204 100% 40%)",
-        hover: "hsl(204 100% 32%)",
-        border: "hsl(204 100% 30%)",
-        foreground: "hsl(204 100% 35%)",
-        text: white,
-        dark: {
-          DEFAULT: "hsl(204 100% 40%)",
-          hover: "hsl(204 100% 32%)",
-          border: "hsl(204 100% 80%)",
-          foreground: "hsl(204 100% 58%)",
-          text: white,
-        },
       },
       "danger-1": {
         DEFAULT: "hsl(357 56% 90%)",
@@ -170,6 +146,7 @@ module.exports = {
           return acc;
         }, {}),
         gray: colors.gray,
+        blue: colors.blue,
       };
     },
 
@@ -195,6 +172,8 @@ module.exports = {
 
       return {
         ...textColor,
+        gray: colors.gray,
+        blue: colors.blue,
         disabled: {
           DEFAULT: "hsla(204, 10%, 10%, 30%)",
           dark: "hsla(0, 0%, 100%, 30%)",

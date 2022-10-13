@@ -9,7 +9,7 @@ export default function Logo({ iconOnly }: LogoProps) {
         aria-hidden
         height="36"
         viewBox="0 0 48 48"
-        className="fill-primary-2-foreground dark:fill-primary-2-dark-foreground"
+        className="fill-blue-700 dark:fill-blue-500"
       >
         <circle cx="29" cy="24" r="5" />
         <path

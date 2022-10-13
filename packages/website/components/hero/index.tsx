@@ -41,9 +41,7 @@ export default function Hero() {
           <a
             className={cx(
               "flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-lg",
-              "text-primary-2 dark:text-primary-2-dark",
-              "bg-primary-2 dark:bg-primary-2-dark",
-              "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
+              "bg-blue-600 text-white hover:bg-blue-800",
               "shadow-xl focus-visible:ariakit-outline"
             )}
           >

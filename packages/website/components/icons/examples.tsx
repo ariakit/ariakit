@@ -16,7 +16,7 @@ export default function Examples({ size = "md" }: Props) {
         width="24"
         height="8"
         rx="2"
-        className="fill-primary-2 dark:fill-primary-2-dark"
+        className="fill-blue-600"
       />
       <rect
         x="2"

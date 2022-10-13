@@ -195,7 +195,7 @@ export default function MarkdownPage(props) {
           "[&_a]:underline [&_a]:[text-decoration-skip-ink:none] [&_a:hover]:decoration-[3px]",
           "[&_a]:underline-offset-[0.125em]",
           "[&_a]:font-medium dark:[&_a]:font-normal",
-          "[&_a]:text-link dark:[&_a]:text-link-dark",
+          "[&_a]:text-blue-700 dark:[&_a]:text-blue-400",
           // h1
           "[&_h1]:scroll-mt-[120px]",
           "[&_h1]:text-4xl sm:[&_h1]:text-5xl",

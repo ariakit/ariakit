@@ -21,9 +21,9 @@ export default function GlobalNotification({ size = "md" }: Props) {
           This site is under construction{" "}
           <ChevronRight className="inline-block h-4 fill-black/40 dark:fill-white/40" />{" "}
           <span
-            className="inline-flex items-center gap-1 font-medium text-link underline
+            className="inline-flex items-center gap-1 font-medium text-blue-700 underline
             underline-offset-[0.125em] [text-decoration-skip-ink:none]
-            group-hover:decoration-[3px] dark:font-normal dark:text-link-dark"
+            group-hover:decoration-[3px] dark:font-normal dark:text-blue-400"
           >
             Subscribe to updates
             <NewWindow className="h-4 w-4 stroke-black/75 dark:stroke-white/75" />
@@ -44,9 +44,9 @@ export default function GlobalNotification({ size = "md" }: Props) {
         This site is under construction{" "}
         <ChevronRight className="inline-block h-4 fill-black/40 dark:fill-white/40" />{" "}
         <span
-          className="inline-flex items-center gap-1 font-medium text-link underline
+          className="inline-flex items-center gap-1 font-medium text-blue-700 underline
           underline-offset-[0.125em] [text-decoration-skip-ink:none]
-          group-hover:decoration-[3px] dark:font-normal dark:text-link-dark"
+          group-hover:decoration-[3px] dark:font-normal dark:text-blue-400"
         >
           Subscribe to our newsletter
           <NewWindow className="h-4 w-4 stroke-black/75 dark:stroke-white/75" />
