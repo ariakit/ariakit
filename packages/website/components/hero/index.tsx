@@ -30,7 +30,7 @@ export default function Hero() {
         >
           Build accessible web apps with React
         </h1>
-        <p className="max-w-3xl text-center text-lg text-canvas-1/70 dark:text-canvas-1-dark/70">
+        <p className="max-w-3xl text-center text-lg text-black/70 dark:text-white/70">
           Ariakit is an open source library that provides lower-level React
           components and hooks for building accessible web apps, design systems,
           and component libraries.
@@ -41,9 +41,7 @@ export default function Hero() {
           <a
             className={cx(
               "flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-lg",
-              "text-primary-2 dark:text-primary-2-dark",
-              "bg-primary-2 dark:bg-primary-2-dark",
-              "hover:bg-primary-2-hover dark:hover:bg-primary-2-dark-hover",
+              "bg-blue-600 text-white hover:bg-blue-800",
               "shadow-xl focus-visible:ariakit-outline"
             )}
           >
@@ -57,8 +55,8 @@ export default function Hero() {
               flex h-12 items-center justify-center
               gap-2 whitespace-nowrap rounded-lg
               px-6
-              hover:bg-canvas-1 focus-visible:ariakit-outline-input
-              dark:hover:bg-canvas-4-dark
+              hover:bg-gray-150 focus-visible:ariakit-outline-input
+              dark:hover:bg-gray-700
             `}
           >
             Explore components{" "}

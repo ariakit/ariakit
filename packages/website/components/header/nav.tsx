@@ -39,7 +39,7 @@ type SearchData = Array<Data[number] & { nested?: boolean }>;
 const style = {
   thumbnail: tw`
     w-7 h-7
-    fill-primary-2-foreground dark:fill-primary-2-dark-foreground
+    fill-blue-700 dark:fill-blue-500
   `,
 };
 
@@ -408,9 +408,9 @@ const NavMenu = memo(
                 className={cx(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
                   "h-10 w-full items-center rounded p-2",
-                  "bg-canvas-1 dark:bg-canvas-5-dark",
-                  "hover:bg-primary-1 dark:hover:bg-primary-2-dark/25",
-                  "active:bg-primary-1-hover dark:active:bg-primary-2-dark-hover/25",
+                  "bg-gray-150 dark:bg-gray-650",
+                  "hover:bg-blue-200/40 dark:hover:bg-blue-600/25",
+                  "active:bg-blue-200/70 dark:active:bg-blue-800/25",
                   "focus-visible:ariakit-outline-input"
                 )}
                 onClick={() => {

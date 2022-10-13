@@ -30,14 +30,13 @@
     p-4
     sm:p-6
     rounded-2xl
-    border
-    border-solid
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
+    dark:border
+    dark:border-solid
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
     shadow-2xl
     focus-visible:ariakit-outline
   ;

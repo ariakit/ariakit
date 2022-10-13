@@ -9,8 +9,8 @@
     max-w-full
     p-4
     rounded-lg
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;
@@ -45,12 +45,12 @@
     border-none
     placeholder-black/60
     dark:placeholder-white/[46%]
-    text-canvas-1
-    dark:text-canvas-1-dark
-    bg-canvas-1/40
-    dark:bg-canvas-1-dark
-    hover:bg-canvas-1
-    dark:hover:bg-canvas-1-dark-hover
+    text-black
+    dark:text-white
+    bg-gray-150/40
+    dark:bg-gray-850
+    hover:bg-gray-150
+    dark:hover:bg-gray-900
     shadow-input
     dark:shadow-input-dark
     focus-visible:ariakit-outline-input
@@ -67,15 +67,15 @@
   @apply
     w-fit
     rounded-md
-    border
-    border-danger-1
-    bg-danger-1
     py-2
     px-4
-    text-danger-1
-    dark:border-danger-1-dark
-    dark:bg-danger-1-dark
-    dark:text-danger-1-dark
+    border
+    border-red-300
+    bg-red-300/40
+    text-red-800
+    dark:border-red-600/40
+    dark:bg-red-700/25
+    dark:text-red-50
   ;
 }
 
@@ -101,7 +101,7 @@
     dark:text-white/70
     border
     border-solid
-    border-black/[15%]
-    dark:border-white/[15%]
+    border-gray-250
+    dark:border-gray-600
   ;
 }

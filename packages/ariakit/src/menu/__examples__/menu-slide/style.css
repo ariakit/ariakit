@@ -16,18 +16,13 @@
     [scroll-snap-type:x_mandatory]
     [scroll-snap-stop:always]
     [scrollbar-width:none]
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-  ;
-}
-
-.menu-wrapper::-webkit-scrollbar {
-  @apply
-    hidden
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    [&::-webkit-scrollbar]:hidden
   ;
 }
 
@@ -44,8 +39,7 @@
     overflow-y-auto
     outline-none
     leave:z-0
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-inherit
   ;
 }
 
@@ -61,12 +55,9 @@
     p-2
     ![outline:none]
     aria-disabled:opacity-25
-    ariakit-focus-visible:active-item:bg-primary-2
-    ariakit-focus-visible:active-item:text-primary-2
-    ariakit-focus-visible:dark:active-item:bg-primary-2-dark
-    ariakit-focus-visible:dark:active-item:text-primary-2-dark
-    [-webkit-tap-highlight-color:theme("colors.primary-2.DEFAULT")]
-    dark:[-webkit-tap-highlight-color:theme("colors.primary-2.dark.DEFAULT")]
+    ariakit-focus-visible:active-item:bg-blue-600
+    ariakit-focus-visible:active-item:text-white
+    [-webkit-tap-highlight-color:theme("colors.blue.600")]
   ;
 }
 
@@ -74,11 +65,11 @@
   .menu-item {
     @apply
       cursor-default
-      hover:bg-primary-1
-      dark:hover:bg-primary-1-dark-hover
-      active:bg-primary-2
-      active:text-primary-2
-      dark:active:bg-primary-2-dark-hover
+      hover:bg-blue-200/40
+      dark:hover:bg-blue-600/25
+      active:text-white
+      active-item:active:bg-blue-800
+      dark:active:bg-blue-600
     ;
   }
 }

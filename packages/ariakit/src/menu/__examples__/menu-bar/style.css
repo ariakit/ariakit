@@ -5,8 +5,8 @@
     flex
     rounded-lg
     p-0.5
-    bg-canvas-3
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;
@@ -15,7 +15,7 @@
 .menu-bar:not(:focus-within) > .menu-item {
   @apply
     bg-transparent
-    [color:inherit]
+    text-inherit
   ;
 }
 
@@ -24,19 +24,15 @@
     px-4
     h-10
     rounded-md
-    hover:bg-primary-1
-    dark:hover:bg-primary-2-dark/40
-    active:bg-primary-2-hover
-    dark:active:bg-primary-2-dark-hover
+    hover:bg-blue-200/40
+    dark:hover:bg-blue-600/40
   ;
 }
 
 .menu-bar:focus-within > .menu-item {
   @apply
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark
+    active-item:bg-blue-600
+    active-item:text-white
   ;
 }
 

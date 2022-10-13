@@ -16,7 +16,7 @@ export default function Examples({ size = "md" }: Props) {
         width="24"
         height="8"
         rx="2"
-        className="fill-primary-2 dark:fill-primary-2-dark"
+        className="fill-blue-600"
       />
       <rect
         x="2"
@@ -25,7 +25,7 @@ export default function Examples({ size = "md" }: Props) {
         height="34"
         rx="2"
         strokeWidth={size === "md" ? 1 : 2 / 3}
-        className="fill-canvas-5 stroke-black/10 dark:fill-canvas-5-dark dark:stroke-white/5"
+        className="fill-white stroke-black/10 dark:fill-gray-650 dark:stroke-white/5"
       />
       <rect
         x="6"
@@ -39,7 +39,7 @@ export default function Examples({ size = "md" }: Props) {
         y="24"
         width="16"
         height="2"
-        className="fill-link dark:fill-link-dark"
+        className="fill-blue-700 dark:fill-blue-500"
       />
       <rect
         x="6"

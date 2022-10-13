@@ -49,7 +49,7 @@ git clone https://github.com/ariakit/ariakit.git
 Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit) and skip to [Creating a component](#creating-a-component).
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Installing Node.js and npm
@@ -74,7 +74,7 @@ nvm use
 > If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. Follow the instructions in your terminal.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Installing dependencies
@@ -86,7 +86,7 @@ npm install
 ```
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Starting the development server
@@ -102,7 +102,7 @@ npm run dev
 Now open http://localhost:3000 in your browser to see the project's site.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Creating a component
@@ -175,7 +175,7 @@ export * from "./my-component";
 ```
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Creating the default example
@@ -199,7 +199,7 @@ export default function Example() {
 Now open http://localhost:3000/examples/my-component to see the example in action.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Styling the example
@@ -212,9 +212,14 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 `packages/ariakit/src/my-component/__examples__/my-component/style.css`
 
+<!-- prettier-ignore -->
 ```css
 .my-component {
-  @apply bg-danger-2 text-danger-2 dark:bg-danger-2-dark dark:text-danger-2-dark;
+  @apply
+    bg-red-600
+    text-white
+    dark:bg-red-800
+  ;
 }
 ```
 
@@ -236,7 +241,7 @@ Now open http://localhost:3000/examples/my-component to see the example with the
 You'll notice that the transpiled CSS file has been also added to editor's files so people can easily edit it directly in the browser. You can also use it to see the output CSS while applying Tailwind classes.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Testing the example
@@ -266,7 +271,7 @@ npm run test-watch
 ```
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Writing the component documentation
@@ -300,7 +305,7 @@ Learn more on [Getting Started](/guide/getting-started).
 Now open http://localhost:3000/components/my-component to see the component documentation.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Writing another example
@@ -325,7 +330,7 @@ export default function Example() {
 Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Importing styles from other examples
@@ -334,16 +339,19 @@ We can `@import` CSS files from other examples. You'll usually import the CSS fi
 
 `packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
 
+<!-- prettier-ignore -->
 ```css
 @import "../my-component/style.css";
 
 .my-component {
-  @apply p-4;
+  @apply
+    p-4
+  ;
 }
 ```
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Writing documentation for other examples
@@ -367,7 +375,7 @@ Note that we're passing the `customProp` prop to the component:
 ````
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 ## Submitting a pull request
@@ -380,7 +388,7 @@ When you're ready to submit a pull request, you can follow these naming conventi
 When you submit a pull request, GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
 
 <div align="right">
-    <a href="#basic-tutorial">&uarr; back to top</a></b>
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
 <br>

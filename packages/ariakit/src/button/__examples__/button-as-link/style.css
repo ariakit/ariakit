@@ -4,8 +4,8 @@
     text-base
     underline
     hover:no-underline
-    text-primary-1
-    dark:text-primary-1-dark
+    text-blue-900
+    dark:text-blue-100
     focus-visible:ariakit-outline
   ;
 }

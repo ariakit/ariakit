@@ -141,7 +141,7 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="relative w-full rounded-lg bg-canvas-1 dark:bg-canvas-1-dark sm:rounded-xl">
+        <div className="relative w-full rounded-lg bg-gray-150 dark:bg-gray-850 sm:rounded-xl">
           <Suspense>
             <PlaygroundPreview
               getModule={getModule}
@@ -150,7 +150,7 @@ export default function Playground(props: PlaygroundProps) {
             />
           </Suspense>
         </div>
-        <div className="relative w-full max-w-3xl rounded-lg border border-canvas-5 bg-canvas-5 shadow-md dark:border-canvas-1-dark dark:bg-canvas-1-dark dark:shadow-md-dark sm:rounded-xl">
+        <div className="relative w-full max-w-3xl rounded-lg border border-gray-250 bg-white shadow-md dark:border-gray-650 dark:bg-gray-850 dark:shadow-md-dark sm:rounded-xl">
           <Suspense>
             <div className="flex justify-between p-2 pb-1">
               <TabList

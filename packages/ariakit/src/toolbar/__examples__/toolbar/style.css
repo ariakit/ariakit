@@ -9,8 +9,8 @@
     items-center
     max-w-full
     overflow-x-auto
-    bg-canvas-4
-    dark:bg-canvas-4-dark
+    bg-white
+    dark:bg-gray-700
     shadow
     dark:shadow-dark
   ;
@@ -20,14 +20,12 @@
   @apply
     gap-2
     rounded
-    text-canvas-4
-    bg-canvas-4
-    hover:bg-canvas-2-hover
-    active:bg-canvas-1-hover
-    dark:text-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:hover:bg-canvas-2-dark-hover
-    dark:active:bg-canvas-1-dark-hover
+    bg-transparent
+    dark:bg-transparent
+    text-black
+    dark:text-white
+    hover:bg-black/10
+    dark:hover:bg-white/10
   ;
 }
 
@@ -35,7 +33,7 @@
   @apply
     h-8
     border-r
-    border-canvas-4
-    dark:border-canvas-4-dark
+    border-gray-250
+    dark:border-gray-550
   ;
 }

@@ -16,8 +16,8 @@ export default function Header() {
       className={cx(
         "sticky top-0 left-0 z-40 w-full",
         "flex justify-center",
-        "bg-canvas-2 dark:bg-canvas-2-dark",
-        "backdrop-blur supports-backdrop-blur:bg-canvas-2/80 dark:supports-backdrop-blur:bg-canvas-2-dark/80"
+        "bg-gray-50 dark:bg-gray-800",
+        "backdrop-blur supports-backdrop-blur:bg-gray-50/80 dark:supports-backdrop-blur:bg-gray-800/80"
       )}
     >
       <div className="flex w-full max-w-[1440px] items-center gap-4 p-3 sm:p-4">

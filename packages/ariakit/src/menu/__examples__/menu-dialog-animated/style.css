@@ -17,11 +17,10 @@
     h-5
     px-2
     text-xs
+    font-medium
     rounded-full
-    bg-primary-1
-    text-primary-1
-    dark:bg-primary-1-dark
-    dark:text-primary-1-dark
+    bg-blue-50/80
+    text-blue-900
   ;
 }
 
@@ -50,8 +49,8 @@
     pb-2
     mb-2
     border-b
-    border-canvas-4
-    dark:border-canvas-4-dark
+    border-gray-250
+    dark:border-gray-500
   ;
 }
 
@@ -59,8 +58,8 @@
   @apply
     text-lg
     font-semibold
-    text-canvas-1
-    dark:text-canvas-1-dark
+    text-black
+    dark:text-white
   ;
 }
 

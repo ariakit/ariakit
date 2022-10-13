@@ -9,14 +9,14 @@ const style = {
     group
     flex items-center
     rounded-lg
-    hover:bg-primary-1/70 dark:hover:bg-primary-2-dark/25
-    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
+    hover:bg-blue-200/40 dark:hover:bg-blue-600/25
+    active:bg-blue-200/70 dark:active:bg-blue-800/25
     focus-visible:ariakit-outline-input
   `,
   thumbnail: tw`
     flex items-center justify-center flex-none
     rounded
-    bg-canvas-1 dark:bg-canvas-1-dark
+    bg-gray-150 dark:bg-gray-850
     group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80
   `,
   textWrapper: tw`

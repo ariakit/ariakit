@@ -16,12 +16,12 @@
     border-solid
     overflow-auto
     overscroll-contain
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
     shadow-lg
     dark:shadow-lg-dark
   ;
@@ -38,11 +38,8 @@
     rounded
     p-2
     aria-disabled:opacity-25
-    active:bg-primary-2-hover
-    dark:active:bg-primary-2-dark-hover
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark
+    active-item:bg-blue-600
+    active-item:text-white
+    active:bg-blue-800
   ;
 }

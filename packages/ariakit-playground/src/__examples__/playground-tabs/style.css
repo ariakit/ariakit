@@ -5,8 +5,10 @@
     flex
     w-full
     border-b
-    border-canvas-3
-    dark:border-canvas-4-dark;
+    border-r
+    border-gray-300
+    dark:border-gray-600
+  ;
 }
 
 .tab {
@@ -16,6 +18,6 @@
     border-[transparent]
     py-2
     px-4
-    aria-selected:border-primary-2
-    dark:aria-selected:border-primary-2-dark;
+    aria-selected:border-blue-600
+  ;
 }

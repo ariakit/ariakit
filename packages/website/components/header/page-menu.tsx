@@ -90,9 +90,9 @@ const style = {
     text-base
     placeholder-black/60 dark:placeholder-white/[46%]
     rounded border-none
-    text-canvas-1 dark:text-canvas-1-dark
-    bg-canvas-1/40 dark:bg-canvas-1-dark
-    hover:bg-canvas-1 dark:hover:bg-canvas-1-dark-hover
+    text-black dark:text-white
+    bg-gray-150/40 dark:bg-gray-850
+    hover:bg-gray-150 dark:hover:bg-gray-900
     shadow-input dark:shadow-input-dark
     focus-visible:ariakit-outline-input
   `,
@@ -128,8 +128,8 @@ const style = {
     p-2 scroll-m-2
     cursor-default [a&]:cursor-pointer
     rounded focus-visible:!outline-none
-    active-item:bg-primary-1/70 dark:active-item:bg-primary-2-dark/25
-    active:bg-primary-1-hover/70 dark:active:bg-primary-2-dark-hover/25
+    active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25
+    active:bg-blue-200/70 dark:active:bg-blue-800/25
   `,
   itemDescription: tw`
     text-sm text-black/70 dark:text-white/70
@@ -141,7 +141,7 @@ const style = {
     flex items-center justify-center flex-none
     w-16 h-16
     rounded-sm
-    bg-canvas-1 dark:bg-canvas-2-dark
+    bg-gray-150 dark:bg-gray-800
     group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
   `,
   itemNestedThumbnail: tw`
@@ -151,9 +151,9 @@ const style = {
     after:absolute after:-top-4 after:h-24 after:w-0.5 after:bg-black/10 after:dark:bg-white/10
   `,
   itemPathSegment: tw`
-    truncate text-link dark:text-link-dark
+    truncate text-blue-700 dark:text-blue-400
     [&_[data-user-value]]:font-semibold
-    [&_[data-user-value]]:text-primary-1 dark:[&_[data-user-value]]:text-primary-1-dark
+    [&_[data-user-value]]:text-blue-900 dark:[&_[data-user-value]]:text-blue-100
   `,
   footer: tw`
     sticky bottom-0
