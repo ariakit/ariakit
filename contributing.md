@@ -46,8 +46,6 @@ If you are already part of the organization on GitHub, clone the repository dire
 git clone https://github.com/ariakit/ariakit.git
 ```
 
-Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit) and skip to [Creating a component](#creating-a-component).
-
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
