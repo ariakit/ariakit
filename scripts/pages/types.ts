@@ -32,6 +32,11 @@ export type Page = {
    * should not be grouped.
    */
   getGroup?: (filename: string) => string | null;
+  /**
+   * Whether it's a normal page or an api page.
+   * @default "page"
+   */
+  type?: "page" | "api";
 };
 
 export type Pages = Page[];

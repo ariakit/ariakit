@@ -15,11 +15,11 @@ function identity<T>(value: T) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. This hook will register the item in the collection state.
- * If this hook is used in a component that is wrapped by `Collection` or a
- * component that implements `useCollection`, there's no need to explicitly pass
- * the `state` prop.
+ * Registers the item in the collection state and returns collection item's
+ * props. If this component hook is used in a component that is wrapped by
+ * [`Collection`](https://ariakit.org/apis/collection), there's no need to
+ * explicitly pass the [`state`](https://ariakit.org/apis/collection-item#state)
+ * prop.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -50,9 +50,10 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
 );
 
 /**
- * A component that renders an item in a collection. The collection state can be
- * passed explicitly through the `state` prop or implicitly through the
- * `Collection` component.
+ * Renders an item in a collection, registering it in the collection state. The
+ * collection state can be passed explicitly through the
+ * [`state`](https://ariakit.org/apis/collection-item#state) prop or implicitly
+ * through the [`Collection`](https://ariakit.org/apis/collection) component.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -75,8 +76,11 @@ if (process.env.NODE_ENV !== "production") {
 
 export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
   /**
-   * Object returned by the `useCollectionState` hook. If not provided, the
-   * parent `Collection` component's context will be used.
+   * Object returned by the
+   * [`useCollectionState`](https://ariakit.org/apis/collection-state) hook. If
+   * not provided, the parent
+   * [`Collection`](https://ariakit.org/apis/collection) component's context
+   * will be used.
    */
   state?: CollectionState;
   /**

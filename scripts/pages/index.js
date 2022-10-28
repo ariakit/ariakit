@@ -15,6 +15,7 @@ const {
   getReadmePathFromIndex,
   getPageIndexPath,
   getPageContentsPath,
+  writeAPIPage,
 } = require("./utils");
 
 /** @type {import("./types").Pages} */
@@ -77,17 +78,22 @@ async function run() {
     }
 
     for (const filename of files) {
-      await writePage({
+      const args = {
         filename,
         buildDir,
         name: page.name,
         componentPath: page.componentPath,
         getGroup: page.getGroup,
-      });
+      };
+      if (page.type === "api") {
+        await writeAPIPage(args);
+      } else {
+        await writePage(args);
+        writeSymlinks(page.name, buildDir, pagesDir);
+      }
     }
 
     writeEntryFile(page.sourceContext, page.sourceRegExp, entryPath);
-    writeSymlinks(page.name, buildDir, pagesDir);
   }
 }
 

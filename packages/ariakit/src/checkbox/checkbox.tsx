@@ -49,9 +49,10 @@ function isNativeCheckbox(tagName?: string, type?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. If the element is not a native checkbox, the hook will
- * return additional props to make sure it's accessible.
+ * Returns checkbox props. If the element receiving these props is not a native
+ * checkbox, the hook will return additional props to make sure it's accessible.
+ * This component hook is used by the
+ * [`Checkbox`](https://ariakit.org/apis/checkbox) component.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -149,9 +150,9 @@ export const useCheckbox = createHook<CheckboxOptions>(
 );
 
 /**
- * A component that renders a native accessible checkbox. If another element is
- * passed to the `as` prop, this component will make sure the rendered element
- * is accessible.
+ * Renders an accessible checkbox. If an element other than a native
+ * `input[type=checkbox]` is passed to the `as` prop, this component will make
+ * sure the rendered element is accessible.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -169,8 +170,9 @@ if (process.env.NODE_ENV !== "production") {
 
 export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
   /**
-   * Object returned by the `useCheckboxState` hook. If not provided, the
-   * internal state will be used.
+   * Object returned by the
+   * [`useCheckboxState`](https://ariakit.org/apis/checkbox-state) hook. If not
+   * provided, the internal state will be used.
    */
   state?: CheckboxState;
   /**
@@ -187,16 +189,16 @@ export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
    */
   value?: string | number;
   /**
-   * The `checked` state of the checkbox. This will override the value inferred
-   * from `state` prop, if provided.
+   * The checked state of the checkbox. This will override the value inferred
+   * from [`state`](https://ariakit.org/apis/checkbox#state) prop, if provided.
    */
   checked?: "mixed" | boolean;
   /**
-   * The default `checked` state of the checkbox.
+   * The default checked state of the checkbox.
    */
   defaultChecked?: "mixed" | boolean;
   /**
-   * A function that is called when the checkbox's `checked` state changes.
+   * A function that is called when the checkbox's checked state changes.
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };

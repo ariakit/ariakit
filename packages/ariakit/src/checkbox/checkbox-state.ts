@@ -5,7 +5,8 @@ import { SetState } from "ariakit-utils/types";
 type Value = boolean | string | number | Array<string | number>;
 
 /**
- * Provides state for the `Checkbox` component.
+ * Provides state for the [Checkbox](https://ariakit.org/components/checkbox)
+ * component.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -31,7 +32,7 @@ export type CheckboxState<T extends Value = Value> = {
    */
   value: T;
   /**
-   * Sets the `value` state.
+   * Sets the [`value`](https://ariakit.org/apis/checkbox-state#value) state.
    * @example
    * const checkbox = useCheckboxState({ defaultValue: false });
    * checkbox.setValue(true);
@@ -53,7 +54,8 @@ export type CheckboxStateProps<T extends Value = Value> = Partial<
    */
   defaultValue?: T;
   /**
-   * Function that will be called when setting the checkbox `value` state.
+   * Function that will be called when setting the checkbox
+   * [`value`](https://ariakit.org/apis/checkbox-state#value) state.
    * @example
    * // Uncontrolled example
    * useCheckboxState({ setValue: (value) => console.log(value) });

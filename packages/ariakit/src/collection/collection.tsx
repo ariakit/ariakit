@@ -9,9 +9,10 @@ import { CollectionItemContext } from "./__utils";
 import { CollectionState } from "./collection-state";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. It receives the collection state through the `state` prop
- * and provides context for `CollectionItem` components.
+ * Returns collection props. It receives the collection state through the
+ * [`state`](https://ariakit.org/apis/collection#state) prop and provides
+ * context for [`CollectionItem`](https://ariakit.org/apis/collection-item)
+ * components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -41,9 +42,10 @@ export const useCollection = createHook<CollectionOptions>(
 );
 
 /**
- * A component that renders a simple wrapper for collection items. It receives
- * the collection state through the `state` prop and provides context for
- * `CollectionItem` components.
+ * Renders a simple wrapper for collection items. It receives the collection
+ * state through the [`state`](https://ariakit.org/apis/collection#state) prop
+ * and provides context for
+ * [`CollectionItem`](https://ariakit.org/apis/collection-item) components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -66,7 +68,8 @@ if (process.env.NODE_ENV !== "production") {
 
 export type CollectionOptions<T extends As = "div"> = Options<T> & {
   /**
-   * Object returned by the `useCollectionState` hook.
+   * Object returned by the
+   * [`useCollectionState`](https://ariakit.org/apis/collection-state) hook.
    */
   state: CollectionState;
 };

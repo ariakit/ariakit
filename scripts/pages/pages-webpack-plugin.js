@@ -21,6 +21,7 @@ class PagesWebpackPlugin {
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
     this.getGroup = options.getGroup;
+    this.type = options.type;
   }
 
   /**
@@ -40,6 +41,7 @@ class PagesWebpackPlugin {
         buildDir: this.buildDir,
         componentPath: this.componentPath,
         getGroup: this.getGroup,
+        type: this.type,
       },
     });
 

@@ -122,7 +122,8 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
 }
 
 /**
- * Provides state for the `Collection` components.
+ * Provides state for the
+ * [Collection](https://ariakit.org/components/collection) components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -171,7 +172,8 @@ export function useCollectionState<T extends Item = Item>(
 export type CollectionState<T extends Item = Item> = {
   /**
    * Lists all the items with their `ref`s. This state is automatically updated
-   * when an item is registered or unregistered with the `registerItem`
+   * when an item is registered or unregistered with the
+   * [`registerItem`](https://ariakit.org/apis/collection-state#registeritem)
    * function. The order of the items is automatically defined by the order of
    * the elements in the DOM.
    * @example
@@ -183,7 +185,7 @@ export type CollectionState<T extends Item = Item> = {
    */
   items: T[];
   /**
-   * Sets the `items` state.
+   * Sets the [`items`](https://ariakit.org/apis/collection-state#items) state.
    * @example
    * const { setItems } = useCollectionState();
    * useEffect(() => {
@@ -210,7 +212,8 @@ export type CollectionStateProps<T extends Item = Item> = Partial<
   Pick<CollectionState<T>, "items">
 > & {
   /**
-   * Function that will be called when setting the collection `items` state.
+   * Function that will be called when setting the collection
+   * [`items`](https://ariakit.org/apis/collection-state#items) state.
    * @example
    * // Uncontrolled example
    * useCollectionState({ setItems: (items) => console.log(items) });

@@ -1,7 +1,7 @@
 // @ts-check
 const path = require("path");
 const markdownLoader = require("./markdown-loader");
-const { writePage } = require("./utils");
+const { writePage, writeAPIPage } = require("./utils");
 
 /**
  * @typedef {Required<import("./types").Page>} Options
@@ -14,9 +14,15 @@ const { writePage } = require("./utils");
  */
 async function pageLoader(source) {
   const filename = this.resourcePath;
-  const { name, buildDir, componentPath, getGroup } = this.getOptions();
+  const { name, buildDir, componentPath, getGroup, type } = this.getOptions();
 
-  await writePage({ filename, name, buildDir, componentPath, getGroup });
+  const args = { filename, name, buildDir, componentPath, getGroup };
+
+  if (type === "api") {
+    await writeAPIPage(args);
+  } else {
+    await writePage(args);
+  }
 
   if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.

@@ -3,9 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const babel = require("@babel/core");
 const matter = require("gray-matter");
-const { uniq } = require("lodash");
+const { uniq, upperFirst, camelCase } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
+const { Project, Node, Structure } = require("ts-morph");
 const ts = require("typescript");
 const babelConfig = require("../../babel.config");
 const { compilerOptions } = require("../../tsconfig.json");
@@ -63,6 +64,13 @@ function getPageName(filename) {
     : `${path.basename(filename, path.extname(filename))}`;
   // Remove leading digits.
   return name.replace(/^\d+\-/, "");
+}
+
+/**
+ * @param {string} filename
+ */
+function getModuleName(filename) {
+  return upperFirst(camelCase(getPageName(filename)));
 }
 
 /**
@@ -481,32 +489,9 @@ function getPageContentsPath(buildDir) {
  * @param {string} options.filename
  * @param {string} options.name
  * @param {string} options.buildDir
- * @param {string} options.componentPath
  * @param {import("./types").Page["getGroup"]} [options.getGroup]
  */
-async function writePage({
-  filename,
-  name,
-  buildDir,
-  componentPath,
-  getGroup,
-}) {
-  const dest = path.join(buildDir, name);
-  // If there's already a readme.md file in the same directory, we'll generate
-  // the page from that, so we can just return the source here for the index.js
-  // file.
-  if (getReadmePathFromIndex(filename)) return;
-  const pagePath = path.join(dest, getPageFilename(filename));
-  fs.mkdirSync(path.dirname(pagePath), { recursive: true });
-  fs.writeFileSync(
-    pagePath,
-    await getPageContent({ filename, dest, componentPath })
-  );
-
-  const ext = path.extname(filename);
-
-  if (ext !== ".md") return;
-
+async function writePageMeta({ filename, name, buildDir, getGroup }) {
   const indexPath = getPageIndexPath(buildDir);
   const contentsPath = getPageContentsPath(buildDir);
 
@@ -543,6 +528,125 @@ async function writePage({
 
   fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
   fs.writeFileSync(contentsPath, JSON.stringify(nextContents, null, 2));
+}
+
+const project = new Project({
+  tsConfigFilePath: path.join(__dirname, "../../tsconfig.json"),
+});
+
+/**
+ * @param {import("ts-morph").Symbol} symbol
+ */
+function getDeclaration(symbol) {
+  const declarations = symbol.getDeclarations();
+  return declarations[0];
+}
+
+/**
+ * @param {import("ts-morph").Node} node
+ */
+function getJsDoc(node) {
+  if (!Node.isJSDocable(node)) return null;
+  const jsDocs = node.getJsDocs();
+  return jsDocs[jsDocs.length - 1];
+}
+
+/**
+ * @param {import("ts-morph").Node} node
+ */
+function getDescription(node) {
+  const jsDoc = getJsDoc(node);
+  if (!jsDoc) return "";
+  return jsDoc
+    .getDescription()
+    .trim()
+    .replace(/\n([^\n])/g, " $1");
+}
+
+/**
+ * @param {object} options
+ * @param {string} options.filename
+ * @param {string} options.name
+ * @param {string} options.buildDir
+ * @param {import("./types").Page["getGroup"]} [options.getGroup]
+ */
+async function writeAPIPage({ filename, name, buildDir, getGroup }) {
+  const dest = path.join(buildDir, name);
+  const sourceFile = project.getSourceFile(filename);
+  if (!sourceFile) return;
+  const moduleName = getModuleName(filename);
+  const declarations = sourceFile.getExportedDeclarations();
+  const isState = moduleName.endsWith("State");
+  if (isState) {
+  } else {
+    const module = declarations.get(moduleName)?.[0];
+    if (!module) return;
+    const symbol =
+      Node.isVariableDeclaration(module) && module.getVariableStatement();
+    if (!symbol) return;
+    const docs = getJsDoc(symbol);
+    const tags = docs?.getTags();
+    if (tags) {
+      console.log(tags.length);
+      tags.forEach((tag) => {
+        console.log("dsadsa", tag.getTagName(), tag.getCommentText());
+      });
+    }
+    const moduleMeta = {
+      name: moduleName,
+      description: getDescription(symbol),
+    };
+    console.log(moduleMeta);
+    const props = declarations.get(`${moduleName}Options`)?.[0];
+    if (!props) return;
+    const obj = props
+      .getType()
+      .getProperties()
+      .map((prop) => {
+        const decl = prop.getDeclarations()?.[0];
+        if (!decl) return;
+        return {
+          name: prop.getEscapedName(),
+          type: decl?.getType().getText(decl),
+          description: getDescription(decl),
+        };
+      });
+    // console.log(obj);
+  }
+}
+
+/**
+ * @param {object} options
+ * @param {string} options.filename
+ * @param {string} options.name
+ * @param {string} options.buildDir
+ * @param {string} options.componentPath
+ * @param {import("./types").Page["getGroup"]} [options.getGroup]
+ */
+async function writePage({
+  filename,
+  name,
+  buildDir,
+  componentPath,
+  getGroup,
+}) {
+  const dest = path.join(buildDir, name);
+  // If there's already a readme.md file in the same directory, we'll generate
+  // the page from that, so we can just return the source here for the
+  // index.js file.
+  if (getReadmePathFromIndex(filename)) return;
+
+  const pagePath = path.join(dest, getPageFilename(filename));
+  fs.mkdirSync(path.dirname(pagePath), { recursive: true });
+
+  const content = await getPageContent({ filename, dest, componentPath });
+  fs.writeFileSync(pagePath, content);
+
+  const ext = path.extname(filename);
+
+  if (ext !== ".md") return;
+
+  await writePageMeta({ filename, name, buildDir, getGroup });
 }
 
 /**
@@ -661,6 +765,7 @@ module.exports = {
   getReadmePathFromIndex,
   getPageIndexPath,
   getPageContentsPath,
+  writeAPIPage,
   writePage,
   getFiles,
   getPagesDir,
