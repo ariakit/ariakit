@@ -530,10 +530,6 @@ async function writePageMeta({ filename, name, buildDir, getGroup }) {
   fs.writeFileSync(contentsPath, JSON.stringify(nextContents, null, 2));
 }
 
-const project = new Project({
-  tsConfigFilePath: path.join(__dirname, "../../tsconfig.json"),
-});
-
 /**
  * @param {import("ts-morph").Symbol} symbol
  */
@@ -565,12 +561,13 @@ function getDescription(node) {
 
 /**
  * @param {object} options
+ * @param {import("ts-morph").Project} options.project
  * @param {string} options.filename
  * @param {string} options.name
  * @param {string} options.buildDir
  * @param {import("./types").Page["getGroup"]} [options.getGroup]
  */
-async function writeAPIPage({ filename, name, buildDir, getGroup }) {
+async function writeAPIPage({ project, filename, name, buildDir, getGroup }) {
   const dest = path.join(buildDir, name);
   const sourceFile = project.getSourceFile(filename);
   if (!sourceFile) return;
