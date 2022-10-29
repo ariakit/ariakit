@@ -2,7 +2,6 @@
 const fs = require("fs");
 const path = require("path");
 const { uniq } = require("lodash");
-const { Project } = require("ts-morph");
 const {
   resetBuildDir,
   getBuildDir,
@@ -44,10 +43,6 @@ function filterOutIndexFilesWithReadme(file, index, array) {
   );
 }
 
-const project = new Project({
-  tsConfigFilePath: path.join(__dirname, "../../tsconfig.json"),
-});
-
 // Reset index/contents paths
 for (const page of pages) {
   const buildDir = getBuildDir(page.buildDir);
@@ -84,7 +79,6 @@ async function run() {
 
     for (const filename of files) {
       const args = {
-        project,
         filename,
         buildDir,
         name: page.name,

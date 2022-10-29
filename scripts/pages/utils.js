@@ -6,7 +6,7 @@ const matter = require("gray-matter");
 const { uniq, upperFirst, camelCase } = require("lodash");
 const { marked } = require("marked");
 const prettier = require("prettier");
-const { Project, Node, Structure } = require("ts-morph");
+const { Project, Node } = require("ts-morph");
 const ts = require("typescript");
 const babelConfig = require("../../babel.config");
 const { compilerOptions } = require("../../tsconfig.json");
@@ -530,28 +530,25 @@ async function writePageMeta({ filename, name, buildDir, getGroup }) {
   fs.writeFileSync(contentsPath, JSON.stringify(nextContents, null, 2));
 }
 
-/**
- * @param {import("ts-morph").Symbol} symbol
- */
-function getDeclaration(symbol) {
-  const declarations = symbol.getDeclarations();
-  return declarations[0];
-}
+const project = new Project({
+  tsConfigFilePath: path.join(__dirname, "../../tsconfig.json"),
+});
 
 /**
- * @param {import("ts-morph").Node} node
+ * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
  */
-function getJsDoc(node) {
-  if (!Node.isJSDocable(node)) return null;
-  const jsDocs = node.getJsDocs();
+function getJsDoc(nodeOrJsDoc) {
+  if (Node.isJSDoc(nodeOrJsDoc)) return nodeOrJsDoc;
+  if (!Node.isJSDocable(nodeOrJsDoc)) return null;
+  const jsDocs = nodeOrJsDoc.getJsDocs();
   return jsDocs[jsDocs.length - 1];
 }
 
 /**
- * @param {import("ts-morph").Node} node
+ * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
  */
-function getDescription(node) {
-  const jsDoc = getJsDoc(node);
+function getDescription(nodeOrJsDoc) {
+  const jsDoc = getJsDoc(nodeOrJsDoc);
   if (!jsDoc) return "";
   return jsDoc
     .getDescription()
@@ -560,42 +557,74 @@ function getDescription(node) {
 }
 
 /**
+ * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
+ */
+function getExamples(nodeOrJsDoc) {
+  const jsDoc = getJsDoc(nodeOrJsDoc);
+  const tags = jsDoc?.getTags();
+  if (!tags) return [];
+  /** @type {Array<{ description: string; language: string; code: string; }>} */
+  const examples = [];
+  tags.forEach((tag) => {
+    if (tag.getTagName() === "example") {
+      const text = tag.getCommentText();
+      if (text) {
+        const match = text.match(
+          /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m
+        );
+        examples.push({
+          description: (match?.groups?.description || "").trim(),
+          language: match?.groups?.language || "jsx",
+          code: (match?.groups?.code || text).trim(),
+        });
+      }
+    }
+  });
+  return examples;
+}
+
+/**
  * @param {object} options
- * @param {import("ts-morph").Project} options.project
  * @param {string} options.filename
  * @param {string} options.name
  * @param {string} options.buildDir
  * @param {import("./types").Page["getGroup"]} [options.getGroup]
+ * @param {boolean} [options.refresh]
  */
-async function writeAPIPage({ project, filename, name, buildDir, getGroup }) {
+async function writeAPIPage({ filename, name, buildDir, getGroup, refresh }) {
   const dest = path.join(buildDir, name);
-  const sourceFile = project.getSourceFile(filename);
-  if (!sourceFile) return;
+  const sourceFile = project.getSourceFileOrThrow(filename);
+  if (refresh) {
+    sourceFile.refreshFromFileSystemSync();
+  }
   const moduleName = getModuleName(filename);
   const declarations = sourceFile.getExportedDeclarations();
   const isState = moduleName.endsWith("State");
+
   if (isState) {
   } else {
-    const module = declarations.get(moduleName)?.[0];
-    if (!module) return;
-    const symbol =
-      Node.isVariableDeclaration(module) && module.getVariableStatement();
-    if (!symbol) return;
-    const docs = getJsDoc(symbol);
-    const tags = docs?.getTags();
-    if (tags) {
-      console.log(tags.length);
-      tags.forEach((tag) => {
-        console.log("dsadsa", tag.getTagName(), tag.getCommentText());
-      });
-    }
+    const defaultModule =
+      sourceFile.getVariableDeclaration(moduleName)?.getVariableStatement() ||
+      sourceFile.getFunction(moduleName);
+
+    if (!defaultModule) return;
+
+    const jsDoc = getJsDoc(defaultModule);
+    if (!jsDoc) return;
+
     const moduleMeta = {
       name: moduleName,
-      description: getDescription(symbol),
+      description: getDescription(jsDoc),
+      examples: getExamples(jsDoc),
     };
-    console.log(moduleMeta);
+    if (moduleName === "VisuallyHidden") {
+      console.log(moduleMeta);
+    }
+
     const props = declarations.get(`${moduleName}Options`)?.[0];
     if (!props) return;
+    // getDefaultValue
+    // data attributes
     const obj = props
       .getType()
       .getProperties()
@@ -606,9 +635,12 @@ async function writeAPIPage({ project, filename, name, buildDir, getGroup }) {
           name: prop.getEscapedName(),
           type: decl?.getType().getText(decl),
           description: getDescription(decl),
+          examples: getExamples(decl),
         };
       });
-    // console.log(obj);
+    if (moduleName === "VisuallyHidden") {
+      // console.log(obj.map((item) => item?.examples));
+    }
   }
 }
 

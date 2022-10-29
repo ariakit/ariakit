@@ -17,15 +17,14 @@ async function pageLoader(source) {
   const filename = this.resourcePath;
   const { name, buildDir, componentPath, getGroup, type } = this.getOptions();
 
-  const project = new Project({
-    tsConfigFilePath: path.join(__dirname, "../../tsconfig.json"),
-    skipAddingFilesFromTsConfig: true,
-  });
-
-  project.addSourceFileAtPath(filename);
-  project.resolveSourceFileDependencies();
-
-  const args = { project, filename, name, buildDir, componentPath, getGroup };
+  const args = {
+    filename,
+    name,
+    buildDir,
+    componentPath,
+    getGroup,
+    refresh: true,
+  };
 
   if (type === "api") {
     await writeAPIPage(args);
