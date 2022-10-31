@@ -1,0 +1,38 @@
+{
+  "name": "ariakit-core",
+  "version": "0.17.0-next.26",
+  "description": "Ariakit core",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://ariakit.org",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-core.min.js",
+  "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-core"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "keywords": [
+    "ariakit",
+    "core"
+  ],
+  "dependencies": {
+    "ariakit-utils": "0.17.0-next.26"
+  }
+}
