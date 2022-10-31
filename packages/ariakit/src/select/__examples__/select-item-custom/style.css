@@ -1,4 +1,4 @@
-@import "../select/style.css";
+@import url("../select/style.css");
 
 .photo {
   @apply

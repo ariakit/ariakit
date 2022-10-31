@@ -1,4 +1,4 @@
-@import "../playground/style.css";
+@import url("../playground/style.css");
 
 .tab-list {
   @apply

@@ -1,5 +1,5 @@
-@import "../select/style.css";
-@import "../../../separator/__examples__/separator/style.css";
+@import url("../select/style.css");
+@import url("../../../separator/__examples__/separator/style.css");
 
 .group-label {
   @apply

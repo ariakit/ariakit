@@ -1,4 +1,4 @@
-@import "../combobox/style.css";
+@import url("../combobox/style.css");
 
 .popover {
   @apply

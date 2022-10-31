@@ -1,4 +1,4 @@
-@import "../focus-trap/style.css";
+@import url("../focus-trap/style.css");
 
 .input {
   @apply

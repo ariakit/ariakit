@@ -1,5 +1,5 @@
-@import "../select-combobox/style.css";
-@import "../../../button/__examples__/button/style.css";
+@import url("../select-combobox/style.css");
+@import url("../../../button/__examples__/button/style.css");
 
 .wrapper {
   @apply

@@ -1,5 +1,5 @@
-@import "../../../button/__examples__/button/style.css";
-@import "../../../separator/__examples__/separator/style.css";
+@import url("../../../button/__examples__/button/style.css");
+@import url("../../../separator/__examples__/separator/style.css");
 
 .menu-wrapper {
   @apply

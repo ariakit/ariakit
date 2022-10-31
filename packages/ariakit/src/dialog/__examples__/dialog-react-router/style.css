@@ -1,4 +1,4 @@
-@import "../dialog/style.css";
+@import url("../dialog/style.css");
 
 .dialog {
   @apply
