@@ -84,3 +84,93 @@ export type PageContent = PageIndexDetail & {
 };
 
 export type PageContents = PageContent[];
+
+export type APIExample = {
+  /**
+   * The description of the example.
+   * @default ""
+   */
+  description: string;
+  /**
+   * The language of the example.
+   * @default "jsx"
+   */
+  language: string;
+  /**
+   * The code of the example.
+   * @default ""
+   */
+  code: string;
+};
+
+export type APIProp = {
+  /**
+   * The name of the prop.
+   */
+  name: string;
+  /**
+   * The type of the prop.
+   */
+  type: string;
+  /**
+   * The description of the prop.
+   */
+  description: string;
+  /**
+   * Whether the prop is optional.
+   */
+  optional: boolean;
+  /**
+   * The default value of the prop.
+   */
+  defaultValue: string | null;
+  /**
+   * Whether the prop is deprecated. May be a string with the deprecation
+   * message.
+   */
+  deprecated: boolean | string;
+  /**
+   * The examples of the prop.
+   */
+  examples: APIExample[];
+};
+
+export type APIComponent = {
+  /**
+   * The name of the component.
+   */
+  name: string;
+  /**
+   * The description of the component.
+   */
+  description: string;
+  /**
+   * Whether the component is deprecated. May be a string with the deprecation
+   * message.
+   */
+  deprecated?: boolean | string;
+  /**
+   * The examples of the component.
+   */
+  examples: APIExample[];
+  /**
+   * The props of the component.
+   * @default []
+   */
+  props: APIProp[];
+};
+
+export type TableOfContents = Array<{
+  /**
+   * The ID of the heading.
+   */
+  id: string;
+  /**
+   * The text of the heading.
+   */
+  text: string;
+  /**
+   * The children of the heading.
+   */
+  children?: TableOfContents;
+}>;

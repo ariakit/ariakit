@@ -10,6 +10,20 @@ const { Project, Node } = require("ts-morph");
 const ts = require("typescript");
 const babelConfig = require("../../babel.config");
 const { compilerOptions } = require("../../tsconfig.json");
+const {
+  getPageTreeFromContent,
+  isPlaygroundNode,
+  isPlaygroundParagraphNode,
+} = require("./utils-ast");
+const {
+  getJsDoc,
+  shouldBeIgnored,
+  getTags,
+  getDescription,
+  getExamples,
+  getDeprecated,
+  getProps,
+} = require("./utils-ts");
 
 const t = babel.types;
 const compilerHost = ts.createCompilerHost(compilerOptions);
@@ -78,27 +92,6 @@ function getModuleName(filename) {
  */
 function getPageFilename(filename, extension = ".js") {
   return `${getPageName(filename)}${extension}`;
-}
-
-/**
- * @param {import('hast').Element | import('hast').ElementContent} node
- * @returns {node is import("hast").Element}
- */
-function isPlaygroundNode(node) {
-  if (!("tagName" in node)) return false;
-  if (node.tagName !== "a") return false;
-  if (!node.properties) return false;
-  return "dataPlayground" in node.properties;
-}
-
-/**
- * @param {import('hast').Element} node
- */
-function isPlaygroundParagraphNode(node) {
-  if (node.tagName !== "p") return false;
-  const [child] = node.children;
-  if (!child) return false;
-  return isPlaygroundNode(child);
 }
 
 /**
@@ -225,41 +218,24 @@ function createPageContent(filename) {
 }
 
 /**
- * @param {string} content The markdown content.
+ * @param {import("./types").APIComponent} apiComponent
  */
-async function getPageTreeFromContent(content) {
-  const { unified } = await import("unified");
-  const { default: rehypeParse } = await import("rehype-parse");
-  const { visit } = await import("unist-util-visit");
-  const { toString } = await import("hast-util-to-string");
+function getTableOfContentsFromAPIComponent(apiComponent) {
+  /** @type {import("./types").TableOfContents} */
+  const tableOfContents = [];
 
-  const { data, content: contentWithoutMatter } = matter(content);
+  if (apiComponent.props.length) {
+    tableOfContents.push({
+      id: "props",
+      text: "Props",
+      children: apiComponent.props.map((prop) => ({
+        id: prop.name,
+        text: prop.name,
+      })),
+    });
+  }
 
-  const tree = unified()
-    .use(rehypeParse, { fragment: true })
-    .parse(marked(contentWithoutMatter));
-
-  tree.data = { ...data, ...tree.data, tableOfContents: [] };
-
-  visit(tree, "element", (node) => {
-    /** @type any */
-    const tableOfContents = tree.data?.tableOfContents;
-    if (node.tagName === "h2") {
-      const id = node.properties?.id;
-      const text = toString(node);
-      tableOfContents.push({ id, text });
-    }
-    if (node.tagName === "h3") {
-      const lastH2 = tableOfContents[tableOfContents.length - 1];
-      if (!lastH2) return;
-      const id = node.properties?.id;
-      const text = toString(node);
-      lastH2.children = lastH2.children || [];
-      lastH2.children.push({ id, text });
-    }
-  });
-
-  return tree;
+  return tableOfContents;
 }
 
 /**
@@ -418,6 +394,21 @@ async function getPageMeta(filename, getGroup, tree) {
 
 /**
  * @param {string} filename
+ * @param {import("./types").APIComponent} apiComponent
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ * @returns {import("./types").PageIndexDetail}
+ */
+function getAPIPageMeta(filename, apiComponent, getGroup) {
+  return {
+    slug: getPageName(filename),
+    title: apiComponent.name,
+    content: apiComponent.description,
+    group: getGroup?.(filename) || null,
+  };
+}
+
+/**
+ * @param {string} filename
  * @param {string} category
  * @param {import("./types").Page["getGroup"]} [getGroup]
  */
@@ -432,6 +423,54 @@ async function getPageSections(filename, category, getGroup) {
   let section = null;
   /** @type {string | null} */
   let id = null;
+  const pageMeta = {
+    ...meta,
+    category,
+    /** @type {Array<import("./types").PageContent>} */
+    sections: [],
+  };
+  visit(tree, "element", (node) => {
+    if (node.tagName === "h2") {
+      parentSection = null;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "h3") {
+      parentSection = parentSection || section;
+      section = toString(node).trim();
+      id = `${node.properties?.id}`;
+    }
+    if (node.tagName === "p") {
+      if (isPlaygroundParagraphNode(node)) return;
+      const content = toString(node).trim();
+      const existingSection = pageMeta.sections.find((s) => s.id === id);
+      if (existingSection) {
+        existingSection.content += `\n\n${content}`;
+      } else {
+        pageMeta.sections.push({
+          ...meta,
+          category,
+          parentSection,
+          section,
+          id,
+          content,
+        });
+      }
+    }
+  });
+  return pageMeta;
+}
+
+/**
+ * @param {string} filename
+ * @param {string} category
+ * @param {import("./types").APIComponent} apiComponent
+ * @param {import("./types").Page["getGroup"]} [getGroup]
+ */
+async function getAPIPageSections(filename, category, apiComponent, getGroup) {
+  const meta = getAPIPageMeta(filename, apiComponent, getGroup);
+  const { visit } = await import("unist-util-visit");
+  const { toString } = await import("hast-util-to-string");
   const pageMeta = {
     ...meta,
     category,
@@ -535,55 +574,6 @@ const project = new Project({
 });
 
 /**
- * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
- */
-function getJsDoc(nodeOrJsDoc) {
-  if (Node.isJSDoc(nodeOrJsDoc)) return nodeOrJsDoc;
-  if (!Node.isJSDocable(nodeOrJsDoc)) return null;
-  const jsDocs = nodeOrJsDoc.getJsDocs();
-  return jsDocs[jsDocs.length - 1];
-}
-
-/**
- * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
- */
-function getDescription(nodeOrJsDoc) {
-  const jsDoc = getJsDoc(nodeOrJsDoc);
-  if (!jsDoc) return "";
-  return jsDoc
-    .getDescription()
-    .trim()
-    .replace(/\n([^\n])/g, " $1");
-}
-
-/**
- * @param {import("ts-morph").Node | import("ts-morph").JSDoc} nodeOrJsDoc
- */
-function getExamples(nodeOrJsDoc) {
-  const jsDoc = getJsDoc(nodeOrJsDoc);
-  const tags = jsDoc?.getTags();
-  if (!tags) return [];
-  /** @type {Array<{ description: string; language: string; code: string; }>} */
-  const examples = [];
-  tags.forEach((tag) => {
-    if (tag.getTagName() === "example") {
-      const text = tag.getCommentText();
-      if (text) {
-        const match = text.match(
-          /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m
-        );
-        examples.push({
-          description: (match?.groups?.description || "").trim(),
-          language: match?.groups?.language || "jsx",
-          code: (match?.groups?.code || text).trim(),
-        });
-      }
-    }
-  });
-  return examples;
-}
-
-/**
  * @param {object} options
  * @param {string} options.filename
  * @param {string} options.name
@@ -611,35 +601,20 @@ async function writeAPIPage({ filename, name, buildDir, getGroup, refresh }) {
 
     const jsDoc = getJsDoc(defaultModule);
     if (!jsDoc) return;
+    if (shouldBeIgnored(jsDoc)) return;
+    const tags = getTags(jsDoc);
+    const props = declarations.get(`${moduleName}Options`)?.[0];
 
-    const moduleMeta = {
+    /** @type {import("./types").APIComponent} */
+    const apiComponent = {
       name: moduleName,
       description: getDescription(jsDoc),
-      examples: getExamples(jsDoc),
+      examples: getExamples(tags),
+      deprecated: getDeprecated(tags),
+      props: props ? getProps(props) : [],
     };
-    if (moduleName === "VisuallyHidden") {
-      console.log(moduleMeta);
-    }
-
-    const props = declarations.get(`${moduleName}Options`)?.[0];
-    if (!props) return;
-    // getDefaultValue
-    // data attributes
-    const obj = props
-      .getType()
-      .getProperties()
-      .map((prop) => {
-        const decl = prop.getDeclarations()?.[0];
-        if (!decl) return;
-        return {
-          name: prop.getEscapedName(),
-          type: decl?.getType().getText(decl),
-          description: getDescription(decl),
-          examples: getExamples(decl),
-        };
-      });
-    if (moduleName === "VisuallyHidden") {
-      // console.log(obj.map((item) => item?.examples));
+    if (moduleName === "Menu") {
+      console.log(apiComponent);
     }
   }
 }
