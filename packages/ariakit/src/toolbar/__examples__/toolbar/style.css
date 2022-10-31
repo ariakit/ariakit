@@ -1,4 +1,4 @@
-@import "../../../button/__examples__/button/style.css";
+@import url("../../../button/__examples__/button/style.css");
 
 .toolbar {
   @apply

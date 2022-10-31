@@ -1,5 +1,5 @@
-@import "../../../select/__examples__/select/style.css";
-@import "../form/style.css";
+@import url("../../../select/__examples__/select/style.css");
+@import url("../form/style.css");
 
 .select {
   @apply
