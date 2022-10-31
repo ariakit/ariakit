@@ -14,7 +14,7 @@
   "dependencies": {
     "@tanstack/react-query": "4.13.0",
     "fast-fuzzy": "1.11.2",
-    "next": "12.3.1",
+    "next": "12.3.2",
     "rehype-react": "7.1.1"
   },
   "devDependencies": {
