@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
+import { matchSorter } from "match-sorter";
 import { NewWindow } from "./icons";
 import "./style.css";
 
@@ -26,28 +28,26 @@ const links = [
   { href: "https://ariakit.org", children: "Ariakit.org" },
 ];
 
-const list = links.map((link) => link.children);
-
 export default function Example() {
-  const combobox = useComboboxState({
-    list,
-    gutter: 4,
-    sameWidth: true,
-  });
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
+  const matches = useMemo(() => {
+    return combobox.value
+      ? matchSorter(links, combobox.value, { keys: ["children", "href"] })
+      : links;
+  }, [combobox.value]);
 
-  const renderItem = (value: string, i: number) => {
-    const link = links.find((link) => link.children === value);
+  const renderItem = (item: typeof links[number], i: number) => {
     return (
       <ComboboxItem
-        key={value + i}
+        key={item.children + i}
         as="a"
         focusOnHover
         hideOnClick
         className="combobox-item"
-        {...link}
+        {...item}
       >
-        {value}
-        {link?.target === "_blank" && (
+        {item.children}
+        {item.target === "_blank" && (
           <NewWindow className="combobox-item-icon" />
         )}
       </ComboboxItem>
@@ -67,8 +67,8 @@ export default function Example() {
       </label>
       {combobox.mounted && (
         <ComboboxPopover state={combobox} className="popover">
-          {combobox.matches.length ? (
-            combobox.matches.map(renderItem)
+          {matches.length ? (
+            matches.map(renderItem)
           ) : (
             <div className="no-results">No results found</div>
           )}

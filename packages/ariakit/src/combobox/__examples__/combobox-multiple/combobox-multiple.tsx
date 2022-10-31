@@ -19,7 +19,7 @@ import {
 
 export type ComboboxMultipleProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  "autoComplete"
+  "autoComplete" | "onChange"
 > & {
   label?: string;
   defaultValue?: string;
@@ -28,9 +28,6 @@ export type ComboboxMultipleProps = Omit<
   defaultValues?: string[];
   values?: string[];
   onValuesChange?: (values: string[]) => void;
-  defaultList?: string[];
-  list?: string[];
-  onFilter?: (matches: string[]) => void;
 };
 
 export const ComboboxMultiple = forwardRef<
@@ -45,9 +42,6 @@ export const ComboboxMultiple = forwardRef<
     defaultValues,
     values,
     onValuesChange,
-    defaultList,
-    list,
-    onFilter,
     children,
     ...comboboxProps
   } = props;
@@ -62,8 +56,6 @@ export const ComboboxMultiple = forwardRef<
     defaultValue,
     value,
     setValue: onChange,
-    defaultList,
-    list,
   });
   const select = useSelectState({
     ...combobox,
@@ -71,10 +63,6 @@ export const ComboboxMultiple = forwardRef<
     value: values,
     setValue: onValuesChange,
   });
-
-  useEffect(() => {
-    onFilter?.(combobox.matches);
-  }, [combobox.matches]);
 
   // Reset the combobox value whenever an item is checked or unchecked.
   useEffect(() => {

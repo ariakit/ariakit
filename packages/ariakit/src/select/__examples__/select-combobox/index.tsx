@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -11,15 +12,20 @@ import {
   SelectPopover,
   useSelectState,
 } from "ariakit/select";
+import { matchSorter } from "match-sorter";
 import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ list, gutter: 4, sameWidth: true });
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
   // value and setValue shouldn't be passed to the select state because the
   // select value and the combobox value are different things.
   const { value, setValue, ...selectProps } = combobox;
   const select = useSelectState({ ...selectProps, defaultValue: "Apple" });
+
+  const matches = useMemo(() => {
+    return combobox.value ? matchSorter(list, combobox.value) : list;
+  }, [combobox.value]);
 
   // Resets combobox value when popover is collapsed
   if (!select.mounted && combobox.value) {
@@ -40,7 +46,7 @@ export default function Example() {
           />
         </div>
         <ComboboxList state={combobox}>
-          {combobox.matches.map((value, i) => (
+          {matches.map((value, i) => (
             <ComboboxItem key={value + i} focusOnHover className="select-item">
               {(props) => <SelectItem {...props} value={value} />}
             </ComboboxItem>

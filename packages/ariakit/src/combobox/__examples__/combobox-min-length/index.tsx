@@ -7,10 +7,7 @@ import {
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({
-    gutter: 8,
-    sameWidth: true,
-  });
+  const combobox = useComboboxState({ gutter: 8, sameWidth: true });
 
   if (combobox.open && combobox.value.length < 1) {
     combobox.setOpen(false);

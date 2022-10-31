@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -11,12 +12,16 @@ import {
   MenuButtonArrow,
   useMenuState,
 } from "ariakit/menu";
-import defaultList from "./list";
+import { matchSorter } from "match-sorter";
+import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ defaultList });
+  const combobox = useComboboxState();
   const menu = useMenuState(combobox);
+  const matches = useMemo(() => {
+    return combobox.value ? matchSorter(list, combobox.value) : list;
+  }, [combobox.value]);
 
   // Resets combobox value when menu is closed
   if (!menu.mounted && combobox.value) {
@@ -38,7 +43,7 @@ export default function Example() {
           className="combobox"
         />
         <ComboboxList state={combobox} className="combobox-list">
-          {combobox.matches.map((value, i) => (
+          {matches.map((value, i) => (
             <ComboboxItem
               key={value + i}
               value={value}

@@ -1,7 +1,7 @@
 # Filterable Combobox
 
 <p data-description>
-  Filtering the suggestions in a <a href="/components/combobox">Combobox</a> using the <a href="/api-reference/use-combobox-state#list"><code>list</code></a> prop from the <a href="/api-reference/use-combobox-state"><code>useComboboxState</code></a> hook.
+  Filtering and sorting the list of suggestions in a <a href="/components/combobox">Combobox</a> based on its value using <a href="https://github.com/kentcdodds/match-sorter">match-sorter</a>.
 </p>
 
 <a href="./index.tsx" data-playground>Example</a>

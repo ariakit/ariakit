@@ -1,10 +1,18 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
   useComboboxState,
 } from "ariakit/combobox";
+import { matchSorter } from "match-sorter";
 import getCaretCoordinates from "textarea-caret";
 import useLayoutEffect from "use-isomorphic-layout-effect";
 import { defaultTriggers, getList, getValue } from "./list";
@@ -26,15 +34,17 @@ export default function Example() {
     },
   });
 
-  const hasMatches = !!combobox.matches.length;
+  const matches = useMemo(() => {
+    return combobox.value
+      ? matchSorter(getList(trigger), combobox.value)
+      : getList(trigger);
+  }, [trigger, combobox.value]);
+
+  const hasMatches = !!matches.length;
 
   useLayoutEffect(() => {
     combobox.setOpen(hasMatches);
   }, [combobox.setOpen, hasMatches]);
-
-  useLayoutEffect(() => {
-    combobox.setList(getList(trigger));
-  }, [combobox.setList, trigger]);
 
   useLayoutEffect(() => {
     if (caretOffset != null) {
@@ -124,7 +134,7 @@ export default function Example() {
           hidden={!hasMatches}
           className="popover"
         >
-          {combobox.matches.map((value, i) => (
+          {matches.map((value, i) => (
             <ComboboxItem
               key={value + i}
               value={value}

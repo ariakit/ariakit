@@ -27,7 +27,7 @@ test("filter list", async () => {
   render(<Example />);
   await press.Tab();
   await type("sa");
-  expect(getAllByRole("option")).toHaveLength(2);
+  expect(getAllByRole("option")).toHaveLength(5);
   await press.ArrowDown();
   expect(getByRole("option", { name: "Salad" })).toHaveFocus();
   await press.ArrowDown();

@@ -9,21 +9,16 @@ import {
   useComboboxState,
 } from "ariakit/combobox";
 import groupBy from "lodash/groupBy";
+import { matchSorter } from "match-sorter";
 import food from "./food";
 import "./style.css";
 
-const list = food.map((item) => item.name);
-
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 4, sameWidth: true, list });
-
-  // Transform combobox.matches into groups of objects.
+  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
   const matches = useMemo(() => {
-    const items = combobox.matches
-      .map((value) => food.find((item) => item.name === value)!)
-      .filter(Boolean);
+    const items = matchSorter(food, combobox.value, { keys: ["name"] });
     return Object.entries(groupBy(items, "type"));
-  }, [combobox.matches]);
+  }, [combobox.value]);
 
   return (
     <div className="wrapper">
@@ -39,7 +34,7 @@ export default function Example() {
       </label>
       <ComboboxPopover state={combobox} className="popover">
         {!!matches.length ? (
-          matches.map(([type, items], index, array) => (
+          matches.map(([type, items], index) => (
             <Fragment key={type}>
               <ComboboxGroup className="group">
                 <ComboboxGroupLabel className="group-label">
@@ -47,14 +42,15 @@ export default function Example() {
                 </ComboboxGroupLabel>
                 {items.map((item, i) => (
                   <ComboboxItem
-                    key={item.name + i}
+                    state={combobox}
+                    key={type + item.name + i}
                     value={item.name}
                     focusOnHover
                     className="combobox-item"
                   />
                 ))}
               </ComboboxGroup>
-              {index < array.length - 1 && (
+              {index < matches.length - 1 && (
                 <ComboboxSeparator className="separator" />
               )}
             </Fragment>
