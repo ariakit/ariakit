@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "autoprefixer": "10.4.13",
-    "next-transpile-modules": "9.1.0"
+    "next-transpile-modules": "10.0.0"
   }
 }
