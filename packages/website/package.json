@@ -12,7 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tanstack/react-query": "4.13.5",
+    "@tanstack/react-query": "4.14.1",
     "fast-fuzzy": "1.11.2",
     "next": "12.3.2",
     "rehype-react": "7.1.1"
