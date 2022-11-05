@@ -5,4 +5,5 @@ export * from "./events";
 export * from "./focus";
 export * from "./misc";
 export * from "./platform";
+export * from "./store";
 export * from "./types";

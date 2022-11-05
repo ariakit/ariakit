@@ -1,18 +1,16 @@
-import {
-  Disclosure,
-  DisclosureContent,
-  useDisclosureState,
-} from "ariakit/disclosure";
+import { DisclosureContent } from "ariakit/disclosure/disclosure-content2";
+import { useDisclosureStore } from "ariakit/disclosure/disclosure-store";
+import { Disclosure } from "ariakit/disclosure/disclosure2";
 import "./style.css";
 
 export default function Example() {
-  const disclosure = useDisclosureState();
+  const disclosure = useDisclosureStore();
   return (
     <div className="wrapper">
-      <Disclosure state={disclosure} className="button">
+      <Disclosure store={disclosure} className="button">
         What are vegetables?
       </Disclosure>
-      <DisclosureContent state={disclosure} className="content">
+      <DisclosureContent store={disclosure} className="content">
         <p>
           Vegetables are parts of plants that are consumed by humans or other
           animals as food. The original meaning is still commonly used and is

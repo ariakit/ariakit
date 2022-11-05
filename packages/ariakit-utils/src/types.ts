@@ -42,3 +42,27 @@ export type BooleanOrCallback<T> =
 export type StringWithValue<T extends string> =
   | T
   | (string & { [key in symbol]: never });
+
+/**
+ * TODO: Description.
+ */
+export type ToPrimitive<T> = T extends string
+  ? string
+  : T extends number
+  ? number
+  : T extends boolean
+  ? boolean
+  : T extends AnyFunction
+  ? (...args: Parameters<T>) => ReturnType<T>
+  : T;
+
+/**
+ * TODO: Description.
+ */
+export type PickByValue<T, Value> = {
+  [K in keyof T as [Value] extends [T[K]]
+    ? T[K] extends Value | undefined
+      ? K
+      : never
+    : never]: T[K];
+};

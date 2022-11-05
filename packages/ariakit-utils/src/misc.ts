@@ -167,3 +167,48 @@ export function queueMicrotask(callback: VoidFunction) {
   }
   Promise.resolve().then(callback);
 }
+
+/**
+ * Omits specific keys from an object.
+ * @example
+ * import { omit } from "ariakit-utils";
+ * omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
+ */
+export function omit<T extends AnyObject, K extends keyof T>(
+  object: T,
+  keys: ReadonlyArray<K> | K[]
+) {
+  const result = { ...object } as Omit<T, K>;
+  for (const key of keys) {
+    if (hasOwnProperty(result, key)) {
+      delete result[key];
+    }
+  }
+  return result;
+}
+
+/**
+ * Picks specific keys from an object.
+ * @example
+ * import { pick } from "ariakit-utils";
+ * pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
+ */
+export function pick<T extends AnyObject, K extends keyof T>(
+  object: T,
+  paths: ReadonlyArray<K> | K[]
+) {
+  const result = {} as Pick<T, K>;
+  for (const key of paths) {
+    if (hasOwnProperty(object, key)) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+
+/**
+ * Returns the same argument.
+ */
+export function identity<T>(value: T) {
+  return value;
+}
