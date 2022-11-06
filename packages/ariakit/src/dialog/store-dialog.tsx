@@ -332,13 +332,13 @@ export const useDialog = createHook<DialogOptions>(
     // Auto focus on hide.
     store.useEffect(
       (state, prevState) => {
-        const dialog = ref.current;
         // We only want to auto focus on hide if the dialog was open before.
         if (!prevState.open) return;
         if (!mayAutoFocusOnHide) return;
-        if (!dialog) return;
         // A function so we can use it on the effect setup and cleanup phases.
         const focusOnHide = () => {
+          const dialog = store.getState().contentElement;
+          if (!dialog) return;
           const dialogs = nestedDialogsRef.current;
           // Hide was triggered by a click/focus on a tabbable element outside
           // the dialog or on another dialog. We won't change focus then.

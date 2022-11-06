@@ -22,9 +22,11 @@ export function createDisclosureStore({
         ["open", "animating"]
       ),
       store.sync(
-        (state, prevState) => {
+        (state, prev) => {
           if (!state.animated) return;
-          store.setState("animating", state.open !== prevState.open);
+          const mounting = state === prev;
+          const animating = mounting ? state.open : state.open !== prev.open;
+          store.setState("animating", animating);
         },
         ["open", "animated"]
       )

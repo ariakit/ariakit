@@ -67,27 +67,35 @@ function useEventOutside({
   store.useEffect(
     (state) => {
       if (!state.open) return;
-      const onEvent = (event: Event) => {
-        const dialog = store.getState().contentElement;
-        const disclosure = store.getState().disclosureElement;
-        const target = event.target as Element | null;
-        if (!dialog) return;
-        if (!target) return;
-        // When an element is unmounted right after it receives focus, the focus
-        // event is triggered after that, when the element isn't part of the
-        // current document anymore. We just ignore it.
-        if (!isInDocument(target)) return;
-        // Event inside dialog
-        if (contains(dialog, target)) return;
-        // Event on disclosure
-        if (disclosure && isDisclosure(disclosure, target)) return;
-        // Event on focus trap
-        if (target.hasAttribute("data-focus-trap")) return;
-        // Event inside a nested dialog
-        if (nestedDialogsRef.current.some(dialogContains(target))) return;
-        callListener(event);
+      // TODO: Refactor?
+      let removeEventListener = () => {};
+      const raf = requestAnimationFrame(() => {
+        const onEvent = (event: Event) => {
+          const dialog = store.getState().contentElement;
+          const disclosure = store.getState().disclosureElement;
+          const target = event.target as Element | null;
+          if (!dialog) return;
+          if (!target) return;
+          // When an element is unmounted right after it receives focus, the focus
+          // event is triggered after that, when the element isn't part of the
+          // current document anymore. We just ignore it.
+          if (!isInDocument(target)) return;
+          // Event inside dialog
+          if (contains(dialog, target)) return;
+          // Event on disclosure
+          if (disclosure && isDisclosure(disclosure, target)) return;
+          // Event on focus trap
+          if (target.hasAttribute("data-focus-trap")) return;
+          // Event inside a nested dialog
+          if (nestedDialogsRef.current.some(dialogContains(target))) return;
+          callListener(event);
+        };
+        removeEventListener = addGlobalEventListener(type, onEvent, capture);
+      });
+      return () => {
+        removeEventListener();
+        cancelAnimationFrame(raf);
       };
-      return addGlobalEventListener(type, onEvent, capture);
     },
     ["open", capture]
   );

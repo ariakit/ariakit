@@ -1,6 +1,6 @@
 import { RefObject, useRef, useState } from "react";
 import { Button } from "ariakit/button";
-import { DialogDismiss } from "ariakit/dialog";
+import { DialogDismiss } from "ariakit/dialog/store";
 import {
   Form,
   FormError,

@@ -163,7 +163,6 @@ export function useStoreSync<
     (state) => {
       const key = valueKey as keyof typeof state;
       const stateValue = state[key] as StoreState<T>[K];
-      parentSetValue(stateValue);
       if (valueRef.current !== undefined) {
         // If useComponentStore({ key: "value" }) is provided, we reset the
         // state. See https://ariakit.org/examples/dialog-react-router (open:
@@ -172,6 +171,7 @@ export function useStoreSync<
       } else {
         parentSetState(valueKey, stateValue);
       }
+      parentSetValue(stateValue);
     },
     [valueKey]
   );

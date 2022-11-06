@@ -4,8 +4,8 @@ import {
   DialogProps as BaseDialogProps,
   DialogDismiss,
   DialogHeading,
-  useDialogState,
-} from "ariakit/dialog";
+  useDialogStore,
+} from "ariakit/dialog/store";
 import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 export type DialogProps = HTMLAttributes<HTMLDivElement> & {
@@ -21,25 +21,27 @@ export type DialogProps = HTMLAttributes<HTMLDivElement> & {
 
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   ({ title, animated, open, onClose, onUnmount, ...props }, ref) => {
-    const dialog = useDialogState({
+    const dialog = useDialogStore({
       animated,
       open,
       setOpen: (open) => {
-        if (dialog.open !== open && !open) {
+        if (dialog.getState().open !== open && !open) {
           onClose?.();
         }
       },
     });
 
+    const mounted = dialog.useState("mounted");
+
     useIsomorphicLayoutEffect(() => {
-      if (!dialog.mounted) {
+      if (!mounted) {
         onUnmount?.();
       }
-    }, [dialog.mounted]);
+    }, [mounted]);
 
     return (
       <BaseDialog
-        state={dialog}
+        store={dialog}
         ref={ref}
         data-animated={animated ? "" : undefined}
         className="dialog"
