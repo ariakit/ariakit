@@ -3,18 +3,18 @@ import {
   Dialog,
   DialogDismiss,
   DialogHeading,
-  useDialogState,
-} from "ariakit/dialog";
+  useDialogStore,
+} from "ariakit/dialog/store";
 import "./style.css";
 
 export default function Example() {
-  const dialog = useDialogState();
+  const dialog = useDialogStore();
   return (
     <>
       <Button onClick={dialog.toggle} className="button">
         Show modal
       </Button>
-      <Dialog state={dialog} className="dialog">
+      <Dialog store={dialog} className="dialog">
         <DialogHeading className="heading">Success</DialogHeading>
         <p className="description">
           Your payment has been successfully processed. We have emailed your

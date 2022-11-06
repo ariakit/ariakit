@@ -3,6 +3,7 @@ import { hasOwnProperty, identity } from "ariakit-utils/misc";
 import {
   Store as CoreStore,
   Listener,
+  ParentStore,
   PartialStore,
   StoreState,
 } from "ariakit-utils/store";
@@ -293,4 +294,4 @@ export type Store<T extends CoreStore> = Omit<T, "setup"> & {
   useWithout: UseWithout<StoreState<T>>;
 };
 
-export type { PartialStore };
+export type { ParentStore };

@@ -4,8 +4,8 @@ import {
   Dialog,
   DialogDismiss,
   DialogHeading,
-  useDialogState,
-} from "ariakit/dialog";
+  useDialogStore,
+} from "ariakit/dialog/store";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import {
   Link,
@@ -20,7 +20,7 @@ import "./style.css";
 function Tweet() {
   const initialFocusRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
-  const dialog = useDialogState({
+  const dialog = useDialogStore({
     open: true,
     setOpen: (open) => {
       if (!open) {
@@ -30,7 +30,7 @@ function Tweet() {
   });
   return (
     <Dialog
-      state={dialog}
+      store={dialog}
       portal={typeof window !== "undefined"}
       initialFocusRef={initialFocusRef}
       className="dialog"

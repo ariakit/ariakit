@@ -12,7 +12,7 @@ import {
 import { As, Props } from "ariakit-react-utils/types";
 import { BooleanOrCallback } from "ariakit-utils/types";
 import { ButtonOptions, useButton } from "ariakit/button/button";
-import { DisclosureStore } from "./disclosure-store";
+import { DisclosureStore } from "./store-disclosure-store";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

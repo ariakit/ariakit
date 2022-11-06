@@ -1,15 +1,16 @@
 import {
   Collection,
   CollectionItem,
-  useCollectionState,
-} from "ariakit/collection";
+  useCollectionStore,
+} from "ariakit/collection/store";
 import "./style.css";
 
 export default function Example() {
-  const collection = useCollectionState();
+  const collection = useCollectionStore();
+  const length = collection.useState((state) => state.renderedItems.length);
   return (
-    <Collection state={collection} className="collection">
-      <div>Items count: {collection.items.length}</div>
+    <Collection store={collection} className="collection">
+      <div>Items count: {length}</div>
       <CollectionItem>🍎 Apple</CollectionItem>
       <CollectionItem>🍇 Grape</CollectionItem>
       <CollectionItem>🍊 Orange</CollectionItem>

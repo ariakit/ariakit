@@ -7,7 +7,7 @@ import {
 } from "ariakit-core/disclosure/disclosure-store";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
-  PartialStore,
+  ParentStore,
   Store,
   useStore,
   useStoreSync,
@@ -56,7 +56,7 @@ export function useDisclosureStore(
 export type { DisclosureStoreState };
 
 export type DisclosureStoreProps = CoreDisclosureStoreProps &
-  PartialStore<DisclosureStoreState> & {
+  ParentStore<DisclosureStoreState> & {
     defaultOpen?: DisclosureStoreState["open"];
     setOpen?: SetState<DisclosureStoreState["open"]>;
   };

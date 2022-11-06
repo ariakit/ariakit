@@ -6,7 +6,7 @@ import {
   createHook,
 } from "ariakit-react-utils/system";
 import { As, Options, Props } from "ariakit-react-utils/types";
-import { DisclosureStore } from "./disclosure-store";
+import { DisclosureStore } from "./store-disclosure-store";
 
 type TransitionState = "enter" | "leave" | null;
 

@@ -211,3 +211,12 @@ export type StoreState<T> = T extends { getState(): infer S } ? S : never;
  * @template S State type.
  */
 export type PartialStore<S = State> = Partial<Store<Partial<S>>>;
+
+/**
+ * Creates a parent store type from a state type.
+ * @template S State type.
+ */
+export type ParentStore<S = State> = Pick<
+  PartialStore<S>,
+  "getState" | "setState"
+>;

@@ -1,6 +1,8 @@
-import { DisclosureContent } from "ariakit/disclosure/disclosure-content2";
-import { useDisclosureStore } from "ariakit/disclosure/disclosure-store";
-import { Disclosure } from "ariakit/disclosure/disclosure2";
+import {
+  Disclosure,
+  DisclosureContent,
+  useDisclosureStore,
+} from "ariakit/disclosure/store";
 import "./style.css";
 
 export default function Example() {

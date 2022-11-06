@@ -4,13 +4,14 @@ import {
   Dialog,
   DialogDismiss,
   DialogHeading,
-  useDialogState,
-} from "ariakit/dialog";
+  useDialogStore,
+} from "ariakit/dialog/store";
 import "./style.css";
 
 export default function Example() {
   const ref = useRef<HTMLDetailsElement>(null);
-  const dialog = useDialogState();
+  const dialog = useDialogStore();
+  const mounted = dialog.useState("mounted");
 
   // Hydrate the dialog state. This is necessary because the user may have
   // opened the dialog before JavaScript has loaded.
@@ -19,21 +20,21 @@ export default function Example() {
   return (
     <details
       ref={ref}
-      open={dialog.mounted}
+      open={mounted}
       onToggle={(event) => dialog.setOpen(event.currentTarget.open)}
     >
       <Button as="summary" className="button">
         Show modal
       </Button>
       <Dialog
-        state={dialog}
+        store={dialog}
         // We're setting the modal prop to true only when the dialog is open and
         // JavaScript is enabled. This means that the dialog will initially have
         // a non-modal state with no backdrop element, allowing users to
         // interact with the content behind. This is necessary because, before
         // JavaScript finishes loading, we can't automatically move focus to the
         // dialog.
-        modal={dialog.mounted}
+        modal={mounted}
         hidden={false}
         className="dialog"
       >

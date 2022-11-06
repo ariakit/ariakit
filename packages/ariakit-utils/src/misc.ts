@@ -212,3 +212,21 @@ export function pick<T extends AnyObject, K extends keyof T>(
 export function identity<T>(value: T) {
   return value;
 }
+
+/**
+ * Runs right before the next paint.
+ */
+export function beforePaint(cb: () => void = noop) {
+  const raf = requestAnimationFrame(cb);
+  return () => cancelAnimationFrame(raf);
+}
+
+/**
+ * Runs after the next paint.
+ */
+export function afterPaint(cb: () => void = noop) {
+  let raf = requestAnimationFrame(() => {
+    raf = requestAnimationFrame(cb);
+  });
+  return () => cancelAnimationFrame(raf);
+}
