@@ -14,9 +14,14 @@ import {
 } from "ariakit-react-utils/store2";
 import { SetState } from "ariakit-utils/types";
 
-export function useCollectionStore(
-  props: CollectionStoreProps = {}
-): CollectionStore {
+type Item = {
+  id: string;
+  element?: HTMLElement | null;
+};
+
+export function useCollectionStore<T extends Item = Item>(
+  props: CollectionStoreProps<T> = {}
+): CollectionStore<T> {
   const store = useStore(() =>
     createCollectionStore({
       items: props.items ?? props.getState?.()?.items ?? props.defaultItems,
@@ -33,10 +38,13 @@ export function useCollectionStore(
 
 export type { CollectionStoreState };
 
-export type CollectionStoreProps = CoreCollectionStoreProps &
-  ParentStore<CollectionStoreState> & {
-    defaultItems?: CollectionStoreState["items"];
-    setItems?: SetState<CollectionStoreState["items"]>;
-  };
+export type CollectionStoreProps<T extends Item = Item> =
+  CoreCollectionStoreProps<T> &
+    ParentStore<CollectionStoreState<T>> & {
+      defaultItems?: CollectionStoreState<T>["items"];
+      setItems?: SetState<CollectionStoreState<T>["items"]>;
+    };
 
-export type CollectionStore = Store<CoreCollectionStore>;
+export type CollectionStore<T extends Item = Item> = Store<
+  CoreCollectionStore<T>
+>;

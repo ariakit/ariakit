@@ -25,16 +25,16 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "focus | toolbar | toolbar",
-      "focus | item-1 | item-1",
-      "focus | toolbar | item-1",
-      "keyup | item-1 | item-1",
-      "keyup | toolbar | item-1",
-      "keydown | item-1 | item-1",
-      "keydown | toolbar | item-1",
-      "blur | item-1 | item-1",
-      "blur | toolbar | item-1",
-      "blur | toolbar | toolbar",
+      "event: focus | currentTarget: toolbar | target: toolbar",
+      "event: focus | currentTarget: item-1 | target: item-1 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-1 | relatedTarget: toolbar",
+      "event: keyup | currentTarget: item-1 | target: item-1",
+      "event: keyup | currentTarget: toolbar | target: item-1",
+      "event: keydown | currentTarget: item-1 | target: item-1",
+      "event: keydown | currentTarget: toolbar | target: item-1",
+      "event: blur | currentTarget: item-1 | target: item-1",
+      "event: blur | currentTarget: toolbar | target: item-1",
+      "event: blur | currentTarget: toolbar | target: toolbar",
     ]
   `);
 
@@ -42,11 +42,11 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "mouseenter | toolbar | item-3",
-      "mouseenter | item-3 | item-3",
-      "focus | toolbar | toolbar",
-      "focus | item-3 | item-3",
-      "focus | toolbar | item-3",
+      "event: mouseenter | currentTarget: toolbar | target: item-3",
+      "event: mouseenter | currentTarget: item-3 | target: item-3",
+      "event: focus | currentTarget: toolbar | target: toolbar",
+      "event: focus | currentTarget: item-3 | target: item-3 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-3 | relatedTarget: toolbar",
     ]
   `);
 
@@ -58,14 +58,14 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "keydown | item-3 | item-3",
-      "keydown | toolbar | item-3",
-      "blur | item-3 | item-3",
-      "blur | toolbar | item-3",
-      "focus | item-2 | item-2",
-      "focus | toolbar | item-2",
-      "keyup | item-2 | item-2",
-      "keyup | toolbar | item-2",
+      "event: keydown | currentTarget: item-3 | target: item-3",
+      "event: keydown | currentTarget: toolbar | target: item-3",
+      "event: blur | currentTarget: item-3 | target: item-3 | relatedTarget: item-2",
+      "event: blur | currentTarget: toolbar | target: item-3 | relatedTarget: item-2",
+      "event: focus | currentTarget: item-2 | target: item-2 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-2 | relatedTarget: toolbar",
+      "event: keyup | currentTarget: item-2 | target: item-2",
+      "event: keyup | currentTarget: toolbar | target: item-2",
     ]
   `);
 
@@ -79,9 +79,9 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "blur | item-2 | item-2",
-      "blur | toolbar | item-2",
-      "mouseenter | item-1 | item-1",
+      "event: mouseenter | currentTarget: item-1 | target: item-1 | relatedTarget: item-3",
+      "event: blur | currentTarget: item-2 | target: item-2 | relatedTarget: item-3",
+      "event: blur | currentTarget: toolbar | target: item-2 | relatedTarget: item-3",
     ]
   `);
 
@@ -95,16 +95,16 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "focus | item-1 | item-1",
-      "focus | toolbar | item-1",
-      "keydown | item-1 | item-1",
-      "keydown | toolbar | item-1",
-      "blur | item-1 | item-1",
-      "blur | toolbar | item-1",
-      "focus | item-2 | item-2",
-      "focus | toolbar | item-2",
-      "keyup | item-2 | item-2",
-      "keyup | toolbar | item-2",
+      "event: focus | currentTarget: item-1 | target: item-1 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-1 | relatedTarget: toolbar",
+      "event: keydown | currentTarget: item-1 | target: item-1",
+      "event: keydown | currentTarget: toolbar | target: item-1",
+      "event: blur | currentTarget: item-1 | target: item-1 | relatedTarget: item-2",
+      "event: blur | currentTarget: toolbar | target: item-1 | relatedTarget: item-2",
+      "event: focus | currentTarget: item-2 | target: item-2 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-2 | relatedTarget: toolbar",
+      "event: keyup | currentTarget: item-2 | target: item-2",
+      "event: keyup | currentTarget: toolbar | target: item-2",
     ]
   `);
 

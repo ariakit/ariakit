@@ -1,4 +1,4 @@
-import { ElementType, ReactElement, forwardRef } from "react";
+import { ElementType, ReactElement, forwardRef, memo } from "react";
 import { hasOwnProperty } from "ariakit-utils/misc";
 import {
   Component,
@@ -36,6 +36,31 @@ export function createComponent<O extends Options>(
   const Role = (props: Props<O>, ref: React.Ref<any>) =>
     render({ ref, ...props });
   return forwardRef(Role) as unknown as Component<O>;
+}
+
+/**
+ * Creates a type-safe component with the `as` prop, `React.forwardRef` and
+ * `React.memo`.
+ *
+ * @example
+ * import { createMemoComponent } from "ariakit-react-utils/system";
+ *
+ * type Props = {
+ *   as?: "div";
+ *   customProp?: boolean;
+ * };
+ *
+ * const Component = createMemoComponent<Props>(({ customProp, ...props }) => {
+ *   return <div {...props} />;
+ * });
+ *
+ * <Component as="button" customProp />
+ */
+export function createMemoComponent2<O extends Options>(
+  render: (props: Props<O>) => ReactElement
+) {
+  const Role = createComponent(render);
+  return memo(Role) as unknown as typeof Role;
 }
 
 /**

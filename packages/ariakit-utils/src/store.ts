@@ -15,7 +15,7 @@ export function createStore<S extends State>(
   initialState: S,
   store?: PartialStore<S>
 ): Store<S> {
-  let state = initialState as S;
+  let state = initialState;
   let prevState = state;
   let lastUpdate = Symbol();
   let updatedKeys: Array<keyof S> = [];
@@ -23,6 +23,25 @@ export function createStore<S extends State>(
   const subscribers = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
+
+  const setup = () => {
+    const unsubscribe = store?.setup?.();
+    // TODO: Refactor
+    const unsync = store?.sync?.((parentState) => {
+      const keys = Object.keys(parentState).filter(
+        (key) => parentState[key] !== state[key]
+      );
+      for (const key of keys) {
+        if (!hasOwnProperty(state, key)) continue;
+        const parentValue = parentState[key];
+        setState(key, parentValue as any);
+      }
+    });
+    return () => {
+      unsubscribe?.();
+      unsync?.();
+    };
+  };
 
   const registerListener = (
     set: Set<Listener<S>>,
@@ -53,18 +72,18 @@ export function createStore<S extends State>(
   };
 
   const getState: Store<S>["getState"] = () => {
-    if (store?.getState) {
-      const parentState = store.getState();
-      const keys = Object.keys(parentState);
-      for (const key of keys) {
-        if (!hasOwnProperty(state, key)) continue;
-        const value = state[key];
-        const parentValue = parentState[key];
-        if (value !== parentValue) {
-          state = { ...state, [key]: parentValue };
-        }
-      }
-    }
+    // if (store?.getState) {
+    //   const parentState = store.getState();
+    //   const keys = Object.keys(parentState);
+    //   for (const key of keys) {
+    //     if (!hasOwnProperty(state, key)) continue;
+    //     const value = state[key];
+    //     const parentValue = parentState[key];
+    //     if (value !== parentValue) {
+    //       state = { ...state, [key]: parentValue };
+    //     }
+    //   }
+    // }
     return state;
   };
 
@@ -126,7 +145,7 @@ export function createStore<S extends State>(
     return createStore(nextState, { getState, setState });
   };
 
-  return { sync, subscribe, effect, getState, setState, pick, omit };
+  return { setup, sync, subscribe, effect, getState, setState, pick, omit };
 }
 
 /**
@@ -163,6 +182,7 @@ export type Subscribe<S = State> = {
 export type Store<S = State> = {
   /**
    * Function that should be called when the store is initialized.
+   * TODO: Make this required.
    */
   setup?: () => void | (() => void);
   /**

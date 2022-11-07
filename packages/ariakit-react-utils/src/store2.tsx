@@ -86,7 +86,7 @@ function batchUpdates<T>(fn: () => T) {
  */
 export function useStoreState<T extends StateStore>(
   store: T
-): T extends CoreStore ? StoreState<T> : null;
+): T extends CoreStore ? StoreState<T> : undefined;
 
 /**
  * Subscribes to and returns a specific key of a store.
@@ -98,7 +98,7 @@ export function useStoreState<T extends StateStore>(
 export function useStoreState<T extends StateStore, K extends StateKey<T>>(
   store: T,
   key: K
-): T extends CoreStore ? StoreState<T>[K] : null;
+): T extends CoreStore ? StoreState<T>[K] : undefined;
 
 /**
  * Subscribes to and returns a computed value of a store based on the selector
@@ -111,14 +111,14 @@ export function useStoreState<T extends StateStore, K extends StateKey<T>>(
 export function useStoreState<T extends StateStore, V>(
   store: T,
   selector: StateSelector<T, V>
-): T extends CoreStore ? V : null;
+): T extends CoreStore ? V : undefined;
 
 export function useStoreState(
   store: StateStore,
   keyOrSelector: StateKey | StateSelector = identity
 ) {
   const getSnapshot = () => {
-    if (!store) return null;
+    if (!store) return;
     const state = store.getState();
     const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
     const key = typeof keyOrSelector === "string" ? keyOrSelector : null;
@@ -233,7 +233,7 @@ export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
       useSafeLayoutEffect(() => {
         return effect((state, prevState) => {
           return batchUpdates(() => listener(state, prevState));
-        });
+        }, keys);
       }, keys);
     },
     []

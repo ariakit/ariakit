@@ -3,16 +3,26 @@ import {
   Composite,
   CompositeHover,
   CompositeItem,
-  useCompositeState,
-} from "ariakit/composite";
+  useCompositeStore,
+} from "ariakit/composite/store";
 import "./style.css";
 
 export default function Example() {
-  const composite = useCompositeState({ virtualFocus: true });
+  const composite = useCompositeStore({ virtualFocus: true });
 
   const onEvent = (event: SyntheticEvent) => {
     const target = event.target as HTMLElement;
-    console.log([event.type, event.currentTarget.id, target.id].join(" | "));
+    const relatedTarget = (event as any).relatedTarget as HTMLElement | null;
+    console.log(
+      [
+        `event: ${event.type}`,
+        `currentTarget: ${event.currentTarget.id}`,
+        `target: ${target.id}`,
+        relatedTarget?.id ? `relatedTarget: ${relatedTarget.id}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(" | ")
+    );
   };
 
   const props = {
@@ -24,7 +34,7 @@ export default function Example() {
   };
 
   return (
-    <Composite state={composite} id="toolbar" role="toolbar" {...props}>
+    <Composite store={composite} id="toolbar" role="toolbar" {...props}>
       <CompositeHover as={CompositeItem} id="item-1" {...props}>
         item-1
       </CompositeHover>

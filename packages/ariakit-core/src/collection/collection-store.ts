@@ -64,6 +64,8 @@ export function createCollectionStore<T extends Item = Item>({
     renderedItems: [],
   });
 
+  const itemsMap = new Map<string, T>();
+
   const setup = () => {
     return chain(
       () => {
@@ -118,7 +120,8 @@ export function createCollectionStore<T extends Item = Item>({
 
   const mergeItem = (
     item: T,
-    setItems: (getItems: (items: T[]) => T[]) => void
+    setItems: (getItems: (items: T[]) => T[]) => void,
+    map?: Map<string, T>
   ) => {
     let prevItem: T | undefined;
     let index: number | undefined;
@@ -127,18 +130,25 @@ export function createCollectionStore<T extends Item = Item>({
       const nextItems = items.slice();
       if (prevItem) {
         index = nextItems.indexOf(prevItem);
-        nextItems[index] = { ...prevItem, ...item };
+        const nextItem = { ...prevItem, ...item };
+        nextItems[index] = nextItem;
+        map?.set(item.id, nextItem);
       } else {
         nextItems.push(item);
+        map?.set(item.id, item);
       }
       return nextItems;
     });
     const unregisterItem = () => {
       setItems((items) => {
-        if (!prevItem) return items.filter(({ id }) => id !== item.id);
+        if (!prevItem) {
+          map?.delete(item.id);
+          return items.filter(({ id }) => id !== item.id);
+        }
         if (index == null || index < 0) return items;
         const nextItems = items.slice();
         nextItems[index] = prevItem;
+        map?.set(item.id, prevItem);
         return nextItems;
       });
     };
@@ -146,7 +156,7 @@ export function createCollectionStore<T extends Item = Item>({
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => store.setState("items", getItems));
+    mergeItem(item, (getItems) => store.setState("items", getItems), itemsMap);
 
   const renderItem: CollectionStore<T>["renderItem"] = (item) =>
     chain(
@@ -156,6 +166,9 @@ export function createCollectionStore<T extends Item = Item>({
       )
     );
 
+  const item: CollectionStore<T>["item"] = (id) =>
+    id ? itemsMap.get(id) || null : null;
+
   return {
     ...store,
     setup,
@@ -163,6 +176,7 @@ export function createCollectionStore<T extends Item = Item>({
     setRenderedItems,
     registerItem,
     renderItem,
+    item,
   };
 }
 
@@ -177,13 +191,15 @@ export type CollectionStoreState<T extends Item = Item> = {
   renderedItems: T[];
 };
 
-export type CollectionStore<T extends Item = Item> =
-  Store<CollectionStoreState> & {
-    setItems: SetState<CollectionStoreState<T>["items"]>;
-    setRenderedItems: SetState<CollectionStoreState<T>["renderedItems"]>;
-    registerItem: BivariantCallback<(item: T) => () => void>;
-    renderItem: BivariantCallback<(item: T) => () => void>;
-  };
+export type CollectionStore<T extends Item = Item> = Store<
+  CollectionStoreState<T>
+> & {
+  setItems: SetState<CollectionStoreState<T>["items"]>;
+  setRenderedItems: SetState<CollectionStoreState<T>["renderedItems"]>;
+  registerItem: BivariantCallback<(item: T) => () => void>;
+  renderItem: BivariantCallback<(item: T) => () => void>;
+  item: (id: string | null | undefined) => T | null;
+};
 
 export type CollectionStoreProps<T extends Item = Item> = Partial<
   Pick<CollectionStoreState<T>, "items">
