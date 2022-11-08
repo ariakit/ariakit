@@ -3,8 +3,8 @@ import {
   HovercardAnchor,
   HovercardDisclosure,
   HovercardHeading,
-  useHovercardState,
-} from "ariakit/hovercard";
+  useHovercardStore,
+} from "ariakit/hovercard/store";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import "./style.css";
 
@@ -19,21 +19,21 @@ const chevronDown = (
 );
 
 export default function Example() {
-  const hovercard = useHovercardState({ gutter: 16 });
+  const hovercard = useHovercardStore({ gutter: 16 });
   const element = (
     <span className="hovercard-wrapper">
       <HovercardAnchor
-        state={hovercard}
+        store={hovercard}
         href="https://twitter.com/ariakitjs"
         className="anchor"
       >
         @ariakitjs
       </HovercardAnchor>
-      <HovercardDisclosure state={hovercard} className="disclosure">
+      <HovercardDisclosure store={hovercard} className="disclosure">
         <VisuallyHidden>More details about @ariakitjs</VisuallyHidden>
         {chevronDown}
       </HovercardDisclosure>
-      <Hovercard portal state={hovercard} className="hovercard">
+      <Hovercard portal store={hovercard} className="hovercard">
         <img
           src="https://pbs.twimg.com/profile_images/1547936373243490306/dSn6Am0o_400x400.jpg"
           alt="Ariakit"
