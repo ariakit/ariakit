@@ -12,13 +12,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tanstack/react-query": "4.13.5",
+    "@tanstack/react-query": "4.14.1",
     "fast-fuzzy": "1.11.2",
     "next": "12.3.2",
     "rehype-react": "7.1.1"
   },
   "devDependencies": {
     "autoprefixer": "10.4.13",
-    "next-transpile-modules": "9.1.0"
+    "next-transpile-modules": "10.0.0"
   }
 }
