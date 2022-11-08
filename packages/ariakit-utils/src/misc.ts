@@ -230,3 +230,17 @@ export function afterPaint(cb: () => void = noop) {
   });
   return () => cancelAnimationFrame(raf);
 }
+
+/**
+ * TODO: Describe
+ */
+export function invariant(
+  condition: any,
+  message?: string | boolean
+): asserts condition {
+  if (condition) return;
+  if (process.env.NODE_ENV === "production" || typeof message === "boolean") {
+    throw new Error("Invariant failed");
+  }
+  throw new Error(message);
+}

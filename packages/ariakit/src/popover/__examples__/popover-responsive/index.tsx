@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { Button } from "ariakit/button";
 import {
   Popover,
@@ -6,14 +5,16 @@ import {
   PopoverDescription,
   PopoverDisclosure,
   PopoverHeading,
-  PopoverStateRenderCallbackProps,
-  usePopoverState,
-} from "ariakit/popover";
+  usePopoverStore,
+} from "ariakit/popover/store";
 import assignStyle from "./assign-style";
 import useMedia from "./use-media";
 import "./style.css";
 
-function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
+function applyMobileStyles(
+  popover?: HTMLElement | null,
+  arrow?: HTMLElement | null
+) {
   const restorePopoverStyle = assignStyle(popover, {
     position: "fixed",
     bottom: "0",
@@ -31,23 +32,20 @@ function applyMobileStyles(popover: HTMLElement, arrow?: HTMLElement | null) {
 export default function Example() {
   const isLarge = useMedia("(min-width: 640px)", true);
 
-  const renderCallback = useCallback(
-    (props: PopoverStateRenderCallbackProps) => {
-      const { popover, arrow, defaultRenderCallback } = props;
+  const popover = usePopoverStore({
+    renderCallback: (props) => {
+      const { popoverElement, arrowElement, defaultRenderCallback } = props;
       if (isLarge) return defaultRenderCallback();
-      return applyMobileStyles(popover, arrow);
+      return applyMobileStyles(popoverElement, arrowElement);
     },
-    [isLarge]
-  );
-
-  const popover = usePopoverState({ renderCallback });
+  });
 
   return (
     <>
-      <PopoverDisclosure state={popover} className="button">
+      <PopoverDisclosure store={popover} className="button">
         Accept invite
       </PopoverDisclosure>
-      <Popover state={popover} modal={!isLarge} className="popover">
+      <Popover store={popover} modal={!isLarge} className="popover">
         <PopoverArrow className="arrow" />
         <PopoverHeading className="heading">Team meeting</PopoverHeading>
         <PopoverDescription>

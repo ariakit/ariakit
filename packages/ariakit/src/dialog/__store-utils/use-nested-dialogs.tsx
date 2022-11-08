@@ -51,7 +51,7 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
   );
 
   // If this is a nested dialog, add it to the context.
-  store.useEffect(
+  store.useSync(
     (state) => {
       if (!state.contentElement) return;
       return context.addDialog?.(state.contentElement);
@@ -59,7 +59,7 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
     ["contentElement", context.addDialog]
   );
 
-  store.useEffect(
+  store.useSync(
     (state) => {
       if (!modal) return;
       if (!state.open) return;

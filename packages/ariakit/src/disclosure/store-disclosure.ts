@@ -36,7 +36,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     // the DOM. If this disclosure element is the disclosureRef, this element
     // will get the `aria-expanded` attribute set to `true` when the disclosure
     // content is open.
-    store.useEffect(
+    store.useSync(
       (state) => {
         let isCurrentDisclosure = state.disclosureElement === ref.current;
         if (!state.disclosureElement || !state.disclosureElement.isConnected) {

@@ -72,18 +72,6 @@ export function createStore<S extends State>(
   };
 
   const getState: Store<S>["getState"] = () => {
-    // if (store?.getState) {
-    //   const parentState = store.getState();
-    //   const keys = Object.keys(parentState);
-    //   for (const key of keys) {
-    //     if (!hasOwnProperty(state, key)) continue;
-    //     const value = state[key];
-    //     const parentValue = parentState[key];
-    //     if (value !== parentValue) {
-    //       state = { ...state, [key]: parentValue };
-    //     }
-    //   }
-    // }
     return state;
   };
 
@@ -91,12 +79,13 @@ export function createStore<S extends State>(
     key: K,
     value: SetStateAction<S[K]>
   ) => {
-    const currentState = getState();
+    let currentState = getState();
 
     if (!hasOwnProperty(currentState, key)) return;
 
     if (store?.setState) {
       store.setState(key, value);
+      currentState = getState();
     }
 
     const currentValue = currentState[key];

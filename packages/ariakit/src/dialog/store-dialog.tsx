@@ -126,8 +126,9 @@ export const useDialog = createHook<DialogOptions>(
     );
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // open.
+    const preserveTabOrderProp = props.preserveTabOrder;
     const preserveTabOrder = store.useState(
-      (state) => props.preserveTabOrder && !modal && state.mounted
+      (state) => preserveTabOrderProp && !modal && state.mounted
     );
     const openStable = store.useState(
       (state) => state.open && !state.animating
@@ -146,7 +147,6 @@ export const useDialog = createHook<DialogOptions>(
     // Sets disclosure element.
     store.useEffect(
       (state) => {
-        const openStable = state.open && !state.animating;
         if (!openStable) return;
         const dialog = state.contentElement;
         const activeElement = getActiveElement(dialog, true);
@@ -156,7 +156,7 @@ export const useDialog = createHook<DialogOptions>(
         if (dialog && contains(dialog, activeElement)) return;
         store.setDisclosureElement(activeElement);
       },
-      ["open", "animating", "contentElement"]
+      ["contentElement", openStable]
     );
 
     const nested = useNestedDialogs(store, modal);
@@ -270,7 +270,6 @@ export const useDialog = createHook<DialogOptions>(
     // Auto focus on show.
     store.useEffect(
       (state) => {
-        const openStable = state.open && !state.animating;
         if (!openStable) return;
         if (!mayAutoFocusOnShow) return;
         // Makes sure to wait for the portalNode to be created before moving
@@ -314,9 +313,8 @@ export const useDialog = createHook<DialogOptions>(
         });
       },
       [
-        "open",
-        "animating",
         "contentElement",
+        openStable,
         mayAutoFocusOnShow,
         domReady,
         initialFocusRef,

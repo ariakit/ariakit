@@ -5,18 +5,18 @@ import {
   PopoverDescription,
   PopoverDisclosure,
   PopoverHeading,
-  usePopoverState,
-} from "ariakit/popover";
+  usePopoverStore,
+} from "ariakit/popover/store";
 import "./style.css";
 
 export default function Example() {
-  const popover = usePopoverState();
+  const popover = usePopoverStore();
   return (
     <>
-      <PopoverDisclosure state={popover} className="button">
+      <PopoverDisclosure store={popover} className="button">
         Accept invite
       </PopoverDisclosure>
-      <Popover state={popover} className="popover">
+      <Popover store={popover} className="popover">
         <PopoverArrow className="arrow" />
         <PopoverHeading className="heading">Team meeting</PopoverHeading>
         <PopoverDescription>

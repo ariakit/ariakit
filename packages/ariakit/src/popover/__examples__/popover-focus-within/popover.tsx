@@ -1,19 +1,19 @@
 import { HTMLAttributes, RefObject, forwardRef, useRef } from "react";
 import {
   Popover as BasePopover,
-  PopoverStateProps,
-  usePopoverState,
-} from "ariakit/popover";
+  PopoverStoreProps,
+  usePopoverStore,
+} from "ariakit/popover/store";
 
 export {
   PopoverArrow,
   PopoverDescription,
   PopoverDismiss,
   PopoverHeading,
-} from "ariakit/popover";
+} from "ariakit/popover/store";
 
 export type PopoverProps = HTMLAttributes<HTMLDivElement> & {
-  placement?: PopoverStateProps["placement"];
+  placement?: PopoverStoreProps["placement"];
   isOpen?: boolean;
   anchorRef?: RefObject<HTMLElement>;
   getAnchorRect?: () => DOMRect | null;
@@ -31,12 +31,11 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       ...rest
     } = props;
     const fallbackRef = useRef<HTMLSpanElement>(null);
-    const popover = usePopoverState({
+    const popover = usePopoverStore({
       placement,
       open: isOpen,
       setOpen: (open) => {
         if (!open && onClose) onClose();
-        return open;
       },
       getAnchorRect: () => {
         if (getAnchorRect) {
@@ -55,7 +54,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
     return (
       <>
         <span ref={fallbackRef} style={{ position: "fixed" }} />
-        <BasePopover state={popover} ref={ref} portal {...rest} />
+        <BasePopover store={popover} ref={ref} portal {...rest} />
       </>
     );
   }

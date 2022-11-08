@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Button } from "ariakit/button";
-import { Popover, PopoverArrow, usePopoverState } from "ariakit/popover";
+import { Popover, PopoverArrow, usePopoverStore } from "ariakit/popover/store";
 import "./style.css";
 
 function hasSelectionWithin(element?: Element | null) {
@@ -15,7 +15,7 @@ export default function Example() {
   const popoverRef = useRef<HTMLDivElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
 
-  const popover = usePopoverState({
+  const popover = usePopoverStore({
     placement: "top",
     getAnchorRect: () => {
       const selection = paragraphRef.current?.ownerDocument.getSelection();
@@ -54,7 +54,7 @@ export default function Example() {
   return (
     <div>
       <Popover
-        state={popover}
+        store={popover}
         autoFocusOnShow={false}
         hideOnInteractOutside={() => !hasSelectionWithin(paragraphRef.current)}
         ref={popoverRef}

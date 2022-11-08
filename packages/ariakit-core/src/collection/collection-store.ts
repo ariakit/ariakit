@@ -64,8 +64,6 @@ export function createCollectionStore<T extends Item = Item>({
     renderedItems: [],
   });
 
-  const itemsMap = new Map<string, T>();
-
   const setup = () => {
     return chain(
       () => {
@@ -120,8 +118,7 @@ export function createCollectionStore<T extends Item = Item>({
 
   const mergeItem = (
     item: T,
-    setItems: (getItems: (items: T[]) => T[]) => void,
-    map?: Map<string, T>
+    setItems: (getItems: (items: T[]) => T[]) => void
   ) => {
     let prevItem: T | undefined;
     let index: number | undefined;
@@ -132,23 +129,19 @@ export function createCollectionStore<T extends Item = Item>({
         index = nextItems.indexOf(prevItem);
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
-        map?.set(item.id, nextItem);
       } else {
         nextItems.push(item);
-        map?.set(item.id, item);
       }
       return nextItems;
     });
     const unregisterItem = () => {
       setItems((items) => {
         if (!prevItem) {
-          map?.delete(item.id);
           return items.filter(({ id }) => id !== item.id);
         }
         if (index == null || index < 0) return items;
         const nextItems = items.slice();
         nextItems[index] = prevItem;
-        map?.set(item.id, prevItem);
         return nextItems;
       });
     };
@@ -156,7 +149,7 @@ export function createCollectionStore<T extends Item = Item>({
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => store.setState("items", getItems), itemsMap);
+    mergeItem(item, (getItems) => store.setState("items", getItems));
 
   const renderItem: CollectionStore<T>["renderItem"] = (item) =>
     chain(
@@ -166,8 +159,24 @@ export function createCollectionStore<T extends Item = Item>({
       )
     );
 
-  const item: CollectionStore<T>["item"] = (id) =>
-    id ? itemsMap.get(id) || null : null;
+  const cache: { id: string | null; items: T[]; item: T | null } = {
+    id: null,
+    item: null,
+    items,
+  };
+
+  const item: CollectionStore<T>["item"] = (id) => {
+    if (!id) return null;
+    const { items } = store.getState();
+    if (cache.id === id && cache.items === items) {
+      return cache.item;
+    }
+    const item = items.find((item) => item.id === id);
+    cache.id = id;
+    cache.items = items;
+    cache.item = item || null;
+    return cache.item;
+  };
 
   return {
     ...store,
