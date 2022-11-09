@@ -121,6 +121,6 @@
     "unified": "10.1.2",
     "unist-util-visit": "4.1.1",
     "use-isomorphic-layout-effect": "1.1.2",
-    "webpack": "5.74.0"
+    "webpack": "5.75.0"
   }
 }
