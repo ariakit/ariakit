@@ -23,7 +23,6 @@ const isSafariOnMobile = isSafari() && isTouchDevice();
 
 export function createComboboxStore({
   value = "",
-  limit = false,
   activeId = null,
   includesBaseElement = true,
   orientation = "vertical",
@@ -50,7 +49,6 @@ export function createComboboxStore({
     {
       activeValue: undefined,
       value,
-      limit,
       ...composite.getState(),
       ...popover.getState(),
     },
@@ -108,12 +106,6 @@ export type ComboboxStoreState = CompositeStoreState<Item> &
      * is not updated when `moveType` is `mouse`.
      */
     activeValue?: string;
-    /**
-     * Maximum number of `matches`. If it's set to `false`, there will be no
-     * limit.
-     * @default false
-     */
-    limit: number | false;
   };
 
 export type ComboboxStore = Omit<CompositeStore<Item>, keyof Store> &
@@ -130,4 +122,4 @@ export type ComboboxStore = Omit<CompositeStore<Item>, keyof Store> &
 
 export type ComboboxStoreProps = CompositeStoreProps<Item> &
   PopoverStoreProps &
-  Partial<Pick<ComboboxStoreState, "value" | "limit">>;
+  Partial<Pick<ComboboxStoreState, "value">>;

@@ -1,14 +1,8 @@
 import { click, getByRole, press, render, type } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("autocomplete on arrow down key", async () => {
   render(<Example />);

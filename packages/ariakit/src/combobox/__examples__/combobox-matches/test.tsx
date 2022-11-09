@@ -7,14 +7,8 @@ import {
   render,
   type,
 } from "ariakit-test";
-import { axe } from "jest-axe";
 import list from "./list";
 import Example from ".";
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("show entire list", async () => {
   render(<Example />);
@@ -27,7 +21,7 @@ test("filter list", async () => {
   render(<Example />);
   await press.Tab();
   await type("sa");
-  expect(getAllByRole("option")).toHaveLength(2);
+  expect(getAllByRole("option")).toHaveLength(5);
   await press.ArrowDown();
   expect(getByRole("option", { name: "Salad" })).toHaveFocus();
   await press.ArrowDown();

@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { matchSorter } from "match-sorter";
 import { ComboboxMultiple, ComboboxMultipleItem } from "./combobox-multiple";
 import list from "./list";
 import "./style.css";
 
 export default function Example() {
+  const [value, setValue] = useState("");
   const [values, setValues] = useState<string[]>(["Bacon"]);
-  const [matches, setMatches] = useState<string[]>([]);
+
+  const matches = useMemo(() => matchSorter(list, value), [value]);
+
   return (
     <div className="wrapper">
       <ComboboxMultiple
         label="Your favorite food"
         placeholder="e.g., Apple, Burger"
-        defaultList={list}
-        onFilter={setMatches}
+        value={value}
+        onChange={setValue}
         values={values}
         onValuesChange={setValues}
       >

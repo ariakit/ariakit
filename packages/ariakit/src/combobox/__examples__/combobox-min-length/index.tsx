@@ -1,19 +1,25 @@
+import { useState } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({
+  const [open, setOpen] = useState(false);
+  const combobox = useComboboxStore({
+    open,
+    setOpen,
     gutter: 8,
     sameWidth: true,
   });
 
-  if (combobox.open && combobox.value.length < 1) {
-    combobox.setOpen(false);
+  const value = combobox.useState("value");
+
+  if (open && value.length < 1) {
+    setOpen(false);
   }
 
   return (
@@ -21,12 +27,12 @@ export default function Example() {
       <label className="label">
         Your favorite fruit
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Apple"
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         <ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
         </ComboboxItem>

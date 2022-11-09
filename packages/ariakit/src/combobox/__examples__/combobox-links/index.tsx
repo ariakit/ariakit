@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
+import { matchSorter } from "match-sorter";
 import { NewWindow } from "./icons";
 import "./style.css";
 
@@ -26,28 +28,36 @@ const links = [
   { href: "https://ariakit.org", children: "Ariakit.org" },
 ];
 
-const list = links.map((link) => link.children);
-
 export default function Example() {
-  const combobox = useComboboxState({
-    list,
+  const combobox = useComboboxStore({
     gutter: 4,
     sameWidth: true,
   });
 
-  const renderItem = (value: string, i: number) => {
-    const link = links.find((link) => link.children === value);
+  const mounted = combobox.useState("mounted");
+  const value = combobox.useState("value");
+
+  const matches = useMemo(
+    () =>
+      matchSorter(links, value, {
+        keys: ["children"],
+        baseSort: (a, b) => (a.index < b.index ? -1 : 1),
+      }),
+    [value]
+  );
+
+  const renderItem = (item: typeof links[number], i: number) => {
     return (
       <ComboboxItem
-        key={value + i}
+        key={item.children + i}
         as="a"
         focusOnHover
         hideOnClick
         className="combobox-item"
-        {...link}
+        {...item}
       >
-        {value}
-        {link?.target === "_blank" && (
+        {item.children}
+        {item.target === "_blank" && (
           <NewWindow className="combobox-item-icon" />
         )}
       </ComboboxItem>
@@ -59,16 +69,16 @@ export default function Example() {
       <label className="label">
         Links
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Twitter"
           className="combobox"
           autoSelect
         />
       </label>
-      {combobox.mounted && (
-        <ComboboxPopover state={combobox} className="popover">
-          {combobox.matches.length ? (
-            combobox.matches.map(renderItem)
+      {mounted && (
+        <ComboboxPopover store={combobox} className="popover">
+          {matches.length ? (
+            matches.map(renderItem)
           ) : (
             <div className="no-results">No results found</div>
           )}

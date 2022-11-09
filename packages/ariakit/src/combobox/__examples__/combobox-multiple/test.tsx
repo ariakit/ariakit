@@ -7,17 +7,11 @@ import {
   render,
   type,
 } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getInput = () => getByRole("combobox", { name: "Your favorite food" });
 const getOption = (name: string) => getByRole("option", { name });
 const queryOption = (name: string) => queryByRole("option", { name });
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("default checked", async () => {
   render(<Example />);

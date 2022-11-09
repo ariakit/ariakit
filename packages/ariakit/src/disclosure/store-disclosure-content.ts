@@ -115,7 +115,8 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     }, [animated, contentElement, open, transition]);
 
     const style =
-      mounted || props.hidden === false
+      // TODO: props.hidden !== true see combobox-textarea example
+      (mounted && props.hidden !== true) || props.hidden === false
         ? props.style
         : { ...props.style, display: "none" };
 

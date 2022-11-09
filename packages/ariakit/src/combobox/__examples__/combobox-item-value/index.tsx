@@ -3,25 +3,25 @@ import {
   ComboboxItem,
   ComboboxItemValue,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import "./style.css";
 
 const fruits = ["Apple", "Grape", "Orange", "Strawberry", "Watermelon"];
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, sameWidth: true });
+  const combobox = useComboboxStore({ gutter: 8, sameWidth: true });
   return (
     <div className="wrapper">
       <label className="label">
         Your favorite fruit
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Apple"
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         {fruits.map((f) => (
           <ComboboxItem key={f} value={f} className="combobox-item">
             <ComboboxItemValue />

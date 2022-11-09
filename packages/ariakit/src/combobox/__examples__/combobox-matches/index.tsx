@@ -1,27 +1,33 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
+import { matchSorter } from "match-sorter";
 import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 8, sameWidth: true, list });
+  const combobox = useComboboxStore({ gutter: 8, sameWidth: true });
+  const value = combobox.useState("value");
+
+  const matches = useMemo(() => matchSorter(list, value), [value]);
+
   return (
     <div className="wrapper">
       <label className="label">
         Your favorite food
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Apple"
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
-        {combobox.matches.length ? (
-          combobox.matches.map((value) => (
+      <ComboboxPopover store={combobox} className="popover">
+        {matches.length ? (
+          matches.map((value) => (
             <ComboboxItem key={value} value={value} className="combobox-item" />
           ))
         ) : (

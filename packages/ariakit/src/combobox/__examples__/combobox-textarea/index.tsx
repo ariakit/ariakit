@@ -1,10 +1,18 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
+import { matchSorter } from "match-sorter";
 import getCaretCoordinates from "textarea-caret";
 import useLayoutEffect from "use-isomorphic-layout-effect";
 import { defaultTriggers, getList, getValue } from "./list";
@@ -16,8 +24,7 @@ export default function Example() {
   const [trigger, setTrigger] = useState<string | null>(null);
   const [caretOffset, setCaretOffset] = useState<number | null>(null);
 
-  const combobox = useComboboxState({
-    limit: 10,
+  const combobox = useComboboxStore({
     fitViewport: true,
     getAnchorRect: () => {
       const textarea = ref.current;
@@ -26,15 +33,21 @@ export default function Example() {
     },
   });
 
-  const hasMatches = !!combobox.matches.length;
+  const searchValue = combobox.useState("value");
+  const mounted = combobox.useState("mounted");
+
+  // TODO: Use deferred values
+  const matches = useMemo(() => {
+    return matchSorter(getList(trigger), searchValue, {
+      baseSort: (a, b) => (a.index < b.index ? -1 : 1),
+    }).slice(0, 10);
+  }, [trigger, searchValue]);
+
+  const hasMatches = !!matches.length;
 
   useLayoutEffect(() => {
     combobox.setOpen(hasMatches);
-  }, [combobox.setOpen, hasMatches]);
-
-  useLayoutEffect(() => {
-    combobox.setList(getList(trigger));
-  }, [combobox.setList, trigger]);
+  }, [combobox, hasMatches]);
 
   useLayoutEffect(() => {
     if (caretOffset != null) {
@@ -44,7 +57,7 @@ export default function Example() {
 
   // Re-calculates the position of the combobox popover in case the changes on
   // the textarea value have shifted the trigger character.
-  useEffect(combobox.render, [value, combobox.render]);
+  useEffect(combobox.render, [combobox, value]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
@@ -79,7 +92,6 @@ export default function Example() {
     const textarea = ref.current;
     if (!textarea) return;
     const offset = getTriggerOffset(textarea);
-    const searchValue = combobox.value;
     const displayValue = getValue(value, trigger);
     if (!displayValue) return;
     setTrigger(null);
@@ -96,7 +108,7 @@ export default function Example() {
           ref={ref}
           as="textarea"
           placeholder="Type @, # or :"
-          state={combobox}
+          store={combobox}
           rows={5}
           autoSelect
           value={value}
@@ -118,13 +130,13 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      {combobox.mounted && (
+      {mounted && (
         <ComboboxPopover
-          state={combobox}
+          store={combobox}
           hidden={!hasMatches}
           className="popover"
         >
-          {combobox.matches.map((value, i) => (
+          {matches.map((value, i) => (
             <ComboboxItem
               key={value + i}
               value={value}

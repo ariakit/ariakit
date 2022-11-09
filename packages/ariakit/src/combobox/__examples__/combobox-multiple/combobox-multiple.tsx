@@ -8,8 +8,8 @@ import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import {
   SelectItem,
   SelectItemCheck,
@@ -19,7 +19,7 @@ import {
 
 export type ComboboxMultipleProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  "autoComplete"
+  "autoComplete" | "onChange"
 > & {
   label?: string;
   defaultValue?: string;
@@ -28,9 +28,6 @@ export type ComboboxMultipleProps = Omit<
   defaultValues?: string[];
   values?: string[];
   onValuesChange?: (values: string[]) => void;
-  defaultList?: string[];
-  list?: string[];
-  onFilter?: (matches: string[]) => void;
 };
 
 export const ComboboxMultiple = forwardRef<
@@ -45,14 +42,11 @@ export const ComboboxMultiple = forwardRef<
     defaultValues,
     values,
     onValuesChange,
-    defaultList,
-    list,
-    onFilter,
     children,
     ...comboboxProps
   } = props;
 
-  const combobox = useComboboxState({
+  const combobox = useComboboxStore({
     // VoiceOver has issues with multi-selectable comboboxes where the DOM focus
     // is on the combobox input, so we set `virtualFocus` to `false` to disable
     // this behavior and put DOM focus on the items.
@@ -62,29 +56,26 @@ export const ComboboxMultiple = forwardRef<
     defaultValue,
     value,
     setValue: onChange,
-    defaultList,
-    list,
   });
+  const { setItems, renderCallback, ...comboboxStore } = combobox;
+  const { items, ...comboboxState } = combobox.useState();
   const select = useSelectState({
-    ...combobox,
+    ...comboboxStore,
+    ...comboboxState,
     defaultValue: defaultValues,
     value: values,
     setValue: onValuesChange,
   });
 
-  useEffect(() => {
-    onFilter?.(combobox.matches);
-  }, [combobox.matches]);
-
   // Reset the combobox value whenever an item is checked or unchecked.
   useEffect(() => {
     combobox.setValue("");
-  }, [select.value, combobox.setValue]);
+  }, [select.value, combobox]);
 
   const element = (
     <Combobox
       ref={ref}
-      state={combobox}
+      store={combobox}
       className="combobox"
       {...comboboxProps}
     />
@@ -100,7 +91,7 @@ export const ComboboxMultiple = forwardRef<
       ) : (
         element
       )}
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         {(popoverProps) => (
           <SelectList
             state={select}
@@ -135,9 +126,9 @@ export const ComboboxMultipleItem = forwardRef<
     <SelectItem
       ref={ref}
       value={value}
-      //We're not registering the select item because the combobox item (the
+      // We're not registering the select item because the combobox item (the
       // same element) already handles it.
-      shouldRegisterItem={false}
+      // shouldRegisterItem={false}
       className="combobox-item"
       {...props}
     >

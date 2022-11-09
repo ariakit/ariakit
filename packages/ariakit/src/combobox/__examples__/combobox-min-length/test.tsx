@@ -1,15 +1,9 @@
 import { click, getByRole, press, render, type } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("popover is not shown on click when combobox is pristine", async () => {
   render(<Example />);
