@@ -1,6 +1,6 @@
 import { flatten2DArray, reverseArray } from "ariakit-utils/array";
 import { chain } from "ariakit-utils/misc";
-import { Store, createStore } from "ariakit-utils/store";
+import { PartialStore, Store, createStore } from "ariakit-utils/store";
 import { SetState } from "ariakit-utils/types";
 import {
   CollectionStore,
@@ -148,19 +148,22 @@ function verticalizeItems(items: Item[]) {
   return verticalized;
 }
 
-export function createCompositeStore<T extends Item = Item>({
-  orientation = "both",
-  rtl = false,
-  virtualFocus = false,
-  focusLoop = false,
-  focusWrap = false,
-  focusShift = false,
-  activeId,
-  includesBaseElement = activeId === null,
-  moves = 0,
-  ...props
-}: CompositeStoreProps<T> = {}): CompositeStore<T> {
-  const collection = createCollectionStore(props);
+export function createCompositeStore<T extends Item = Item>(
+  {
+    orientation = "both",
+    rtl = false,
+    virtualFocus = false,
+    focusLoop = false,
+    focusWrap = false,
+    focusShift = false,
+    activeId,
+    includesBaseElement = activeId === null,
+    moves = 0,
+    ...props
+  }: CompositeStoreProps<T> = {},
+  parentStore?: PartialStore
+): CompositeStore<T> {
+  const collection = createCollectionStore(props, parentStore);
   const store = createStore<CompositeStoreState<T>>(
     {
       baseElement: null,
@@ -209,16 +212,17 @@ export function createCompositeStore<T extends Item = Item>({
   const move: CompositeStore<T>["move"] = (id) => {
     // move() does nothing
     if (id === undefined) return;
-    store.setState("moves", (moves) => moves + 1);
     store.setState("activeId", id);
+    store.setState("moves", (moves) => moves + 1);
   };
 
   const first: CompositeStore<T>["first"] = () => {
-    return findFirstEnabledItem(store.getState().items)?.id;
+    return findFirstEnabledItem(store.getState().renderedItems)?.id;
   };
 
   const last: CompositeStore<T>["last"] = () => {
-    return findFirstEnabledItem(reverseArray(store.getState().items))?.id;
+    return findFirstEnabledItem(reverseArray(store.getState().renderedItems))
+      ?.id;
   };
 
   const getNextId = (

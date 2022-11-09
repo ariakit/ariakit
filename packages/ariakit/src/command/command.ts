@@ -45,8 +45,9 @@ export const useCommand = createHook<CommandOptions>(
   ({ clickOnEnter = true, clickOnSpace = true, ...props }) => {
     const ref = useRef<HTMLButtonElement>(null);
     const tagName = useTagName(ref, props.as);
+    const type = props.type;
     const [isNativeButton, setIsNativeButton] = useState(
-      () => !!tagName && isButton({ tagName, type: props.type })
+      () => !!tagName && isButton({ tagName, type })
     );
 
     useEffect(() => {

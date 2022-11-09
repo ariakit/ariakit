@@ -108,7 +108,7 @@ test("autocomplete on focus on hover", async () => {
   render(<Example />);
   await click(getCombobox());
   await type("g");
-  expect(getCombobox()).toHaveValue("grape");
-  await hover(getOption("Gelato"));
+  expect(getCombobox()).toHaveValue("gelato");
+  await hover(getOption("Pudding"));
   expect(getCombobox()).toHaveValue("g");
 });

@@ -17,7 +17,6 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-react-utils/hooks";
-import { useStoreState } from "ariakit-react-utils/store2";
 import {
   createElement,
   createHook,
@@ -26,6 +25,7 @@ import {
 import { As, Props } from "ariakit-react-utils/types";
 import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
 import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
+import { invariant } from "ariakit-utils/misc";
 import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
@@ -124,13 +124,14 @@ function targetIsAnotherItem(event: SyntheticEvent, store: CompositeStore) {
 }
 
 function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
-  const [role, setRole] = useState(props.role);
+  const roleProp = props.role;
+  const [role, setRole] = useState(roleProp);
 
   useSafeLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
-    setRole(element.getAttribute("role") || props.role);
-  }, [props.role]);
+    setRole(element.getAttribute("role") || roleProp);
+  }, [roleProp]);
 
   return role;
 }
@@ -174,9 +175,15 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const context = useContext(CompositeContext);
     store = store || context;
 
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "CompositeItem must be wrapped in a Composite component"
+    );
+
     const ref = useRef<HTMLButtonElement>(null);
     const row = useContext(CompositeRowContext);
-    const rowId = useStoreState(store, (state) => {
+    const rowId = store.useState((state) => {
       if (rowIdProp) return rowIdProp;
       if (!row?.baseElement) return;
       if (row.baseElement !== state.baseElement) return;
@@ -313,8 +320,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       }
     });
 
-    const baseElement = useStoreState(
-      store,
+    const baseElement = store.useState(
       (state) => state.baseElement || undefined
     );
 
@@ -333,9 +339,9 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [providerValue]
     );
 
-    const isActiveItem = useStoreState(store, (state) => state.activeId === id);
+    const isActiveItem = store.useState((state) => state.activeId === id);
     const role = useRole(ref, props);
-    const virtualFocus = !!useStoreState(store, "virtualFocus");
+    const virtualFocus = store.useState("virtualFocus");
     let ariaSelected: boolean | undefined;
 
     if (isActiveItem) {
@@ -352,8 +358,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       }
     }
 
-    const shouldTabIndex = !!useStoreState(
-      store,
+    const shouldTabIndex = store.useState(
       (state) =>
         (!state.virtualFocus && isActiveItem) ||
         // We don't want to set tabIndex="-1" when using CompositeItem as a

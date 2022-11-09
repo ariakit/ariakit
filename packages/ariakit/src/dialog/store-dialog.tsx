@@ -4,6 +4,7 @@ import {
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
   SyntheticEvent,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -143,21 +144,19 @@ export const useDialog = createHook<DialogOptions>(
       modal || (portal && preserveTabOrder && isSafari());
 
     const id = useId(props.id);
+    const contentElement = store.useState("contentElement");
 
     // Sets disclosure element.
-    store.useEffect(
-      (state) => {
-        if (!openStable) return;
-        const dialog = state.contentElement;
-        const activeElement = getActiveElement(dialog, true);
-        if (!activeElement) return;
-        if (activeElement.tagName === "BODY") return;
-        // The disclosure element can't be inside the dialog.
-        if (dialog && contains(dialog, activeElement)) return;
-        store.setDisclosureElement(activeElement);
-      },
-      ["contentElement", openStable]
-    );
+    useEffect(() => {
+      if (!openStable) return;
+      const dialog = contentElement;
+      const activeElement = getActiveElement(dialog, true);
+      if (!activeElement) return;
+      if (activeElement.tagName === "BODY") return;
+      // The disclosure element can't be inside the dialog.
+      if (dialog && contains(dialog, activeElement)) return;
+      store.setDisclosureElement(activeElement);
+    }, [contentElement, openStable]);
 
     const nested = useNestedDialogs(store, modal);
     const { nestedDialogs, openModals, wrapElement } = nested;
@@ -268,61 +267,59 @@ export const useDialog = createHook<DialogOptions>(
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
     // Auto focus on show.
-    store.useEffect(
-      (state) => {
-        if (!openStable) return;
-        if (!mayAutoFocusOnShow) return;
-        // Makes sure to wait for the portalNode to be created before moving
-        // focus. This is useful for when the Dialog component is unmounted
-        // when hidden.
-        if (!domReady) return;
-        // If there are open nested dialogs, let them handle the focus.
-        const hasNestedOpenDialog = nestedDialogsRef.current?.some(
-          (dialog) => !dialog.hidden
-        );
-        if (hasNestedOpenDialog) return;
-        // The dialog element may change for different reasons. For example, when
-        // the `modal`, `portal` or `backdrop` props change, the HTML structure
-        // will also change, which will affect the dialog element reference.
-        // That's why we're listening to `state.contentElement` here instead of
-        // getting the `ref.current` value. This ensures this effect will re-run
-        // when the dialog element reference changes.
-        const dialog = state.contentElement;
-        if (!dialog?.isConnected) return;
-        const initialFocus = initialFocusRef?.current;
-        return beforePaint(() => {
-          const element =
-            initialFocus ||
-            // We have to fallback to the first focusable element otherwise portaled
-            // dialogs with preserveTabOrder set to true will not receive focus
-            // properly because the elements aren't tabbable until the dialog
-            // receives focus.
-            getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
-            dialog;
-          const prevInitialFocus = prevInitialFocusRef.current;
-          prevInitialFocusRef.current = initialFocus;
-          // If the initial focus is the same as the previous initial focus and
-          // there's already an element with focus inside the dialog, we don't
-          // change focus here.
-          if (initialFocus === prevInitialFocus) {
-            const activeElement = getActiveElement(dialog, true);
-            if (activeElement && contains(dialog, activeElement)) return;
-          }
-          if (!autoFocusOnShowProp(element)) return;
-          element.focus();
-        });
-      },
-      [
-        "contentElement",
-        openStable,
-        mayAutoFocusOnShow,
-        domReady,
-        initialFocusRef,
-        portal,
-        preserveTabOrder,
-        autoFocusOnShowProp,
-      ]
-    );
+    useEffect(() => {
+      if (!openStable) return;
+      if (!mayAutoFocusOnShow) return;
+      // Makes sure to wait for the portalNode to be created before moving
+      // focus. This is useful for when the Dialog component is unmounted
+      // when hidden.
+      if (!domReady) return;
+      // If there are open nested dialogs, let them handle the focus.
+      const hasNestedOpenDialog = nestedDialogsRef.current?.some(
+        (dialog) => !dialog.hidden
+      );
+      if (hasNestedOpenDialog) return;
+      // The dialog element may change for different reasons. For example, when
+      // the `modal`, `portal` or `backdrop` props change, the HTML structure
+      // will also change, which will affect the dialog element reference.
+      // That's why we're listening to `state.contentElement` here instead of
+      // getting the `ref.current` value. This ensures this effect will re-run
+      // when the dialog element reference changes.
+      const dialog = contentElement;
+      if (!dialog?.isConnected) return;
+      const initialFocus = initialFocusRef?.current;
+      // TODO: Refactor this
+      return beforePaint(() => {
+        const element =
+          initialFocus ||
+          // We have to fallback to the first focusable element otherwise portaled
+          // dialogs with preserveTabOrder set to true will not receive focus
+          // properly because the elements aren't tabbable until the dialog
+          // receives focus.
+          getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
+          dialog;
+        const prevInitialFocus = prevInitialFocusRef.current;
+        prevInitialFocusRef.current = initialFocus;
+        // If the initial focus is the same as the previous initial focus and
+        // there's already an element with focus inside the dialog, we don't
+        // change focus here.
+        if (initialFocus === prevInitialFocus) {
+          const activeElement = getActiveElement(dialog, true);
+          if (activeElement && contains(dialog, activeElement)) return;
+        }
+        if (!autoFocusOnShowProp(element)) return;
+        element.focus();
+      });
+    }, [
+      contentElement,
+      openStable,
+      mayAutoFocusOnShow,
+      domReady,
+      initialFocusRef,
+      portal,
+      preserveTabOrder,
+      autoFocusOnShowProp,
+    ]);
 
     const mayAutoFocusOnHide = !!autoFocusOnHide;
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);

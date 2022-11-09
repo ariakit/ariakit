@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import { WrapElement } from "ariakit-react-utils/types";
 import { chain } from "ariakit-utils/misc";
 import { DialogStore } from "../store-dialog-store";
@@ -23,6 +24,8 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
   const context = useContext(NestedDialogsContext);
   const [openModals, setOpenModals] = useState<HTMLElement[]>([]);
   const [nestedDialogs, setNestedDialogs] = useState<HTMLElement[]>([]);
+  const open = store.useState("open");
+  const contentElement = store.useState("contentElement");
 
   const addDialog = useCallback(
     (dialog: HTMLElement) => {
@@ -51,23 +54,17 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
   );
 
   // If this is a nested dialog, add it to the context.
-  store.useSync(
-    (state) => {
-      if (!state.contentElement) return;
-      return context.addDialog?.(state.contentElement);
-    },
-    ["contentElement", context.addDialog]
-  );
+  useSafeLayoutEffect(() => {
+    if (!contentElement) return;
+    return context.addDialog?.(contentElement);
+  }, [contentElement, context.addDialog]);
 
-  store.useSync(
-    (state) => {
-      if (!modal) return;
-      if (!state.open) return;
-      if (!state.contentElement) return;
-      return context.showModal?.(state.contentElement);
-    },
-    ["open", "contentElement", modal, context.showModal]
-  );
+  useSafeLayoutEffect(() => {
+    if (!modal) return;
+    if (!open) return;
+    if (!contentElement) return;
+    return context.showModal?.(contentElement);
+  }, [modal, open, contentElement, context.showModal]);
 
   // Close all nested dialogs when parent dialog closes.
   useEffect(() => {

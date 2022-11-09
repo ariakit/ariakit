@@ -8,6 +8,7 @@
     font-medium
     opacity-60
     cursor-default
+    [&+*]:scroll-mt-11
   ;
 }
 

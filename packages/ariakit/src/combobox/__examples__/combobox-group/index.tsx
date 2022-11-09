@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useDeferredValue, useMemo } from "react";
 import {
   Combobox,
   ComboboxGroup,
@@ -6,55 +6,53 @@ import {
   ComboboxItem,
   ComboboxPopover,
   ComboboxSeparator,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import groupBy from "lodash/groupBy";
+import { matchSorter } from "match-sorter";
 import food from "./food";
 import "./style.css";
 
-const list = food.map((item) => item.name);
-
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 4, sameWidth: true, list });
+  const combobox = useComboboxStore({ gutter: 4, sameWidth: true });
+  const value = combobox.useState("value");
+  const deferredValue = useDeferredValue(value);
 
-  // Transform combobox.matches into groups of objects.
   const matches = useMemo(() => {
-    const items = combobox.matches
-      .map((value) => food.find((item) => item.name === value)!)
-      .filter(Boolean);
+    const items = matchSorter(food, deferredValue, { keys: ["name"] });
     return Object.entries(groupBy(items, "type"));
-  }, [combobox.matches]);
+  }, [deferredValue]);
 
   return (
     <div className="wrapper">
       <label className="label">
         Your favorite food
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Apple"
           className="combobox"
           autoComplete="both"
           autoSelect
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         {!!matches.length ? (
-          matches.map(([type, items], index, array) => (
+          matches.map(([type, items], i) => (
             <Fragment key={type}>
               <ComboboxGroup className="group">
                 <ComboboxGroupLabel className="group-label">
                   {type}
                 </ComboboxGroupLabel>
-                {items.map((item, i) => (
+                {items.map((item, j) => (
                   <ComboboxItem
-                    key={item.name + i}
+                    key={item.name + i + j}
                     value={item.name}
                     focusOnHover
                     className="combobox-item"
                   />
                 ))}
               </ComboboxGroup>
-              {index < array.length - 1 && (
+              {i < matches.length - 1 && (
                 <ComboboxSeparator className="separator" />
               )}
             </Fragment>

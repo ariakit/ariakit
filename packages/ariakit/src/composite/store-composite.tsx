@@ -4,6 +4,7 @@ import {
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -11,6 +12,7 @@ import {
   useBooleanEvent,
   useEvent,
   useForkRef,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "ariakit-react-utils/hooks";
 import {
@@ -127,16 +129,16 @@ function findFirstEnabledItemInTheLastRow(items: Item[]) {
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
-  store.useEffect(
-    (state) => {
-      if (!scheduled) return;
-      const activeItem = getEnabledItem(store, state.activeId);
-      if (!activeItem?.element) return;
-      setScheduled(false);
-      focusIntoView(activeItem.element);
-    },
-    ["renderedItems", "activeId", scheduled]
+  const activeItem = store.useState((state) =>
+    getEnabledItem(store, state.activeId)
   );
+  useEffect(() => {
+    const activeElement = activeItem?.element;
+    if (!scheduled) return;
+    if (!activeElement) return;
+    setScheduled(false);
+    focusIntoView(activeElement);
+  }, [activeItem, scheduled]);
   return schedule;
 }
 
@@ -164,72 +166,67 @@ export const useComposite = createHook<CompositeOptions>(
   }) => {
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
+    const moves = store.useState("moves");
 
     // Focus on the active item element.
-    store.useEffect(
-      (state) => {
-        if (!composite) return;
-        if (!focusOnMove) return;
-        if (!state.moves) return;
-        const { activeId } = store.getState();
-        const itemElement = getEnabledItem(store, activeId)?.element;
-        if (!itemElement) return;
-        // TODO: Revisit and explain this.
-        scheduleFocus();
-      },
-      ["moves", composite, focusOnMove]
-    );
+    useSafeLayoutEffect(() => {
+      if (!composite) return;
+      if (!focusOnMove) return;
+      if (!moves) return;
+      const { activeId } = store.getState();
+      const itemElement = getEnabledItem(store, activeId)?.element;
+      if (!itemElement) return;
+      // TODO: Revisit and explain this.
+      scheduleFocus();
+    }, [moves, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
     // element) should receive focus.
-    store.useEffect(
-      (state) => {
-        if (!composite) return;
-        if (!state.moves) return;
-        const { baseElement, activeId } = store.getState();
-        const isSelfAcive = activeId === null;
-        if (!isSelfAcive) return;
-        if (!baseElement) return;
-        const previousElement = previousElementRef.current;
-        // We have to clean up the previous element ref so an additional blur
-        // event is not fired on it, for example, when looping through items while
-        // includesBaseElement is true.
-        previousElementRef.current = null;
-        if (previousElement) {
-          // We fire a blur event on the previous active item before moving focus
-          // to the composite element so the events are dispatched in the right
-          // order (blur, then focus).
-          fireBlurEvent(previousElement, { relatedTarget: baseElement });
-        }
-        // If the composite element is already focused, we still need to fire a
-        // focus event on it so consumer props like onFocus are called.
-        if (hasFocus(baseElement)) {
-          fireFocusEvent(baseElement, { relatedTarget: previousElement });
-        } else {
-          baseElement.focus();
-        }
-      },
-      ["moves", composite]
-    );
+    useSafeLayoutEffect(() => {
+      if (!composite) return;
+      if (!moves) return;
+      const { baseElement, activeId } = store.getState();
+      const isSelfAcive = activeId === null;
+      if (!isSelfAcive) return;
+      if (!baseElement) return;
+      const previousElement = previousElementRef.current;
+      // We have to clean up the previous element ref so an additional blur
+      // event is not fired on it, for example, when looping through items while
+      // includesBaseElement is true.
+      previousElementRef.current = null;
+      if (previousElement) {
+        // We fire a blur event on the previous active item before moving focus
+        // to the composite element so the events are dispatched in the right
+        // order (blur, then focus).
+        fireBlurEvent(previousElement, { relatedTarget: baseElement });
+      }
+      // If the composite element is already focused, we still need to fire a
+      // focus event on it so consumer props like onFocus are called.
+      if (hasFocus(baseElement)) {
+        fireFocusEvent(baseElement, { relatedTarget: previousElement });
+      } else {
+        baseElement.focus();
+      }
+    }, [moves, composite]);
+
+    // TODO: Refactor
+    const activeId = store.useState("activeId");
+    const virtualFocus = store.useState("virtualFocus");
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
     // so we do it here. This will be the scenario when moving through items, in
     // which case the onFocusCapture below event will stop propgation.
-    store.useEffect(
-      (state) => {
-        if (!composite) return;
-        if (!state.virtualFocus) return;
-        const previousElement = previousElementRef.current;
-        previousElementRef.current = null;
-        if (!previousElement) return;
-        const activeElement = getEnabledItem(store, state.activeId)?.element;
-        const relatedTarget =
-          activeElement || getActiveElement(previousElement);
-        fireBlurEvent(previousElement, { relatedTarget });
-      },
-      ["activeId", "virtualFocus", composite]
-    );
+    useSafeLayoutEffect(() => {
+      if (!composite) return;
+      if (!virtualFocus) return;
+      const previousElement = previousElementRef.current;
+      previousElementRef.current = null;
+      if (!previousElement) return;
+      const activeElement = getEnabledItem(store, activeId)?.element;
+      const relatedTarget = activeElement || getActiveElement(previousElement);
+      fireBlurEvent(previousElement, { relatedTarget });
+    }, [activeId, virtualFocus, composite]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
       store,

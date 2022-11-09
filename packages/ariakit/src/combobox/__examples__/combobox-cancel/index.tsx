@@ -3,8 +3,8 @@ import {
   ComboboxCancel,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import "./style.css";
 
 const list = [
@@ -18,25 +18,25 @@ const list = [
 ];
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
+  const combobox = useComboboxStore({ gutter: 4, sameWidth: true });
   return (
     <div className="wrapper">
       <label className="label">
         Your favorite food
         <div className="combobox-wrapper">
           <Combobox
-            state={combobox}
+            store={combobox}
             autoSelect
             placeholder="e.g., Apple"
             className="combobox"
           />
           <ComboboxCancel
-            state={combobox}
+            store={combobox}
             className="button secondary combobox-cancel"
           />
         </div>
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         {list.map((value) => (
           <ComboboxItem key={value} value={value} className="combobox-item" />
         ))}

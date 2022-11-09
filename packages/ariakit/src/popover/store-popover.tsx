@@ -1,5 +1,9 @@
 import { HTMLAttributes, useState } from "react";
-import { usePortalRef, useWrapElement } from "ariakit-react-utils/hooks";
+import {
+  usePortalRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
@@ -31,35 +35,37 @@ export const usePopover = createHook<PopoverOptions>(
     wrapperProps,
     ...props
   }) => {
+    const popoverElement = store.useState("popoverElement");
+    const contentElement = store.useState("contentElement");
     // Makes sure the wrapper element that's passed to popper has the same
     // z-index as the popover element so users only need to set the z-index
     // once.
-    store.useEffect(
-      (state) => {
-        const wrapper = state.popoverElement;
-        const popover = state.contentElement;
-        if (!wrapper) return;
-        if (!popover) return;
-        wrapper.style.zIndex = getComputedStyle(popover).zIndex;
-      },
-      ["popoverElement", "contentElement"]
-    );
+    useSafeLayoutEffect(() => {
+      const wrapper = popoverElement;
+      const popover = contentElement;
+      if (!wrapper) return;
+      if (!popover) return;
+      wrapper.style.zIndex = getComputedStyle(popover).zIndex;
+    }, [popoverElement, contentElement]);
 
     // We have to wait for the popover to be positioned before we can move
     // focus, otherwise there may be scroll jumps. See popover-standalone
     // example test-browser file.
     const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
+    const mounted = store.useState("mounted");
 
-    store.useSync(
-      (state) => {
-        if (!domReady) return;
-        if (!state.mounted) return;
-        if (!state.contentElement?.isConnected) return;
+    useSafeLayoutEffect(() => {
+      if (!domReady) return;
+      if (!mounted) return;
+      if (!contentElement?.isConnected) return;
+      const raf = requestAnimationFrame(() => {
         setCanAutoFocusOnShow(true);
-      },
-      ["mounted", "contentElement", domReady]
-    );
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+      };
+    }, [domReady, mounted, contentElement]);
 
     const position = store.useState((state) =>
       state.fixed ? "fixed" : "absolute"

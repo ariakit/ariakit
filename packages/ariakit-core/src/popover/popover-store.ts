@@ -283,16 +283,36 @@ export function createPopoverStore({
               });
             };
 
-            // TODO: Think of another solution
-            if (renderCallback) {
-              return renderCallback({
-                ...state,
-                setPlacement: setCurrentPlacement,
-                defaultRenderCallback,
-              });
-            }
+            let result: (() => void) | void;
 
-            return defaultRenderCallback();
+            // TODO: This is needed because of default combobox example. Scroll
+            // so the combobox popover should open above the combobox input.
+            // Open the popover by clicking on the input, then press Escape,
+            // then type something.
+            queueMicrotask(() => {
+              result = renderCallback
+                ? renderCallback({
+                    ...state,
+                    setPlacement: setCurrentPlacement,
+                    defaultRenderCallback,
+                  })
+                : defaultRenderCallback();
+            });
+
+            return () => {
+              result?.();
+            };
+
+            // TODO: Think of another solution
+            // if (renderCallback) {
+            //   return renderCallback({
+            //     ...state,
+            //     setPlacement: setCurrentPlacement,
+            //     defaultRenderCallback,
+            //   });
+            // }
+
+            // return defaultRenderCallback();
           },
           [
             "anchorElement",

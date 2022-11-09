@@ -2,23 +2,23 @@ import {
   Combobox,
   ComboboxItem,
   ComboboxPopover,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ gutter: 4, sameWidth: true });
+  const combobox = useComboboxStore({ gutter: 4, sameWidth: true });
   return (
     <div className="wrapper">
       <label className="label">
         Your favorite fruit
         <Combobox
-          state={combobox}
+          store={combobox}
           placeholder="e.g., Apple"
           className="combobox"
         />
       </label>
-      <ComboboxPopover state={combobox} className="popover">
+      <ComboboxPopover store={combobox} className="popover">
         <ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
         </ComboboxItem>

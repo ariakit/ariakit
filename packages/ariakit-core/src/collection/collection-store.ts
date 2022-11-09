@@ -1,6 +1,6 @@
 import { getDocument } from "ariakit-utils/dom";
 import { chain } from "ariakit-utils/misc";
-import { Store, createStore } from "ariakit-utils/store";
+import { PartialStore, Store, createStore } from "ariakit-utils/store";
 import { BivariantCallback, SetState } from "ariakit-utils/types";
 
 type Item = {
@@ -55,43 +55,38 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-export function createCollectionStore<T extends Item = Item>({
-  items = [],
-}: CollectionStoreProps<T> = {}): CollectionStore<T> {
+export function createCollectionStore<T extends Item = Item>(
+  { items = [] }: CollectionStoreProps<T> = {},
+  parentStore?: PartialStore
+): CollectionStore<T> {
   const privateStore = createStore({ renderedItems: [] as T[] });
-  const store = createStore<CollectionStoreState<T>>({
-    items,
-    renderedItems: [],
-  });
+  const store = createStore<CollectionStoreState<T>>(
+    {
+      items,
+      renderedItems: [],
+    },
+    parentStore
+  );
+
+  const sortItems = () => {
+    const state = privateStore.getState();
+    const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
+    privateStore.setState("renderedItems", renderedItems);
+    store.setState("renderedItems", renderedItems);
+  };
 
   const setup = () => {
     return chain(
-      () => {
-        // istanbul ignore else: JSDOM doesn't support IntersectionObverser
-        // See https://github.com/jsdom/jsdom/issues/2032
-        if (typeof IntersectionObserver === "function") return;
-        const timeout = setInterval(
-          () =>
-            store.setState(
-              "renderedItems",
-              sortBasedOnDOMPosition(privateStore.getState().renderedItems)
-            ),
-          50
-        );
-        return () => clearInterval(timeout);
-      },
+      store.setup?.(),
       privateStore.subscribe(
         (state) => {
-          if (typeof IntersectionObserver !== "function") return;
           let raf = 0;
+          raf = requestAnimationFrame(sortItems);
+          if (typeof IntersectionObserver !== "function") return;
           const callback = () => {
+            // TODO: Optimize this running twice
             cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => {
-              store.setState(
-                "renderedItems",
-                sortBasedOnDOMPosition(state.renderedItems)
-              );
-            });
+            raf = requestAnimationFrame(sortItems);
           };
           const root = getCommonParent(state.renderedItems);
           const observer = new IntersectionObserver(callback, { root });
@@ -151,13 +146,14 @@ export function createCollectionStore<T extends Item = Item>({
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
     mergeItem(item, (getItems) => store.setState("items", getItems));
 
-  const renderItem: CollectionStore<T>["renderItem"] = (item) =>
-    chain(
+  const renderItem: CollectionStore<T>["renderItem"] = (item) => {
+    return chain(
       registerItem(item),
       mergeItem(item, (getItems) =>
         privateStore.setState("renderedItems", getItems)
       )
     );
+  };
 
   const cache: { id: string | null; items: T[]; item: T | null } = {
     id: null,

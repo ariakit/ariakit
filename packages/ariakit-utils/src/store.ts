@@ -15,7 +15,7 @@ export function createStore<S extends State>(
   initialState: S,
   store?: PartialStore<S>
 ): Store<S> {
-  let state = initialState;
+  let state = store ? { ...store.getState?.(), ...initialState } : initialState;
   let prevState = state;
   let lastUpdate = Symbol();
   let updatedKeys: Array<keyof S> = [];

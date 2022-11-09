@@ -18,15 +18,8 @@ export function useCompositeStore<T extends Item = Item>(
 ): CompositeStore<T> {
   const store = useStore(() =>
     createCompositeStore({
-      includesBaseElement:
-        props.includesBaseElement ?? props.getState?.().includesBaseElement,
-      virtualFocus: props.virtualFocus ?? props.getState?.().virtualFocus,
-      orientation: props.orientation ?? props.getState?.().orientation,
-      rtl: props.rtl ?? props.getState?.().rtl,
-      focusLoop: props.focusLoop ?? props.getState?.().focusLoop,
-      focusWrap: props.focusWrap ?? props.getState?.().focusWrap,
-      focusShift: props.focusShift ?? props.getState?.().focusShift,
-      moves: props.moves ?? props.getState?.().moves,
+      ...props.getState?.(),
+      ...props,
       items: props.items ?? props.getState?.()?.items ?? props.defaultItems,
       activeId:
         props.activeId ?? props.getState?.()?.activeId ?? props.defaultActiveId,
