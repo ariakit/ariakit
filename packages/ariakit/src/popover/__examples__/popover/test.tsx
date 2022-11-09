@@ -1,15 +1,9 @@
 import { click, getByRole, press, render } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getPopover = () => getByRole("dialog", { hidden: true });
 const getDisclosure = () => getByRole("button", { name: "Accept invite" });
 const getButton = (name: string) => getByRole("button", { name });
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("show/hide when clicking on disclosure", async () => {
   render(<Example />);

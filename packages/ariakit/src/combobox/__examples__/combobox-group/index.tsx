@@ -1,4 +1,4 @@
-import { Fragment, useDeferredValue, useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import {
   Combobox,
   ComboboxGroup,
@@ -16,12 +16,11 @@ import "./style.css";
 export default function Example() {
   const combobox = useComboboxStore({ gutter: 4, sameWidth: true });
   const value = combobox.useState("value");
-  const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(() => {
-    const items = matchSorter(food, deferredValue, { keys: ["name"] });
+    const items = matchSorter(food, value, { keys: ["name"] });
     return Object.entries(groupBy(items, "type"));
-  }, [deferredValue]);
+  }, [value]);
 
   return (
     <div className="wrapper">

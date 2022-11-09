@@ -1,5 +1,4 @@
 import { click, getByRole, hover, press, render, type } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getCombobox = () => getByRole("combobox");
@@ -11,11 +10,6 @@ function getSelectionValue(element: Element) {
   const selectionValue = input.value.slice(selectionStart!, selectionEnd!);
   return selectionValue;
 }
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("auto select with inline autocomplete on typing", async () => {
   render(<Example />);
