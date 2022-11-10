@@ -7,7 +7,12 @@ import {
   PartialStore,
   StoreState,
 } from "ariakit-utils/store";
-import { AnyFunction, PickByValue, SetState } from "ariakit-utils/types";
+import {
+  AnyFunction,
+  BivariantCallback,
+  PickByValue,
+  SetState,
+} from "ariakit-utils/types";
 import { unstable_batchedUpdates } from "react-dom";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import {
@@ -56,13 +61,13 @@ type UseSubscribe<S> = {
   ): void;
 };
 
-type UseWith<S> = {
+type UseWith<S> = BivariantCallback<{
   <K extends keyof S>(...keys: K[]): Store<CoreStore<Pick<S, K>>>;
-};
+}>;
 
-type UseWithout<S> = {
+type UseWithout<S> = BivariantCallback<{
   <K extends keyof S>(...keys: K[]): Store<CoreStore<Omit<S, K>>>;
-};
+}>;
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;

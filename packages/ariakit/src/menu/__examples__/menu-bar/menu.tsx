@@ -80,7 +80,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           {inSubmenu && <MenuButtonArrow />}
         </MenuButton>
         {mounted && (
-          <BaseMenu store={menu} portal className="menu">
+          <BaseMenu store={menu} portal className="menu" label={label}>
             <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
           </BaseMenu>
         )}

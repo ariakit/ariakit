@@ -73,7 +73,6 @@ export function useMenuStore<V extends Values = Values>(
 
   useStoreSync(store, props, "items", "setItems");
   useStoreSync(store, props, "activeId", "setActiveId");
-  useStoreSync(store, props, "baseElement");
   useStoreSync(store, props, "includesBaseElement");
   useStoreSync(store, props, "virtualFocus");
   useStoreSync(store, props, "orientation");

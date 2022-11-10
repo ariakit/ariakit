@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { Menu, MenuItem, MenuSeparator, useMenuState } from "ariakit/menu";
+import {
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  useMenuStore,
+} from "ariakit/menu/store";
 import "./style.css";
 
 export default function Example() {
   const [anchorRect, setAnchorRect] = useState({ x: 0, y: 0 });
-  const menu = useMenuState({ getAnchorRect: () => anchorRect });
+  const menu = useMenuStore({ getAnchorRect: () => anchorRect });
   return (
     <div
       className="wrapper"
@@ -15,7 +20,7 @@ export default function Example() {
       }}
     >
       Right click here
-      <Menu state={menu} modal className="menu">
+      <Menu store={menu} modal className="menu">
         <MenuItem className="menu-item">Back</MenuItem>
         <MenuItem className="menu-item" disabled>
           Forward

@@ -131,6 +131,8 @@ export const useDialog = createHook<DialogOptions>(
     const preserveTabOrder = store.useState(
       (state) => preserveTabOrderProp && !modal && state.mounted
     );
+    const open = store.useState("open");
+    const openRef = useRef(open);
     const openStable = store.useState(
       (state) => state.open && !state.animating
     );
@@ -325,65 +327,70 @@ export const useDialog = createHook<DialogOptions>(
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
     // Auto focus on hide.
-    store.useEffect(
-      (state, prevState) => {
-        // We only want to auto focus on hide if the dialog was open before.
-        if (!prevState.open) return;
-        if (!mayAutoFocusOnHide) return;
-        // A function so we can use it on the effect setup and cleanup phases.
-        const focusOnHide = () => {
-          const dialog = store.getState().contentElement;
-          if (!dialog) return;
-          const dialogs = nestedDialogsRef.current;
-          // Hide was triggered by a click/focus on a tabbable element outside
-          // the dialog or on another dialog. We won't change focus then.
-          if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
-          let element =
-            finalFocusRef?.current || store.getState().disclosureElement;
-          if (element) {
-            if (element.id) {
-              const doc = getDocument(element);
-              const selector = `[aria-activedescendant="${element.id}"]`;
-              const composite = doc.querySelector<HTMLElement>(selector);
-              // If the element is an item in a composite widget that handles
-              // focus with the `aria-activedescendant` attribute, we want to
-              // focus on the composite element itself.
-              if (composite) {
-                element = composite;
-              }
+    useEffect(() => {
+      const prevOpen = openRef.current;
+      openRef.current = open;
+      // We only want to auto focus on hide if the dialog was open before.
+      if (!prevOpen) return;
+      if (!mayAutoFocusOnHide) return;
+      // A function so we can use it on the effect setup and cleanup phases.
+      const focusOnHide = () => {
+        const dialog = contentElement;
+        if (!dialog) return;
+        const dialogs = nestedDialogsRef.current;
+        // Hide was triggered by a click/focus on a tabbable element outside
+        // the dialog or on another dialog. We won't change focus then.
+        if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
+        let element =
+          finalFocusRef?.current || store.getState().disclosureElement;
+        if (element) {
+          if (element.id) {
+            const doc = getDocument(element);
+            const selector = `[aria-activedescendant="${element.id}"]`;
+            const composite = doc.querySelector<HTMLElement>(selector);
+            // If the element is an item in a composite widget that handles
+            // focus with the `aria-activedescendant` attribute, we want to
+            // focus on the composite element itself.
+            if (composite) {
+              element = composite;
             }
-            // If the element is not focusable by the time the dialog is hidden,
-            // it's probably because it's an element inside another popover or
-            // menu that also got hidden when this dialog was shown. We'll try to
-            // focus on their disclosure element instead.
-            if (!isFocusable(element)) {
-              const parentDialog = closest(element, "[data-dialog]");
-              if (parentDialog && parentDialog.id) {
-                const doc = getDocument(parentDialog);
-                const selector = `[aria-controls~="${parentDialog.id}"]`;
-                const control = doc.querySelector<HTMLElement>(selector);
-                if (control) {
-                  element = control;
-                }
-              }
-            }
-            if (!autoFocusOnHideProp(element)) return;
-            element.focus();
           }
-        };
-        if (!state.open) {
-          // If this effect is running while state.open is false, this means
-          // that the Dialog component doesn't get unmounted when it's not
-          // open, so we can immediatelly move focus.
-          return focusOnHide();
+          // If the element is not focusable by the time the dialog is hidden,
+          // it's probably because it's an element inside another popover or
+          // menu that also got hidden when this dialog was shown. We'll try to
+          // focus on their disclosure element instead.
+          if (!isFocusable(element)) {
+            const parentDialog = closest(element, "[data-dialog]");
+            if (parentDialog && parentDialog.id) {
+              const doc = getDocument(parentDialog);
+              const selector = `[aria-controls~="${parentDialog.id}"]`;
+              const control = doc.querySelector<HTMLElement>(selector);
+              if (control) {
+                element = control;
+              }
+            }
+          }
+          if (!autoFocusOnHideProp(element)) return;
+          element.focus();
         }
-        // Otherwise, we just return the focusOnHide function so it's going to
-        // be executed when the Dialog component gets unmounted. This is useful
-        // so we can support both mounting and unmounting Dialog components.
-        return focusOnHide;
-      },
-      ["open", mayAutoFocusOnHide, finalFocusRef, autoFocusOnHideProp]
-    );
+      };
+      if (!open) {
+        // If this effect is running while state.open is false, this means
+        // that the Dialog component doesn't get unmounted when it's not
+        // open, so we can immediatelly move focus.
+        return focusOnHide();
+      }
+      // Otherwise, we just return the focusOnHide function so it's going to
+      // be executed when the Dialog component gets unmounted. This is useful
+      // so we can support both mounting and unmounting Dialog components.
+      return focusOnHide;
+    }, [
+      open,
+      mayAutoFocusOnHide,
+      contentElement,
+      finalFocusRef,
+      autoFocusOnHideProp,
+    ]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 

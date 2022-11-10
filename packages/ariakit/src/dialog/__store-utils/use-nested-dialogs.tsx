@@ -29,26 +29,34 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
 
   const addDialog = useCallback(
     (dialog: HTMLElement) => {
-      return chain(context.addDialog?.(dialog), () => {
-        setNestedDialogs((dialogs) => [...dialogs, dialog]);
-        return () => {
-          setNestedDialogs((dialogs) =>
-            dialogs.filter((element) => element !== dialog)
-          );
-        };
-      });
+      return chain(
+        context.addDialog?.(dialog),
+        (() => {
+          setNestedDialogs((dialogs) => [...dialogs, dialog]);
+          return () => {
+            setNestedDialogs((dialogs) =>
+              dialogs.filter((element) => element !== dialog)
+            );
+          };
+        })()
+      );
     },
     [context.addDialog]
   );
 
   const showModal = useCallback(
     (dialog: HTMLElement) => {
-      return chain(context.showModal?.(dialog), () => {
-        setOpenModals((modals) => [...modals, dialog]);
-        return () => {
-          setOpenModals((modals) => modals.filter((modal) => modal !== dialog));
-        };
-      });
+      return chain(
+        context.showModal?.(dialog),
+        (() => {
+          setOpenModals((modals) => [...modals, dialog]);
+          return () => {
+            setOpenModals((modals) =>
+              modals.filter((modal) => modal !== dialog)
+            );
+          };
+        })()
+      );
     },
     [context.showModal]
   );

@@ -21,6 +21,13 @@ export default function Example() {
   const combobox = useComboboxStore({ value, setValue });
   const menu = useMenuStore(combobox);
 
+  combobox.useSync(
+    (state) => {
+      menu.setBaseElement(state.baseElement);
+    },
+    ["baseElement", menu]
+  );
+
   const matches = useMemo(() => {
     return matchSorter(list, value, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
@@ -40,7 +47,7 @@ export default function Example() {
         Add block
         <MenuButtonArrow />
       </MenuButton>
-      <Menu store={menu} className="menu">
+      <Menu store={menu} composite={false} className="menu">
         <MenuArrow />
         <Combobox
           store={combobox}

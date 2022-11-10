@@ -6,7 +6,7 @@ const getMenu = () => getByRole("dialog", { hidden: true });
 const getCombobox = () => getByRole("combobox");
 const getOption = (name: string) => getByRole("option", { name });
 
-test.only("show/hide on click", async () => {
+test("show/hide on click", async () => {
   render(<Example />);
   expect(getMenu()).not.toBeVisible();
   await click(getMenuButton());
