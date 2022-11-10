@@ -32,7 +32,7 @@ test("show/hide on click", async () => {
   expect(getMenuItem("File")).toHaveFocus();
 });
 
-test.only("show/hide on enter", async () => {
+test("show/hide on enter", async () => {
   render(<Example />);
   await press.Tab();
   await press.Enter();

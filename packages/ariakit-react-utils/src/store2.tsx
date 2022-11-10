@@ -133,7 +133,7 @@ export function useStoreState(
     return state[key];
   };
   return useSyncExternalStore(
-    store?.subscribe || noopSubscribe,
+    store?.subscribeSync || noopSubscribe,
     getSnapshot,
     getSnapshot
   );

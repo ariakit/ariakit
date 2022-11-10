@@ -58,6 +58,9 @@ export function createStore<S extends State>(
     };
   };
 
+  const subscribeSync: Store<S>["subscribe"] = (listener, keys) =>
+    registerListener(computers, listener, keys);
+
   const sync: Store<S>["sync"] = (listener, keys) => {
     disposables.set(listener, listener(getState(), getState()));
     return registerListener(computers, listener, keys);
@@ -139,7 +142,17 @@ export function createStore<S extends State>(
     return createStore(nextState, { getState, setState });
   };
 
-  return { setup, sync, subscribe, effect, getState, setState, pick, omit };
+  return {
+    setup,
+    subscribeSync,
+    sync,
+    subscribe,
+    effect,
+    getState,
+    setState,
+    pick,
+    omit,
+  };
 }
 
 /**
@@ -179,6 +192,11 @@ export type Store<S = State> = {
    * TODO: Make this required.
    */
   setup?: () => void | (() => void);
+  /**
+   * Registers a listener function that's called after a batch of state changes
+   * in the store.
+   */
+  subscribeSync: Subscribe<S>;
   /**
    * Registers a listener function that's called immediately and synchronously
    * whenever the store state changes.

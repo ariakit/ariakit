@@ -79,9 +79,9 @@ test("events", async () => {
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
-      "event: mouseenter | currentTarget: item-1 | target: item-1 | relatedTarget: item-3",
       "event: blur | currentTarget: item-2 | target: item-2 | relatedTarget: item-3",
       "event: blur | currentTarget: toolbar | target: item-2 | relatedTarget: item-3",
+      "event: mouseenter | currentTarget: item-1 | target: item-1 | relatedTarget: item-3",
     ]
   `);
 
