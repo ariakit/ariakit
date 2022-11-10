@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useEvent, useLiveRef } from "ariakit-react-utils/hooks";
 import { contains, getDocument } from "ariakit-utils/dom";
 import { addGlobalEventListener } from "ariakit-utils/events";
@@ -63,42 +63,32 @@ function useEventOutside({
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
   const nestedDialogsRef = useLiveRef(nestedDialogs);
+  const open = store.useState("open");
 
-  store.useEffect(
-    (state) => {
-      if (!state.open) return;
-      // TODO: Refactor?
-      let removeEventListener = () => {};
-      const raf = requestAnimationFrame(() => {
-        const onEvent = (event: Event) => {
-          const dialog = store.getState().contentElement;
-          const disclosure = store.getState().disclosureElement;
-          const target = event.target as Element | null;
-          if (!dialog) return;
-          if (!target) return;
-          // When an element is unmounted right after it receives focus, the focus
-          // event is triggered after that, when the element isn't part of the
-          // current document anymore. We just ignore it.
-          if (!isInDocument(target)) return;
-          // Event inside dialog
-          if (contains(dialog, target)) return;
-          // Event on disclosure
-          if (disclosure && isDisclosure(disclosure, target)) return;
-          // Event on focus trap
-          if (target.hasAttribute("data-focus-trap")) return;
-          // Event inside a nested dialog
-          if (nestedDialogsRef.current.some(dialogContains(target))) return;
-          callListener(event);
-        };
-        removeEventListener = addGlobalEventListener(type, onEvent, capture);
-      });
-      return () => {
-        removeEventListener();
-        cancelAnimationFrame(raf);
-      };
-    },
-    ["open", capture]
-  );
+  useEffect(() => {
+    if (!open) return;
+    const onEvent = (event: Event) => {
+      const dialog = store.getState().contentElement;
+      const disclosure = store.getState().disclosureElement;
+      const target = event.target as Element | null;
+      if (!dialog) return;
+      if (!target) return;
+      // When an element is unmounted right after it receives focus, the focus
+      // event is triggered after that, when the element isn't part of the
+      // current document anymore. We just ignore it.
+      if (!isInDocument(target)) return;
+      // Event inside dialog
+      if (contains(dialog, target)) return;
+      // Event on disclosure
+      if (disclosure && isDisclosure(disclosure, target)) return;
+      // Event on focus trap
+      if (target.hasAttribute("data-focus-trap")) return;
+      // Event inside a nested dialog
+      if (nestedDialogsRef.current.some(dialogContains(target))) return;
+      callListener(event);
+    };
+    return addGlobalEventListener(type, onEvent, capture);
+  }, [open, capture]);
 }
 
 function shouldHideOnInteractOutside(
