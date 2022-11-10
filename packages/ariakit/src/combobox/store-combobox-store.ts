@@ -11,7 +11,6 @@ import {
   useStore,
   useStoreSync,
 } from "ariakit-react-utils/store2";
-import { SetState } from "ariakit-utils/types";
 
 export function useComboboxStore(
   props: ComboboxStoreProps = {}
@@ -35,8 +34,6 @@ export function useComboboxStore(
   useStoreSync(store, props, "open", "setOpen");
   useStoreSync(store, props, "animated");
   useStoreSync(store, props, "animating");
-  useStoreSync(store, props, "contentElement");
-  useStoreSync(store, props, "disclosureElement");
   useStoreSync(store, props, "placement");
   useStoreSync(store, props, "fixed");
   useStoreSync(store, props, "gutter");
@@ -70,14 +67,14 @@ export type { ComboboxStoreState };
 export type ComboboxStoreProps = CoreComboboxStoreProps &
   ParentStore<ComboboxStoreState> & {
     defaultOpen?: ComboboxStoreState["open"];
-    setOpen?: SetState<ComboboxStoreState["open"]>;
+    setOpen?: (open: ComboboxStoreState["open"]) => void;
     defaultItems?: ComboboxStoreState["items"];
-    setItems?: SetState<ComboboxStoreState["items"]>;
+    setItems?: (items: ComboboxStoreState["items"]) => void;
     defaultActiveId?: ComboboxStoreState["activeId"];
     setActiveId?: (activeId: ComboboxStoreState["activeId"]) => void;
     setMoves?: (moves: ComboboxStoreState["moves"]) => void;
     defaultValue?: ComboboxStoreState["value"];
-    setValue?: SetState<ComboboxStoreState["value"]>;
+    setValue?: (value: ComboboxStoreState["value"]) => void;
   };
 
 export type ComboboxStore = Store<CoreComboboxStore>;

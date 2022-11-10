@@ -11,8 +11,8 @@ import {
   MenuItem as BaseMenuItem,
   MenuButton,
   MenuButtonArrow,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 
 // Use React Context so we can determine if the menu is a submenu or not.
 const MenuContext = createContext(false);
@@ -43,13 +43,13 @@ type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
     const nested = useContext(MenuContext);
-    const menu = useMenuState({
+    const menu = useMenuStore({
       gutter: 8,
       shift: nested ? -9 : 0,
     });
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
-      <MenuButton state={menu} className="button" {...menuButtonProps}>
+      <MenuButton store={menu} className="button" {...menuButtonProps}>
         <span className="label">{label}</span>
         <MenuButtonArrow />
       </MenuButton>
@@ -68,7 +68,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })
         )}
-        <BaseMenu state={menu} className="menu">
+        <BaseMenu store={menu} className="menu">
           <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
         </BaseMenu>
       </>

@@ -11,7 +11,6 @@ import {
   useStore,
   useStoreSync,
 } from "ariakit-react-utils/store2";
-import { SetState } from "ariakit-utils/types";
 
 export function useHovercardStore(
   props: HovercardStoreProps = {}
@@ -31,8 +30,6 @@ export function useHovercardStore(
   useStoreSync(store, props, "open", "setOpen");
   useStoreSync(store, props, "animated");
   useStoreSync(store, props, "animating");
-  useStoreSync(store, props, "contentElement");
-  useStoreSync(store, props, "disclosureElement");
   useStoreSync(store, props, "placement");
   useStoreSync(store, props, "fixed");
   useStoreSync(store, props, "gutter");
@@ -56,7 +53,7 @@ export type { HovercardStoreState };
 export type HovercardStoreProps = CoreHovercardStoreProps &
   ParentStore<HovercardStoreState> & {
     defaultOpen?: HovercardStoreState["open"];
-    setOpen?: SetState<HovercardStoreState["open"]>;
+    setOpen?: (open: HovercardStoreState["open"]) => void;
   };
 
 export type HovercardStore = Store<CoreHovercardStore>;

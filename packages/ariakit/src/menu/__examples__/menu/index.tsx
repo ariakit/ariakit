@@ -4,19 +4,19 @@ import {
   MenuButtonArrow,
   MenuItem,
   MenuSeparator,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState({ gutter: 8 });
+  const menu = useMenuStore({ gutter: 8 });
   return (
     <>
-      <MenuButton state={menu} className="button">
+      <MenuButton store={menu} className="button">
         Actions
         <MenuButtonArrow />
       </MenuButton>
-      <Menu state={menu} className="menu">
+      <Menu store={menu} className="menu">
         <MenuItem className="menu-item" onClick={() => alert("Edit")}>
           Edit
         </MenuItem>

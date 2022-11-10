@@ -12,7 +12,6 @@ import {
   useStore,
   useStoreSync,
 } from "ariakit-react-utils/store2";
-import { SetState } from "ariakit-utils/types";
 
 export function useDisclosureStore(
   props: DisclosureStoreProps = {}
@@ -27,8 +26,6 @@ export function useDisclosureStore(
   useStoreSync(store, props, "open", "setOpen");
   useStoreSync(store, props, "animated");
   useStoreSync(store, props, "animating");
-  useStoreSync(store, props, "contentElement");
-  useStoreSync(store, props, "disclosureElement");
 
   const setOpen = useEvent(store.setOpen);
   const show = useEvent(store.show);
@@ -58,7 +55,7 @@ export type { DisclosureStoreState };
 export type DisclosureStoreProps = CoreDisclosureStoreProps &
   ParentStore<DisclosureStoreState> & {
     defaultOpen?: DisclosureStoreState["open"];
-    setOpen?: SetState<DisclosureStoreState["open"]>;
+    setOpen?: (open: DisclosureStoreState["open"]) => void;
   };
 
 export type DisclosureStore = Store<CoreDisclosureStore>;

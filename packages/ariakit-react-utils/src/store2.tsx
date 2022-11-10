@@ -146,7 +146,13 @@ export function useStoreSync<
   P extends PartialStore,
   K extends keyof StoreState<T>,
   SK extends keyof PickByValue<P, SetState<StoreState<T>[K]>>
->(store: T, props: P, valueKey: K, setValueKey?: SK) {
+>(
+  store: T,
+  props: P,
+  valueKey: K,
+  setValueKey?: SK,
+  defaultValue?: P[K & keyof P]
+) {
   const value = hasOwnProperty(props, valueKey) ? props[valueKey] : undefined;
   const hasValue = value !== undefined;
   const valueRef = useLiveRef(value);
@@ -188,12 +194,17 @@ export function useStoreSync<
     if (hasValue) return;
     return parentSync?.(
       (state) => {
-        if (state[valueKey] === undefined) return;
+        if (state[valueKey] === undefined) {
+          if (defaultValue !== undefined) {
+            store.setState(valueKey, defaultValue);
+          }
+          return;
+        }
         store.setState(valueKey, state[valueKey]!);
       },
       [valueKey]
     );
-  }, [hasValue, parentSync, valueKey, store]);
+  }, [hasValue, parentSync, valueKey, store, defaultValue]);
 }
 
 /**

@@ -30,8 +30,6 @@ export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
   useStoreSync(store, props, "open", "setOpen");
   useStoreSync(store, props, "animated");
   useStoreSync(store, props, "animating");
-  useStoreSync(store, props, "contentElement");
-  useStoreSync(store, props, "disclosureElement");
   useStoreSync(store, props, "placement");
   useStoreSync(store, props, "fixed");
   useStoreSync(store, props, "gutter");

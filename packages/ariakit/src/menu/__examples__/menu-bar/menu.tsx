@@ -12,9 +12,9 @@ import {
   MenuSeparator as BaseMenuSeparator,
   MenuButton,
   MenuButtonArrow,
-  useMenuBarState,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuBarStore,
+  useMenuStore,
+} from "ariakit/menu/store";
 
 // Use React Context so we can determine if the menu is a submenu or a top-level
 // menu inside a menu bar.
@@ -60,16 +60,17 @@ export type MenuProps = HTMLAttributes<HTMLDivElement> & {
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
     const inSubmenu = useContext(MenuContext);
-    const menu = useMenuState({
+    const menu = useMenuStore({
       gutter: inSubmenu ? 12 : 4,
       overlap: inSubmenu,
       fitViewport: true,
       shift: inSubmenu ? -9 : -2,
     });
+    const mounted = menu.useState("mounted");
     return (
       <>
         <MenuButton
-          state={menu}
+          store={menu}
           as={BaseMenuItem}
           className="menu-item"
           ref={ref}
@@ -78,8 +79,8 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           <span className="label">{label}</span>
           {inSubmenu && <MenuButtonArrow />}
         </MenuButton>
-        {menu.mounted && (
-          <BaseMenu state={menu} portal className="menu">
+        {mounted && (
+          <BaseMenu store={menu} portal className="menu">
             <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
           </BaseMenu>
         )}
@@ -95,9 +96,9 @@ export type MenuBarProps = HTMLAttributes<HTMLDivElement>;
  */
 export const MenuBar = forwardRef<HTMLDivElement, MenuBarProps>(
   (props, ref) => {
-    const menu = useMenuBarState();
+    const menu = useMenuBarStore();
     return (
-      <BaseMenuBar state={menu} className="menu-bar" ref={ref} {...props} />
+      <BaseMenuBar store={menu} className="menu-bar" ref={ref} {...props} />
     );
   }
 );

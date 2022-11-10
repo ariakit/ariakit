@@ -1,44 +1,55 @@
+import { useMemo, useState } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxList,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import {
   Menu,
   MenuArrow,
   MenuButton,
   MenuButtonArrow,
-  useMenuState,
-} from "ariakit/menu";
-import defaultList from "./list";
+  useMenuStore,
+} from "ariakit/menu/store";
+import { matchSorter } from "match-sorter";
+import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ defaultList });
-  const menu = useMenuState(combobox);
+  const [value, setValue] = useState("");
+  const combobox = useComboboxStore({ value, setValue });
+  const menu = useMenuStore(combobox);
+
+  const matches = useMemo(() => {
+    return matchSorter(list, value, {
+      baseSort: (a, b) => (a.index < b.index ? -1 : 1),
+    });
+  }, [value]);
+
+  const mounted = menu.useState("mounted");
 
   // Resets combobox value when menu is closed
-  if (!menu.mounted && combobox.value) {
-    combobox.setValue("");
+  if (!mounted && value) {
+    setValue("");
   }
 
   return (
     <>
-      <MenuButton state={menu} className="button">
+      <MenuButton store={menu} className="button">
         Add block
         <MenuButtonArrow />
       </MenuButton>
-      <Menu state={menu} composite={false} className="menu">
+      <Menu store={menu} className="menu">
         <MenuArrow />
         <Combobox
-          state={combobox}
+          store={combobox}
           autoSelect
           placeholder="Search..."
           className="combobox"
         />
-        <ComboboxList state={combobox} className="combobox-list">
-          {combobox.matches.map((value, i) => (
+        <ComboboxList store={combobox} className="combobox-list">
+          {matches.map((value, i) => (
             <ComboboxItem
               key={value + i}
               value={value}

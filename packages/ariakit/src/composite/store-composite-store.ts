@@ -28,6 +28,7 @@ export function useCompositeStore<T extends Item = Item>(
 
   useStoreSync(store, props, "items", "setItems");
   useStoreSync(store, props, "activeId", "setActiveId");
+  useStoreSync(store, props, "baseElement");
   useStoreSync(store, props, "includesBaseElement");
   useStoreSync(store, props, "virtualFocus");
   useStoreSync(store, props, "orientation");

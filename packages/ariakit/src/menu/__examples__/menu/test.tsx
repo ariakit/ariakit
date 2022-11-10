@@ -7,7 +7,6 @@ import {
   render,
   type,
 } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getMenuButton = () => getByRole("button", { name: "Actions" });
@@ -25,12 +24,6 @@ beforeEach(() => {
 
 afterEach(() => {
   alert.mockClear();
-});
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  await click(getMenuButton());
-  expect(await axe(container)).toHaveNoViolations();
 });
 
 test("show/hide on click", async () => {

@@ -10,7 +10,6 @@ import {
   useStore,
   useStoreSync,
 } from "ariakit-react-utils/store2";
-import { SetState } from "ariakit-utils/types";
 
 export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
   const store = useStore(() =>
@@ -23,8 +22,6 @@ export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
   useStoreSync(store, props, "open", "setOpen");
   useStoreSync(store, props, "animated");
   useStoreSync(store, props, "animating");
-  useStoreSync(store, props, "contentElement");
-  useStoreSync(store, props, "disclosureElement");
 
   return store;
 }
@@ -34,7 +31,7 @@ export type { DialogStoreState };
 export type DialogStoreProps = CoreDialogStoreProps &
   ParentStore<DialogStoreState> & {
     defaultOpen?: DialogStoreState["open"];
-    setOpen?: SetState<DialogStoreState["open"]>;
+    setOpen?: (open: DialogStoreState["open"]) => void;
   };
 
 export type DialogStore = Store<CoreDialogStore>;
