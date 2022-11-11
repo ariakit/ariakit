@@ -7,7 +7,6 @@ import {
   render,
   sleep,
   type,
-  waitFor,
 } from "ariakit-test";
 import Example from ".";
 
@@ -36,7 +35,7 @@ test("show/hide on enter", async () => {
   render(<Example />);
   await press.Tab();
   await press.Enter();
-  await waitFor(() => expect(getMenu("File")).toBeInTheDocument());
+  expect(getMenu("File")).toBeInTheDocument();
   expect(getMenu("File")).toBeVisible();
   expect(getMenuItem("New Tab")).toHaveFocus();
   await press.Enter();

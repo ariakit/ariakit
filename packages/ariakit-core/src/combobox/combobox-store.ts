@@ -66,7 +66,7 @@ export function createComboboxStore({
         },
         ["open"]
       ),
-      store.effect(
+      store.sync(
         (state, prevState) => {
           if (state.moves === prevState.moves) {
             store.setState("activeValue", undefined);
@@ -74,7 +74,7 @@ export function createComboboxStore({
         },
         ["moves", "activeId"]
       ),
-      store.effect(() => {
+      store.sync(() => {
         const { activeId } = store.getState();
         const activeItem = composite.item(activeId);
         store.setState("activeValue", activeItem?.value);

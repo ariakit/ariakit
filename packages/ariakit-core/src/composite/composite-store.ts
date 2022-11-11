@@ -185,7 +185,7 @@ export function createCompositeStore<T extends Item = Item>(
     // TODO: Automatically call parentStore setup on createStore.
     return chain(
       store.setup?.(),
-      store.subscribe(
+      store.sync(
         (state) => {
           store.setState(
             "activeId",

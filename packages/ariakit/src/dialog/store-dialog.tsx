@@ -326,8 +326,9 @@ export const useDialog = createHook<DialogOptions>(
     const mayAutoFocusOnHide = !!autoFocusOnHide;
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
-    // Auto focus on hide.
-    useEffect(() => {
+    // Auto focus on hide. This must be a layout effect because we need to move
+    // focus synchronously before another dialog is shown in parallel.
+    useSafeLayoutEffect(() => {
       const prevOpen = openRef.current;
       openRef.current = open;
       // We only want to auto focus on hide if the dialog was open before.

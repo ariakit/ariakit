@@ -210,6 +210,9 @@ export async function press(
     }
   }
 
+  // This allows the DOM to be updated before we fire the event
+  await sleep();
+
   let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
   await queuedMicrotasks();
