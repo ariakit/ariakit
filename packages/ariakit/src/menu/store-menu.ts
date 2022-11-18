@@ -97,7 +97,8 @@ export const useMenu = createHook<MenuOptions>(
         if (cleaning) return;
         // TODO: Fix
         if (!autoFocusOnShowState) return;
-        if (prevInitialFocusRef?.current) return prevInitialFocusRef;
+        if (prevInitialFocusRef?.current?.isConnected)
+          return prevInitialFocusRef;
         const ref = createRef() as MutableRefObject<HTMLElement | null>;
         switch (initialFocus) {
           // TODO: Refactor
