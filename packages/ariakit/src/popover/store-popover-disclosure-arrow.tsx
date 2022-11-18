@@ -1,11 +1,11 @@
 import { useContext, useMemo } from "react";
+import { useStoreState } from "ariakit-react-utils/store2";
 import {
   createComponent,
   createElement,
   createHook,
 } from "ariakit-react-utils/system";
 import { As, Options, Props } from "ariakit-react-utils/types";
-import { invariant } from "ariakit-utils/misc";
 import { PopoverContext } from "./__store-utils";
 import { PopoverStore, PopoverStoreState } from "./store-popover-store";
 
@@ -35,20 +35,14 @@ const pointsMap = {
  */
 export const usePopoverDisclosureArrow =
   createHook<PopoverDisclosureArrowOptions>(
-    ({ store, placement, ...props }) => {
+    ({ store, placement = "bottom", ...props }) => {
       const context = useContext(PopoverContext);
       store = store || context;
 
-      invariant(
-        store,
-        process.env.NODE_ENV !== "production" &&
-          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component"
-      );
-
-      const dir = store.useState((state) => {
-        const position = placement || state.placement;
-        return position.split("-")[0] as BasePlacement;
-      });
+      const position =
+        useStoreState(store, (state) => placement || state.placement) ||
+        placement;
+      const dir = position.split("-")[0] as BasePlacement;
       const points = pointsMap[dir];
 
       const children = useMemo(
