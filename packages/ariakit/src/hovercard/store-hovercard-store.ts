@@ -3,7 +3,7 @@ import {
   HovercardStoreProps as CoreHovercardStoreProps,
   HovercardStoreState,
   createHovercardStore,
-} from "ariakit-core/hovercard/hovercard-store";
+} from "@ariakit/core/hovercard/hovercard-store";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

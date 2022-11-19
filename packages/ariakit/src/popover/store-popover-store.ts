@@ -4,7 +4,7 @@ import {
   PopoverStoreRenderCallbackProps,
   PopoverStoreState,
   createPopoverStore,
-} from "ariakit-core/popover/popover-store";
+} from "@ariakit/core/popover/popover-store";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

@@ -3,7 +3,7 @@ import {
   DialogStoreProps as CoreDialogStoreProps,
   DialogStoreState,
   createDialogStore,
-} from "ariakit-core/dialog/dialog-store";
+} from "@ariakit/core/dialog/dialog-store";
 import {
   ParentStore,
   Store,

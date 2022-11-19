@@ -14,7 +14,7 @@ import { SetStateAction } from "./types";
  */
 export function createStore<S extends State>(
   initialState: S,
-  store?: DerivedStore<S>
+  store?: PartialStore<S>
 ): Store<S> {
   let state = initialState;
   let prevState = state;
@@ -31,7 +31,7 @@ export function createStore<S extends State>(
   const setup = () => {
     return chain(
       store?.setup?.(),
-      store?.sync((storeState) => {
+      store?.sync?.((storeState) => {
         for (const key in storeState) {
           const value = storeState[key];
           if (value === state[key]) continue;
@@ -74,7 +74,7 @@ export function createStore<S extends State>(
   const setState: Store<S>["setState"] = (key, value) => {
     if (!hasOwnProperty(state, key)) return;
 
-    if (store) {
+    if (store?.setState) {
       store.setState(key, value);
     }
 
@@ -116,23 +116,19 @@ export function createStore<S extends State>(
       });
       batchPrevState = snapshot;
       queueMicrotask(() => {
-        // Clear updated keys after all batch listeners are called and right
-        // before the next batch of updates. This is to ensure that the updated
-        // keys are cleared even if the batch listeners setState.
+        // Listeners may call setState again. If we don't clear the updated keys
+        // in a microtask, we may end up clearing keys right before the nested
+        // setState listeners.
         updatedKeys.clear();
       });
     });
   };
 
-  const pick: Store<S>["pick"] = (...keys) => {
-    const nextState = _pick(state, keys);
-    return createStore(nextState, { sync, setState });
-  };
+  const pick: Store<S>["pick"] = (...keys) =>
+    createStore(_pick(state, keys), { sync, setState });
 
-  const omit: Store<S>["omit"] = (...keys) => {
-    const nextState = _omit(state, keys);
-    return createStore(nextState, { sync, setState });
-  };
+  const omit: Store<S>["omit"] = (...keys) =>
+    createStore(_omit(state, keys), { sync, setState });
 
   return {
     setup,
@@ -227,56 +223,4 @@ export type StoreState<T> = T extends { getState(): infer S } ? S : never;
  * Store that can be passed to createStore. TODO: Find a better name.
  * @template S State type.
  */
-export type DerivedStore<S = State> = Pick<
-  Partial<Store<Partial<S>>>,
-  "setup"
-> &
-  Pick<Store<Partial<S>>, "sync" | "setState">;
-
-(async () => {
-  const store1 = createStore({ a: 1, b: 2, c: 10 });
-  // store1.setup();
-
-  const store2 = createStore({ a: 2, b: 2, d: 10 }, store1);
-  store2.setup();
-
-  store1.batchSync(
-    (state, prevState) => {
-      console.log(`store1 ${prevState.a} -> ${state.a}`);
-    },
-    ["a"]
-  );
-
-  store2.batchSync(
-    (state, prevState) => {
-      console.log(`store2 ${prevState.a} -> ${state.a}`);
-      store2.setState("a", 3);
-      store2.setState("a", 5);
-      store2.setState("a", 5);
-      store2.setState("a", 7);
-    },
-    ["a"]
-  );
-
-  // store1.batchSync(
-  //   (state, prevState) => {
-  //     // if (state === prevState) return;
-  //     console.log(`store1 batch ${prevState.a} -> ${state.a}`);
-  //     store2.setState("a", 5);
-  //   },
-  //   ["a"]
-  // );
-
-  // store2.batchSync(
-  //   (state, prevState) => {
-  //     if (state === prevState) return;
-  //     console.log(`store2 batch ${prevState.a} -> ${state.a}`);
-  //   },
-  //   ["a"]
-  // );
-
-  store2.setState("a", 4);
-  queueMicrotask(() => {
-    console.log(store2.getState());
-  });
-})();
+export type PartialStore<S = State> = Partial<Store<Partial<S>>>;

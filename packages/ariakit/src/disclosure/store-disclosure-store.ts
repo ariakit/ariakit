@@ -4,7 +4,7 @@ import {
   DisclosureStoreProps as CoreDisclosureStoreProps,
   DisclosureStoreState,
   createDisclosureStore,
-} from "ariakit-core/disclosure/disclosure-store";
+} from "@ariakit/core/disclosure/disclosure-store";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

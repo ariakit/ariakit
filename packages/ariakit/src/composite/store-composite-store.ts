@@ -3,7 +3,7 @@ import {
   CompositeStore as CoreCompositeStore,
   CompositeStoreProps as CoreCompositeStoreProps,
   createCompositeStore,
-} from "ariakit-core/composite/composite-store";
+} from "@ariakit/core/composite/composite-store";
 import {
   ParentStore,
   Store,

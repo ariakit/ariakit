@@ -1,1 +1,1 @@
-# ariakit-core
+# @ariakit/core
