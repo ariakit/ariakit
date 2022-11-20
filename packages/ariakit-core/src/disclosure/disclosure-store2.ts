@@ -7,18 +7,16 @@ export function createDisclosureStore({
   animated = false,
   ...partialStore
 }: DisclosureStoreProps = {}): DisclosureStore {
-  const store = createStore<DisclosureState>(
-    {
-      open,
-      animated,
-      animating: animated && open,
-      mounted: open,
-      contentElement: null,
-      disclosureElement: null,
-      ...partialStore.getState?.(),
-    },
-    partialStore
-  );
+  const initialState: DisclosureState = {
+    ...partialStore.getState?.(),
+    open,
+    animated,
+    animating: animated && open,
+    mounted: open,
+    contentElement: null,
+    disclosureElement: null,
+  };
+  const store = createStore(initialState, partialStore);
 
   const setup = () => {
     return chain(
@@ -39,34 +37,16 @@ export function createDisclosureStore({
     );
   };
 
-  const setOpen: DisclosureStore["setOpen"] = (value) =>
-    store.setState("open", value);
-
-  const show: DisclosureStore["show"] = () => store.setState("open", true);
-  const hide: DisclosureStore["hide"] = () => store.setState("open", false);
-  const toggle: DisclosureStore["toggle"] = () =>
-    store.setState("open", (open) => !open);
-
-  const stopAnimation: DisclosureStore["stopAnimation"] = () =>
-    store.setState("animating", false);
-
-  const setContentElement: DisclosureStore["setContentElement"] = (value) =>
-    store.setState("contentElement", value);
-
-  const setDisclosureElement: DisclosureStore["setDisclosureElement"] = (
-    value
-  ) => store.setState("disclosureElement", value);
-
   return {
     ...store,
     setup,
-    setOpen,
-    show,
-    hide,
-    toggle,
-    stopAnimation,
-    setContentElement,
-    setDisclosureElement,
+    setOpen: (value) => store.setState("open", value),
+    show: () => store.setState("open", true),
+    hide: () => store.setState("open", false),
+    toggle: () => store.setState("open", (open) => !open),
+    stopAnimation: () => store.setState("animating", false),
+    setContentElement: (value) => store.setState("contentElement", value),
+    setDisclosureElement: (value) => store.setState("disclosureElement", value),
   };
 }
 

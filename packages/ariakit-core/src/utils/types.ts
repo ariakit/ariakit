@@ -66,3 +66,94 @@ export type PickByValue<T, Value> = {
       : never
     : never]: T[K];
 };
+
+/**
+ * Indicates the availability and type of interactive popup element, such as
+ * menu or dialog, that can be triggered by an element.
+ */
+export type AriaHasPopup =
+  | boolean
+  | "false"
+  | "true"
+  | "menu"
+  | "listbox"
+  | "tree"
+  | "grid"
+  | "dialog"
+  | undefined;
+
+/**
+ * All the WAI-ARIA 1.1 role attribute values from
+ * https://www.w3.org/TR/wai-aria-1.1/#role_definitions
+ */
+export type AriaRole = StringWithValue<
+  | "alert"
+  | "alertdialog"
+  | "application"
+  | "article"
+  | "banner"
+  | "button"
+  | "cell"
+  | "checkbox"
+  | "columnheader"
+  | "combobox"
+  | "complementary"
+  | "contentinfo"
+  | "definition"
+  | "dialog"
+  | "directory"
+  | "document"
+  | "feed"
+  | "figure"
+  | "form"
+  | "grid"
+  | "gridcell"
+  | "group"
+  | "heading"
+  | "img"
+  | "link"
+  | "list"
+  | "listbox"
+  | "listitem"
+  | "log"
+  | "main"
+  | "marquee"
+  | "math"
+  | "menu"
+  | "menubar"
+  | "menuitem"
+  | "menuitemcheckbox"
+  | "menuitemradio"
+  | "navigation"
+  | "none"
+  | "note"
+  | "option"
+  | "presentation"
+  | "progressbar"
+  | "radio"
+  | "radiogroup"
+  | "region"
+  | "row"
+  | "rowgroup"
+  | "rowheader"
+  | "scrollbar"
+  | "search"
+  | "searchbox"
+  | "separator"
+  | "slider"
+  | "spinbutton"
+  | "status"
+  | "switch"
+  | "tab"
+  | "table"
+  | "tablist"
+  | "tabpanel"
+  | "term"
+  | "textbox"
+  | "timer"
+  | "toolbar"
+  | "tooltip"
+  | "tree"
+  | "treegrid"
+  | "treeitem"
+>;

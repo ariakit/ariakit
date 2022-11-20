@@ -1,4 +1,4 @@
-import { AriaAttributes, AriaRole } from "./aria-types";
+import { AriaHasPopup, AriaRole } from "./types";
 
 /**
  * It's `true` if it is running in a browser environment or `false` if it is not
@@ -194,7 +194,7 @@ export function isTextField(
  */
 export function getPopupRole(
   element?: Element | null,
-  fallback?: AriaAttributes["aria-haspopup"]
+  fallback?: AriaHasPopup
 ) {
   const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
   const role = element?.getAttribute("role");
