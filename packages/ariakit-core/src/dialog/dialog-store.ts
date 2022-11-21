@@ -3,7 +3,7 @@ import {
   DisclosureStoreProps,
   DisclosureStoreState,
   createDisclosureStore,
-} from "../disclosure/disclosure-store";
+} from "../disclosure/disclosure-store3";
 
 export function createDialogStore(props: DialogStoreProps = {}): DialogStore {
   return createDisclosureStore(props);

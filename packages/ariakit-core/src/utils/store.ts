@@ -1,8 +1,10 @@
+import { BivariantCallback } from "ariakit-utils/types";
 import {
   omit as _omit,
   pick as _pick,
   applyState,
   chain,
+  getKeys,
   hasOwnProperty,
 } from "./misc";
 import { SetStateAction } from "./types";
@@ -17,7 +19,6 @@ export function createStore<S extends State>(
   store?: PartialStore<S>
 ): Store<S> {
   let state = initialState;
-  let prevState = state;
   let batchPrevState = state;
   let lastUpdate = Symbol();
   let updating = false;
@@ -29,17 +30,19 @@ export function createStore<S extends State>(
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
   const setup = () => {
-    return chain(
-      store?.setup?.(),
-      store?.sync?.((storeState) => {
-        for (const key in storeState) {
-          const value = storeState[key];
-          if (value === state[key]) continue;
-          if (!hasOwnProperty(state, key)) continue;
-          setState(key, value!);
-        }
-      })
+    if (!store) return;
+
+    const storeState = store.getState?.();
+
+    const keys = storeState
+      ? getKeys(state).filter((key) => hasOwnProperty(storeState, key))
+      : [];
+
+    const cleanups = keys.map((key) =>
+      store.subscribe?.((state) => setState(key, state[key]!), [key])
     );
+
+    return chain(store.setup?.(), ...cleanups);
   };
 
   const sub = (listener: Listener<S>, keys?: Array<keyof S>, batch = false) => {
@@ -58,7 +61,7 @@ export function createStore<S extends State>(
     sub(listener, keys);
 
   const sync: Store<S>["sync"] = (listener, keys) => {
-    disposables.set(listener, listener(state, prevState));
+    disposables.set(listener, listener(state, state));
     return sub(listener, keys);
   };
 
@@ -74,16 +77,13 @@ export function createStore<S extends State>(
   const setState: Store<S>["setState"] = (key, value) => {
     if (!hasOwnProperty(state, key)) return;
 
-    if (store?.setState) {
-      store.setState(key, value);
-    }
+    const nextValue = applyState(value, state[key]);
 
-    const currentValue = state[key];
-    const nextValue = applyState(value, currentValue);
+    store?.setState?.(key, nextValue);
 
-    if (nextValue === currentValue) return;
+    if (nextValue === state[key]) return;
 
-    prevState = state;
+    const prevState = state;
     state = { ...state, [key]: nextValue };
 
     const thisUpdate = Symbol();
@@ -124,19 +124,17 @@ export function createStore<S extends State>(
     });
   };
 
+  const partialStore = { subscribe, sync, batchSync, getState, setState };
+
   const pick: Store<S>["pick"] = (...keys) =>
-    createStore(_pick(state, keys), { sync, setState });
+    createStore(_pick(state, keys), partialStore);
 
   const omit: Store<S>["omit"] = (...keys) =>
-    createStore(_omit(state, keys), { sync, setState });
+    createStore(_omit(state, keys), partialStore);
 
   return {
+    ...partialStore,
     setup,
-    subscribe,
-    sync,
-    batchSync,
-    getState,
-    setState,
     pick,
     omit,
   };
@@ -205,12 +203,16 @@ export type Store<S = State> = {
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  pick<K extends keyof S>(...keys: K[]): Store<Pick<S, K>>;
+  pick: BivariantCallback<{
+    <K extends keyof S>(...keys: K[]): Store<Pick<S, K>>;
+  }>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  omit<K extends keyof S>(...keys: K[]): Store<Omit<S, K>>;
+  omit: BivariantCallback<{
+    <K extends keyof S>(...keys: K[]): Store<Omit<S, K>>;
+  }>;
 };
 
 /**

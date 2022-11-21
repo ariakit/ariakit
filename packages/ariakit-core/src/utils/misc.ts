@@ -244,3 +244,10 @@ export function invariant(
   }
   throw new Error(message);
 }
+
+/**
+ * TODO: Describe
+ */
+export function getKeys<T extends object>(obj: T) {
+  return Object.keys(obj) as Array<keyof T>;
+}

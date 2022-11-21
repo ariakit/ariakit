@@ -1,25 +1,33 @@
-import { chain } from "ariakit-utils/misc";
-import { Store, createStore } from "ariakit-utils/store";
-import { SetState } from "ariakit-utils/types";
+import { chain } from "../utils/misc";
+import { PartialStore, Store, createStore } from "../utils/store";
+import { SetState } from "../utils/types";
 
 export function createDisclosureStore({
   open = false,
   animated = false,
+  ...partialStore
 }: DisclosureStoreProps = {}): DisclosureStore {
-  const store = createStore<DisclosureStoreState>({
+  const initialState: DisclosureState = {
+    ...partialStore.getState?.(),
     open,
     animated,
-    animating: animated && open,
+    animating: !!animated && open,
     mounted: open,
     contentElement: null,
     disclosureElement: null,
-  });
+  };
+  const store = createStore(initialState, partialStore);
 
   const setup = () => {
     return chain(
+      store.setup(),
       store.sync(
-        (state) => store.setState("mounted", state.open || state.animating),
-        ["open", "animating"]
+        (state) => {
+          if (state.animated) return;
+          // Reset animating to false when animation is disabled.
+          store.setState("animating", false);
+        },
+        ["animated", "animating"]
       ),
       store.sync(
         (state, prev) => {
@@ -29,60 +37,47 @@ export function createDisclosureStore({
           store.setState("animating", animating);
         },
         ["open", "animated"]
+      ),
+      store.sync(
+        (state) => {
+          store.setState("mounted", state.open || state.animating);
+        },
+        ["open", "animating"]
       )
     );
   };
 
-  const setOpen: DisclosureStore["setOpen"] = (value) =>
-    store.setState("open", value);
-
-  const show: DisclosureStore["show"] = () => store.setState("open", true);
-  const hide: DisclosureStore["hide"] = () => store.setState("open", false);
-  const toggle: DisclosureStore["toggle"] = () =>
-    store.setState("open", (open) => !open);
-
-  const stopAnimation: DisclosureStore["stopAnimation"] = () =>
-    store.setState("animating", false);
-
-  const setContentElement: DisclosureStore["setContentElement"] = (value) =>
-    store.setState("contentElement", value);
-
-  const setDisclosureElement: DisclosureStore["setDisclosureElement"] = (
-    value
-  ) => store.setState("disclosureElement", value);
-
   return {
     ...store,
     setup,
-    setOpen,
-    show,
-    hide,
-    toggle,
-    stopAnimation,
-    setContentElement,
-    setDisclosureElement,
+    setOpen: (value) => store.setState("open", value),
+    show: () => store.setState("open", true),
+    hide: () => store.setState("open", false),
+    toggle: () => store.setState("open", (open) => !open),
+    stopAnimation: () => store.setState("animating", false),
+    setContentElement: (value) => store.setState("contentElement", value),
+    setDisclosureElement: (value) => store.setState("disclosureElement", value),
   };
 }
 
-export type DisclosureStoreState = {
+export type DisclosureState = {
   open: boolean;
   mounted: boolean;
-  animated: boolean;
+  animated: boolean | number;
   animating: boolean;
   contentElement: HTMLElement | null;
   disclosureElement: HTMLElement | null;
 };
 
-export type DisclosureStore = Store<DisclosureStoreState> & {
-  setOpen: SetState<DisclosureStoreState["open"]>;
+export type DisclosureStore = Store<DisclosureState> & {
+  setOpen: SetState<DisclosureState["open"]>;
   show: () => void;
   hide: () => void;
   toggle: () => void;
   stopAnimation: () => void;
-  setContentElement: SetState<DisclosureStoreState["contentElement"]>;
-  setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
+  setContentElement: SetState<DisclosureState["contentElement"]>;
+  setDisclosureElement: SetState<DisclosureState["disclosureElement"]>;
 };
 
-export type DisclosureStoreProps = Partial<
-  Pick<DisclosureStoreState, "open" | "animated">
->;
+export type DisclosureStoreProps = PartialStore<DisclosureState> &
+  Partial<Pick<DisclosureState, "open" | "animated">>;
