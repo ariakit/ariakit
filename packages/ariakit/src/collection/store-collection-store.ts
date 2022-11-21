@@ -4,7 +4,7 @@ import {
   CollectionStore as CoreCollectionStore,
   CollectionStoreProps as CoreCollectionStoreProps,
   createCollectionStore,
-} from "@ariakit/core/collection/collection-store";
+} from "@ariakit/core/collection/collection-store2";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

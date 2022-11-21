@@ -7,7 +7,7 @@ import {
   CollectionStoreProps,
   CollectionStoreState,
   createCollectionStore,
-} from "../collection/collection-store";
+} from "../collection/collection-store2";
 
 type Orientation = "horizontal" | "vertical" | "both";
 

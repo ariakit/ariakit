@@ -1,7 +1,12 @@
-import { getDocument } from "../utils/dom";
-import { chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
-import { BivariantCallback, SetState } from "../utils/types";
+import { getDocument } from "ariakit-utils/dom";
+import { chain } from "ariakit-utils/misc";
+import { PartialStore, Store, createStore } from "ariakit-utils/store";
+import { BivariantCallback, SetState } from "ariakit-utils/types";
+
+type Item = {
+  id: string;
+  element?: HTMLElement | null;
+};
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -9,7 +14,7 @@ function isElementPreceding(a: Element, b: Element) {
   );
 }
 
-function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
+function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
@@ -36,7 +41,7 @@ function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
   return items;
 }
 
-function getCommonParent(items: CollectionStoreItem[]) {
+function getCommonParent(items: Item[]) {
   const firstItem = items.find((item) => !!item.element);
   const lastItem = [...items].reverse().find((item) => !!item.element);
   let parentElement = firstItem?.element?.parentElement;
@@ -50,21 +55,18 @@ function getCommonParent(items: CollectionStoreItem[]) {
   return getDocument(parentElement).body;
 }
 
-export function createCollectionStore<
-  T extends CollectionStoreItem = CollectionStoreItem
->({
-  items = [],
-  ...partialStore
-}: CollectionStoreProps<T> = {}): CollectionStore<T> {
-  const initialState: CollectionState<T> = {
-    ...partialStore?.getState?.(),
-    items,
-    renderedItems: [],
-  };
-  const store = createStore(initialState, partialStore);
-  const privateStore = createStore({
-    renderedItems: initialState.renderedItems,
-  });
+export function createCollectionStore<T extends Item = Item>(
+  { items = [] }: CollectionStoreProps<T> = {},
+  parentStore?: PartialStore
+): CollectionStore<T> {
+  const privateStore = createStore({ renderedItems: [] as T[] });
+  const store = createStore<CollectionStoreState<T>>(
+    {
+      items,
+      renderedItems: [],
+    },
+    parentStore
+  );
 
   const sortItems = () => {
     const state = privateStore.getState();
@@ -75,18 +77,14 @@ export function createCollectionStore<
 
   const setup = () => {
     return chain(
-      store.setup(),
-      privateStore.batchSync(
+      store.setup?.(),
+      privateStore.subscribe(
         (state) => {
-          let firstRun = true;
           let raf = 0;
           raf = requestAnimationFrame(sortItems);
           if (typeof IntersectionObserver !== "function") return;
           const callback = () => {
-            if (firstRun) {
-              firstRun = false;
-              return;
-            }
+            // TODO: Optimize this running twice
             cancelAnimationFrame(raf);
             raf = requestAnimationFrame(sortItems);
           };
@@ -187,29 +185,27 @@ export function createCollectionStore<
   };
 }
 
-export type CollectionStoreItem = {
-  id: string;
-  element?: HTMLElement | null;
-};
-
-export type CollectionState<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = {
+export type CollectionStoreState<T extends Item = Item> = {
+  /**
+   * Lists all the items with their `ref`s. This state is automatically updated
+   * when an item is registered or unregistered with the `registerItem`
+   * function. The order of the items is automatically defined by the order of
+   * the elements in the DOM.
+   */
   items: T[];
   renderedItems: T[];
 };
 
-export type CollectionStore<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = Store<CollectionState<T>> & {
-  setItems: SetState<CollectionState<T>["items"]>;
-  setRenderedItems: SetState<CollectionState<T>["renderedItems"]>;
+export type CollectionStore<T extends Item = Item> = Store<
+  CollectionStoreState<T>
+> & {
+  setItems: SetState<CollectionStoreState<T>["items"]>;
+  setRenderedItems: SetState<CollectionStoreState<T>["renderedItems"]>;
   registerItem: BivariantCallback<(item: T) => () => void>;
   renderItem: BivariantCallback<(item: T) => () => void>;
   item: (id: string | null | undefined) => T | null;
 };
 
-export type CollectionStoreProps<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = PartialStore<CollectionState<T>> &
-  Partial<Pick<CollectionState<T>, "items">>;
+export type CollectionStoreProps<T extends Item = Item> = Partial<
+  Pick<CollectionStoreState<T>, "items">
+>;
