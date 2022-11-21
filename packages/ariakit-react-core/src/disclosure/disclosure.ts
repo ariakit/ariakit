@@ -1,6 +1,6 @@
 import { MouseEvent, useRef, useState } from "react";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { ButtonOptions, useButton } from "ariakit/button/button";
+import { ButtonOptions, useButton } from "../button/button";
 import {
   useBooleanEvent,
   useEvent,
