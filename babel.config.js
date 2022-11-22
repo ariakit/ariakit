@@ -39,6 +39,7 @@ module.exports = {
       {
         alias: {
           "^ariakit([^/]*)(.*)$": "ariakit\\1/src\\2",
+          "^@ariakit/([^/]*)(.*)$": "@ariakit/\\1/src\\2",
         },
       },
     ],
