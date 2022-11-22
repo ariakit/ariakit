@@ -16,7 +16,7 @@ import {
   DialogStoreProps,
   DialogStoreState,
   createDialogStore,
-} from "../dialog/dialog-store";
+} from "../dialog/dialog-store2";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
