@@ -6,9 +6,9 @@ import {
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Props } from "@ariakit/react-core/utils/types";
-import { HeadingOptions, useHeading } from "ariakit/heading";
+import { HeadingOptions, useHeading } from "../heading/heading";
+import { DialogHeadingContext } from "./dialog-context";
 import { DialogStore } from "./dialog-store";
-import { DialogHeadingContext } from "./utils/dialog-context";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

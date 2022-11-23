@@ -1,8 +1,8 @@
 import { useWrapElement } from "../utils/hooks";
 import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Options, Props } from "../utils/types";
+import { CollectionContext } from "./collection-context";
 import { CollectionStore } from "./collection-store";
-import { CollectionContext } from "./utils";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other

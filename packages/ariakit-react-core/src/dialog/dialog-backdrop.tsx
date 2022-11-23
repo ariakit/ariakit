@@ -13,9 +13,9 @@ import {
   useForkRef,
   useSafeLayoutEffect,
 } from "@ariakit/react-core/utils/hooks";
-import { useDisclosureContent } from "../../disclosure/disclosure-content";
-import { DialogProps } from "../dialog";
-import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref";
+import { useDisclosureContent } from "../disclosure/disclosure-content";
+import { DialogProps } from "./dialog";
+import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref";
 
 type DialogBackdropProps = Pick<
   DialogProps,

@@ -42,22 +42,22 @@ import {
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Props } from "@ariakit/react-core/utils/types";
-import { useFocusTrapRegion } from "ariakit/focus-trap/focus-trap-region";
-import { HeadingLevel } from "ariakit/heading/heading-level";
-import { PortalOptions, usePortal } from "ariakit/portal/portal";
 import {
   DisclosureContentOptions,
   DisclosureContentProps,
   useDisclosureContent,
 } from "../disclosure/disclosure-content";
+import { useFocusTrapRegion } from "../focus-trap/focus-trap-region";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { DialogStore } from "./dialog-store";
-import { DialogBackdrop } from "./utils/dialog-backdrop";
+import { HeadingLevel } from "../heading/heading-level";
+import { PortalOptions, usePortal } from "../portal/portal";
+import { DialogBackdrop } from "./dialog-backdrop";
 import {
   DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
-} from "./utils/dialog-context";
+} from "./dialog-context";
+import { DialogStore } from "./dialog-store";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside";
 import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss";

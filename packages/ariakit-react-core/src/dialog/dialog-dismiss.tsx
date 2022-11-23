@@ -7,8 +7,8 @@ import {
 } from "@ariakit/react-core/utils/system";
 import { As, Props } from "@ariakit/react-core/utils/types";
 import { ButtonOptions, useButton } from "../button/button";
+import { DialogContext } from "./dialog-context";
 import { DialogStore } from "./dialog-store";
-import { DialogContext } from "./utils/dialog-context";
 
 /**
  * A component hook that returns props that can be passed to `Role` or any other
