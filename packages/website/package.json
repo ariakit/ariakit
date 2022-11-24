@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "4.16.1",
-    "fast-fuzzy": "1.11.2",
+    "fast-fuzzy": "1.12.0",
     "next": "12.3.4",
     "rehype-react": "7.1.1"
   },
