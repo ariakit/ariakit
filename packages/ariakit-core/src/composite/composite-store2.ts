@@ -1,20 +1,26 @@
+import { flatten2DArray, reverseArray } from "ariakit-utils/array";
+import { chain } from "ariakit-utils/misc";
+import { PartialStore, Store, createStore } from "ariakit-utils/store";
+import { SetState } from "ariakit-utils/types";
 import {
-  CollectionState,
   CollectionStore,
-  CollectionStoreItem,
   CollectionStoreProps,
+  CollectionStoreState,
   createCollectionStore,
-} from "../collection/collection-store";
-import { flatten2DArray, reverseArray } from "../utils/array";
-import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../collection/collection-store2";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
+type Item = {
+  id: string;
+  element?: HTMLElement | null;
+  rowId?: string;
+  disabled?: boolean;
+};
+
 const NULL_ITEM = { id: null as unknown as string };
 
-function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
+function findFirstEnabledItem(items: Item[], excludeId?: string) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -23,7 +29,7 @@ function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
   });
 }
 
-function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
+function getEnabledItems(items: Item[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -38,15 +44,15 @@ function getOppositeOrientation(orientation: Orientation) {
   return;
 }
 
-function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
+function getItemsInRow(items: Item[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
 function flipItems(
-  items: CompositeStoreItem[],
+  items: Item[],
   activeId: string,
   shouldInsertNullItem = false
-): CompositeStoreItem[] {
+): Item[] {
   const index = items.findIndex((item) => item.id === activeId);
   return [
     ...items.slice(index + 1),
@@ -56,7 +62,7 @@ function flipItems(
 }
 
 function getActiveId(
-  items: CompositeStoreItem[],
+  items: Item[],
   activeId?: string | null,
   passedId?: string | null
 ) {
@@ -65,8 +71,8 @@ function getActiveId(
   return findFirstEnabledItem(items)?.id;
 }
 
-function groupItemsByRows(items: CompositeStoreItem[]) {
-  const rows: CompositeStoreItem[][] = [];
+function groupItemsByRows(items: Item[]) {
+  const rows: Item[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
     if (row) {
@@ -78,7 +84,7 @@ function groupItemsByRows(items: CompositeStoreItem[]) {
   return rows;
 }
 
-function getMaxRowLength(array: CompositeStoreItem[][]) {
+function getMaxRowLength(array: Item[][]) {
   let maxLength = 0;
   for (const { length } of array) {
     if (length > maxLength) {
@@ -97,7 +103,7 @@ function createEmptyItem(rowId?: string) {
 }
 
 function normalizeRows(
-  rows: CompositeStoreItem[][],
+  rows: Item[][],
   activeId?: string | null,
   focusShift?: boolean
 ) {
@@ -119,10 +125,10 @@ function normalizeRows(
   return rows;
 }
 
-function verticalizeItems(items: CompositeStoreItem[]) {
+function verticalizeItems(items: Item[]) {
   const rows = groupItemsByRows(items);
   const maxLength = getMaxRowLength(rows);
-  const verticalized: CompositeStoreItem[] = [];
+  const verticalized: Item[] = [];
   for (let i = 0; i < maxLength; i += 1) {
     for (const row of rows) {
       const item = row[i];
@@ -142,39 +148,43 @@ function verticalizeItems(items: CompositeStoreItem[]) {
   return verticalized;
 }
 
-export function createCompositeStore<
-  T extends CompositeStoreItem = CompositeStoreItem
->({
-  orientation = "both",
-  rtl = false,
-  virtualFocus = false,
-  focusLoop = false,
-  focusWrap = false,
-  focusShift = false,
-  activeId,
-  includesBaseElement = activeId === null,
-  moves = 0,
-  ...props
-}: CompositeStoreProps<T> = {}): CompositeStore<T> {
-  const collection = createCollectionStore(props);
-  const initialState: CompositeState<T> = {
-    ...collection.getState(),
-    baseElement: null,
+export function createCompositeStore<T extends Item = Item>(
+  {
+    orientation = "both",
+    rtl = false,
+    virtualFocus = false,
+    focusLoop = false,
+    focusWrap = false,
+    focusShift = false,
     activeId,
-    includesBaseElement,
-    moves,
-    orientation,
-    rtl,
-    virtualFocus,
-    focusLoop,
-    focusWrap,
-    focusShift,
-  };
-  const store = createStore(initialState, collection);
+    includesBaseElement = activeId === null,
+    moves = 0,
+    ...props
+  }: CompositeStoreProps<T> = {},
+  parentStore?: PartialStore
+): CompositeStore<T> {
+  const collection = createCollectionStore(props, parentStore);
+  const store = createStore<CompositeStoreState<T>>(
+    {
+      baseElement: null,
+      activeId,
+      includesBaseElement,
+      moves,
+      orientation,
+      rtl,
+      virtualFocus,
+      focusLoop,
+      focusWrap,
+      focusShift,
+      ...collection.getState(),
+    },
+    collection
+  );
 
   const setup = () => {
+    // TODO: Automatically call parentStore setup on createStore.
     return chain(
-      store.setup(),
+      store.setup?.(),
       store.sync(
         (state) => {
           store.setState(
@@ -216,7 +226,7 @@ export function createCompositeStore<
   };
 
   const getNextId = (
-    items: CompositeStoreItem[],
+    items: Item[],
     orientation: Orientation,
     hasNullItem: boolean,
     skip?: number
@@ -377,14 +387,8 @@ export function createCompositeStore<
   };
 }
 
-export type CompositeStoreItem = CollectionStoreItem & {
-  rowId?: string;
-  disabled?: boolean;
-  children?: string;
-};
-
-export type CompositeState<T extends CompositeStoreItem = CompositeStoreItem> =
-  CollectionState<T> & {
+export type CompositeStoreState<T extends Item = Item> =
+  CollectionStoreState<T> & {
     baseElement: HTMLElement | null;
     virtualFocus: boolean;
     orientation: Orientation;
@@ -397,35 +401,36 @@ export type CompositeState<T extends CompositeStoreItem = CompositeStoreItem> =
     activeId?: string | null;
   };
 
-export type CompositeStore<T extends CompositeStoreItem = CompositeStoreItem> =
-  Omit<CollectionStore<T>, keyof Store> &
-    Store<CompositeState<T>> & {
-      setBaseElement: SetState<CompositeState<T>["baseElement"]>;
-      setMoves: SetState<CompositeState<T>["moves"]>;
-      setActiveId: SetState<CompositeState<T>["activeId"]>;
-      move: (id?: string | null) => void;
-      next: (skip?: number) => string | null | undefined;
-      previous: (skip?: number) => string | null | undefined;
-      up: (skip?: number) => string | null | undefined;
-      down: (skip?: number) => string | null | undefined;
-      first: () => string | null | undefined;
-      last: () => string | null | undefined;
-    };
+export type CompositeStore<T extends Item = Item> = Omit<
+  CollectionStore<T>,
+  keyof Store
+> &
+  Store<CompositeStoreState<T>> & {
+    setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
+    setMoves: SetState<CompositeStoreState<T>["moves"]>;
+    setActiveId: SetState<CompositeStoreState<T>["activeId"]>;
+    move: (id?: string | null) => void;
+    next: (skip?: number) => string | null | undefined;
+    previous: (skip?: number) => string | null | undefined;
+    up: (skip?: number) => string | null | undefined;
+    down: (skip?: number) => string | null | undefined;
+    first: () => string | null | undefined;
+    last: () => string | null | undefined;
+  };
 
-export type CompositeStoreProps<
-  T extends CompositeStoreItem = CompositeStoreItem
-> = CollectionStoreProps<T> &
-  Partial<
-    Pick<
-      CompositeState<T>,
-      | "virtualFocus"
-      | "orientation"
-      | "rtl"
-      | "focusLoop"
-      | "focusWrap"
-      | "focusShift"
-      | "moves"
-      | "includesBaseElement"
-      | "activeId"
-    >
-  >;
+export type CompositeStoreProps<T extends Item = Item> =
+  CollectionStoreProps<T> &
+    Partial<
+      Pick<
+        CompositeStoreState<T>,
+        | "virtualFocus"
+        | "orientation"
+        | "rtl"
+        | "focusLoop"
+        | "focusWrap"
+        | "focusShift"
+        | "moves"
+        | "includesBaseElement"
+        | "activeId"
+      >
+    >;

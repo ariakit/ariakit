@@ -6,7 +6,7 @@ import {
   CompositeStoreProps,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
+} from "../composite/composite-store2";
 import {
   HovercardStore,
   HovercardStoreProps,

@@ -56,7 +56,7 @@ export function createComponent<O extends Options>(
  *
  * <Component as="button" customProp />
  */
-export function createMemoComponent2<O extends Options>(
+export function createMemoComponent<O extends Options>(
   render: (props: Props<O>) => ReactElement
 ) {
   const Role = createComponent(render);

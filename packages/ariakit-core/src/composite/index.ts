@@ -1,1 +1,1 @@
-export * from "./composite-store";
+export * from "./composite-store2";
