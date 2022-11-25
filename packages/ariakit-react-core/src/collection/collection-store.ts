@@ -1,17 +1,14 @@
 import {
-  CollectionState,
   CollectionStoreItem,
+  CollectionStoreState,
   CollectionStore as CoreCollectionStore,
   CollectionStoreProps as CoreCollectionStoreProps,
   createCollectionStore,
 } from "@ariakit/core/collection/collection-store";
-import {
-  Store,
-  useStore,
-  useStoreProps,
-} from "@ariakit/react-core/utils/store";
+import { BivariantCallback } from "@ariakit/core/utils/types";
+import { Store, useStore, useStoreProps } from "../utils/store";
 
-export function getCollectionDefaultState<
+export function useCollectionStoreOptions<
   T extends CollectionStoreItem = CollectionStoreItem
 >(props: CollectionStoreProps<T>) {
   return {
@@ -19,10 +16,10 @@ export function getCollectionDefaultState<
   };
 }
 
-export function useCollectionStoreProps<
-  T extends CollectionStore<I>,
-  I extends CollectionStoreItem
->(store: T, props: CollectionStoreProps<I>) {
+export function useCollectionStoreProps<T extends CollectionStore>(
+  store: T,
+  props: CollectionStoreProps
+) {
   useStoreProps(store, props, "items", "setItems");
   return store;
 }
@@ -30,14 +27,15 @@ export function useCollectionStoreProps<
 export function useCollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem
 >(props: CollectionStoreProps<T> = {}): CollectionStore<T> {
-  let store = useStore(() =>
-    createCollectionStore({ ...props, ...getCollectionDefaultState(props) })
-  );
+  const options = useCollectionStoreOptions(props);
+  let store = useStore(() => createCollectionStore({ ...props, ...options }));
+
   store = useCollectionStoreProps(store, props);
+
   return store;
 }
 
-export type { CollectionState };
+export type { CollectionStoreState, CollectionStoreItem };
 
 export type CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem
@@ -46,6 +44,8 @@ export type CollectionStore<
 export type CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem
 > = CoreCollectionStoreProps<T> & {
-  defaultItems?: CollectionState<T>["items"];
-  setItems?: (items: CollectionState<T>["items"]) => void;
+  defaultItems?: CollectionStoreState<T>["items"];
+  setItems?: BivariantCallback<
+    (items: CollectionStoreState<T>["items"]) => void
+  >;
 };

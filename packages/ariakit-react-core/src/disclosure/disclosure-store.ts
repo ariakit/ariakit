@@ -1,7 +1,7 @@
 import {
   DisclosureStore as CoreDisclosureStore,
   DisclosureStoreProps as CoreDisclosureStoreProps,
-  DisclosureState,
+  DisclosureStoreState,
   createDisclosureStore,
 } from "@ariakit/core/disclosure/disclosure-store";
 import {
@@ -10,7 +10,7 @@ import {
   useStoreProps,
 } from "@ariakit/react-core/utils/store";
 
-export function getDisclosureDefaultState(props: DisclosureStoreProps) {
+export function useDisclosureStoreOptions(props: DisclosureStoreProps) {
   return {
     open: props.open ?? props.getState?.().open ?? props.defaultOpen,
     animated: props.animated ?? props.getState?.().animated,
@@ -29,18 +29,17 @@ export function useDisclosureStoreProps<T extends DisclosureStore>(
 export function useDisclosureStore(
   props: DisclosureStoreProps = {}
 ): DisclosureStore {
-  let store = useStore(() =>
-    createDisclosureStore({ ...props, ...getDisclosureDefaultState(props) })
-  );
+  const options = useDisclosureStoreOptions(props);
+  let store = useStore(() => createDisclosureStore({ ...props, ...options }));
   store = useDisclosureStoreProps(store, props);
   return store;
 }
 
-export type { DisclosureState };
+export type { DisclosureStoreState };
 
 export type DisclosureStore = Store<CoreDisclosureStore>;
 
 export type DisclosureStoreProps = CoreDisclosureStoreProps & {
-  defaultOpen?: DisclosureState["open"];
-  setOpen?: (open: DisclosureState["open"]) => void;
+  defaultOpen?: DisclosureStoreState["open"];
+  setOpen?: (open: DisclosureStoreState["open"]) => void;
 };

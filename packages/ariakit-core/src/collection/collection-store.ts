@@ -56,7 +56,7 @@ export function createCollectionStore<
   items = [],
   ...partialStore
 }: CollectionStoreProps<T> = {}): CollectionStore<T> {
-  const initialState: CollectionState<T> = {
+  const initialState: CollectionStoreState<T> = {
     ...partialStore?.getState?.(),
     items,
     renderedItems: [],
@@ -107,12 +107,6 @@ export function createCollectionStore<
     );
   };
 
-  const setItems: CollectionStore<T>["setItems"] = (value) =>
-    store.setState("items", value);
-
-  const setRenderedItems: CollectionStore<T>["setRenderedItems"] = (value) =>
-    store.setState("renderedItems", value);
-
   const mergeItem = (
     item: T,
     setItems: (getItems: (items: T[]) => T[]) => void
@@ -148,42 +142,41 @@ export function createCollectionStore<
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
     mergeItem(item, (getItems) => store.setState("items", getItems));
 
-  const renderItem: CollectionStore<T>["renderItem"] = (item) => {
-    return chain(
-      registerItem(item),
-      mergeItem(item, (getItems) =>
-        privateStore.setState("renderedItems", getItems)
-      )
-    );
-  };
-
-  const cache: { id: string | null; items: T[]; item: T | null } = {
+  const itemCache: { id: string | null; items: T[]; item: T | null } = {
     id: null,
     item: null,
     items,
   };
 
-  const item: CollectionStore<T>["item"] = (id) => {
-    if (!id) return null;
-    const { items } = store.getState();
-    if (cache.id === id && cache.items === items) {
-      return cache.item;
-    }
-    const item = items.find((item) => item.id === id);
-    cache.id = id;
-    cache.items = items;
-    cache.item = item || null;
-    return cache.item;
-  };
-
   return {
     ...store,
     setup,
-    setItems,
-    setRenderedItems,
+
+    setItems: (value) => store.setState("items", value),
+
+    setRenderedItems: (value) => store.setState("renderedItems", value),
+
     registerItem,
-    renderItem,
-    item,
+    renderItem: (item) =>
+      chain(
+        registerItem(item),
+        mergeItem(item, (getItems) =>
+          privateStore.setState("renderedItems", getItems)
+        )
+      ),
+
+    item: (id) => {
+      if (!id) return null;
+      const { items } = store.getState();
+      if (itemCache.id === id && itemCache.items === items) {
+        return itemCache.item;
+      }
+      const item = items.find((item) => item.id === id);
+      itemCache.id = id;
+      itemCache.items = items;
+      itemCache.item = item || null;
+      return itemCache.item;
+    },
   };
 }
 
@@ -192,7 +185,7 @@ export type CollectionStoreItem = {
   element?: HTMLElement | null;
 };
 
-export type CollectionState<
+export type CollectionStoreState<
   T extends CollectionStoreItem = CollectionStoreItem
 > = {
   items: T[];
@@ -201,9 +194,9 @@ export type CollectionState<
 
 export type CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem
-> = Store<CollectionState<T>> & {
-  setItems: SetState<CollectionState<T>["items"]>;
-  setRenderedItems: SetState<CollectionState<T>["renderedItems"]>;
+> = Store<CollectionStoreState<T>> & {
+  setItems: SetState<CollectionStoreState<T>["items"]>;
+  setRenderedItems: SetState<CollectionStoreState<T>["renderedItems"]>;
   registerItem: BivariantCallback<(item: T) => () => void>;
   renderItem: BivariantCallback<(item: T) => () => void>;
   item: (id: string | null | undefined) => T | null;
@@ -211,5 +204,5 @@ export type CollectionStore<
 
 export type CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem
-> = PartialStore<CollectionState<T>> &
-  Partial<Pick<CollectionState<T>, "items">>;
+> = PartialStore<CollectionStoreState<T>> &
+  Partial<Pick<CollectionStoreState<T>, "items">>;

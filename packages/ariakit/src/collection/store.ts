@@ -21,6 +21,6 @@ export type {
 export { useCollectionStore } from "@ariakit/react-core/collection/collection-store";
 export type {
   CollectionStore,
-  CollectionState,
+  CollectionStoreState,
   CollectionStoreProps,
 } from "@ariakit/react-core/collection/collection-store";

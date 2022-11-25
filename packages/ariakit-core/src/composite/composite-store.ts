@@ -1,13 +1,13 @@
 import {
-  CollectionState,
   CollectionStore,
   CollectionStoreItem,
   CollectionStoreProps,
+  CollectionStoreState,
   createCollectionStore,
 } from "../collection/collection-store";
 import { flatten2DArray, reverseArray } from "../utils/array";
 import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
+import { PartialStore, Store, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 type Orientation = "horizontal" | "vertical" | "both";
@@ -157,7 +157,7 @@ export function createCompositeStore<
   ...props
 }: CompositeStoreProps<T> = {}): CompositeStore<T> {
   const collection = createCollectionStore(props);
-  const initialState: CompositeState<T> = {
+  const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
     baseElement: null,
     activeId,
@@ -185,34 +185,6 @@ export function createCompositeStore<
         ["renderedItems", "activeId"]
       )
     );
-  };
-
-  const setBaseElement: CompositeStore<T>["setBaseElement"] = (element) => {
-    store.setState("baseElement", element);
-  };
-
-  const setMoves: CompositeStore<T>["setMoves"] = (moves) => {
-    store.setState("moves", moves);
-  };
-
-  const setActiveId: CompositeStore<T>["setActiveId"] = (id) => {
-    store.setState("activeId", id);
-  };
-
-  const move: CompositeStore<T>["move"] = (id) => {
-    // move() does nothing
-    if (id === undefined) return;
-    store.setState("activeId", id);
-    store.setState("moves", (moves) => moves + 1);
-  };
-
-  const first: CompositeStore<T>["first"] = () => {
-    return findFirstEnabledItem(store.getState().renderedItems)?.id;
-  };
-
-  const last: CompositeStore<T>["last"] = () => {
-    return findFirstEnabledItem(reverseArray(store.getState().renderedItems))
-      ?.id;
   };
 
   const getNextId = (
@@ -298,82 +270,91 @@ export function createCompositeStore<
     return nextItem?.id;
   };
 
-  const next: CompositeStore<T>["next"] = (skip) => {
-    const { renderedItems, orientation } = store.getState();
-    return getNextId(renderedItems, orientation, false, skip);
-  };
-
-  const previous: CompositeStore<T>["previous"] = (skip) => {
-    const { renderedItems, orientation, includesBaseElement } =
-      store.getState();
-    // If activeId is initially set to null or if includesBaseElement is set
-    // to true, then the composite container will be focusable while
-    // navigating with arrow keys. But, if it's a grid, we don't want to
-    // focus on the composite container with horizontal navigation.
-    const isGrid = !!findFirstEnabledItem(renderedItems)?.rowId;
-    const hasNullItem = !isGrid && includesBaseElement;
-    return getNextId(
-      reverseArray(renderedItems),
-      orientation,
-      hasNullItem,
-      skip
-    );
-  };
-
-  const down: CompositeStore<T>["down"] = (skip) => {
-    const {
-      activeId,
-      renderedItems,
-      focusShift,
-      focusLoop,
-      includesBaseElement,
-    } = store.getState();
-    const shouldShift = focusShift && !skip;
-    // First, we make sure rows have the same number of items by filling it
-    // with disabled fake items. Then, we reorganize the items.
-    const verticalItems = verticalizeItems(
-      flatten2DArray(
-        normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift)
-      )
-    );
-    const canLoop = focusLoop && focusLoop !== "horizontal";
-    // Pressing down arrow key will only focus on the composite container if
-    // loop is true, both, or vertical.
-    const hasNullItem = canLoop && includesBaseElement;
-    return getNextId(verticalItems, "vertical", hasNullItem, skip);
-  };
-
-  const up: CompositeStore<T>["up"] = (skip) => {
-    const { activeId, renderedItems, focusShift, includesBaseElement } =
-      store.getState();
-    const shouldShift = focusShift && !skip;
-    const verticalItems = verticalizeItems(
-      reverseArray(
-        flatten2DArray(
-          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift)
-        )
-      )
-    );
-    // If activeId is initially set to null, we'll always focus on the
-    // composite container when the up arrow key is pressed in the first row.
-    const hasNullItem = includesBaseElement;
-    return getNextId(verticalItems, "vertical", hasNullItem, skip);
-  };
-
   return {
     ...collection,
     ...store,
     setup,
-    setBaseElement,
-    setMoves,
-    setActiveId,
-    move,
-    first,
-    last,
-    next,
-    previous,
-    down,
-    up,
+
+    setBaseElement: (element) => store.setState("baseElement", element),
+    setMoves: (moves) => store.setState("moves", moves),
+    setActiveId: (id) => store.setState("activeId", id),
+
+    move: (id) => {
+      // move() does nothing
+      if (id === undefined) return;
+      store.setState("activeId", id);
+      store.setState("moves", (moves) => moves + 1);
+    },
+
+    first: () => findFirstEnabledItem(store.getState().renderedItems)?.id,
+    last: () =>
+      findFirstEnabledItem(reverseArray(store.getState().renderedItems))?.id,
+
+    next: (skip) => {
+      const { renderedItems, orientation } = store.getState();
+      return getNextId(renderedItems, orientation, false, skip);
+    },
+
+    previous: (skip) => {
+      const { renderedItems, orientation, includesBaseElement } =
+        store.getState();
+      // If activeId is initially set to null or if includesBaseElement is set
+      // to true, then the composite container will be focusable while
+      // navigating with arrow keys. But, if it's a grid, we don't want to
+      // focus on the composite container with horizontal navigation.
+      const isGrid = !!findFirstEnabledItem(renderedItems)?.rowId;
+      const hasNullItem = !isGrid && includesBaseElement;
+      return getNextId(
+        reverseArray(renderedItems),
+        orientation,
+        hasNullItem,
+        skip
+      );
+    },
+
+    down: (skip) => {
+      const {
+        activeId,
+        renderedItems,
+        focusShift,
+        focusLoop,
+        includesBaseElement,
+      } = store.getState();
+      const shouldShift = focusShift && !skip;
+      // First, we make sure rows have the same number of items by filling it
+      // with disabled fake items. Then, we reorganize the items.
+      const verticalItems = verticalizeItems(
+        flatten2DArray(
+          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift)
+        )
+      );
+      const canLoop = focusLoop && focusLoop !== "horizontal";
+      // Pressing down arrow key will only focus on the composite container if
+      // loop is true, both, or vertical.
+      const hasNullItem = canLoop && includesBaseElement;
+      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    },
+
+    up: (skip) => {
+      const { activeId, renderedItems, focusShift, includesBaseElement } =
+        store.getState();
+      const shouldShift = focusShift && !skip;
+      const verticalItems = verticalizeItems(
+        reverseArray(
+          flatten2DArray(
+            normalizeRows(
+              groupItemsByRows(renderedItems),
+              activeId,
+              shouldShift
+            )
+          )
+        )
+      );
+      // If activeId is initially set to null, we'll always focus on the
+      // composite container when the up arrow key is pressed in the first row.
+      const hasNullItem = includesBaseElement;
+      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    },
   };
 }
 
@@ -383,26 +364,27 @@ export type CompositeStoreItem = CollectionStoreItem & {
   children?: string;
 };
 
-export type CompositeState<T extends CompositeStoreItem = CompositeStoreItem> =
-  CollectionState<T> & {
-    baseElement: HTMLElement | null;
-    virtualFocus: boolean;
-    orientation: Orientation;
-    rtl: boolean;
-    focusLoop: boolean | Orientation;
-    focusWrap: boolean | Orientation;
-    focusShift: boolean;
-    moves: number;
-    includesBaseElement: boolean;
-    activeId?: string | null;
-  };
+export type CompositeStoreState<
+  T extends CompositeStoreItem = CompositeStoreItem
+> = CollectionStoreState<T> & {
+  baseElement: HTMLElement | null;
+  virtualFocus: boolean;
+  orientation: Orientation;
+  rtl: boolean;
+  focusLoop: boolean | Orientation;
+  focusWrap: boolean | Orientation;
+  focusShift: boolean;
+  moves: number;
+  includesBaseElement: boolean;
+  activeId?: string | null;
+};
 
 export type CompositeStore<T extends CompositeStoreItem = CompositeStoreItem> =
   Omit<CollectionStore<T>, keyof Store> &
-    Store<CompositeState<T>> & {
-      setBaseElement: SetState<CompositeState<T>["baseElement"]>;
-      setMoves: SetState<CompositeState<T>["moves"]>;
-      setActiveId: SetState<CompositeState<T>["activeId"]>;
+    Store<CompositeStoreState<T>> & {
+      setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
+      setMoves: SetState<CompositeStoreState<T>["moves"]>;
+      setActiveId: SetState<CompositeStoreState<T>["activeId"]>;
       move: (id?: string | null) => void;
       next: (skip?: number) => string | null | undefined;
       previous: (skip?: number) => string | null | undefined;
@@ -414,10 +396,11 @@ export type CompositeStore<T extends CompositeStoreItem = CompositeStoreItem> =
 
 export type CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem
-> = CollectionStoreProps<T> &
+> = Omit<CollectionStoreProps<T>, keyof CompositeStore<T>> &
+  PartialStore<CompositeStoreState<T>> &
   Partial<
     Pick<
-      CompositeState<T>,
+      CompositeStoreState<T>,
       | "virtualFocus"
       | "orientation"
       | "rtl"

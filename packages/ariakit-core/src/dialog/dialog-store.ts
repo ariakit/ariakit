@@ -1,7 +1,7 @@
 import {
-  DisclosureState,
   DisclosureStore,
   DisclosureStoreProps,
+  DisclosureStoreState,
   createDisclosureStore,
 } from "../disclosure/disclosure-store";
 
@@ -9,7 +9,7 @@ export function createDialogStore(props: DialogStoreProps = {}): DialogStore {
   return createDisclosureStore(props);
 }
 
-export type DialogState = DisclosureState;
+export type DialogStoreState = DisclosureStoreState;
 
 export type DialogStore = DisclosureStore;
 

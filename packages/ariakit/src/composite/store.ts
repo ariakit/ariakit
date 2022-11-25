@@ -62,7 +62,7 @@ export { useCompositeStore } from "@ariakit/react-core/composite/composite-store
 
 export type {
   CompositeStore,
-  CompositeState,
+  CompositeStoreState,
   CompositeStoreProps,
 } from "@ariakit/react-core/composite/composite-store";
 

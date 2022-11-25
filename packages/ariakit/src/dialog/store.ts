@@ -42,7 +42,7 @@ export type {
 
 export { useDialogStore } from "@ariakit/react-core/dialog/dialog-store";
 export type {
-  DialogState,
+  DialogStoreState,
   DialogStore,
   DialogStoreProps,
 } from "@ariakit/react-core/dialog/dialog-store";

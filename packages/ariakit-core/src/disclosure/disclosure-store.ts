@@ -7,7 +7,7 @@ export function createDisclosureStore({
   animated = false,
   ...partialStore
 }: DisclosureStoreProps = {}): DisclosureStore {
-  const initialState: DisclosureState = {
+  const initialState: DisclosureStoreState = {
     ...partialStore.getState?.(),
     open,
     animated,
@@ -60,7 +60,7 @@ export function createDisclosureStore({
   };
 }
 
-export type DisclosureState = {
+export type DisclosureStoreState = {
   open: boolean;
   mounted: boolean;
   animated: boolean | number;
@@ -69,15 +69,15 @@ export type DisclosureState = {
   disclosureElement: HTMLElement | null;
 };
 
-export type DisclosureStore = Store<DisclosureState> & {
-  setOpen: SetState<DisclosureState["open"]>;
+export type DisclosureStore = Store<DisclosureStoreState> & {
+  setOpen: SetState<DisclosureStoreState["open"]>;
   show: () => void;
   hide: () => void;
   toggle: () => void;
   stopAnimation: () => void;
-  setContentElement: SetState<DisclosureState["contentElement"]>;
-  setDisclosureElement: SetState<DisclosureState["disclosureElement"]>;
+  setContentElement: SetState<DisclosureStoreState["contentElement"]>;
+  setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 };
 
-export type DisclosureStoreProps = PartialStore<DisclosureState> &
-  Partial<Pick<DisclosureState, "open" | "animated">>;
+export type DisclosureStoreProps = PartialStore<DisclosureStoreState> &
+  Partial<Pick<DisclosureStoreState, "open" | "animated">>;

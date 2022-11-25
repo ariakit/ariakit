@@ -31,9 +31,9 @@ import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 import { CompositeContext } from "./composite-context";
 import {
-  CompositeState,
   CompositeStore,
   CompositeStoreItem,
+  CompositeStoreState,
 } from "./composite-store";
 import {
   findFirstEnabledItem,
@@ -62,7 +62,7 @@ function isModifierKey(event: ReactKeyboardEvent) {
 
 function canProxyKeyboardEvent(
   event: ReactKeyboardEvent,
-  state: CompositeState
+  state: CompositeStoreState
 ) {
   if (!isSelfTarget(event)) return false;
   if (isModifierKey(event)) return false;

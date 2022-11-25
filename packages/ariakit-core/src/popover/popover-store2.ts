@@ -8,15 +8,15 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
+import { chain } from "ariakit-utils/misc";
+import { Store, createStore } from "ariakit-utils/store";
+import { SetState } from "ariakit-utils/types";
 import {
   DialogStore,
   DialogStoreProps,
   DialogStoreState,
   createDialogStore,
-} from "../dialog/dialog-store";
-import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../dialog/dialog-store2";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
@@ -99,25 +99,27 @@ export function createPopoverStore({
 }: PopoverStoreProps = {}): PopoverStore {
   const rendered = createStore({ rendered: [] });
   const dialog = createDialogStore(props);
-  const initialState: PopoverStoreState = {
-    ...dialog.getState(),
-    anchorElement: null,
-    popoverElement: null,
-    arrowElement: null,
-    placement,
-    currentPlacement: placement,
-    fixed,
-    gutter,
-    flip,
-    shift,
-    slide,
-    overlap,
-    sameWidth,
-    fitViewport,
-    arrowPadding,
-    overflowPadding,
-  };
-  const store = createStore(initialState, dialog);
+  const store = createStore<PopoverStoreState>(
+    {
+      anchorElement: null,
+      popoverElement: null,
+      arrowElement: null,
+      placement,
+      currentPlacement: placement,
+      fixed,
+      gutter,
+      flip,
+      shift,
+      slide,
+      overlap,
+      sameWidth,
+      fitViewport,
+      arrowPadding,
+      overflowPadding,
+      ...dialog.getState(),
+    },
+    dialog
+  );
 
   const setCurrentPlacement = (placement: Placement) => {
     store.setState("currentPlacement", placement);
@@ -127,7 +129,7 @@ export function createPopoverStore({
     return chain(
       store.setup?.(),
       rendered.sync(() =>
-        store.batchSync(
+        store.effect(
           (state) => {
             if (!state.contentElement?.isConnected) return;
             const popover = state.popoverElement;
@@ -312,14 +314,30 @@ export function createPopoverStore({
     );
   };
 
+  const setAnchorElement: PopoverStore["setAnchorElement"] = (element) => {
+    store.setState("anchorElement", element);
+  };
+
+  const setPopoverElement: PopoverStore["setPopoverElement"] = (element) => {
+    store.setState("popoverElement", element);
+  };
+
+  const setArrowElement: PopoverStore["setArrowElement"] = (element) => {
+    store.setState("arrowElement", element);
+  };
+
+  const render: PopoverStore["render"] = () => {
+    rendered.setState("rendered", []);
+  };
+
   return {
     ...dialog,
     ...store,
     setup,
-    setAnchorElement: (element) => store.setState("anchorElement", element),
-    setPopoverElement: (element) => store.setState("popoverElement", element),
-    setArrowElement: (element) => store.setState("arrowElement", element),
-    render: () => rendered.setState("rendered", []),
+    setAnchorElement,
+    setPopoverElement,
+    setArrowElement,
+    render,
     getAnchorRect,
   };
 }

@@ -20,5 +20,5 @@ export { useDisclosureStore } from "@ariakit/react-core/disclosure/disclosure-st
 export type {
   DisclosureStore,
   DisclosureStoreProps,
-  DisclosureState,
+  DisclosureStoreState,
 } from "@ariakit/react-core/disclosure/disclosure-store";

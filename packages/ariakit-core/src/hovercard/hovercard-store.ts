@@ -6,7 +6,7 @@ import {
   PopoverStoreProps,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
+} from "../popover/popover-store2";
 
 export function createHovercardStore({
   timeout = 500,

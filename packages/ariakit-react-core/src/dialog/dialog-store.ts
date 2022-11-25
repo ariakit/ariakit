@@ -1,18 +1,18 @@
 import {
   DialogStore as CoreDialogStore,
   DialogStoreProps as CoreDialogStoreProps,
-  DialogState,
+  DialogStoreState,
   createDialogStore,
 } from "@ariakit/core/dialog/dialog-store";
 import { Store, useStore } from "@ariakit/react-core/utils/store";
 import {
   DisclosureStoreProps,
-  getDisclosureDefaultState,
+  useDisclosureStoreOptions,
   useDisclosureStoreProps,
 } from "../disclosure/disclosure-store";
 
-export function getDialogDefaultState(props: DialogStoreProps) {
-  return getDisclosureDefaultState(props);
+export function useDialogStoreOptions(props: DialogStoreProps) {
+  return useDisclosureStoreOptions(props);
 }
 
 export function useDialogStoreProps<T extends DialogStore>(
@@ -23,14 +23,13 @@ export function useDialogStoreProps<T extends DialogStore>(
 }
 
 export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
-  let store = useStore(() =>
-    createDialogStore({ ...props, ...getDialogDefaultState(props) })
-  );
+  const options = useDialogStoreOptions(props);
+  let store = useStore(() => createDialogStore({ ...props, ...options }));
   store = useDialogStoreProps(store, props);
   return store;
 }
 
-export type { DialogState };
+export type { DialogStoreState };
 
 export type DialogStore = Store<CoreDialogStore>;
 

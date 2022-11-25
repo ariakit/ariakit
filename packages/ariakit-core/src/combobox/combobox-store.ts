@@ -13,7 +13,7 @@ import {
   PopoverStoreProps,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
+} from "../popover/popover-store2";
 
 type Item = CompositeStoreState["items"][number] & {
   value?: string;

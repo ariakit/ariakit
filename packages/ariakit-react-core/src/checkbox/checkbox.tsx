@@ -11,10 +11,10 @@ import { useStoreState } from "../utils/store";
 import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 import { CheckboxCheckedContext } from "./checkbox-checked-context";
-import { CheckboxState, CheckboxStore } from "./checkbox-store";
+import { CheckboxStore, CheckboxStoreState } from "./checkbox-store";
 
 function getStoreChecked(
-  storeValue?: CheckboxState["value"],
+  storeValue?: CheckboxStoreState["value"],
   elementValue?: CheckboxOptions["value"]
 ) {
   if (storeValue === undefined) return;
