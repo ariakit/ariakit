@@ -53,7 +53,7 @@
     "@changesets/cli": "2.25.2",
     "@jest/types": "29.3.1",
     "@playwright/test": "1.28.1",
-    "@rollup/plugin-babel": "6.0.2",
+    "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "23.0.2",
     "@rollup/plugin-node-resolve": "15.0.1",
     "@rollup/plugin-replace": "5.0.1",
