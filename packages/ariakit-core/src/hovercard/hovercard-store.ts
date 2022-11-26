@@ -5,7 +5,7 @@ import {
   createPopoverStore,
 } from "../popover/popover-store";
 import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
+import { PartialStore, Store, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 export function createHovercardStore({
@@ -82,5 +82,9 @@ export type HovercardStore = Omit<PopoverStore, keyof Store> &
     setAutoFocusOnShow: SetState<HovercardStoreState["autoFocusOnShow"]>;
   };
 
-export type HovercardStoreProps = PopoverStoreProps &
+export type HovercardStoreProps = Omit<
+  PopoverStoreProps,
+  keyof HovercardStore
+> &
+  PartialStore<HovercardStoreState> &
   Partial<Pick<HovercardStoreState, "timeout" | "showTimeout" | "hideTimeout">>;

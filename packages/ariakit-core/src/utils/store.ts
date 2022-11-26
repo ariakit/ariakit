@@ -16,7 +16,7 @@ import { SetStateAction } from "./types";
  */
 export function createStore<S extends State>(
   initialState: S,
-  store?: PartialStore<S>
+  ...stores: Array<PartialStore<S>>
 ): Store<S> {
   let state = initialState;
   let batchPrevState = state;
@@ -30,19 +30,27 @@ export function createStore<S extends State>(
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
   const setup = () => {
-    if (!store) return;
+    if (!stores.length) return;
 
-    const storeState = store.getState?.();
+    const keys = getKeys(state);
 
-    const keys = storeState
-      ? getKeys(state).filter((key) => hasOwnProperty(storeState, key))
-      : [];
+    const setups = stores.map((store) => store.setup?.());
 
     const cleanups = keys.map((key) =>
-      store.sync?.((state) => _setState(key, state[key]!, false), [key])
+      chain(
+        stores.map((store) => {
+          const storeState = store.getState?.();
+          if (!storeState) return;
+          if (!hasOwnProperty(storeState, key)) return;
+          return store.sync?.(
+            (state) => _setState(key, state[key]!, false),
+            [key]
+          );
+        })
+      )
     );
 
-    return chain(store.setup?.(), ...cleanups);
+    return chain(...setups, ...cleanups);
   };
 
   const sub = (listener: Listener<S>, keys?: Array<keyof S>, batch = false) => {
@@ -84,7 +92,9 @@ export function createStore<S extends State>(
     const nextValue = applyState(value, state[key]);
 
     if (syncStore) {
-      store?.setState?.(key, nextValue);
+      stores.forEach((store) => {
+        store.setState?.(key, nextValue);
+      });
     }
 
     if (nextValue === state[key]) return;

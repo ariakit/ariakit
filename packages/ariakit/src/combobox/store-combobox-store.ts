@@ -3,7 +3,7 @@ import {
   ComboboxStore as CoreComboboxStore,
   ComboboxStoreProps as CoreComboboxStoreProps,
   createComboboxStore,
-} from "@ariakit/core/combobox/combobox-store";
+} from "@ariakit/core/combobox/combobox-store2";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

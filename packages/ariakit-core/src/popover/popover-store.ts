@@ -15,7 +15,7 @@ import {
   createDialogStore,
 } from "../dialog/dialog-store";
 import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
+import { PartialStore, Store, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -459,7 +459,8 @@ export type PopoverStore = Omit<DialogStore, keyof Store> &
     render: () => void;
   };
 
-export type PopoverStoreProps = DialogStoreProps &
+export type PopoverStoreProps = Omit<DialogStoreProps, keyof PopoverStore> &
+  PartialStore<PopoverStoreState> &
   Partial<Pick<PopoverStore, "getAnchorRect" | "renderCallback">> &
   Partial<
     Pick<
