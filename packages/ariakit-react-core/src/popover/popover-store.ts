@@ -17,8 +17,8 @@ export function usePopoverStoreOptions(props: PopoverStoreProps) {
   const renderCallback = useEvent(props.renderCallback);
   return {
     ...useDialogStoreOptions(props),
-    getAnchorRect,
-    renderCallback,
+    getAnchorRect: props.getAnchorRect ? getAnchorRect : undefined,
+    renderCallback: props.renderCallback ? renderCallback : undefined,
   };
 }
 

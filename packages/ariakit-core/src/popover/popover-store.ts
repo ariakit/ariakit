@@ -321,6 +321,7 @@ export function createPopoverStore({
     setArrowElement: (element) => store.setState("arrowElement", element),
     render: () => rendered.setState("rendered", []),
     getAnchorRect,
+    renderCallback,
   };
 }
 

@@ -39,7 +39,7 @@ export function createStore<S extends State>(
       : [];
 
     const cleanups = keys.map((key) =>
-      store.subscribe?.((state) => setState(key, state[key]!), [key])
+      store.sync?.((state) => setState(key, state[key]!), [key])
     );
 
     return chain(store.setup?.(), ...cleanups);
