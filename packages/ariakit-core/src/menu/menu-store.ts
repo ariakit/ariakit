@@ -12,7 +12,7 @@ import {
   HovercardStoreProps,
   HovercardStoreState,
   createHovercardStore,
-} from "../hovercard/hovercard-store";
+} from "../hovercard/hovercard-store2";
 
 type Values = Record<
   string,

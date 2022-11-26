@@ -39,7 +39,7 @@ export function createStore<S extends State>(
       : [];
 
     const cleanups = keys.map((key) =>
-      store.sync?.((state) => setState(key, state[key]!), [key])
+      store.sync?.((state) => _setState(key, state[key]!, false), [key])
     );
 
     return chain(store.setup?.(), ...cleanups);
@@ -74,12 +74,18 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const setState: Store<S>["setState"] = (key, value) => {
+  const _setState = <K extends keyof S>(
+    key: K,
+    value: SetStateAction<S[K]>,
+    syncStore = true
+  ) => {
     if (!hasOwnProperty(state, key)) return;
 
     const nextValue = applyState(value, state[key]);
 
-    store?.setState?.(key, nextValue);
+    if (syncStore) {
+      store?.setState?.(key, nextValue);
+    }
 
     if (nextValue === state[key]) return;
 
@@ -123,6 +129,8 @@ export function createStore<S extends State>(
       });
     });
   };
+
+  const setState: Store<S>["setState"] = (key, value) => _setState(key, value);
 
   const partialStore = { subscribe, sync, batchSync, getState, setState };
 

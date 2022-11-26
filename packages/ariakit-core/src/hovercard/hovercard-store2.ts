@@ -1,33 +1,35 @@
+import { chain } from "ariakit-utils/misc";
+import { Store, createStore } from "ariakit-utils/store";
+import { SetState } from "ariakit-utils/types";
 import {
   PopoverStore,
   PopoverStoreProps,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
-import { chain } from "../utils/misc";
-import { Store, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../popover/popover-store2";
 
 export function createHovercardStore({
-  placement = "bottom",
   timeout = 500,
+  placement = "bottom",
   showTimeout,
   hideTimeout,
   ...props
 }: HovercardStoreProps = {}): HovercardStore {
   const popover = createPopoverStore({ placement, ...props });
-  const initialState: HovercardStoreState = {
-    ...popover.getState(),
-    timeout,
-    showTimeout: showTimeout ?? timeout,
-    hideTimeout: hideTimeout ?? timeout,
-    autoFocusOnShow: false,
-  };
-  const store = createStore(initialState, popover);
+  const store = createStore<HovercardStoreState>(
+    {
+      timeout,
+      showTimeout: showTimeout ?? timeout,
+      hideTimeout: hideTimeout ?? timeout,
+      autoFocusOnShow: false,
+      ...popover.getState(),
+    },
+    popover
+  );
 
   const setup = () => {
     return chain(
-      store.setup(),
+      store.setup?.(),
       store.sync(
         (state) => {
           store.setState("showTimeout", (value) => {
@@ -44,11 +46,15 @@ export function createHovercardStore({
     );
   };
 
+  const setAutoFocusOnShow: HovercardStore["setAutoFocusOnShow"] = (value) => {
+    store.setState("autoFocusOnShow", value);
+  };
+
   return {
     ...popover,
     ...store,
     setup,
-    setAutoFocusOnShow: (value) => store.setState("autoFocusOnShow", value),
+    setAutoFocusOnShow,
   };
 }
 
