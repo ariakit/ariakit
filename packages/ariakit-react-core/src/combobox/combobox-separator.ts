@@ -1,9 +1,12 @@
+import { useContext } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import {
   CompositeSeparatorOptions,
   useCompositeSeparator,
 } from "../composite/composite-separator";
 import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
+import { ComboboxContext } from "./combobox-context";
 import { ComboboxStore } from "./combobox-store";
 
 /**
@@ -23,8 +26,17 @@ import { ComboboxStore } from "./combobox-store";
  * ```
  */
 export const useComboboxSeparator = createHook<ComboboxSeparatorOptions>(
-  (props) => {
-    props = useCompositeSeparator(props);
+  ({ store, ...props }) => {
+    const context = useContext(ComboboxContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxSeparator must be wrapped in a ComboboxList or ComboboxPopover component"
+    );
+
+    props = useCompositeSeparator({ store, ...props });
     return props;
   }
 );

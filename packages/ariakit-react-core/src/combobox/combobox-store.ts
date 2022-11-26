@@ -5,6 +5,7 @@ import {
   ComboboxStoreProps as CoreComboboxStoreProps,
   createComboboxStore,
 } from "@ariakit/core/combobox/combobox-store";
+import { Store as CoreStore } from "@ariakit/core/utils/store";
 import {
   CompositeStoreProps,
   useCompositeStoreOptions,
@@ -50,9 +51,9 @@ export type ComboboxStore = Store<CoreComboboxStore>;
 
 export type ComboboxStoreProps = Omit<
   CompositeStoreProps<ComboboxStoreItem>,
-  keyof ComboboxStore
+  keyof CoreStore
 > &
-  Omit<PopoverStoreProps, keyof ComboboxStore> &
+  Omit<PopoverStoreProps, keyof CoreStore> &
   CoreComboboxStoreProps & {
     defaultValue?: ComboboxStoreState["value"];
     setValue?: (value: ComboboxStoreState["value"]) => void;

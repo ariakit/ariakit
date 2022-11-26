@@ -103,6 +103,6 @@ export type ComboboxCancelOptions<T extends As = "button"> =
     store: ComboboxStore;
   };
 
-export type ComboboxClearProps<T extends As = "button"> = Props<
+export type ComboboxCancelProps<T extends As = "button"> = Props<
   ComboboxCancelOptions<T>
 >;

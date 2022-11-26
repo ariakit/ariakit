@@ -5,6 +5,7 @@ import {
   CompositeStoreProps as CoreCompositeStoreProps,
   createCompositeStore,
 } from "@ariakit/core/composite/composite-store";
+import { Store as CoreStore } from "@ariakit/core/utils/store";
 import {
   CollectionStoreProps,
   useCollectionStoreOptions,
@@ -55,7 +56,7 @@ export type CompositeStore<T extends CompositeStoreItem = CompositeStoreItem> =
 
 export type CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem
-> = Omit<CollectionStoreProps<T>, keyof CompositeStore<T>> &
+> = Omit<CollectionStoreProps<T>, keyof CoreStore> &
   CoreCompositeStoreProps<T> & {
     defaultActiveId?: CompositeStoreState<T>["activeId"];
     setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
