@@ -3,7 +3,7 @@ import {
   MenuBarStoreProps as CoreMenuBarStoreProps,
   MenuBarStoreState,
   createMenuBarStore,
-} from "@ariakit/core/menu/menu-bar-store";
+} from "@ariakit/core/menu/menu-bar-store2";
 import {
   ParentStore,
   Store,

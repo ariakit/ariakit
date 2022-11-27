@@ -29,9 +29,7 @@ export function useCollectionStore<
 >(props: CollectionStoreProps<T> = {}): CollectionStore<T> {
   const options = useCollectionStoreOptions(props);
   let store = useStore(() => createCollectionStore({ ...props, ...options }));
-
   store = useCollectionStoreProps(store, props);
-
   return store;
 }
 

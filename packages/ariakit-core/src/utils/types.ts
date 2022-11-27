@@ -86,7 +86,7 @@ export type AriaHasPopup =
  * All the WAI-ARIA 1.1 role attribute values from
  * https://www.w3.org/TR/wai-aria-1.1/#role_definitions
  */
-export type AriaRole = StringWithValue<
+export type AriaRole =
   | "alert"
   | "alertdialog"
   | "application"
@@ -156,4 +156,5 @@ export type AriaRole = StringWithValue<
   | "tree"
   | "treegrid"
   | "treeitem"
->;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | (string & {});

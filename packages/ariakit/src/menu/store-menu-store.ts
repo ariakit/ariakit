@@ -4,7 +4,7 @@ import {
   MenuStoreProps as CoreMenuStoreProps,
   MenuStoreState,
   createMenuStore,
-} from "@ariakit/core/menu/menu-store";
+} from "@ariakit/core/menu/menu-store2";
 import { useEvent } from "ariakit-react-utils/hooks";
 import {
   ParentStore,

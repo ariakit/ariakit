@@ -1,4 +1,3 @@
-import { BivariantCallback } from "ariakit-utils/types";
 import {
   omit as _omit,
   pick as _pick,
@@ -221,16 +220,12 @@ export type Store<S = State> = {
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  pick: BivariantCallback<{
-    <K extends keyof S>(...keys: K[]): Store<Pick<S, K>>;
-  }>;
+  pick<K extends keyof S>(...keys: K[]): Store<Pick<S, K>>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  omit: BivariantCallback<{
-    <K extends keyof S>(...keys: K[]): Store<Omit<S, K>>;
-  }>;
+  omit<K extends keyof S>(...keys: K[]): Store<Omit<S, K>>;
 };
 
 /**
