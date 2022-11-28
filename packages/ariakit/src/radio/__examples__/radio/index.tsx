@@ -1,10 +1,10 @@
-import { Radio, RadioGroup, useRadioState } from "ariakit/radio";
+import { Radio, RadioGroup, useRadioStore } from "ariakit/radio/store";
 import "./style.css";
 
 export default function Example() {
-  const radio = useRadioState();
+  const radio = useRadioStore();
   return (
-    <RadioGroup state={radio}>
+    <RadioGroup store={radio}>
       <label className="label">
         <Radio className="radio" value="apple" />
         apple
