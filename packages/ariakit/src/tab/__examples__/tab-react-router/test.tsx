@@ -1,5 +1,4 @@
 import { click, getByRole, press, render } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 function getTab(name: string) {
@@ -9,11 +8,6 @@ function getTab(name: string) {
 function getPanel(name: string) {
   return getByRole("tabpanel", { name });
 }
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("default selected tab", () => {
   render(<Example />);

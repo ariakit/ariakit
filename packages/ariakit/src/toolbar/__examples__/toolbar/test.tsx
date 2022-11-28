@@ -1,13 +1,7 @@
 import { getByRole, press, render } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getItem = (name: string) => getByRole("button", { name });
-
-test("a11y", async () => {
-  render(<Example />);
-  expect(await axe(getByRole("toolbar"))).toHaveNoViolations();
-});
 
 test("navigate with keyboard", async () => {
   render(<Example />);

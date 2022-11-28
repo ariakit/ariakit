@@ -1,15 +1,8 @@
 import { click, getByRole, press, render } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getMenuButton = (name: string) => getByRole("button", { name });
 const getMenuItem = (name: string) => getByRole("menuitemradio", { name });
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  await click(getMenuButton("Sort"));
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("default checked menu item", async () => {
   render(<Example />);

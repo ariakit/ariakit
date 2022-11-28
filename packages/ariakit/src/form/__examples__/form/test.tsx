@@ -6,7 +6,6 @@ import {
   render,
   type,
 } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getInput = (name: string) => getByRole("textbox", { name });
@@ -23,11 +22,6 @@ beforeEach(() => {
 
 afterEach(() => {
   alert.mockClear();
-});
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
 });
 
 test("focus on the first input by tabbing", async () => {

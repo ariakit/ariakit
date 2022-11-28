@@ -7,7 +7,6 @@ import {
   sleep,
   waitFor,
 } from "ariakit-test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
@@ -23,11 +22,6 @@ const hoverOutside = async () => {
   await hover(document.body);
   await hover(document.body, { clientX: 10, clientY: 10 });
 };
-
-test("a11y", async () => {
-  const { container } = render(<Example />);
-  expect(await axe(container)).toHaveNoViolations();
-});
 
 test("show hovercard on hover after timeout", async () => {
   render(<Example />);
