@@ -6,8 +6,8 @@ import {
   MenuArrow,
   MenuButton,
   MenuButtonArrow,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import { HTMLMotionProps, motion } from "framer-motion";
 
 export type MenuProps = HTMLAttributes<HTMLDivElement> & {
@@ -25,18 +25,19 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
     { open, setOpen, label, children, animate, transition, variants, ...props },
     ref
   ) => {
-    const menu = useMenuState({ animated: !!animate, open, setOpen });
+    const menu = useMenuStore({ animated: !!animate, open, setOpen });
+    const currentPlacement = menu.useState("currentPlacement");
     const [currentAnimation, setCurrentAnimation] = useState<unknown>();
     return (
       <>
-        <MenuButton state={menu} className="button" {...props} ref={ref}>
+        <MenuButton store={menu} className="button" {...props} ref={ref}>
           {label}
           <MenuButtonArrow />
         </MenuButton>
         <BaseMenu
-          state={menu}
+          store={menu}
           className="menu"
-          data-placement={menu.currentPlacement}
+          data-placement={currentPlacement}
           as={motion.div}
           animate={animate}
           transition={transition}
@@ -48,7 +49,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           onAnimationStart={setCurrentAnimation}
           onAnimationComplete={(animation: string) => {
             if (currentAnimation !== animation) return;
-            if (!menu.animating) return;
+            if (!menu.getState().animating) return;
             menu.stopAnimation();
           }}
         >

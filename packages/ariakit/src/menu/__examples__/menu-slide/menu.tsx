@@ -17,8 +17,8 @@ import {
   MenuButtonArrow,
   MenuGroupLabel,
   MenuHeading,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import { flushSync } from "react-dom";
 import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
@@ -43,7 +43,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
     const parent = useContext(MenuContext);
     const isSubmenu = !!parent;
 
-    const menu = useMenuState({
+    const menu = useMenuStore({
       placement: isSubmenu ? "right-start" : "bottom-start",
       overflowPadding: isSubmenu ? 0 : 8,
       animated: isSubmenu ? 500 : false,
@@ -58,21 +58,36 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       },
     });
 
+    const open = menu.useState("open");
+    const mounted = menu.useState("mounted");
+    const autoFocusOnShow = menu.useState("autoFocusOnShow");
+
     // By default, submenus don't automatically receive focus when they open.
     // But here we want them to always receive focus.
-    if (!menu.autoFocusOnShow) {
-      menu.setAutoFocusOnShow(true);
-    }
+    useIsomorphicLayoutEffect(() => {
+      if (!autoFocusOnShow) {
+        menu.setAutoFocusOnShow(true);
+      }
+    }, [autoFocusOnShow, menu]);
+
+    // We only want to delay hiding the menu, so we immediately stop the
+    // animation when it's opening.
+    useIsomorphicLayoutEffect(() => {
+      if (open) {
+        menu.stopAnimation();
+      }
+    }, [open, menu]);
 
     const contextValue = useMemo<MenuContextProps>(
       () => ({
-        getWrapper: () => parent?.getWrapper() || menu.popoverRef.current,
-        getMenu: () => menu.baseRef.current,
+        getWrapper: () =>
+          parent?.getWrapper() || menu.getState().popoverElement,
+        getMenu: () => menu.getState().baseElement,
         getOffsetRight: () =>
           (parent?.getOffsetRight() ?? 0) +
-          (menu.baseRef.current?.offsetWidth ?? 0),
+          (menu.getState().baseElement?.offsetWidth ?? 0),
       }),
-      [menu.popoverRef, menu.baseRef, parent?.getOffsetRight]
+      [menu, parent]
     );
 
     // Hide the submenu when it's not visible on scroll.
@@ -101,17 +116,10 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
       return () => parentWrapper.removeEventListener("scroll", onScroll);
     }, [parent, menu.hide, menu.stopAnimation]);
 
-    // We only want to delay hiding the menu, so we immediately stop the
-    // animation when it's opening.
-    useIsomorphicLayoutEffect(() => {
-      if (!menu.open) return;
-      menu.stopAnimation();
-    }, [menu.open, menu.stopAnimation]);
-
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
       <MenuButton
         as="button"
-        state={menu}
+        store={menu}
         showOnHover={false}
         className="button"
         {...menuButtonProps}
@@ -152,9 +160,9 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })
         )}
-        {menu.mounted && (
+        {mounted && (
           <BaseMenu
-            state={menu}
+            store={menu}
             className="menu"
             portal={isSubmenu}
             portalElement={parent?.getWrapper}

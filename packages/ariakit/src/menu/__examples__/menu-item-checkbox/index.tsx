@@ -5,21 +5,24 @@ import {
   MenuButtonArrow,
   MenuItemCheck,
   MenuItemCheckbox,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState({
+  const menu = useMenuStore({
     defaultValues: { watching: ["issues"] },
   });
+  const buttonLabel = menu.useState((state) =>
+    !!state.values.watching.length ? "Unwatch" : "Watch"
+  );
   return (
     <>
-      <MenuButton state={menu} className="button">
-        {!!menu.values.watching.length ? "Unwatch" : "Watch"}
+      <MenuButton store={menu} className="button">
+        {buttonLabel}
         <MenuButtonArrow />
       </MenuButton>
-      <Menu state={menu} className="menu">
+      <Menu store={menu} className="menu">
         <MenuArrow className="menu-arrow" />
         <MenuItemCheckbox name="watching" value="issues" className="menu-item">
           <MenuItemCheck />

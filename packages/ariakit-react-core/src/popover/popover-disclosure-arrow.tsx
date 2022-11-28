@@ -31,7 +31,7 @@ const pointsMap = {
  */
 export const usePopoverDisclosureArrow =
   createHook<PopoverDisclosureArrowOptions>(
-    ({ store, placement = "bottom", ...props }) => {
+    ({ store, placement, ...props }) => {
       const context = useContext(PopoverContext);
       store = store || context;
 

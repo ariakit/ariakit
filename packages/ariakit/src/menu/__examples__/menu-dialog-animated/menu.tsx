@@ -7,19 +7,19 @@ import {
   MenuDismiss,
   MenuHeading,
   MenuItem,
-  MenuStateProps,
-  useMenuState,
-} from "ariakit/menu";
+  MenuStoreProps,
+  useMenuStore,
+} from "ariakit/menu/store";
 import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 export type MenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: ReactNode;
   title?: string;
   animated?: boolean;
-  values?: MenuStateProps["values"];
+  values?: MenuStoreProps["values"];
   setValues?: (values: any) => void;
-  open?: MenuStateProps["open"];
-  setOpen?: MenuStateProps["setOpen"];
+  open?: MenuStoreProps["open"];
+  setOpen?: MenuStoreProps["setOpen"];
   onUnmount?: () => void;
   initialFocusRef?: BaseMenuProps["initialFocusRef"];
 };
@@ -41,21 +41,22 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
     },
     ref
   ) => {
-    const menu = useMenuState({ animated, values, setValues, open, setOpen });
+    const menu = useMenuStore({ animated, values, setValues, open, setOpen });
+    const mounted = menu.useState("mounted");
 
     useIsomorphicLayoutEffect(() => {
-      if (!menu.mounted) {
+      if (!mounted) {
         onUnmount?.();
       }
-    }, [menu.mounted]);
+    }, [mounted]);
 
     return (
       <>
-        <MenuButton state={menu} ref={ref} className="button" {...props}>
+        <MenuButton store={menu} ref={ref} className="button" {...props}>
           {label}
         </MenuButton>
         <BaseMenu
-          state={menu}
+          store={menu}
           initialFocusRef={initialFocusRef}
           data-animated={animated ? "" : undefined}
           className="menu"

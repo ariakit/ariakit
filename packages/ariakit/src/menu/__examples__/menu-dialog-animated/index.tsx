@@ -14,7 +14,7 @@ import {
   MenuItemCheck,
   MenuItemCheckbox,
   MenuSeparator,
-} from "ariakit/menu";
+} from "ariakit/menu/store";
 import { Dialog } from "./dialog";
 import { add, playlistAdd } from "./icons";
 import { Menu } from "./menu";

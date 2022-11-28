@@ -4,22 +4,22 @@ import {
   MenuButtonArrow,
   MenuItemCheck,
   MenuItemRadio,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import "./style.css";
 
 export default function Example() {
-  const menu = useMenuState({
+  const menu = useMenuStore({
     gutter: 8,
     defaultValues: { sort: "popular" },
   });
   return (
     <>
-      <MenuButton state={menu} className="button">
+      <MenuButton store={menu} className="button">
         Sort
         <MenuButtonArrow />
       </MenuButton>
-      <Menu state={menu} className="menu">
+      <Menu store={menu} className="menu">
         <MenuItemRadio name="sort" value="popular" className="menu-item">
           <MenuItemCheck />
           Popular

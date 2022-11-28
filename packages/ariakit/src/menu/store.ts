@@ -87,6 +87,36 @@ export type {
   MenuHeadingOptions,
 } from "@ariakit/react-core/menu/menu-heading";
 
+export {
+  MenuItemCheck,
+  useMenuItemCheck,
+} from "@ariakit/react-core/menu/menu-item-check";
+
+export type {
+  MenuItemCheckProps,
+  MenuItemCheckOptions,
+} from "@ariakit/react-core/menu/menu-item-check";
+
+export {
+  MenuItemCheckbox,
+  useMenuItemCheckbox,
+} from "@ariakit/react-core/menu/menu-item-checkbox";
+
+export type {
+  MenuItemCheckboxProps,
+  MenuItemCheckboxOptions,
+} from "@ariakit/react-core/menu/menu-item-checkbox";
+
+export {
+  MenuItemRadio,
+  useMenuItemRadio,
+} from "@ariakit/react-core/menu/menu-item-radio";
+
+export type {
+  MenuItemRadioProps,
+  MenuItemRadioOptions,
+} from "@ariakit/react-core/menu/menu-item-radio";
+
 export { MenuItem, useMenuItem } from "@ariakit/react-core/menu/menu-item";
 
 export type {
