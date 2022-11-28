@@ -19,7 +19,7 @@ import "./style.css";
 export default function Example() {
   const [value, setValue] = useState("");
   const combobox = useComboboxStore({ value, setValue });
-  const menu = useMenuStore(combobox.useWithout("contentElement"));
+  const menu = useMenuStore(combobox);
 
   const matches = useMemo(() => {
     return matchSorter(list, value, {

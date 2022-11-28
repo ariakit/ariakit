@@ -161,7 +161,6 @@ export function useStoreProps<
     store.setState(key, value);
   }, [store, key, value]);
 }
-
 /**
  * Creates a React store from a core store object.
  * @param createStore The function that creates the core store object.

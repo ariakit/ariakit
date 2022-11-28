@@ -5,6 +5,7 @@ import {
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
+import { MenuStore } from "../menu/menu-store";
 import {
   PopoverStore,
   PopoverStoreProps,
@@ -18,6 +19,15 @@ import { SetState } from "../utils/types";
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
+function isMenuStoreProps<T extends ComboboxStoreProps>(
+  props: T
+): props is T & Pick<MenuStore, "omit"> {
+  if (!props.omit) return false;
+  if (!props.getState) return false;
+  const state = props.getState();
+  return "initialFocus" in state && "values" in state;
+}
+
 export function createComboboxStore({
   placement = "bottom-start",
   activeId = null,
@@ -29,6 +39,9 @@ export function createComboboxStore({
   value = "",
   ...props
 }: ComboboxStoreProps = {}): ComboboxStore {
+  if (isMenuStoreProps(props)) {
+    props = { ...props, ...props.omit("contentElement") };
+  }
   const popover = createPopoverStore({ placement, ...props });
   const composite = createCompositeStore({
     activeId,

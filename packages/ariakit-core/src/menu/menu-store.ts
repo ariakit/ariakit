@@ -1,3 +1,4 @@
+import { ComboboxStore } from "../combobox/combobox-store";
 import {
   CompositeStore,
   CompositeStoreProps,
@@ -14,6 +15,15 @@ import { applyState, chain } from "../utils/misc";
 import { PartialStore, Store, createStore } from "../utils/store";
 import { BivariantCallback, SetState, SetStateAction } from "../utils/types";
 
+function isComboboxStoreProps<T extends MenuStoreProps>(
+  props: T
+): props is T & Pick<ComboboxStore, "omit"> {
+  if (!props.omit) return false;
+  if (!props.getState) return false;
+  const state = props.getState();
+  return "value" in state && "activeValue" in state;
+}
+
 export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>({
   orientation = "vertical",
   placement = "bottom-start",
@@ -22,6 +32,9 @@ export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>({
   values = {} as T,
   ...props
 }: MenuStoreProps<T> = {}): MenuStore<T> {
+  if (isComboboxStoreProps(props)) {
+    props = { ...props, ...props.omit("contentElement") };
+  }
   const composite = createCompositeStore({ orientation, ...props });
   const hovercard = createHovercardStore({
     placement,
