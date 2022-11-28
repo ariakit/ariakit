@@ -5,20 +5,20 @@ import {
   FormLabel,
   FormReset,
   FormSubmit,
-  useFormState,
-} from "ariakit/form";
+  useFormStore,
+} from "ariakit/form/store";
 import "./style.css";
 
 export default function Example() {
-  const form = useFormState({ defaultValues: { name: "", email: "" } });
+  const form = useFormStore({ defaultValues: { name: "", email: "" } });
 
   form.useSubmit(async () => {
-    alert(JSON.stringify(form.values));
+    alert(JSON.stringify(form.getState().values));
   });
 
   return (
     <Form
-      state={form}
+      store={form}
       aria-labelledby="add-new-participant"
       className="wrapper"
     >

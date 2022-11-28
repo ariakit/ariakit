@@ -194,14 +194,18 @@ export function useDeferredValue<T>(value: T): T {
  * }
  */
 export function useTagName(
-  ref: RefObject<HTMLElement> | undefined,
+  refOrElement?: RefObject<HTMLElement> | HTMLElement | null,
   type?: string | ComponentType
 ) {
   const [tagName, setTagName] = useState(() => stringOrUndefined(type));
 
   useSafeLayoutEffect(() => {
-    setTagName(ref?.current?.tagName.toLowerCase() || stringOrUndefined(type));
-  }, [ref, type]);
+    const element =
+      refOrElement && "current" in refOrElement
+        ? refOrElement.current
+        : refOrElement;
+    setTagName(element?.tagName.toLowerCase() || stringOrUndefined(type));
+  }, [refOrElement, type]);
 
   return tagName;
 }

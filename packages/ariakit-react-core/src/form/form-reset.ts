@@ -1,0 +1,75 @@
+import { useContext } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
+import { ButtonOptions, useButton } from "../button/button";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Props } from "../utils/types";
+import { FormContext } from "./form-context";
+import { FormStore } from "./form-store";
+
+/**
+ * A component hook that returns props that can be passed to `Role` or any other
+ * Ariakit component to render a reset buttom in a form.
+ * @see https://ariakit.org/components/form
+ * @example
+ * ```jsx
+ * const store = useFormStore();
+ * const props = useFormReset({ store });
+ * <Form store={store}>
+ *   <Role {...props}>Reset</Role>
+ * </Form>
+ * ```
+ */
+export const useFormReset = createHook<FormResetOptions>(
+  ({ store, ...props }) => {
+    const context = useContext(FormContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "FormReset must be wrapped in a Form component"
+    );
+
+    props = {
+      type: "reset",
+      disabled: store.useState("submitting"),
+      ...props,
+    };
+
+    props = useButton(props);
+
+    return props;
+  }
+);
+
+/**
+ * A component that renders a reset buttom in a form.
+ * @see https://ariakit.org/components/form
+ * @example
+ * ```jsx
+ * const form = useFormStore();
+ * <Form store={form}>
+ *   <FormReset>Reset</FormReset>
+ * </Form>
+ * ```
+ */
+export const FormReset = createComponent<FormResetOptions>((props) => {
+  const htmlProps = useFormReset(props);
+  return createElement("button", htmlProps);
+});
+
+if (process.env.NODE_ENV !== "production") {
+  FormReset.displayName = "FormReset";
+}
+
+export type FormResetOptions<T extends As = "button"> = ButtonOptions<T> & {
+  /**
+   * Object returned by the `useFormStore` hook. If not provided, the parent
+   * `Form` component's context will be used.
+   */
+  store?: FormStore;
+};
+
+export type FormResetProps<T extends As = "button"> = Props<
+  FormResetOptions<T>
+>;
