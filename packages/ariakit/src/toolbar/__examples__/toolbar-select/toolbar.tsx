@@ -16,8 +16,8 @@ import {
   Toolbar as BaseToolbar,
   ToolbarSeparator as BaseToolbarSeparator,
   ToolbarItem,
-  useToolbarState,
-} from "ariakit/toolbar";
+  useToolbarStore,
+} from "ariakit/toolbar/store";
 
 /* Toolbar */
 
@@ -25,9 +25,9 @@ export type ToolbarProps = HTMLAttributes<HTMLDivElement>;
 
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
   (props, ref) => {
-    const toolbar = useToolbarState();
+    const toolbar = useToolbarStore();
     return (
-      <BaseToolbar ref={ref} state={toolbar} className="toolbar" {...props} />
+      <BaseToolbar ref={ref} store={toolbar} className="toolbar" {...props} />
     );
   }
 );

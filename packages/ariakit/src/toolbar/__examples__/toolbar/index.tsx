@@ -2,15 +2,15 @@ import {
   Toolbar,
   ToolbarItem,
   ToolbarSeparator,
-  useToolbarState,
-} from "ariakit/toolbar";
+  useToolbarStore,
+} from "ariakit/toolbar/store";
 import { bold, italic, redo, underline, undo } from "./icons";
 import "./style.css";
 
 export default function Example() {
-  const toolbar = useToolbarState();
+  const toolbar = useToolbarStore();
   return (
-    <Toolbar state={toolbar} className="toolbar">
+    <Toolbar store={toolbar} className="toolbar">
       <ToolbarItem className="button">
         {undo}
         Undo
