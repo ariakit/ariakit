@@ -1,7 +1,12 @@
 import { getDocument } from "../utils/dom";
 import { chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { BivariantCallback, SetState } from "../utils/types";
+
+type Item = {
+  id: string;
+  element?: HTMLElement | null;
+};
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -9,7 +14,7 @@ function isElementPreceding(a: Element, b: Element) {
   );
 }
 
-function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
+function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
@@ -36,7 +41,7 @@ function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
   return items;
 }
 
-function getCommonParent(items: CollectionStoreItem[]) {
+function getCommonParent(items: Item[]) {
   const firstItem = items.find((item) => !!item.element);
   const lastItem = [...items].reverse().find((item) => !!item.element);
   let parentElement = firstItem?.element?.parentElement;
@@ -50,12 +55,11 @@ function getCommonParent(items: CollectionStoreItem[]) {
   return getDocument(parentElement).body;
 }
 
-export function createCollectionStore<
-  T extends CollectionStoreItem = CollectionStoreItem
->({
+export function createCollectionStore<T extends Item = Item>({
   items = [],
   ...partialStore
 }: CollectionStoreProps<T> = {}): CollectionStore<T> {
+  const itemsMap = new Map<string, T>();
   const initialState: CollectionStoreState<T> = {
     ...partialStore?.getState?.(),
     items,
@@ -76,7 +80,15 @@ export function createCollectionStore<
   const setup = () => {
     return chain(
       store.setup(),
-      // TODO: Keep renderedItems in sync with items (item data changes)
+      store.batchSync(
+        (state) => {
+          itemsMap.clear();
+          for (const item of state.items) {
+            itemsMap.set(item.id, item);
+          }
+        },
+        ["items"]
+      ),
       privateStore.batchSync(
         (state) => {
           let firstRun = true;
@@ -143,19 +155,11 @@ export function createCollectionStore<
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
     mergeItem(item, (getItems) => store.setState("items", getItems));
 
-  const itemCache: { id: string | null; items: T[]; item: T | null } = {
-    id: null,
-    item: null,
-    items,
-  };
-
   return {
     ...store,
     setup,
 
     setItems: (value) => store.setState("items", value),
-
-    setRenderedItems: (value) => store.setState("renderedItems", value),
 
     registerItem,
     renderItem: (item) =>
@@ -168,42 +172,32 @@ export function createCollectionStore<
 
     item: (id) => {
       if (!id) return null;
-      const { items } = store.getState();
-      if (itemCache.id === id && itemCache.items === items) {
-        return itemCache.item;
-      }
-      const item = items.find((item) => item.id === id);
-      itemCache.id = id;
-      itemCache.items = items;
-      itemCache.item = item || null;
-      return itemCache.item;
+      return itemsMap.get(id) || null;
     },
   };
 }
 
-export type CollectionStoreItem = {
-  id: string;
-  element?: HTMLElement | null;
-};
+export type CollectionStoreItem = Item;
 
-export type CollectionStoreState<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = {
+export type CollectionStoreState<T extends Item = Item> = {
   items: T[];
   renderedItems: T[];
 };
 
-export type CollectionStore<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = Store<CollectionStoreState<T>> & {
+export type CollectionStoreFunctions<T extends Item = Item> = {
   setItems: SetState<CollectionStoreState<T>["items"]>;
-  setRenderedItems: SetState<CollectionStoreState<T>["renderedItems"]>;
   registerItem: BivariantCallback<(item: T) => () => void>;
   renderItem: BivariantCallback<(item: T) => () => void>;
   item: (id: string | null | undefined) => T | null;
 };
 
-export type CollectionStoreProps<
-  T extends CollectionStoreItem = CollectionStoreItem
-> = PartialStore<CollectionStoreState<T>> &
-  Partial<Pick<CollectionStoreState<T>, "items">>;
+export type CollectionStoreOptions<T extends Item = Item> = StoreOptions<
+  CollectionStoreState<T>,
+  "items"
+>;
+
+export type CollectionStoreProps<T extends Item = Item> =
+  CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;
+
+export type CollectionStore<T extends Item = Item> =
+  CollectionStoreFunctions<T> & Store<CollectionStoreState<T>>;

@@ -1,5 +1,7 @@
 import {
   CompositeStore,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
   CompositeStoreProps,
   CompositeStoreState,
   createCompositeStore,
@@ -15,6 +17,10 @@ export function createMenuBarStore({
 
 export type MenuBarStoreState = CompositeStoreState;
 
-export type MenuBarStore = CompositeStore;
+export type MenuBarStoreFunctions = CompositeStoreFunctions;
+
+export type MenuBarStoreOptions = CompositeStoreOptions;
 
 export type MenuBarStoreProps = CompositeStoreProps;
+
+export type MenuBarStore = CompositeStore;

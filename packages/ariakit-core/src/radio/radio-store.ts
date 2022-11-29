@@ -1,10 +1,10 @@
 import {
-  CompositeStore,
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 export function createRadioStore({
@@ -32,14 +32,16 @@ export type RadioStoreState = CompositeStoreState & {
   value: string | number | null;
 };
 
-export type RadioStore = Omit<CompositeStore, keyof Store> &
-  Store<RadioStoreState> & {
-    /**
-     * Sets the `value` state.
-     */
-    setValue: SetState<RadioStoreState["value"]>;
-  };
+export type RadioStoreFunctions = CompositeStoreFunctions & {
+  /**
+   * Sets the `value` state.
+   */
+  setValue: SetState<RadioStoreState["value"]>;
+};
 
-export type RadioStoreProps = Omit<CompositeStoreProps, keyof RadioStore> &
-  PartialStore<RadioStoreState> &
-  Partial<Pick<RadioStoreState, "value">>;
+export type RadioStoreOptions = CompositeStoreOptions &
+  StoreOptions<RadioStoreState, "value">;
+
+export type RadioStoreProps = RadioStoreOptions & StoreProps<RadioStoreState>;
+
+export type RadioStore = RadioStoreFunctions & Store<RadioStoreState>;

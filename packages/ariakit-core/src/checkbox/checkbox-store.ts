@@ -1,9 +1,9 @@
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
-export function createCheckboxStore<
-  T extends CheckboxStoreValue = CheckboxStoreValue
->({
+type Value = boolean | string | number | Array<string | number>;
+
+export function createCheckboxStore<T extends Value = Value>({
   value = false as T,
   ...partialStore
 }: CheckboxStoreProps<T> = {}): CheckboxStore<T> {
@@ -19,24 +19,23 @@ export function createCheckboxStore<
   };
 }
 
-export type CheckboxStoreValue =
-  | boolean
-  | string
-  | number
-  | Array<string | number>;
+export type CheckboxStoreValue = Value;
 
-export type CheckboxStoreState<
-  T extends CheckboxStoreValue = CheckboxStoreValue
-> = {
+export type CheckboxStoreState<T extends Value = Value> = {
   value: T;
 };
 
-export type CheckboxStore<T extends CheckboxStoreValue = CheckboxStoreValue> =
-  Store<CheckboxStoreState<T>> & {
-    setValue: SetState<CheckboxStoreState<T>["value"]>;
-  };
+export type CheckboxStoreFunctions<T extends Value = Value> = {
+  setValue: SetState<CheckboxStoreState<T>["value"]>;
+};
 
-export type CheckboxStoreProps<
-  T extends CheckboxStoreValue = CheckboxStoreValue
-> = PartialStore<CheckboxStoreState<T>> &
-  Partial<Pick<CheckboxStoreState<T>, "value">>;
+export type CheckboxStoreOptions<T extends Value = Value> = StoreOptions<
+  CheckboxStoreState<T>,
+  "value"
+>;
+
+export type CheckboxStoreProps<T extends Value = Value> =
+  CheckboxStoreOptions<T> & StoreProps<CheckboxStoreState<T>>;
+
+export type CheckboxStore<T extends Value = Value> = CheckboxStoreFunctions<T> &
+  Store<CheckboxStoreState<T>>;

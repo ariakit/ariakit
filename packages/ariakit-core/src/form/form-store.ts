@@ -1,22 +1,27 @@
 import {
-  CollectionStore,
+  CollectionStoreFunctions,
   CollectionStoreItem,
-  CollectionStoreProps,
+  CollectionStoreOptions,
   CollectionStoreState,
   createCollectionStore,
 } from "../collection/collection-store";
 import { applyState, isInteger, isObject } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { AnyObject, SetState, SetStateAction } from "../utils/types";
 import { DeepMap, DeepPartial, Names, StringLike } from "./types";
 
+type Values = AnyObject;
 type ErrorMessage = string | undefined | null;
+type Item = CollectionStoreItem & {
+  type: "field" | "label" | "description" | "error" | "button";
+  name: string;
+};
 
 function nextFrame() {
   return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-export function hasMessages(object: AnyObject): boolean {
+export function hasMessages(object: Values): boolean {
   return Object.keys(object).some((key) => {
     if (isObject(object[key])) {
       return hasMessages(object[key]);
@@ -26,7 +31,7 @@ export function hasMessages(object: AnyObject): boolean {
 }
 
 export function get<T>(
-  values: AnyObject,
+  values: Values,
   path: StringLike | string[],
   defaultValue?: T
 ): T {
@@ -40,7 +45,7 @@ export function get<T>(
   return get(values[key], rest, defaultValue);
 }
 
-function set<T extends AnyObject | unknown[]>(
+function set<T extends Values | unknown[]>(
   values: T,
   path: StringLike | string[],
   value: unknown
@@ -71,8 +76,8 @@ function set<T extends AnyObject | unknown[]>(
   return { ...values, [key]: result };
 }
 
-function setAll<T extends AnyObject, V>(values: T, value: V) {
-  const result = {} as AnyObject;
+function setAll<T extends Values, V>(values: T, value: V) {
+  const result = {} as Values;
   const keys = Object.keys(values);
   for (const key of keys) {
     const currentValue = values[key];
@@ -92,11 +97,8 @@ function setAll<T extends AnyObject, V>(values: T, value: V) {
   return result as DeepMap<T, V>;
 }
 
-function getNameHandler(
-  cache: AnyObject,
-  prevKeys: Array<string | symbol> = []
-) {
-  const handler: ProxyHandler<AnyObject> = {
+function getNameHandler(cache: Values, prevKeys: Array<string | symbol> = []) {
+  const handler: ProxyHandler<Values> = {
     get(target, key) {
       if (["toString", "valueOf", Symbol.toPrimitive].includes(key)) {
         return () => prevKeys.join(".");
@@ -119,7 +121,7 @@ function createNames() {
   return new Proxy(Object.create(null), getNameHandler(cache));
 }
 
-export function createFormStore<T extends FormStoreValues = FormStoreValues>({
+export function createFormStore<T extends Values = Values>({
   values = {} as FormStoreState<T>["values"],
   errors = {} as FormStoreState<T>["errors"],
   touched = {} as FormStoreState<T>["touched"],
@@ -253,15 +255,12 @@ export function createFormStore<T extends FormStoreValues = FormStoreValues>({
 
 export type FormStoreCallback = () => void | Promise<void>;
 
-export type FormStoreValues = AnyObject;
+export type FormStoreValues = Values;
 
-export type FormStoreItem = CollectionStoreItem & {
-  type: "field" | "label" | "description" | "error" | "button";
-  name: string;
-};
+export type FormStoreItem = Item;
 
-export type FormStoreState<T extends FormStoreValues = FormStoreValues> =
-  CollectionStoreState<FormStoreItem> & {
+export type FormStoreState<T extends Values = Values> =
+  CollectionStoreState<Item> & {
     /**
      * Form values.
      */
@@ -281,11 +280,8 @@ export type FormStoreState<T extends FormStoreValues = FormStoreValues> =
     submitFailed: number;
   };
 
-export type FormStore<T extends FormStoreValues = FormStoreValues> = Omit<
-  CollectionStore<FormStoreItem>,
-  keyof Store
-> &
-  Store<FormStoreState<T>> & {
+export type FormStoreFunctions<T extends Values = Values> =
+  CollectionStoreFunctions<Item> & {
     names: Names<T>;
     setValues: SetState<FormStoreState<T>["values"]>;
     getValue: <T = any>(name: StringLike) => T;
@@ -305,9 +301,12 @@ export type FormStore<T extends FormStoreValues = FormStoreValues> = Omit<
     reset: () => void;
   };
 
-export type FormStoreProps<T extends FormStoreValues = FormStoreValues> = Omit<
-  CollectionStoreProps<FormStoreItem>,
-  keyof FormStore<T>
-> &
-  PartialStore<FormStoreState<T>> &
-  Partial<Pick<FormStoreState<T>, "values" | "errors" | "touched">>;
+export type FormStoreOptions<T extends Values = Values> =
+  CollectionStoreOptions<Item> &
+    StoreOptions<FormStoreState<T>, "values" | "errors" | "touched">;
+
+export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
+  StoreProps<FormStoreState<T>>;
+
+export type FormStore<T extends Values = Values> = FormStoreFunctions<T> &
+  Store<FormStoreState<T>>;

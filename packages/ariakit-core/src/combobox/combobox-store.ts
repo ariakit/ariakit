@@ -1,21 +1,25 @@
 import {
-  CompositeStore,
+  CompositeStoreFunctions,
   CompositeStoreItem,
-  CompositeStoreProps,
+  CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
 import { MenuStore } from "../menu/menu-store";
 import {
-  PopoverStore,
-  PopoverStoreProps,
+  PopoverStoreFunctions,
+  PopoverStoreOptions,
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
 import { chain } from "../utils/misc";
 import { isSafari, isTouchDevice } from "../utils/platform";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
+
+type Item = CompositeStoreItem & {
+  value?: string;
+};
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
@@ -42,7 +46,6 @@ export function createComboboxStore({
   if (isMenuStoreProps(props)) {
     props = { ...props, ...props.omit("contentElement") };
   }
-  const popover = createPopoverStore({ placement, ...props });
   const composite = createCompositeStore({
     activeId,
     includesBaseElement,
@@ -52,9 +55,10 @@ export function createComboboxStore({
     virtualFocus,
     ...props,
   });
+  const popover = createPopoverStore({ placement, ...props });
   const initialState: ComboboxStoreState = {
-    ...popover.getState(),
     ...composite.getState(),
+    ...popover.getState(),
     activeValue: undefined,
     value,
   };
@@ -96,11 +100,9 @@ export function createComboboxStore({
   };
 }
 
-export type ComboboxStoreItem = CompositeStoreItem & {
-  value?: string;
-};
+export type ComboboxStoreItem = Item;
 
-export type ComboboxStoreState = CompositeStoreState<ComboboxStoreItem> &
+export type ComboboxStoreState = CompositeStoreState<Item> &
   PopoverStoreState & {
     /**
      * The input value.
@@ -113,22 +115,19 @@ export type ComboboxStoreState = CompositeStoreState<ComboboxStoreItem> &
     activeValue?: string;
   };
 
-export type ComboboxStore = Omit<
-  CompositeStore<ComboboxStoreItem>,
-  keyof Store
-> &
-  Omit<PopoverStore, keyof Store> &
-  Store<ComboboxStoreState> & {
+export type ComboboxStoreFunctions = CompositeStoreFunctions<Item> &
+  PopoverStoreFunctions & {
     /**
      * Sets the `value` state.
      */
     setValue: SetState<ComboboxStoreState["value"]>;
   };
 
-export type ComboboxStoreProps = Omit<
-  CompositeStoreProps<ComboboxStoreItem>,
-  keyof ComboboxStore
-> &
-  Omit<PopoverStoreProps, keyof ComboboxStore> &
-  PartialStore<ComboboxStoreState> &
-  Partial<Pick<ComboboxStoreState, "value">>;
+export type ComboboxStoreOptions = CompositeStoreOptions<Item> &
+  PopoverStoreOptions &
+  StoreOptions<ComboboxStoreState, "value">;
+
+export type ComboboxStoreProps = ComboboxStoreOptions &
+  StoreProps<ComboboxStoreState>;
+
+export type ComboboxStore = ComboboxStoreFunctions & Store<ComboboxStoreState>;

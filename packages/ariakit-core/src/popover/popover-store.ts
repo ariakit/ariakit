@@ -9,13 +9,13 @@ import {
   size,
 } from "@floating-ui/dom";
 import {
-  DialogStore,
-  DialogStoreProps,
+  DialogStoreFunctions,
+  DialogStoreOptions,
   DialogStoreState,
   createDialogStore,
 } from "../dialog/dialog-store";
 import { chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -439,42 +439,43 @@ export type PopoverStoreState = DialogStoreState & {
   overflowPadding: number;
 };
 
-export type PopoverStore = Omit<DialogStore, keyof Store> &
-  Store<PopoverStoreState> & {
-    setAnchorElement: SetState<PopoverStoreState["anchorElement"]>;
-    setPopoverElement: SetState<PopoverStoreState["popoverElement"]>;
-    setArrowElement: SetState<PopoverStoreState["arrowElement"]>;
-    getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
-    /**
-     * A function that will be called when the popover needs to calculate its
-     * styles. It will override the internal behavior.
-     */
-    renderCallback?: (
-      props: PopoverStoreRenderCallbackProps
-    ) => void | (() => void);
-    /**
-     * A function that can be used to recompute the popover styles. This is useful
-     * when the popover anchor changes in a way that affects the popover position.
-     */
-    render: () => void;
-  };
+export type PopoverStoreFunctions = DialogStoreFunctions & {
+  setAnchorElement: SetState<PopoverStoreState["anchorElement"]>;
+  setPopoverElement: SetState<PopoverStoreState["popoverElement"]>;
+  setArrowElement: SetState<PopoverStoreState["arrowElement"]>;
+  getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
+  /**
+   * A function that will be called when the popover needs to calculate its
+   * styles. It will override the internal behavior.
+   */
+  renderCallback?: (
+    props: PopoverStoreRenderCallbackProps
+  ) => void | (() => void);
+  /**
+   * A function that can be used to recompute the popover styles. This is useful
+   * when the popover anchor changes in a way that affects the popover position.
+   */
+  render: () => void;
+};
 
-export type PopoverStoreProps = Omit<DialogStoreProps, keyof PopoverStore> &
-  PartialStore<PopoverStoreState> &
-  Partial<Pick<PopoverStore, "getAnchorRect" | "renderCallback">> &
-  Partial<
-    Pick<
-      PopoverStoreState,
-      | "placement"
-      | "fixed"
-      | "gutter"
-      | "shift"
-      | "flip"
-      | "slide"
-      | "overlap"
-      | "sameWidth"
-      | "fitViewport"
-      | "arrowPadding"
-      | "overflowPadding"
-    >
+export type PopoverStoreOptions = DialogStoreOptions &
+  Partial<Pick<PopoverStoreFunctions, "getAnchorRect" | "renderCallback">> &
+  StoreOptions<
+    PopoverStoreState,
+    | "placement"
+    | "fixed"
+    | "gutter"
+    | "shift"
+    | "flip"
+    | "slide"
+    | "overlap"
+    | "sameWidth"
+    | "fitViewport"
+    | "arrowPadding"
+    | "overflowPadding"
   >;
+
+export type PopoverStoreProps = PopoverStoreOptions &
+  StoreProps<PopoverStoreState>;
+
+export type PopoverStore = PopoverStoreFunctions & Store<PopoverStoreState>;

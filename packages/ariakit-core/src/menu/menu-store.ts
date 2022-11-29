@@ -1,19 +1,24 @@
 import { ComboboxStore } from "../combobox/combobox-store";
 import {
-  CompositeStore,
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
 import {
-  HovercardStore,
-  HovercardStoreProps,
+  HovercardStoreFunctions,
+  HovercardStoreOptions,
   HovercardStoreState,
   createHovercardStore,
 } from "../hovercard/hovercard-store";
 import { applyState, chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { BivariantCallback, SetState, SetStateAction } from "../utils/types";
+
+type Values = Record<
+  string,
+  string | boolean | number | Array<string | number>
+>;
 
 function isComboboxStoreProps<T extends MenuStoreProps>(
   props: T
@@ -24,7 +29,7 @@ function isComboboxStoreProps<T extends MenuStoreProps>(
   return "value" in state && "activeValue" in state;
 }
 
-export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>({
+export function createMenuStore<T extends Values = Values>({
   orientation = "vertical",
   placement = "bottom-start",
   timeout,
@@ -64,8 +69,8 @@ export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>({
   };
 
   return {
-    ...hovercard,
     ...composite,
+    ...hovercard,
     ...store,
     setup,
     setInitialFocus: (value) => store.setState("initialFocus", value),
@@ -93,49 +98,48 @@ export type MenuStoreValues = Record<
   string | boolean | number | Array<string | number>
 >;
 
-export type MenuStoreState<V extends MenuStoreValues = MenuStoreValues> =
-  CompositeStoreState &
-    HovercardStoreState & {
-      /**
-       * Determines the element that should be focused when the menu is opened.
-       */
-      initialFocus: "container" | "first" | "last";
-      /**
-       * A map of names and values that will be used by the `MenuItemCheckbox`
-       * and `MenuItemRadio` components.
-       */
-      values: V;
-    };
-
-export type MenuStore<T extends MenuStoreValues = MenuStoreValues> = Omit<
-  CompositeStore,
-  keyof Store
-> &
-  Omit<HovercardStore, keyof Store> &
-  Store<MenuStoreState<T>> & {
+export type MenuStoreState<T extends Values = Values> = CompositeStoreState &
+  HovercardStoreState & {
     /**
-     * Sets the `initialFocus` state.
+     * Determines the element that should be focused when the menu is opened.
      */
-    setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
+    initialFocus: "container" | "first" | "last";
     /**
-     * Sets the `values` state.
+     * A map of names and values that will be used by the `MenuItemCheckbox`
+     * and `MenuItemRadio` components.
      */
-    setValues: SetState<MenuStoreState<T>["values"]>;
-    /**
-     * Sets a specific value.
-     */
-    setValue: BivariantCallback<
-      (
-        name: string,
-        value: SetStateAction<MenuStoreState<T>["values"][string]>
-      ) => void
-    >;
+    values: T;
   };
 
-export type MenuStoreProps<T extends MenuStoreValues = MenuStoreValues> = Omit<
-  CompositeStoreProps,
-  keyof MenuStore<T>
-> &
-  Omit<HovercardStoreProps, keyof MenuStore<T>> &
-  PartialStore<MenuStoreState<T>> &
-  Partial<Pick<MenuStoreState<T>, "values">>;
+export type MenuStoreFunctions<T extends Values = Values> =
+  CompositeStoreFunctions &
+    HovercardStoreFunctions & {
+      /**
+       * Sets the `initialFocus` state.
+       */
+      setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
+      /**
+       * Sets the `values` state.
+       */
+      setValues: SetState<MenuStoreState<T>["values"]>;
+      /**
+       * Sets a specific value.
+       */
+      setValue: BivariantCallback<
+        (
+          name: string,
+          value: SetStateAction<MenuStoreState<T>["values"][string]>
+        ) => void
+      >;
+    };
+
+export type MenuStoreOptions<T extends Values = Values> =
+  CompositeStoreOptions &
+    HovercardStoreOptions &
+    StoreOptions<MenuStoreState<T>, "values">;
+
+export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
+  StoreProps<MenuStoreState<T>>;
+
+export type MenuStore<T extends Values = Values> = MenuStoreFunctions<T> &
+  Store<MenuStoreState<T>>;

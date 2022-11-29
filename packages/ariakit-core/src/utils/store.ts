@@ -11,7 +11,7 @@ import { SetStateAction } from "./types";
 /**
  * Creates a store.
  * @param initialState Initial state.
- * @param store Store to extend.
+ * @param stores Stores to extend.
  */
 export function createStore<S extends State>(
   initialState: S,
@@ -162,6 +162,20 @@ export function createStore<S extends State>(
  */
 export type State = Record<string, unknown>;
 
+/**
+ * Initial state that can be passed to a store creator function.
+ * @template S State type.
+ * @template K Key type.
+ */
+export type StoreOptions<S extends State, K extends keyof S> = Partial<
+  Pick<S, K>
+>;
+
+/**
+ * Props that can be passed to a store creator function.
+ * @template S State type.
+ */
+export type StoreProps<S extends State> = PartialStore<S>;
 /**
  * Store listener type.
  * @template S State type.

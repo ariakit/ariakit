@@ -1,5 +1,7 @@
 import {
   DisclosureStore,
+  DisclosureStoreFunctions,
+  DisclosureStoreOptions,
   DisclosureStoreProps,
   DisclosureStoreState,
   createDisclosureStore,
@@ -11,6 +13,10 @@ export function createDialogStore(props: DialogStoreProps = {}): DialogStore {
 
 export type DialogStoreState = DisclosureStoreState;
 
-export type DialogStore = DisclosureStore;
+export type DialogStoreFunctions = DisclosureStoreFunctions;
+
+export type DialogStoreOptions = DisclosureStoreOptions;
 
 export type DialogStoreProps = DisclosureStoreProps;
+
+export type DialogStore = DisclosureStore;

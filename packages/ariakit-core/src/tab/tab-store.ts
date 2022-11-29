@@ -4,15 +4,19 @@ import {
   createCollectionStore,
 } from "../collection/collection-store";
 import {
-  CompositeStore,
+  CompositeStoreFunctions,
   CompositeStoreItem,
-  CompositeStoreProps,
+  CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
 import { chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
+
+type Item = CompositeStoreItem & {
+  dimmed?: boolean;
+};
 
 export function createTabStore({
   orientation = "horizontal",
@@ -117,15 +121,13 @@ export function createTabStore({
   };
 }
 
-export type TabStoreItem = CompositeStoreItem & {
-  dimmed?: boolean;
-};
+export type TabStoreItem = Item;
 
 export type TabStorePanel = CollectionStoreItem & {
   tabId?: string | null;
 };
 
-export type TabStoreState = CompositeStoreState<TabStoreItem> & {
+export type TabStoreState = CompositeStoreState<Item> & {
   /**
    * The id of the tab whose panel is currently visible.
    */
@@ -138,25 +140,24 @@ export type TabStoreState = CompositeStoreState<TabStoreItem> & {
   selectOnMove?: boolean;
 };
 
-export type TabStore = Omit<CompositeStore<TabStoreItem>, keyof Store> &
-  Store<TabStoreState> & {
-    /**
-     * Sets the `selectedId` state.
-     */
-    setSelectedId: SetState<TabStoreState["selectedId"]>;
-    /**
-     * A collection store containing the tab panels.
-     */
-    panels: CollectionStore<TabStorePanel>;
-    /**
-     * Selects the tab panel for the tab with the given id.
-     */
-    select: TabStore["move"];
-  };
+export type TabStoreFunctions = CompositeStoreFunctions<Item> & {
+  /**
+   * Sets the `selectedId` state.
+   */
+  setSelectedId: SetState<TabStoreState["selectedId"]>;
+  /**
+   * A collection store containing the tab panels.
+   */
+  panels: CollectionStore<TabStorePanel>;
+  /**
+   * Selects the tab panel for the tab with the given id.
+   */
+  select: TabStore["move"];
+};
 
-export type TabStoreProps = Omit<
-  CompositeStoreProps<TabStoreItem>,
-  keyof TabStore
-> &
-  PartialStore<TabStoreState> &
-  Partial<Pick<TabStoreState, "selectedId" | "selectOnMove">>;
+export type TabStoreOptions = CompositeStoreOptions<Item> &
+  StoreOptions<TabStoreState, "selectedId" | "selectOnMove">;
+
+export type TabStoreProps = TabStoreOptions & StoreProps<TabStoreState>;
+
+export type TabStore = TabStoreFunctions & Store<TabStoreState>;

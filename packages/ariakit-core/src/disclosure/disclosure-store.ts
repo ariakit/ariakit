@@ -1,5 +1,5 @@
 import { chain } from "../utils/misc";
-import { PartialStore, Store, createStore } from "../utils/store";
+import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 export function createDisclosureStore({
@@ -69,7 +69,7 @@ export type DisclosureStoreState = {
   disclosureElement: HTMLElement | null;
 };
 
-export type DisclosureStore = Store<DisclosureStoreState> & {
+export type DisclosureStoreFunctions = {
   setOpen: SetState<DisclosureStoreState["open"]>;
   show: () => void;
   hide: () => void;
@@ -79,5 +79,13 @@ export type DisclosureStore = Store<DisclosureStoreState> & {
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 };
 
-export type DisclosureStoreProps = PartialStore<DisclosureStoreState> &
-  Partial<Pick<DisclosureStoreState, "open" | "animated">>;
+export type DisclosureStoreOptions = StoreOptions<
+  DisclosureStoreState,
+  "open" | "animated"
+>;
+
+export type DisclosureStoreProps = DisclosureStoreOptions &
+  StoreProps<DisclosureStoreState>;
+
+export type DisclosureStore = DisclosureStoreFunctions &
+  Store<DisclosureStoreState>;
