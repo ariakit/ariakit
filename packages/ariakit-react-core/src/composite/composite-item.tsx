@@ -173,7 +173,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const id = useId(props.id);
     const context = useContext(CompositeContext);
     store = store || context;
 
@@ -183,6 +182,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         "CompositeItem must be wrapped in a Composite component"
     );
 
+    const id = useId(props.id);
     const ref = useRef<HTMLButtonElement>(null);
     const row = useContext(CompositeRowContext);
     const rowId = store.useState((state) => {

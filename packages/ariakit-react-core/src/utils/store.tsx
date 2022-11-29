@@ -5,12 +5,7 @@ import {
   State,
   StoreState,
 } from "@ariakit/core/utils/store";
-import {
-  AnyFunction,
-  BivariantCallback,
-  PickByValue,
-  SetState,
-} from "@ariakit/core/utils/types";
+import { AnyFunction, PickByValue, SetState } from "@ariakit/core/utils/types";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import {
   useLazyValue,
@@ -46,14 +41,6 @@ type UseState<S> = {
    */
   <V>(selector: (state: S) => V): V;
 };
-
-type UseWith<S> = BivariantCallback<{
-  <K extends keyof S>(...keys: K[]): Store<CoreStore<Pick<S, K>>>;
-}>;
-
-type UseWithout<S> = BivariantCallback<{
-  <K extends keyof S>(...keys: K[]): Store<CoreStore<Omit<S, K>>>;
-}>;
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
@@ -175,17 +162,7 @@ export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
     []
   );
 
-  const useWith: UseWith<StoreState<T>> = useCallback<AnyFunction>(
-    (...keys) => useStore(() => store.pick(...keys)),
-    []
-  );
-
-  const useWithout: UseWithout<StoreState<T>> = useCallback<AnyFunction>(
-    (...keys) => useStore(() => store.omit(...keys)),
-    []
-  );
-
-  return useMemo(() => ({ ...store, useState, useWith, useWithout }), []);
+  return useMemo(() => ({ ...store, useState }), []);
 }
 
 export type Store<T extends CoreStore> = T & {
@@ -194,14 +171,4 @@ export type Store<T extends CoreStore> = T & {
    * state.
    */
   useState: UseState<StoreState<T>>;
-  /**
-   * Creates a new store with a subset of the current store state and keeps them
-   * in sync.
-   */
-  useWith: UseWith<StoreState<T>>;
-  /**
-   * Creates a new store with a subset of the current store state and keeps them
-   * in sync.
-   */
-  useWithout: UseWithout<StoreState<T>>;
 };

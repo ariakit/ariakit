@@ -76,6 +76,7 @@ export function createCollectionStore<
   const setup = () => {
     return chain(
       store.setup(),
+      // TODO: Keep renderedItems in sync with items (item data changes)
       privateStore.batchSync(
         (state) => {
           let firstRun = true;

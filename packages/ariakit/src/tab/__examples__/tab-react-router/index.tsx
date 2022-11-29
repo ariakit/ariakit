@@ -1,23 +1,18 @@
-import {
-  MemoryRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { HashRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import {
   TabLink,
   TabLinkList,
   TabLinkPanel,
-  useTabLinkState,
+  useTabLinkStore,
 } from "./tab-link";
 import "./style.css";
 
 function Tabs() {
-  const tab = useTabLinkState();
+  const tab = useTabLinkStore();
+  const selectedId = tab.useState("selectedId");
   return (
     <div className="wrapper">
-      <TabLinkList state={tab} className="tab-list" aria-label="Groceries">
+      <TabLinkList store={tab} className="tab-list" aria-label="Groceries">
         <TabLink className="tab" id="/fruits" to="/fruits">
           Fruits
         </TabLink>
@@ -29,7 +24,7 @@ function Tabs() {
         </TabLink>
       </TabLinkList>
       <div className="panels">
-        <TabLinkPanel state={tab} tabId={tab.selectedId || undefined}>
+        <TabLinkPanel store={tab} tabId={selectedId}>
           <Outlet />
         </TabLinkPanel>
       </div>
@@ -69,10 +64,10 @@ function Meat() {
 
 export default function Example() {
   return (
-    // We're using MemoryRouter here for demonstration purposes. You can change
+    // We're using HashRouter here for demonstration purposes. You can change
     // it to HashRouter to see the effect (tip: You can select all instances of
-    // MemoryRouter with Cmd/Ctrl+D).
-    <MemoryRouter>
+    // HashRouter with Cmd/Ctrl+D).
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Tabs />}>
           <Route index element={<Navigate to="/fruits" />} />
@@ -81,6 +76,6 @@ export default function Example() {
           <Route path="/meat" element={<Meat />} />
         </Route>
       </Routes>
-    </MemoryRouter>
+    </HashRouter>
   );
 }

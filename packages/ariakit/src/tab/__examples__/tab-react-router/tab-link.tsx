@@ -3,9 +3,9 @@ import {
   TabList,
   TabPanel,
   TabProps,
-  TabStateProps,
-  useTabState,
-} from "ariakit/tab";
+  TabStoreProps,
+  useTabStore,
+} from "ariakit/tab/store";
 import {
   useHref,
   useLinkClickHandler,
@@ -25,11 +25,11 @@ export function TabLink({ to, ...props }: TabLinkProps) {
   return <Tab {...props} as="a" href={href} onClick={onClick} />;
 }
 
-export function useTabLinkState(props: TabStateProps = {}) {
+export function useTabLinkStore(props: TabStoreProps = {}) {
   const { pathname: selectedId } = useLocation();
   const navigate = useNavigate();
 
-  const tab = useTabState({
+  const tab = useTabStore({
     ...props,
     selectedId,
     setSelectedId: (id) => {
