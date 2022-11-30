@@ -1,18 +1,15 @@
+import * as Core from "@ariakit/core/combobox/combobox-store";
 import {
-  ComboboxStoreItem,
-  ComboboxStoreState,
-  ComboboxStore as CoreComboboxStore,
-  ComboboxStoreProps as CoreComboboxStoreProps,
-  createComboboxStore,
-} from "@ariakit/core/combobox/combobox-store";
-import { Store as CoreStore } from "@ariakit/core/utils/store";
-import {
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
+  CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
 import {
-  PopoverStoreProps,
+  PopoverStoreFunctions,
+  PopoverStoreOptions,
+  PopoverStoreState,
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store";
@@ -40,21 +37,29 @@ export function useComboboxStore(
   props: ComboboxStoreProps = {}
 ): ComboboxStore {
   const options = useComboboxStoreOptions(props);
-  let store = useStore(() => createComboboxStore({ ...props, ...options }));
-  store = useComboboxStoreProps(store, props);
-  return store;
+  const store = useStore(() =>
+    Core.createComboboxStore({ ...props, ...options })
+  );
+  return useComboboxStoreProps(store, props);
 }
 
-export type { ComboboxStoreState, ComboboxStoreItem };
+export type ComboboxStoreItem = Core.ComboboxStoreItem;
 
-export type ComboboxStore = Store<CoreComboboxStore>;
+export type ComboboxStoreState = Core.ComboboxStoreState &
+  CompositeStoreState &
+  PopoverStoreState;
 
-export type ComboboxStoreProps = Omit<
-  CompositeStoreProps<ComboboxStoreItem>,
-  keyof CoreStore
-> &
-  Omit<PopoverStoreProps, keyof CoreStore> &
-  CoreComboboxStoreProps & {
+export type ComboboxStoreFunctions = Core.ComboboxStoreFunctions &
+  CompositeStoreFunctions &
+  PopoverStoreFunctions;
+
+export type ComboboxStoreOptions = Core.ComboboxStoreOptions &
+  CompositeStoreOptions &
+  PopoverStoreOptions & {
     defaultValue?: ComboboxStoreState["value"];
     setValue?: (value: ComboboxStoreState["value"]) => void;
   };
+
+export type ComboboxStoreProps = ComboboxStoreOptions & Core.ComboboxStoreProps;
+
+export type ComboboxStore = ComboboxStoreFunctions & Store<Core.ComboboxStore>;

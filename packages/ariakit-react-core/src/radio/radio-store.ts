@@ -1,12 +1,8 @@
+import * as Core from "@ariakit/core/radio/radio-store";
 import {
-  RadioStore as CoreRadioStore,
-  RadioStoreProps as CoreRadioStoreProps,
-  RadioStoreState,
-  createRadioStore,
-} from "@ariakit/core/radio/radio-store";
-import { Store as CoreStore } from "@ariakit/core/utils/store";
-import {
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
+  CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
@@ -29,16 +25,17 @@ export function useRadioStoreProps<
 
 export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
   const options = useRadioStoreOptions(props);
-  const store = useStore(() => createRadioStore({ ...props, ...options }));
+  const store = useStore(() => Core.createRadioStore({ ...props, ...options }));
   return useRadioStoreProps(store, props);
 }
 
-export type { RadioStoreState };
+export type RadioStoreState = Core.RadioStoreState & CompositeStoreState;
 
-export type RadioStore = Store<CoreRadioStore>;
+export type RadioStoreFunctions = Core.RadioStoreFunctions &
+  CompositeStoreFunctions;
 
-export type RadioStoreProps = Omit<CompositeStoreProps, keyof CoreStore> &
-  CoreRadioStoreProps & {
+export type RadioStoreOptions = Core.RadioStoreOptions &
+  CompositeStoreOptions & {
     /**
      * The initial value of the radio group.
      */
@@ -47,8 +44,12 @@ export type RadioStoreProps = Omit<CompositeStoreProps, keyof CoreStore> &
      * Function that will be called when setting the radio `value` state.
      * @example
      * function RadioGroup({ value, onChange }) {
-     *   const radio = useRadioState({ value, setValue: onChange });
+     *   const radio = useRadioStore({ value, setValue: onChange });
      * }
      */
     setValue?: (value: RadioStoreState["value"]) => void;
   };
+
+export type RadioStoreProps = RadioStoreOptions & Core.RadioStoreProps;
+
+export type RadioStore = RadioStoreFunctions & Store<Core.RadioStore>;

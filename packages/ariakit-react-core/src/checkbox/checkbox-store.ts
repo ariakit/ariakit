@@ -1,20 +1,12 @@
-import {
-  CheckboxStoreState,
-  CheckboxStoreValue,
-  CheckboxStore as CoreCheckboxStore,
-  CheckboxStoreProps as CoreCheckboxStoreProps,
-  createCheckboxStore,
-} from "@ariakit/core/checkbox/checkbox-store";
+import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import { BivariantCallback } from "@ariakit/core/utils/types";
-import {
-  Store,
-  useStore,
-  useStoreProps,
-} from "@ariakit/react-core/utils/store";
+import { Store, useStore, useStoreProps } from "../utils/store";
 
-export function useCheckboxStoreOptions<
-  T extends CheckboxStoreValue = CheckboxStoreValue
->(props: CheckboxStoreProps<T>) {
+type Value = Core.CheckboxStoreValue;
+
+export function useCheckboxStoreOptions<T extends Value = Value>(
+  props: CheckboxStoreProps<T>
+) {
   return {
     value: props.value ?? props.getState?.()?.value ?? props.defaultValue,
   };
@@ -28,23 +20,34 @@ export function useCheckboxStoreProps<T extends CheckboxStore>(
   return store;
 }
 
-export function useCheckboxStore<
-  T extends CheckboxStoreValue = CheckboxStoreValue
->(props: CheckboxStoreProps<T> = {}): CheckboxStore<T> {
+export function useCheckboxStore<T extends Value = Value>(
+  props: CheckboxStoreProps<T> = {}
+): CheckboxStore<T> {
   const options = useCheckboxStoreOptions(props);
-  let store = useStore(() => createCheckboxStore({ ...props, ...options }));
-  store = useCheckboxStoreProps(store, props);
-  return store;
+  const store = useStore(() =>
+    Core.createCheckboxStore({ ...props, ...options })
+  );
+  return useCheckboxStoreProps(store, props);
 }
 
-export type { CheckboxStoreState, CheckboxStoreValue };
+export type CheckboxStoreValue = Core.CheckboxStoreValue;
 
-export type CheckboxStore<T extends CheckboxStoreValue = CheckboxStoreValue> =
-  Store<CoreCheckboxStore<T>>;
+export type CheckboxStoreState<T extends Value = Value> =
+  Core.CheckboxStoreState<T>;
 
-export type CheckboxStoreProps<
-  T extends CheckboxStoreValue = CheckboxStoreValue
-> = CoreCheckboxStoreProps<T> & {
-  defaultValue?: CheckboxStoreState<T>["value"];
-  setValue?: BivariantCallback<(value: CheckboxStoreState<T>["value"]) => void>;
-};
+export type CheckboxStoreFunctions<T extends Value = Value> =
+  Core.CheckboxStoreFunctions<T>;
+
+export type CheckboxStoreOptions<T extends Value = Value> =
+  Core.CheckboxStoreOptions<T> & {
+    defaultValue?: CheckboxStoreState<T>["value"];
+    setValue?: BivariantCallback<
+      (value: CheckboxStoreState<T>["value"]) => void
+    >;
+  };
+
+export type CheckboxStoreProps<T extends Value = Value> =
+  CheckboxStoreOptions<T> & Core.CheckboxStoreProps<T>;
+
+export type CheckboxStore<T extends Value = Value> = CheckboxStoreFunctions<T> &
+  Store<Core.CheckboxStore<T>>;

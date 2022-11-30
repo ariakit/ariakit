@@ -1,18 +1,15 @@
 import { useMemo } from "react";
+import * as Core from "@ariakit/core/tab/tab-store";
 import {
-  TabStore as CoreTabStore,
-  TabStoreProps as CoreTabStoreProps,
-  TabStoreItem,
-  TabStoreState,
-  createTabStore,
-} from "@ariakit/core/tab/tab-store";
-import { Store as CoreStore } from "@ariakit/core/utils/store";
-import {
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
+  CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
 import { Store, useStore, useStoreProps } from "../utils/store";
+
+type Item = Core.TabStoreItem;
 
 export function useTabStoreOptions(props: TabStoreProps) {
   return {
@@ -24,7 +21,7 @@ export function useTabStoreOptions(props: TabStoreProps) {
   };
 }
 
-export function useTabStoreProps<T extends Store<CoreTabStore>>(
+export function useTabStoreProps<T extends Store<Core.TabStore>>(
   store: T,
   props: TabStoreProps
 ) {
@@ -37,23 +34,21 @@ export function useTabStoreProps<T extends Store<CoreTabStore>>(
 
 export function useTabStore(props: TabStoreProps = {}): TabStore {
   const options = useTabStoreOptions(props);
-  const store = useStore(() => createTabStore({ ...props, ...options }));
+  const store = useStore(() => Core.createTabStore({ ...props, ...options }));
   return useTabStoreProps(store, props);
 }
 
-export type { TabStoreState, TabStoreItem };
+export type TabStoreItem = Item;
 
-export type TabStore = Store<
-  CoreTabStore & {
-    panels: Store<CoreTabStore["panels"]>;
-  }
->;
+export type TabStoreState = Core.TabStoreState & CompositeStoreState<Item>;
 
-export type TabStoreProps = Omit<
-  CompositeStoreProps<TabStoreItem>,
-  keyof CoreStore
-> &
-  CoreTabStoreProps & {
+export type TabStoreFunctions = Core.TabStoreFunctions &
+  CompositeStoreFunctions<Item> & {
+    panels: Store<Core.TabStoreFunctions["panels"]>;
+  };
+
+export type TabStoreOptions = Core.TabStoreOptions &
+  CompositeStoreOptions<Item> & {
     /**
      * The id of the tab whose panel should be initially visible.
      * @example
@@ -78,3 +73,7 @@ export type TabStoreProps = Omit<
      */
     setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
   };
+
+export type TabStoreProps = TabStoreOptions & Core.TabStoreProps;
+
+export type TabStore = TabStoreFunctions & Store<Core.TabStore>;

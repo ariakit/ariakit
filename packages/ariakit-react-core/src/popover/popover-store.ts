@@ -1,11 +1,8 @@
+import * as Core from "@ariakit/core/popover/popover-store";
 import {
-  PopoverStore as CorePopoverStore,
-  PopoverStoreProps as CorePopoverStoreProps,
-  PopoverStoreState,
-  createPopoverStore,
-} from "@ariakit/core/popover/popover-store";
-import {
-  DialogStoreProps,
+  DialogStoreFunctions,
+  DialogStoreOptions,
+  DialogStoreState,
   useDialogStoreOptions,
   useDialogStoreProps,
 } from "../dialog/dialog-store";
@@ -43,13 +40,19 @@ export function usePopoverStoreProps<T extends PopoverStore>(
 
 export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
   const options = usePopoverStoreOptions(props);
-  let store = useStore(() => createPopoverStore({ ...props, ...options }));
-  store = usePopoverStoreProps(store, props);
-  return store;
+  const store = useStore(() =>
+    Core.createPopoverStore({ ...props, ...options })
+  );
+  return usePopoverStoreProps(store, props);
 }
 
-export type { PopoverStoreState };
+export type PopoverStoreState = Core.PopoverStoreState & DialogStoreState;
 
-export type PopoverStore = Store<CorePopoverStore>;
+export type PopoverStoreFunctions = Core.PopoverStoreFunctions &
+  DialogStoreFunctions;
 
-export type PopoverStoreProps = CorePopoverStoreProps & DialogStoreProps;
+export type PopoverStoreOptions = Core.PopoverStoreOptions & DialogStoreOptions;
+
+export type PopoverStoreProps = PopoverStoreOptions & Core.PopoverStoreProps;
+
+export type PopoverStore = PopoverStoreFunctions & Store<Core.PopoverStore>;

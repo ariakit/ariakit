@@ -1,12 +1,9 @@
-import {
-  MenuBarStore as CoreMenuBarStore,
-  MenuBarStoreProps as CoreMenuBarStoreProps,
-  MenuBarStoreState,
-  createMenuBarStore,
-} from "@ariakit/core/menu/menu-bar-store";
+import * as Core from "@ariakit/core/menu/menu-bar-store";
 import { Store, useStore } from "@ariakit/react-core/utils/store";
 import {
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
+  CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
@@ -24,13 +21,20 @@ export function useMenuBarStoreProps<T extends MenuBarStore>(
 
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
   const options = useMenuBarStoreOptions(props);
-  let store = useStore(() => createMenuBarStore({ ...props, ...options }));
-  store = useMenuBarStoreProps(store, props);
-  return store;
+  const store = useStore(() =>
+    Core.createMenuBarStore({ ...props, ...options })
+  );
+  return useMenuBarStoreProps(store, props);
 }
 
-export type { MenuBarStoreState };
+export type MenuBarStoreState = Core.MenuBarStoreState & CompositeStoreState;
 
-export type MenuBarStore = Store<CoreMenuBarStore>;
+export type MenuBarStoreFunctions = Core.MenuBarStoreFunctions &
+  CompositeStoreFunctions;
 
-export type MenuBarStoreProps = CoreMenuBarStoreProps & CompositeStoreProps;
+export type MenuBarStoreOptions = Core.MenuBarStoreOptions &
+  CompositeStoreOptions;
+
+export type MenuBarStoreProps = MenuBarStoreOptions & Core.MenuBarStoreProps;
+
+export type MenuBarStore = MenuBarStoreFunctions & Store<Core.MenuBarStore>;

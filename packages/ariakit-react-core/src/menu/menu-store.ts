@@ -1,29 +1,28 @@
 import { useContext, useMemo } from "react";
-import {
-  MenuStore as CoreMenuStore,
-  MenuStoreProps as CoreMenuStoreProps,
-  MenuStoreState,
-  MenuStoreValues,
-  createMenuStore,
-} from "@ariakit/core/menu/menu-store";
-import { Store as CoreStore } from "@ariakit/core/utils/store";
+import * as Core from "@ariakit/core/menu/menu-store";
 import { BivariantCallback } from "@ariakit/core/utils/types";
 import {
-  CompositeStoreProps,
+  CompositeStoreFunctions,
+  CompositeStoreOptions,
+  CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
 import {
-  HovercardStoreProps,
+  HovercardStoreFunctions,
+  HovercardStoreOptions,
+  HovercardStoreState,
   useHovercardStoreOptions,
   useHovercardStoreProps,
 } from "../hovercard/hovercard-store";
 import { Store, useStore, useStoreProps, useStoreState } from "../utils/store";
 import { MenuBarContext, MenuContext } from "./menu-context";
 
-export function useMenuStoreOptions<
-  T extends MenuStoreValues = MenuStoreValues
->(props: MenuStoreProps<T>) {
+type Values = Core.MenuStoreValues;
+
+export function useMenuStoreOptions<T extends Values = Values>(
+  props: MenuStoreProps<T>
+) {
   const parentMenu = useContext(MenuContext);
   const parentMenuBar = useContext(MenuBarContext);
   const placementProp = props.placement;
@@ -69,30 +68,39 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
   );
 }
 
-export function useMenuStore<T extends MenuStoreValues = MenuStoreValues>(
+export function useMenuStore<T extends Values = Values>(
   props: MenuStoreProps<T> = {}
 ): MenuStore<T> {
   const options = useMenuStoreOptions(props);
-  const store = useStore(() => createMenuStore({ ...props, ...options }));
+  const store = useStore(() => Core.createMenuStore({ ...props, ...options }));
   return useMenuStoreProps(store, props);
 }
 
-export type { MenuStoreState };
+export type MenuStoreValues = Core.MenuStoreValues;
 
-export type MenuStore<T extends MenuStoreValues = MenuStoreValues> = Store<
-  CoreMenuStore<T>
-> & {
-  hideAll: () => void;
-};
+export type MenuStoreState<T extends Values = Values> = Core.MenuStoreState<T> &
+  CompositeStoreState &
+  HovercardStoreState;
 
-export type MenuStoreProps<T extends MenuStoreValues = MenuStoreValues> = Omit<
-  CompositeStoreProps,
-  keyof CoreStore
-> &
-  Omit<HovercardStoreProps, keyof CoreStore> &
-  CoreMenuStoreProps<T> & {
-    defaultValues?: MenuStoreState<T>["values"];
-    setValues?: BivariantCallback<
-      (values: MenuStoreState<T>["values"]) => void
-    >;
-  };
+export type MenuStoreFunctions<T extends Values = Values> =
+  Core.MenuStoreFunctions<T> &
+    CompositeStoreFunctions &
+    HovercardStoreFunctions & {
+      hideAll: () => void;
+    };
+
+export type MenuStoreOptions<T extends Values = Values> =
+  Core.MenuStoreOptions<T> &
+    CompositeStoreOptions &
+    HovercardStoreOptions & {
+      defaultValues?: MenuStoreState<T>["values"];
+      setValues?: BivariantCallback<
+        (values: MenuStoreState<T>["values"]) => void
+      >;
+    };
+
+export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
+  Core.MenuStoreProps<T>;
+
+export type MenuStore<T extends Values = Values> = MenuStoreFunctions<T> &
+  Store<Core.MenuStore<T>>;

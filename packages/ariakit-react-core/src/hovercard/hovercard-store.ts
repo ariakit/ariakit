@@ -1,11 +1,8 @@
+import * as Core from "@ariakit/core/hovercard/hovercard-store";
 import {
-  HovercardStore as CoreHovercardStore,
-  HovercardStoreProps as CoreHovercardStoreProps,
-  HovercardStoreState,
-  createHovercardStore,
-} from "@ariakit/core/hovercard/hovercard-store";
-import {
-  PopoverStoreProps,
+  PopoverStoreFunctions,
+  PopoverStoreOptions,
+  PopoverStoreState,
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store";
@@ -26,13 +23,22 @@ export function useHovercardStore(
   props: HovercardStoreProps = {}
 ): HovercardStore {
   const options = useHovercardStoreOptions(props);
-  let store = useStore(() => createHovercardStore({ ...props, ...options }));
-  store = useHovercardStoreProps(store, props);
-  return store;
+  const store = useStore(() =>
+    Core.createHovercardStore({ ...props, ...options })
+  );
+  return useHovercardStoreProps(store, props);
 }
 
-export type { HovercardStoreState };
+export type HovercardStoreState = Core.HovercardStoreState & PopoverStoreState;
 
-export type HovercardStore = Store<CoreHovercardStore>;
+export type HovercardStoreFunctions = Core.HovercardStoreFunctions &
+  PopoverStoreFunctions;
 
-export type HovercardStoreProps = CoreHovercardStoreProps & PopoverStoreProps;
+export type HovercardStoreOptions = Core.HovercardStoreOptions &
+  PopoverStoreOptions;
+
+export type HovercardStoreProps = HovercardStoreOptions &
+  Core.HovercardStoreProps;
+
+export type HovercardStore = HovercardStoreFunctions &
+  Store<Core.HovercardStore>;
