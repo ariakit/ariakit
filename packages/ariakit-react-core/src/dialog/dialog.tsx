@@ -98,8 +98,8 @@ function isAlreadyFocusingAnotherElement(
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
- * const state = useDialogState();
- * const props = useDialog({ state });
+ * const store = useDialogStore();
+ * const props = useDialog({ store });
  * <Role {...props}>Dialog</Role>
  * ```
  */
@@ -524,9 +524,9 @@ export const useDialog = createHook<DialogOptions>(
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
- * const dialog = useDialogState();
+ * const dialog = useDialogStore();
  * <button onClick={dialog.toggle}>Open dialog</button>
- * <Dialog state={dialog}>Dialog</Dialog>
+ * <Dialog store={dialog}>Dialog</Dialog>
  * ```
  */
 export const Dialog = createComponent<DialogOptions>((props) => {
@@ -542,7 +542,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
   PortalOptions<T> &
   Omit<DisclosureContentOptions<T>, "store"> & {
     /**
-     * Object returned by the `useDialogState` hook.
+     * Object returned by the `useDialogStore` hook.
      */
     store: DialogStore;
     /**
@@ -576,7 +576,7 @@ export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
      * Props that will be passed to the backdrop element if `backdrop` is
      * `true`.
      */
-    backdropProps?: Omit<DisclosureContentProps, "state">;
+    backdropProps?: Omit<DisclosureContentProps, "store">;
     /**
      * Determines whether the dialog will be hidden when the user presses the
      * Escape key.
