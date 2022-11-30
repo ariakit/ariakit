@@ -54,7 +54,6 @@ export const useTabPanel = createHook<TabPanelOptions>(
       [id, tabIdProp, getItemProp]
     );
 
-    // TODO: Use store.panels.item() when collection store supports sync.
     const tabId = store.panels.useState(
       () => tabIdProp || store.panels.item(id)?.tabId
     );

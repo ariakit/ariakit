@@ -80,15 +80,6 @@ export function createCollectionStore<T extends Item = Item>({
   const setup = () => {
     return chain(
       store.setup(),
-      store.batchSync(
-        (state) => {
-          itemsMap.clear();
-          for (const item of state.items) {
-            itemsMap.set(item.id, item);
-          }
-        },
-        ["items"]
-      ),
       privateStore.batchSync(
         (state) => {
           let firstRun = true;
@@ -122,7 +113,8 @@ export function createCollectionStore<T extends Item = Item>({
 
   const mergeItem = (
     item: T,
-    setItems: (getItems: (items: T[]) => T[]) => void
+    setItems: (getItems: (items: T[]) => T[]) => void,
+    map?: Map<string, T>
   ) => {
     let prevItem: T | undefined;
     let index: number | undefined;
@@ -133,19 +125,23 @@ export function createCollectionStore<T extends Item = Item>({
         index = nextItems.indexOf(prevItem);
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
+        map?.set(item.id, nextItem);
       } else {
         nextItems.push(item);
+        map?.set(item.id, item);
       }
       return nextItems;
     });
     const unregisterItem = () => {
       setItems((items) => {
         if (!prevItem) {
+          map?.delete(item.id);
           return items.filter(({ id }) => id !== item.id);
         }
         if (index == null || index < 0) return items;
         const nextItems = items.slice();
         nextItems[index] = prevItem;
+        map?.set(item.id, prevItem);
         return nextItems;
       });
     };
@@ -153,7 +149,7 @@ export function createCollectionStore<T extends Item = Item>({
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => store.setState("items", getItems));
+    mergeItem(item, (getItems) => store.setState("items", getItems), itemsMap);
 
   return {
     ...store,
@@ -172,7 +168,15 @@ export function createCollectionStore<T extends Item = Item>({
 
     item: (id) => {
       if (!id) return null;
-      return itemsMap.get(id) || null;
+      let item = itemsMap.get(id);
+      if (!item) {
+        const { items } = store.getState();
+        item = items.find((item) => item.id === id);
+        if (item) {
+          itemsMap.set(id, item);
+        }
+      }
+      return item || null;
     },
   };
 }
