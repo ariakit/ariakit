@@ -1,4 +1,3 @@
-import { chain } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -18,38 +17,40 @@ export function createDisclosureStore({
   };
   const store = createStore(initialState, partialStore);
 
-  const setup = () => {
-    return chain(
-      store.setup(),
-      store.sync(
-        (state) => {
-          if (state.animated) return;
-          // Reset animating to false when animation is disabled.
-          store.setState("animating", false);
-        },
-        ["animated", "animating"]
-      ),
-      store.sync(
-        (state, prev) => {
-          if (!state.animated) return;
-          const mounting = state === prev;
-          const animating = mounting ? state.open : state.open !== prev.open;
-          store.setState("animating", animating);
-        },
-        ["open", "animated"]
-      ),
-      store.sync(
-        (state) => {
-          store.setState("mounted", state.open || state.animating);
-        },
-        ["open", "animating"]
-      )
-    );
-  };
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        if (state.animated) return;
+        // Reset animating to false when animation is disabled.
+        store.setState("animating", false);
+      },
+      ["animated", "animating"]
+    )
+  );
+
+  store.setup(() =>
+    store.sync(
+      (state, prev) => {
+        if (!state.animated) return;
+        const mounting = state === prev;
+        const animating = mounting ? state.open : state.open !== prev.open;
+        store.setState("animating", animating);
+      },
+      ["open", "animated"]
+    )
+  );
+
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        store.setState("mounted", state.open || state.animating);
+      },
+      ["open", "animating"]
+    )
+  );
 
   return {
     ...store,
-    setup,
     setOpen: (value) => store.setState("open", value),
     show: () => store.setState("open", true),
     hide: () => store.setState("open", false),

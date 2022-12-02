@@ -6,7 +6,6 @@ import {
   createCollectionStore,
 } from "../collection/collection-store";
 import { flatten2DArray, reverseArray } from "../utils/array";
-import { chain } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -175,20 +174,17 @@ export function createCompositeStore<T extends Item = Item>({
   };
   const store = createStore(initialState, collection);
 
-  const setup = () => {
-    return chain(
-      store.setup(),
-      store.sync(
-        (state) => {
-          store.setState(
-            "activeId",
-            getActiveId(state.renderedItems, state.activeId)
-          );
-        },
-        ["renderedItems", "activeId"]
-      )
-    );
-  };
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        store.setState(
+          "activeId",
+          getActiveId(state.renderedItems, state.activeId)
+        );
+      },
+      ["renderedItems", "activeId"]
+    )
+  );
 
   const getNextId = (
     items: Item[],
@@ -276,7 +272,6 @@ export function createCompositeStore<T extends Item = Item>({
   return {
     ...collection,
     ...store,
-    setup,
 
     setBaseElement: (element) => store.setState("baseElement", element),
     setMoves: (moves) => store.setState("moves", moves),

@@ -5,6 +5,7 @@ import {
   chain,
   getKeys,
   hasOwnProperty,
+  noop,
 } from "./misc";
 import { SetStateAction } from "./types";
 
@@ -21,35 +22,49 @@ export function createStore<S extends State>(
   let batchPrevState = state;
   let lastUpdate = Symbol();
   let updating = false;
+  let hasSetup = false;
   const updatedKeys = new Set<keyof S>();
 
+  const initializers = new Set<() => void | (() => void)>();
   const listeners = new Set<Listener<S>>();
   const batchListeners = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
-  const setup = () => {
-    if (!stores.length) return;
+  // TODO: Refactor this into two functions maybe? setup(callback) and init().
+  const setup: Store<S>["setup"] = (callback) => {
+    if (callback) {
+      initializers.add(callback);
+      return () => initializers.delete(callback);
+    }
+    if (hasSetup) return noop;
+    if (!stores.length) return noop;
+    hasSetup = true;
 
     const keys = getKeys(state);
 
-    const setups = stores.map((store) => store.setup?.());
-
-    const cleanups = keys.map((key) =>
+    const syncs = keys.map((key) =>
       chain(
-        stores.map((store) => {
+        ...stores.map((store) => {
           const storeState = store.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return store.sync?.(
-            (state) => _setState(key, state[key]!, false),
-            [key]
-          );
+          return store.sync?.((state) => setState(key, state[key]!), [key]);
         })
       )
     );
 
-    return chain(...setups, ...cleanups);
+    const setups = stores.map((store) => store.setup?.());
+
+    const inits: Array<void | (() => void)> = [];
+
+    initializers.forEach((init) => {
+      inits.push(init());
+    });
+
+    return chain(...syncs, ...setups, ...inits, () => {
+      hasSetup = false;
+    });
   };
 
   const sub = (listener: Listener<S>, keys?: Array<keyof S>, batch = false) => {
@@ -81,22 +96,16 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const _setState = <K extends keyof S>(
-    key: K,
-    value: SetStateAction<S[K]>,
-    syncStore = true
-  ) => {
+  const setState: Store<S>["setState"] = (key, value) => {
     if (!hasOwnProperty(state, key)) return;
 
     const nextValue = applyState(value, state[key]);
 
-    if (syncStore) {
-      stores.forEach((store) => {
-        store.setState?.(key, nextValue);
-      });
-    }
-
     if (nextValue === state[key]) return;
+
+    stores.forEach((store) => {
+      store.setState?.(key, nextValue);
+    });
 
     const prevState = state;
     state = { ...state, [key]: nextValue };
@@ -139,22 +148,24 @@ export function createStore<S extends State>(
     });
   };
 
-  const setState: Store<S>["setState"] = (key, value) => _setState(key, value);
-
-  const partialStore = { subscribe, sync, batchSync, getState, setState };
-
   const pick: Store<S>["pick"] = (...keys) =>
-    createStore(_pick(state, keys), partialStore);
+    createStore(_pick(state, keys), finalStore);
 
   const omit: Store<S>["omit"] = (...keys) =>
-    createStore(_omit(state, keys), partialStore);
+    createStore(_omit(state, keys), finalStore);
 
-  return {
-    ...partialStore,
+  const finalStore = {
     setup,
+    subscribe,
+    sync,
+    batchSync,
+    getState,
+    setState,
     pick,
     omit,
   };
+
+  return finalStore;
 }
 
 /**
@@ -206,7 +217,7 @@ export type Store<S = State> = {
   /**
    * Function that should be called when the store is initialized.
    */
-  setup: () => void | (() => void);
+  setup: (callback?: () => void | (() => void)) => () => void;
   /**
    * Registers a listener function that's called immediately and synchronously
    * whenever the store state changes.
@@ -234,12 +245,12 @@ export type Store<S = State> = {
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  pick<K extends keyof S>(...keys: K[]): Store<Pick<S, K>>;
+  pick<K extends Array<keyof S>>(...keys: K): Store<Pick<S, K[number]>>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
    */
-  omit<K extends keyof S>(...keys: K[]): Store<Omit<S, K>>;
+  omit<K extends Array<keyof S>>(...keys: K): Store<Omit<S, K[number]>>;
 };
 
 /**

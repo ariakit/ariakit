@@ -4,7 +4,6 @@ import {
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
-import { chain } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -25,29 +24,19 @@ export function createHovercardStore({
   };
   const store = createStore(initialState, popover);
 
-  const setup = () => {
-    return chain(
-      store.setup(),
-      store.sync(
-        (state) => {
-          store.setState("showTimeout", (value) => {
-            if (showTimeout != undefined) return value;
-            return state.timeout;
-          });
-          store.setState("hideTimeout", (value) => {
-            if (hideTimeout != undefined) return value;
-            return state.timeout;
-          });
-        },
-        ["timeout"]
-      )
-    );
-  };
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        store.setState("showTimeout", (value) => value ?? state.timeout);
+        store.setState("hideTimeout", (value) => value ?? state.timeout);
+      },
+      ["timeout"]
+    )
+  );
 
   return {
     ...popover,
     ...store,
-    setup,
     setAutoFocusOnShow: (value) => store.setState("autoFocusOnShow", value),
   };
 }

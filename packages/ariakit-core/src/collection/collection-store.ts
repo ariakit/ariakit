@@ -65,9 +65,40 @@ export function createCollectionStore<T extends Item = Item>({
     items,
     renderedItems: [],
   };
-  const store = createStore(initialState, partialStore);
   const privateStore = createStore({
     renderedItems: initialState.renderedItems,
+  });
+  const store = createStore(initialState, partialStore);
+
+  store.setup(() => {
+    return privateStore.batchSync(
+      (state) => {
+        let firstRun = true;
+        let raf = 0;
+        raf = requestAnimationFrame(sortItems);
+        if (typeof IntersectionObserver !== "function") return;
+        const callback = () => {
+          if (firstRun) {
+            firstRun = false;
+            return;
+          }
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(sortItems);
+        };
+        const root = getCommonParent(state.renderedItems);
+        const observer = new IntersectionObserver(callback, { root });
+        state.renderedItems.forEach((item) => {
+          if (item.element) {
+            observer.observe(item.element);
+          }
+        });
+        return () => {
+          cancelAnimationFrame(raf);
+          observer.disconnect();
+        };
+      },
+      ["renderedItems"]
+    );
   });
 
   const sortItems = () => {
@@ -75,40 +106,6 @@ export function createCollectionStore<T extends Item = Item>({
     const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
     privateStore.setState("renderedItems", renderedItems);
     store.setState("renderedItems", renderedItems);
-  };
-
-  const setup = () => {
-    return chain(
-      store.setup(),
-      privateStore.batchSync(
-        (state) => {
-          let firstRun = true;
-          let raf = 0;
-          raf = requestAnimationFrame(sortItems);
-          if (typeof IntersectionObserver !== "function") return;
-          const callback = () => {
-            if (firstRun) {
-              firstRun = false;
-              return;
-            }
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(sortItems);
-          };
-          const root = getCommonParent(state.renderedItems);
-          const observer = new IntersectionObserver(callback, { root });
-          state.renderedItems.forEach((item) => {
-            if (item.element) {
-              observer.observe(item.element);
-            }
-          });
-          return () => {
-            cancelAnimationFrame(raf);
-            observer.disconnect();
-          };
-        },
-        ["renderedItems"]
-      )
-    );
   };
 
   const mergeItem = (
@@ -153,7 +150,6 @@ export function createCollectionStore<T extends Item = Item>({
 
   return {
     ...store,
-    setup,
 
     setItems: (value) => store.setState("items", value),
 

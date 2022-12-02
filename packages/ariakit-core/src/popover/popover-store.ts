@@ -14,7 +14,6 @@ import {
   DialogStoreState,
   createDialogStore,
 } from "../dialog/dialog-store";
-import { chain } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -123,199 +122,196 @@ export function createPopoverStore({
     store.setState("currentPlacement", placement);
   };
 
-  const setup = () => {
-    return chain(
-      store.setup?.(),
-      rendered.sync(() =>
-        store.batchSync(
-          (state) => {
-            if (!state.contentElement?.isConnected) return;
-            const popover = state.popoverElement;
-            if (!popover) return;
-            const anchor = getAnchorElement(state.anchorElement, getAnchorRect);
+  store.setup(() =>
+    rendered.sync(() =>
+      store.batchSync(
+        (state) => {
+          if (!state.contentElement?.isConnected) return;
+          const popover = state.popoverElement;
+          if (!popover) return;
+          const anchor = getAnchorElement(state.anchorElement, getAnchorRect);
 
-            popover.style.setProperty(
-              "--popover-overflow-padding",
-              `${state.overflowPadding}px`
-            );
+          popover.style.setProperty(
+            "--popover-overflow-padding",
+            `${state.overflowPadding}px`
+          );
 
-            const defaultRenderCallback = () => {
-              const update = async () => {
-                if (!state.mounted) return;
+          const defaultRenderCallback = () => {
+            const update = async () => {
+              if (!state.mounted) return;
 
-                const arrow = state.arrowElement;
+              const arrow = state.arrowElement;
 
-                const middleware: Middleware[] = [
-                  // https://floating-ui.com/docs/offset
-                  middlewares.offset(({ placement }) => {
-                    const arrowOffset = (arrow?.clientHeight || 0) / 2;
-                    const finalGutter =
-                      typeof state.gutter === "number"
-                        ? state.gutter + arrowOffset
-                        : state.gutter ?? arrowOffset;
-                    // If there's no placement alignment (*-start or *-end),
-                    // we'll fallback to the crossAxis offset as it also works
-                    // for center-aligned placements.
-                    const hasAlignment = !!placement.split("-")[1];
-                    return {
-                      crossAxis: !hasAlignment ? state.shift : undefined,
-                      mainAxis: finalGutter,
-                      alignmentAxis: state.shift,
-                    };
-                  }),
-                ];
+              const middleware: Middleware[] = [
+                // https://floating-ui.com/docs/offset
+                middlewares.offset(({ placement }) => {
+                  const arrowOffset = (arrow?.clientHeight || 0) / 2;
+                  const finalGutter =
+                    typeof state.gutter === "number"
+                      ? state.gutter + arrowOffset
+                      : state.gutter ?? arrowOffset;
+                  // If there's no placement alignment (*-start or *-end),
+                  // we'll fallback to the crossAxis offset as it also works
+                  // for center-aligned placements.
+                  const hasAlignment = !!placement.split("-")[1];
+                  return {
+                    crossAxis: !hasAlignment ? state.shift : undefined,
+                    mainAxis: finalGutter,
+                    alignmentAxis: state.shift,
+                  };
+                }),
+              ];
 
-                if (state.flip !== false) {
-                  const fallbackPlacements =
-                    typeof state.flip === "string"
-                      ? state.flip.split(" ")
-                      : undefined;
+              if (state.flip !== false) {
+                const fallbackPlacements =
+                  typeof state.flip === "string"
+                    ? state.flip.split(" ")
+                    : undefined;
 
-                  if (
-                    fallbackPlacements !== undefined &&
-                    !fallbackPlacements.every(isValidPlacement)
-                  ) {
-                    throw new Error(
-                      "`flip` expects a spaced-delimited list of placements"
-                    );
-                  }
-
-                  // https://floating-ui.com/docs/flip
-                  middleware.push(
-                    middlewares.flip({
-                      padding: overflowPadding,
-                      fallbackPlacements,
-                    })
+                if (
+                  fallbackPlacements !== undefined &&
+                  !fallbackPlacements.every(isValidPlacement)
+                ) {
+                  throw new Error(
+                    "`flip` expects a spaced-delimited list of placements"
                   );
                 }
 
-                if (state.slide || state.overlap) {
-                  // https://floating-ui.com/docs/shift
-                  middleware.push(
-                    middlewares.shift({
-                      mainAxis: state.slide,
-                      crossAxis: state.overlap,
-                      padding: state.overflowPadding,
-                    })
-                  );
-                }
-
-                // https://floating-ui.com/docs/size
+                // https://floating-ui.com/docs/flip
                 middleware.push(
-                  middlewares.size({
-                    padding: state.overflowPadding,
-                    apply({ availableWidth, availableHeight, rects }) {
-                      const referenceWidth = Math.round(rects.reference.width);
-                      availableWidth = Math.floor(availableWidth);
-                      availableHeight = Math.floor(availableHeight);
-                      popover.style.setProperty(
-                        "--popover-anchor-width",
-                        `${referenceWidth}px`
-                      );
-                      popover.style.setProperty(
-                        "--popover-available-width",
-                        `${availableWidth}px`
-                      );
-                      popover.style.setProperty(
-                        "--popover-available-height",
-                        `${availableHeight}px`
-                      );
-                      if (sameWidth) {
-                        popover.style.width = `${referenceWidth}px`;
-                      }
-                      if (fitViewport) {
-                        popover.style.maxWidth = `${availableWidth}px`;
-                        popover.style.maxHeight = `${availableHeight}px`;
-                      }
-                    },
+                  middlewares.flip({
+                    padding: overflowPadding,
+                    fallbackPlacements,
                   })
                 );
+              }
 
-                if (arrow) {
-                  // https://floating-ui.com/docs/arrow
-                  middleware.push(
-                    middlewares.arrow({
-                      element: arrow,
-                      padding: state.arrowPadding,
-                    })
-                  );
-                }
+              if (state.slide || state.overlap) {
+                // https://floating-ui.com/docs/shift
+                middleware.push(
+                  middlewares.shift({
+                    mainAxis: state.slide,
+                    crossAxis: state.overlap,
+                    padding: state.overflowPadding,
+                  })
+                );
+              }
 
-                // https://floating-ui.com/docs/computePosition
-                const pos = await computePosition(anchor, popover, {
-                  placement: state.placement,
-                  strategy: state.fixed ? "fixed" : "absolute",
-                  middleware,
-                });
+              // https://floating-ui.com/docs/size
+              middleware.push(
+                middlewares.size({
+                  padding: state.overflowPadding,
+                  apply({ availableWidth, availableHeight, rects }) {
+                    const referenceWidth = Math.round(rects.reference.width);
+                    availableWidth = Math.floor(availableWidth);
+                    availableHeight = Math.floor(availableHeight);
+                    popover.style.setProperty(
+                      "--popover-anchor-width",
+                      `${referenceWidth}px`
+                    );
+                    popover.style.setProperty(
+                      "--popover-available-width",
+                      `${availableWidth}px`
+                    );
+                    popover.style.setProperty(
+                      "--popover-available-height",
+                      `${availableHeight}px`
+                    );
+                    if (sameWidth) {
+                      popover.style.width = `${referenceWidth}px`;
+                    }
+                    if (fitViewport) {
+                      popover.style.maxWidth = `${availableWidth}px`;
+                      popover.style.maxHeight = `${availableHeight}px`;
+                    }
+                  },
+                })
+              );
 
-                setCurrentPlacement(pos.placement);
+              if (arrow) {
+                // https://floating-ui.com/docs/arrow
+                middleware.push(
+                  middlewares.arrow({
+                    element: arrow,
+                    padding: state.arrowPadding,
+                  })
+                );
+              }
 
-                const x = Math.round(pos.x);
-                const y = Math.round(pos.y);
-
-                // https://floating-ui.com/docs/misc#subpixel-and-accelerated-positioning
-                Object.assign(popover.style, {
-                  top: "0",
-                  left: "0",
-                  transform: `translate3d(${x}px, ${y}px, 0)`,
-                });
-
-                // https://floating-ui.com/docs/arrow#usage
-                if (arrow && pos.middlewareData.arrow) {
-                  const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
-
-                  const dir = pos.placement.split("-")[0] as BasePlacement;
-
-                  Object.assign(arrow.style, {
-                    left: arrowX != null ? `${arrowX}px` : "",
-                    top: arrowY != null ? `${arrowY}px` : "",
-                    [dir]: "100%",
-                  });
-                }
-              };
-
-              // https://floating-ui.com/docs/autoUpdate
-              return autoUpdate(anchor, popover, update, {
-                // JSDOM doesn't support ResizeObserver
-                elementResize: typeof ResizeObserver === "function",
+              // https://floating-ui.com/docs/computePosition
+              const pos = await computePosition(anchor, popover, {
+                placement: state.placement,
+                strategy: state.fixed ? "fixed" : "absolute",
+                middleware,
               });
+
+              setCurrentPlacement(pos.placement);
+
+              const x = Math.round(pos.x);
+              const y = Math.round(pos.y);
+
+              // https://floating-ui.com/docs/misc#subpixel-and-accelerated-positioning
+              Object.assign(popover.style, {
+                top: "0",
+                left: "0",
+                transform: `translate3d(${x}px, ${y}px, 0)`,
+              });
+
+              // https://floating-ui.com/docs/arrow#usage
+              if (arrow && pos.middlewareData.arrow) {
+                const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
+
+                const dir = pos.placement.split("-")[0] as BasePlacement;
+
+                Object.assign(arrow.style, {
+                  left: arrowX != null ? `${arrowX}px` : "",
+                  top: arrowY != null ? `${arrowY}px` : "",
+                  [dir]: "100%",
+                });
+              }
             };
-            if (renderCallback) {
-              return renderCallback({
-                ...state,
-                setPlacement: setCurrentPlacement,
-                defaultRenderCallback,
-              });
-            }
-            return defaultRenderCallback();
-          },
-          [
-            "anchorElement",
-            "popoverElement",
-            "arrowElement",
-            "contentElement",
-            "gutter",
-            "mounted",
-            "shift",
-            "overlap",
-            "flip",
-            "overflowPadding",
-            "slide",
-            "sameWidth",
-            "fitViewport",
-            "arrowPadding",
-            "placement",
-            "fixed",
-          ]
-        )
+
+            // https://floating-ui.com/docs/autoUpdate
+            return autoUpdate(anchor, popover, update, {
+              // JSDOM doesn't support ResizeObserver
+              elementResize: typeof ResizeObserver === "function",
+            });
+          };
+
+          if (renderCallback) {
+            return renderCallback({
+              ...state,
+              setPlacement: setCurrentPlacement,
+              defaultRenderCallback,
+            });
+          }
+          return defaultRenderCallback();
+        },
+        [
+          "anchorElement",
+          "popoverElement",
+          "arrowElement",
+          "contentElement",
+          "gutter",
+          "mounted",
+          "shift",
+          "overlap",
+          "flip",
+          "overflowPadding",
+          "slide",
+          "sameWidth",
+          "fitViewport",
+          "arrowPadding",
+          "placement",
+          "fixed",
+        ]
       )
-    );
-  };
+    )
+  );
 
   return {
     ...dialog,
     ...store,
-    setup,
     setAnchorElement: (element) => store.setState("anchorElement", element),
     setPopoverElement: (element) => store.setState("popoverElement", element),
     setArrowElement: (element) => store.setState("arrowElement", element),

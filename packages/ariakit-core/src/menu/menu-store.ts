@@ -11,7 +11,7 @@ import {
   HovercardStoreState,
   createHovercardStore,
 } from "../hovercard/hovercard-store";
-import { applyState, chain } from "../utils/misc";
+import { applyState } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { BivariantCallback, SetState, SetStateAction } from "../utils/types";
 
@@ -55,24 +55,20 @@ export function createMenuStore<T extends Values = Values>({
   };
   const store = createStore(initialState, composite, hovercard);
 
-  const setup = () => {
-    return chain(
-      store.setup(),
-      store.sync(
-        (state) => {
-          if (state.mounted) return;
-          store.setState("activeId", null);
-        },
-        ["mounted"]
-      )
-    );
-  };
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        if (state.mounted) return;
+        store.setState("activeId", null);
+      },
+      ["mounted"]
+    )
+  );
 
   return {
     ...composite,
     ...hovercard,
     ...store,
-    setup,
     setInitialFocus: (value) => store.setState("initialFocus", value),
     setValues: (values) => store.setState("values", values),
     setValue: (name, value) => {

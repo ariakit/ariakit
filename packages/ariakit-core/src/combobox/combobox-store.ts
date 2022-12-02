@@ -12,7 +12,6 @@ import {
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
-import { chain } from "../utils/misc";
 import { isSafari, isTouchDevice } from "../utils/platform";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
@@ -64,38 +63,38 @@ export function createComboboxStore({
   };
   const store = createStore(initialState, composite, popover);
 
-  const setup = () => {
-    return chain(
-      store.setup(),
-      store.sync(
-        (state) => {
-          if (state.open) return;
-          composite.setActiveId(activeId);
-          composite.setMoves(0);
-        },
-        ["open"]
-      ),
-      store.sync(
-        (state, prevState) => {
-          if (state.moves === prevState.moves) {
-            store.setState("activeValue", undefined);
-          }
-        },
-        ["moves", "activeId"]
-      ),
-      store.sync(() => {
-        const { activeId } = store.getState();
-        const activeItem = composite.item(activeId);
-        store.setState("activeValue", activeItem?.value);
-      }, ["moves", "renderedItems"])
-    );
-  };
+  store.setup(() =>
+    store.sync(
+      (state) => {
+        if (state.open) return;
+        composite.setActiveId(activeId);
+        composite.setMoves(0);
+      },
+      ["open"]
+    )
+  );
+  store.setup(() =>
+    store.sync(
+      (state, prevState) => {
+        if (state.moves === prevState.moves) {
+          store.setState("activeValue", undefined);
+        }
+      },
+      ["moves", "activeId"]
+    )
+  );
+  store.setup(() =>
+    store.sync(() => {
+      const { activeId } = store.getState();
+      const activeItem = composite.item(activeId);
+      store.setState("activeValue", activeItem?.value);
+    }, ["moves", "renderedItems"])
+  );
 
   return {
     ...popover,
     ...composite,
     ...store,
-    setup,
     setValue: (value) => store.setState("value", value),
   };
 }
