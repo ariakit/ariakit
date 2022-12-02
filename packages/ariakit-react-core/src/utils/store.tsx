@@ -155,7 +155,7 @@ export function useStoreProps<
 export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
   const store = useLazyValue(createStore);
 
-  useSafeLayoutEffect(() => store.setup?.(), []);
+  useSafeLayoutEffect(() => store.init(), []);
 
   const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),

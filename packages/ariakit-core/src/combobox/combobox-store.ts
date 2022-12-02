@@ -12,6 +12,7 @@ import {
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
+import { SelectStore } from "../select/select-store";
 import { isSafari, isTouchDevice } from "../utils/platform";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
@@ -31,6 +32,15 @@ function isMenuStoreProps<T extends ComboboxStoreProps>(
   return "initialFocus" in state && "values" in state;
 }
 
+function isSelectStoreProps<T extends ComboboxStoreProps>(
+  props: T
+): props is T & Pick<SelectStore, "omit"> {
+  if (!props.omit) return false;
+  if (!props.getState) return false;
+  const state = props.getState();
+  return "value" in state && "setValueOnMove" in state;
+}
+
 export function createComboboxStore({
   placement = "bottom-start",
   activeId = null,
@@ -44,6 +54,9 @@ export function createComboboxStore({
 }: ComboboxStoreProps = {}): ComboboxStore {
   if (isMenuStoreProps(props)) {
     props = { ...props, ...props.omit("contentElement") };
+  }
+  if (isSelectStoreProps(props)) {
+    props = { ...props, ...props.omit("value", "contentElement") };
   }
   const composite = createCompositeStore({
     activeId,

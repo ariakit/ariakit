@@ -22,10 +22,10 @@ export function createStore<S extends State>(
   let batchPrevState = state;
   let lastUpdate = Symbol();
   let updating = false;
-  let hasSetup = false;
+  let initialized = false;
   const updatedKeys = new Set<keyof S>();
 
-  const initializers = new Set<() => void | (() => void)>();
+  const setups = new Set<() => void | (() => void)>();
   const listeners = new Set<Listener<S>>();
   const batchListeners = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
@@ -33,17 +33,18 @@ export function createStore<S extends State>(
 
   // TODO: Refactor this into two functions maybe? setup(callback) and init().
   const setup: Store<S>["setup"] = (callback) => {
-    if (callback) {
-      initializers.add(callback);
-      return () => initializers.delete(callback);
-    }
-    if (hasSetup) return noop;
+    setups.add(callback);
+    return () => setups.delete(callback);
+  };
+
+  const init: Store<S>["init"] = () => {
+    if (initialized) return noop;
     if (!stores.length) return noop;
-    hasSetup = true;
+    initialized = true;
 
     const keys = getKeys(state);
 
-    const syncs = keys.map((key) =>
+    const desyncs = keys.map((key) =>
       chain(
         ...stores.map((store) => {
           const storeState = store.getState?.();
@@ -54,16 +55,16 @@ export function createStore<S extends State>(
       )
     );
 
-    const setups = stores.map((store) => store.setup?.());
+    const cleanups = stores.map((store) => store.init?.());
 
-    const inits: Array<void | (() => void)> = [];
+    const teardowns: Array<void | (() => void)> = [];
 
-    initializers.forEach((init) => {
-      inits.push(init());
+    setups.forEach((setup) => {
+      teardowns.push(setup());
     });
 
-    return chain(...syncs, ...setups, ...inits, () => {
-      hasSetup = false;
+    return chain(...desyncs, ...cleanups, ...teardowns, () => {
+      initialized = false;
     });
   };
 
@@ -156,6 +157,7 @@ export function createStore<S extends State>(
 
   const finalStore = {
     setup,
+    init,
     subscribe,
     sync,
     batchSync,
@@ -215,9 +217,13 @@ export type Sync<S = State> = {
  */
 export type Store<S = State> = {
   /**
+   * Register a callback function that's called when the store is initialized.
+   */
+  setup: (callback: () => void | (() => void)) => () => void;
+  /**
    * Function that should be called when the store is initialized.
    */
-  setup: (callback?: () => void | (() => void)) => () => void;
+  init: () => () => void;
   /**
    * Registers a listener function that's called immediately and synchronously
    * whenever the store state changes.
