@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ComboboxItemValue } from "ariakit/combobox";
+import { ComboboxItemValue } from "ariakit/combobox/store";
 import list from "./list";
 import { SelectCombobox, SelectComboboxItem } from "./select-combobox";
 import "./style.css";

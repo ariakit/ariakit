@@ -139,46 +139,46 @@ export function createFormStore<T extends Values = Values>({
     submitFailed: 0,
     valid: !hasMessages(errors),
   };
-  const store = createStore(initialState, collection);
+  const form = createStore(initialState, collection);
 
   const validateCallbacks = new Set<FormStoreCallback>();
   const submitCallbacks = new Set<FormStoreCallback>();
 
   const validate = async () => {
-    store.setState("validating", true);
-    store.setState("errors", {});
+    form.setState("validating", true);
+    form.setState("errors", {});
     try {
       const callbacks = [...validateCallbacks];
       const results = callbacks.map((callback) => callback());
       // Wait for the next frame to allow the errors to be set on the state.
       await Promise.all(results).then(nextFrame);
-      return !hasMessages(store.getState().errors);
+      return !hasMessages(form.getState().errors);
     } finally {
-      store.setState("validating", false);
+      form.setState("validating", false);
     }
   };
 
   return {
     ...collection,
-    ...store,
+    ...form,
     names: createNames(),
 
-    setValues: (values) => store.setState("values", values),
-    getValue: (name) => get(store.getState().values, name),
+    setValues: (values) => form.setState("values", values),
+    getValue: (name) => get(form.getState().values, name),
     setValue: (name, value) =>
-      store.setState("values", (values) => {
+      form.setState("values", (values) => {
         const prevValue = get(values, name);
         const nextValue = applyState(value, prevValue);
         if (nextValue === prevValue) return values;
         return set(values, name, nextValue);
       }),
     pushValue: (name, value) =>
-      store.setState("values", (values) => {
+      form.setState("values", (values) => {
         const array = get(values, name, [] as unknown[]);
         return set(values, name, [...array, value]);
       }),
     removeValue: (name, index) =>
-      store.setState("values", (values) => {
+      form.setState("values", (values) => {
         const array = get(values, name, [] as unknown[]);
         return set(values, name, [
           ...array.slice(0, index),
@@ -187,20 +187,20 @@ export function createFormStore<T extends Values = Values>({
         ]);
       }),
 
-    setErrors: (errors) => store.setState("errors", errors),
-    getError: (name) => get(store.getState().errors, name),
+    setErrors: (errors) => form.setState("errors", errors),
+    getError: (name) => get(form.getState().errors, name),
     setError: (name, error) =>
-      store.setState("errors", (errors) => {
+      form.setState("errors", (errors) => {
         const prevError = get(errors, name);
         const nextError = applyState(error, prevError);
         if (nextError === prevError) return errors;
         return set(errors, name, nextError);
       }),
 
-    setTouched: (touched) => store.setState("touched", touched),
-    getFieldTouched: (name) => !!get(store.getState().touched, name),
+    setTouched: (touched) => form.setState("touched", touched),
+    getFieldTouched: (name) => !!get(form.getState().touched, name),
     setFieldTouched: (name, value) =>
-      store.setState("touched", (touched) => {
+      form.setState("touched", (touched) => {
         const prevValue = get(touched, name);
         const nextValue = applyState(value, prevValue);
         if (nextValue === prevValue) return touched;
@@ -218,37 +218,37 @@ export function createFormStore<T extends Values = Values>({
       return () => submitCallbacks.delete(callback);
     },
     submit: async () => {
-      store.setState("submitting", true);
-      store.setState("touched", setAll(store.getState().values, true));
+      form.setState("submitting", true);
+      form.setState("touched", setAll(form.getState().values, true));
       try {
         if (await validate()) {
           const callbacks = [...submitCallbacks];
           const results = callbacks.map((callback) => callback());
           // Wait for the next frame to allow the errors to be set on the state.
           await Promise.all(results).then(nextFrame);
-          if (!hasMessages(store.getState().errors)) {
-            store.setState("submitSucceed", (count) => count + 1);
+          if (!hasMessages(form.getState().errors)) {
+            form.setState("submitSucceed", (count) => count + 1);
             return true;
           }
         }
-        store.setState("submitFailed", (count) => count + 1);
+        form.setState("submitFailed", (count) => count + 1);
         return false;
       } catch (error) {
-        store.setState("submitFailed", (count) => count + 1);
+        form.setState("submitFailed", (count) => count + 1);
         throw error;
       } finally {
-        store.setState("submitting", false);
+        form.setState("submitting", false);
       }
     },
 
     reset: () => {
-      store.setState("values", values);
-      store.setState("errors", errors);
-      store.setState("touched", touched);
-      store.setState("validating", false);
-      store.setState("submitting", false);
-      store.setState("submitSucceed", 0);
-      store.setState("submitFailed", 0);
+      form.setState("values", values);
+      form.setState("errors", errors);
+      form.setState("touched", touched);
+      form.setState("validating", false);
+      form.setState("submitting", false);
+      form.setState("submitSucceed", 0);
+      form.setState("submitFailed", 0);
     },
   };
 }

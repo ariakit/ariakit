@@ -20,26 +20,21 @@ type Values = Record<
   string | boolean | number | Array<string | number>
 >;
 
-function isComboboxStoreProps<T extends MenuStoreProps>(
-  props: T
-): props is T & Pick<ComboboxStore, "omit"> {
-  if (!props.omit) return false;
-  if (!props.getState) return false;
-  const state = props.getState();
-  return "value" in state && "activeValue" in state;
-}
-
 export function createMenuStore<T extends Values = Values>({
   orientation = "vertical",
   placement = "bottom-start",
   timeout,
   hideTimeout = 0,
   values = {} as T,
+  combobox,
   ...props
 }: MenuStoreProps<T> = {}): MenuStore<T> {
-  if (isComboboxStoreProps(props)) {
-    props = { ...props, ...props.omit("contentElement") };
-  }
+  const comboboxStore = combobox?.omit(
+    "anchorElement",
+    "baseElement",
+    "contentElement",
+    "popoverElement"
+  );
   const composite = createCompositeStore({ orientation, ...props });
   const hovercard = createHovercardStore({
     placement,
@@ -53,13 +48,13 @@ export function createMenuStore<T extends Values = Values>({
     initialFocus: "container",
     values,
   };
-  const store = createStore(initialState, composite, hovercard);
+  const menu = createStore(initialState, composite, hovercard, comboboxStore);
 
-  store.setup(() =>
-    store.sync(
+  menu.setup(() =>
+    menu.sync(
       (state) => {
         if (state.mounted) return;
-        store.setState("activeId", null);
+        menu.setState("activeId", null);
       },
       ["mounted"]
     )
@@ -68,15 +63,15 @@ export function createMenuStore<T extends Values = Values>({
   return {
     ...composite,
     ...hovercard,
-    ...store,
-    setInitialFocus: (value) => store.setState("initialFocus", value),
-    setValues: (values) => store.setState("values", values),
+    ...menu,
+    setInitialFocus: (value) => menu.setState("initialFocus", value),
+    setValues: (values) => menu.setState("values", values),
     setValue: (name, value) => {
       // Avoid prototype pollution
       if (name === "__proto__") return;
       if (name === "constructor") return;
       if (Array.isArray(name)) return;
-      store.setState("values", (values) => {
+      menu.setState("values", (values) => {
         const prevValue = values[name];
         const nextValue = applyState(value, prevValue);
         if (nextValue === prevValue) return values;
@@ -132,7 +127,9 @@ export type MenuStoreFunctions<T extends Values = Values> =
 export type MenuStoreOptions<T extends Values = Values> =
   CompositeStoreOptions &
     HovercardStoreOptions &
-    StoreOptions<MenuStoreState<T>, "values">;
+    StoreOptions<MenuStoreState<T>, "values"> & {
+      combobox?: ComboboxStore;
+    };
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
   StoreProps<MenuStoreState<T>>;

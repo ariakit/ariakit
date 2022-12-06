@@ -6,18 +6,19 @@ import {
   SelectLabel,
   SelectPopover,
   SelectRow,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import Icon from "./icon";
 import "./style.css";
 
 export default function Example() {
-  const select = useSelectState({
+  const select = useSelectStore({
     defaultValue: "Center",
     placement: "bottom",
     setValueOnMove: true,
   });
+  const value = select.useState("value");
 
   const renderItem = (value: string) => (
     <SelectItem
@@ -40,13 +41,13 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Position</SelectLabel>
-      <Select state={select} showOnKeyDown={false} className="select">
-        <Icon value={select.value} />
-        {select.value}
+      <SelectLabel store={select}>Position</SelectLabel>
+      <Select store={select} showOnKeyDown={false} className="select">
+        <Icon value={value} />
+        {value}
         <SelectArrow />
       </Select>
-      <SelectPopover state={select} role="grid" className="popover">
+      <SelectPopover store={select} role="grid" className="popover">
         <PopoverArrow className="arrow" />
         <SelectRow className="row">
           {renderItem("Top Left")}

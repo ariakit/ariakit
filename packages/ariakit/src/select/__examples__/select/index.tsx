@@ -3,21 +3,21 @@ import {
   SelectItem,
   SelectLabel,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import "./style.css";
 
 export default function Example() {
-  const select = useSelectState({
+  const select = useSelectStore({
     defaultValue: "Apple",
     sameWidth: true,
     gutter: 4,
   });
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Favorite fruit</SelectLabel>
-      <Select state={select} className="select" />
-      <SelectPopover state={select} className="popover">
+      <SelectLabel store={select}>Favorite fruit</SelectLabel>
+      <Select store={select} className="select" />
+      <SelectPopover store={select} className="popover">
         <SelectItem className="select-item" value="Apple" />
         <SelectItem className="select-item" value="Banana" />
         <SelectItem className="select-item" value="Grape" disabled />

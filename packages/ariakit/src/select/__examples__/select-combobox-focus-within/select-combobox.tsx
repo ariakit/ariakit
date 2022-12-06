@@ -3,7 +3,6 @@ import {
   HTMLAttributes,
   ReactNode,
   forwardRef,
-  useEffect,
   useState,
 } from "react";
 import {
@@ -11,15 +10,15 @@ import {
   ComboboxCancel,
   ComboboxItem,
   ComboboxList,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import {
   Select,
   SelectItem,
   SelectLabel,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 
 type SelectComboboxProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -56,50 +55,37 @@ export const SelectCombobox = forwardRef<
     },
     ref
   ) => {
-    const combobox = useComboboxState({
+    const combobox = useComboboxStore({
       gutter: 4,
       sameWidth: true,
       open,
-      setOpen: (open) => {
-        if (combobox.open !== open) {
-          onToggle?.(open);
-        }
-      },
+      setOpen: onToggle,
       value: searchValue,
-      setValue: (value) => {
-        if (combobox.value !== value) {
-          onSearch?.(value);
-        }
-      },
+      setValue: onSearch,
+      resetValueOnHide: true,
     });
 
-    const select = useSelectState({
+    const select = useSelectStore({
       ...combobox,
       defaultValue,
       value,
-      setValue: (value) => {
-        if (select.value !== value) {
-          onChange?.(value);
-        }
-      },
+      setValue: onChange,
     });
 
     const [popoverFocused, setPopoverFocused] = useState(false);
-    const showComboboxCancel = popoverFocused || combobox.value !== "";
+    const showComboboxCancel = combobox.useState(
+      (state) => popoverFocused || state.value !== ""
+    );
 
-    // Resets combobox value when popover is collapsed
-    useEffect(() => {
-      if (select.mounted) return;
-      combobox.setValue("");
-    }, [select.mounted, combobox.setValue]);
+    const mounted = select.useState("mounted");
 
     return (
       <>
-        {label && <SelectLabel state={select}>{label}</SelectLabel>}
-        <Select ref={ref} state={select} className="select" {...props} />
-        {select.mounted && (
+        {label && <SelectLabel store={select}>{label}</SelectLabel>}
+        <Select ref={ref} store={select} className="select" {...props} />
+        {mounted && (
           <SelectPopover
-            state={select}
+            store={select}
             composite={false}
             portal
             className="popover"
@@ -108,18 +94,18 @@ export const SelectCombobox = forwardRef<
           >
             <div className="combobox-wrapper">
               <Combobox
-                state={combobox}
+                store={combobox}
                 autoSelect
                 placeholder={searchPlaceholder}
                 className="combobox"
               />
               <ComboboxCancel
-                state={combobox}
+                store={combobox}
                 className="button secondary combobox-cancel"
                 data-visible={showComboboxCancel ? "" : undefined}
               />
             </div>
-            <ComboboxList state={combobox}>{children}</ComboboxList>
+            <ComboboxList store={combobox}>{children}</ComboboxList>
           </SelectPopover>
         )}
       </>

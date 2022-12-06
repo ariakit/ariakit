@@ -23,25 +23,9 @@ type Item = CompositeStoreItem & {
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
-function isMenuStoreProps<T extends ComboboxStoreProps>(
-  props: T
-): props is T & Pick<MenuStore, "omit"> {
-  if (!props.omit) return false;
-  if (!props.getState) return false;
-  const state = props.getState();
-  return "initialFocus" in state && "values" in state;
-}
-
-function isSelectStoreProps<T extends ComboboxStoreProps>(
-  props: T
-): props is T & Pick<SelectStore, "omit"> {
-  if (!props.omit) return false;
-  if (!props.getState) return false;
-  const state = props.getState();
-  return "value" in state && "setValueOnMove" in state;
-}
-
 export function createComboboxStore({
+  menu,
+  select,
   placement = "bottom-start",
   activeId = null,
   includesBaseElement = true,
@@ -50,14 +34,24 @@ export function createComboboxStore({
   focusWrap = true,
   virtualFocus = !isSafariOnMobile,
   value = "",
+  resetValueOnHide = false,
   ...props
 }: ComboboxStoreProps = {}): ComboboxStore {
-  if (isMenuStoreProps(props)) {
-    props = { ...props, ...props.omit("contentElement") };
-  }
-  if (isSelectStoreProps(props)) {
-    props = { ...props, ...props.omit("value", "contentElement") };
-  }
+  const menuStore = menu?.omit(
+    "anchorElement",
+    "baseElement",
+    "contentElement",
+    "popoverElement"
+  );
+  const selectStore = select?.omit(
+    "value",
+    "anchorElement",
+    "baseElement",
+    "contentElement",
+    "popoverElement",
+    "items",
+    "renderedItems"
+  );
   const composite = createCompositeStore({
     activeId,
     includesBaseElement,
@@ -71,13 +65,20 @@ export function createComboboxStore({
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    activeValue: undefined,
     value,
+    resetValueOnHide,
+    activeValue: undefined,
   };
-  const store = createStore(initialState, composite, popover);
+  const combobox = createStore(
+    initialState,
+    composite,
+    popover,
+    menuStore,
+    selectStore
+  );
 
-  store.setup(() =>
-    store.sync(
+  combobox.setup(() =>
+    combobox.sync(
       (state) => {
         if (state.open) return;
         composite.setActiveId(activeId);
@@ -86,29 +87,39 @@ export function createComboboxStore({
       ["open"]
     )
   );
-  store.setup(() =>
-    store.sync(
+  combobox.setup(() =>
+    combobox.sync(
       (state, prevState) => {
         if (state.moves === prevState.moves) {
-          store.setState("activeValue", undefined);
+          combobox.setState("activeValue", undefined);
         }
       },
       ["moves", "activeId"]
     )
   );
-  store.setup(() =>
-    store.sync(() => {
-      const { activeId } = store.getState();
+  combobox.setup(() =>
+    combobox.sync(() => {
+      const { activeId } = combobox.getState();
       const activeItem = composite.item(activeId);
-      store.setState("activeValue", activeItem?.value);
+      combobox.setState("activeValue", activeItem?.value);
     }, ["moves", "renderedItems"])
+  );
+  combobox.setup(() =>
+    combobox.sync(
+      (state) => {
+        if (!state.resetValueOnHide) return;
+        if (state.mounted) return;
+        combobox.setState("value", value);
+      },
+      ["resetValueOnHide", "mounted"]
+    )
   );
 
   return {
     ...popover,
     ...composite,
-    ...store,
-    setValue: (value) => store.setState("value", value),
+    ...combobox,
+    setValue: (value) => combobox.setState("value", value),
   };
 }
 
@@ -125,6 +136,10 @@ export type ComboboxStoreState = CompositeStoreState<Item> &
      * is not updated when `moveType` is `mouse`.
      */
     activeValue?: string;
+    /**
+     * TODO: Description
+     */
+    resetValueOnHide: boolean;
   };
 
 export type ComboboxStoreFunctions = CompositeStoreFunctions<Item> &
@@ -137,7 +152,10 @@ export type ComboboxStoreFunctions = CompositeStoreFunctions<Item> &
 
 export type ComboboxStoreOptions = CompositeStoreOptions<Item> &
   PopoverStoreOptions &
-  StoreOptions<ComboboxStoreState, "value">;
+  StoreOptions<ComboboxStoreState, "value" | "resetValueOnHide"> & {
+    menu?: MenuStore;
+    select?: SelectStore;
+  };
 
 export type ComboboxStoreProps = ComboboxStoreOptions &
   StoreProps<ComboboxStoreState>;

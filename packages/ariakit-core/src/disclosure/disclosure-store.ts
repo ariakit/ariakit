@@ -4,10 +4,10 @@ import { SetState } from "../utils/types";
 export function createDisclosureStore({
   open = false,
   animated = false,
-  ...partialStore
+  store,
 }: DisclosureStoreProps = {}): DisclosureStore {
   const initialState: DisclosureStoreState = {
-    ...partialStore.getState?.(),
+    ...store?.getState(),
     open,
     animated,
     animating: !!animated && open,
@@ -15,49 +15,50 @@ export function createDisclosureStore({
     contentElement: null,
     disclosureElement: null,
   };
-  const store = createStore(initialState, partialStore);
+  const disclosure = createStore(initialState, store);
 
-  store.setup(() =>
-    store.sync(
+  disclosure.setup(() =>
+    disclosure.sync(
       (state) => {
         if (state.animated) return;
         // Reset animating to false when animation is disabled.
-        store.setState("animating", false);
+        disclosure.setState("animating", false);
       },
       ["animated", "animating"]
     )
   );
 
-  store.setup(() =>
-    store.sync(
+  disclosure.setup(() =>
+    disclosure.sync(
       (state, prev) => {
         if (!state.animated) return;
         const mounting = state === prev;
         const animating = mounting ? state.open : state.open !== prev.open;
-        store.setState("animating", animating);
+        disclosure.setState("animating", animating);
       },
       ["open", "animated"]
     )
   );
 
-  store.setup(() =>
-    store.sync(
+  disclosure.setup(() =>
+    disclosure.sync(
       (state) => {
-        store.setState("mounted", state.open || state.animating);
+        disclosure.setState("mounted", state.open || state.animating);
       },
       ["open", "animating"]
     )
   );
 
   return {
-    ...store,
-    setOpen: (value) => store.setState("open", value),
-    show: () => store.setState("open", true),
-    hide: () => store.setState("open", false),
-    toggle: () => store.setState("open", (open) => !open),
-    stopAnimation: () => store.setState("animating", false),
-    setContentElement: (value) => store.setState("contentElement", value),
-    setDisclosureElement: (value) => store.setState("disclosureElement", value),
+    ...disclosure,
+    setOpen: (value) => disclosure.setState("open", value),
+    show: () => disclosure.setState("open", true),
+    hide: () => disclosure.setState("open", false),
+    toggle: () => disclosure.setState("open", (open) => !open),
+    stopAnimation: () => disclosure.setState("animating", false),
+    setContentElement: (value) => disclosure.setState("contentElement", value),
+    setDisclosureElement: (value) =>
+      disclosure.setState("disclosureElement", value),
   };
 }
 

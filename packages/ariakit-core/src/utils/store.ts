@@ -16,7 +16,7 @@ import { SetStateAction } from "./types";
  */
 export function createStore<S extends State>(
   initialState: S,
-  ...stores: Array<PartialStore<S>>
+  ...stores: Array<PartialStore<S> | undefined>
 ): Store<S> {
   let state = initialState;
   let batchPrevState = state;
@@ -47,15 +47,15 @@ export function createStore<S extends State>(
     const desyncs = keys.map((key) =>
       chain(
         ...stores.map((store) => {
-          const storeState = store.getState?.();
+          const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return store.sync?.((state) => setState(key, state[key]!), [key]);
+          return store?.sync?.((state) => setState(key, state[key]!), [key]);
         })
       )
     );
 
-    const cleanups = stores.map((store) => store.init?.());
+    const cleanups = stores.map((store) => store?.init?.());
 
     const teardowns: Array<void | (() => void)> = [];
 
@@ -105,7 +105,7 @@ export function createStore<S extends State>(
     if (nextValue === state[key]) return;
 
     stores.forEach((store) => {
-      store.setState?.(key, nextValue);
+      store?.setState?.(key, nextValue);
     });
 
     const prevState = state;
@@ -188,7 +188,7 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
  * Props that can be passed to a store creator function.
  * @template S State type.
  */
-export type StoreProps<S extends State> = PartialStore<S>;
+export type StoreProps<S extends State> = { store?: Store<Partial<S>> };
 /**
  * Store listener type.
  * @template S State type.

@@ -13,10 +13,10 @@ type Item = Core.CompositeStoreItem;
 export function useCompositeStoreOptions<T extends Item = Item>(
   props: CompositeStoreProps<T>
 ) {
+  const state = props.store?.getState?.();
   return {
     ...useCollectionStoreOptions(props),
-    activeId:
-      props.activeId ?? props.getState?.().activeId ?? props.defaultActiveId,
+    activeId: props.activeId ?? state?.activeId ?? props.defaultActiveId,
   };
 }
 

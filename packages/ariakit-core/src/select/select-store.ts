@@ -14,21 +14,13 @@ import {
 } from "../popover/popover-store";
 import { toArray } from "../utils/array";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+import { SetState } from "../utils/types";
 
 type Value = string | string[];
 type MutableValue<T extends Value = Value> = T extends string ? string : T;
 type Item = CompositeStoreItem & {
   value?: string;
 };
-
-function isComboboxStoreProps<T extends SelectStoreProps>(
-  props: T
-): props is T & Pick<ComboboxStore, "omit"> {
-  if (!props.omit) return false;
-  if (!props.getState) return false;
-  const state = props.getState();
-  return "value" in state && "activeValue" in state;
-}
 
 export function createSelectStore<T extends Value = Value>({
   virtualFocus = true,
@@ -38,11 +30,19 @@ export function createSelectStore<T extends Value = Value>({
   placement = "bottom-start",
   value,
   setValueOnMove = false,
+  combobox,
   ...props
 }: SelectStoreProps<T> = {}): SelectStore<T> {
-  if (isComboboxStoreProps(props)) {
-    props = { ...props, ...props.omit("value", "contentElement") };
-  }
+  const defaultValue = new String("") as MutableValue<T>;
+  const comboboxStore = combobox?.omit(
+    "value",
+    "anchorElement",
+    "baseElement",
+    "contentElement",
+    "popoverElement",
+    "items",
+    "renderedItems"
+  );
   const composite = createCompositeStore({
     virtualFocus,
     includesBaseElement,
@@ -54,32 +54,32 @@ export function createSelectStore<T extends Value = Value>({
   const initialState: SelectStoreState<T> = {
     ...composite.getState(),
     ...popover.getState(),
-    value,
+    value: value ?? defaultValue,
     setValueOnMove,
     selectElement: null,
     labelElement: null,
   };
-  const store = createStore(initialState, composite, popover);
+  const select = createStore(initialState, composite, popover, comboboxStore);
 
   // Automatically sets the default value if it's not set.
-  store.setup(() =>
-    store.sync(
+  select.setup(() =>
+    select.sync(
       (state) => {
-        if (state.value != null) return;
+        if (state.value !== defaultValue) return;
         if (!state.items.length) return;
         const item = state.items.find(
           (item) => !item.disabled && item.value != null
         );
         if (item?.value == null) return;
-        store.setState("value", item.value as MutableValue<T>);
+        select.setState("value", item.value as MutableValue<T>);
       },
       ["value", "items"]
     )
   );
 
   // Sets the active id when the value changes and the popover is hidden.
-  store.setup(() =>
-    store.sync(
+  select.setup(() =>
+    select.sync(
       (state) => {
         if (state.mounted) return;
         const values = toArray(state.value);
@@ -89,7 +89,7 @@ export function createSelectStore<T extends Value = Value>({
           (item) => !item.disabled && item.value === lastValue
         );
         if (!item) return;
-        store.setState("activeId", item.id);
+        select.setState("activeId", item.id);
       },
       ["mounted", "items", "value"]
     )
@@ -97,17 +97,17 @@ export function createSelectStore<T extends Value = Value>({
 
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
-  store.setup(() =>
-    store.sync(
+  select.setup(() =>
+    select.batchSync(
       (state) => {
-        const { mounted, value, activeId } = store.getState();
+        const { mounted, value, activeId } = select.getState();
         if (!state.setValueOnMove && mounted) return;
         if (Array.isArray(value)) return;
         if (!state.moves) return;
         if (!activeId) return;
         const item = composite.item(activeId);
         if (!item || item.disabled || item.value == null) return;
-        store.setState("value", item.value as MutableValue<T>);
+        select.setState("value", item.value as MutableValue<T>);
       },
       ["setValueOnMove", "moves"]
     )
@@ -116,19 +116,16 @@ export function createSelectStore<T extends Value = Value>({
   return {
     ...composite,
     ...popover,
-    ...store,
-    setValue: (value) => store.setState("value", value),
-    setSelectElement: (element) => store.setState("selectElement", element),
-    setLabelElement: (element) => store.setState("labelElement", element),
+    ...select,
+    setValue: (value) => select.setState("value", value),
+    setSelectElement: (element) => select.setState("selectElement", element),
+    setLabelElement: (element) => select.setState("labelElement", element),
   };
 }
 
 export type SelectStoreItem = Item;
 
-export type SelectStoreValues = Record<
-  string,
-  string | boolean | number | Array<string | number>
->;
+export type SelectStoreValue = Value;
 
 export type SelectStoreState<T extends Value = Value> =
   CompositeStoreState<Item> &
@@ -136,7 +133,7 @@ export type SelectStoreState<T extends Value = Value> =
       /**
        * The select value.
        */
-      value?: MutableValue<T>;
+      value: MutableValue<T>;
       /**
        * Whether the select value should be set when the active item changes by
        * moving (which usually happens when moving to an item using the keyboard).
@@ -156,15 +153,17 @@ export type SelectStoreState<T extends Value = Value> =
 export type SelectStoreFunctions<T extends Value = Value> =
   CompositeStoreFunctions<Item> &
     PopoverStoreFunctions & {
-      setValue: (value: SelectStoreState<T>["value"]) => void;
-      setSelectElement: (element: SelectStoreState<T>["selectElement"]) => void;
-      setLabelElement: (element: SelectStoreState<T>["labelElement"]) => void;
+      setValue: SetState<SelectStoreState<T>["value"]>;
+      setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
+      setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
     };
 
 export type SelectStoreOptions<T extends Value = Value> =
   CompositeStoreOptions<Item> &
     PopoverStoreOptions &
-    StoreOptions<SelectStoreState<T>, "value" | "setValueOnMove">;
+    StoreOptions<SelectStoreState<T>, "value" | "setValueOnMove"> & {
+      combobox?: ComboboxStore;
+    };
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
   StoreProps<SelectStoreState<T>>;

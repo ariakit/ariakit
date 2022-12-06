@@ -5,8 +5,8 @@ import {
   SelectItemCheck,
   SelectLabel,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import list from "./list";
 import "./style.css";
 
@@ -17,20 +17,22 @@ function renderValue(value: string[]) {
 }
 
 export default function Example() {
-  const select = useSelectState({
+  const select = useSelectStore({
     defaultValue: ["Apple", "Cake"],
     sameWidth: true,
     gutter: 4,
   });
+  const value = select.useState("value");
+  const mounted = select.useState("mounted");
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Favorite food</SelectLabel>
-      <Select state={select} className="select">
-        {renderValue(select.value)}
+      <SelectLabel store={select}>Favorite food</SelectLabel>
+      <Select store={select} className="select">
+        {renderValue(value)}
         <SelectArrow />
       </Select>
-      {select.mounted && (
-        <SelectPopover state={select} className="popover">
+      {mounted && (
+        <SelectPopover store={select} className="popover">
           {list.map((value) => (
             <SelectItem key={value} value={value} className="select-item">
               <SelectItemCheck />

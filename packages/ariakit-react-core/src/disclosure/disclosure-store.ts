@@ -2,9 +2,10 @@ import * as Core from "@ariakit/core/disclosure/disclosure-store";
 import { Store, useStore, useStoreProps } from "../utils/store";
 
 export function useDisclosureStoreOptions(props: DisclosureStoreProps) {
+  const state = props.store?.getState?.();
   return {
-    open: props.open ?? props.getState?.().open ?? props.defaultOpen,
-    animated: props.animated ?? props.getState?.().animated,
+    open: props.open ?? state?.open ?? props.defaultOpen,
+    animated: props.animated ?? state?.animated,
   };
 }
 

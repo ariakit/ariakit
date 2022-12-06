@@ -7,8 +7,9 @@ type Value = Core.CheckboxStoreValue;
 export function useCheckboxStoreOptions<T extends Value = Value>(
   props: CheckboxStoreProps<T>
 ) {
+  const state = props.store?.getState?.();
   return {
-    value: props.value ?? props.getState?.()?.value ?? props.defaultValue,
+    value: props.value ?? state?.value ?? props.defaultValue,
   };
 }
 

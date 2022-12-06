@@ -172,12 +172,12 @@ export function createCompositeStore<T extends Item = Item>({
     focusWrap,
     focusShift,
   };
-  const store = createStore(initialState, collection);
+  const composite = createStore(initialState, collection);
 
-  store.setup(() =>
-    store.sync(
+  composite.setup(() =>
+    composite.sync(
       (state) => {
-        store.setState(
+        composite.setState(
           "activeId",
           getActiveId(state.renderedItems, state.activeId)
         );
@@ -193,7 +193,7 @@ export function createCompositeStore<T extends Item = Item>({
     skip?: number
   ): string | null | undefined => {
     const { activeId, rtl, focusLoop, focusWrap, includesBaseElement } =
-      store.getState();
+      composite.getState();
     // RTL doesn't make sense on vertical navigation
     const isHorizontal = orientation !== "vertical";
     const isRTL = rtl && isHorizontal;
@@ -271,31 +271,32 @@ export function createCompositeStore<T extends Item = Item>({
 
   return {
     ...collection,
-    ...store,
+    ...composite,
 
-    setBaseElement: (element) => store.setState("baseElement", element),
-    setMoves: (moves) => store.setState("moves", moves),
-    setActiveId: (id) => store.setState("activeId", id),
+    setBaseElement: (element) => composite.setState("baseElement", element),
+    setMoves: (moves) => composite.setState("moves", moves),
+    setActiveId: (id) => composite.setState("activeId", id),
 
     move: (id) => {
       // move() does nothing
       if (id === undefined) return;
-      store.setState("activeId", id);
-      store.setState("moves", (moves) => moves + 1);
+      composite.setState("activeId", id);
+      composite.setState("moves", (moves) => moves + 1);
     },
 
-    first: () => findFirstEnabledItem(store.getState().renderedItems)?.id,
+    first: () => findFirstEnabledItem(composite.getState().renderedItems)?.id,
     last: () =>
-      findFirstEnabledItem(reverseArray(store.getState().renderedItems))?.id,
+      findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
+        ?.id,
 
     next: (skip) => {
-      const { renderedItems, orientation } = store.getState();
+      const { renderedItems, orientation } = composite.getState();
       return getNextId(renderedItems, orientation, false, skip);
     },
 
     previous: (skip) => {
       const { renderedItems, orientation, includesBaseElement } =
-        store.getState();
+        composite.getState();
       // If activeId is initially set to null or if includesBaseElement is set
       // to true, then the composite container will be focusable while
       // navigating with arrow keys. But, if it's a grid, we don't want to
@@ -317,7 +318,7 @@ export function createCompositeStore<T extends Item = Item>({
         focusShift,
         focusLoop,
         includesBaseElement,
-      } = store.getState();
+      } = composite.getState();
       const shouldShift = focusShift && !skip;
       // First, we make sure rows have the same number of items by filling it
       // with disabled fake items. Then, we reorganize the items.
@@ -335,7 +336,7 @@ export function createCompositeStore<T extends Item = Item>({
 
     up: (skip) => {
       const { activeId, renderedItems, focusShift, includesBaseElement } =
-        store.getState();
+        composite.getState();
       const shouldShift = focusShift && !skip;
       const verticalItems = verticalizeItems(
         reverseArray(

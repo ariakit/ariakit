@@ -15,12 +15,12 @@ type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;
 
 export function useFormStoreOptions(props: FormStoreProps) {
+  const state = props.store?.getState?.();
   return {
     ...useCollectionStoreOptions(props),
-    values: props.values ?? props.getState?.().values ?? props.defaultValues,
-    errors: props.errors ?? props.getState?.().errors ?? props.defaultErrors,
-    touched:
-      props.touched ?? props.getState?.().touched ?? props.defaultTouched,
+    values: props.values ?? state?.values ?? props.defaultValues,
+    errors: props.errors ?? state?.errors ?? props.defaultErrors,
+    touched: props.touched ?? state?.touched ?? props.defaultTouched,
   };
 }
 

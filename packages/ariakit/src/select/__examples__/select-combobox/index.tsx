@@ -1,52 +1,66 @@
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
   ComboboxList,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import {
   Select,
   SelectItem,
   SelectLabel,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
+import { matchSorter } from "match-sorter";
 import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const combobox = useComboboxState({ list, gutter: 4, sameWidth: true });
-  // value and setValue shouldn't be passed to the select state because the
-  // select value and the combobox value are different things.
-  const { value, setValue, ...selectProps } = combobox;
-  const select = useSelectState({ ...selectProps, defaultValue: "Apple" });
+  const combobox = useComboboxStore({ resetValueOnHide: true });
+  const select = useSelectStore({
+    combobox,
+    defaultValue: "Apple",
+    gutter: 4,
+    sameWidth: true,
+  });
 
-  // Resets combobox value when popover is collapsed
-  if (!select.mounted && combobox.value) {
-    combobox.setValue("");
-  }
+  const value = combobox.useState("value");
+  const mounted = select.useState("mounted");
+
+  const matches = useMemo(() => {
+    return matchSorter(list, value, {
+      baseSort: (a, b) => (a.index < b.index ? -1 : 1),
+    });
+  }, [value]);
 
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Favorite fruit</SelectLabel>
-      <Select state={select} className="select" />
-      <SelectPopover state={select} composite={false} className="popover">
-        <div className="combobox-wrapper">
-          <Combobox
-            state={combobox}
-            autoSelect
-            placeholder="Search..."
-            className="combobox"
-          />
-        </div>
-        <ComboboxList state={combobox}>
-          {combobox.matches.map((value, i) => (
-            <ComboboxItem key={value + i} focusOnHover className="select-item">
-              {(props) => <SelectItem {...props} value={value} />}
-            </ComboboxItem>
-          ))}
-        </ComboboxList>
-      </SelectPopover>
+      <SelectLabel store={select}>Favorite fruit</SelectLabel>
+      <Select store={select} className="select" />
+      {mounted && (
+        <SelectPopover store={select} composite={false} className="popover">
+          <div className="combobox-wrapper">
+            <Combobox
+              store={combobox}
+              autoSelect
+              placeholder="Search..."
+              className="combobox"
+            />
+          </div>
+          <ComboboxList store={combobox}>
+            {matches.map((value, i) => (
+              <ComboboxItem
+                key={value + i}
+                focusOnHover
+                className="select-item"
+              >
+                {(props) => <SelectItem {...props} value={value} />}
+              </ComboboxItem>
+            ))}
+          </ComboboxList>
+        </SelectPopover>
+      )}
     </div>
   );
 }

@@ -16,12 +16,12 @@ export function createRadioStore({
     ...composite.getState(),
     value: null,
   };
-  const store = createStore(initialState, composite);
+  const radio = createStore(initialState, composite);
 
   return {
     ...composite,
-    ...store,
-    setValue: (value) => store.setState("value", value),
+    ...radio,
+    setValue: (value) => radio.setState("value", value),
   };
 }
 

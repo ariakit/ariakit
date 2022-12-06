@@ -23,9 +23,11 @@ type Values = Core.MenuStoreValues;
 export function useMenuStoreOptions<T extends Values = Values>(
   props: MenuStoreProps<T>
 ) {
+  const state = props.store?.getState?.();
+
   const parentMenu = useContext(MenuContext);
   const parentMenuBar = useContext(MenuBarContext);
-  const placementProp = props.placement;
+  const placementProp = props.placement ?? state?.placement;
 
   const placement = useStoreState(
     parentMenu || parentMenuBar,
@@ -40,8 +42,8 @@ export function useMenuStoreOptions<T extends Values = Values>(
   return {
     ...useCompositeStoreOptions(props),
     ...useHovercardStoreOptions(props),
-    values: props.values ?? props.getState?.().values ?? props.defaultValues,
-    timeout: props.timeout ?? timeout,
+    values: props.values ?? state?.values ?? props.defaultValues,
+    timeout: props.timeout ?? state?.timeout ?? timeout,
     placement,
   };
 }

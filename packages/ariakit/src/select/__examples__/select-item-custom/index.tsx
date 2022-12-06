@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import startCase from "lodash/startCase";
 import "./style.css";
 
@@ -32,20 +32,21 @@ const accounts = [
 ];
 
 export default function Example() {
-  const select = useSelectState({
+  const select = useSelectStore({
     defaultValue: "john.doe@example.com",
     setValueOnMove: true,
     sameWidth: true,
     gutter: 4,
   });
+  const value = select.useState("value");
   return (
     <div className="wrapper">
-      <SelectLabel state={select}>Account</SelectLabel>
-      <Select state={select} className="select">
-        {renderValue(select.value)}
+      <SelectLabel store={select}>Account</SelectLabel>
+      <Select store={select} className="select">
+        {renderValue(value)}
         <SelectArrow />
       </Select>
-      <SelectPopover state={select} className="popover">
+      <SelectPopover store={select} className="popover">
         {accounts.map((email) => (
           <SelectItem key={email} value={email} className="select-item">
             {renderValue(email)}

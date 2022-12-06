@@ -16,10 +16,11 @@ import {
 import { Store, useStore, useStoreProps } from "../utils/store";
 
 export function useComboboxStoreOptions(props: ComboboxStoreProps) {
+  const state = props.store?.getState?.();
   return {
     ...useCompositeStoreOptions(props),
     ...usePopoverStoreOptions(props),
-    value: props.value ?? props.getState?.().value ?? props.defaultValue,
+    value: props.value ?? state?.value ?? props.defaultValue,
   };
 }
 

@@ -7,8 +7,9 @@ type Item = Core.CollectionStoreItem;
 export function useCollectionStoreOptions<T extends Item = Item>(
   props: CollectionStoreProps<T>
 ) {
+  const state = props.store?.getState?.();
   return {
-    items: props.items ?? props.getState?.()?.items ?? props.defaultItems,
+    items: props.items ?? state?.items ?? props.defaultItems,
   };
 }
 

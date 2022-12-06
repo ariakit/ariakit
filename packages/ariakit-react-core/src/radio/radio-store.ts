@@ -9,9 +9,10 @@ import {
 import { Store, useStore, useStoreProps } from "../utils/store";
 
 export function useRadioStoreOptions(props: RadioStoreProps) {
+  const state = props.store?.getState?.();
   return {
     ...useCompositeStoreOptions(props),
-    value: props.value ?? props.getState?.().value ?? props.defaultValue,
+    value: props.value ?? state?.value ?? props.defaultValue,
   };
 }
 

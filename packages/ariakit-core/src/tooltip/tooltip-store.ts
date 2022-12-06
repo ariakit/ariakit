@@ -27,7 +27,7 @@ export function createTooltipStore({
     ...popover.getState(),
     timeout,
   };
-  const store = createStore(
+  const tooltip = createStore(
     initialState,
     popover,
     disclosure.omit("open", "mounted")
@@ -35,17 +35,17 @@ export function createTooltipStore({
 
   const ref = Symbol();
 
-  store.setup(() =>
+  tooltip.setup(() =>
     disclosure.sync(
       (state, prev) => {
-        const { timeout } = store.getState();
+        const { timeout } = tooltip.getState();
         const { activeRef } = tooltips.getState();
         if (state.open) {
           if (!timeout || activeRef) {
             // If there's no timeout or an open tooltip already, we can show
             // this immediately.
             tooltips.setState("activeRef", ref);
-            store.setState("open", true);
+            tooltip.setState("open", true);
             return;
           } else {
             // There may be a reference with focus whose tooltip is still not
@@ -57,7 +57,7 @@ export function createTooltipStore({
             });
           }
         } else if (state.open !== prev.open) {
-          store.setState("open", false);
+          tooltip.setState("open", false);
           // Let's give some time so people can move from a reference to
           // another and still show tooltips immediately.
           return afterTimeout(timeout, () => {
@@ -72,16 +72,16 @@ export function createTooltipStore({
     )
   );
 
-  store.setup(() =>
+  tooltip.setup(() =>
     tooltips.sync(
       (state) => {
-        store.setState("open", state.activeRef === ref);
+        tooltip.setState("open", state.activeRef === ref);
       },
       ["activeRef"]
     )
   );
 
-  store.setup(() => () => {
+  tooltip.setup(() => () => {
     tooltips.setState("activeRef", (activeRef) =>
       activeRef === ref ? null : activeRef
     );
@@ -90,7 +90,7 @@ export function createTooltipStore({
   return {
     ...popover,
     ...disclosure,
-    ...store,
+    ...tooltip,
   };
 }
 

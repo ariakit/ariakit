@@ -57,20 +57,20 @@ function getCommonParent(items: Item[]) {
 
 export function createCollectionStore<T extends Item = Item>({
   items = [],
-  ...partialStore
+  store,
 }: CollectionStoreProps<T> = {}): CollectionStore<T> {
   const itemsMap = new Map<string, T>();
   const initialState: CollectionStoreState<T> = {
-    ...partialStore?.getState?.(),
+    ...store?.getState(),
     items,
     renderedItems: [],
   };
   const privateStore = createStore({
     renderedItems: initialState.renderedItems,
   });
-  const store = createStore(initialState, partialStore);
+  const collection = createStore(initialState, store);
 
-  store.setup(() => {
+  collection.setup(() => {
     return privateStore.batchSync(
       (state) => {
         let firstRun = true;
@@ -105,7 +105,7 @@ export function createCollectionStore<T extends Item = Item>({
     const state = privateStore.getState();
     const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
     privateStore.setState("renderedItems", renderedItems);
-    store.setState("renderedItems", renderedItems);
+    collection.setState("renderedItems", renderedItems);
   };
 
   const mergeItem = (
@@ -114,12 +114,11 @@ export function createCollectionStore<T extends Item = Item>({
     map?: Map<string, T>
   ) => {
     let prevItem: T | undefined;
-    let index: number | undefined;
     setItems((items) => {
-      prevItem = items.find(({ id }) => id === item.id);
+      prevItem = map?.get(item.id) || items.find(({ id }) => id === item.id);
       const nextItems = items.slice();
       if (prevItem) {
-        index = nextItems.indexOf(prevItem);
+        const index = nextItems.indexOf(prevItem);
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
         map?.set(item.id, nextItem);
@@ -129,12 +128,13 @@ export function createCollectionStore<T extends Item = Item>({
       }
       return nextItems;
     });
-    const unregisterItem = () => {
+    const unmergeItem = () => {
       setItems((items) => {
         if (!prevItem) {
           map?.delete(item.id);
           return items.filter(({ id }) => id !== item.id);
         }
+        const index = items.findIndex(({ id }) => id === item.id);
         if (index == null || index < 0) return items;
         const nextItems = items.slice();
         nextItems[index] = prevItem;
@@ -142,16 +142,20 @@ export function createCollectionStore<T extends Item = Item>({
         return nextItems;
       });
     };
-    return unregisterItem;
+    return unmergeItem;
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => store.setState("items", getItems), itemsMap);
+    mergeItem(
+      item,
+      (getItems) => collection.setState("items", getItems),
+      itemsMap
+    );
 
   return {
-    ...store,
+    ...collection,
 
-    setItems: (value) => store.setState("items", value),
+    setItems: (value) => collection.setState("items", value),
 
     registerItem,
     renderItem: (item) =>
@@ -166,7 +170,7 @@ export function createCollectionStore<T extends Item = Item>({
       if (!id) return null;
       let item = itemsMap.get(id);
       if (!item) {
-        const { items } = store.getState();
+        const { items } = collection.getState();
         item = items.find((item) => item.id === id);
         if (item) {
           itemsMap.set(id, item);

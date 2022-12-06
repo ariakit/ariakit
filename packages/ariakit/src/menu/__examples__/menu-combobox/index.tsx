@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -17,22 +17,15 @@ import list from "./list";
 import "./style.css";
 
 export default function Example() {
-  const [value, setValue] = useState("");
-  const combobox = useComboboxStore({ value, setValue });
-  const menu = useMenuStore(combobox);
+  const combobox = useComboboxStore({ resetValueOnHide: true });
+  const menu = useMenuStore({ combobox });
+  const value = combobox.useState("value");
 
   const matches = useMemo(() => {
     return matchSorter(list, value, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
     });
   }, [value]);
-
-  const mounted = menu.useState("mounted");
-
-  // Resets combobox value when menu is closed
-  if (!mounted && value) {
-    setValue("");
-  }
 
   return (
     <>

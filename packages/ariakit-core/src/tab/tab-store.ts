@@ -31,51 +31,51 @@ export function createTabStore({
     selectedId,
     selectOnMove,
   };
-  const store = createStore(initialState, composite);
+  const tab = createStore(initialState, composite);
 
   // Selects the active tab when selectOnMove is true. Since we're listening to
   // the moves state, but not the activeId state, this callback will run only
   // when there's a move, which is usually triggered by moving through the tabs
   // using the keyboard.
-  store.setup(() =>
-    store.sync(() => {
-      const { activeId, selectOnMove } = store.getState();
+  tab.setup(() =>
+    tab.sync(() => {
+      const { activeId, selectOnMove } = tab.getState();
       if (!selectOnMove) return;
       if (!activeId) return;
-      const tab = composite.item(activeId);
-      if (!tab) return;
-      if (tab.dimmed) return;
-      if (tab.disabled) return;
-      store.setState("selectedId", tab.id);
+      const tabItem = composite.item(activeId);
+      if (!tabItem) return;
+      if (tabItem.dimmed) return;
+      if (tabItem.disabled) return;
+      tab.setState("selectedId", tabItem.id);
     }, ["moves"])
   );
 
   // Keep activeId in sync with selectedId.
-  store.setup(() =>
-    store.sync(
-      (state) => store.setState("activeId", state.selectedId),
+  tab.setup(() =>
+    tab.sync(
+      (state) => tab.setState("activeId", state.selectedId),
       ["selectedId"]
     )
   );
 
   // Automatically set selectedId if it's undefined.
-  store.setup(() =>
-    store.sync(
+  tab.setup(() =>
+    tab.sync(
       (state) => {
         if (state.selectedId !== undefined) return;
         // First, we try to set selectedId based on the current active tab.
-        const { activeId, renderedItems } = store.getState();
-        const tab = composite.item(activeId);
-        if (tab && !tab.disabled && !tab.dimmed) {
-          store.setState("selectedId", tab.id);
+        const { activeId, renderedItems } = tab.getState();
+        const tabItem = composite.item(activeId);
+        if (tabItem && !tabItem.disabled && !tabItem.dimmed) {
+          tab.setState("selectedId", tabItem.id);
         }
         // If there's no active tab or the active tab is dimmed, we get the
         // first enabled tab instead.
         else {
-          const tab = renderedItems.find(
+          const tabItem = renderedItems.find(
             (item) => !item.disabled && !item.dimmed
           );
-          store.setState("selectedId", tab?.id);
+          tab.setState("selectedId", tabItem?.id);
         }
       },
       ["selectedId", "renderedItems"]
@@ -83,8 +83,8 @@ export function createTabStore({
   );
 
   // Keep panels tabIds in sync with the current tabs.
-  store.setup(() =>
-    store.sync(
+  tab.setup(() =>
+    tab.sync(
       (state) => {
         const tabs = state.renderedItems;
         if (!tabs.length) return;
@@ -95,9 +95,9 @@ export function createTabStore({
             if (!hasOrphanPanels) return;
             items.forEach((panel, i) => {
               if (panel.tabId) return;
-              const tab = tabs[i];
-              if (!tab) return;
-              panels.renderItem({ ...panel, tabId: tab.id });
+              const tabItem = tabs[i];
+              if (!tabItem) return;
+              panels.renderItem({ ...panel, tabId: tabItem.id });
             });
           },
           ["renderedItems"]
@@ -109,11 +109,11 @@ export function createTabStore({
 
   return {
     ...composite,
-    ...store,
+    ...tab,
     panels,
-    setSelectedId: (id) => store.setState("selectedId", id),
+    setSelectedId: (id) => tab.setState("selectedId", id),
     select: (id) => {
-      store.setState("selectedId", id);
+      tab.setState("selectedId", id);
       composite.move(id);
     },
   };

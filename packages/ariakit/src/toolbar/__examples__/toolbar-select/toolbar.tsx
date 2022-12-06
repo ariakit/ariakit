@@ -10,8 +10,8 @@ import {
   SelectArrow,
   SelectItem,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import {
   Toolbar as BaseToolbar,
   ToolbarSeparator as BaseToolbarSeparator,
@@ -75,38 +75,40 @@ export const ToolbarSelect = forwardRef<HTMLButtonElement, ToolbarSelectProps>(
       ...rest
     } = props;
 
-    const select = useSelectState({
+    const select = useSelectStore({
       value,
       setValue: onChange,
       defaultValue,
       gutter: 4,
     });
 
+    const selectValue = select.useState("value");
+
     // The display value includes an icon if one is provided, so we have to
     // compose it based on the value and the passed options.
     const displayValue = useMemo(() => {
-      const item = options.find((option) => option.value === select.value);
+      const item = options.find((option) => option.value === selectValue);
       return (
         <>
           {item?.icon}
-          {item?.label || select.value}
+          {item?.label || selectValue}
         </>
       );
-    }, [options, select.value]);
+    }, [options, selectValue]);
 
     return (
       <>
         <Select
           as={ToolbarItem}
           ref={ref}
-          state={select}
+          store={select}
           className="button"
           {...rest}
         >
           {displayValue}
           <SelectArrow />
         </Select>
-        <SelectPopover state={select} className="popover">
+        <SelectPopover store={select} className="popover">
           {options.map((option) => (
             <SelectItem
               key={option.value}

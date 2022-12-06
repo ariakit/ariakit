@@ -12,12 +12,11 @@ import { Store, useStore, useStoreProps } from "../utils/store";
 type Item = Core.TabStoreItem;
 
 export function useTabStoreOptions(props: TabStoreProps) {
+  const state = props.store?.getState?.();
   return {
     ...useCompositeStoreOptions(props),
     selectedId:
-      props.selectedId ??
-      props.getState?.().selectedId ??
-      props.defaultSelectedId,
+      props.selectedId ?? state?.selectedId ?? props.defaultSelectedId,
   };
 }
 

@@ -22,13 +22,13 @@ export function createHovercardStore({
     hideTimeout: hideTimeout ?? timeout,
     autoFocusOnShow: false,
   };
-  const store = createStore(initialState, popover);
+  const hovercard = createStore(initialState, popover);
 
-  store.setup(() =>
-    store.sync(
+  hovercard.setup(() =>
+    hovercard.sync(
       (state) => {
-        store.setState("showTimeout", (value) => value ?? state.timeout);
-        store.setState("hideTimeout", (value) => value ?? state.timeout);
+        hovercard.setState("showTimeout", (value) => value ?? state.timeout);
+        hovercard.setState("hideTimeout", (value) => value ?? state.timeout);
       },
       ["timeout"]
     )
@@ -36,8 +36,8 @@ export function createHovercardStore({
 
   return {
     ...popover,
-    ...store,
-    setAutoFocusOnShow: (value) => store.setState("autoFocusOnShow", value),
+    ...hovercard,
+    setAutoFocusOnShow: (value) => hovercard.setState("autoFocusOnShow", value),
   };
 }
 

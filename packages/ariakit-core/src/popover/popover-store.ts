@@ -116,15 +116,15 @@ export function createPopoverStore({
     arrowPadding,
     overflowPadding,
   };
-  const store = createStore(initialState, dialog);
+  const popover = createStore(initialState, dialog);
 
   const setCurrentPlacement = (placement: Placement) => {
-    store.setState("currentPlacement", placement);
+    popover.setState("currentPlacement", placement);
   };
 
-  store.setup(() =>
+  popover.setup(() =>
     rendered.sync(() =>
-      store.batchSync(
+      popover.batchSync(
         (state) => {
           if (!state.contentElement?.isConnected) return;
           const popover = state.popoverElement;
@@ -311,10 +311,10 @@ export function createPopoverStore({
 
   return {
     ...dialog,
-    ...store,
-    setAnchorElement: (element) => store.setState("anchorElement", element),
-    setPopoverElement: (element) => store.setState("popoverElement", element),
-    setArrowElement: (element) => store.setState("arrowElement", element),
+    ...popover,
+    setAnchorElement: (element) => popover.setState("anchorElement", element),
+    setPopoverElement: (element) => popover.setState("popoverElement", element),
+    setArrowElement: (element) => popover.setState("arrowElement", element),
     render: () => rendered.setState("rendered", []),
     getAnchorRect,
     renderCallback,

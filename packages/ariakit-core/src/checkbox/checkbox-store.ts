@@ -5,17 +5,17 @@ type Value = boolean | string | number | Array<string | number>;
 
 export function createCheckboxStore<T extends Value = Value>({
   value = false as T,
-  ...partialStore
+  store,
 }: CheckboxStoreProps<T> = {}): CheckboxStore<T> {
   const initialState: CheckboxStoreState<T> = {
-    ...partialStore?.getState?.(),
+    ...store?.getState(),
     value,
   };
-  const store = createStore(initialState, partialStore);
+  const checkbox = createStore(initialState, store);
 
   return {
-    ...store,
-    setValue: (value) => store.setState("value", value),
+    ...checkbox,
+    setValue: (value) => checkbox.setState("value", value),
   };
 }
 
