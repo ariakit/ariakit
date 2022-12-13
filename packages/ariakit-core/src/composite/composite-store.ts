@@ -6,6 +6,7 @@ import {
   createCollectionStore,
 } from "../collection/collection-store";
 import { flatten2DArray, reverseArray } from "../utils/array";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -146,32 +147,44 @@ function verticalizeItems(items: Item[]) {
   return verticalized;
 }
 
-export function createCompositeStore<T extends Item = Item>({
-  orientation = "both",
-  rtl = false,
-  virtualFocus = false,
-  focusLoop = false,
-  focusWrap = false,
-  focusShift = false,
-  activeId,
-  includesBaseElement = activeId === null,
-  moves = 0,
-  ...props
-}: CompositeStoreProps<T> = {}): CompositeStore<T> {
+export function createCompositeStore<T extends Item = Item>(
+  props: CompositeStoreProps<T> = {}
+): CompositeStore<T> {
   const collection = createCollectionStore(props);
+  const syncState = props.store?.getState();
+
+  const activeId = defaultValue(
+    props.activeId,
+    syncState?.activeId,
+    props.defaultActiveId
+  );
+
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
-    baseElement: null,
     activeId,
-    includesBaseElement,
-    moves,
-    orientation,
-    rtl,
-    virtualFocus,
-    focusLoop,
-    focusWrap,
-    focusShift,
+    baseElement: defaultValue(syncState?.baseElement, null),
+    includesBaseElement: defaultValue(
+      props.includesBaseElement,
+      syncState?.includesBaseElement,
+      activeId === null
+    ),
+    moves: defaultValue(props.moves, syncState?.moves, 0),
+    orientation: defaultValue(
+      props.orientation,
+      syncState?.orientation,
+      "both" as const
+    ),
+    rtl: defaultValue(props.rtl, syncState?.rtl, false),
+    virtualFocus: defaultValue(
+      props.virtualFocus,
+      syncState?.virtualFocus,
+      false
+    ),
+    focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, false),
+    focusWrap: defaultValue(props.focusWrap, syncState?.focusWrap, false),
+    focusShift: defaultValue(props.focusShift, syncState?.focusShift, false),
   };
+
   const composite = createStore(initialState, collection);
 
   composite.setup(() =>
@@ -274,6 +287,7 @@ export function createCompositeStore<T extends Item = Item>({
     ...composite,
 
     setBaseElement: (element) => composite.setState("baseElement", element),
+    // TODO: Remove setMoves?
     setMoves: (moves) => composite.setState("moves", moves),
     setActiveId: (id) => composite.setState("activeId", id),
 
@@ -357,6 +371,8 @@ export function createCompositeStore<T extends Item = Item>({
   };
 }
 
+export type CompositeStoreOrientation = Orientation;
+
 export type CompositeStoreItem = Item;
 
 export type CompositeStoreState<T extends Item = Item> =
@@ -400,7 +416,9 @@ export type CompositeStoreOptions<T extends Item = Item> =
       | "moves"
       | "includesBaseElement"
       | "activeId"
-    >;
+    > & {
+      defaultActiveId?: CompositeStoreState<T>["activeId"];
+    };
 
 export type CompositeStoreProps<T extends Item = Item> =
   CompositeStoreOptions<T> & StoreProps<CompositeStoreState<T>>;

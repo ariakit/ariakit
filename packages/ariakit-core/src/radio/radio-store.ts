@@ -4,18 +4,25 @@ import {
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 export function createRadioStore({
-  focusLoop = true,
   ...props
 }: RadioStoreProps = {}): RadioStore {
-  const composite = createCompositeStore({ focusLoop, ...props });
+  const syncState = props.store?.getState();
+
+  const composite = createCompositeStore({
+    ...props,
+    focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
+  });
+
   const initialState: RadioStoreState = {
     ...composite.getState(),
-    value: null,
+    value: defaultValue(props.value, syncState?.value, null),
   };
+
   const radio = createStore(initialState, composite);
 
   return {

@@ -13,8 +13,15 @@ import {
   createPopoverStore,
 } from "../popover/popover-store";
 import { SelectStore } from "../select/select-store";
+import { defaultValue } from "../utils/misc";
 import { isSafari, isTouchDevice } from "../utils/platform";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+  mergeStore,
+} from "../utils/store";
 import { SetState } from "../utils/types";
 
 type Item = CompositeStoreItem & {
@@ -26,15 +33,6 @@ const isSafariOnMobile = isSafari() && isTouchDevice();
 export function createComboboxStore({
   menu,
   select,
-  placement = "bottom-start",
-  activeId = null,
-  includesBaseElement = true,
-  orientation = "vertical",
-  focusLoop = true,
-  focusWrap = true,
-  virtualFocus = !isSafariOnMobile,
-  value = "",
-  resetValueOnHide = false,
   ...props
 }: ComboboxStoreProps = {}): ComboboxStore {
   const menuStore = menu?.omit(
@@ -43,6 +41,7 @@ export function createComboboxStore({
     "contentElement",
     "popoverElement"
   );
+
   const selectStore = select?.omit(
     "value",
     "anchorElement",
@@ -52,30 +51,58 @@ export function createComboboxStore({
     "items",
     "renderedItems"
   );
+
+  const store = mergeStore(props.store, menuStore, selectStore);
+  const syncState = store.getState();
+
+  const activeId = defaultValue(props.activeId, syncState.activeId, null);
+
   const composite = createCompositeStore({
-    activeId,
-    includesBaseElement,
-    orientation,
-    focusLoop,
-    focusWrap,
-    virtualFocus,
     ...props,
+    store,
+    activeId,
+    includesBaseElement: defaultValue(
+      props.includesBaseElement,
+      syncState.includesBaseElement,
+      true
+    ),
+    orientation: defaultValue(
+      props.orientation,
+      syncState.orientation,
+      "vertical" as const
+    ),
+    focusLoop: defaultValue(props.focusLoop, syncState.focusLoop, true),
+    focusWrap: defaultValue(props.focusWrap, syncState.focusWrap, true),
+    virtualFocus: defaultValue(
+      props.virtualFocus,
+      syncState?.virtualFocus,
+      !isSafariOnMobile
+    ),
   });
-  const popover = createPopoverStore({ placement, ...props });
+
+  const popover = createPopoverStore({
+    ...props,
+    store,
+    placement: defaultValue(
+      props.placement,
+      syncState.placement,
+      "bottom-start" as const
+    ),
+  });
+
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value,
-    resetValueOnHide,
-    activeValue: undefined,
+    value: defaultValue(props.value, syncState.value, props.defaultValue, ""),
+    resetValueOnHide: defaultValue(
+      props.resetValueOnHide,
+      syncState.resetValueOnHide,
+      false
+    ),
+    activeValue: syncState.activeValue,
   };
-  const combobox = createStore(
-    initialState,
-    composite,
-    popover,
-    menuStore,
-    selectStore
-  );
+
+  const combobox = createStore(initialState, composite, popover);
 
   combobox.setup(() =>
     combobox.sync(
@@ -109,7 +136,7 @@ export function createComboboxStore({
       (state) => {
         if (!state.resetValueOnHide) return;
         if (state.mounted) return;
-        combobox.setState("value", value);
+        combobox.setState("value", props.value ?? "");
       },
       ["resetValueOnHide", "mounted"]
     )
@@ -155,6 +182,7 @@ export type ComboboxStoreOptions = CompositeStoreOptions<Item> &
   StoreOptions<ComboboxStoreState, "value" | "resetValueOnHide"> & {
     menu?: MenuStore;
     select?: SelectStore;
+    defaultValue?: ComboboxStoreState["value"];
   };
 
 export type ComboboxStoreProps = ComboboxStoreOptions &

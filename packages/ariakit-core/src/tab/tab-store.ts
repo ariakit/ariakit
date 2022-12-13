@@ -10,6 +10,7 @@ import {
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -17,19 +18,34 @@ type Item = CompositeStoreItem & {
   dimmed?: boolean;
 };
 
-export function createTabStore({
-  orientation = "horizontal",
-  focusLoop = true,
-  selectedId,
-  selectOnMove = true,
-  ...props
-}: TabStoreProps = {}): TabStore {
-  const composite = createCompositeStore({ orientation, focusLoop, ...props });
+export function createTabStore(props: TabStoreProps = {}): TabStore {
+  const syncState = props.store?.getState();
+
+  const composite = createCompositeStore({
+    ...props,
+    orientation: defaultValue(
+      props.orientation,
+      syncState?.orientation,
+      "horizontal" as const
+    ),
+    focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
+  });
+
   const panels = createCollectionStore<TabStorePanel>();
+
   const initialState: TabStoreState = {
     ...composite.getState(),
-    selectedId,
-    selectOnMove,
+    selectedId: defaultValue(
+      props.selectedId,
+      syncState?.selectedId,
+      props.defaultSelectedId,
+      undefined
+    ),
+    selectOnMove: defaultValue(
+      props.selectOnMove,
+      syncState?.selectOnMove,
+      true
+    ),
   };
   const tab = createStore(initialState, composite);
 
@@ -154,7 +170,9 @@ export type TabStoreFunctions = CompositeStoreFunctions<Item> & {
 };
 
 export type TabStoreOptions = CompositeStoreOptions<Item> &
-  StoreOptions<TabStoreState, "selectedId" | "selectOnMove">;
+  StoreOptions<TabStoreState, "selectedId" | "selectOnMove"> & {
+    defaultSelectedId?: TabStoreState["selectedId"];
+  };
 
 export type TabStoreProps = TabStoreOptions & StoreProps<TabStoreState>;
 

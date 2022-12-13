@@ -31,7 +31,6 @@ export function createStore<S extends State>(
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
-  // TODO: Refactor this into two functions maybe? setup(callback) and init().
   const setup: Store<S>["setup"] = (callback) => {
     setups.add(callback);
     return () => setups.delete(callback);
@@ -42,8 +41,9 @@ export function createStore<S extends State>(
     if (!stores.length) return noop;
     initialized = true;
 
-    const keys = getKeys(state);
+    const cleanups = stores.map((store) => store?.init?.());
 
+    const keys = getKeys(state);
     const desyncs = keys.map((key) =>
       chain(
         ...stores.map((store) => {
@@ -55,15 +55,10 @@ export function createStore<S extends State>(
       )
     );
 
-    const cleanups = stores.map((store) => store?.init?.());
-
     const teardowns: Array<void | (() => void)> = [];
+    setups.forEach((setup) => teardowns.push(setup()));
 
-    setups.forEach((setup) => {
-      teardowns.push(setup());
-    });
-
-    return chain(...desyncs, ...cleanups, ...teardowns, () => {
+    return chain(...teardowns, ...desyncs, ...cleanups, () => {
       initialized = false;
     });
   };
@@ -170,6 +165,18 @@ export function createStore<S extends State>(
   return finalStore;
 }
 
+export function mergeStore<S extends State>(
+  ...stores: Array<Partial<Store<S>> | undefined>
+): Store<S> {
+  const initialState = stores.reduce((state, store) => {
+    const nextState = store?.getState?.();
+    if (!nextState) return state;
+    return { ...state, ...nextState };
+  }, {} as S);
+  const store = createStore(initialState, ...stores);
+  return store;
+}
+
 /**
  * Store state type.
  */
@@ -188,7 +195,13 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
  * Props that can be passed to a store creator function.
  * @template S State type.
  */
-export type StoreProps<S extends State> = { store?: Store<Partial<S>> };
+export type StoreProps<S extends State = State> = { store?: Store<Partial<S>> };
+
+/**
+ * TODO: Description
+ */
+export type StorePropsState<T extends StoreProps> = StoreState<T["store"]>;
+
 /**
  * Store listener type.
  * @template S State type.

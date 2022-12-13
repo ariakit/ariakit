@@ -1,21 +1,31 @@
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
-export function createDisclosureStore({
-  open = false,
-  animated = false,
-  store,
-}: DisclosureStoreProps = {}): DisclosureStore {
+export function createDisclosureStore(
+  props: DisclosureStoreProps = {}
+): DisclosureStore {
+  const syncState = props.store?.getState();
+
+  const open = defaultValue(
+    props.open,
+    syncState?.open,
+    props.defaultOpen,
+    false
+  );
+
+  const animated = defaultValue(props.animated, syncState?.animated, false);
+
   const initialState: DisclosureStoreState = {
-    ...store?.getState(),
     open,
     animated,
     animating: !!animated && open,
     mounted: open,
-    contentElement: null,
-    disclosureElement: null,
+    contentElement: defaultValue(syncState?.contentElement, null),
+    disclosureElement: defaultValue(syncState?.disclosureElement, null),
   };
-  const disclosure = createStore(initialState, store);
+
+  const disclosure = createStore(initialState, props.store);
 
   disclosure.setup(() =>
     disclosure.sync(
@@ -84,7 +94,9 @@ export type DisclosureStoreFunctions = {
 export type DisclosureStoreOptions = StoreOptions<
   DisclosureStoreState,
   "open" | "animated"
->;
+> & {
+  defaultOpen?: DisclosureStoreState["open"];
+};
 
 export type DisclosureStoreProps = DisclosureStoreOptions &
   StoreProps<DisclosureStoreState>;

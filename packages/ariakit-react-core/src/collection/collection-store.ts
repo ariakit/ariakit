@@ -5,12 +5,9 @@ import { Store, useStore, useStoreProps } from "../utils/store";
 type Item = Core.CollectionStoreItem;
 
 export function useCollectionStoreOptions<T extends Item = Item>(
-  props: CollectionStoreProps<T>
-) {
-  const state = props.store?.getState?.();
-  return {
-    items: props.items ?? state?.items ?? props.defaultItems,
-  };
+  _props: CollectionStoreProps<T>
+): Partial<CollectionStoreOptions<T>> {
+  return {};
 }
 
 export function useCollectionStoreProps<T extends CollectionStore>(
@@ -22,8 +19,20 @@ export function useCollectionStoreProps<T extends CollectionStore>(
 }
 
 export function useCollectionStore<T extends Item = Item>(
-  props: CollectionStoreProps<T> = {}
-): CollectionStore<T> {
+  props: CollectionStoreProps<T> &
+    (
+      | Required<Pick<CollectionStoreProps<T>, "items">>
+      | Required<Pick<CollectionStoreProps<T>, "defaultItems">>
+    )
+): CollectionStore<T>;
+
+export function useCollectionStore(
+  props?: CollectionStoreProps
+): CollectionStore;
+
+export function useCollectionStore(
+  props: CollectionStoreProps = {}
+): CollectionStore {
   const options = useCollectionStoreOptions(props);
   const store = useStore(() =>
     Core.createCollectionStore({ ...props, ...options })
@@ -41,7 +50,6 @@ export type CollectionStoreFunctions<T extends Item = Item> =
 
 export type CollectionStoreOptions<T extends Item = Item> =
   Core.CollectionStoreOptions<T> & {
-    defaultItems?: CollectionStoreState<T>["items"];
     setItems?: BivariantCallback<
       (items: CollectionStoreState<T>["items"]) => void
     >;

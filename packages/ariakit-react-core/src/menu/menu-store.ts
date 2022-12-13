@@ -42,6 +42,7 @@ export function useMenuStoreOptions<T extends Values = Values>(
   return {
     ...useCompositeStoreOptions(props),
     ...useHovercardStoreOptions(props),
+    // TODO: Pass parent prop and remove these default values
     values: props.values ?? state?.values ?? props.defaultValues,
     timeout: props.timeout ?? state?.timeout ?? timeout,
     placement,
@@ -71,8 +72,16 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
 }
 
 export function useMenuStore<T extends Values = Values>(
-  props: MenuStoreProps<T> = {}
-): MenuStore<T> {
+  props: MenuStoreProps<T> &
+    (
+      | Required<Pick<MenuStoreProps<T>, "values">>
+      | Required<Pick<MenuStoreProps<T>, "defaultValues">>
+    )
+): MenuStore<T>;
+
+export function useMenuStore(props?: MenuStoreProps): MenuStore;
+
+export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
   const options = useMenuStoreOptions(props);
   const store = useStore(() => Core.createMenuStore({ ...props, ...options }));
   return useMenuStoreProps(store, props);
@@ -95,7 +104,6 @@ export type MenuStoreOptions<T extends Values = Values> =
   Core.MenuStoreOptions<T> &
     CompositeStoreOptions &
     HovercardStoreOptions & {
-      defaultValues?: MenuStoreState<T>["values"];
       setValues?: BivariantCallback<
         (values: MenuStoreState<T>["values"]) => void
       >;

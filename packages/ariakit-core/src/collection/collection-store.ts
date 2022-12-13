@@ -1,7 +1,7 @@
 import { getDocument } from "../utils/dom";
-import { chain } from "../utils/misc";
+import { chain, defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { BivariantCallback, SetState } from "../utils/types";
+import { BivariantCallback } from "../utils/types";
 
 type Item = {
   id: string;
@@ -55,20 +55,28 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-export function createCollectionStore<T extends Item = Item>({
-  items = [],
-  store,
-}: CollectionStoreProps<T> = {}): CollectionStore<T> {
+export function createCollectionStore<T extends Item = Item>(
+  props: CollectionStoreProps<T> = {}
+): CollectionStore<T> {
   const itemsMap = new Map<string, T>();
+
+  const syncState = props.store?.getState();
   const initialState: CollectionStoreState<T> = {
-    ...store?.getState(),
-    items,
-    renderedItems: [],
+    items: defaultValue(props.items, syncState?.items, props.defaultItems, []),
+    renderedItems: defaultValue(syncState?.renderedItems, []),
   };
+
   const privateStore = createStore({
     renderedItems: initialState.renderedItems,
   });
-  const collection = createStore(initialState, store);
+  const collection = createStore(initialState, props.store);
+
+  const sortItems = () => {
+    const state = privateStore.getState();
+    const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
+    privateStore.setState("renderedItems", renderedItems);
+    collection.setState("renderedItems", renderedItems);
+  };
 
   collection.setup(() => {
     return privateStore.batchSync(
@@ -101,44 +109,40 @@ export function createCollectionStore<T extends Item = Item>({
     );
   });
 
-  const sortItems = () => {
-    const state = privateStore.getState();
-    const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
-    privateStore.setState("renderedItems", renderedItems);
-    collection.setState("renderedItems", renderedItems);
-  };
-
   const mergeItem = (
     item: T,
     setItems: (getItems: (items: T[]) => T[]) => void,
-    map?: Map<string, T>
+    canDeleteFromMap = false
   ) => {
     let prevItem: T | undefined;
     setItems((items) => {
-      prevItem = map?.get(item.id) || items.find(({ id }) => id === item.id);
+      const index =
+        itemsMap.get(item.id) && items.findIndex(({ id }) => id === item.id);
       const nextItems = items.slice();
-      if (prevItem) {
-        const index = nextItems.indexOf(prevItem);
+      if (index && index >= 0) {
+        prevItem = items[index];
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
-        map?.set(item.id, nextItem);
+        itemsMap.set(item.id, nextItem);
       } else {
         nextItems.push(item);
-        map?.set(item.id, item);
+        itemsMap.set(item.id, item);
       }
       return nextItems;
     });
     const unmergeItem = () => {
       setItems((items) => {
         if (!prevItem) {
-          map?.delete(item.id);
+          if (canDeleteFromMap) {
+            itemsMap.delete(item.id);
+          }
           return items.filter(({ id }) => id !== item.id);
         }
         const index = items.findIndex(({ id }) => id === item.id);
-        if (index == null || index < 0) return items;
+        if (index === -1) return items;
         const nextItems = items.slice();
         nextItems[index] = prevItem;
-        map?.set(item.id, prevItem);
+        itemsMap.set(item.id, prevItem);
         return nextItems;
       });
     };
@@ -146,16 +150,10 @@ export function createCollectionStore<T extends Item = Item>({
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(
-      item,
-      (getItems) => collection.setState("items", getItems),
-      itemsMap
-    );
+    mergeItem(item, (getItems) => collection.setState("items", getItems), true);
 
   return {
     ...collection,
-
-    setItems: (value) => collection.setState("items", value),
 
     registerItem,
     renderItem: (item) =>
@@ -184,21 +182,48 @@ export function createCollectionStore<T extends Item = Item>({
 export type CollectionStoreItem = Item;
 
 export type CollectionStoreState<T extends Item = Item> = {
+  /**
+   * Lists all the items with their meta data. This state is automatically
+   * updated when an item is registered or unregistered with the `registerItem`
+   * function.
+   */
   items: T[];
+  /**
+   * Lists all the items that are currently rendered. This state is
+   * automatically updated when an item is rendered or unrendered with the
+   * `renderItem` function. This state is also automatically sorted based on
+   * their DOM position.
+   */
   renderedItems: T[];
 };
 
 export type CollectionStoreFunctions<T extends Item = Item> = {
-  setItems: SetState<CollectionStoreState<T>["items"]>;
+  /**
+   * Registers an item in the collection. This function returns a cleanup
+   * function that unregisters the item.
+   */
   registerItem: BivariantCallback<(item: T) => () => void>;
+  /**
+   * Renders an item in the collection. This function returns a cleanup function
+   * that unrenders the item.
+   */
   renderItem: BivariantCallback<(item: T) => () => void>;
+  /**
+   * Gets an item by its id.
+   */
   item: (id: string | null | undefined) => T | null;
 };
 
 export type CollectionStoreOptions<T extends Item = Item> = StoreOptions<
   CollectionStoreState<T>,
   "items"
->;
+> & {
+  /**
+   * The defaut value for the `items` state.
+   * @default []
+   */
+  defaultItems?: CollectionStoreState<T>["items"];
+};
 
 export type CollectionStoreProps<T extends Item = Item> =
   CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;

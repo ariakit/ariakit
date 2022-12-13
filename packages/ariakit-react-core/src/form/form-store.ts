@@ -15,13 +15,7 @@ type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;
 
 export function useFormStoreOptions(props: FormStoreProps) {
-  const state = props.store?.getState?.();
-  return {
-    ...useCollectionStoreOptions(props),
-    values: props.values ?? state?.values ?? props.defaultValues,
-    errors: props.errors ?? state?.errors ?? props.defaultErrors,
-    touched: props.touched ?? state?.touched ?? props.defaultTouched,
-  };
+  return useCollectionStoreOptions(props);
 }
 
 export function useFormStoreProps<
@@ -62,8 +56,20 @@ export function useFormStoreProps<
 }
 
 export function useFormStore<T extends Values = Values>(
-  props: FormStoreProps<T> = {}
-): FormStore<T> {
+  props: FormStoreProps<T> &
+    (
+      | Required<Pick<FormStoreProps<T>, "values">>
+      | Required<Pick<FormStoreProps<T>, "defaultValues">>
+      | Required<Pick<FormStoreProps<T>, "errors">>
+      | Required<Pick<FormStoreProps<T>, "defaultErrors">>
+      | Required<Pick<FormStoreProps<T>, "touched">>
+      | Required<Pick<FormStoreProps<T>, "defaultTouched">>
+    )
+): FormStore<T>;
+
+export function useFormStore(props: FormStoreProps): FormStore;
+
+export function useFormStore(props: FormStoreProps = {}): FormStore {
   const options = useFormStoreOptions(props);
   const store = useStore(() => Core.createFormStore({ ...props, ...options }));
   return useFormStoreProps(store, props);
@@ -85,18 +91,6 @@ export type FormStoreFunctions<T extends Values = Values> =
 export type FormStoreOptions<T extends Values = Values> =
   Core.FormStoreOptions<T> &
     CollectionStoreOptions<Item> & {
-      /**
-       * The default values of the form.
-       */
-      defaultValues?: FormStoreState<T>["values"];
-      /**
-       * The default errors of the form.
-       */
-      defaultErrors?: FormStoreState<T>["errors"];
-      /**
-       * The default touched state of the form.
-       */
-      defaultTouched?: FormStoreState<T>["touched"];
       /**
        * Function that will be called when setting the form `values` state.
        * @example

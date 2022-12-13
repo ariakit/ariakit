@@ -5,6 +5,7 @@ import {
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 
 const tooltips = createStore({ activeRef: null as symbol | null });
@@ -14,18 +15,28 @@ function afterTimeout(timeoutMs: number, cb: () => void) {
   return () => clearTimeout(timeoutId);
 }
 
-export function createTooltipStore({
-  placement = "top",
-  gutter = 8,
-  timeout = 0,
-  open,
-  ...props
-}: TooltipStoreProps = {}): TooltipStore {
-  const disclosure = createDisclosureStore({ open, ...props });
-  const popover = createPopoverStore({ placement, gutter, open, ...props });
+export function createTooltipStore(
+  props: TooltipStoreProps = {}
+): TooltipStore {
+  const syncState = props.store?.getState();
+  const open = defaultValue(props.open, syncState?.open, false);
+
+  const disclosure = createDisclosureStore({ ...props, open });
+
+  const popover = createPopoverStore({
+    ...props,
+    open,
+    placement: defaultValue(
+      props.placement,
+      syncState?.placement,
+      "top" as const
+    ),
+    gutter: defaultValue(props.gutter, syncState?.gutter, 8),
+  });
+
   const initialState: TooltipStoreState = {
     ...popover.getState(),
-    timeout,
+    timeout: defaultValue(props.timeout, syncState?.timeout, 0),
   };
   const tooltip = createStore(
     initialState,

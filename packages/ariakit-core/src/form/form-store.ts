@@ -5,7 +5,7 @@ import {
   CollectionStoreState,
   createCollectionStore,
 } from "../collection/collection-store";
-import { applyState, isInteger, isObject } from "../utils/misc";
+import { applyState, defaultValue, isInteger, isObject } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { AnyObject, SetState, SetStateAction } from "../utils/types";
 import { DeepMap, DeepPartial, Names, StringLike } from "./types";
@@ -121,14 +121,46 @@ function createNames() {
   return new Proxy(Object.create(null), getNameHandler(cache));
 }
 
-export function createFormStore<T extends Values = Values>({
-  values = {} as FormStoreState<T>["values"],
-  errors = {} as FormStoreState<T>["errors"],
-  touched = {} as FormStoreState<T>["touched"],
-  ...props
-}: FormStoreProps<T> = {}): FormStore<T> {
+export function createFormStore<T extends Values = Values>(
+  props: FormStoreProps<T> &
+    (
+      | Required<Pick<FormStoreProps<T>, "values">>
+      | Required<Pick<FormStoreProps<T>, "defaultValues">>
+      | Required<Pick<FormStoreProps<T>, "errors">>
+      | Required<Pick<FormStoreProps<T>, "defaultErrors">>
+      | Required<Pick<FormStoreProps<T>, "touched">>
+      | Required<Pick<FormStoreProps<T>, "defaultTouched">>
+    )
+): FormStore<T>;
+
+export function createFormStore(props: FormStoreProps): FormStore;
+
+export function createFormStore(props: FormStoreProps = {}): FormStore {
+  const syncState = props.store?.getState();
   const collection = createCollectionStore(props);
-  const initialState: FormStoreState<T> = {
+
+  const values = defaultValue(
+    props.values,
+    syncState?.values,
+    props.defaultValues,
+    {}
+  );
+
+  const errors = defaultValue(
+    props.errors,
+    syncState?.errors,
+    props.defaultErrors,
+    {}
+  );
+
+  const touched = defaultValue(
+    props.touched,
+    syncState?.touched,
+    props.defaultTouched,
+    {}
+  );
+
+  const initialState: FormStoreState = {
     ...collection.getState(),
     values,
     errors,
@@ -303,7 +335,11 @@ export type FormStoreFunctions<T extends Values = Values> =
 
 export type FormStoreOptions<T extends Values = Values> =
   CollectionStoreOptions<Item> &
-    StoreOptions<FormStoreState<T>, "values" | "errors" | "touched">;
+    StoreOptions<FormStoreState<T>, "values" | "errors" | "touched"> & {
+      defaultValues?: FormStoreState<T>["values"];
+      defaultErrors?: FormStoreState<T>["errors"];
+      defaultTouched?: FormStoreState<T>["touched"];
+    };
 
 export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
   StoreProps<FormStoreState<T>>;

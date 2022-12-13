@@ -13,7 +13,14 @@ import {
   createPopoverStore,
 } from "../popover/popover-store";
 import { toArray } from "../utils/array";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+import { defaultValue } from "../utils/misc";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+  mergeStore,
+} from "../utils/store";
 import { SetState } from "../utils/types";
 
 type Value = string | string[];
@@ -22,18 +29,20 @@ type Item = CompositeStoreItem & {
   value?: string;
 };
 
-export function createSelectStore<T extends Value = Value>({
-  virtualFocus = true,
-  includesBaseElement = false,
-  activeId = null,
-  orientation = "vertical",
-  placement = "bottom-start",
-  value,
-  setValueOnMove = false,
+export function createSelectStore<T extends Value = Value>(
+  props: SelectStoreProps<T> &
+    (
+      | Required<Pick<SelectStoreProps<T>, "value">>
+      | Required<Pick<SelectStoreProps<T>, "defaultValue">>
+    )
+): SelectStore<T>;
+
+export function createSelectStore(props?: SelectStoreProps): SelectStore;
+
+export function createSelectStore({
   combobox,
   ...props
-}: SelectStoreProps<T> = {}): SelectStore<T> {
-  const defaultValue = new String("") as MutableValue<T>;
+}: SelectStoreProps = {}): SelectStore {
   const comboboxStore = combobox?.omit(
     "value",
     "anchorElement",
@@ -43,35 +52,79 @@ export function createSelectStore<T extends Value = Value>({
     "items",
     "renderedItems"
   );
+
+  const store = mergeStore(props.store, comboboxStore);
+  const syncState = store.getState();
+
   const composite = createCompositeStore({
-    virtualFocus,
-    includesBaseElement,
-    activeId,
-    orientation,
     ...props,
+    store,
+    virtualFocus: defaultValue(
+      props.virtualFocus,
+      syncState.virtualFocus,
+      true
+    ),
+    includesBaseElement: defaultValue(
+      props.includesBaseElement,
+      syncState.includesBaseElement,
+      false
+    ),
+    activeId: defaultValue(
+      props.activeId,
+      syncState.activeId,
+      props.defaultActiveId,
+      null
+    ),
+    orientation: defaultValue(
+      props.orientation,
+      syncState.orientation,
+      "vertical" as const
+    ),
   });
-  const popover = createPopoverStore({ placement, ...props });
-  const initialState: SelectStoreState<T> = {
+
+  const popover = createPopoverStore({
+    ...props,
+    store,
+    placement: defaultValue(
+      props.placement,
+      syncState.placement,
+      "bottom-start" as const
+    ),
+  });
+
+  const initialValue = new String("") as "";
+
+  const initialState: SelectStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value: value ?? defaultValue,
-    setValueOnMove,
-    selectElement: null,
-    labelElement: null,
+    value: defaultValue(
+      props.value,
+      syncState.value,
+      props.defaultValue,
+      initialValue
+    ),
+    setValueOnMove: defaultValue(
+      props.setValueOnMove,
+      syncState.setValueOnMove,
+      false
+    ),
+    selectElement: defaultValue(syncState.selectElement, null),
+    labelElement: defaultValue(syncState.labelElement, null),
   };
-  const select = createStore(initialState, composite, popover, comboboxStore);
+
+  const select = createStore(initialState, composite, popover);
 
   // Automatically sets the default value if it's not set.
   select.setup(() =>
     select.sync(
       (state) => {
-        if (state.value !== defaultValue) return;
+        if (state.value !== initialValue) return;
         if (!state.items.length) return;
         const item = state.items.find(
           (item) => !item.disabled && item.value != null
         );
         if (item?.value == null) return;
-        select.setState("value", item.value as MutableValue<T>);
+        select.setState("value", item.value);
       },
       ["value", "items"]
     )
@@ -107,7 +160,7 @@ export function createSelectStore<T extends Value = Value>({
         if (!activeId) return;
         const item = composite.item(activeId);
         if (!item || item.disabled || item.value == null) return;
-        select.setState("value", item.value as MutableValue<T>);
+        select.setState("value", item.value);
       },
       ["setValueOnMove", "moves"]
     )
@@ -163,6 +216,8 @@ export type SelectStoreOptions<T extends Value = Value> =
     PopoverStoreOptions &
     StoreOptions<SelectStoreState<T>, "value" | "setValueOnMove"> & {
       combobox?: ComboboxStore;
+    } & {
+      defaultValue?: SelectStoreState<T>["value"];
     };
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &

@@ -24,7 +24,7 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { beforePaint, chain } from "@ariakit/core/utils/misc";
+import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
@@ -154,14 +154,14 @@ export const useDialog = createHook<DialogOptions>(
     // Sets disclosure element.
     useEffect(() => {
       if (!openStable) return;
-      const dialog = contentElement;
+      const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
       if (activeElement.tagName === "BODY") return;
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
-    }, [contentElement, openStable]);
+    }, [openStable]);
 
     const nested = useNestedDialogs(store, modal);
     const { nestedDialogs, openModals, wrapElement } = nested;
@@ -221,7 +221,7 @@ export const useDialog = createHook<DialogOptions>(
     useEffect(() => {
       if (!mounted) return;
       if (!domReady) return;
-      const dialog = contentElement;
+      const dialog = ref.current;
       if (!dialog) return;
       // Usually, we only want to force the presence of a dismiss button if the
       // dialog is a modal. But, on Safari, since we're disabling the
@@ -232,7 +232,7 @@ export const useDialog = createHook<DialogOptions>(
       const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
       if (existingDismiss) return;
       return prependHiddenDismiss(dialog, store.hide);
-    }, [mounted, contentElement, domReady, shouldDisableAccessibilityTree]);
+    }, [mounted, domReady, shouldDisableAccessibilityTree]);
 
     const shouldDisableOutside = useChampionDialog(
       "data-dialog-disable-outside",
@@ -289,28 +289,26 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = contentElement;
       if (!dialog?.isConnected) return;
       const initialFocus = initialFocusRef?.current;
-      // TODO: Refactor this
-      return beforePaint(() => {
-        const element =
-          initialFocus ||
-          // We have to fallback to the first focusable element otherwise portaled
-          // dialogs with preserveTabOrder set to true will not receive focus
-          // properly because the elements aren't tabbable until the dialog
-          // receives focus.
-          getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
-          dialog;
-        const prevInitialFocus = prevInitialFocusRef.current;
-        prevInitialFocusRef.current = initialFocus;
-        // If the initial focus is the same as the previous initial focus and
-        // there's already an element with focus inside the dialog, we don't
-        // change focus here.
-        if (initialFocus === prevInitialFocus) {
-          const activeElement = getActiveElement(dialog, true);
-          if (activeElement && contains(dialog, activeElement)) return;
-        }
-        if (!autoFocusOnShowProp(element)) return;
-        element.focus();
-      });
+
+      const element =
+        initialFocus ||
+        // We have to fallback to the first focusable element otherwise portaled
+        // dialogs with preserveTabOrder set to true will not receive focus
+        // properly because the elements aren't tabbable until the dialog
+        // receives focus.
+        getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
+        dialog;
+      const prevInitialFocus = prevInitialFocusRef.current;
+      prevInitialFocusRef.current = initialFocus;
+      // If the initial focus is the same as the previous initial focus and
+      // there's already an element with focus inside the dialog, we don't
+      // change focus here.
+      if (initialFocus === prevInitialFocus) {
+        const activeElement = getActiveElement(dialog, true);
+        if (activeElement && contains(dialog, activeElement)) return;
+      }
+      if (!autoFocusOnShowProp(element)) return;
+      element.focus();
     }, [
       contentElement,
       openStable,
@@ -335,7 +333,7 @@ export const useDialog = createHook<DialogOptions>(
       if (!mayAutoFocusOnHide) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
-        const dialog = contentElement;
+        const dialog = ref.current;
         if (!dialog) return;
         const dialogs = nestedDialogsRef.current;
         // Hide was triggered by a click/focus on a tabbable element outside
@@ -384,13 +382,7 @@ export const useDialog = createHook<DialogOptions>(
       // be executed when the Dialog component gets unmounted. This is useful
       // so we can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [
-      open,
-      mayAutoFocusOnHide,
-      contentElement,
-      finalFocusRef,
-      autoFocusOnHideProp,
-    ]);
+    }, [open, mayAutoFocusOnHide, finalFocusRef, autoFocusOnHideProp]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 

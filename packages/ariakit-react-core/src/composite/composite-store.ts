@@ -13,11 +13,7 @@ type Item = Core.CompositeStoreItem;
 export function useCompositeStoreOptions<T extends Item = Item>(
   props: CompositeStoreProps<T>
 ) {
-  const state = props.store?.getState?.();
-  return {
-    ...useCollectionStoreOptions(props),
-    activeId: props.activeId ?? state?.activeId ?? props.defaultActiveId,
-  };
+  return useCollectionStoreOptions(props);
 }
 
 export function useCompositeStoreProps<T extends CompositeStore>(
@@ -38,8 +34,18 @@ export function useCompositeStoreProps<T extends CompositeStore>(
 }
 
 export function useCompositeStore<T extends Item = Item>(
-  props: CompositeStoreProps<T> = {}
-): CompositeStore<T> {
+  props: CompositeStoreProps<T> &
+    (
+      | Required<Pick<CompositeStoreProps<T>, "items">>
+      | Required<Pick<CompositeStoreProps<T>, "defaultItems">>
+    )
+): CompositeStore<T>;
+
+export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
+
+export function useCompositeStore(
+  props: CompositeStoreProps = {}
+): CompositeStore {
   const options = useCompositeStoreOptions(props);
   const store = useStore(() =>
     Core.createCompositeStore({ ...props, ...options })
@@ -58,7 +64,6 @@ export type CompositeStoreFunctions<T extends Item = Item> =
 export type CompositeStoreOptions<T extends Item = Item> =
   Core.CompositeStoreOptions<T> &
     CollectionStoreOptions<T> & {
-      defaultActiveId?: CompositeStoreState<T>["activeId"];
       setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
       setMoves?: (moves: CompositeStoreState<T>["moves"]) => void;
     };

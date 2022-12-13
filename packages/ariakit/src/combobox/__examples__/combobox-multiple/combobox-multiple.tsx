@@ -14,8 +14,8 @@ import {
   SelectItem,
   SelectItemCheck,
   SelectList,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 
 export type ComboboxMultipleProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -57,20 +57,19 @@ export const ComboboxMultiple = forwardRef<
     value,
     setValue: onChange,
   });
-  const { setItems, renderCallback, ...comboboxStore } = combobox;
-  const { items, ...comboboxState } = combobox.useState();
-  const select = useSelectState({
-    ...comboboxStore,
-    ...comboboxState,
+  const select = useSelectStore({
+    combobox,
     defaultValue: defaultValues,
     value: values,
     setValue: onValuesChange,
   });
 
+  const selectValue = select.useState("value");
+
   // Reset the combobox value whenever an item is checked or unchecked.
   useEffect(() => {
     combobox.setValue("");
-  }, [select.value, combobox]);
+  }, [selectValue, combobox]);
 
   const element = (
     <Combobox
@@ -94,7 +93,7 @@ export const ComboboxMultiple = forwardRef<
       <ComboboxPopover store={combobox} className="popover">
         {(popoverProps) => (
           <SelectList
-            state={select}
+            store={select}
             // Disable the composite behavior on the select list since combobox
             // will handle it.
             composite={false}

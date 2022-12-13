@@ -14,6 +14,7 @@ import {
   DialogStoreState,
   createDialogStore,
 } from "../dialog/dialog-store";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
@@ -81,40 +82,42 @@ function isValidPlacement(flip: string): flip is Placement {
 }
 
 export function createPopoverStore({
-  placement = "bottom",
-  fixed = false,
-  gutter,
-  flip = true,
-  shift = 0,
-  slide = true,
-  overlap = false,
-  sameWidth = false,
-  fitViewport = false,
-  arrowPadding = 4,
-  overflowPadding = 8,
   getAnchorRect,
   renderCallback,
   ...props
 }: PopoverStoreProps = {}): PopoverStore {
+  const syncState = props.store?.getState();
+
   const rendered = createStore({ rendered: [] });
   const dialog = createDialogStore(props);
+
+  const placement = defaultValue(
+    props.placement,
+    syncState?.placement,
+    "bottom" as Placement
+  );
+
   const initialState: PopoverStoreState = {
     ...dialog.getState(),
-    anchorElement: null,
-    popoverElement: null,
-    arrowElement: null,
     placement,
     currentPlacement: placement,
-    fixed,
-    gutter,
-    flip,
-    shift,
-    slide,
-    overlap,
-    sameWidth,
-    fitViewport,
-    arrowPadding,
-    overflowPadding,
+    fixed: defaultValue(props.fixed, syncState?.fixed, false),
+    gutter: defaultValue(props.gutter, syncState?.gutter),
+    flip: defaultValue(props.flip, syncState?.flip, true),
+    shift: defaultValue(props.shift, syncState?.shift, 0),
+    slide: defaultValue(props.slide, syncState?.slide, true),
+    overlap: defaultValue(props.overlap, syncState?.overlap, false),
+    sameWidth: defaultValue(props.sameWidth, syncState?.sameWidth, false),
+    fitViewport: defaultValue(props.fitViewport, syncState?.fitViewport, false),
+    arrowPadding: defaultValue(props.arrowPadding, syncState?.arrowPadding, 4),
+    overflowPadding: defaultValue(
+      props.overflowPadding,
+      syncState?.overflowPadding,
+      8
+    ),
+    anchorElement: defaultValue(syncState?.anchorElement, null),
+    popoverElement: defaultValue(syncState?.popoverElement, null),
+    arrowElement: defaultValue(syncState?.arrowElement, null),
   };
   const popover = createStore(initialState, dialog);
 
@@ -180,7 +183,7 @@ export function createPopoverStore({
                 // https://floating-ui.com/docs/flip
                 middleware.push(
                   middlewares.flip({
-                    padding: overflowPadding,
+                    padding: state.overflowPadding,
                     fallbackPlacements,
                   })
                 );
@@ -217,10 +220,10 @@ export function createPopoverStore({
                       "--popover-available-height",
                       `${availableHeight}px`
                     );
-                    if (sameWidth) {
+                    if (state.sameWidth) {
                       popover.style.width = `${referenceWidth}px`;
                     }
-                    if (fitViewport) {
+                    if (state.fitViewport) {
                       popover.style.maxWidth = `${availableWidth}px`;
                       popover.style.maxHeight = `${availableHeight}px`;
                     }

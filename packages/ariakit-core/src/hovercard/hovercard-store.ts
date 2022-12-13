@@ -4,24 +4,42 @@ import {
   PopoverStoreState,
   createPopoverStore,
 } from "../popover/popover-store";
+import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
-export function createHovercardStore({
-  placement = "bottom",
-  timeout = 500,
-  showTimeout,
-  hideTimeout,
-  ...props
-}: HovercardStoreProps = {}): HovercardStore {
-  const popover = createPopoverStore({ placement, ...props });
+export function createHovercardStore(
+  props: HovercardStoreProps = {}
+): HovercardStore {
+  const syncState = props.store?.getState();
+
+  const timeout = defaultValue(props.timeout, syncState?.timeout, 500);
+
+  const popover = createPopoverStore({
+    ...props,
+    placement: defaultValue(
+      props.placement,
+      syncState?.placement,
+      "bottom" as const
+    ),
+  });
+
   const initialState: HovercardStoreState = {
     ...popover.getState(),
     timeout,
-    showTimeout: showTimeout ?? timeout,
-    hideTimeout: hideTimeout ?? timeout,
-    autoFocusOnShow: false,
+    showTimeout: defaultValue(
+      props.showTimeout,
+      syncState?.showTimeout,
+      timeout
+    ),
+    hideTimeout: defaultValue(
+      props.hideTimeout,
+      syncState?.hideTimeout,
+      timeout
+    ),
+    autoFocusOnShow: defaultValue(syncState?.autoFocusOnShow, false),
   };
+
   const hovercard = createStore(initialState, popover);
 
   hovercard.setup(() =>

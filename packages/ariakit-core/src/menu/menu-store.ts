@@ -11,44 +11,80 @@ import {
   HovercardStoreState,
   createHovercardStore,
 } from "../hovercard/hovercard-store";
-import { applyState } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+import { applyState, defaultValue } from "../utils/misc";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+  mergeStore,
+} from "../utils/store";
 import { BivariantCallback, SetState, SetStateAction } from "../utils/types";
+import { MenuBarStore } from "./menu-bar-store";
 
 type Values = Record<
   string,
   string | boolean | number | Array<string | number>
 >;
 
-export function createMenuStore<T extends Values = Values>({
-  orientation = "vertical",
-  placement = "bottom-start",
-  timeout,
-  hideTimeout = 0,
-  values = {} as T,
+export function createMenuStore<T extends Values = Values>(
+  props: MenuStoreProps<T> &
+    (
+      | Required<Pick<MenuStoreProps<T>, "values">>
+      | Required<Pick<MenuStoreProps<T>, "defaultValues">>
+    )
+): MenuStore<T>;
+
+export function createMenuStore(props?: MenuStoreProps): MenuStore;
+
+export function createMenuStore({
   combobox,
+  parent,
   ...props
-}: MenuStoreProps<T> = {}): MenuStore<T> {
+}: MenuStoreProps = {}): MenuStore {
   const comboboxStore = combobox?.omit(
     "anchorElement",
     "baseElement",
     "contentElement",
     "popoverElement"
   );
-  const composite = createCompositeStore({ orientation, ...props });
-  const hovercard = createHovercardStore({
-    placement,
-    timeout,
-    hideTimeout,
+  const store = mergeStore(props.store, comboboxStore);
+  const syncState = store.getState();
+
+  const composite = createCompositeStore({
     ...props,
+    store,
+    orientation: defaultValue(
+      props.orientation,
+      syncState.orientation,
+      "vertical" as const
+    ),
   });
-  const initialState: MenuStoreState<T> = {
+
+  const hovercard = createHovercardStore({
+    ...props,
+    store,
+    placement: defaultValue(
+      props.placement,
+      syncState.placement,
+      "bottom-start" as const
+    ),
+    hideTimeout: defaultValue(props.hideTimeout, syncState.hideTimeout, 0),
+  });
+
+  const initialState: MenuStoreState = {
     ...composite.getState(),
     ...hovercard.getState(),
-    initialFocus: "container",
-    values,
+    initialFocus: defaultValue(syncState.initialFocus, "container" as const),
+    values: defaultValue(
+      props.values,
+      syncState.values,
+      props.defaultValues,
+      {}
+    ),
   };
-  const menu = createStore(initialState, composite, hovercard, comboboxStore);
+
+  const menu = createStore(initialState, composite, hovercard);
 
   menu.setup(() =>
     menu.sync(
@@ -129,6 +165,9 @@ export type MenuStoreOptions<T extends Values = Values> =
     HovercardStoreOptions &
     StoreOptions<MenuStoreState<T>, "values"> & {
       combobox?: ComboboxStore;
+      parent?: MenuStore | MenuBarStore;
+    } & {
+      defaultValues?: MenuStoreState<T>["values"];
     };
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &

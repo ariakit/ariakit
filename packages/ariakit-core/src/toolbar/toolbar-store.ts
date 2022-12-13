@@ -6,13 +6,22 @@ import {
   CompositeStoreState,
   createCompositeStore,
 } from "../composite/composite-store";
+import { defaultValue } from "../utils/misc";
 
-export function createToolbarStore({
-  orientation = "horizontal",
-  focusLoop = true,
-  ...props
-}: ToolbarStoreProps = {}): ToolbarStore {
-  return createCompositeStore({ orientation, focusLoop, ...props });
+export function createToolbarStore(
+  props: ToolbarStoreProps = {}
+): ToolbarStore {
+  const syncState = props.store?.getState();
+
+  return createCompositeStore({
+    ...props,
+    orientation: defaultValue(
+      props.orientation,
+      syncState?.orientation,
+      "horizontal" as const
+    ),
+    focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
+  });
 }
 
 export type ToolbarStoreState = CompositeStoreState;

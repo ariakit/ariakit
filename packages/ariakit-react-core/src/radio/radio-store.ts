@@ -9,11 +9,7 @@ import {
 import { Store, useStore, useStoreProps } from "../utils/store";
 
 export function useRadioStoreOptions(props: RadioStoreProps) {
-  const state = props.store?.getState?.();
-  return {
-    ...useCompositeStoreOptions(props),
-    value: props.value ?? state?.value ?? props.defaultValue,
-  };
+  return useCompositeStoreOptions(props);
 }
 
 export function useRadioStoreProps<
@@ -37,10 +33,6 @@ export type RadioStoreFunctions = Core.RadioStoreFunctions &
 
 export type RadioStoreOptions = Core.RadioStoreOptions &
   CompositeStoreOptions & {
-    /**
-     * The initial value of the radio group.
-     */
-    defaultValue?: RadioStoreState["value"];
     /**
      * Function that will be called when setting the radio `value` state.
      * @example

@@ -251,3 +251,24 @@ export function invariant(
 export function getKeys<T extends object>(obj: T) {
   return Object.keys(obj) as Array<keyof T>;
 }
+
+/**
+ * TODO: Describe
+ */
+export function defaultValue<T extends any[]>(...values: T): DefaultValue<T> {
+  for (const value of values) {
+    if (value !== undefined) return value;
+  }
+  return;
+}
+
+type DefinedArray<T extends any[]> = {
+  [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
+    ? [Exclude<T[K], undefined>, never]
+    : [T[K]];
+};
+
+type DefaultValue<T extends any[]> =
+  DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
+    ? T[number]
+    : DefinedArray<T>[keyof DefinedArray<T>][0];

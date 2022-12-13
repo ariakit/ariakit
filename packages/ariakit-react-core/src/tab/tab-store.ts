@@ -12,12 +12,7 @@ import { Store, useStore, useStoreProps } from "../utils/store";
 type Item = Core.TabStoreItem;
 
 export function useTabStoreOptions(props: TabStoreProps) {
-  const state = props.store?.getState?.();
-  return {
-    ...useCompositeStoreOptions(props),
-    selectedId:
-      props.selectedId ?? state?.selectedId ?? props.defaultSelectedId,
-  };
+  return useCompositeStoreOptions(props);
 }
 
 export function useTabStoreProps<T extends Store<Core.TabStore>>(
@@ -48,18 +43,6 @@ export type TabStoreFunctions = Core.TabStoreFunctions &
 
 export type TabStoreOptions = Core.TabStoreOptions &
   CompositeStoreOptions<Item> & {
-    /**
-     * The id of the tab whose panel should be initially visible.
-     * @example
-     * ```jsx
-     * const tab = useTabStore({ defaultSelectedId: "tab-1" });
-     * <TabList store={tab}>
-     *   <Tab id="tab-1">Tab 1</Tab>
-     * </TabList>
-     * <TabPanel store={tab}>Panel 1</TabPanel>
-     * ```
-     */
-    defaultSelectedId?: TabStoreState["selectedId"];
     /**
      * Function that will be called when setting the tab `selectedId` state.
      * @example
