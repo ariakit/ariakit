@@ -171,7 +171,7 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
     submitFailed: 0,
     valid: !hasMessages(errors),
   };
-  const form = createStore(initialState, collection);
+  const form = createStore(initialState, collection, props.store);
 
   const validateCallbacks = new Set<FormStoreCallback>();
   const submitCallbacks = new Set<FormStoreCallback>();

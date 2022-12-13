@@ -47,7 +47,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
       true
     ),
   };
-  const tab = createStore(initialState, composite);
+  const tab = createStore(initialState, composite, props.store);
 
   // Selects the active tab when selectOnMove is true. Since we're listening to
   // the moves state, but not the activeId state, this callback will run only

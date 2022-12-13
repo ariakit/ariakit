@@ -56,6 +56,7 @@ export const ComboboxMultiple = forwardRef<
     defaultValue,
     value,
     setValue: onChange,
+    resetValueOnHide: true,
   });
   const select = useSelectStore({
     combobox,

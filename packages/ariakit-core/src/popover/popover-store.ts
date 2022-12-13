@@ -119,7 +119,7 @@ export function createPopoverStore({
     popoverElement: defaultValue(syncState?.popoverElement, null),
     arrowElement: defaultValue(syncState?.arrowElement, null),
   };
-  const popover = createStore(initialState, dialog);
+  const popover = createStore(initialState, dialog, props.store);
 
   const setCurrentPlacement = (placement: Placement) => {
     popover.setState("currentPlacement", placement);

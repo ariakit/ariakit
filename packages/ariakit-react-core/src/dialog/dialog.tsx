@@ -28,21 +28,6 @@ import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
-  useBooleanEvent,
-  useForkRef,
-  useId,
-  useLiveRef,
-  usePortalRef,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "@ariakit/react-core/utils/hooks";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
-import {
   DisclosureContentOptions,
   DisclosureContentProps,
   useDisclosureContent,
@@ -51,6 +36,17 @@ import { useFocusTrapRegion } from "../focus-trap/focus-trap-region";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import { HeadingLevel } from "../heading/heading-level";
 import { PortalOptions, usePortal } from "../portal/portal";
+import {
+  useBooleanEvent,
+  useForkRef,
+  useId,
+  useLiveRef,
+  usePortalRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "../utils/hooks";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Props } from "../utils/types";
 import { DialogBackdrop } from "./dialog-backdrop";
 import {
   DialogContext,
@@ -289,7 +285,6 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = contentElement;
       if (!dialog?.isConnected) return;
       const initialFocus = initialFocusRef?.current;
-
       const element =
         initialFocus ||
         // We have to fallback to the first focusable element otherwise portaled

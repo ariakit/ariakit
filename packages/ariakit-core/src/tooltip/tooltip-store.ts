@@ -41,7 +41,8 @@ export function createTooltipStore(
   const tooltip = createStore(
     initialState,
     popover,
-    disclosure.omit("open", "mounted")
+    disclosure.omit("open", "mounted"),
+    props.store
   );
 
   const ref = Symbol();

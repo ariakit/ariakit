@@ -84,7 +84,7 @@ export function createMenuStore({
     ),
   };
 
-  const menu = createStore(initialState, composite, hovercard);
+  const menu = createStore(initialState, composite, hovercard, store);
 
   menu.setup(() =>
     menu.sync(

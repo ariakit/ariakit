@@ -112,7 +112,7 @@ export function createSelectStore({
     labelElement: defaultValue(syncState.labelElement, null),
   };
 
-  const select = createStore(initialState, composite, popover);
+  const select = createStore(initialState, composite, popover, store);
 
   // Automatically sets the default value if it's not set.
   select.setup(() =>
@@ -142,6 +142,7 @@ export function createSelectStore({
           (item) => !item.disabled && item.value === lastValue
         );
         if (!item) return;
+        // TODO: This may be problematic.
         select.setState("activeId", item.id);
       },
       ["mounted", "items", "value"]

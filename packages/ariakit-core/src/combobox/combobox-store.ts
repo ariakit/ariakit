@@ -55,7 +55,12 @@ export function createComboboxStore({
   const store = mergeStore(props.store, menuStore, selectStore);
   const syncState = store.getState();
 
-  const activeId = defaultValue(props.activeId, syncState.activeId, null);
+  const activeId = defaultValue(
+    props.activeId,
+    syncState.activeId,
+    props.defaultActiveId,
+    null
+  );
 
   const composite = createCompositeStore({
     ...props,
@@ -102,7 +107,7 @@ export function createComboboxStore({
     activeValue: syncState.activeValue,
   };
 
-  const combobox = createStore(initialState, composite, popover);
+  const combobox = createStore(initialState, composite, popover, store);
 
   combobox.setup(() =>
     combobox.sync(

@@ -5,11 +5,12 @@ import {
   createRef,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { HovercardOptions, useHovercard } from "../hovercard/hovercard";
-import { useBooleanEvent, useEvent } from "../utils/hooks";
+import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks";
 import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 import { MenuBarContext, MenuContext } from "./menu-context";
@@ -38,6 +39,8 @@ export const useMenu = createHook<MenuOptions>(
     hideOnHoverOutside,
     ...props
   }) => {
+    const ref = useRef<HTMLDivElement>(null);
+
     const parentMenu = useContext(MenuContext);
     const parentMenuBar = useContext(MenuBarContext);
     const hasParentMenu = !!parentMenu;
@@ -62,6 +65,7 @@ export const useMenu = createHook<MenuOptions>(
 
     props = {
       ...props,
+      ref: useForkRef(ref, props.ref),
       onKeyDown,
     };
 
@@ -111,7 +115,7 @@ export const useMenu = createHook<MenuOptions>(
               null;
             break;
           default:
-            ref.current = baseElement;
+            return ref;
         }
         if (!ref.current) return;
         return ref;

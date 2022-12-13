@@ -150,8 +150,9 @@ function verticalizeItems(items: Item[]) {
 export function createCompositeStore<T extends Item = Item>(
   props: CompositeStoreProps<T> = {}
 ): CompositeStore<T> {
-  const collection = createCollectionStore(props);
   const syncState = props.store?.getState();
+
+  const collection = createCollectionStore(props);
 
   const activeId = defaultValue(
     props.activeId,
@@ -185,7 +186,7 @@ export function createCompositeStore<T extends Item = Item>(
     focusShift: defaultValue(props.focusShift, syncState?.focusShift, false),
   };
 
-  const composite = createStore(initialState, collection);
+  const composite = createStore(initialState, collection, props.store);
 
   composite.setup(() =>
     composite.sync(

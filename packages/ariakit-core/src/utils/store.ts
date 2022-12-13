@@ -43,8 +43,7 @@ export function createStore<S extends State>(
 
     const cleanups = stores.map((store) => store?.init?.());
 
-    const keys = getKeys(state);
-    const desyncs = keys.map((key) =>
+    const desyncs = getKeys(state).map((key) =>
       chain(
         ...stores.map((store) => {
           const storeState = store?.getState?.();

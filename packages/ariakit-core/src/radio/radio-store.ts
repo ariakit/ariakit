@@ -23,7 +23,7 @@ export function createRadioStore({
     value: defaultValue(props.value, syncState?.value, null),
   };
 
-  const radio = createStore(initialState, composite);
+  const radio = createStore(initialState, composite, props.store);
 
   return {
     ...composite,

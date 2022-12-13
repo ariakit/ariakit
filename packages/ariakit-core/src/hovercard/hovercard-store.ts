@@ -40,7 +40,7 @@ export function createHovercardStore(
     autoFocusOnShow: defaultValue(syncState?.autoFocusOnShow, false),
   };
 
-  const hovercard = createStore(initialState, popover);
+  const hovercard = createStore(initialState, popover, props.store);
 
   hovercard.setup(() =>
     hovercard.sync(

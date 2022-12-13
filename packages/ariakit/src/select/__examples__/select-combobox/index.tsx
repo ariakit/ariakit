@@ -26,7 +26,6 @@ export default function Example() {
   });
 
   const value = combobox.useState("value");
-  const mounted = select.useState("mounted");
 
   const matches = useMemo(() => {
     return matchSorter(list, value, {
@@ -38,29 +37,23 @@ export default function Example() {
     <div className="wrapper">
       <SelectLabel store={select}>Favorite fruit</SelectLabel>
       <Select store={select} className="select" />
-      {mounted && (
-        <SelectPopover store={select} composite={false} className="popover">
-          <div className="combobox-wrapper">
-            <Combobox
-              store={combobox}
-              autoSelect
-              placeholder="Search..."
-              className="combobox"
-            />
-          </div>
-          <ComboboxList store={combobox}>
-            {matches.map((value, i) => (
-              <ComboboxItem
-                key={value + i}
-                focusOnHover
-                className="select-item"
-              >
-                {(props) => <SelectItem {...props} value={value} />}
-              </ComboboxItem>
-            ))}
-          </ComboboxList>
-        </SelectPopover>
-      )}
+      <SelectPopover store={select} composite={false} className="popover">
+        <div className="combobox-wrapper">
+          <Combobox
+            store={combobox}
+            autoSelect
+            placeholder="Search..."
+            className="combobox"
+          />
+        </div>
+        <ComboboxList store={combobox}>
+          {matches.map((value, i) => (
+            <ComboboxItem key={value + i} focusOnHover className="select-item">
+              {(props) => <SelectItem {...props} value={value} />}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </SelectPopover>
     </div>
   );
 }
