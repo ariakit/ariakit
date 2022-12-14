@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
 import * as Core from "@ariakit/core/menu/menu-store";
-import { BivariantCallback } from "@ariakit/core/utils/types";
+import { BivariantCallback, PickRequired } from "@ariakit/core/utils/types";
 import {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -27,7 +27,7 @@ export function useMenuStoreOptions<T extends Values = Values>(
 
   const parentMenu = useContext(MenuContext);
   const parentMenuBar = useContext(MenuBarContext);
-  const placementProp = props.placement ?? state?.placement;
+  const placementProp = props.placement;
 
   const placement = useStoreState(
     parentMenu || parentMenuBar,
@@ -72,11 +72,7 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
 }
 
 export function useMenuStore<T extends Values = Values>(
-  props: MenuStoreProps<T> &
-    (
-      | Required<Pick<MenuStoreProps<T>, "values">>
-      | Required<Pick<MenuStoreProps<T>, "defaultValues">>
-    )
+  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">
 ): MenuStore<T>;
 
 export function useMenuStore(props?: MenuStoreProps): MenuStore;

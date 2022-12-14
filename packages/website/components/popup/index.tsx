@@ -1,5 +1,5 @@
 import { HTMLAttributes, forwardRef } from "react";
-import { cx } from "ariakit-utils/misc";
+import { cx } from "@ariakit/core/utils/misc";
 
 type PopupProps = HTMLAttributes<HTMLDivElement> & {
   elevation?: 0 | 1 | 2 | 3 | 4;

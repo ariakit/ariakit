@@ -19,8 +19,12 @@ import {
   createStore,
   mergeStore,
 } from "../utils/store";
-import { BivariantCallback, SetState, SetStateAction } from "../utils/types";
-import { MenuBarStore } from "./menu-bar-store";
+import {
+  BivariantCallback,
+  PickRequired,
+  SetState,
+  SetStateAction,
+} from "../utils/types";
 
 type Values = Record<
   string,
@@ -28,18 +32,13 @@ type Values = Record<
 >;
 
 export function createMenuStore<T extends Values = Values>(
-  props: MenuStoreProps<T> &
-    (
-      | Required<Pick<MenuStoreProps<T>, "values">>
-      | Required<Pick<MenuStoreProps<T>, "defaultValues">>
-    )
+  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">
 ): MenuStore<T>;
 
 export function createMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function createMenuStore({
   combobox,
-  parent,
   ...props
 }: MenuStoreProps = {}): MenuStore {
   const comboboxStore = combobox?.omit(
@@ -165,8 +164,6 @@ export type MenuStoreOptions<T extends Values = Values> =
     HovercardStoreOptions &
     StoreOptions<MenuStoreState<T>, "values"> & {
       combobox?: ComboboxStore;
-      parent?: MenuStore | MenuBarStore;
-    } & {
       defaultValues?: MenuStoreState<T>["values"];
     };
 

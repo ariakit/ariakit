@@ -1,6 +1,6 @@
 import { useEffect } from "react";
+import { cx } from "@ariakit/core/utils/misc";
 import { useQuery } from "@tanstack/react-query";
-import { cx } from "ariakit-utils/misc";
 import pkg from "ariakit/package.json";
 import {
   Select,
@@ -10,8 +10,8 @@ import {
   SelectLabel,
   SelectPopover,
   SelectSeparator,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import tw from "../../utils/tw";
@@ -70,7 +70,7 @@ export default function VersionSelect() {
 
   const tags = data || { latest: pkg.version };
 
-  const select = useSelectState({
+  const select = useSelectStore({
     gutter: 4,
     defaultValue: pkg.version,
   });
@@ -101,17 +101,20 @@ export default function VersionSelect() {
     );
   };
 
+  const selectValue = select.useState("value");
+  const selectMounted = select.useState("mounted");
+
   return (
     <>
-      <SelectLabel state={select} hidden>
+      <SelectLabel store={select} hidden>
         Version
       </SelectLabel>
-      <Select state={select} className={style.select}>
-        {getDisplayValue(select.value)}
+      <Select store={select} className={style.select}>
+        {getDisplayValue(selectValue)}
         <SelectArrow />
       </Select>
-      {select.mounted && (
-        <SelectPopover state={select} className={cx(popoverStyle, "text-sm")}>
+      {selectMounted && (
+        <SelectPopover store={select} className={cx(popoverStyle, "text-sm")}>
           <div role="presentation" className={popoverScrollerStyle}>
             {Object.entries(tags).map(([tag, version]) =>
               renderItem(version, tag)

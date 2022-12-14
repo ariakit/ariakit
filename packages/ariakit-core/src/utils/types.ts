@@ -22,6 +22,11 @@ export type BivariantCallback<T extends AnyFunction> = {
 export type SetStateAction<T> = T | BivariantCallback<(prevState: T) => T>;
 
 /**
+ * TODO: Description.
+ */
+export type SetStateOption<T> = (value: T) => void;
+
+/**
  * The type of the `setState` function in `[state, setState] = useState()`.
  * @template T The type of the state.
  */
@@ -66,6 +71,14 @@ export type PickByValue<T, Value> = {
       : never
     : never]: T[K];
 };
+
+/**
+ * TODO: Description.
+ */
+export type PickRequired<T, P extends keyof T> = T &
+  {
+    [K in keyof T]: Pick<Required<T>, K>;
+  }[P];
 
 /**
  * Indicates the availability and type of interactive popup element, such as

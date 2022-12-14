@@ -1,4 +1,4 @@
-import { cx } from "ariakit-utils/misc";
+import { cx } from "@ariakit/core/utils/misc";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import Link from "next/link";
 import { useRouter } from "next/router";

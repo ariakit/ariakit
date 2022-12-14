@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { cx } from "ariakit-utils/misc";
+import { cx } from "@ariakit/core/utils/misc";
 import { Heading, HeadingLevel } from "ariakit/heading";
 import SEO from "../seo";
 

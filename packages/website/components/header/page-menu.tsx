@@ -13,40 +13,40 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { cx } from "@ariakit/core/utils/misc";
 import {
   useEvent,
   useId,
   useSafeLayoutEffect,
-} from "ariakit-react-utils/hooks";
-import { cx } from "ariakit-utils/misc";
+} from "@ariakit/react-core/utils/hooks";
 import {
   Combobox,
   ComboboxCancel,
   ComboboxItem,
   ComboboxList,
-  useComboboxState,
-} from "ariakit/combobox";
+  useComboboxStore,
+} from "ariakit/combobox/store";
 import {
   CompositeGroup,
   CompositeGroupLabel,
   CompositeSeparator,
-} from "ariakit/composite";
+} from "ariakit/composite/store";
 import {
   Menu,
   MenuButton,
   MenuButtonArrow,
   MenuItem,
   MenuList,
-  useMenuState,
-} from "ariakit/menu";
+  useMenuStore,
+} from "ariakit/menu/store";
 import { PopoverDismiss } from "ariakit/popover";
 import { Role } from "ariakit/role";
 import {
   Select,
   SelectItem,
   SelectPopover,
-  useSelectState,
-} from "ariakit/select";
+  useSelectStore,
+} from "ariakit/select/store";
 import { VisuallyHidden } from "ariakit/visually-hidden";
 import Link from "next/link";
 import tw from "../../utils/tw";
@@ -224,31 +224,39 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
   ) => {
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
-    const combobox = useComboboxState({
+    const combobox = useComboboxStore({
       fitViewport: true,
       focusLoop: false,
       includesBaseElement: false,
       gutter: 4,
       open,
       setOpen: (open) => {
-        if (open !== combobox.open && onToggle) {
+        if (onToggle) {
           onToggle(open);
         }
       },
     });
-    const select = useSelectState({
-      ...combobox,
+    const select = useSelectStore({
+      combobox,
       value,
       setValue: (value) => {
-        if (value !== select.value && onChange) {
+        if (onChange && typeof value === "string") {
           onChange(value);
         }
       },
+      // TODO: Find a better solution
+      getAnchorRect: (anchor) => {
+        if (parent?.current) {
+          return parent.current.getBoundingClientRect();
+        }
+        if (!anchor) return null;
+        return anchor.getBoundingClientRect();
+      },
     });
-    const menu = useMenuState({
-      ...select,
+    const menu = useMenuStore({
+      store: select,
       fixed: true,
-      placement: undefined,
+      placement: parent ? "right-start" : "bottom-start",
       getAnchorRect: (anchor) => {
         if (parent?.current) {
           return parent.current.getBoundingClientRect();
@@ -260,19 +268,26 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
 
     const idle = useIdle();
 
-    if (!parent && menu.open && !menu.autoFocusOnShow) {
-      menu.setAutoFocusOnShow(true);
-      menu.setInitialFocus("first");
-    }
+    useSafeLayoutEffect(() => {
+      return menu.batchSync(
+        (state) => {
+          if (!parent && state.open) {
+            // menu.setAutoFocusOnShow(true);
+            // menu.setInitialFocus("first");
+          }
+        },
+        ["open", "autoFocusOnShow"]
+      );
+    }, [parent, menu]);
 
-    useEffect(() => {
-      if (!parent) {
-        menu.disclosureRef.current =
-          select.disclosureRef.current =
-          combobox.disclosureRef.current =
-            menu.anchorRef.current;
-      }
-    });
+    // useEffect(() => {
+    //   if (!parent) {
+    //     menu.disclosureRef.current =
+    //       select.disclosureRef.current =
+    //       combobox.disclosureRef.current =
+    //         menu.anchorRef.current;
+    //   }
+    // });
 
     const selectable = value != null || !!onChange;
     const searchable = searchValue != null || !!onSearch;
@@ -282,12 +297,14 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       if (searchValue != null) {
         combobox.setValue(searchValue);
       }
-    }, [searchValue, combobox.setValue]);
+    }, [searchValue, combobox]);
+
+    const comboboxValue = combobox.useState("value");
 
     useEffect(() => {
-      if (combobox.value === searchValue) return;
-      return whenIdle(() => onSearchProp(combobox.value), 500);
-    }, [combobox.value, searchValue, onSearchProp]);
+      if (comboboxValue === searchValue) return;
+      return whenIdle(() => onSearchProp(comboboxValue), 500);
+    }, [comboboxValue, searchValue, onSearchProp]);
 
     const footerElement = footer && (
       <div className={style.footer}>{footer}</div>
@@ -330,13 +347,13 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
                     <Search className={style.comboboxIcon} />
                   )}
                   <Combobox
-                    state={combobox}
+                    store={combobox}
                     placeholder={searchPlaceholder}
                     autoSelect={autoSelect}
                     className={style.combobox}
                   />
                   <ComboboxCancel
-                    state={combobox}
+                    store={combobox}
                     as={PopoverDismiss}
                     aria-label="Cancel search"
                     className={style.comboboxCancel}
@@ -347,7 +364,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
               </div>
               <ComboboxContext.Provider value={true}>
                 <ComboboxList
-                  state={combobox}
+                  store={combobox}
                   aria-label={contentLabel}
                   className={style.comboboxList}
                 >
@@ -366,29 +383,34 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       </div>
     );
 
+    const selectChildren = select.useState((state) => label ?? state.value);
+
     const button = selectable ? (
-      <Select state={select} {...props} ref={ref}>
-        {(props) => renderButton({ ...props, children: label ?? select.value })}
+      <Select store={select} {...props} ref={ref}>
+        {(props) => renderButton({ ...props, children: selectChildren })}
       </Select>
     ) : (
-      <MenuButton state={menu} {...props} ref={ref}>
+      <MenuButton store={menu} {...props} ref={ref}>
         {(props) => renderButton({ ...props, children: label })}
       </MenuButton>
     );
 
+    const selectMounted = select.useState((state) => idle || state.mounted);
+    const menuMounted = menu.useState((state) => idle || state.mounted);
+
     const popover = selectable ? (
       <SelectContext.Provider value={true}>
-        {(idle || select.mounted) && (
+        {selectMounted && (
           <SelectPopover
             ref={popoverRef}
-            state={select}
+            store={select}
             typeahead={!searchable}
             composite={!searchable}
           >
             {(props) => (
               <MenuList
                 {...props}
-                state={menu}
+                store={menu}
                 typeahead={false}
                 composite={false}
               >
@@ -400,9 +422,9 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       </SelectContext.Provider>
     ) : (
       <SelectContext.Provider value={false}>
-        {(idle || menu.mounted) && (
+        {menuMounted && (
           <Menu
-            state={menu}
+            store={menu}
             ref={popoverRef}
             portal
             typeahead={!searchable}

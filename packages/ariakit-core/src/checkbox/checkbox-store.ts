@@ -1,15 +1,14 @@
 import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { SetState, ToPrimitive } from "../utils/types";
+import { PickRequired, SetState, ToPrimitive } from "../utils/types";
 
 type Value = boolean | string | number | Array<string | number>;
 
+/**
+ * Creates a checkbox store.
+ */
 export function createCheckboxStore<T extends Value = Value>(
-  props: CheckboxStoreProps<T> &
-    (
-      | Required<Pick<CheckboxStoreProps<T>, "value">>
-      | Required<Pick<CheckboxStoreProps<T>, "defaultValue">>
-    )
+  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">
 ): CheckboxStore<T>;
 
 export function createCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;

@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes } from "react";
-import { cx } from "ariakit-utils/misc";
+import { cx } from "@ariakit/core/utils/misc";
 import tw from "../../utils/tw";
 import Moon from "../icons/moon";
 import Sun from "../icons/sun";

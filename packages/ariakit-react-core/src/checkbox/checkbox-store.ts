@@ -1,5 +1,5 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
-import { BivariantCallback } from "@ariakit/core/utils/types";
+import { PickRequired, SetStateOption } from "@ariakit/core/utils/types";
 import { Store, useStore, useStoreProps } from "../utils/store";
 
 type Value = Core.CheckboxStoreValue;
@@ -19,11 +19,7 @@ export function useCheckboxStoreProps<T extends CheckboxStore>(
 }
 
 export function useCheckboxStore<T extends Value = Value>(
-  props: CheckboxStoreProps<T> &
-    (
-      | Required<Pick<CheckboxStoreProps<T>, "value">>
-      | Required<Pick<CheckboxStoreProps<T>, "defaultValue">>
-    )
+  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">
 ): CheckboxStore<T>;
 
 export function useCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;
@@ -41,13 +37,21 @@ export type CheckboxStoreState<T extends Value = Value> =
   Core.CheckboxStoreState<T>;
 
 export type CheckboxStoreFunctions<T extends Value = Value> =
-  Core.CheckboxStoreFunctions<T>;
+  Core.CheckboxStoreFunctions<T> & {
+    /**
+     * @example
+     * ```jsx
+     * <button onClick={() => store.setValue((value) => !value)}>
+     *   Toggle
+     * </button>
+     * ```
+     */
+    setValue: Core.CheckboxStoreFunctions<T>["setValue"];
+  };
 
 export type CheckboxStoreOptions<T extends Value = Value> =
   Core.CheckboxStoreOptions<T> & {
-    setValue?: BivariantCallback<
-      (value: CheckboxStoreState<T>["value"]) => void
-    >;
+    setValue?: SetStateOption<CheckboxStoreState<T>["value"]>;
   };
 
 export type CheckboxStoreProps<T extends Value = Value> =

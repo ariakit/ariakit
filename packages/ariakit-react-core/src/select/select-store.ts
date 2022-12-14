@@ -1,5 +1,5 @@
 import * as Core from "@ariakit/core/select/select-store";
-import { BivariantCallback } from "@ariakit/core/utils/types";
+import { BivariantCallback, PickRequired } from "@ariakit/core/utils/types";
 import {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -39,11 +39,7 @@ export function useSelectStoreProps<T extends SelectStore>(
 }
 
 export function useSelectStore<T extends Value = Value>(
-  props: SelectStoreProps<T> &
-    (
-      | Required<Pick<SelectStoreProps<T>, "value">>
-      | Required<Pick<SelectStoreProps<T>, "defaultValue">>
-    )
+  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
 ): SelectStore<T>;
 
 export function useSelectStore(props?: SelectStoreProps): SelectStore;

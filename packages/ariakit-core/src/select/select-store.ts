@@ -21,7 +21,7 @@ import {
   createStore,
   mergeStore,
 } from "../utils/store";
-import { SetState } from "../utils/types";
+import { PickRequired, SetState } from "../utils/types";
 
 type Value = string | string[];
 type MutableValue<T extends Value = Value> = T extends string ? string : T;
@@ -30,11 +30,7 @@ type Item = CompositeStoreItem & {
 };
 
 export function createSelectStore<T extends Value = Value>(
-  props: SelectStoreProps<T> &
-    (
-      | Required<Pick<SelectStoreProps<T>, "value">>
-      | Required<Pick<SelectStoreProps<T>, "defaultValue">>
-    )
+  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
 ): SelectStore<T>;
 
 export function createSelectStore(props?: SelectStoreProps): SelectStore;
@@ -217,7 +213,6 @@ export type SelectStoreOptions<T extends Value = Value> =
     PopoverStoreOptions &
     StoreOptions<SelectStoreState<T>, "value" | "setValueOnMove"> & {
       combobox?: ComboboxStore;
-    } & {
       defaultValue?: SelectStoreState<T>["value"];
     };
 

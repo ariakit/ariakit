@@ -1,4 +1,4 @@
-import { cx } from "ariakit-utils/misc";
+import { cx } from "@ariakit/core/utils/misc";
 import Link from "next/link";
 import tw from "packages/website/utils/tw";
 import ArrowRight from "../icons/arrow-right";
