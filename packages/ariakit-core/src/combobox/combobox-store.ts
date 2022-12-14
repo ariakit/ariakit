@@ -95,10 +95,17 @@ export function createComboboxStore({
     ),
   });
 
+  const initialValue = defaultValue(
+    props.value,
+    syncState.value,
+    props.defaultValue,
+    ""
+  );
+
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value: defaultValue(props.value, syncState.value, props.defaultValue, ""),
+    value: initialValue,
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
       syncState.resetValueOnHide,
@@ -141,7 +148,7 @@ export function createComboboxStore({
       (state) => {
         if (!state.resetValueOnHide) return;
         if (state.mounted) return;
-        combobox.setState("value", props.value ?? "");
+        combobox.setState("value", initialValue);
       },
       ["resetValueOnHide", "mounted"]
     )
