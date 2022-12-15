@@ -40,7 +40,7 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
 
     useEffect(() => {
       if (!open) {
-        setCanAutoFocusOnShow(false);
+        // setCanAutoFocusOnShow(false);
       }
     }, [open]);
 
@@ -55,6 +55,9 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
         // re-opening an animated popover before the leave animation is done
         // will not restore focus to the correct item.
         if (open && prevInitialFocusRef) {
+          if (prevInitialFocusRef.current?.isConnected) {
+            setCanAutoFocusOnShow(false);
+          }
           return prevInitialFocusRef;
         }
         const item = items.find(

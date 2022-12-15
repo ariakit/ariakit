@@ -298,7 +298,7 @@ export const useDialog = createHook<DialogOptions>(
       // If the initial focus is the same as the previous initial focus and
       // there's already an element with focus inside the dialog, we don't
       // change focus here.
-      if (initialFocus === prevInitialFocus) {
+      if (initialFocus && initialFocus === prevInitialFocus) {
         const activeElement = getActiveElement(dialog, true);
         if (activeElement && contains(dialog, activeElement)) return;
       }

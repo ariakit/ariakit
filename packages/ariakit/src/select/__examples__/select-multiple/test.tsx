@@ -70,6 +70,7 @@ test("select with keyboard", async () => {
   render(<Example />);
   await press.Tab();
   await press.ArrowDown();
+  expect(getOption("Cake")).toHaveFocus();
   await type("cccc");
   expect(getOption("Chocolate")).toHaveFocus();
   await press.Enter();
