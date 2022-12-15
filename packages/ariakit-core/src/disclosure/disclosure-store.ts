@@ -5,7 +5,8 @@ import { SetState } from "../utils/types";
 export function createDisclosureStore(
   props: DisclosureStoreProps = {}
 ): DisclosureStore {
-  const syncState = props.store?.getState();
+  const store = props.store?.omit("contentElement", "disclosureElement");
+  const syncState = store?.getState();
 
   const open = defaultValue(
     props.open,
@@ -21,11 +22,11 @@ export function createDisclosureStore(
     animated,
     animating: !!animated && open,
     mounted: open,
-    contentElement: defaultValue(syncState?.contentElement, null),
-    disclosureElement: defaultValue(syncState?.disclosureElement, null),
+    contentElement: null,
+    disclosureElement: null,
   };
 
-  const disclosure = createStore(initialState, props.store);
+  const disclosure = createStore(initialState, store);
 
   disclosure.setup(() =>
     disclosure.sync(

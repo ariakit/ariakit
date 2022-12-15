@@ -39,7 +39,9 @@ export function createComboboxStore({
     "anchorElement",
     "baseElement",
     "contentElement",
-    "popoverElement"
+    "popoverElement",
+    "arrowElement",
+    "disclosureElement"
   );
 
   const selectStore = select?.omit(
@@ -48,6 +50,8 @@ export function createComboboxStore({
     "baseElement",
     "contentElement",
     "popoverElement",
+    "disclosureElement",
+    "arrowElement",
     "items",
     "renderedItems"
   );

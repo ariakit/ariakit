@@ -41,13 +41,23 @@ export function createMenuStore({
   combobox,
   ...props
 }: MenuStoreProps = {}): MenuStore {
-  const comboboxStore = combobox?.omit(
-    "anchorElement",
-    "baseElement",
-    "contentElement",
-    "popoverElement"
+  const store = mergeStore(
+    props.store?.omit(
+      "anchorElement",
+      "popoverElement",
+      "arrowElement",
+      "arrowElement",
+      "disclosureElement"
+    ),
+    combobox?.omit(
+      "baseElement",
+      "anchorElement",
+      "contentElement",
+      "popoverElement",
+      "arrowElement",
+      "disclosureElement"
+    )
   );
-  const store = mergeStore(props.store, comboboxStore);
   const syncState = store.getState();
 
   const composite = createCompositeStore({

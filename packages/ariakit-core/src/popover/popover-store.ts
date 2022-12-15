@@ -86,15 +86,22 @@ export function createPopoverStore({
   renderCallback,
   ...props
 }: PopoverStoreProps = {}): PopoverStore {
-  const syncState = props.store?.getState();
+  const store = props.store?.omit(
+    "anchorElement",
+    "popoverElement",
+    "arrowElement",
+    "disclosureElement",
+    "contentElement"
+  );
+  const syncState = store?.getState();
 
   const rendered = createStore({ rendered: [] });
-  const dialog = createDialogStore(props);
+  const dialog = createDialogStore({ ...props, store });
 
   const placement = defaultValue(
     props.placement,
     syncState?.placement,
-    "bottom" as Placement
+    "bottom" as const
   );
 
   const initialState: PopoverStoreState = {
@@ -115,11 +122,11 @@ export function createPopoverStore({
       syncState?.overflowPadding,
       8
     ),
-    anchorElement: defaultValue(syncState?.anchorElement, null),
-    popoverElement: defaultValue(syncState?.popoverElement, null),
-    arrowElement: defaultValue(syncState?.arrowElement, null),
+    anchorElement: null,
+    popoverElement: null,
+    arrowElement: null,
   };
-  const popover = createStore(initialState, dialog, props.store);
+  const popover = createStore(initialState, dialog, store);
 
   const setCurrentPlacement = (placement: Placement) => {
     popover.setState("currentPlacement", placement);

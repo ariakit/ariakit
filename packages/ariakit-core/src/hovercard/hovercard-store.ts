@@ -11,7 +11,14 @@ import { SetState } from "../utils/types";
 export function createHovercardStore(
   props: HovercardStoreProps = {}
 ): HovercardStore {
-  const syncState = props.store?.getState();
+  const store = props.store?.omit(
+    "anchorElement",
+    "popoverElement",
+    "arrowElement",
+    "contentElement",
+    "disclosureElement"
+  );
+  const syncState = store?.getState();
 
   const timeout = defaultValue(props.timeout, syncState?.timeout, 500);
 
@@ -40,7 +47,7 @@ export function createHovercardStore(
     autoFocusOnShow: defaultValue(syncState?.autoFocusOnShow, false),
   };
 
-  const hovercard = createStore(initialState, popover, props.store);
+  const hovercard = createStore(initialState, popover, store);
 
   hovercard.setup(() =>
     hovercard.sync(

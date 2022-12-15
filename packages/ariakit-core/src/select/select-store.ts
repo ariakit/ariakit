@@ -39,17 +39,29 @@ export function createSelectStore({
   combobox,
   ...props
 }: SelectStoreProps = {}): SelectStore {
-  const comboboxStore = combobox?.omit(
-    "value",
-    "anchorElement",
-    "baseElement",
-    "contentElement",
-    "popoverElement",
-    "items",
-    "renderedItems"
+  const store = mergeStore(
+    props.store?.omit(
+      "baseElement",
+      "arrowElement",
+      "labelElement",
+      "anchorElement",
+      "selectElement",
+      "contentElement",
+      "popoverElement",
+      "disclosureElement"
+    ),
+    combobox?.omit(
+      "value",
+      "anchorElement",
+      "baseElement",
+      "contentElement",
+      "popoverElement",
+      "arrowElement",
+      "disclosureElement",
+      "items",
+      "renderedItems"
+    )
   );
-
-  const store = mergeStore(props.store, comboboxStore);
   const syncState = store.getState();
 
   const composite = createCompositeStore({
@@ -104,8 +116,8 @@ export function createSelectStore({
       syncState.setValueOnMove,
       false
     ),
-    selectElement: defaultValue(syncState.selectElement, null),
-    labelElement: defaultValue(syncState.labelElement, null),
+    selectElement: null,
+    labelElement: null,
   };
 
   const select = createStore(initialState, composite, popover, store);

@@ -244,17 +244,9 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
           onChange(value);
         }
       },
-      // TODO: Find a better solution
-      getAnchorRect: (anchor) => {
-        if (parent?.current) {
-          return parent.current.getBoundingClientRect();
-        }
-        if (!anchor) return null;
-        return anchor.getBoundingClientRect();
-      },
     });
     const menu = useMenuStore({
-      store: select,
+      store: combobox,
       fixed: true,
       placement: parent ? "right-start" : "bottom-start",
       getAnchorRect: (anchor) => {
@@ -272,22 +264,26 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       return menu.batchSync(
         (state) => {
           if (!parent && state.open) {
-            // menu.setAutoFocusOnShow(true);
-            // menu.setInitialFocus("first");
+            menu.setAutoFocusOnShow(true);
+            menu.setInitialFocus("first");
           }
         },
         ["open", "autoFocusOnShow"]
       );
     }, [parent, menu]);
 
-    // useEffect(() => {
-    //   if (!parent) {
-    //     menu.disclosureRef.current =
-    //       select.disclosureRef.current =
-    //       combobox.disclosureRef.current =
-    //         menu.anchorRef.current;
-    //   }
-    // });
+    useSafeLayoutEffect(() => {
+      return select.sync(
+        (state) => {
+          if (!parent) {
+            menu.setDisclosureElement(state.selectElement);
+            select.setDisclosureElement(state.selectElement);
+            combobox.setDisclosureElement(state.selectElement);
+          }
+        },
+        ["selectElement", "disclosureElement"]
+      );
+    }, [parent, menu, select, combobox]);
 
     const selectable = value != null || !!onChange;
     const searchable = searchValue != null || !!onSearch;
