@@ -1,7 +1,7 @@
 import "./mock-get-client-rects";
 
-import { closest } from "ariakit-utils/dom";
-import { isFocusable } from "ariakit-utils/focus";
+import { closest } from "@ariakit/core/utils/dom";
+import { isFocusable } from "@ariakit/core/utils/focus";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";
 import { hover } from "./hover";

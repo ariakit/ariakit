@@ -41,8 +41,6 @@ export function createStore<S extends State>(
     if (!stores.length) return noop;
     initialized = true;
 
-    const cleanups = stores.map((store) => store?.init?.());
-
     const desyncs = getKeys(state).map((key) =>
       chain(
         ...stores.map((store) => {
@@ -57,7 +55,9 @@ export function createStore<S extends State>(
     const teardowns: Array<void | (() => void)> = [];
     setups.forEach((setup) => teardowns.push(setup()));
 
-    return chain(...teardowns, ...desyncs, ...cleanups, () => {
+    const cleanups = stores.map((store) => store?.init?.());
+
+    return chain(...desyncs, ...teardowns, ...cleanups, () => {
       initialized = false;
     });
   };

@@ -1,11 +1,11 @@
 import "./mock-get-client-rects";
 
-import { isTextField } from "ariakit-utils/dom";
+import { isTextField } from "@ariakit/core/utils/dom";
 import {
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
-} from "ariakit-utils/focus";
+} from "@ariakit/core/utils/focus";
 import { queuedMicrotasks } from "./__utils";
 import { blur } from "./blur";
 import { fireEvent } from "./fire-event";

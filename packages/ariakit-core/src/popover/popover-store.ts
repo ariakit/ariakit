@@ -103,7 +103,7 @@ export function createPopoverStore({
       "disclosureElement"
     )
   );
-  const syncState = props.store?.getState();
+  const syncState = store?.getState();
 
   const rendered = createStore({ rendered: [] });
   const dialog = createDialogStore({ ...props, store });

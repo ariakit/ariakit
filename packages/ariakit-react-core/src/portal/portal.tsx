@@ -123,16 +123,15 @@ export const usePortal = createHook<PortalOptions>(
       if (!preserveTabOrder) return;
       let raf = 0;
       const onFocus = (event: FocusEvent) => {
-        if (isFocusEventOutside(event)) {
-          const focusing = event.type === "focusin";
-          if (focusing) return restoreFocusIn(portalNode);
-          // Wait for the next frame to allow tabindex changes after the focus
-          // event.
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => {
-            disableFocusIn(portalNode, true);
-          });
-        }
+        if (!isFocusEventOutside(event)) return;
+        const focusing = event.type === "focusin";
+        if (focusing) return restoreFocusIn(portalNode);
+        // Wait for the next frame to allow tabindex changes after the focus
+        // event.
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          disableFocusIn(portalNode, true);
+        });
       };
       // Listen to the event on the capture phase so they run before the focus
       // trap elements onFocus prop is called.
