@@ -36,24 +36,24 @@ export function createComboboxStore({
   ...props
 }: ComboboxStoreProps = {}): ComboboxStore {
   const menuStore = menu?.omit(
-    "anchorElement",
     "baseElement",
+    "arrowElement",
+    "anchorElement",
     "contentElement",
     "popoverElement",
-    "arrowElement",
     "disclosureElement"
   );
 
   const selectStore = select?.omit(
     "value",
-    "anchorElement",
+    "items",
+    "renderedItems",
     "baseElement",
+    "arrowElement",
+    "anchorElement",
     "contentElement",
     "popoverElement",
-    "disclosureElement",
-    "arrowElement",
-    "items",
-    "renderedItems"
+    "disclosureElement"
   );
 
   const store = mergeStore(props.store, menuStore, selectStore);
@@ -124,8 +124,8 @@ export function createComboboxStore({
     combobox.sync(
       (state) => {
         if (state.open) return;
-        composite.setActiveId(activeId);
-        composite.setMoves(0);
+        combobox.setState("activeId", activeId);
+        combobox.setState("moves", 0);
       },
       ["open"]
     )

@@ -356,10 +356,6 @@ export function focusIntoView(
   element: HTMLElement,
   options?: ScrollIntoViewOptions
 ) {
-  if (!("scrollIntoView" in element)) {
-    element.focus();
-  } else {
-    element.focus({ preventScroll: true });
-    element.scrollIntoView({ block: "nearest", inline: "nearest", ...options });
-  }
+  element.focus({ preventScroll: true });
+  element.scrollIntoView({ block: "nearest", inline: "nearest", ...options });
 }

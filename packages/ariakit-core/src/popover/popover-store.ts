@@ -15,7 +15,13 @@ import {
   createDialogStore,
 } from "../dialog/dialog-store";
 import { defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+  mergeStore,
+} from "../utils/store";
 import { SetState } from "../utils/types";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -84,16 +90,20 @@ function isValidPlacement(flip: string): flip is Placement {
 export function createPopoverStore({
   getAnchorRect,
   renderCallback,
+  popover: otherPopover,
   ...props
 }: PopoverStoreProps = {}): PopoverStore {
-  const store = props.store?.omit(
-    "anchorElement",
-    "popoverElement",
-    "arrowElement",
-    "disclosureElement",
-    "contentElement"
+  const store = mergeStore(
+    props.store,
+    otherPopover?.omit(
+      "arrowElement",
+      "anchorElement",
+      "contentElement",
+      "popoverElement",
+      "disclosureElement"
+    )
   );
-  const syncState = store?.getState();
+  const syncState = props.store?.getState();
 
   const rendered = createStore({ rendered: [] });
   const dialog = createDialogStore({ ...props, store });
@@ -122,9 +132,9 @@ export function createPopoverStore({
       syncState?.overflowPadding,
       8
     ),
-    anchorElement: null,
-    popoverElement: null,
-    arrowElement: null,
+    anchorElement: defaultValue(syncState?.anchorElement, null),
+    popoverElement: defaultValue(syncState?.popoverElement, null),
+    arrowElement: defaultValue(syncState?.arrowElement, null),
   };
   const popover = createStore(initialState, dialog, store);
 
@@ -479,7 +489,9 @@ export type PopoverStoreOptions = DialogStoreOptions &
     | "fitViewport"
     | "arrowPadding"
     | "overflowPadding"
-  >;
+  > & {
+    popover?: PopoverStore;
+  };
 
 export type PopoverStoreProps = PopoverStoreOptions &
   StoreProps<PopoverStoreState>;

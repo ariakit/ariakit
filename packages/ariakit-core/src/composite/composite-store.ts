@@ -169,7 +169,7 @@ export function createCompositeStore<T extends Item = Item>(
       syncState?.includesBaseElement,
       activeId === null
     ),
-    moves: defaultValue(props.moves, syncState?.moves, 0),
+    moves: defaultValue(syncState?.moves, 0),
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
@@ -288,8 +288,6 @@ export function createCompositeStore<T extends Item = Item>(
     ...composite,
 
     setBaseElement: (element) => composite.setState("baseElement", element),
-    // TODO: Remove setMoves?
-    setMoves: (moves) => composite.setState("moves", moves),
     setActiveId: (id) => composite.setState("activeId", id),
 
     move: (id) => {
@@ -393,7 +391,6 @@ export type CompositeStoreState<T extends Item = Item> =
 export type CompositeStoreFunctions<T extends Item = Item> =
   CollectionStoreFunctions<T> & {
     setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
-    setMoves: SetState<CompositeStoreState<T>["moves"]>;
     setActiveId: SetState<CompositeStoreState<T>["activeId"]>;
     move: (id?: string | null) => void;
     next: (skip?: number) => string | null | undefined;
@@ -414,7 +411,6 @@ export type CompositeStoreOptions<T extends Item = Item> =
       | "focusLoop"
       | "focusWrap"
       | "focusShift"
-      | "moves"
       | "includesBaseElement"
       | "activeId"
     > & {

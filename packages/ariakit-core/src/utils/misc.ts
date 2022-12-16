@@ -97,14 +97,6 @@ export function isEmpty(arg: any): boolean {
 }
 
 /**
- * Checks whether `arg` is a promise or not.
- * @returns {boolean}
- */
-export function isPromise<T>(arg: T | Promise<T>): arg is Promise<T> {
-  return Boolean(arg && "then" in arg && typeof arg.then === "function");
-}
-
-/**
  * Checks whether `arg` is an integer or not.
  * @example
  * isInteger(1); // true

@@ -326,6 +326,7 @@ export type FormStoreFunctions<T extends Values = Values> =
     setTouched: SetState<FormStoreState<T>["touched"]>;
     getFieldTouched: (name: StringLike) => boolean;
     setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
+    // TODO: Rename to registerValidate? or onValidate?
     registerValidateCallback: (callback: FormStoreCallback) => void;
     validate: () => Promise<boolean>;
     registerSubmitCallback: (callback: FormStoreCallback) => void;

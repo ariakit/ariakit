@@ -246,7 +246,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
       },
     });
     const menu = useMenuStore({
-      store: combobox,
+      popover: combobox,
       fixed: true,
       placement: parent ? "right-start" : "bottom-start",
       getAnchorRect: (anchor) => {
