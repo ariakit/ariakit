@@ -134,7 +134,7 @@ export function useStoreProps<
         if (value !== undefined) {
           store.setState(key, value);
         }
-        if (setValue && state[key] !== prev[key]) {
+        if (setValue && state[key] !== prev[key] && state[key] !== value) {
           setValue(state[key]);
         }
       },
