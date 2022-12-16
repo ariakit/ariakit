@@ -129,7 +129,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
         // Resets the moves in the store so the composite item will not be
         // focused right after the focusable element inside the container gets
         // focus.
-        store?.setMoves(0);
+        store?.setState("moves", 0);
       }
     });
 

@@ -29,7 +29,6 @@ export function useCompositeStoreProps<T extends CompositeStore>(
   useStoreProps(store, props, "focusLoop");
   useStoreProps(store, props, "focusWrap");
   useStoreProps(store, props, "focusShift");
-  useStoreProps(store, props, "moves");
   return store;
 }
 
