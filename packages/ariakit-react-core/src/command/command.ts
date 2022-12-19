@@ -5,7 +5,6 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import { useEvent, useForkRef, useTagName } from "../utils/hooks";

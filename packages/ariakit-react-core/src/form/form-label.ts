@@ -1,7 +1,7 @@
 import { MouseEvent, useCallback, useContext, useRef } from "react";
 import { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
-import { invariant, queueMicrotask } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/core/utils/misc";
 import {
   CollectionItemOptions,
   useCollectionItem,

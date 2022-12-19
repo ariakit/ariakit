@@ -17,7 +17,6 @@ import {
   isSelfTarget,
 } from "@ariakit/core/utils/events";
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {

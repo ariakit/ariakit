@@ -7,6 +7,9 @@ import {
   createPopoverStore,
 } from "../popover/popover-store";
 
+/**
+ * Creates a composite overflow store.
+ */
 export function createCompositeOverflowStore(
   props: CompositeOverflowStoreProps = {}
 ): CompositeOverflowStore {

@@ -144,26 +144,14 @@ export function cx(...args: Array<string | null | false | undefined>) {
 
 /**
  * Removes diatrics from a string.
- * TODO: Check if it works on WebView Android.
  */
 export function normalizeString(str: string) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 /**
- * Queues a function to be called at the end of the current event loop.
- */
-export function queueMicrotask(callback: VoidFunction) {
-  if (window.queueMicrotask) {
-    return window.queueMicrotask(callback);
-  }
-  Promise.resolve().then(callback);
-}
-
-/**
  * Omits specific keys from an object.
  * @example
- * import { omit } from "ariakit-utils";
  * omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
  */
 export function omit<T extends AnyObject, K extends keyof T>(
@@ -182,7 +170,6 @@ export function omit<T extends AnyObject, K extends keyof T>(
 /**
  * Picks specific keys from an object.
  * @example
- * import { pick } from "ariakit-utils";
  * pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
  */
 export function pick<T extends AnyObject, K extends keyof T>(
@@ -224,43 +211,46 @@ export function afterPaint(cb: () => void = noop) {
 }
 
 /**
- * TODO: Describe
+ * Asserts that a condition is true, otherwise throws an error.
+ * @example
+ * invariant(
+ *   condition,
+ *   process.env.NODE_ENV !== "production" && "Invariant failed"
+ * );
  */
 export function invariant(
   condition: any,
   message?: string | boolean
 ): asserts condition {
   if (condition) return;
-  if (process.env.NODE_ENV === "production" || typeof message === "boolean") {
-    throw new Error("Invariant failed");
-  }
+  if (typeof message !== "string") throw new Error("Invariant failed");
   throw new Error(message);
 }
 
 /**
- * TODO: Describe
+ * Similar to `Object.keys` but returns a type-safe array of keys.
  */
 export function getKeys<T extends object>(obj: T) {
   return Object.keys(obj) as Array<keyof T>;
 }
 
 /**
- * TODO: Describe
+ * Returns the first value that is not `undefined`.
  */
-export function defaultValue<T extends any[]>(...values: T): DefaultValue<T> {
+export function defaultValue<T extends readonly any[]>(...values: T) {
+  type DefinedArray<T extends readonly any[]> = {
+    [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
+      ? [Exclude<T[K], undefined>, never]
+      : [T[K]];
+  };
+
+  type DefaultValue<T extends readonly any[]> =
+    DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
+      ? T[number]
+      : DefinedArray<T>[keyof DefinedArray<T>][0];
+
   for (const value of values) {
-    if (value !== undefined) return value;
+    if (value !== undefined) return value as DefaultValue<T>;
   }
-  return;
+  return undefined as DefaultValue<T>;
 }
-
-type DefinedArray<T extends any[]> = {
-  [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
-    ? [Exclude<T[K], undefined>, never]
-    : [T[K]];
-};
-
-type DefaultValue<T extends any[]> =
-  DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
-    ? T[number]
-    : DefinedArray<T>[keyof DefinedArray<T>][0];

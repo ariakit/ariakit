@@ -8,6 +8,9 @@ import {
 } from "../composite/composite-store";
 import { defaultValue } from "../utils/misc";
 
+/**
+ * Creates a menu bar store.
+ */
 export function createMenuBarStore(
   props: MenuBarStoreProps = {}
 ): MenuBarStore {

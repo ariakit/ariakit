@@ -34,30 +34,31 @@ export function createCheckboxStore(
 
 export type CheckboxStoreValue = Value;
 
-export type CheckboxStoreState<T extends Value = Value> = {
+export interface CheckboxStoreState<T extends Value = Value> {
   /**
    * The checked state of the checkbox.
    */
   value: ToPrimitive<T>;
-};
+}
 
-export type CheckboxStoreFunctions<T extends Value = Value> = {
+export interface CheckboxStoreFunctions<T extends Value = Value> {
   /**
    * Sets the `value` state.
+   * @example
+   * store.setValue(true);
+   * store.setValue((value) => !value);
    */
   setValue: SetState<CheckboxStoreState<T>["value"]>;
-};
+}
 
-export type CheckboxStoreOptions<T extends Value = Value> = StoreOptions<
-  CheckboxStoreState<T>,
-  "value"
-> & {
+export interface CheckboxStoreOptions<T extends Value = Value>
+  extends StoreOptions<CheckboxStoreState<T>, "value"> {
   /**
    * The default value of the checkbox.
    * @default false
    */
   defaultValue?: CheckboxStoreState<T>["value"];
-};
+}
 
 export type CheckboxStoreProps<T extends Value = Value> =
   CheckboxStoreOptions<T> & StoreProps<CheckboxStoreState<T>>;

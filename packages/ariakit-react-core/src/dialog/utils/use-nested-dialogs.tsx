@@ -76,7 +76,7 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
 
   // Close all nested dialogs when parent dialog closes.
   useEffect(() => {
-    return context.store?.batchSync(
+    return context.store?.syncBatch(
       (state) => {
         if (!state.open) {
           store.setOpen(false);

@@ -7,6 +7,9 @@ import {
   createDisclosureStore,
 } from "../disclosure/disclosure-store";
 
+/**
+ * Creates a dialog store.
+ */
 export function createDialogStore(props: DialogStoreProps = {}): DialogStore {
   return createDisclosureStore(props);
 }

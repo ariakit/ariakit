@@ -14,7 +14,6 @@ import {
   getFirstTabbableIn,
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { useEvent, useForkRef } from "../utils/hooks";
 import { useStoreState } from "../utils/store";
 import {

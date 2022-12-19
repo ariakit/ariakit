@@ -5,7 +5,7 @@
  * toArray(["a"]); // ["a"]
  */
 export function toArray<T>(arg: T) {
-  type ToArray<T> = T extends any[] ? T : T[];
+  type ToArray<T> = T extends readonly any[] ? T : T[];
   if (Array.isArray(arg)) {
     return arg as ToArray<T>;
   }

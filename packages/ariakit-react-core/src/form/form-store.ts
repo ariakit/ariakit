@@ -31,17 +31,11 @@ export function useFormStoreProps<
   }, []);
 
   const useValidate = useCallback<FormStore["useValidate"]>((callback) => {
-    useSafeLayoutEffect(
-      () => store.registerValidateCallback(callback),
-      [callback]
-    );
+    useSafeLayoutEffect(() => store.onValidate(callback), [callback]);
   }, []);
 
   const useSubmit = useCallback<FormStore["useSubmit"]>((callback) => {
-    useSafeLayoutEffect(
-      () => store.registerSubmitCallback(callback),
-      [callback]
-    );
+    useSafeLayoutEffect(() => store.onSubmit(callback), [callback]);
   }, []);
 
   return useMemo(

@@ -261,7 +261,7 @@ export const PageMenu = forwardRef<HTMLButtonElement, PageMenuProps>(
     const idle = useIdle();
 
     useSafeLayoutEffect(() => {
-      return menu.batchSync(
+      return menu.syncBatch(
         (state) => {
           if (!parent && state.open) {
             menu.setAutoFocusOnShow(true);

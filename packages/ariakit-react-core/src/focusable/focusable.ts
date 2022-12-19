@@ -21,7 +21,6 @@ import {
   hasFocus,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import { BivariantCallback } from "@ariakit/core/utils/types";
 import {

@@ -1,5 +1,4 @@
 import { MouseEvent } from "react";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { useEvent, useForkRef, useId } from "../utils/hooks";
 import {
   createElement,

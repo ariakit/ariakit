@@ -87,6 +87,9 @@ function isValidPlacement(flip: string): flip is Placement {
   return /^(?:top|bottom|left|right)(?:-(?:start|end))?$/.test(flip);
 }
 
+/**
+ * Creates a popover store.
+ */
 export function createPopoverStore({
   getAnchorRect,
   renderCallback,
@@ -144,7 +147,7 @@ export function createPopoverStore({
 
   popover.setup(() =>
     rendered.sync(() =>
-      popover.batchSync(
+      popover.syncBatch(
         (state) => {
           if (!state.contentElement?.isConnected) return;
           const popover = state.popoverElement;
@@ -341,23 +344,24 @@ export function createPopoverStore({
   };
 }
 
-export type PopoverStoreRenderCallbackProps = Pick<
-  PopoverStoreState,
-  | "anchorElement"
-  | "popoverElement"
-  | "arrowElement"
-  | "mounted"
-  | "placement"
-  | "fixed"
-  | "gutter"
-  | "shift"
-  | "overlap"
-  | "flip"
-  | "sameWidth"
-  | "fitViewport"
-  | "arrowPadding"
-  | "overflowPadding"
-> & {
+export interface PopoverStoreRenderCallbackProps
+  extends Pick<
+    PopoverStoreState,
+    | "anchorElement"
+    | "popoverElement"
+    | "arrowElement"
+    | "mounted"
+    | "placement"
+    | "fixed"
+    | "gutter"
+    | "shift"
+    | "overlap"
+    | "flip"
+    | "sameWidth"
+    | "fitViewport"
+    | "arrowPadding"
+    | "overflowPadding"
+  > {
   /**
    * A method that updates the `currentPlacement` state.
    */
@@ -367,9 +371,9 @@ export type PopoverStoreRenderCallbackProps = Pick<
    * prop is not provided.
    */
   defaultRenderCallback: () => () => void;
-};
+}
 
-export type PopoverStoreState = DialogStoreState & {
+export interface PopoverStoreState extends DialogStoreState {
   /**
    * The anchor element.
    */
@@ -401,9 +405,8 @@ export type PopoverStoreState = DialogStoreState & {
   /**
    * The distance between the popover and the anchor element. By default, it's 0
    * plus half of the arrow offset, if it exists.
-   * @default 0
    */
-  gutter?: number;
+  gutter: number | undefined;
   /**
    * The skidding of the popover along the anchor element.
    * @default 0
@@ -453,12 +456,26 @@ export type PopoverStoreState = DialogStoreState & {
    * @default 8
    */
   overflowPadding: number;
-};
+}
 
-export type PopoverStoreFunctions = DialogStoreFunctions & {
+export interface PopoverStoreFunctions extends DialogStoreFunctions {
+  /**
+   * Sets the anchor element.
+   */
   setAnchorElement: SetState<PopoverStoreState["anchorElement"]>;
+  /**
+   * Sets the popover element.
+   */
   setPopoverElement: SetState<PopoverStoreState["popoverElement"]>;
+  /**
+   * Sets the arrow element.
+   */
   setArrowElement: SetState<PopoverStoreState["arrowElement"]>;
+  /**
+   * Function that returns the anchor element's DOMRect. If this is explicitly
+   * passed, it will override the anchor `getBoundingClientRect` method.
+   * @param anchor The anchor element.
+   */
   getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
   /**
    * A function that will be called when the popover needs to calculate its
@@ -472,26 +489,31 @@ export type PopoverStoreFunctions = DialogStoreFunctions & {
    * when the popover anchor changes in a way that affects the popover position.
    */
   render: () => void;
-};
+}
 
-export type PopoverStoreOptions = DialogStoreOptions &
-  Partial<Pick<PopoverStoreFunctions, "getAnchorRect" | "renderCallback">> &
-  StoreOptions<
-    PopoverStoreState,
-    | "placement"
-    | "fixed"
-    | "gutter"
-    | "shift"
-    | "flip"
-    | "slide"
-    | "overlap"
-    | "sameWidth"
-    | "fitViewport"
-    | "arrowPadding"
-    | "overflowPadding"
-  > & {
-    popover?: PopoverStore;
-  };
+export interface PopoverStoreOptions
+  extends StoreOptions<
+      PopoverStoreState,
+      | "placement"
+      | "fixed"
+      | "gutter"
+      | "shift"
+      | "flip"
+      | "slide"
+      | "overlap"
+      | "sameWidth"
+      | "fitViewport"
+      | "arrowPadding"
+      | "overflowPadding"
+    >,
+    Partial<Pick<PopoverStoreFunctions, "getAnchorRect" | "renderCallback">>,
+    DialogStoreOptions {
+  /**
+   * A reference to another popover store that's controlling another popover to
+   * keep them in sync.
+   */
+  popover?: PopoverStore;
+}
 
 export type PopoverStoreProps = PopoverStoreOptions &
   StoreProps<PopoverStoreState>;

@@ -7,7 +7,7 @@ import {
   hasOwnProperty,
   noop,
 } from "./misc";
-import { SetStateAction } from "./types";
+import { AnyObject, SetStateAction } from "./types";
 
 /**
  * Creates a store.
@@ -16,10 +16,10 @@ import { SetStateAction } from "./types";
  */
 export function createStore<S extends State>(
   initialState: S,
-  ...stores: Array<PartialStore<S> | undefined>
+  ...stores: Array<Partial<Store<Partial<S>>> | undefined>
 ): Store<S> {
   let state = initialState;
-  let batchPrevState = state;
+  let prevStateBatch = state;
   let lastUpdate = Symbol();
   let updating = false;
   let initialized = false;
@@ -27,7 +27,7 @@ export function createStore<S extends State>(
 
   const setups = new Set<() => void | (() => void)>();
   const listeners = new Set<Listener<S>>();
-  const batchListeners = new Set<Listener<S>>();
+  const listenersBatch = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
@@ -63,7 +63,7 @@ export function createStore<S extends State>(
   };
 
   const sub = (listener: Listener<S>, keys?: Array<keyof S>, batch = false) => {
-    const set = batch ? batchListeners : listeners;
+    const set = batch ? listenersBatch : listeners;
     set.add(listener);
     listenerKeys.set(listener, keys);
     return () => {
@@ -82,9 +82,9 @@ export function createStore<S extends State>(
     return sub(listener, keys);
   };
 
-  const batchSync: Store<S>["batchSync"] = (listener, keys) => {
+  const syncBatch: Store<S>["syncBatch"] = (listener, keys) => {
     if (!updating) {
-      disposables.set(listener, listener(state, batchPrevState));
+      disposables.set(listener, listener(state, prevStateBatch));
     }
     return sub(listener, keys, true);
   };
@@ -130,10 +130,10 @@ export function createStore<S extends State>(
       // Take a snapshot of the state before running batch listeners. This is
       // necessary because batch listeners can setState.
       const snapshot = state;
-      batchListeners.forEach((listener) => {
-        run(listener, batchPrevState, updatedKeys);
+      listenersBatch.forEach((listener) => {
+        run(listener, prevStateBatch, updatedKeys);
       });
-      batchPrevState = snapshot;
+      prevStateBatch = snapshot;
       queueMicrotask(() => {
         // Listeners may call setState again. If we don't clear the updated keys
         // in a microtask, we may end up clearing keys right before the nested
@@ -154,7 +154,7 @@ export function createStore<S extends State>(
     init,
     subscribe,
     sync,
-    batchSync,
+    syncBatch,
     getState,
     setState,
     pick,
@@ -164,6 +164,9 @@ export function createStore<S extends State>(
   return finalStore;
 }
 
+/**
+ * Merges multiple stores into a single store.
+ */
 export function mergeStore<S extends State>(
   ...stores: Array<Partial<Store<S>> | undefined>
 ): Store<S> {
@@ -179,7 +182,7 @@ export function mergeStore<S extends State>(
 /**
  * Store state type.
  */
-export type State = Record<string, unknown>;
+export type State = AnyObject;
 
 /**
  * Initial state that can be passed to a store creator function.
@@ -197,9 +200,10 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
 export type StoreProps<S extends State = State> = { store?: Store<Partial<S>> };
 
 /**
- * TODO: Description
+ * Extracts the state type from a store type.
+ * @template T Store type.
  */
-export type StorePropsState<T extends StoreProps> = StoreState<T["store"]>;
+export type StoreState<T> = T extends { getState(): infer S } ? S : never;
 
 /**
  * Store listener type.
@@ -227,7 +231,15 @@ export type Sync<S = State> = {
  * Store.
  * @template S State type.
  */
-export type Store<S = State> = {
+export interface Store<S = State> {
+  /**
+   * Returns the current store state.
+   */
+  getState(): S;
+  /**
+   * Sets a state value.
+   */
+  setState<K extends keyof S>(key: K, value: SetStateAction<S[K]>): void;
   /**
    * Register a callback function that's called when the store is initialized.
    */
@@ -250,15 +262,7 @@ export type Store<S = State> = {
    * Registers a listener function that's called immediately and after a batch
    * of state changes in the store.
    */
-  batchSync: Sync<S>;
-  /**
-   * Returns the current store state.
-   */
-  getState(): S;
-  /**
-   * Sets a state value.
-   */
-  setState<K extends keyof S>(key: K, value: SetStateAction<S[K]>): void;
+  syncBatch: Sync<S>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
@@ -269,16 +273,4 @@ export type Store<S = State> = {
    * in sync.
    */
   omit<K extends Array<keyof S>>(...keys: K): Store<Omit<S, K[number]>>;
-};
-
-/**
- * Extracts the state type from a store type.
- * @template T Store type.
- */
-export type StoreState<T> = T extends { getState(): infer S } ? S : never;
-
-/**
- * Store that can be passed to createStore. TODO: Find a better name.
- * @template S State type.
- */
-export type PartialStore<S = State> = Partial<Store<Partial<S>>>;
+}

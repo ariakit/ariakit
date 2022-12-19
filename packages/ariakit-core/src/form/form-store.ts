@@ -7,7 +7,12 @@ import {
 } from "../collection/collection-store";
 import { applyState, defaultValue, isInteger, isObject } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { AnyObject, SetState, SetStateAction } from "../utils/types";
+import {
+  AnyObject,
+  PickRequired,
+  SetState,
+  SetStateAction,
+} from "../utils/types";
 import { DeepMap, DeepPartial, Names, StringLike } from "./types";
 
 type Values = AnyObject;
@@ -121,16 +126,19 @@ function createNames() {
   return new Proxy(Object.create(null), getNameHandler(cache));
 }
 
+/**
+ * Creates a form store.
+ */
 export function createFormStore<T extends Values = Values>(
-  props: FormStoreProps<T> &
-    (
-      | Required<Pick<FormStoreProps<T>, "values">>
-      | Required<Pick<FormStoreProps<T>, "defaultValues">>
-      | Required<Pick<FormStoreProps<T>, "errors">>
-      | Required<Pick<FormStoreProps<T>, "defaultErrors">>
-      | Required<Pick<FormStoreProps<T>, "touched">>
-      | Required<Pick<FormStoreProps<T>, "defaultTouched">>
-    )
+  props: PickRequired<
+    FormStoreProps<T>,
+    | "values"
+    | "defaultValues"
+    | "errors"
+    | "defaultErrors"
+    | "touched"
+    | "defaultTouched"
+  >
 ): FormStore<T>;
 
 export function createFormStore(props: FormStoreProps): FormStore;
@@ -165,10 +173,10 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
     values,
     errors,
     touched,
-    validating: false,
-    submitting: false,
-    submitSucceed: 0,
-    submitFailed: 0,
+    validating: defaultValue(syncState?.validating, false),
+    submitting: defaultValue(syncState?.submitting, false),
+    submitSucceed: defaultValue(syncState?.submitSucceed, 0),
+    submitFailed: defaultValue(syncState?.submitFailed, 0),
     valid: !hasMessages(errors),
   };
   const form = createStore(initialState, collection, props.store);
@@ -181,7 +189,7 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
     form.setState("errors", {});
     try {
       const callbacks = [...validateCallbacks];
-      const results = callbacks.map((callback) => callback());
+      const results = callbacks.map((callback) => callback(form.getState()));
       // Wait for the next frame to allow the errors to be set on the state.
       await Promise.all(results).then(nextFrame);
       return !hasMessages(form.getState().errors);
@@ -239,13 +247,13 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
         return set(touched, name, nextValue);
       }),
 
-    registerValidateCallback: (callback) => {
+    onValidate: (callback) => {
       validateCallbacks.add(callback);
       return () => validateCallbacks.delete(callback);
     },
     validate,
 
-    registerSubmitCallback: (callback) => {
+    onSubmit: (callback) => {
       submitCallbacks.add(callback);
       return () => submitCallbacks.delete(callback);
     },
@@ -255,7 +263,9 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       try {
         if (await validate()) {
           const callbacks = [...submitCallbacks];
-          const results = callbacks.map((callback) => callback());
+          const results = callbacks.map((callback) =>
+            callback(form.getState())
+          );
           // Wait for the next frame to allow the errors to be set on the state.
           await Promise.all(results).then(nextFrame);
           if (!hasMessages(form.getState().errors)) {
@@ -285,62 +295,233 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
   };
 }
 
-export type FormStoreCallback = () => void | Promise<void>;
+export type FormStoreCallback<T extends FormStoreState = FormStoreState> = (
+  state: T
+) => void | Promise<void>;
 
 export type FormStoreValues = Values;
 
 export type FormStoreItem = Item;
 
-export type FormStoreState<T extends Values = Values> =
-  CollectionStoreState<Item> & {
-    /**
-     * Form values.
-     */
-    values: T;
-    /**
-     * Form errors.
-     */
-    errors: DeepPartial<DeepMap<T, ErrorMessage>>;
-    /**
-     * The touched state of the form.
-     */
-    touched: DeepPartial<DeepMap<T, boolean>>;
-    valid: boolean;
-    validating: boolean;
-    submitting: boolean;
-    submitSucceed: number;
-    submitFailed: number;
-  };
+export interface FormStoreState<T extends Values = Values>
+  extends CollectionStoreState<Item> {
+  /**
+   * Form values.
+   * @default {}
+   */
+  values: T;
+  /**
+   * Form errors.
+   */
+  errors: DeepPartial<DeepMap<T, ErrorMessage>>;
+  /**
+   * The touched state of the form.
+   */
+  touched: DeepPartial<DeepMap<T, boolean>>;
+  /**
+   * Whether the form is valid.
+   */
+  valid: boolean;
+  /**
+   * Whether the form is validating.
+   */
+  validating: boolean;
+  /**
+   * Whether the form is submitting.
+   */
+  submitting: boolean;
+  /**
+   * The number of times `form.submit` has been called with a successful
+   * response.
+   */
+  submitSucceed: number;
+  /**
+   * The number of times `form.submit` has been called with an error response.
+   */
+  submitFailed: number;
+}
 
-export type FormStoreFunctions<T extends Values = Values> =
-  CollectionStoreFunctions<Item> & {
-    names: Names<T>;
-    setValues: SetState<FormStoreState<T>["values"]>;
-    getValue: <T = any>(name: StringLike) => T;
-    setValue: <T>(name: StringLike, value: SetStateAction<T>) => void;
-    pushValue: <T>(name: StringLike, value: T) => void;
-    removeValue: (name: StringLike, index: number) => void;
-    setErrors: SetState<FormStoreState<T>["errors"]>;
-    getError: (name: StringLike) => ErrorMessage;
-    setError: (name: StringLike, error: SetStateAction<ErrorMessage>) => void;
-    setTouched: SetState<FormStoreState<T>["touched"]>;
-    getFieldTouched: (name: StringLike) => boolean;
-    setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
-    // TODO: Rename to registerValidate? or onValidate?
-    registerValidateCallback: (callback: FormStoreCallback) => void;
-    validate: () => Promise<boolean>;
-    registerSubmitCallback: (callback: FormStoreCallback) => void;
-    submit: () => Promise<boolean>;
-    reset: () => void;
-  };
+export interface FormStoreFunctions<T extends Values = Values>
+  extends CollectionStoreFunctions<Item> {
+  /**
+   * An object containing the names of the form fields for type-safety.
+   * @example
+   * store.names.name; // "name"
+   * store.names.name.first; // "name.first"
+   * store.names.name.last; // "name.last"
+   */
+  names: Names<T>;
+  /**
+   * Sets the `values` state.
+   * @example
+   * store.setValues({ name: "John" });
+   * store.setValues((values) => ({ ...values, name: "John" }));
+   */
+  setValues: SetState<FormStoreState<T>["values"]>;
+  /**
+   * Retrieves a field value.
+   * @param name The field name.
+   * @example
+   * const nameValue = store.getValue("name");
+   * // Can also use store.names for type-safety.
+   * const emailValue = store.getValue(store.names.email);
+   */
+  getValue: <T = any>(name: StringLike) => T;
+  /**
+   * Sets a field value.
+   * @param name The field name.
+   * @param value The field value.
+   * @example
+   * store.setValue("name", "John");
+   * store.setValue("name", (value) => value + " Doe");
+   * // Can also use store.names for type-safety.
+   * store.setValue(store.names.name, "John");
+   */
+  setValue: <T>(name: StringLike, value: SetStateAction<T>) => void;
+  /**
+   * Pushes a value to an array field.
+   * @param name The array field name.
+   * @param value The value to push.
+   * @example
+   * store.pushValue("tags", "new tag");
+   * store.pushValue("tags", { id: 1, name: "new tag" });
+   * // Can also use store.names for type-safety.
+   * store.pushValue(store.names.tags, "new tag");
+   */
+  pushValue: <T>(name: StringLike, value: T) => void;
+  /**
+   * Removes a value from an array field.
+   * @param name The array field name.
+   * @param index The index of the value to remove.
+   * @example
+   * store.removeValue("tags", 0);
+   * store.removeValue("tags", 1);
+   * // Can also use store.names for type-safety.
+   * store.removeValue(store.names.tags, 0);
+   */
+  removeValue: (name: StringLike, index: number) => void;
+  /**
+   * Sets the `errors` state.
+   * @example
+   * store.setErrors({ name: "Name is required" });
+   * store.setErrors((errors) => ({ ...errors, name: "Name is required" }));
+   */
+  setErrors: SetState<FormStoreState<T>["errors"]>;
+  /**
+   * Retrieves a field error.
+   * @param name The field name.
+   * @example
+   * const nameError = store.getError("name");
+   * // Can also use store.names for type-safety.
+   * const emailError = store.getError(store.names.email);
+   */
+  getError: (name: StringLike) => ErrorMessage;
+  /**
+   * Sets a field error.
+   * @param name The field name.
+   * @param error The field error.
+   * @example
+   * store.setError("name", "Name is required");
+   * store.setError("name", (error) => error + "!");
+   * // Can also use store.names for type-safety.
+   * store.setError(store.names.name, "Name is required");
+   */
+  setError: (name: StringLike, error: SetStateAction<ErrorMessage>) => void;
+  /**
+   * Sets the `touched` state.
+   * @example
+   * store.setTouched({ name: true });
+   * store.setTouched((touched) => ({ ...touched, name: true }));
+   */
+  setTouched: SetState<FormStoreState<T>["touched"]>;
+  /**
+   * Retrieves a field touched state.
+   * @param name The field name.
+   * @example
+   * const nameTouched = store.getFieldTouched("name");
+   * // Can also use store.names for type-safety.
+   * const emailTouched = store.getFieldTouched(store.names.email);
+   */
+  getFieldTouched: (name: StringLike) => boolean;
+  /**
+   * Sets a field touched state.
+   * @param name The field name.
+   * @param value The field touched state.
+   * @example
+   * store.setFieldTouched("name", true);
+   * store.setFieldTouched("name", (value) => !value);
+   * // Can also use store.names for type-safety.
+   * store.setFieldTouched(store.names.name, true);
+   */
+  setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
+  /**
+   * Function that accepts a callback that will be used to validate the form
+   * when `validate` is called. It returns a cleanup function that will remove
+   * the callback.
+   * @param callback The callback function.
+   * @example
+   * const cleanup = store.onValidate(async (state) => {
+   *   const errors = await api.validate(state.values);
+   *   if (errors) {
+   *     store.setErrors(errors);
+   *   }
+   * });
+   */
+  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  /**
+   * Function that accepts a callback that will be used to submit the form
+   * when `submit` is called. It returns a cleanup function that will remove
+   * the callback.
+   * @param callback The callback function.
+   * @example
+   * const cleanup = store.onSubmit(async (state) => {
+   *   try {
+   *     await api.submit(state.values);
+   *   } catch (errors) {
+   *     store.setErrors(errors);
+   *   }
+   * });
+   */
+  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  /**
+   * Validates the form.
+   * @example
+   * if (await store.validate()) {
+   *  // Form is valid.
+   * }
+   */
+  validate: () => Promise<boolean>;
+  /**
+   * Submits the form. This also triggers validation.
+   * @example
+   * if (await form.submit()) {
+   *   // Form is submitted.
+   * }
+   */
+  submit: () => Promise<boolean>;
+  /**
+   * Resets the form to its default values.
+   */
+  reset: () => void;
+}
 
-export type FormStoreOptions<T extends Values = Values> =
-  CollectionStoreOptions<Item> &
-    StoreOptions<FormStoreState<T>, "values" | "errors" | "touched"> & {
-      defaultValues?: FormStoreState<T>["values"];
-      defaultErrors?: FormStoreState<T>["errors"];
-      defaultTouched?: FormStoreState<T>["touched"];
-    };
+export interface FormStoreOptions<T extends Values = Values>
+  extends StoreOptions<FormStoreState<T>, "values" | "errors" | "touched">,
+    CollectionStoreOptions<Item> {
+  /**
+   * The default values of the form.
+   * @default {}
+   */
+  defaultValues?: FormStoreState<T>["values"];
+  /**
+   * The default errors of the form.
+   */
+  defaultErrors?: FormStoreState<T>["errors"];
+  /**
+   * The default touched state of the form.
+   */
+  defaultTouched?: FormStoreState<T>["touched"];
+}
 
 export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
   StoreProps<FormStoreState<T>>;

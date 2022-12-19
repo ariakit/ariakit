@@ -14,7 +14,6 @@ import {
   getPreviousTabbable,
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
-import { queueMicrotask } from "@ariakit/core/utils/misc";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap/focus-trap";
 import {

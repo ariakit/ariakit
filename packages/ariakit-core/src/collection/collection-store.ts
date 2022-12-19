@@ -55,6 +55,9 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
+/**
+ * Creates a collection store.
+ */
 export function createCollectionStore<T extends Item = Item>(
   props: CollectionStoreProps<T> = {}
 ): CollectionStore<T> {
@@ -79,7 +82,7 @@ export function createCollectionStore<T extends Item = Item>(
   };
 
   collection.setup(() => {
-    return privateStore.batchSync(
+    return privateStore.syncBatch(
       (state) => {
         let firstRun = true;
         let raf = 0;
@@ -181,7 +184,7 @@ export function createCollectionStore<T extends Item = Item>(
 
 export type CollectionStoreItem = Item;
 
-export type CollectionStoreState<T extends Item = Item> = {
+export interface CollectionStoreState<T extends Item = Item> {
   /**
    * Lists all the items with their meta data. This state is automatically
    * updated when an item is registered or unregistered with the `registerItem`
@@ -195,35 +198,46 @@ export type CollectionStoreState<T extends Item = Item> = {
    * their DOM position.
    */
   renderedItems: T[];
-};
+}
 
-export type CollectionStoreFunctions<T extends Item = Item> = {
+export interface CollectionStoreFunctions<T extends Item = Item> {
   /**
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
+   * @param item The item to register.
+   * @example
+   * const unregisterItem = store.registerItem({ id: "item-1" });
+   * // on cleanup
+   * unregisterItem();
    */
   registerItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Renders an item in the collection. This function returns a cleanup function
    * that unrenders the item.
+   * @param item The item to render.
+   * @example
+   * const unrenderItem = store.renderItem({ id: "item-1" });
+   * // on cleanup
+   * unrenderItem();
    */
   renderItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Gets an item by its id.
+   * @param id The id of the item.
+   * @example
+   * const item = store.item("item-1");
    */
   item: (id: string | null | undefined) => T | null;
-};
+}
 
-export type CollectionStoreOptions<T extends Item = Item> = StoreOptions<
-  CollectionStoreState<T>,
-  "items"
-> & {
+export interface CollectionStoreOptions<T extends Item = Item>
+  extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
    * The defaut value for the `items` state.
    * @default []
    */
   defaultItems?: CollectionStoreState<T>["items"];
-};
+}
 
 export type CollectionStoreProps<T extends Item = Item> =
   CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;

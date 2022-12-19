@@ -128,48 +128,81 @@ export type MenuStoreValues = Record<
   string | boolean | number | Array<string | number>
 >;
 
-export type MenuStoreState<T extends Values = Values> = CompositeStoreState &
-  HovercardStoreState & {
-    /**
-     * Determines the element that should be focused when the menu is opened.
-     */
-    initialFocus: "container" | "first" | "last";
-    /**
-     * A map of names and values that will be used by the `MenuItemCheckbox`
-     * and `MenuItemRadio` components.
-     */
-    values: T;
-  };
+export interface MenuStoreState<T extends Values = Values>
+  extends CompositeStoreState,
+    HovercardStoreState {
+  /**
+   * @default "vertical"
+   */
+  orientation: CompositeStoreState["orientation"];
+  /**
+   * @default "bottom-start"
+   */
+  placement: HovercardStoreState["placement"];
+  /**
+   * @default 0
+   */
+  hideTimeout: HovercardStoreState["hideTimeout"];
+  /**
+   * Determines the element that should be focused when the menu is opened.
+   */
+  initialFocus: "container" | "first" | "last";
+  /**
+   * A map of names and values that will be used by the `MenuItemCheckbox` and
+   * `MenuItemRadio` components.
+   */
+  values: T;
+}
 
-export type MenuStoreFunctions<T extends Values = Values> =
-  CompositeStoreFunctions &
-    HovercardStoreFunctions & {
-      /**
-       * Sets the `initialFocus` state.
-       */
-      setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
-      /**
-       * Sets the `values` state.
-       */
-      setValues: SetState<MenuStoreState<T>["values"]>;
-      /**
-       * Sets a specific value.
-       */
-      setValue: BivariantCallback<
-        (
-          name: string,
-          value: SetStateAction<MenuStoreState<T>["values"][string]>
-        ) => void
-      >;
-    };
+export interface MenuStoreFunctions<T extends Values = Values>
+  extends CompositeStoreFunctions,
+    HovercardStoreFunctions {
+  /**
+   * Sets the `initialFocus` state.
+   */
+  setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
+  /**
+   * Sets the `values` state.
+   * @example
+   * store.setValues({ watching: ["issues"] });
+   * store.setValues((values) => ({ ...values, watching: ["issues"] }));
+   */
+  setValues: SetState<MenuStoreState<T>["values"]>;
+  /**
+   * Sets a specific menu value.
+   * @param name The name.
+   * @param value The value.
+   * @example
+   * store.setValue("watching", ["issues"]);
+   * store.setValue("watching", (value) => [...value, "issues"]);
+   */
+  setValue: BivariantCallback<
+    (
+      name: string,
+      value: SetStateAction<MenuStoreState<T>["values"][string]>
+    ) => void
+  >;
+}
 
-export type MenuStoreOptions<T extends Values = Values> =
-  CompositeStoreOptions &
-    HovercardStoreOptions &
-    StoreOptions<MenuStoreState<T>, "values"> & {
-      combobox?: ComboboxStore;
-      defaultValues?: MenuStoreState<T>["values"];
-    };
+export interface MenuStoreOptions<T extends Values = Values>
+  extends StoreOptions<
+      MenuStoreState<T>,
+      "orientation" | "placement" | "hideTimeout" | "values"
+    >,
+    CompositeStoreOptions,
+    HovercardStoreOptions {
+  /**
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a menu (e.g., dropdown menu with a search input). The stores will
+   * share the same state.
+   */
+  combobox?: ComboboxStore;
+  /**
+   * The default values for the `values` state.
+   * @default {}
+   */
+  defaultValues?: MenuStoreState<T>["values"];
+}
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
   StoreProps<MenuStoreState<T>>;

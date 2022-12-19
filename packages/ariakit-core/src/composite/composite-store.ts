@@ -60,16 +60,6 @@ function flipItems(
   ];
 }
 
-function getActiveId(
-  items: Item[],
-  activeId?: string | null,
-  passedId?: string | null
-) {
-  if (passedId !== undefined) return passedId;
-  if (activeId !== undefined) return activeId;
-  return findFirstEnabledItem(items)?.id;
-}
-
 function groupItemsByRows(items: Item[]) {
   const rows: Item[][] = [];
   for (const item of items) {
@@ -147,6 +137,9 @@ function verticalizeItems(items: Item[]) {
   return verticalized;
 }
 
+/**
+ * Creates a composite store.
+ */
 export function createCompositeStore<T extends Item = Item>(
   props: CompositeStoreProps<T> = {}
 ): CompositeStore<T> {
@@ -188,13 +181,15 @@ export function createCompositeStore<T extends Item = Item>(
 
   const composite = createStore(initialState, collection, props.store);
 
+  // When the activeId is undefined, we need to find the first enabled item and
+  // set it as the activeId.
   composite.setup(() =>
     composite.sync(
       (state) => {
-        composite.setState(
-          "activeId",
-          getActiveId(state.renderedItems, state.activeId)
-        );
+        composite.setState("activeId", (activeId) => {
+          if (activeId !== undefined) return activeId;
+          return findFirstEnabledItem(state.renderedItems)?.id;
+        });
       },
       ["renderedItems", "activeId"]
     )
@@ -235,20 +230,19 @@ export function createCompositeStore<T extends Item = Item>(
       return nextItem?.id;
     }
     const oppositeOrientation = getOppositeOrientation(
-      // If it's a grid and orientation is not set, it's a next/previous
-      // call, which is inherently horizontal. up/down will call next with
-      // orientation set to vertical by default (see below on up/down
-      // methods).
+      // If it's a grid and orientation is not set, it's a next/previous call,
+      // which is inherently horizontal. up/down will call next with orientation
+      // set to vertical by default (see below on up/down methods).
       isGrid ? orientation || "horizontal" : orientation
     );
     const canLoop = focusLoop && focusLoop !== oppositeOrientation;
     const canWrap = isGrid && focusWrap && focusWrap !== oppositeOrientation;
     // previous and up methods will set hasNullItem, but when calling next
     // directly, hasNullItem will only be true if if it's not a grid and
-    // focusLoop is set to true, which means that pressing right or down keys
-    // on grids will never focus the composite container element. On
-    // one-dimensional composites that don't loop, pressing right or down
-    // keys also doesn't focus on the composite container element.
+    // focusLoop is set to true, which means that pressing right or down keys on
+    // grids will never focus the composite container element. On
+    // one-dimensional composites that don't loop, pressing right or down keys
+    // also doesn't focus on the composite container element.
     hasNullItem = hasNullItem || (!isGrid && canLoop && includesBaseElement);
 
     if (canLoop) {
@@ -264,11 +258,11 @@ export function createCompositeStore<T extends Item = Item>(
     if (canWrap) {
       const nextItem = findFirstEnabledItem(
         // We can use nextItems, which contains all the next items, including
-        // items from other rows, to wrap between rows. However, if there is
-        // a null item (the composite container), we'll only use the next
-        // items in the row. So moving next from the last item will focus on
-        // the composite container. On grid composites, horizontal navigation
-        // never focuses on the composite container, only vertical.
+        // items from other rows, to wrap between rows. However, if there is a
+        // null item (the composite container), we'll only use the next items in
+        // the row. So moving next from the last item will focus on the
+        // composite container. On grid composites, horizontal navigation never
+        // focuses on the composite container, only vertical.
         hasNullItem ? nextItemsInRow : nextItems,
         activeId
       );
@@ -374,36 +368,187 @@ export type CompositeStoreOrientation = Orientation;
 
 export type CompositeStoreItem = Item;
 
-export type CompositeStoreState<T extends Item = Item> =
-  CollectionStoreState<T> & {
-    baseElement: HTMLElement | null;
-    virtualFocus: boolean;
-    orientation: Orientation;
-    rtl: boolean;
-    focusLoop: boolean | Orientation;
-    focusWrap: boolean | Orientation;
-    focusShift: boolean;
-    moves: number;
-    includesBaseElement: boolean;
-    activeId?: string | null;
-  };
+export interface CompositeStoreState<T extends Item = Item>
+  extends CollectionStoreState<T> {
+  /**
+   * The composite element.
+   */
+  baseElement: HTMLElement | null;
+  /**
+   * If enabled, the composite element will act as an
+   * [aria-activedescendant](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_focus_activedescendant)
+   * container instead of [roving
+   * tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
+   * DOM focus will remain on the composite element while its items receive
+   * virtual focus.
+   * @default false
+   */
+  virtualFocus: boolean;
+  /**
+   * Defines the orientation of the composite widget. If the composite has a
+   * single row or column (one-dimensional), the `orientation` value determines
+   * which arrow keys can be used to move focus:
+   *   - `both`: all arrow keys work.
+   *   - `horizontal`: only left and right arrow keys work.
+   *   - `vertical`: only up and down arrow keys work.
+   *
+   * It doesn't have any effect on two-dimensional composites.
+   * @default "both"
+   */
+  orientation: Orientation;
+  /**
+   * Determines how the `next` and `previous` functions will behave. If `rtl` is
+   * set to `true`, they will be inverted. This only affects the composite
+   * widget behavior. You still need to set `dir="rtl"` on HTML/CSS.
+   * @default false
+   */
+  rtl: boolean;
+  /**
+   * Determines how the focus behaves when the user reaches the end of the
+   * composite widget.
+   *
+   * On one-dimensional composites:
+   *   - `true` loops from the last item to the first item and vice-versa.
+   *   - `horizontal` loops only if `orientation` is `horizontal` or not set.
+   *   - `vertical` loops only if `orientation` is `vertical` or not set.
+   *   - If `includesBaseElement` is set to `true` (or `activeId` is initially
+   *     set to `null`), the composite element will be focused in between the
+   *     last and first items.
+   *
+   * On two-dimensional composites (when using `CompositeRow`):
+   *   - `true` loops from the last row/column item to the first item in the
+   *     same row/column and vice-versa. If it's the last item in the last row,
+   *     it moves to the first item in the first row and vice-versa.
+   *   - `horizontal` loops only from the last row item to the first item in the
+   *     same row.
+   *   - `vertical` loops only from the last column item to the first item in
+   *     the column row.
+   *   - If `includesBaseElement` is set to `true` (or `activeId` is initially
+   *     set to `null`), vertical loop will have no effect as moving down from
+   *     the last row or up from the first row will focus the composite element.
+   *   - If `focusWrap` matches the value of `focusLoop`, it'll wrap between the
+   *     last item in the last row or column and the first item in the first row
+   *     or column and vice-versa.
+   * @default false
+   */
+  focusLoop: boolean | Orientation;
+  /**
+   * **Works only on two-dimensional composites**. If enabled, moving to the
+   * next item from the last one in a row or column will focus the first item in
+   * the next row or column and vice-versa.
+   *   - `true` wraps between rows and columns.
+   *   - `horizontal` wraps only between rows.
+   *   - `vertical` wraps only between columns.
+   *   - If `focusLoop` matches the value of `focusWrap`, it'll wrap between the
+   *     last item in the last row or column and the first item in the first row
+   *     or column and vice-versa.
+   * @default false
+   */
+  focusWrap: boolean | Orientation;
+  /**
+   * **Works only on two-dimensional composites**. If enabled, moving up or down
+   * when there's no next item or when the next item is disabled will shift to
+   * the item right before it.
+   * @default false
+   */
+  focusShift: boolean;
+  /**
+   * The number of times the `move` function has been called.
+   */
+  moves: number;
+  /**
+   * Indicates whether the composite element should be included in the focus
+   * order.
+   * @default false
+   */
+  includesBaseElement: boolean;
+  /**
+   * The current focused item `id`.
+   *   - `null` focuses the base composite element and users will be able to
+   *     navigate out of it using arrow keys.
+   *   - If `activeId` is initially set to `null`, the `includesBaseElement`
+   *     prop will also default to `true`, which means the base composite
+   *     element itself will have focus and users will be able to navigate to it
+   *     using arrow keys.
+   */
+  activeId?: string | null;
+}
 
-export type CompositeStoreFunctions<T extends Item = Item> =
-  CollectionStoreFunctions<T> & {
-    setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
-    setActiveId: SetState<CompositeStoreState<T>["activeId"]>;
-    move: (id?: string | null) => void;
-    next: (skip?: number) => string | null | undefined;
-    previous: (skip?: number) => string | null | undefined;
-    up: (skip?: number) => string | null | undefined;
-    down: (skip?: number) => string | null | undefined;
-    first: () => string | null | undefined;
-    last: () => string | null | undefined;
-  };
+export interface CompositeStoreFunctions<T extends Item = Item>
+  extends CollectionStoreFunctions<T> {
+  /**
+   * Sets the `baseElement`.
+   */
+  setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
+  /**
+   * Sets the `activeId` state. This just sets the state and doesn't move
+   * focus. Use `move` to move focus.
+   * @example
+   * // Sets the composite element as the active item
+   * store.setActiveId(null);
+   * // Sets the item with id "item-1" as the active item
+   * store.setActiveId("item-1");
+   * // Sets the next item as the active item
+   * store.setActiveId(store.next());
+   */
+  setActiveId: SetState<CompositeStoreState<T>["activeId"]>;
+  /**
+   * Moves focus to a given item id and sets it as the active item. Passing
+   * `null` will focus the composite element itself.
+   * @param id The item id to move focus to.
+   * @example
+   * // Moves focus to the composite element
+   * store.move(null);
+   * // Moves focus to the item with id "item-1"
+   * store.move("item-1");
+   * // Moves focus to the next item
+   * store.move(store.next());
+   */
+  move: (id?: string | null) => void;
+  /**
+   * Returns the id of the next item based on the current `activeId` state.
+   * @param skip The number of items to skip. Defaults to 1.
+   * @example
+   * const nextId = store.next();
+   * const nextNextId = store.next(2);
+   */
+  next: (skip?: number) => string | null | undefined;
+  /**
+   * Returns the id of the previous item based on the current `activeId` state.
+   * @param skip The number of items to skip. Defaults to 1.
+   * @example
+   * const previousId = store.previous();
+   * const previousPreviousId = store.previous(2);
+   */
+  previous: (skip?: number) => string | null | undefined;
+  /**
+   * Returns the id of the item above based on the current `activeId` state.
+   * @param skip The number of items to skip. Defaults to 1.
+   * @example
+   * const upId = store.up();
+   * const upUpId = store.up(2);
+   */
+  up: (skip?: number) => string | null | undefined;
+  /**
+   * Returns the id of the item below based on the current `activeId` state.
+   * @param skip The number of items to skip. Defaults to 1.
+   * @example
+   * const downId = store.down();
+   * const downDownId = store.down(2);
+   */
+  down: (skip?: number) => string | null | undefined;
+  /**
+   * Returns the id of the first item.
+   */
+  first: () => string | null | undefined;
+  /**
+   * Returns the id of the last item.
+   */
+  last: () => string | null | undefined;
+}
 
-export type CompositeStoreOptions<T extends Item = Item> =
-  CollectionStoreOptions<T> &
-    StoreOptions<
+export interface CompositeStoreOptions<T extends Item = Item>
+  extends StoreOptions<
       CompositeStoreState<T>,
       | "virtualFocus"
       | "orientation"
@@ -413,9 +558,16 @@ export type CompositeStoreOptions<T extends Item = Item> =
       | "focusShift"
       | "includesBaseElement"
       | "activeId"
-    > & {
-      defaultActiveId?: CompositeStoreState<T>["activeId"];
-    };
+    >,
+    CollectionStoreOptions<T> {
+  /**
+   * The composite item id that should be active by default when the composite
+   * widget is rendered. If `null`, the composite element itself will have focus
+   * and users will be able to navigate to it using arrow keys. If `undefined`,
+   * the first enabled item will be focused.
+   */
+  defaultActiveId?: CompositeStoreState<T>["activeId"];
+}
 
 export type CompositeStoreProps<T extends Item = Item> =
   CompositeStoreOptions<T> & StoreProps<CompositeStoreState<T>>;

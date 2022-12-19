@@ -151,7 +151,7 @@ export function createSelectStore({
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   select.setup(() =>
-    select.batchSync(
+    select.syncBatch(
       (state) => {
         const { mounted, value, activeId } = select.getState();
         if (!state.setValueOnMove && mounted) return;

@@ -1,7 +1,7 @@
 /**
  * Any object.
  */
-export type AnyObject = Record<keyof any, any>;
+export type AnyObject = Record<string, any>;
 
 /**
  * Any function.

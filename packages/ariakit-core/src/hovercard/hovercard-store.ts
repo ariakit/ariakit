@@ -8,6 +8,9 @@ import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
+/**
+ * Creates a hovercard store.
+ */
 export function createHovercardStore(
   props: HovercardStoreProps = {}
 ): HovercardStore {
@@ -59,7 +62,11 @@ export function createHovercardStore(
   };
 }
 
-export type HovercardStoreState = PopoverStoreState & {
+export interface HovercardStoreState extends PopoverStoreState {
+  /**
+   * @default "bottom"
+   */
+  placement: PopoverStoreState["placement"];
   /**
    * The amount of time in milliseconds to wait before showing or hiding the
    * popover.
@@ -82,15 +89,21 @@ export type HovercardStoreState = PopoverStoreState & {
    * @default false
    */
   autoFocusOnShow: boolean;
-};
+}
 
-export type HovercardStoreFunctions = PopoverStoreFunctions & {
-  // TODO: Remove this?
+export interface HovercardStoreFunctions extends PopoverStoreFunctions {
+  /**
+   * Sets the `autoFocusOnShow` state.
+   */
   setAutoFocusOnShow: SetState<HovercardStoreState["autoFocusOnShow"]>;
-};
+}
 
-export type HovercardStoreOptions = PopoverStoreOptions &
-  StoreOptions<HovercardStoreState, "timeout" | "showTimeout" | "hideTimeout">;
+export interface HovercardStoreOptions
+  extends StoreOptions<
+      HovercardStoreState,
+      "placement" | "timeout" | "showTimeout" | "hideTimeout"
+    >,
+    PopoverStoreOptions {}
 
 export type HovercardStoreProps = HovercardStoreOptions &
   StoreProps<HovercardStoreState>;

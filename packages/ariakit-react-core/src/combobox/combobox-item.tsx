@@ -2,7 +2,7 @@ import { KeyboardEvent, MouseEvent, useCallback, useContext } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
-import { invariant, queueMicrotask } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CompositeHoverOptions,
