@@ -81,7 +81,7 @@
     "eslint-plugin-jest": "27.1.7",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.31.11",
-    "framer-motion": "7.10.2",
+    "framer-motion": "7.10.3",
     "fs-extra": "11.1.0",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
