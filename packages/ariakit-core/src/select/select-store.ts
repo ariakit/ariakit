@@ -25,9 +25,10 @@ import { PickRequired, SetState } from "../utils/types";
 
 type Value = string | string[];
 type MutableValue<T extends Value = Value> = T extends string ? string : T;
-type Item = CompositeStoreItem & {
+
+interface Item extends CompositeStoreItem {
   value?: string;
-};
+}
 
 export function createSelectStore<T extends Value = Value>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
@@ -180,44 +181,94 @@ export type SelectStoreItem = Item;
 
 export type SelectStoreValue = Value;
 
-export type SelectStoreState<T extends Value = Value> =
-  CompositeStoreState<Item> &
-    PopoverStoreState & {
-      /**
-       * The select value.
-       */
-      value: MutableValue<T>;
-      /**
-       * Whether the select value should be set when the active item changes by
-       * moving (which usually happens when moving to an item using the keyboard).
-       * @default false
-       */
-      setValueOnMove: boolean;
-      /**
-       * The select button element.
-       */
-      selectElement: HTMLElement | null;
-      /**
-       * The select label element.
-       */
-      labelElement: HTMLElement | null;
-    };
+export interface SelectStoreState<T extends Value = Value>
+  extends CompositeStoreState<Item>,
+    PopoverStoreState {
+  /**
+   * @default true
+   */
+  virtualFocus: CompositeStoreState<Item>["virtualFocus"];
+  /**
+   * @default false
+   */
+  includesBaseElement: CompositeStoreState<Item>["includesBaseElement"];
+  /**
+   * @default null
+   */
+  activeId: CompositeStoreState<Item>["activeId"];
+  /**
+   * @default "vertical"
+   */
+  orientation: CompositeStoreState<Item>["orientation"];
+  /**
+   * @default "bottom-start"
+   */
+  placement: PopoverStoreState["placement"];
+  /**
+   * The select value.
+   */
+  value: MutableValue<T>;
+  /**
+   * Whether the select value should be set when the active item changes by
+   * moving (which usually happens when moving to an item using the keyboard).
+   * @default false
+   */
+  setValueOnMove: boolean;
+  /**
+   * The select button element.
+   */
+  selectElement: HTMLElement | null;
+  /**
+   * The select label element.
+   */
+  labelElement: HTMLElement | null;
+}
 
-export type SelectStoreFunctions<T extends Value = Value> =
-  CompositeStoreFunctions<Item> &
-    PopoverStoreFunctions & {
-      setValue: SetState<SelectStoreState<T>["value"]>;
-      setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
-      setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
-    };
+export interface SelectStoreFunctions<T extends Value = Value>
+  extends CompositeStoreFunctions<Item>,
+    PopoverStoreFunctions {
+  /**
+   * Sets the `value` state.
+   * @example
+   * store.setValue("Apple");
+   * store.setValue(["Apple", "Banana"]);
+   * store.setValue((value) => value === "Apple" ? "Banana" : "Apple"));
+   */
+  setValue: SetState<SelectStoreState<T>["value"]>;
+  /**
+   * Sets the `selectElement` state.
+   */
+  setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
+  /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+}
 
-export type SelectStoreOptions<T extends Value = Value> =
-  CompositeStoreOptions<Item> &
-    PopoverStoreOptions &
-    StoreOptions<SelectStoreState<T>, "value" | "setValueOnMove"> & {
-      combobox?: ComboboxStore;
-      defaultValue?: SelectStoreState<T>["value"];
-    };
+export interface SelectStoreOptions<T extends Value = Value>
+  extends StoreOptions<
+      SelectStoreState<T>,
+      | "virtualFocus"
+      | "includesBaseElement"
+      | "activeId"
+      | "orientation"
+      | "placement"
+      | "value"
+      | "setValueOnMove"
+    >,
+    CompositeStoreOptions<Item>,
+    PopoverStoreOptions {
+  /**
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a select (e.g., select with a search input). The stores will share the
+   * same state.
+   */
+  combobox?: ComboboxStore;
+  /**
+   * The default value. If not set, the first non-disabled item will be used.
+   */
+  defaultValue?: SelectStoreState<T>["value"];
+}
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
   StoreProps<SelectStoreState<T>>;

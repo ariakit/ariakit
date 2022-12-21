@@ -3,10 +3,10 @@ import { chain, defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { BivariantCallback } from "../utils/types";
 
-type Item = {
+interface Item {
   id: string;
   element?: HTMLElement | null;
-};
+}
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(

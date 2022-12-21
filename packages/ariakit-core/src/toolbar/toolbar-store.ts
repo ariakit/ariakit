@@ -7,7 +7,11 @@ import {
   createCompositeStore,
 } from "../composite/composite-store";
 import { defaultValue } from "../utils/misc";
+import { StoreOptions } from "../utils/store";
 
+/**
+ * Creates a toolbar store.
+ */
 export function createToolbarStore(
   props: ToolbarStoreProps = {}
 ): ToolbarStore {
@@ -24,11 +28,22 @@ export function createToolbarStore(
   });
 }
 
-export type ToolbarStoreState = CompositeStoreState;
+export interface ToolbarStoreState extends CompositeStoreState {
+  /**
+   * @default "horizontal"
+   */
+  orientation: CompositeStoreState["orientation"];
+  /**
+   * @default true
+   */
+  focusLoop: CompositeStoreState["focusLoop"];
+}
 
 export type ToolbarStoreFunctions = CompositeStoreFunctions;
 
-export type ToolbarStoreOptions = CompositeStoreOptions;
+export interface ToolbarStoreOptions
+  extends StoreOptions<ToolbarStoreState, "orientation" | "focusLoop">,
+    CompositeStoreOptions {}
 
 export type ToolbarStore = CompositeStore;
 

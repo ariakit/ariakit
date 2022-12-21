@@ -14,9 +14,13 @@ import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
-type Item = CompositeStoreItem & {
+interface Item extends CompositeStoreItem {
   dimmed?: boolean;
-};
+}
+
+interface Panel extends CollectionStoreItem {
+  tabId?: string | null;
+}
 
 export function createTabStore(props: TabStoreProps = {}): TabStore {
   const syncState = props.store?.getState();
@@ -31,7 +35,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
 
-  const panels = createCollectionStore<TabStorePanel>();
+  const panels = createCollectionStore<Panel>();
 
   const initialState: TabStoreState = {
     ...composite.getState(),
@@ -137,13 +141,20 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
 
 export type TabStoreItem = Item;
 
-export type TabStorePanel = CollectionStoreItem & {
-  tabId?: string | null;
-};
+export type TabStorePanel = Panel;
 
-export type TabStoreState = CompositeStoreState<Item> & {
+export interface TabStoreState extends CompositeStoreState<Item> {
   /**
-   * The id of the tab whose panel is currently visible.
+   * @default "horizontal"
+   */
+  orientation: CompositeStoreState<Item>["orientation"];
+  /**
+   * @default true
+   */
+  focusLoop: CompositeStoreState<Item>["focusLoop"];
+  /**
+   * The id of the tab whose panel is currently visible. If it's `undefined`, it
+   * will be automatically set to the first enabled tab.
    */
   selectedId: TabStoreState["activeId"];
   /**
@@ -152,27 +163,55 @@ export type TabStoreState = CompositeStoreState<Item> & {
    * @default true
    */
   selectOnMove?: boolean;
-};
+}
 
-export type TabStoreFunctions = CompositeStoreFunctions<Item> & {
+export interface TabStoreFunctions extends CompositeStoreFunctions<Item> {
   /**
-   * Sets the `selectedId` state.
+   * Sets the `selectedId` state without moving focus. If you want to move focus,
+   * use the `select` function instead.
+   * @example
+   * // Selects the tab with id "tab-1"
+   * store.setSelectedId("tab-1");
+   * // Toggles between "tab-1" and "tab-2"
+   * store.setSelectedId((id) => id === "tab-1" ? "tab-2" : "tab-1"));
+   * // Selects the first tab
+   * store.setSelectedId(store.first());
+   * // Selects the next tab
+   * store.setSelectedId(store.next());
    */
   setSelectedId: SetState<TabStoreState["selectedId"]>;
   /**
    * A collection store containing the tab panels.
    */
-  panels: CollectionStore<TabStorePanel>;
+  panels: CollectionStore<Panel>;
   /**
-   * Selects the tab panel for the tab with the given id.
+   * Selects the tab for the given id and moves focus to it. If you want to set
+   * the `selectedId` state without moving focus, use the `setSelectedId`
+   * function instead.
+   * @param id The id of the tab to select.
+   * @example
+   * // Selects the tab with id "tab-1"
+   * store.select("tab-1");
+   * // Selects the first tab
+   * store.select(store.first());
+   * // Selects the next tab
+   * store.select(store.next());
    */
   select: TabStore["move"];
-};
+}
 
-export type TabStoreOptions = CompositeStoreOptions<Item> &
-  StoreOptions<TabStoreState, "selectedId" | "selectOnMove"> & {
-    defaultSelectedId?: TabStoreState["selectedId"];
-  };
+export interface TabStoreOptions
+  extends StoreOptions<
+      TabStoreState,
+      "orientation" | "focusLoop" | "selectedId" | "selectOnMove"
+    >,
+    CompositeStoreOptions<Item> {
+  /**
+   * The id of the tab whose panel is currently visible. If it's `undefined`, it
+   * will be automatically set to the first enabled tab.
+   */
+  defaultSelectedId?: TabStoreState["selectedId"];
+}
 
 export type TabStoreProps = TabStoreOptions & StoreProps<TabStoreState>;
 

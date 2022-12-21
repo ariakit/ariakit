@@ -17,10 +17,11 @@ import { DeepMap, DeepPartial, Names, StringLike } from "./types";
 
 type Values = AnyObject;
 type ErrorMessage = string | undefined | null;
-type Item = CollectionStoreItem & {
+
+interface Item extends CollectionStoreItem {
   type: "field" | "label" | "description" | "error" | "button";
   name: string;
-};
+}
 
 function nextFrame() {
   return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));

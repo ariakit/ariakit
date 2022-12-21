@@ -8,6 +8,9 @@ import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
+/**
+ * Creates a radio store.
+ */
 export function createRadioStore({
   ...props
 }: RadioStoreProps = {}): RadioStore {
@@ -32,22 +35,31 @@ export function createRadioStore({
   };
 }
 
-export type RadioStoreState = CompositeStoreState & {
+export interface RadioStoreState extends CompositeStoreState {
   /**
-   * The current value of the radio group.
+   * @default true
+   */
+  focusLoop: CompositeStoreState["focusLoop"];
+  /**
+   * The value of the radio group.
+   * @default null
    */
   value: string | number | null;
-};
+}
 
-export type RadioStoreFunctions = CompositeStoreFunctions & {
+export interface RadioStoreFunctions extends CompositeStoreFunctions {
   /**
    * Sets the `value` state.
+   * @example
+   * store.setValue("apple");
+   * store.setValue((value) => value === "apple" ? "orange" : "apple");
    */
   setValue: SetState<RadioStoreState["value"]>;
-};
+}
 
-export type RadioStoreOptions = CompositeStoreOptions &
-  StoreOptions<RadioStoreState, "value">;
+export interface RadioStoreOptions
+  extends StoreOptions<RadioStoreState, "focusLoop" | "value">,
+    CompositeStoreOptions {}
 
 export type RadioStoreProps = RadioStoreOptions & StoreProps<RadioStoreState>;
 

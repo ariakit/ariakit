@@ -15,6 +15,9 @@ function afterTimeout(timeoutMs: number, cb: () => void) {
   return () => clearTimeout(timeoutId);
 }
 
+/**
+ * Creates a tooltip store.
+ */
 export function createTooltipStore(
   props: TooltipStoreProps = {}
 ): TooltipStore {
@@ -106,7 +109,15 @@ export function createTooltipStore(
   };
 }
 
-export type TooltipStoreState = PopoverStoreState & {
+export interface TooltipStoreState extends PopoverStoreState {
+  /**
+   * @default "top"
+   */
+  placement: PopoverStoreState["placement"];
+  /**
+   * @default 8
+   */
+  gutter: PopoverStoreState["gutter"];
   /**
    * The amount in milliseconds to wait before showing the tooltip. When there's
    * already an open tooltip in the page, this value will be ignored and other
@@ -114,12 +125,13 @@ export type TooltipStoreState = PopoverStoreState & {
    * @default 0
    */
   timeout: number;
-};
+}
 
 export type TooltipStoreFunctions = PopoverStoreFunctions;
 
-export type TooltipStoreOptions = PopoverStoreOptions &
-  StoreOptions<TooltipStoreState, "timeout">;
+export interface TooltipStoreOptions
+  extends StoreOptions<TooltipStoreState, "placement" | "gutter" | "timeout">,
+    PopoverStoreOptions {}
 
 export type TooltipStoreProps = TooltipStoreOptions &
   StoreProps<TooltipStoreState>;

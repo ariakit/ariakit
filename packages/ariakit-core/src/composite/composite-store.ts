@@ -11,11 +11,12 @@ import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
 type Orientation = "horizontal" | "vertical" | "both";
-type Item = CollectionStoreItem & {
+
+interface Item extends CollectionStoreItem {
   rowId?: string;
   disabled?: boolean;
   children?: string;
-};
+}
 
 const NULL_ITEM = { id: null as unknown as string };
 
@@ -471,7 +472,7 @@ export interface CompositeStoreState<T extends Item = Item>
    *     element itself will have focus and users will be able to navigate to it
    *     using arrow keys.
    */
-  activeId?: string | null;
+  activeId: string | null | undefined;
 }
 
 export interface CompositeStoreFunctions<T extends Item = Item>
@@ -481,8 +482,8 @@ export interface CompositeStoreFunctions<T extends Item = Item>
    */
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**
-   * Sets the `activeId` state. This just sets the state and doesn't move
-   * focus. Use `move` to move focus.
+   * Sets the `activeId` state without moving focus. If you want to move focus,
+   * use the `move` function instead.
    * @example
    * // Sets the composite element as the active item
    * store.setActiveId(null);
