@@ -11,8 +11,7 @@ import { ComboboxContext } from "./combobox-context";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox row.
+ * Returns props to create a `ComboboxRow` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -51,7 +50,7 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
 );
 
 /**
- * A component that renders a combobox row.
+ * Renders a combobox row.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -80,16 +79,14 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxRow.displayName = "ComboboxRow";
 }
 
-export type ComboboxRowOptions<T extends As = "div"> = Omit<
-  CompositeRowOptions<T>,
-  "store"
-> & {
+export interface ComboboxRowOptions<T extends As = "div">
+  extends CompositeRowOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook. If not provided, the parent
    * `ComboboxList` or `ComboboxPopover` components' context will be used.
    */
   store?: ComboboxStore;
-};
+}
 
 export type ComboboxRowProps<T extends As = "div"> = Props<
   ComboboxRowOptions<T>

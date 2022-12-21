@@ -1,7 +1,6 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { CommandOptions, useCommand } from "../command/command";
 import {
-  useControlledState,
   useEvent,
   useForkRef,
   useTagName,
@@ -11,27 +10,7 @@ import { useStoreState } from "../utils/store";
 import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 import { CheckboxCheckedContext } from "./checkbox-checked-context";
-import { CheckboxStore, CheckboxStoreState } from "./checkbox-store";
-
-function getStoreChecked(
-  storeValue?: CheckboxStoreState["value"],
-  elementValue?: CheckboxOptions["value"]
-) {
-  if (storeValue === undefined) return;
-  if (elementValue) {
-    if (Array.isArray(storeValue)) {
-      return storeValue.includes(elementValue);
-    }
-    return storeValue === elementValue;
-  }
-  if (Array.isArray(storeValue)) {
-    return false;
-  }
-  if (typeof storeValue === "boolean") {
-    return storeValue;
-  }
-  return false;
-}
+import { CheckboxStore } from "./checkbox-store";
 
 function setMixed(element: HTMLInputElement, mixed?: boolean) {
   if (mixed) {
@@ -46,9 +25,9 @@ function isNativeCheckbox(tagName?: string, type?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. If the element is not a native checkbox, the hook will
- * return additional props to make sure it's accessible.
+ * Returns props to create a `Checkbox` component. If the element is not a
+ * native checkbox, the hook will return additional props to make sure it's
+ * accessible.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -58,14 +37,20 @@ function isNativeCheckbox(tagName?: string, type?: string) {
  */
 export const useCheckbox = createHook<CheckboxOptions>(
   ({ store, value, checked: checkedProp, defaultChecked, ...props }) => {
-    const storeValue = useStoreState(
-      store,
-      (state) => checkedProp ?? getStoreChecked(state.value, value)
-    );
-    const [checked, setChecked] = useControlledState(
-      defaultChecked ?? false,
-      checkedProp ?? storeValue
-    );
+    const storeChecked = useStoreState(store, (state) => {
+      if (checkedProp !== undefined) return checkedProp;
+      if (state.value === undefined) return;
+      if (value) {
+        if (Array.isArray(state.value)) return state.value.includes(value);
+        return state.value === value;
+      }
+      if (Array.isArray(state.value)) return false;
+      if (typeof state.value === "boolean") return state.value;
+      return false;
+    });
+
+    const [_checked, setChecked] = useState(defaultChecked ?? false);
+    const checked = checkedProp ?? storeChecked ?? _checked;
 
     const ref = useRef<HTMLInputElement>(null);
     const tagName = useTagName(ref, props.as || "input");
@@ -150,9 +135,9 @@ export const useCheckbox = createHook<CheckboxOptions>(
 );
 
 /**
- * A component that renders a native accessible checkbox. If another element is
- * passed to the `as` prop, this component will make sure the rendered element
- * is accessible.
+ * Renders an accessible checkbox element. If the underlying element is not a
+ * native checkbox, this component will pass additional attributes to make sure
+ * it's accessible.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -168,7 +153,8 @@ if (process.env.NODE_ENV !== "production") {
   Checkbox.displayName = "Checkbox";
 }
 
-export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
+export interface CheckboxOptions<T extends As = "input">
+  extends CommandOptions<T> {
   /**
    * Object returned by the `useCheckboxStore` hook. If not provided, the
    * internal store will be used.
@@ -180,7 +166,9 @@ export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
    * array of checked values.
    * @example
    * ```jsx
-   * const checkbox = useCheckboxStore({ defaultValue: ["Apple", "Orange"] });
+   * const checkbox = useCheckboxStore({
+   *   defaultValue: ["Apple", "Orange"],
+   * });
    * <Checkbox store={checkbox} value="Apple" />
    * <Checkbox store={checkbox} value="Orange" />
    * <Checkbox store={checkbox} value="Watermelon" />
@@ -188,18 +176,20 @@ export type CheckboxOptions<T extends As = "input"> = CommandOptions<T> & {
    */
   value?: string | number;
   /**
-   * The `checked` store of the checkbox. This will override the value inferred
-   * from `store` prop, if provided.
+   * The `checked` state of the checkbox. This will override the value inferred
+   * from `store` prop, if provided. This can be `"mixed"` to indicate that the
+   * checkbox is partially checked.
    */
   checked?: "mixed" | boolean;
   /**
-   * The default `checked` store of the checkbox.
+   * The default `checked` state of the checkbox. This prop is ignored if the
+   * `checked` or the `store` props are provided.
    */
   defaultChecked?: "mixed" | boolean;
   /**
    * A function that is called when the checkbox's `checked` store changes.
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
 export type CheckboxProps<T extends As = "input"> = Props<CheckboxOptions<T>>;

@@ -10,8 +10,7 @@ import { ComboboxContext } from "./combobox-context";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator element for combobox items.
+ * Returns props a `ComboboxSeparator` component for combobox items.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -42,7 +41,7 @@ export const useComboboxSeparator = createHook<ComboboxSeparatorOptions>(
 );
 
 /**
- * A component that renders a separator element for combobox items
+ * Renders a separator element for combobox items
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -67,16 +66,14 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxSeparator.displayName = "ComboboxSeparator";
 }
 
-export type ComboboxSeparatorOptions<T extends As = "hr"> = Omit<
-  CompositeSeparatorOptions<T>,
-  "store"
-> & {
+export interface ComboboxSeparatorOptions<T extends As = "hr">
+  extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook. If not provided, the parent
    * `ComboboxList` or `ComboboxPopover` components' context will be used.
    */
   store?: ComboboxStore;
-};
+}
 
 export type ComboboxSeparatorProps<T extends As = "hr"> = Props<
   ComboboxSeparatorOptions<T>

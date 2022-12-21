@@ -60,8 +60,7 @@ function isInputEvent(event: Event): event is InputEvent {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox input.
+ * Returns props to create a `Combobox` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -69,9 +68,9 @@ function isInputEvent(event: Event): event is InputEvent {
  * const props = useCombobox({ store });
  * <Role {...props} />
  * <ComboboxPopover store={store}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
+ *   <ComboboxItem value="Apple" />
+ *   <ComboboxItem value="Banana" />
+ *   <ComboboxItem value="Orange" />
  * </ComboboxPopover>
  * ```
  */
@@ -385,16 +384,16 @@ export const useCombobox = createHook<ComboboxOptions>(
 );
 
 /**
- * A component that renders a combobox input.
+ * Renders a combobox input.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxStore();
  * <Combobox store={combobox} />
  * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
+ *   <ComboboxItem value="Apple" />
+ *   <ComboboxItem value="Banana" />
+ *   <ComboboxItem value="Orange" />
  * </ComboboxPopover>
  * ```
  */
@@ -407,93 +406,93 @@ if (process.env.NODE_ENV !== "production") {
   Combobox.displayName = "Combobox";
 }
 
-export type ComboboxOptions<T extends As = "input"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> &
-  Omit<PopoverAnchorOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useComboboxStore` hook.
-     */
-    store: ComboboxStore;
-    /**
-     * Whether the first item will be automatically selected when the combobox
-     * input value changes. When it's set to `true`, the exact behavior will
-     * depend on the value of `autoComplete` prop:
-     *   - If `autoComplete` is `both` or `inline`, the first item is
-     *     automatically focused when the popup opens, and the input value
-     *     changes to reflect this. The inline completion string will be
-     *     highlighted and will have a selected state.
-     *   - If `autoComplete` is `list` or `none`, the first item is
-     *     automatically focused when the popup opens, but the input value
-     *     doesn't change.
-     * @default false
-     */
-    autoSelect?: boolean;
-    /**
-     * Whether the items will be filtered based on `value` and whether the input
-     * value will temporarily change based on the active item. If `defaultList`
-     * or `list` are provided, this will be set to `list` by default, otherwise
-     * it'll default to `none`.
-     *   - `both`: the items will be filtered based on `value` and the input
-     *     value will temporarily change based on the active item.
-     *   - `list`: the items will be filtered based on `value` and the input
-     *     value will NOT change based on the active item.
-     *   - `inline`: the items are static, that is, they won't be filtered based
-     *     on `value`, but the input value will temporarily change based on the
-     *     active item.
-     *   - `none`: the items are static and the input value will NOT change
-     *     based on the active item.
-     */
-    autoComplete?: "both" | "inline" | "list" | "none";
-    /**
-     * Whether the combobox list/popover should be shown when the input value is
-     * changed.
-     * @default true
-     * @example
-     * ```jsx
-     * <Combobox showOnChange={(event) => event.target.value.length > 1} />
-     * ```
-     */
-    showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
-    /**
-     * Whether the combobox store value will be updated when the input value
-     * changes. This is useful if you want to customize how the store value is
-     * updated based on the input value.
-     * @default true
-     */
-    setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
-    /**
-     * Whether the combobox list/popover should be shown when the input is
-     * clicked.
-     * @default true
-     * @example
-     * ```jsx
-     * const combobox = useComboboxStore();
-     * <Combobox store={combobox} showOnMouseDown={combobox.value.length > 1} />
-     * ```
-     */
-    showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether the combobox list/popover should be shown when the user presses
-     * the arrow up or down keys while focusing on the combobox input element.
-     * @default true
-     * @example
-     * ```jsx
-     * const combobox = useComboboxStore();
-     * <Combobox store={combobox} showOnKeyDown={combobox.value.length > 1} />
-     * ```
-     */
-    showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
-    /**
-     * Whether the combobox store value will be updated when the combobox input
-     * element gets clicked. This usually only applies when `autoComplete` is
-     * `both` or `inline`, because the input value will temporarily change based
-     * on the active item and the store value will not be updated until the user
-     * confirms the selection.
-     * @default true
-     */
-    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-  };
+export interface ComboboxOptions<T extends As = "input">
+  extends CompositeOptions<T>,
+    PopoverAnchorOptions<T> {
+  /**
+   * Object returned by the `useComboboxStore` hook.
+   */
+  store: ComboboxStore;
+  /**
+   * Whether the first item will be automatically selected when the combobox
+   * input value changes. When it's set to `true`, the exact behavior will
+   * depend on the value of `autoComplete` prop:
+   *   - If `autoComplete` is `both` or `inline`, the first item is
+   *     automatically focused when the popup opens, and the input value
+   *     changes to reflect this. The inline completion string will be
+   *     highlighted and will have a selected state.
+   *   - If `autoComplete` is `list` or `none`, the first item is
+   *     automatically focused when the popup opens, but the input value
+   *     doesn't change.
+   * @default false
+   */
+  autoSelect?: boolean;
+  /**
+   * Whether the items will be filtered based on `value` and whether the input
+   * value will temporarily change based on the active item. If `defaultList`
+   * or `list` are provided, this will be set to `list` by default, otherwise
+   * it'll default to `none`.
+   *   - `both`: the items will be filtered based on `value` and the input
+   *     value will temporarily change based on the active item.
+   *   - `list`: the items will be filtered based on `value` and the input
+   *     value will NOT change based on the active item.
+   *   - `inline`: the items are static, that is, they won't be filtered based
+   *     on `value`, but the input value will temporarily change based on the
+   *     active item.
+   *   - `none`: the items are static and the input value will NOT change
+   *     based on the active item.
+   */
+  autoComplete?: "both" | "inline" | "list" | "none";
+  /**
+   * Whether the combobox list/popover should be shown when the input value is
+   * changed.
+   * @default true
+   * @example
+   * ```jsx
+   * <Combobox showOnChange={(event) => event.target.value.length > 1} />
+   * ```
+   */
+  showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
+  /**
+   * Whether the combobox store value will be updated when the input value
+   * changes. This is useful if you want to customize how the store value is
+   * updated based on the input value.
+   * @default true
+   */
+  setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
+  /**
+   * Whether the combobox list/popover should be shown when the input is
+   * clicked.
+   * @default true
+   * @example
+   * ```jsx
+   * const combobox = useComboboxStore();
+   * const canShow = combobox.useState((state) => state.value.length > 1);
+   * <Combobox store={combobox} showOnMouseDown={canShow} />
+   * ```
+   */
+  showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether the combobox list/popover should be shown when the user presses
+   * the arrow up or down keys while focusing on the combobox input element.
+   * @default true
+   * @example
+   * ```jsx
+   * const combobox = useComboboxStore();
+   * const canShow = combobox.useState((state) => state.value.length > 1);
+   * <Combobox store={combobox} showOnKeyDown={canShow} />
+   * ```
+   */
+  showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
+  /**
+   * Whether the combobox store value will be updated when the combobox input
+   * element gets clicked. This usually only applies when `autoComplete` is
+   * `both` or `inline`, because the input value will temporarily change based
+   * on the active item and the store value will not be updated until the user
+   * confirms the selection.
+   * @default true
+   */
+  setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+}
 
 export type ComboboxProps<T extends As = "input"> = Props<ComboboxOptions<T>>;

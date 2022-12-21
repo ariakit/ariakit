@@ -22,8 +22,7 @@ function isController(
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox popover.
+ * Returns props to create a `ComboboxPopover` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -74,10 +73,10 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
 );
 
 /**
- * A component that renders a combobox popover. The `role` prop is set to
- * `listbox` by default, but can be overriden by any other valid combobox popup
- * role (`listbox`, `menu`, `tree`, `grid` or `dialog`). The `aria-labelledby`
- * prop is set to the combobox input element's `id` by default.
+ * Renders a combobox popover. The `role` prop is set to `listbox` by default,
+ * but can be overriden by any other valid combobox popup role (`listbox`,
+ * `menu`, `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the
+ * combobox input element's `id` by default.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -101,8 +100,9 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxPopover.displayName = "ComboboxPopover";
 }
 
-export type ComboboxPopoverOptions<T extends As = "div"> =
-  ComboboxListOptions<T> & Omit<PopoverOptions<T>, "store" | "modal">;
+export interface ComboboxPopoverOptions<T extends As = "div">
+  extends ComboboxListOptions<T>,
+    Omit<PopoverOptions<T>, "store" | "modal"> {}
 
 export type ComboboxPopoverProps<T extends As = "div"> = Props<
   ComboboxPopoverOptions<T>

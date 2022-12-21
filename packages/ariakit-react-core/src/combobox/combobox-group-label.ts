@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label in a combobox group. This hook should be
+ * Returns props to create a `ComboboxGroupLabel` component. This hook should be
  * used in a component that's wrapped with `ComboboxGroup` so the
  * `aria-labelledby` is correctly set on the combobox group element.
  * @see https://ariakit.org/components/combobox
@@ -27,9 +26,9 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
 );
 
 /**
- * A component that renders a label in a combobox group. This component should
- * be wrapped with `ComboboxGroup` so the `aria-labelledby` is correctly set on
- * the combobox group element.
+ * Renders a label in a combobox group. This component should be wrapped with
+ * `ComboboxGroup` so the `aria-labelledby` is correctly set on the combobox
+ * group element.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -55,16 +54,14 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxGroupLabel.displayName = "ComboboxGroupLabel";
 }
 
-export type ComboboxGroupLabelOptions<T extends As = "div"> = Omit<
-  CompositeGroupLabelOptions<T>,
-  "store"
-> & {
+export interface ComboboxGroupLabelOptions<T extends As = "div">
+  extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook. If not provided, the parent
    * `ComboboxList` or `ComboboxPopover` components' context will be used.
    */
   store?: ComboboxStore;
-};
+}
 
 export type ComboboxGroupLabelProps<T extends As = "div"> = Props<
   ComboboxGroupLabelOptions<T>

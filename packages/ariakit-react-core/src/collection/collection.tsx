@@ -5,9 +5,9 @@ import { CollectionContext } from "./collection-context";
 import { CollectionStore } from "./collection-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. It receives the collection store through the `store` prop
- * and provides context for `CollectionItem` components.
+ * Returns props to create a `Collection` component. It receives the collection
+ * store through the `store` prop and provides context for `CollectionItem`
+ * components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -36,9 +36,9 @@ export const useCollection = createHook<CollectionOptions>(
 );
 
 /**
- * A component that renders a simple wrapper for collection items. It receives
- * the collection store through the `store` prop and provides context for
- * `CollectionItem` components.
+ * Renders a simple wrapper for collection items. It receives the collection
+ * store through the `store` prop and provides context for `CollectionItem`
+ * components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -59,11 +59,11 @@ if (process.env.NODE_ENV !== "production") {
   Collection.displayName = "Collection";
 }
 
-export type CollectionOptions<T extends As = "div"> = Options<T> & {
+export interface CollectionOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `useCollectionStore` hook.
    */
   store: CollectionStore;
-};
+}
 
 export type CollectionProps<T extends As = "div"> = Props<CollectionOptions<T>>;

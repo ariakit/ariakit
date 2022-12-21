@@ -25,8 +25,7 @@ const children = (
 );
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox cancel button that clears the combobox
+ * Returns props to create a `ComboboxCancel` component that clears the combobox
  * input when clicked.
  * @see https://ariakit.org/components/combobox
  * @example
@@ -69,8 +68,7 @@ export const useComboboxCancel = createHook<ComboboxCancelOptions>(
 );
 
 /**
- * A component that renders a combobox cancel button that clears the combobox
- * input when clicked.
+ * Renders a combobox cancel button that clears the combobox input when clicked.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -95,13 +93,13 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxCancel.displayName = "ComboboxCancel";
 }
 
-export type ComboboxCancelOptions<T extends As = "button"> =
-  ButtonOptions<T> & {
-    /**
-     * Object returned by the `useComboboxStore` hook.
-     */
-    store: ComboboxStore;
-  };
+export interface ComboboxCancelOptions<T extends As = "button">
+  extends ButtonOptions<T> {
+  /**
+   * Object returned by the `useComboboxStore` hook.
+   */
+  store: ComboboxStore;
+}
 
 export type ComboboxCancelProps<T extends As = "button"> = Props<
   ComboboxCancelOptions<T>

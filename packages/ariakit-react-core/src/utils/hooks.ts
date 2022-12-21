@@ -197,6 +197,11 @@ export function useTagName(
   refOrElement?: RefObject<HTMLElement> | HTMLElement | null,
   type?: string | ComponentType
 ) {
+  const stringOrUndefined = (type?: string | ComponentType) => {
+    if (typeof type !== "string") return;
+    return type;
+  };
+
   const [tagName, setTagName] = useState(() => stringOrUndefined(type));
 
   useSafeLayoutEffect(() => {
@@ -208,13 +213,6 @@ export function useTagName(
   }, [refOrElement, type]);
 
   return tagName;
-}
-
-function stringOrUndefined(type?: string | ComponentType) {
-  if (typeof type === "string") {
-    return type;
-  }
-  return;
 }
 
 /**

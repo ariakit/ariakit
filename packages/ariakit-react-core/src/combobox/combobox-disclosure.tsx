@@ -27,8 +27,8 @@ const children = (
 );
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox disclosure button.
+ * Returns props to create a `ComboboxDisclosure` component that toggles the
+ * combobox popover visibility when clicked.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -87,8 +87,8 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
 );
 
 /**
- * A component that renders a combobox disclosure button that toggles the
- * combobox popover visibility when clicked.
+ * Renders a combobox disclosure button that toggles the combobox popover
+ * visibility when clicked.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -113,15 +113,13 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxDisclosure.displayName = "ComboboxDisclosure";
 }
 
-export type ComboboxDisclosureOptions<T extends As = "button"> = Omit<
-  DialogDisclosureOptions<T>,
-  "store"
-> & {
+export interface ComboboxDisclosureOptions<T extends As = "button">
+  extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook.
    */
   store: ComboboxStore;
-};
+}
 
 export type ComboboxDisclosureProps<T extends As = "button"> = Props<
   ComboboxDisclosureOptions<T>

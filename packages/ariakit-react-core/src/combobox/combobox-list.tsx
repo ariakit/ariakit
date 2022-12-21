@@ -6,8 +6,7 @@ import { ComboboxContext } from "./combobox-context";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox list.
+ * Returns props to create a `ComboboxList` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -64,10 +63,10 @@ export const useComboboxList = createHook<ComboboxListOptions>(
 );
 
 /**
- * A component that renders a combobox list. The `role` prop is set to `listbox`
- * by default, but can be overriden by any other valid combobox popup role
- * (`listbox`, `menu`, `tree`, `grid` or `dialog`). The `aria-labelledby` prop
- * is set to the combobox input element's `id` by default.
+ * Renders a combobox list. The `role` prop is set to `listbox` by default, but
+ * can be overriden by any other valid combobox popup role (`listbox`, `menu`,
+ * `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the
+ * combobox input element's `id` by default.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -89,12 +88,12 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxList.displayName = "ComboboxList";
 }
 
-export type ComboboxListOptions<T extends As = "div"> = Options<T> & {
+export interface ComboboxListOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `useComboboxStore` hook.
    */
   store: ComboboxStore;
-};
+}
 
 export type ComboboxListProps<T extends As = "div"> = Props<
   ComboboxListOptions<T>

@@ -12,11 +12,11 @@ import { SetState } from "../utils/types";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
-interface Item extends CollectionStoreItem {
+type Item = CollectionStoreItem & {
   rowId?: string;
   disabled?: boolean;
   children?: string;
-}
+};
 
 const NULL_ITEM = { id: null as unknown as string };
 

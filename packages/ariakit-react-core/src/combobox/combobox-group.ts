@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox group.
+ * Returns props to create a `ComboboxGroup` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -30,7 +29,7 @@ export const useComboboxGroup = createHook<ComboboxGroupOptions>((props) => {
 });
 
 /**
- * A component that renders a combobox group.
+ * Renders a combobox group.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -54,16 +53,14 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxGroup.displayName = "ComboboxGroup";
 }
 
-export type ComboboxGroupOptions<T extends As = "div"> = Omit<
-  CompositeGroupOptions<T>,
-  "store"
-> & {
+export interface ComboboxGroupOptions<T extends As = "div">
+  extends CompositeGroupOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook. If not provided, the parent
    * `ComboboxList` or `ComboboxPopover` components' context will be used.
    */
   store?: ComboboxStore;
-};
+}
 
 export type ComboboxGroupProps<T extends As = "div"> = Props<
   ComboboxGroupOptions<T>

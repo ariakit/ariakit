@@ -14,13 +14,13 @@ import { defaultValue } from "../utils/misc";
 import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
 import { SetState } from "../utils/types";
 
-interface Item extends CompositeStoreItem {
+type Item = CompositeStoreItem & {
   dimmed?: boolean;
-}
+};
 
-interface Panel extends CollectionStoreItem {
+type Panel = CollectionStoreItem & {
   tabId?: string | null;
-}
+};
 
 export function createTabStore(props: TabStoreProps = {}): TabStore {
   const syncState = props.store?.getState();

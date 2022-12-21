@@ -18,6 +18,15 @@ export function useCheckboxStoreProps<T extends CheckboxStore>(
   return store;
 }
 
+/**
+ * Creates a checkbox store.
+ * @see https://ariakit.org/components/checkbox
+ * @example
+ * ```jsx
+ * const checkbox = useCheckboxStore({ defaultValue: true });
+ * <Checkbox store={checkbox} />
+ * ```
+ */
 export function useCheckboxStore<T extends Value = Value>(
   props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">
 ): CheckboxStore<T>;
@@ -37,25 +46,25 @@ export type CheckboxStoreState<T extends Value = Value> =
   Core.CheckboxStoreState<T>;
 
 export type CheckboxStoreFunctions<T extends Value = Value> =
-  Core.CheckboxStoreFunctions<T> & {
-    /**
-     * @example
-     * ```jsx
-     * <button onClick={() => store.setValue((value) => !value)}>
-     *   Toggle
-     * </button>
-     * ```
-     */
-    setValue: Core.CheckboxStoreFunctions<T>["setValue"];
-  };
+  Core.CheckboxStoreFunctions<T>;
 
-export type CheckboxStoreOptions<T extends Value = Value> =
-  Core.CheckboxStoreOptions<T> & {
-    setValue?: SetStateOption<CheckboxStoreState<T>["value"]>;
-  };
+export interface CheckboxStoreOptions<T extends Value = Value>
+  extends Core.CheckboxStoreOptions<T> {
+  /**
+   * A callback that gets called when the `value` state changes.
+   * @param value The new value.
+   * @example
+   * function MyCheckbox({ value, onChange }) {
+   *   const checkbox = useCheckboxStore({ value, setValue: onChange });
+   * }
+   */
+  setValue?: SetStateOption<CheckboxStoreState<T>["value"]>;
+}
 
-export type CheckboxStoreProps<T extends Value = Value> =
-  CheckboxStoreOptions<T> & Core.CheckboxStoreProps<T>;
+export interface CheckboxStoreProps<T extends Value = Value>
+  extends CheckboxStoreOptions<T>,
+    Core.CheckboxStoreProps<T> {}
 
-export type CheckboxStore<T extends Value = Value> = CheckboxStoreFunctions<T> &
-  Store<Core.CheckboxStore<T>>;
+export interface CheckboxStore<T extends Value = Value>
+  extends CheckboxStoreFunctions<T>,
+    Store<Core.CheckboxStore<T>> {}

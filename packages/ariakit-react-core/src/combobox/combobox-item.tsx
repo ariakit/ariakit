@@ -23,8 +23,7 @@ import { ComboboxContext, ComboboxItemValueContext } from "./combobox-context";
 import { ComboboxStore } from "./combobox-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a combobox item.
+ * Returns props to create a `ComboboxItem` component.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -164,12 +163,12 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 );
 
 /**
- * A component that renders a combobox item inside a combobox list or popover.
- * The `role` prop will be automatically set based on the `ComboboxList` or
- * `ComboboxPopover` own `role` prop. For example, if the `ComboboxPopover`
- * component's `role` prop is set to `listbox` (default), the `ComboboxItem`
- * `role` will be set to `option`. By default, the `value` prop will be rendered
- * as the children, but this can be overriden.
+ * Renders a combobox item inside a combobox list or popover. The `role` prop
+ * will be automatically set based on the `ComboboxList` or `ComboboxPopover`
+ * own `role` prop. For example, if the `ComboboxPopover` component's `role`
+ * prop is set to `listbox` (default), the `ComboboxItem` `role` will be set to
+ * `option`. By default, the `value` prop will be rendered as the children, but
+ * this can be overriden.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -193,42 +192,39 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxItem.displayName = "ComboboxItem";
 }
 
-export type ComboboxItemOptions<T extends As = "div"> = Omit<
-  CompositeItemOptions<T>,
-  "store"
-> &
-  Omit<CompositeHoverOptions<T>, "store" | "focusOnHover"> & {
-    /**
-     * Object returned by the `useComboboxStore` hook. If not provided, the
-     * parent `ComboboxList` or `ComboboxPopover` components' context will be
-     * used.
-     */
-    store?: ComboboxStore;
-    /**
-     * The value of the item. This will be rendered as the children by default.
-     * If `setValueOnClick` is set to `true`, this will be the value of the
-     * combobox input when the user clicks on this item. If
-     * `combobox.autoComplete` is `both` or `inline`, this will be the value of
-     * the combobox input when the combobox loses focus.
-     */
-    value?: string;
-    /**
-     * Whether to hide the combobox when this item is clicked.
-     * @default true
-     */
-    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether to set the combobox value with this item's value when this item
-     * is clicked.
-     * @default true
-     */
-    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether to focus the combobox item on hover.
-     * @default false
-     */
-    focusOnHover?: CompositeHoverOptions["focusOnHover"];
-  };
+export interface ComboboxItemOptions<T extends As = "div">
+  extends CompositeItemOptions<T>,
+    CompositeHoverOptions<T> {
+  /**
+   * Object returned by the `useComboboxStore` hook. If not provided, the parent
+   * `ComboboxList` or `ComboboxPopover` components' context will be used.
+   */
+  store?: ComboboxStore;
+  /**
+   * The value of the item. This will be rendered as the children by default.
+   *   - If `setValueOnClick` is set to `true`, this will be the value of the
+   *     combobox input when the user clicks on this item.
+   *   - If the `autoComplete` prop on the `Combobox` component is set to `both`
+   *     or `inline`, this will be the value of the combobox input when the
+   *     combobox loses focus.
+   */
+  value?: string;
+  /**
+   * Whether to hide the combobox when this item is clicked.
+   * @default true
+   */
+  hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether to set the combobox value with this item's value when this item is
+   * clicked.
+   * @default true
+   */
+  setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * @default false
+   */
+  focusOnHover?: CompositeHoverOptions["focusOnHover"];
+}
 
 export type ComboboxItemProps<T extends As = "div"> = Props<
   ComboboxItemOptions<T>

@@ -40,12 +40,11 @@ function splitValue(itemValue: string, userValue: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a value element inside a combobox item. The value
- * will be split into span elements and returned as the children prop. The
- * portions of the value that correspond to the store value will have a
- * `data-user-value` attribute. The other portions will have a
- * `data-autocomplete-value` attribute.
+ * Returns props to create a `ComboboxItemValue` component that displays a value
+ * element inside a combobox item. The value will be split into span elements
+ * and returned as the children prop. The portions of the value that correspond
+ * to the store value will have a `data-user-value` attribute. The other
+ * portions will have a `data-autocomplete-value` attribute.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
@@ -94,20 +93,22 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
 );
 
 /**
- * A component that renders a value element inside a combobox item. The value
- * will be split into span elements. The portions of the value that correspond
- * to the store value will have a `data-user-value` attribute. The other
- * portions will have a `data-autocomplete-value` attribute.
+ * Renders a value element inside a combobox item. The value will be split into
+ * span elements. The portions of the value that correspond to the store value
+ * will have a `data-user-value` attribute. The other portions will have a
+ * `data-autocomplete-value` attribute.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxStore({ value: "p" });
+ *
  * <Combobox store={combobox} />
  * <ComboboxPopover store={combobox}>
  *   <ComboboxItem value="Apple">
  *     <ComboboxItemValue />
  *   </ComboboxItem>
  * </ComboboxPopover>
+ *
  * // The Apple item will have a value element that looks like this:
  * <span>
  *   <span data-autocomplete-value>A</span>
@@ -128,7 +129,8 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxItemValue.displayName = "ComboboxItemValue";
 }
 
-export type ComboboxItemValueOptions<T extends As = "span"> = Options<T> & {
+export interface ComboboxItemValueOptions<T extends As = "span">
+  extends Options<T> {
   /**
    * Object returned by the `useComboboxStore` hook. If not provided, the parent
    * `ComboboxList` or `ComboboxPopover` components' context will be used.
@@ -139,7 +141,7 @@ export type ComboboxItemValueOptions<T extends As = "span"> = Options<T> & {
    * component's `value` prop will be used.
    */
   value?: string;
-};
+}
 
 export type ComboboxItemValueProps<T extends As = "span"> = Props<
   ComboboxItemValueOptions<T>

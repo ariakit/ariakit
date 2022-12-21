@@ -31,8 +31,8 @@ function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a check mark icon.
+ * Returns props to create a `CheckboxCheck` component, that's usually rendered
+ * inside a `Checkbox` component.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -63,7 +63,7 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
 );
 
 /**
- * A component that renders a a check mark icon.
+ * Renders a check mark icon, usually inside a `Checkbox` component.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -79,11 +79,12 @@ if (process.env.NODE_ENV !== "production") {
   CheckboxCheck.displayName = "CheckboxCheck";
 }
 
-export type CheckboxCheckOptions<T extends As = "span"> = Options<T> & {
+export interface CheckboxCheckOptions<T extends As = "span">
+  extends Options<T> {
   /**
    * Object returned by the `useCheckboxStore` hook. If not provided, the parent
    * `Checkbox` component's context will be used. If the `checked` prop is
-   * provided, it will override this store.
+   * provided, it will override this prop.
    */
   store?: CheckboxStore;
   /**
@@ -92,7 +93,7 @@ export type CheckboxCheckOptions<T extends As = "span"> = Options<T> & {
    * setting this prop will override the inferred value.
    */
   checked?: boolean;
-};
+}
 
 export type CheckboxCheckProps<T extends As = "span"> = Props<
   CheckboxCheckOptions<T>

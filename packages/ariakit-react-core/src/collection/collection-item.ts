@@ -8,11 +8,10 @@ import { CollectionContext } from "./collection-context";
 import { CollectionStore } from "./collection-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. This hook will register the item in the collection store.
- * If this hook is used in a component that is wrapped by `Collection` or a
- * component that implements `useCollection`, there's no need to explicitly pass
- * the `store` prop.
+ * Returns props to create a `CollectionItem` component. This hook will register
+ * the item in the collection store. If this hook is used in a component that is
+ * wrapped by `Collection` or a component that implements `useCollection`,
+ * there's no need to explicitly pass the `store` prop.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -56,8 +55,8 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
 );
 
 /**
- * A component that renders an item in a collection. The collection store can be
- * passed explicitly through the `store` prop or implicitly through the
+ * Renders an item in a collection. The collection store can be passed
+ * explicitly through the `store` prop or implicitly through the parent
  * `Collection` component.
  * @see https://ariakit.org/components/collection
  * @example
@@ -79,7 +78,8 @@ if (process.env.NODE_ENV !== "production") {
   CollectionItem.displayName = "CollectionItem";
 }
 
-export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
+export interface CollectionItemOptions<T extends As = "div">
+  extends Options<T> {
   /**
    * Object returned by the `useCollectionStore` hook. If not provided, the
    * parent `Collection` component's context will be used.
@@ -97,12 +97,11 @@ export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
    * ```jsx
    * const store = useCollectionStore();
    * const getItem = useCallback((item) => ({ ...item, custom: true }), []);
-   * store.items[0]; // { ref, custom: true }
    * <CollectionItem store={store} getItem={getItem} />
    * ```
    */
   getItem?: (props: CollectionStoreItem) => CollectionStoreItem;
-};
+}
 
 export type CollectionItemProps<T extends As = "div"> = Props<
   CollectionItemOptions<T>

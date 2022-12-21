@@ -6,9 +6,8 @@ import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. If the element is not a native button, the hook will
- * return additional props to make sure it's accessible.
+ * Returns props to create a `Button` component. If the element is not a native
+ * button, the hook will return additional props to make sure it's accessible.
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx
@@ -40,9 +39,9 @@ export const useButton = createHook<ButtonOptions>((props) => {
 });
 
 /**
- * A component that renders a native accessible button. If another element is
- * passed to the `as` prop, this component will make sure the rendered element
- * is accessible.
+ * Renders an accessible button element. If the underlying element is not a
+ * native button, this component will pass additional attributes to make sure
+ * it's accessible.
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx

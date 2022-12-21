@@ -24,9 +24,9 @@ import {
 } from "../utils/store";
 import { SetState } from "../utils/types";
 
-interface Item extends CompositeStoreItem {
+type Item = CompositeStoreItem & {
   value?: string;
-}
+};
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 

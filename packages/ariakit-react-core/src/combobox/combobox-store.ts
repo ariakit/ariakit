@@ -32,6 +32,20 @@ export function useComboboxStoreProps<T extends ComboboxStore>(
   return store;
 }
 
+/**
+ * Creates a combobox store.
+ * @see https://ariakit.org/components/combobox
+ * @example
+ * ```jsx
+ * const combobox = useComboboxStore();
+ * <Combobox store={combobox} />
+ * <ComboboxPopover store={combobox}>
+ *   <ComboboxItem value="Apple" />
+ *   <ComboboxItem value="Banana" />
+ *   <ComboboxItem value="Orange" />
+ * </ComboboxPopover>
+ * ```
+ */
 export function useComboboxStore(
   props: ComboboxStoreProps = {}
 ): ComboboxStore {
@@ -44,19 +58,30 @@ export function useComboboxStore(
 
 export type ComboboxStoreItem = Core.ComboboxStoreItem;
 
-export type ComboboxStoreState = Core.ComboboxStoreState &
-  CompositeStoreState &
-  PopoverStoreState;
+export interface ComboboxStoreState
+  extends Core.ComboboxStoreState,
+    CompositeStoreState<ComboboxStoreItem>,
+    PopoverStoreState {}
 
-export type ComboboxStoreFunctions = Core.ComboboxStoreFunctions &
-  CompositeStoreFunctions &
-  PopoverStoreFunctions;
+export interface ComboboxStoreFunctions
+  extends Core.ComboboxStoreFunctions,
+    CompositeStoreFunctions<ComboboxStoreItem>,
+    PopoverStoreFunctions {}
 
-export type ComboboxStoreOptions = Core.ComboboxStoreOptions &
-  CompositeStoreOptions &
-  PopoverStoreOptions & {
-    setValue?: (value: ComboboxStoreState["value"]) => void;
-  };
+export interface ComboboxStoreOptions
+  extends Core.ComboboxStoreOptions,
+    CompositeStoreOptions<ComboboxStoreItem>,
+    PopoverStoreOptions {
+  /**
+   * A callback that gets called when the `value` state changes.
+   * @param value The new value.
+   * @example
+   * function MyCombobox({ value, onChange }) {
+   *   const combobox = useComboboxStore({ value, setValue: onChange });
+   * }
+   */
+  setValue?: (value: ComboboxStoreState["value"]) => void;
+}
 
 export type ComboboxStoreProps = ComboboxStoreOptions & Core.ComboboxStoreProps;
 
