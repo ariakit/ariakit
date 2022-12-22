@@ -1,7 +1,7 @@
 import { RefObject, createContext } from "react";
 import { CollectionState } from "./collection-state";
 
-export type Item = {
+export type CollectionStateItem = {
   ref: RefObject<HTMLElement>;
 };
 

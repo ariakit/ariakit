@@ -7,7 +7,7 @@ import {
   createHook,
 } from "ariakit-react-utils/system";
 import { As, Options, Props } from "ariakit-react-utils/types";
-import { CollectionItemContext, Item } from "./__utils";
+import { CollectionItemContext, CollectionStateItem } from "./__utils";
 import { CollectionState } from "./collection-state";
 
 function identity<T>(value: T) {
@@ -95,7 +95,7 @@ export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
    * <CollectionItem state={state} getItem={getItem} />
    * ```
    */
-  getItem?: (props: Item) => Item;
+  getItem?: (props: CollectionStateItem) => CollectionStateItem;
 };
 
 export type CollectionItemProps<T extends As = "div"> = Props<

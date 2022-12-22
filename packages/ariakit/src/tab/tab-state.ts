@@ -12,7 +12,7 @@ import {
   useCompositeState,
 } from "../composite/composite-state";
 
-type Item = CompositeState["items"][number] & {
+type TabStateItem = CompositeState["items"][number] & {
   dimmed?: boolean;
 };
 
@@ -21,11 +21,11 @@ type Panel = CollectionState["items"][number] & {
   tabId?: string | null;
 };
 
-function findEnabledTabById(items: Item[], id?: string | null) {
+function findEnabledTabById(items: TabStateItem[], id?: string | null) {
   return items.find((item) => item.id === id && !item.disabled && !item.dimmed);
 }
 
-function findFirstEnabledTab(items: Item[]) {
+function findFirstEnabledTab(items: TabStateItem[]) {
   return items.find((item) => !item.disabled && !item.dimmed);
 }
 
@@ -129,7 +129,7 @@ export function useTabState({
   return useStorePublisher(state);
 }
 
-export type TabState = CompositeState<Item> & {
+export type TabState = CompositeState<TabStateItem> & {
   /**
    * The id of the tab whose panel is currently visible.
    */
@@ -154,7 +154,7 @@ export type TabState = CompositeState<Item> & {
   selectOnMove?: boolean;
 };
 
-export type TabStateProps = CompositeStateProps<Item> &
+export type TabStateProps = CompositeStateProps<TabStateItem> &
   Partial<Pick<TabState, "selectedId" | "selectOnMove">> & {
     /**
      * The id of the tab whose panel should be initially visible.

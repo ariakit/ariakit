@@ -34,7 +34,11 @@ import {
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
 import { VisuallyHidden } from "../visually-hidden";
-import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
+import {
+  SelectContext,
+  SelectStateItem,
+  findFirstEnabledItemWithValue,
+} from "./__utils";
 import { SelectArrow } from "./select-arrow";
 import { SelectState } from "./select-state";
 
@@ -46,7 +50,7 @@ function getSelectedValues(select: HTMLSelectElement) {
 
 // When moving through the items when the select list is closed, we don't want
 // to move to items without value, so we filter them out here.
-function nextWithValue(items: Item[], next: SelectState["next"]) {
+function nextWithValue(items: SelectStateItem[], next: SelectState["next"]) {
   return () => {
     const nextId = next();
     if (!nextId) return;

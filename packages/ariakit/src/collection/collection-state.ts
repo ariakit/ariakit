@@ -3,7 +3,7 @@ import { useControlledState } from "ariakit-react-utils/hooks";
 import { addItemToArray } from "ariakit-utils/array";
 import { getDocument } from "ariakit-utils/dom";
 import { BivariantCallback, SetState } from "ariakit-utils/types";
-import { Item } from "./__utils";
+import { CollectionStateItem } from "./__utils";
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -11,7 +11,7 @@ function isElementPreceding(a: Element, b: Element) {
   );
 }
 
-function findDOMIndex(items: Item[], item: Item) {
+function findDOMIndex(items: CollectionStateItem[], item: CollectionStateItem) {
   const itemElement = item.ref.current;
   if (!itemElement) return -1;
   let length = items.length;
@@ -29,7 +29,7 @@ function findDOMIndex(items: Item[], item: Item) {
   return 0;
 }
 
-function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
+function sortBasedOnDOMPosition<T extends CollectionStateItem>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
@@ -56,7 +56,7 @@ function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   return items;
 }
 
-function setItemsBasedOnDOMPosition<T extends Item>(
+function setItemsBasedOnDOMPosition<T extends CollectionStateItem>(
   items: T[],
   setItems: (items: T[]) => any
 ) {
@@ -66,7 +66,7 @@ function setItemsBasedOnDOMPosition<T extends Item>(
   }
 }
 
-function getCommonParent(items: Item[]) {
+function getCommonParent(items: CollectionStateItem[]) {
   const firstItem = items[0];
   const lastItem = items[items.length - 1];
   let parentElement = firstItem?.ref.current?.parentElement;
@@ -80,10 +80,9 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-function useTimeoutObserver<T extends Item = Item>(
-  items: T[],
-  setItems: (items: T[]) => any
-) {
+function useTimeoutObserver<
+  T extends CollectionStateItem = CollectionStateItem
+>(items: T[], setItems: (items: T[]) => any) {
   useEffect(() => {
     const callback = () => setItemsBasedOnDOMPosition(items, setItems);
     const timeout = setTimeout(callback);
@@ -91,10 +90,9 @@ function useTimeoutObserver<T extends Item = Item>(
   });
 }
 
-function useSortBasedOnDOMPosition<T extends Item = Item>(
-  items: T[],
-  setItems: (items: T[]) => any
-) {
+function useSortBasedOnDOMPosition<
+  T extends CollectionStateItem = CollectionStateItem
+>(items: T[], setItems: (items: T[]) => any) {
   // istanbul ignore else: JSDOM doesn't support IntersectionObverser
   // See https://github.com/jsdom/jsdom/issues/2032
   if (typeof IntersectionObserver !== "function") {
@@ -134,9 +132,9 @@ function useSortBasedOnDOMPosition<T extends Item = Item>(
  * </Collection>
  * ```
  */
-export function useCollectionState<T extends Item = Item>(
-  props: CollectionStateProps<T> = {}
-): CollectionState<T> {
+export function useCollectionState<
+  T extends CollectionStateItem = CollectionStateItem
+>(props: CollectionStateProps<T> = {}): CollectionState<T> {
   const [items, setItems] = useControlledState([], props.items, props.setItems);
 
   useSortBasedOnDOMPosition(items, setItems);
@@ -168,7 +166,9 @@ export function useCollectionState<T extends Item = Item>(
   return state;
 }
 
-export type CollectionState<T extends Item = Item> = {
+export type CollectionState<
+  T extends CollectionStateItem = CollectionStateItem
+> = {
   /**
    * Lists all the items with their `ref`s. This state is automatically updated
    * when an item is registered or unregistered with the `registerItem`
@@ -206,9 +206,9 @@ export type CollectionState<T extends Item = Item> = {
   registerItem: BivariantCallback<(item: T) => () => void>;
 };
 
-export type CollectionStateProps<T extends Item = Item> = Partial<
-  Pick<CollectionState<T>, "items">
-> & {
+export type CollectionStateProps<
+  T extends CollectionStateItem = CollectionStateItem
+> = Partial<Pick<CollectionState<T>, "items">> & {
   /**
    * Function that will be called when setting the collection `items` state.
    * @example
