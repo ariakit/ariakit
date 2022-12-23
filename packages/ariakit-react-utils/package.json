@@ -1,6 +1,6 @@
 {
   "name": "ariakit-react-utils",
-  "version": "0.17.0-next.26",
+  "version": "0.17.0-next.27",
   "description": "Ariakit React utils",
   "sideEffects": false,
   "license": "MIT",
@@ -34,7 +34,7 @@
     "utils"
   ],
   "dependencies": {
-    "ariakit-utils": "0.17.0-next.26"
+    "ariakit-utils": "0.17.0-next.27"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
