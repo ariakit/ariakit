@@ -30,7 +30,7 @@ function useTreeState({ values }: { values: Array<string | number> }) {
 }
 
 export default function Example() {
-  const values = ["Apple", "Orange", "Watermelon"];
+  const values = ["Apple", "Orange", "Mango"];
 
   const { group, items } = useTreeState({ values });
 
