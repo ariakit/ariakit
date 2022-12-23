@@ -29,7 +29,7 @@ import {
 type ErrorMessage = string | undefined | null;
 type Callback = () => void | Promise<void>;
 
-type Item = CollectionState["items"][number] & {
+type FormStateItem = CollectionState["items"][number] & {
   type: "field" | "label" | "description" | "error" | "button";
   name: string;
   id?: string;
@@ -288,7 +288,7 @@ export function useFormState<V extends AnyObject = AnyObject>(
 }
 
 export type FormState<V extends AnyObject = AnyObject> =
-  CollectionState<Item> & {
+  CollectionState<FormStateItem> & {
     /**
      * Form values.
      */
@@ -505,7 +505,7 @@ export type FormState<V extends AnyObject = AnyObject> =
   };
 
 export type FormStateProps<V extends AnyObject = AnyObject> =
-  CollectionStateProps<Item> &
+  CollectionStateProps<FormStateItem> &
     Partial<Pick<FormState<V>, "values" | "errors" | "touched">> & {
       /**
        * The default values of the form.

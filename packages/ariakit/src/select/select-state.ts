@@ -18,14 +18,15 @@ import {
   usePopoverState,
 } from "../popover/popover-state";
 import {
-  Item,
+  SelectStateItem,
   findEnabledItemByValue,
   findEnabledItemWithValueById,
   findFirstEnabledItemWithValue,
 } from "./__utils";
 
-type Value = string | string[];
-type MutableValue<T extends Value = Value> = T extends string ? string : T;
+type SelectStateValue = string | string[];
+type MutableValue<T extends SelectStateValue = SelectStateValue> =
+  T extends string ? string : T;
 
 /**
  * Provides state for the `Select` components.
@@ -39,7 +40,7 @@ type MutableValue<T extends Value = Value> = T extends string ? string : T;
  * </SelectPopover>
  * ```
  */
-export function useSelectState<T extends Value = Value>({
+export function useSelectState<T extends SelectStateValue = SelectStateValue>({
   virtualFocus = true,
   orientation = "vertical",
   placement = "bottom-start",
@@ -55,7 +56,7 @@ export function useSelectState<T extends Value = Value>({
     props.value,
     props.setValue
   );
-  const composite = useCompositeState<Item>({
+  const composite = useCompositeState<SelectStateItem>({
     ...props,
     virtualFocus,
     orientation,
@@ -123,37 +124,38 @@ export function useSelectState<T extends Value = Value>({
   return useStorePublisher(state);
 }
 
-export type SelectState<T extends Value = Value> = CompositeState<Item> &
-  PopoverState & {
-    /**
-     * The select value.
-     */
-    value: MutableValue<T>;
-    /**
-     * Sets the `value` state.
-     * @example
-     * const select = useSelectState();
-     * select.setValue("new value");
-     */
-    setValue: SetState<SelectState<T>["value"]>;
-    /**
-     * Whether the select value should be set when the active item changes by
-     * moving (which usually happens when moving to an item using the keyboard).
-     * @default false
-     */
-    setValueOnMove: boolean;
-    /**
-     * The select button element's ref.
-     */
-    selectRef: RefObject<HTMLElement>;
-    /**
-     * The select label element's ref.
-     */
-    labelRef: RefObject<HTMLElement>;
-  };
+export type SelectState<T extends SelectStateValue = SelectStateValue> =
+  CompositeState<SelectStateItem> &
+    PopoverState & {
+      /**
+       * The select value.
+       */
+      value: MutableValue<T>;
+      /**
+       * Sets the `value` state.
+       * @example
+       * const select = useSelectState();
+       * select.setValue("new value");
+       */
+      setValue: SetState<SelectState<T>["value"]>;
+      /**
+       * Whether the select value should be set when the active item changes by
+       * moving (which usually happens when moving to an item using the keyboard).
+       * @default false
+       */
+      setValueOnMove: boolean;
+      /**
+       * The select button element's ref.
+       */
+      selectRef: RefObject<HTMLElement>;
+      /**
+       * The select label element's ref.
+       */
+      labelRef: RefObject<HTMLElement>;
+    };
 
-export type SelectStateProps<T extends Value = Value> =
-  CompositeStateProps<Item> &
+export type SelectStateProps<T extends SelectStateValue = SelectStateValue> =
+  CompositeStateProps<SelectStateItem> &
     PopoverStateProps &
     Partial<Pick<SelectState<T>, "value" | "setValueOnMove">> & {
       /**

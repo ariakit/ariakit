@@ -10,7 +10,7 @@ import { As, Options, Props } from "ariakit-react-utils/types";
 import { isTextField } from "ariakit-utils/dom";
 import { isSelfTarget } from "ariakit-utils/events";
 import { normalizeString } from "ariakit-utils/misc";
-import { CompositeContext, Item, flipItems } from "./__utils";
+import { CompositeContext, CompositeStateItem, flipItems } from "./__utils";
 import { CompositeState } from "./composite-state";
 
 let chars = "";
@@ -35,7 +35,7 @@ function isValidTypeaheadEvent(event: KeyboardEvent) {
   );
 }
 
-function isSelfTargetOrItem(event: KeyboardEvent, items: Item[]) {
+function isSelfTargetOrItem(event: KeyboardEvent, items: CompositeStateItem[]) {
   if (isSelfTarget(event)) return true;
   const target = event.target as HTMLElement | null;
   if (!target) return false;
@@ -43,18 +43,18 @@ function isSelfTargetOrItem(event: KeyboardEvent, items: Item[]) {
   return isItem;
 }
 
-function getEnabledItems(items: Item[]) {
+function getEnabledItems(items: CompositeStateItem[]) {
   return items.filter((item) => !item.disabled);
 }
 
-function itemTextStartsWith(item: Item, text: string) {
+function itemTextStartsWith(item: CompositeStateItem, text: string) {
   const itemText = item.ref.current?.textContent;
   if (!itemText) return false;
   return normalizeString(itemText).toLowerCase().startsWith(text.toLowerCase());
 }
 
 function getSameInitialItems(
-  items: Item[],
+  items: CompositeStateItem[],
   char: string,
   activeId?: string | null
 ) {
