@@ -1,5 +1,13 @@
 # ariakit-playground
 
+## 0.17.0-next.42
+
+### Patch Changes
+
+- Extracted React specific utilities from the `ariakit-utils` package to the `ariakit-react-utils` package. ([#1819](https://github.com/ariakit/ariakit/pull/1819))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.27`, `ariakit@2.0.0-next.42`.
+
 ## 0.17.0-next.41
 
 ### Patch Changes
