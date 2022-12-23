@@ -33,6 +33,9 @@ function getStateChecked(
   if (typeof stateValue === "boolean") {
     return stateValue;
   }
+  if (stateValue === "mixed") {
+    return "mixed";
+  }
   return false;
 }
 
@@ -65,6 +68,8 @@ export const useCheckbox = createHook<CheckboxOptions>(
       defaultChecked ?? false,
       checkedProp ?? getStateChecked(state?.value, value)
     );
+
+    console.log("checked", checked);
 
     const ref = useRef<HTMLInputElement>(null);
     const tagName = useTagName(ref, props.as || "input");
