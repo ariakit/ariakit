@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/composite/composite-store";
+import { PickRequired } from "@ariakit/core/utils/types";
 import {
   CollectionStoreFunctions,
   CollectionStoreOptions,
@@ -32,12 +33,21 @@ export function useCompositeStoreProps<T extends CompositeStore>(
   return store;
 }
 
+/**
+ * Creates a composite store.
+ * @see https://ariakit.org/components/composite
+ * @example
+ * ```jsx
+ * const composite = useCompositeStore();
+ * <Composite store={composite}>
+ *   <CompositeItem>Item</CompositeItem>
+ *   <CompositeItem>Item</CompositeItem>
+ *   <CompositeItem>Item</CompositeItem>
+ * </Composite>
+ * ```
+ */
 export function useCompositeStore<T extends Item = Item>(
-  props: CompositeStoreProps<T> &
-    (
-      | Required<Pick<CompositeStoreProps<T>, "items">>
-      | Required<Pick<CompositeStoreProps<T>, "defaultItems">>
-    )
+  props: PickRequired<CompositeStoreProps<T>, "items" | "defaultItems">
 ): CompositeStore<T>;
 
 export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
@@ -54,18 +64,26 @@ export function useCompositeStore(
 
 export type CompositeStoreItem = Core.CompositeStoreItem;
 
-export type CompositeStoreState<T extends Item = Item> =
-  Core.CompositeStoreState<T> & CollectionStoreState<T>;
+export interface CompositeStoreState<T extends Item = Item>
+  extends Core.CompositeStoreState<T>,
+    CollectionStoreState<T> {}
 
-export type CompositeStoreFunctions<T extends Item = Item> =
-  Core.CompositeStoreFunctions<T> & CollectionStoreFunctions<T>;
+export interface CompositeStoreFunctions<T extends Item = Item>
+  extends Core.CompositeStoreFunctions<T>,
+    CollectionStoreFunctions<T> {}
 
-export type CompositeStoreOptions<T extends Item = Item> =
-  Core.CompositeStoreOptions<T> &
-    CollectionStoreOptions<T> & {
-      setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
-      setMoves?: (moves: CompositeStoreState<T>["moves"]) => void;
-    };
+export interface CompositeStoreOptions<T extends Item = Item>
+  extends Core.CompositeStoreOptions<T>,
+    CollectionStoreOptions<T> {
+  /**
+   * A callback that gets called when the `activeId` state changes.
+   * @param activeId The new active id.
+   * @example
+   * const [activeId, setActiveId] = useState(null);
+   * const composite = useCompositeStore({ activeId, setActiveId });
+   */
+  setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
+}
 
 export type CompositeStoreProps<T extends Item = Item> =
   CompositeStoreOptions<T> & Core.CompositeStoreProps<T>;

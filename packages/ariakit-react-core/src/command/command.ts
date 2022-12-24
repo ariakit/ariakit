@@ -26,9 +26,9 @@ function isNativeClick(event: KeyboardEvent) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. If the element is not a native clickable element (like a
- * button), the hook will return additional props to make sure it's accessible.
+ * Returns props to create a `Command` component. If the element is not a native
+ * clickable element (like a button), this hook will return additional props to
+ * make sure it's accessible.
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
@@ -145,9 +145,9 @@ export const useCommand = createHook<CommandOptions>(
 );
 
 /**
- * A component that renders a native clickable element (a button). If another
- * element is passed to the `as` prop, this component will make sure the
- * rendered element is accessible.
+ * Renders a clickable element (like a button). If the underlying element is not
+ * a native clickable element, this component will pass additional attributes to
+ * make sure it's accessible.
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
@@ -163,7 +163,8 @@ if (process.env.NODE_ENV !== "production") {
   Command.displayName = "Command";
 }
 
-export type CommandOptions<T extends As = "button"> = FocusableOptions<T> & {
+export interface CommandOptions<T extends As = "button">
+  extends FocusableOptions<T> {
   /**
    * If true, pressing the enter key will trigger a click on the button.
    * @default true
@@ -174,6 +175,6 @@ export type CommandOptions<T extends As = "button"> = FocusableOptions<T> & {
    * @default true
    */
   clickOnSpace?: boolean;
-};
+}
 
 export type CommandProps<T extends As = "button"> = Props<CommandOptions<T>>;

@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { CompositeStore } from "./composite-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label in a composite group. This hook must be
+ * Returns props to create a `CompositeGroupLabel` component. This hook must be
  * used in a component that's wrapped with `CompositeGroup` so the
  * `aria-labelledby` prop is properly set on the composite group element.
  * @see https://ariakit.org/components/composite
@@ -24,9 +23,9 @@ export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
 );
 
 /**
- * A component that renders a label in a composite group. This component must be
- * wrapped with `CompositeGroup` so the `aria-labelledby` prop is properly set
- * on the composite group element.
+ * Renders a label in a composite group. This component must be wrapped with
+ * `CompositeGroup` so the `aria-labelledby` prop is properly set on the
+ * composite group element.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -51,14 +50,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeGroupLabel.displayName = "CompositeGroupLabel";
 }
 
-export type CompositeGroupLabelOptions<T extends As = "div"> =
-  GroupLabelOptions<T> & {
-    /**
-     * Object returned by the `useCompositeStore` hook. If not provided, the
-     * parent `Composite` component's context will be used.
-     */
-    store?: CompositeStore;
-  };
+export interface CompositeGroupLabelOptions<T extends As = "div">
+  extends GroupLabelOptions<T> {
+  /**
+   * Object returned by the `useCompositeStore` hook. If not provided, the
+   * parent `Composite` component's context will be used.
+   */
+  store?: CompositeStore;
+}
 
 export type CompositeGroupLabelProps<T extends As = "div"> = Props<
   CompositeGroupLabelOptions<T>

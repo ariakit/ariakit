@@ -10,10 +10,8 @@ import { CompositeItemOptions, useCompositeItem } from "./composite-item";
 import { CompositeOverflowStore } from "./composite-overflow-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a disclosure button for the `CompositeOverflow`
- * component. This hook should be used in a component that's wrapped with
- * a composite component.
+ * Returns props to create a `CompositeOverflowDisclosure` component. This hook
+ * should be used in a component that's wrapped with a composite component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -64,8 +62,8 @@ export const useCompositeOverflowDisclosure =
   });
 
 /**
- * A component that renders a disclosure button for the `CompositeOverflow`
- * component. This component should be wrapped with a composite component.
+ * Renders a disclosure button for the `CompositeOverflow` component. This
+ * component should be wrapped with a composite component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -94,16 +92,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeOverflowDisclosure.displayName = "CompositeOverflowDisclosure";
 }
 
-export type CompositeOverflowDisclosureOptions<T extends As = "button"> = Omit<
-  PopoverDisclosureOptions<T>,
-  "store"
-> &
-  Omit<CompositeItemOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useCompositeOverflowStore` hook.
-     */
-    store: CompositeOverflowStore;
-  };
+export interface CompositeOverflowDisclosureOptions<T extends As = "button">
+  extends Omit<CompositeItemOptions<T>, "store">,
+    PopoverDisclosureOptions<T> {
+  /**
+   * Object returned by the `useCompositeOverflowStore` hook.
+   */
+  store: CompositeOverflowStore;
+}
 
 export type CompositeOverflowDisclosureProps<T extends As = "button"> = Props<
   CompositeOverflowDisclosureOptions<T>

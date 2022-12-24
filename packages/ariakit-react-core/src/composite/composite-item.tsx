@@ -154,8 +154,7 @@ function supportsAriaSelected(role?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a composite item.
+ * Returns props to create a `CompositeItem` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -389,7 +388,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 );
 
 /**
- * A component that renders a composite item.
+ * Renders a composite item.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -412,31 +411,32 @@ if (process.env.NODE_ENV !== "production") {
   CompositeItem.displayName = "CompositeItem";
 }
 
-export type CompositeItemOptions<T extends As = "button"> = CommandOptions<T> &
-  Omit<CollectionItemOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useCompositeStore` hook. If not provided, the
-     * parent `Composite` component's context will be used.
-     */
-    store?: CompositeStore;
-    /**
-     * The id that will be used to group items in the same row. This is
-     * usually retrieved by the `CompositeRow` component through context so in
-     * most cases you don't need to set it manually.
-     */
-    rowId?: string;
-    /**
-     * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last items.
-     * @default false
-     */
-    preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-    /**
-     * Whether pressing arrow keys should move the focus to a different item.
-     * @default true
-     */
-    moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-  };
+export interface CompositeItemOptions<T extends As = "button">
+  extends CommandOptions<T>,
+    CollectionItemOptions<T> {
+  /**
+   * Object returned by the `useCompositeStore` hook. If not provided, the
+   * parent `Composite` component's context will be used.
+   */
+  store?: CompositeStore;
+  /**
+   * The id that will be used to group items in the same row. This is usually
+   * retrieved by the `CompositeRow` component through context so in most cases
+   * you don't need to set it manually.
+   */
+  rowId?: string;
+  /**
+   * Whether the scroll behavior should be prevented when pressing arrow keys on
+   * the first or the last items.
+   * @default false
+   */
+  preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Whether pressing arrow keys should move the focus to a different item.
+   * @default true
+   */
+  moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+}
 
 export type CompositeItemProps<T extends As = "button"> = Props<
   CompositeItemOptions<T>

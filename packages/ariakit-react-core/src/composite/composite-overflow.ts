@@ -5,17 +5,15 @@ import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Props } from "../utils/types";
 import { CompositeOverflowStore } from "./composite-overflow-store";
 
-// Hiding the popover with `display: none` would prevent the hidden items to
-// be focused, so we just make it transparent and disable pointer events.
+// Hiding the popover with `display: none` would prevent the hidden items to be
+// focused, so we just make it transparent and disable pointer events.
 const hiddenStyle: CSSProperties = {
   opacity: 0,
   pointerEvents: "none",
 };
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a popover that will contain the overflow items in
- * a composite collection.
+ * Returns props to create a `CompositeOverflow` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -80,8 +78,8 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
 );
 
 /**
- * A component that renders a popover that will contain the overflow items in a
- * composite collection.
+ * Renders a popover that will contain the overflow items in a composite
+ * collection.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -111,15 +109,13 @@ if (process.env.NODE_ENV !== "production") {
   CompositeOverflow.displayName = "CompositeOverflow";
 }
 
-export type CompositeOverflowOptions<T extends As = "div"> = Omit<
-  PopoverOptions<T>,
-  "store"
-> & {
+export interface CompositeOverflowOptions<T extends As = "div">
+  extends PopoverOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */
   store: CompositeOverflowStore;
-};
+}
 
 export type CompositeOverflowProps<T extends As = "div"> = Props<
   CompositeOverflowOptions<T>

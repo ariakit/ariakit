@@ -22,10 +22,9 @@ function getValueLength(element: HTMLElement) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an input as a composite item. This should be used
- * in conjunction with the `CompositeItem` component, the `useCompositeItem`
- * hook, or any other component/hook that uses `CompositeItem` underneath.
+ * Returns props to create a `CompositeInput` component. This should be used in
+ * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
+ * or any other component/hook that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -78,9 +77,9 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
 );
 
 /**
- * A component that renders an input as a composite item. This should be used in
- * conjunction with the `CompositeItem` component or a component that uses
- * `CompositeItem` underneath.
+ * Renders an input as a composite item. This should be used in conjunction with
+ * the `CompositeItem` component or a component that uses `CompositeItem`
+ * underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -101,13 +100,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeInput.displayName = "CompositeInput";
 }
 
-export type CompositeInputOptions<T extends As = "input"> = Options<T> & {
+export interface CompositeInputOptions<T extends As = "input">
+  extends Options<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
    */
   store?: CompositeStore;
-};
+}
 
 export type CompositeInputProps<T extends As = "input"> = Props<
   CompositeInputOptions<T>

@@ -7,8 +7,7 @@ import { CompositeContext, CompositeRowContext } from "./composite-context";
 import { CompositeStore } from "./composite-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a composite row. Wrapping `CompositeItem`
+ * Returns props to create a `CompositeRow` component. Wrapping `CompositeItem`
  * elements within rows will create a two-dimensional composite widget, such as
  * a grid.
  * @see https://ariakit.org/components/composite
@@ -64,9 +63,9 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
 );
 
 /**
- * A component that renders a composite row. Wrapping `CompositeItem` elements
- * within `CompositeRow` will create a two-dimensional composite widget, such
- * as a grid.
+ * Renders a composite row. Wrapping `CompositeItem` elements within
+ * `CompositeRow` will create a two-dimensional composite widget, such as a
+ * grid.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -94,13 +93,13 @@ if (process.env.NODE_ENV !== "production") {
   CompositeRow.displayName = "CompositeRow";
 }
 
-export type CompositeRowOptions<T extends As = "div"> = Options<T> & {
+export interface CompositeRowOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
    */
   store?: CompositeStore;
-};
+}
 
 export type CompositeRowProps<T extends As = "div"> = Props<
   CompositeRowOptions<T>

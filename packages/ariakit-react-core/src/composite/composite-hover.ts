@@ -35,11 +35,11 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element in a composite widget that receives
- * focus on mouse move and loses focus to the composite base element on mouse
- * leave. This should be combined with the `CompositeItem` component, the
- * `useCompositeItem` hook or any component/hook that uses them underneath.
+ * Returns props to create a `CompositeHover` component. The composite item that
+ * receives these props will get focused on mouse move and lose focus to the
+ * composite base element on mouse leave. This should be combined with the
+ * `CompositeItem` component, the `useCompositeItem` hook or any component/hook
+ * that uses them underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -105,10 +105,10 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
 );
 
 /**
- * A component that renders an element in a composite widget that receives focus
- * on mouse move and loses focus to the composite base element on mouse leave.
- * This should be combined with the `CompositeItem` component, the
- * `useCompositeItem` hook or any component/hook that uses them underneath.
+ * Renders an element in a composite widget that receives focus on mouse move
+ * and loses focus to the composite base element on mouse leave. This should be
+ * combined with the `CompositeItem` component, the `useCompositeItem` hook or
+ * any component/hook that uses them underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -129,7 +129,8 @@ if (process.env.NODE_ENV !== "production") {
   CompositeHover.displayName = "CompositeHover";
 }
 
-export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
+export interface CompositeHoverOptions<T extends As = "div">
+  extends Options<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
@@ -140,7 +141,7 @@ export type CompositeHoverOptions<T extends As = "div"> = Options<T> & {
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
-};
+}
 
 export type CompositeHoverProps<T extends As = "div"> = Props<
   CompositeHoverOptions<T>

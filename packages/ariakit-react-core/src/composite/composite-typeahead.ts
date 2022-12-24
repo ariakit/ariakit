@@ -72,8 +72,7 @@ function getSameInitialItems(
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to add typeahead functionality to composite components.
+ * Returns props to create a `CompositeTypeahead` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -149,7 +148,8 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
 );
 
 /**
- * A component that adds typeahead functionality to composite components.
+ * Renders a component that adds typeahead functionality to composite
+ * components.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -171,7 +171,8 @@ if (process.env.NODE_ENV !== "production") {
   CompositeTypeahead.displayName = "CompositeTypeahead";
 }
 
-export type CompositeTypeaheadOptions<T extends As = "div"> = Options<T> & {
+export interface CompositeTypeaheadOptions<T extends As = "div">
+  extends Options<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
@@ -182,7 +183,7 @@ export type CompositeTypeaheadOptions<T extends As = "div"> = Options<T> & {
    * @default true
    */
   typeahead?: boolean;
-};
+}
 
 export type CompositeTypeaheadProps<T extends As = "div"> = Props<
   CompositeTypeaheadOptions<T>

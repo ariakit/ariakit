@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { CompositeStore } from "./composite-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a composite group.
+ * Returns props to create a `CompositeGroup` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -28,7 +27,7 @@ export const useCompositeGroup = createHook<CompositeGroupOptions>(
 );
 
 /**
- * A component that renders a composite group.
+ * Renders a group element for composite items.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -53,13 +52,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeGroup.displayName = "CompositeGroup";
 }
 
-export type CompositeGroupOptions<T extends As = "div"> = GroupOptions<T> & {
+export interface CompositeGroupOptions<T extends As = "div">
+  extends GroupOptions<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
    */
   store?: CompositeStore;
-};
+}
 
 export type CompositeGroupProps<T extends As = "div"> = Props<
   CompositeGroupOptions<T>

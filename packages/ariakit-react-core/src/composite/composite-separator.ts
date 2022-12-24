@@ -7,8 +7,7 @@ import { CompositeContext } from "./composite-context";
 import { CompositeStore } from "./composite-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator for composite items.
+ * Returns props to create a `CompositeSeparator` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -43,7 +42,7 @@ export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
 );
 
 /**
- * A component that renders a separator for composite items.
+ * Renders a separator for composite items.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -66,14 +65,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeSeparator.displayName = "CompositeSeparator";
 }
 
-export type CompositeSeparatorOptions<T extends As = "hr"> =
-  SeparatorOptions<T> & {
-    /**
-     * Object returned by the `useCompositeStore` hook. If not provided, the
-     * parent `Composite` component's context will be used.
-     */
-    store?: CompositeStore;
-  };
+export interface CompositeSeparatorOptions<T extends As = "hr">
+  extends SeparatorOptions<T> {
+  /**
+   * Object returned by the `useCompositeStore` hook. If not provided, the
+   * parent `Composite` component's context will be used.
+   */
+  store?: CompositeStore;
+}
 
 export type CompositeSeparatorProps<T extends As = "hr"> = Props<
   CompositeSeparatorOptions<T>

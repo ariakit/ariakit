@@ -141,13 +141,12 @@ function useScheduleFocus(store: CompositeStore) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a composite widget.
+ * Returns props to create a `Composite` component.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
- * const state = useCompositeState();
- * const props = useComposite({ state });
+ * const store = useCompositeStore();
+ * const props = useComposite({ store });
  * <Role {...props}>
  *   <CompositeItem>Item 1</CompositeItem>
  *   <CompositeItem>Item 2</CompositeItem>
@@ -317,7 +316,7 @@ export const useComposite = createHook<CompositeOptions>(
       // to focus on an item (nextActiveElement).
       if (isSelfTarget(event) && nextActiveElementIsItem) {
         // The next active element will be the same as the active item in the
-        // state in these two scenarios:
+        // store in these two scenarios:
         //   - Moving focus with keyboard: the state is updated before the blur
         //     event is triggered, so here the active item is already pointing
         //     to the next active element.
@@ -437,12 +436,12 @@ export const useComposite = createHook<CompositeOptions>(
 );
 
 /**
- * A component that renders a composite widget.
+ * Renders a composite widget.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
- * const composite = useCompositeState();
- * <Composite state={composite}>
+ * const composite = useCompositeStore();
+ * <Composite store={composite}>
  *   <CompositeItem>Item 1</CompositeItem>
  *   <CompositeItem>Item 2</CompositeItem>
  * </Composite>
@@ -457,7 +456,8 @@ if (process.env.NODE_ENV !== "production") {
   Composite.displayName = "Composite";
 }
 
-export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
+export interface CompositeOptions<T extends As = "div">
+  extends FocusableOptions<T> {
   /**
    * Object returned by the `useCompositeStore` hook.
    */
@@ -471,23 +471,23 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * ```jsx
    * // Combining two composite widgets (combobox and menu), where only the
    * // Combobox component should behave as a composite widget.
-   * const combobox = useComboboxState();
-   * const menu = useMenuState(combobox);
-   * <MenuButton state={menu}>Open Menu</MenuButton>
-   * <Menu state={menu} composite={false}>
-   *   <Combobox state={combobox} />
-   *   <ComboboxList state={combobox}>
-   *     <ComboboxItem as={MenuItem}>Item 1</ComboboxItem>
-   *     <ComboboxItem as={MenuItem}>Item 2</ComboboxItem>
-   *     <ComboboxItem as={MenuItem}>Item 3</ComboboxItem>
+   * const combobox = useComboboxStore();
+   * const menu = useMenuStore({ combobox });
+   * <MenuButton store={menu}>Open Menu</MenuButton>
+   * <Menu store={menu} composite={false}>
+   *   <Combobox store={combobox} />
+   *   <ComboboxList store={combobox}>
+   *     <ComboboxItem value="Apple" />
+   *     <ComboboxItem value="Banana" />
+   *     <ComboboxItem value="Orange" />
    *   </ComboboxList>
    * </Menu>
    * ```
    */
   composite?: boolean;
   /**
-   * Whether the active composite item should receive focus when
-   * `composite.move` is called.
+   * Whether the active composite item should receive focus when `store.move` is
+   * called.
    * @default true
    */
   focusOnMove?: boolean;
@@ -497,6 +497,6 @@ export type CompositeOptions<T extends As = "div"> = FocusableOptions<T> & {
    * @default true
    */
   moveOnKeyPress?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
-};
+}
 
 export type CompositeProps<T extends As = "div"> = Props<CompositeOptions<T>>;

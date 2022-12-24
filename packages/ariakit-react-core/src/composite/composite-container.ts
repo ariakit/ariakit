@@ -34,11 +34,10 @@ function getFirstTabbable(container: HTMLElement) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a container for interactive widgets inside
- * composite items. This should be used in conjunction with the `CompositeItem`
- * component, the `useCompositeItem` hook, or any other component/hook that uses
- * `CompositeItem` underneath.
+ * Returns props to create a `CompositeContainer` component. This component
+ * renders interactive widgets inside composite items. This should be used in
+ * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
+ * or any other component/hook that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -155,8 +154,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
       if (isSelfTarget(event)) {
         // Alphanumeric key on container: focus the first tabbable element in
         // the container if it's a text field or contenteditable element. This
-        // will automatically replace the text field value with the pressed
-        // key.
+        // will automatically replace the text field value with the pressed key.
         if (event.key.length === 1 && event.key !== " ") {
           const tabbable = getFirstTabbable(container);
           if (!tabbable) return;
@@ -165,9 +163,9 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
             open();
           }
         }
-        // Delete/Backspace on container: focus on the first tabbable element
-        // in the container if it's a text field or contenteditable element.
-        // This will automatically clear the text field value.
+        // Delete/Backspace on container: focus on the first tabbable element in
+        // the container if it's a text field or contenteditable element. This
+        // will automatically clear the text field value.
         else if (event.key === "Delete" || event.key === "Backspace") {
           const tabbable = getFirstTabbable(container);
           if (!tabbable) return;
@@ -226,9 +224,9 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
 );
 
 /**
- * A component that renders a container for interactive widgets inside composite
- * items. This should be used in conjunction with the `CompositeItem` component
- * or a component that uses `CompositeItem` underneath.
+ * Renders a container for interactive widgets inside composite items. This
+ * should be used in conjunction with the `CompositeItem` component or a
+ * component that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
@@ -250,13 +248,14 @@ if (process.env.NODE_ENV !== "production") {
   CompositeContainer.displayName = "CompositeContainer";
 }
 
-export type CompositeContainerOptions<T extends As = "div"> = Options<T> & {
+export interface CompositeContainerOptions<T extends As = "div">
+  extends Options<T> {
   /**
    * Object returned by the `useCompositeStore` hook. If not provided, the
    * parent `Composite` component's context will be used.
    */
   store?: CompositeStore;
-};
+}
 
 export type CompositeContainerProps<T extends As = "div"> = Props<
   CompositeContainerOptions<T>
