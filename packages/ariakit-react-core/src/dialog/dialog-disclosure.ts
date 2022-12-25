@@ -1,15 +1,10 @@
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
 import { DisclosureOptions, useDisclosure } from "../disclosure/disclosure";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Props } from "../utils/types";
 import { DialogStore } from "./dialog-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that shows/hides a dialog.
+ * Returns props to create a `DialogDisclosure` component.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -27,7 +22,7 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
 );
 
 /**
- * A component that renders a button that shows/hides a dialog.
+ * Renders a button that shows/hides a dialog.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -47,15 +42,13 @@ if (process.env.NODE_ENV !== "production") {
   DialogDisclosure.displayName = "DialogDisclosure";
 }
 
-export type DialogDisclosureOptions<T extends As = "button"> = Omit<
-  DisclosureOptions<T>,
-  "store"
-> & {
+export interface DialogDisclosureOptions<T extends As = "button">
+  extends DisclosureOptions<T> {
   /**
    * Object returned by the `useDialogStore` hook.
    */
   store: DialogStore;
-};
+}
 
 export type DialogDisclosureProps<T extends As = "button"> = Props<
   DialogDisclosureOptions<T>

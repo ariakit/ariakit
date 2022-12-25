@@ -6,8 +6,7 @@ import { As, Options, Props } from "../utils/types";
 import { FocusTrap } from "./focus-trap";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a focus trap region element.
+ * Returns props to create a `FocusTrapRegion` component.
  * @see https://ariakit.org/components/focus-trap-region
  * @example
  * ```jsx
@@ -67,7 +66,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
 );
 
 /**
- * A component that renders a focus trap region element.
+ * Renders a focus trap region element.
  * @see https://ariakit.org/components/focus-trap-region
  * @example
  * ```jsx
@@ -89,13 +88,14 @@ if (process.env.NODE_ENV !== "production") {
   FocusTrapRegion.displayName = "FocusTrapRegion";
 }
 
-export type FocusTrapRegionOptions<T extends As = "div"> = Options<T> & {
+export interface FocusTrapRegionOptions<T extends As = "div">
+  extends Options<T> {
   /**
    * If true, it will trap the focus in the region.
    * @default false
    */
   enabled?: boolean;
-};
+}
 
 export type FocusTrapRegionProps<T extends As = "div"> = Props<
   FocusTrapRegionOptions<T>

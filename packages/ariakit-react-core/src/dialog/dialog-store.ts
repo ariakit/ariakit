@@ -19,6 +19,16 @@ export function useDialogStoreProps<T extends DialogStore>(
   return useDisclosureStoreProps(store, props);
 }
 
+/**
+ * Creates a dialog store.
+ * @see https://ariakit.org/components/dialog
+ * @example
+ * ```jsx
+ * const dialog = useDialogStore();
+ * <button onClick={dialog.toggle}>Open dialog</button>
+ * <Dialog store={dialog}>Content</Dialog>
+ * ```
+ */
 export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
   const options = useDialogStoreOptions(props);
   const store = useStore(() =>
@@ -27,13 +37,17 @@ export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
   return useDialogStoreProps(store, props);
 }
 
-export type DialogStoreState = Core.DialogStoreState & DisclosureStoreState;
+export interface DialogStoreState
+  extends Core.DialogStoreState,
+    DisclosureStoreState {}
 
-export type DialogStoreFunctions = Core.DialogStoreFunctions &
-  DisclosureStoreFunctions;
+export interface DialogStoreFunctions
+  extends Core.DialogStoreFunctions,
+    DisclosureStoreFunctions {}
 
-export type DialogStoreOptions = Core.DialogStoreOptions &
-  DisclosureStoreOptions;
+export interface DialogStoreOptions
+  extends Core.DialogStoreOptions,
+    DisclosureStoreOptions {}
 
 export type DialogStoreProps = DialogStoreOptions & Core.DialogStoreProps;
 

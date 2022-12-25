@@ -7,8 +7,7 @@ import { FormContext } from "./form-context";
 import { FormStore } from "./form-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a submit buttom in a form.
+ * Returns props to create a `FormReset` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -43,7 +42,7 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
 );
 
 /**
- * A component that renders a submit buttom in a form.
+ * Renders a submit buttom in a form.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -62,13 +61,18 @@ if (process.env.NODE_ENV !== "production") {
   FormSubmit.displayName = "FormSubmit";
 }
 
-export type FormSubmitOptions<T extends As = "button"> = ButtonOptions<T> & {
+export interface FormSubmitOptions<T extends As = "button">
+  extends ButtonOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
    */
   store?: FormStore;
-};
+  /**
+   * @default true
+   */
+  accessibleWhenDisabled?: ButtonOptions<T>["accessibleWhenDisabled"];
+}
 
 export type FormSubmitProps<T extends As = "button"> = Props<
   FormSubmitOptions<T>

@@ -12,8 +12,7 @@ import { FormContext } from "./form-context";
 import { FormFieldOptions, useFormField } from "./form-field";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a radio button in a form.
+ * Returns props to create a `FormRadio` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -76,7 +75,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
 );
 
 /**
- * A component that renders a radio button in a form.
+ * Renders a radio button in a form.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -100,7 +99,8 @@ if (process.env.NODE_ENV !== "production") {
   FormRadio.displayName = "FormRadio";
 }
 
-export type FormRadioOptions<T extends As = "input"> = FormFieldOptions<T> &
-  Omit<RadioOptions<T>, "store">;
+export interface FormRadioOptions<T extends As = "input">
+  extends FormFieldOptions<T>,
+    Omit<RadioOptions<T>, "store"> {}
 
 export type FormRadioProps<T extends As = "input"> = Props<FormRadioOptions<T>>;

@@ -40,11 +40,11 @@ function useItem(store: FormStore, name: string, type: ItemType) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form field. Unlike `useFormInput`, this hook
- * doesn't automatically returns the `value` and `onChange` props. This is so we
- * can use it not only for native form elements but also for custom components
- * whose value is not controlled by the native `value` and `onChange` props.
+ * Returns props to create a `FormField` component. Unlike `useFormInput`, this
+ * hook doesn't automatically returns the `value` and `onChange` props. This is
+ * so we can use it not only for native form elements but also for custom
+ * components whose value is not controlled by the native `value` and `onChange`
+ * props.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -145,11 +145,11 @@ export const useFormField = createHook<FormFieldOptions>(
 );
 
 /**
- * A component that renders a form field. Unlike `FormInput`, this component
- * doesn't automatically pass the `value` and `onChange` props down to the
- * underlying element. This is so we can use it not only for native form
- * elements but also for custom components whose value is not controlled by the
- * native `value` and `onChange` props.
+ * Renders a form field. Unlike `FormInput`, this component doesn't
+ * automatically pass the `value` and `onChange` props down to the underlying
+ * element. This is so we can use it not only for native form elements but also
+ * for custom components whose value is not controlled by the native `value` and
+ * `onChange` props.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -176,10 +176,8 @@ if (process.env.NODE_ENV !== "production") {
   FormField.displayName = "FormField";
 }
 
-export type FormFieldOptions<T extends As = "input"> = Omit<
-  CollectionItemOptions<T>,
-  "store"
-> & {
+export interface FormFieldOptions<T extends As = "input">
+  extends CollectionItemOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
@@ -194,6 +192,6 @@ export type FormFieldOptions<T extends As = "input"> = Omit<
    * @default true
    */
   touchOnBlur?: BooleanOrCallback<FocusEvent>;
-};
+}
 
 export type FormFieldProps<T extends As = "input"> = Props<FormFieldOptions<T>>;

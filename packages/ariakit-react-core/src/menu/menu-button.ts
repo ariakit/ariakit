@@ -40,8 +40,7 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu button that triggers a dropdown menu.
+ * Returns props to create a `MenuButton` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -207,10 +206,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 );
 
 /**
- * A component that renders a menu button that triggers a dropdown menu.
- * Usually, this is rendered as a native `button` element, but if it's a submenu
- * button rendered as a menu item inside another menu, it'll be rendered as a
- * `div`.
+ * Renders a menu button that triggers a dropdown menu. Usually, this is
+ * rendered as a native `button` element, but if it's a submenu button rendered
+ * as a menu item inside another menu, it'll be rendered as a `div`.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -231,24 +229,22 @@ if (process.env.NODE_ENV !== "production") {
   MenuButton.displayName = "MenuButton";
 }
 
-export type MenuButtonOptions<T extends As = "button" | "div"> = Omit<
-  HovercardAnchorOptions<T>,
-  "store"
-> &
-  Omit<PopoverDisclosureOptions<T>, "store"> &
-  Omit<CompositeTypeaheadOptions<T>, "store" | "typeahead"> & {
-    /**
-     * Object returned by the `useMenuStore` hook.
-     */
-    store: MenuStore;
-    /**
-     * Determines whether pressing a character key while focusing on the
-     * `MenuButton` should move focus to the `MenuItem` starting with that
-     * character. By default, it's `true` for menu buttons in a `MenuBar`, but
-     * `false` for other menu buttons.
-     */
-    typeahead?: boolean;
-  };
+export interface MenuButtonOptions<T extends As = "button" | "div">
+  extends HovercardAnchorOptions<T>,
+    PopoverDisclosureOptions<T>,
+    CompositeTypeaheadOptions<T> {
+  /**
+   * Object returned by the `useMenuStore` hook.
+   */
+  store: MenuStore;
+  /**
+   * Determines whether pressing a character key while focusing on the
+   * `MenuButton` should move focus to the `MenuItem` starting with that
+   * character. By default, it's `true` for menu buttons in a `MenuBar`, but
+   * `false` for other menu buttons.
+   */
+  typeahead?: boolean;
+}
 
 export type MenuButtonProps<T extends As = "button" | "div"> = Props<
   MenuButtonOptions<T>

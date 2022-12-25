@@ -16,8 +16,7 @@ import { FormContext } from "./form-context";
 import { FormStore } from "./form-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a description element for a form field.
+ * Returns props to create a `FormDescription` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -74,7 +73,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
 );
 
 /**
- * A component that renders a description element for a form field.
+ * Renders a description element for a form field.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -99,10 +98,8 @@ if (process.env.NODE_ENV !== "production") {
   FormDescription.displayName = "FormDescription";
 }
 
-export type FormDescriptionOptions<T extends As = "div"> = Omit<
-  CollectionItemOptions<T>,
-  "store"
-> & {
+export interface FormDescriptionOptions<T extends As = "div">
+  extends CollectionItemOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
@@ -112,7 +109,7 @@ export type FormDescriptionOptions<T extends As = "div"> = Omit<
    * Name of the field.
    */
   name: StringLike;
-};
+}
 
 export type FormDescriptionProps<T extends As = "div"> = Props<
   FormDescriptionOptions<T>

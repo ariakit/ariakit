@@ -28,8 +28,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form element.
+ * Returns props to create a `Form` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -142,7 +141,7 @@ export const useForm = createHook<FormOptions>(
 );
 
 /**
- * A component that renders a form element.
+ * Renders a form element.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -162,7 +161,7 @@ if (process.env.NODE_ENV !== "production") {
   Form.displayName = "Form";
 }
 
-export type FormOptions<T extends As = "form"> = Options<T> & {
+export interface FormOptions<T extends As = "form"> extends Options<T> {
   /**
    * Object returned by the `useFormStore` hook.
    */
@@ -197,6 +196,6 @@ export type FormOptions<T extends As = "form"> = Options<T> & {
    * @default true
    */
   autoFocusOnSubmit?: boolean;
-};
+}
 
 export type FormProps<T extends As = "form"> = Props<FormOptions<T>>;

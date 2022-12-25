@@ -32,8 +32,7 @@ function parseCSSTime(...times: string[]) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that can be shown or hidden.
+ * Returns props to create a `DislosureContent` component.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
@@ -127,13 +126,13 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
 );
 
 /**
- * A component that renders an element that can be shown or hidden.
+ * Renders an element that can be shown or hidden.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
- * const disclosure = useDisclosureState();
- * <Disclosure state={disclosure}>Disclosure</Disclosure>
- * <DisclosureContent state={disclosure}>Content</DisclosureContent>
+ * const disclosure = useDisclosureStore();
+ * <Disclosure store={disclosure}>Disclosure</Disclosure>
+ * <DisclosureContent store={disclosure}>Content</DisclosureContent>
  * ```
  */
 export const DisclosureContent = createComponent<DisclosureContentOptions>(
@@ -147,12 +146,13 @@ if (process.env.NODE_ENV !== "production") {
   DisclosureContent.displayName = "DisclosureContent";
 }
 
-export type DisclosureContentOptions<T extends As = "div"> = Options<T> & {
+export interface DisclosureContentOptions<T extends As = "div">
+  extends Options<T> {
   /**
-   * Object returned by the `useDisclosureState` hook.
+   * Object returned by the `useDisclosureStore` hook.
    */
   store: DisclosureStore;
-};
+}
 
 export type DisclosureContentProps<T extends As = "div"> = Props<
   DisclosureContentOptions<T>

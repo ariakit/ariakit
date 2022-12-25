@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow inside the menu element.
+ * Returns props to create a `MenuArrow` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -22,7 +21,7 @@ export const useMenuArrow = createHook<MenuArrowOptions>((props) => {
 });
 
 /**
- * A component that renders an arrow inside the menu element.
+ * Renders an arrow inside the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -42,15 +41,13 @@ if (process.env.NODE_ENV !== "production") {
   MenuArrow.displayName = "MenuArrow";
 }
 
-export type MenuArrowOptions<T extends As = "div"> = Omit<
-  PopoverArrowOptions<T>,
-  "store"
-> & {
+export interface MenuArrowOptions<T extends As = "div">
+  extends PopoverArrowOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook. If not provided, the parent
    * `Menu` component's context will be used.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuArrowProps<T extends As = "div"> = Props<MenuArrowOptions<T>>;

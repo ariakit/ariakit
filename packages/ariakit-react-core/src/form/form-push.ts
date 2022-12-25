@@ -37,9 +37,7 @@ function getFirstFieldsByName(
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that will push items to an array field
- * in the form when clicked.
+ * Returns props to create a `FormPush` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -127,8 +125,8 @@ export const useFormPush = createHook<FormPushOptions>(
 );
 
 /**
- * A component that renders a button that will push items to an array value in
- * the form store when clicked.
+ * Renders a button that will push items to an array value in the form store
+ * when clicked.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -158,27 +156,28 @@ if (process.env.NODE_ENV !== "production") {
   FormPush.displayName = "FormPush";
 }
 
-export type FormPushOptions<T extends As = "button"> = ButtonOptions<T> &
-  Omit<CollectionItemOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useFormStore` hook. If not provided, the parent
-     * `Form` component's context will be used.
-     */
-    store?: FormStore;
-    /**
-     * Name of the array field.
-     */
-    name: StringLike;
-    /**
-     * Value that will be initially set to the item when it is pushed.
-     */
-    value: unknown;
-    /**
-     * Whether the newly added input should be automatically focused when the
-     * button is clicked.
-     * @default true
-     */
-    autoFocusOnClick?: boolean;
-  };
+export interface FormPushOptions<T extends As = "button">
+  extends ButtonOptions<T>,
+    CollectionItemOptions<T> {
+  /**
+   * Object returned by the `useFormStore` hook. If not provided, the parent
+   * `Form` component's context will be used.
+   */
+  store?: FormStore;
+  /**
+   * Name of the array field.
+   */
+  name: StringLike;
+  /**
+   * Value that will be initially set to the item when it is pushed.
+   */
+  value: unknown;
+  /**
+   * Whether the newly added input should be automatically focused when the
+   * button is clicked.
+   * @default true
+   */
+  autoFocusOnClick?: boolean;
+}
 
 export type FormPushProps<T extends As = "button"> = Props<FormPushOptions<T>>;

@@ -6,8 +6,7 @@ import {
 } from "../visually-hidden/visually-hidden";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a focus trap element.
+ * Returns props to create a `FocusTrap` component.
  * @see https://ariakit.org/components/focus-trap
  * @example
  * ```jsx
@@ -36,7 +35,7 @@ export const useFocusTrap = createHook<FocusTrapOptions>((props) => {
 });
 
 /**
- * A component that renders a focus trap element.
+ * Renders a focus trap element.
  * @see https://ariakit.org/components/focus-trap
  * @example
  * ```jsx

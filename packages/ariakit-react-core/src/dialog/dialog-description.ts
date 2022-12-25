@@ -1,19 +1,14 @@
 import { useContext } from "react";
-import { useId, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "@ariakit/react-core/utils/system";
-import { As, Options, Props } from "@ariakit/react-core/utils/types";
+import { useId, useSafeLayoutEffect } from "../utils/hooks";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Options, Props } from "../utils/types";
 import { DialogDescriptionContext } from "./dialog-context";
 import { DialogStore } from "./dialog-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a description element for a dialog. This hook
- * must be used in a component that's wrapped with `Dialog` so the
- * `aria-describedby` prop is properly set on the dialog element.
+ * Returns props to create a `DialogDescription` component. This hook must be
+ * used in a component that's wrapped with `Dialog` so the `aria-describedby`
+ * prop is properly set on the dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -42,9 +37,9 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
 );
 
 /**
- * A component that renders a description in a dialog. This component must be
- * wrapped with `Dialog` so the `aria-describedby` prop is properly set on the
- * dialog element.
+ * Renders a description in a dialog. This component must be wrapped with
+ * `Dialog` so the `aria-describedby` prop is properly set on the dialog
+ * element.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -65,13 +60,14 @@ if (process.env.NODE_ENV !== "production") {
   DialogDescription.displayName = "DialogDescription";
 }
 
-export type DialogDescriptionOptions<T extends As = "p"> = Options<T> & {
+export interface DialogDescriptionOptions<T extends As = "p">
+  extends Options<T> {
   /**
    * Object returned by the `useDialogStore` hook. If not provided, the parent
    * `Dialog` component's context will be used.
    */
   store?: DialogStore;
-};
+}
 
 export type DialogDescriptionProps<T extends As = "p"> = Props<
   DialogDescriptionOptions<T>

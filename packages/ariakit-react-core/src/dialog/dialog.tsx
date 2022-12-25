@@ -89,8 +89,7 @@ function isAlreadyFocusingAnotherElement(
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a dialog element.
+ * Returns props to create a `Dialog` component.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -268,8 +267,8 @@ export const useDialog = createHook<DialogOptions>(
       if (!openStable) return;
       if (!mayAutoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
-      // focus. This is useful for when the Dialog component is unmounted
-      // when hidden.
+      // focus. This is useful for when the Dialog component is unmounted when
+      // hidden.
       if (!domReady) return;
       // If there are open nested dialogs, let them handle the focus.
       const hasNestedOpenDialog = nestedDialogsRef.current?.some(
@@ -331,8 +330,8 @@ export const useDialog = createHook<DialogOptions>(
         const dialog = ref.current;
         if (!dialog) return;
         const dialogs = nestedDialogsRef.current;
-        // Hide was triggered by a click/focus on a tabbable element outside
-        // the dialog or on another dialog. We won't change focus then.
+        // Hide was triggered by a click/focus on a tabbable element outside the
+        // dialog or on another dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
         let element =
           finalFocusRef?.current || store.getState().disclosureElement;
@@ -368,14 +367,14 @@ export const useDialog = createHook<DialogOptions>(
         }
       };
       if (!open) {
-        // If this effect is running while state.open is false, this means
-        // that the Dialog component doesn't get unmounted when it's not
-        // open, so we can immediatelly move focus.
+        // If this effect is running while state.open is false, this means that
+        // the Dialog component doesn't get unmounted when it's not open, so we
+        // can immediatelly move focus.
         return focusOnHide();
       }
-      // Otherwise, we just return the focusOnHide function so it's going to
-      // be executed when the Dialog component gets unmounted. This is useful
-      // so we can support both mounting and unmounting Dialog components.
+      // Otherwise, we just return the focusOnHide function so it's going to be
+      // executed when the Dialog component gets unmounted. This is useful so we
+      // can support both mounting and unmounting Dialog components.
       return focusOnHide;
     }, [open, mayAutoFocusOnHide, finalFocusRef, autoFocusOnHideProp]);
 
@@ -507,7 +506,7 @@ export const useDialog = createHook<DialogOptions>(
 );
 
 /**
- * A component that renders a dialog element.
+ * Renders a dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -525,95 +524,93 @@ if (process.env.NODE_ENV !== "production") {
   Dialog.displayName = "Dialog";
 }
 
-export type DialogOptions<T extends As = "div"> = FocusableOptions<T> &
-  PortalOptions<T> &
-  Omit<DisclosureContentOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useDialogStore` hook.
-     */
-    store: DialogStore;
-    /**
-     * Determines whether the dialog is modal. Modal dialogs have distinct
-     * states and behaviors:
-     *   - The `portal`, `backdrop` and `preventBodyScroll` props are set to
-     *     `true`. They can still be manually set to `false`.
-     *   - A visually hidden dismiss button will be rendered if the
-     *     `DialogDismiss` component hasn't been used. This allows screen reader
-     *     users to close the dialog.
-     *   - The focus will be trapped within the dialog.
-     *   - When the dialog is open, the elements outside of the dialog will be
-     *     hidden to assistive technology users using the `aria-hidden`
-     *     attribute.
-     *   - When using the `Heading` or `DialogHeading` components within the
-     *     dialog, their level will be reset so they start with `h1`.
-     * @default true
-     */
-    modal?: boolean;
-    /**
-     * Determines whether there will be a backdrop behind the dialog. On modal
-     * dialogs, this is `true` by default. Besides a `boolean`, this prop can
-     * also be a React component that will be rendered as the backdrop.
-     * @example
-     * ```jsx
-     * <Dialog backdrop={StyledBackdrop} />
-     * ```
-     */
-    backdrop?: boolean | ElementType<ComponentProps<"div">>;
-    /**
-     * Props that will be passed to the backdrop element if `backdrop` is
-     * `true`.
-     */
-    backdropProps?: Omit<DisclosureContentProps, "store">;
-    /**
-     * Determines whether the dialog will be hidden when the user presses the
-     * Escape key.
-     * @default true
-     */
-    hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
-    /**
-     * Determines whether the dialog will be hidden when the user clicks or
-     * focus on an element outside of the dialog.
-     * @default true
-     */
-    hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
-    /**
-     * Determines whether the body scrolling will be prevented when the dialog
-     * is shown.
-     */
-    preventBodyScroll?: boolean;
-    /**
-     * Determines whether an element inside the dialog will receive focus when
-     * the dialog is shown. By default, this is usually the first tabbable
-     * element in the dialog or the dialog itself. The `initialFocusRef` prop
-     * can be used to set a different element to receive focus.
-     * @default true
-     */
-    autoFocusOnShow?: BooleanOrCallback<HTMLElement>;
-    /**
-     * Determines whether an element outside of the dialog will be focused when
-     * the dialog is hidden if another element hasn't been focused in the action
-     * of hiding the dialog (for example, by clicking or tabbing into another
-     * tabbable element outside of the dialog). By default, this is usually the
-     * disclosure element. The `finalFocusRef` prop can be used to define a
-     * different element to be focused.
-     * @default true
-     */
-    autoFocusOnHide?: BooleanOrCallback<HTMLElement>;
-    /**
-     * Determines which element will receive focus when the dialog is shown.
-     * This has no effect if `autoFocusOnShow` is `false`. If not set, the first
-     * tabbable element inside the dialog or the dialog itself will receive
-     * focus.
-     */
-    initialFocusRef?: RefObject<HTMLElement>;
-    /**
-     * Determines which element will receive focus when the dialog is hidden if
-     * another element hasn't been focused in the action of hiding the dialog
-     * (for example, by clicking or tabbing into another tabbable element
-     * outside of the dialog). This has no effect if `autoFocusOnHide` is
-     * `false`. If not set, the disclosure element will be used.
-     */
-    finalFocusRef?: RefObject<HTMLElement>;
-  };
+export interface DialogOptions<T extends As = "div">
+  extends FocusableOptions<T>,
+    PortalOptions<T>,
+    DisclosureContentOptions<T> {
+  /**
+   * Object returned by the `useDialogStore` hook.
+   */
+  store: DialogStore;
+  /**
+   * Determines whether the dialog is modal. Modal dialogs have distinct states
+   * and behaviors:
+   *   - The `portal`, `backdrop` and `preventBodyScroll` props are set to
+   *     `true`. They can still be manually set to `false`.
+   *   - A visually hidden dismiss button will be rendered if the
+   *     `DialogDismiss` component hasn't been used. This allows screen reader
+   *     users to close the dialog.
+   *   - The focus will be trapped within the dialog.
+   *   - When the dialog is open, the elements outside of the dialog will be
+   *     hidden to assistive technology users using the `aria-hidden` attribute.
+   *   - When using the `Heading` or `DialogHeading` components within the
+   *     dialog, their level will be reset so they start with `h1`.
+   * @default true
+   */
+  modal?: boolean;
+  /**
+   * Determines whether there will be a backdrop behind the dialog. On modal
+   * dialogs, this is `true` by default. Besides a `boolean`, this prop can also
+   * be a React component that will be rendered as the backdrop.
+   * @example
+   * ```jsx
+   * <Dialog backdrop={StyledBackdrop} />
+   * ```
+   */
+  backdrop?: boolean | ElementType<ComponentProps<"div">>;
+  /**
+   * Props that will be passed to the backdrop element if `backdrop` is `true`.
+   */
+  backdropProps?: Omit<DisclosureContentProps, "store">;
+  /**
+   * Determines whether the dialog will be hidden when the user presses the
+   * Escape key.
+   * @default true
+   */
+  hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
+  /**
+   * Determines whether the dialog will be hidden when the user clicks or focus
+   * on an element outside of the dialog.
+   * @default true
+   */
+  hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
+  /**
+   * Determines whether the body scrolling will be prevented when the dialog is
+   * shown.
+   */
+  preventBodyScroll?: boolean;
+  /**
+   * Determines whether an element inside the dialog will receive focus when the
+   * dialog is shown. By default, this is usually the first tabbable element in
+   * the dialog or the dialog itself. The `initialFocusRef` prop can be used to
+   * set a different element to receive focus.
+   * @default true
+   */
+  autoFocusOnShow?: BooleanOrCallback<HTMLElement>;
+  /**
+   * Determines whether an element outside of the dialog will be focused when
+   * the dialog is hidden if another element hasn't been focused in the action
+   * of hiding the dialog (for example, by clicking or tabbing into another
+   * tabbable element outside of the dialog). By default, this is usually the
+   * disclosure element. The `finalFocusRef` prop can be used to define a
+   * different element to be focused.
+   * @default true
+   */
+  autoFocusOnHide?: BooleanOrCallback<HTMLElement>;
+  /**
+   * Determines which element will receive focus when the dialog is shown. This
+   * has no effect if `autoFocusOnShow` is `false`. If not set, the first
+   * tabbable element inside the dialog or the dialog itself will receive focus.
+   */
+  initialFocusRef?: RefObject<HTMLElement>;
+  /**
+   * Determines which element will receive focus when the dialog is hidden if
+   * another element hasn't been focused in the action of hiding the dialog (for
+   * example, by clicking or tabbing into another tabbable element outside of
+   * the dialog). This has no effect if `autoFocusOnHide` is `false`. If not
+   * set, the disclosure element will be used.
+   */
+  finalFocusRef?: RefObject<HTMLElement>;
+}
 
 export type DialogProps<T extends As = "div"> = Props<DialogOptions<T>>;

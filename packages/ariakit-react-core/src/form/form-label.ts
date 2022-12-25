@@ -27,12 +27,11 @@ function supportsNativeLabel(tagName?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label for a form field. If the field is not a
- * native input, select or textarea element, the hook will return props to
- * render a `span` element. Instead of relying on the `htmlFor` prop, it'll rely
- * on the `aria-labelledby` attribute on the form field. Clicking on the label
- * will move focus to the field even if it's not a native input.
+ * Returns props to create a `FormLabel` component. If the field is not a native
+ * input, select or textarea element, the hook will return props to render a
+ * `span` element. Instead of relying on the `htmlFor` prop, it'll rely on the
+ * `aria-labelledby` attribute on the form field. Clicking on the label will
+ * move focus to the field even if it's not a native input.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -118,11 +117,11 @@ export const useFormLabel = createHook<FormLabelOptions>(
 );
 
 /**
- * A component that renders a label for a form field. If the field is not a
- * native input, select or textarea element, the component will render a `span`
- * element. Instead of relying on the `htmlFor` prop, it'll rely on the
- * `aria-labelledby` attribute on the form field. Clicking on the label will
- * move focus to the field even if it's not a native input.
+ * Renders a label for a form field. If the field is not a native input, select
+ * or textarea element, the component will render a `span` element. Instead of
+ * relying on the `htmlFor` prop, it'll rely on the `aria-labelledby` attribute
+ * on the form field. Clicking on the label will move focus to the field even if
+ * it's not a native input.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -142,10 +141,8 @@ if (process.env.NODE_ENV !== "production") {
   FormLabel.displayName = "FormLabel";
 }
 
-export type FormLabelOptions<T extends As = "label"> = Omit<
-  CollectionItemOptions<T>,
-  "store"
-> & {
+export interface FormLabelOptions<T extends As = "label">
+  extends CollectionItemOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
@@ -155,6 +152,6 @@ export type FormLabelOptions<T extends As = "label"> = Omit<
    * Name of the field.
    */
   name: StringLike;
-};
+}
 
 export type FormLabelProps<T extends As = "label"> = Props<FormLabelOptions<T>>;

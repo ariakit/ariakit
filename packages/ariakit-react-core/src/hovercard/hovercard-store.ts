@@ -19,6 +19,16 @@ export function useHovercardStoreProps<T extends HovercardStore>(
   return usePopoverStoreProps(store, props);
 }
 
+/**
+ * Creates a hovercard store.
+ * @see https://ariakit.org/components/hovercard
+ * @example
+ * ```jsx
+ * const hovercard = useHovercardStore({ placement: "top" });
+ * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
+ * <Hovercard store={hovercard}>Details</Hovercard>
+ * ```
+ */
 export function useHovercardStore(
   props: HovercardStoreProps = {}
 ): HovercardStore {
@@ -29,13 +39,17 @@ export function useHovercardStore(
   return useHovercardStoreProps(store, props);
 }
 
-export type HovercardStoreState = Core.HovercardStoreState & PopoverStoreState;
+export interface HovercardStoreState
+  extends Core.HovercardStoreState,
+    PopoverStoreState {}
 
-export type HovercardStoreFunctions = Core.HovercardStoreFunctions &
-  PopoverStoreFunctions;
+export interface HovercardStoreFunctions
+  extends Core.HovercardStoreFunctions,
+    PopoverStoreFunctions {}
 
-export type HovercardStoreOptions = Core.HovercardStoreOptions &
-  PopoverStoreOptions;
+export interface HovercardStoreOptions
+  extends Core.HovercardStoreOptions,
+    PopoverStoreOptions {}
 
 export type HovercardStoreProps = HovercardStoreOptions &
   Core.HovercardStoreProps;

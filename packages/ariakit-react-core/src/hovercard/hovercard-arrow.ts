@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow element in a hovercard.
+ * Returns props to create a `HovercardArrow` component.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -23,7 +22,7 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>((props) => {
 });
 
 /**
- * A component that renders an arrow element in a hovercard.
+ * Renders an arrow element in a hovercard.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -46,16 +45,14 @@ if (process.env.NODE_ENV !== "production") {
   HovercardArrow.displayName = "HovercardArrow";
 }
 
-export type HovercardArrowOptions<T extends As = "div"> = Omit<
-  PopoverArrowOptions<T>,
-  "store"
-> & {
+export interface HovercardArrowOptions<T extends As = "div">
+  extends PopoverArrowOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook. If not provided, the
    * parent `Hovercard` component's context will be used.
    */
   store?: HovercardStore;
-};
+}
 
 export type HovercardArrowProps<T extends As = "div"> = Props<
   HovercardArrowOptions<T>

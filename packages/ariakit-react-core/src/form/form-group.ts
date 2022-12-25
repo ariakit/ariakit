@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { FormStore } from "./form-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form group.
+ * Returns props to create a `FormGroup` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -26,7 +25,7 @@ export const useFormGroup = createHook<FormGroupOptions>(
 );
 
 /**
- * A component that renders a form group.
+ * Renders a form group.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -56,12 +55,13 @@ if (process.env.NODE_ENV !== "production") {
   FormGroup.displayName = "FormGroup";
 }
 
-export type FormGroupOptions<T extends As = "div"> = GroupOptions<T> & {
+export interface FormGroupOptions<T extends As = "div">
+  extends GroupOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
    */
   store?: FormStore;
-};
+}
 
 export type FormGroupProps<T extends As = "div"> = Props<FormGroupOptions<T>>;

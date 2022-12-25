@@ -13,8 +13,7 @@ import { MenuItemOptions, useMenuItem } from "./menu-item";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu item checkbox inside a menu.
+ * Returns props to create a `MenuItemCheckbox` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -55,7 +54,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
 );
 
 /**
- * A component that renders a menu item checkbox inside a menu.
+ * Renders a menu item checkbox inside a menu.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -77,26 +76,23 @@ if (process.env.NODE_ENV !== "production") {
   MenuItemCheckbox.displayName = "MenuItemCheckbox";
 }
 
-export type MenuItemCheckboxOptions<T extends As = "div"> = Omit<
-  MenuItemOptions<T>,
-  "store" | "hideOnClick"
-> &
-  Omit<CheckboxOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useMenuStore` hook. If not provided, the parent
-     * `Menu` component's context will be used.
-     */
-    store?: MenuStore;
-    /**
-     * MenuItemCheckbox's name as in `menu.values`.
-     */
-    name: string;
-    /**
-     * Whether to hide the menu when the menu item checkbox is clicked.
-     * @default false
-     */
-    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
-  };
+export interface MenuItemCheckboxOptions<T extends As = "div">
+  extends MenuItemOptions<T>,
+    Omit<CheckboxOptions<T>, "store"> {
+  /**
+   * Object returned by the `useMenuStore` hook. If not provided, the parent
+   * `Menu` component's context will be used.
+   */
+  store?: MenuStore;
+  /**
+   * MenuItemCheckbox's name as in `menu.values`.
+   */
+  name: string;
+  /**
+   * @default false
+   */
+  hideOnClick?: MenuItemOptions<T>["hideOnClick"];
+}
 
 export type MenuItemCheckboxProps<T extends As = "div"> = Props<
   MenuItemCheckboxOptions<T>

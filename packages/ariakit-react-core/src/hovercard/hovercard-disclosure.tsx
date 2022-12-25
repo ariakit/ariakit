@@ -17,11 +17,7 @@ import { useVisuallyHidden } from "../visually-hidden/visually-hidden";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a hidden disclosure button that will be visible
- * when the hovercard anchor element (`HovercardAnchor`) receives keyboard
- * focus. The user can then navigate to the button to open the hovercard when
- * using the keyboard.
+ * Returns props to create a `HovercardDisclosure` component.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -144,10 +140,9 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
 );
 
 /**
- * A component that renders a hidden disclosure button that will be visible when
- * the hovercard anchor element (`HovercardAnchor`) receives keyboard focus. The
- * user can then navigate to the button to open the hovercard when using the
- * keyboard.
+ * Renders a hidden disclosure button that will be visible when the hovercard
+ * anchor element (`HovercardAnchor`) receives keyboard focus. The user can then
+ * navigate to the button to open the hovercard when using the keyboard.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -168,15 +163,13 @@ if (process.env.NODE_ENV !== "production") {
   HovercardDisclosure.displayName = "HovercardDisclosure";
 }
 
-export type HovercardDisclosureOptions<T extends As = "button"> = Omit<
-  DialogDisclosureOptions<T>,
-  "store"
-> & {
+export interface HovercardDisclosureOptions<T extends As = "button">
+  extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook.
    */
   store: HovercardStore;
-};
+}
 
 export type HovercardDisclosureProps<T extends As = "button"> = Props<
   HovercardDisclosureOptions<T>

@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a description element for a hovercard. This hook
- * must be used in a component that's wrapped with `Hovercard` so the
- * `aria-describedby` prop is properly set on the hovercard element.
+ * Returns props to create a `HovercardDescription` component. This hook must be
+ * used in a component that's wrapped with `Hovercard` so the `aria-describedby`
+ * prop is properly set on the hovercard element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -27,9 +26,9 @@ export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
 );
 
 /**
- * A component that renders a description in a hovercard. This component must be
- * wrapped with `Hovercard` so the `aria-describedby` prop is properly set on
- * the hovercard element.
+ * Renders a description in a hovercard. This component must be wrapped with
+ * `Hovercard` so the `aria-describedby` prop is properly set on the hovercard
+ * element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -49,16 +48,14 @@ if (process.env.NODE_ENV !== "production") {
   HovercardDescription.displayName = "HovercardDescription";
 }
 
-export type HovercardDescriptionOptions<T extends As = "p"> = Omit<
-  PopoverDescriptionOptions<T>,
-  "store"
-> & {
+export interface HovercardDescriptionOptions<T extends As = "p">
+  extends PopoverDescriptionOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook. If not provided, the
    * parent `Hovercard` component's context will be used.
    */
   store?: HovercardStore;
-};
+}
 
 export type HovercardDescriptionProps<T extends As = "p"> = Props<
   HovercardDescriptionOptions<T>

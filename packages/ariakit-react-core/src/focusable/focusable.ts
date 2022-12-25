@@ -116,8 +116,8 @@ function getTabIndex(
   }
   if (trulyDisabled) {
     if (nativeTabbable && !supportsDisabled) {
-      // Anchor, audio and video tags don't support the `disabled` attribute.
-      // We must pass tabIndex={-1} so they don't receive focus on tab.
+      // Anchor, audio and video tags don't support the `disabled` attribute. We
+      // must pass tabIndex={-1} so they don't receive focus on tab.
       return -1;
     }
     // Elements that support the `disabled` attribute don't need tabIndex.
@@ -128,8 +128,8 @@ function getTabIndex(
     // specify a tabIndex attribute unless it's explicitly set by the user.
     return tabIndexProp;
   }
-  // If the element is enabled and is not natively tabbable, we have to
-  // fallback tabIndex={0}.
+  // If the element is enabled and is not natively tabbable, we have to fallback
+  // tabIndex={0}.
   return tabIndexProp || 0;
 }
 
@@ -168,8 +168,7 @@ function onGlobalKeyDown(event: KeyboardEvent) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that can be focused.
+ * Returns props to create a `Focusable` component.
  * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
@@ -421,7 +420,7 @@ export const useFocusable = createHook<FocusableOptions>(
 );
 
 /**
- * A component that renders an element that can be focused.
+ * Renders an element that can be focused.
  * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
@@ -437,7 +436,7 @@ if (process.env.NODE_ENV !== "production") {
   Focusable.displayName = "Focusable";
 }
 
-export type FocusableOptions<T extends As = "div"> = Options<T> & {
+export interface FocusableOptions<T extends As = "div"> extends Options<T> {
   /**
    * Determines whether the focusable element is disabled. If the focusable
    * element doesn't support the native `disabled` attribute, the
@@ -447,8 +446,8 @@ export type FocusableOptions<T extends As = "div"> = Options<T> & {
   disabled?: boolean;
   /**
    * Automatically focus the element when it is mounted. It works similarly to
-   * the native `autoFocus` prop, but solves an issue where the element is
-   * given focus before React effects can run.
+   * the native `autoFocus` prop, but solves an issue where the element is given
+   * focus before React effects can run.
    * @default false
    */
   autoFocus?: boolean;
@@ -478,6 +477,6 @@ export type FocusableOptions<T extends As = "div"> = Options<T> & {
    * keyboard or when a key is pressed while the element is focused.
    */
   onFocusVisible?: BivariantCallback<(event: SyntheticEvent) => void>;
-};
+}
 
 export type FocusableProps<T extends As = "div"> = Props<FocusableOptions<T>>;

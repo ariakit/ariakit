@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu group.
+ * Returns props to create a `MenuGroup` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -30,7 +29,7 @@ export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
 });
 
 /**
- * A component that renders a menu group.
+ * Renders a menu group inside a menu.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -54,14 +53,12 @@ if (process.env.NODE_ENV !== "production") {
   MenuGroup.displayName = "MenuGroup";
 }
 
-export type MenuGroupOptions<T extends As = "div"> = Omit<
-  CompositeGroupOptions<T>,
-  "store"
-> & {
+export interface MenuGroupOptions<T extends As = "div">
+  extends CompositeGroupOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuGroupProps<T extends As = "div"> = Props<MenuGroupOptions<T>>;

@@ -16,9 +16,7 @@ import { FormContext } from "./form-context";
 import { FormStore } from "./form-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that displays an error message. The
- * `children` will be automatically set to the error message set on the store.
+ * Returns props to create a `FormDescription` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -86,8 +84,8 @@ export const useFormError = createHook<FormErrorOptions>(
 );
 
 /**
- * A component that renders an element that displays an error message. The
- * `children` will be automatically set to the error message set on the store.
+ * Renders an element that displays an error message. The `children` will be
+ * automatically set to the error message set on the store.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -115,10 +113,8 @@ if (process.env.NODE_ENV !== "production") {
   FormError.displayName = "FormError";
 }
 
-export type FormErrorOptions<T extends As = "div"> = Omit<
-  CollectionItemOptions<T>,
-  "store"
-> & {
+export interface FormErrorOptions<T extends As = "div">
+  extends CollectionItemOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
@@ -128,6 +124,6 @@ export type FormErrorOptions<T extends As = "div"> = Omit<
    * Name of the field.
    */
   name: StringLike;
-};
+}
 
 export type FormErrorProps<T extends As = "div"> = Props<FormErrorOptions<T>>;

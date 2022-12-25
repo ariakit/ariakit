@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label in a menu group. This hook must be used
- * in a component that's wrapped with `MenuGroup` so the `aria-labelledby`
- * prop is properly set on the menu group element.
+ * Returns props to create a `MenuGroupLabel` component. This hook must be used
+ * in a component that's wrapped with `MenuGroup` so the `aria-labelledby` prop
+ * is properly set on the menu group element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -25,9 +24,9 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
 });
 
 /**
- * A component that renders a label in a menu group. This component must be
- * wrapped with `MenuGroup` so the `aria-labelledby` prop is properly set
- * on the menu group element.
+ * Renders a label in a menu group. This component must be wrapped with
+ * `MenuGroup` so the `aria-labelledby` prop is properly set on the menu group
+ * element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -53,15 +52,13 @@ if (process.env.NODE_ENV !== "production") {
   MenuGroupLabel.displayName = "MenuGroupLabel";
 }
 
-export type MenuGroupLabelOptions<T extends As = "div"> = Omit<
-  CompositeGroupLabelOptions<T>,
-  "store"
-> & {
+export interface MenuGroupLabelOptions<T extends As = "div">
+  extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuGroupLabelProps<T extends As = "div"> = Props<
   MenuGroupLabelOptions<T>

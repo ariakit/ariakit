@@ -37,8 +37,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu list element.
+ * Returns props to create a `MenuList` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -155,7 +154,7 @@ export const useMenuList = createHook<MenuListOptions>(
 );
 
 /**
- * A component that renders a menu list element.
+ * Renders a menu list element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -176,15 +175,13 @@ if (process.env.NODE_ENV !== "production") {
   MenuList.displayName = "MenuList";
 }
 
-export type MenuListOptions<T extends As = "div"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> &
-  Omit<CompositeTypeaheadOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useMenuStore` hook.
-     */
-    store: MenuStore;
-  };
+export interface MenuListOptions<T extends As = "div">
+  extends CompositeOptions<T>,
+    CompositeTypeaheadOptions<T> {
+  /**
+   * Object returned by the `useMenuStore` hook.
+   */
+  store: MenuStore;
+}
 
 export type MenuListProps<T extends As = "div"> = Props<MenuListOptions<T>>;

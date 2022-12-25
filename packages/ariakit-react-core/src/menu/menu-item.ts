@@ -25,8 +25,7 @@ import { MenuStore } from "./menu-store";
 import { hasExpandedMenuButton } from "./utils";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu item.
+ * Returns props to create a `MenuItem` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -125,7 +124,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
 );
 
 /**
- * A component that renders a menu item.
+ * Renders a menu item.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -146,28 +145,24 @@ if (process.env.NODE_ENV !== "production") {
   MenuItem.displayName = "MenuItem";
 }
 
-export type MenuItemOptions<T extends As = "div"> = Omit<
-  CompositeItemOptions<T>,
-  "store" | "preventScrollOnKeyDown"
-> &
-  Omit<CompositeHoverOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useMenuBarStore` or `useMenuStore` hooks. If not
-     * provided, the parent `Menu` or `MenuBar` components' context will be
-     * used.
-     */
-    store?: MenuBarStore | MenuStore;
-    /**
-     * Whether to hide the menu when the menu item is clicked.
-     * @default true
-     */
-    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last items.
-     * @default true
-     */
-    preventScrollOnKeyDown?: CompositeItemOptions["preventScrollOnKeyDown"];
-  };
+export interface MenuItemOptions<T extends As = "div">
+  extends CompositeItemOptions<T>,
+    CompositeHoverOptions<T> {
+  /**
+   * Object returned by the `useMenuBarStore` or `useMenuStore` hooks. If not
+   * provided, the parent `Menu` or `MenuBar` components' context will be
+   * used.
+   */
+  store?: MenuBarStore | MenuStore;
+  /**
+   * Whether to hide the menu when the menu item is clicked.
+   * @default true
+   */
+  hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * @default true
+   */
+  preventScrollOnKeyDown?: CompositeItemOptions<T>["preventScrollOnKeyDown"];
+}
 
 export type MenuItemProps<T extends As = "div"> = Props<MenuItemOptions<T>>;

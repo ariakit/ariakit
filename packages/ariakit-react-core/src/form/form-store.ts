@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import * as Core from "@ariakit/core/form/form-store";
 import { StringLike } from "@ariakit/core/form/types";
+import { PickRequired } from "@ariakit/core/utils/types";
 import {
   CollectionStoreFunctions,
   CollectionStoreOptions,
@@ -49,16 +50,29 @@ export function useFormStoreProps<
   );
 }
 
+/**
+ * Creates a form store.
+ * @example
+ * ```jsx
+ * const form = useFormStore({ defaultValues: { email: "" } });
+ * <Form store={form}>
+ *   <FormLabel name={form.names.email}>Email</FormLabel>
+ *   <FormInput name={form.names.email} />
+ *   <FormError name={form.names.email} />
+ *   <FormSubmit>Submit</FormSubmit>
+ * </Form>
+ * ```
+ */
 export function useFormStore<T extends Values = Values>(
-  props: FormStoreProps<T> &
-    (
-      | Required<Pick<FormStoreProps<T>, "values">>
-      | Required<Pick<FormStoreProps<T>, "defaultValues">>
-      | Required<Pick<FormStoreProps<T>, "errors">>
-      | Required<Pick<FormStoreProps<T>, "defaultErrors">>
-      | Required<Pick<FormStoreProps<T>, "touched">>
-      | Required<Pick<FormStoreProps<T>, "defaultTouched">>
-    )
+  props: PickRequired<
+    FormStoreProps<T>,
+    | "values"
+    | "defaultValues"
+    | "errors"
+    | "defaultErrors"
+    | "touched"
+    | "defaultTouched"
+  >
 ): FormStore<T>;
 
 export function useFormStore(props: FormStoreProps): FormStore;
@@ -71,49 +85,79 @@ export function useFormStore(props: FormStoreProps = {}): FormStore {
 
 export type FormStoreItem = Item;
 
-export type FormStoreState<T extends Values = Values> = Core.FormStoreState<T> &
-  CollectionStoreState<Item>;
+export interface FormStoreState<T extends Values = Values>
+  extends Core.FormStoreState<T>,
+    CollectionStoreState<Item> {}
 
-export type FormStoreFunctions<T extends Values = Values> =
-  Core.FormStoreFunctions<T> &
-    CollectionStoreFunctions<Item> & {
-      useValue: <T = any>(name: StringLike) => T;
-      useValidate: (callback: Core.FormStoreCallback) => void;
-      useSubmit: (callback: Core.FormStoreCallback) => void;
-    };
+export interface FormStoreFunctions<T extends Values = Values>
+  extends Core.FormStoreFunctions<T>,
+    CollectionStoreFunctions<Item> {
+  /**
+   * A custom hook that rerenders the component when the value of the given
+   * field changes. It returns the value of the field.
+   * @param name The name of the field.
+   * @example
+   * const nameValue = store.useValue("name");
+   * // Can also use store.names for type-safety.
+   * const emailValue = store.useValue(store.names.email);
+   */
+  useValue: <T = any>(name: StringLike) => T;
+  /**
+   * Custom hook that accepts a callback that will be used to validate the form
+   * when `form.validate` is called.
+   * @param callback The callback that receives the form state as argument.
+   * @example
+   * store.useValidate(async (state) => {
+   *   const errors = await api.validate(state.values);
+   *   if (errors) {
+   *     store.setErrors(errors);
+   *   }
+   * });
+   */
+  useValidate: (callback: Core.FormStoreCallback) => void;
+  /**
+   * Custom hook that accepts a callback that will be used to submit the form
+   * when `form.submit` is called.
+   * @param callback The callback that receives the form state as argument.
+   * @example
+   * store.useSubmit(async (state) => {
+   *   try {
+   *     await api.submit(state.values);
+   *   } catch (errors) {
+   *     store.setErrors(errors);
+   *   }
+   * });
+   */
+  useSubmit: (callback: Core.FormStoreCallback) => void;
+}
 
-export type FormStoreOptions<T extends Values = Values> =
-  Core.FormStoreOptions<T> &
-    CollectionStoreOptions<Item> & {
-      /**
-       * Function that will be called when setting the form `values` state.
-       * @example
-       * // Uncontrolled example
-       * useFormStore({ setValues: (values) => console.log(values) });
-       * @example
-       * // Controlled example
-       * const [values, setValues] = useState({});
-       * useFormStore({ values, setValues });
-       * @example
-       * // Externally controlled example
-       * function MyForm({ values, onChange }) {
-       *   const form = useFormStore({ values, setValues: onChange });
-       * }
-       */
-      setValues?: (values: FormStoreState<T>["values"]) => void;
-      /**
-       * Function that will be called when setting the form `errors` state.
-       * @example
-       * useFormStore({ setErrors: (errors) => console.log(errors) });
-       */
-      setErrors?: (errors: FormStoreState<T>["errors"]) => void;
-      /**
-       * Function that will be called when setting the form `touched` state.
-       * @example
-       * useFormStore({ setTouched: (touched) => console.log(touched) });
-       */
-      setTouched?: (touched: FormStoreState<T>["touched"]) => void;
-    };
+export interface FormStoreOptions<T extends Values = Values>
+  extends Core.FormStoreOptions<T>,
+    CollectionStoreOptions<Item> {
+  /**
+   * Function that will be called when `values` state changes.
+   * @param values The new values.
+   * @example
+   * function MyForm({ values, onChange }) {
+   *   const form = useFormStore({ values, setValues: onChange });
+   * }
+   */
+  setValues?: (values: FormStoreState<T>["values"]) => void;
+  /**
+   * Function that will be called when the `errors` state changes.
+   * @param errors The new errors.
+   * @example
+   * useFormStore({ setErrors: (errors) => console.log(errors) });
+   */
+  setErrors?: (errors: FormStoreState<T>["errors"]) => void;
+  /**
+   * Function that will be called when the `touched` state changes.
+   * @param touched The new touched state.
+   * @example
+   * useFormStore({ setTouched: (touched) => console.log(touched) });
+   */
+  setTouched?: (touched: FormStoreState<T>["touched"]) => void;
+}
 
 export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
   Core.FormStoreProps<T>;

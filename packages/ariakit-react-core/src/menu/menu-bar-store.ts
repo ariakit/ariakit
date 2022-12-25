@@ -19,6 +19,15 @@ export function useMenuBarStoreProps<T extends MenuBarStore>(
   return useCompositeStoreProps(store, props);
 }
 
+/**
+ * Creates a menu bar store.
+ * @see https://ariakit.org/components/menu
+ * @example
+ * ```jsx
+ * const menu = useMenuBarStore();
+ * <MenuBar store={menu} />
+ * ```
+ */
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
   const options = useMenuBarStoreOptions(props);
   const store = useStore(() =>
@@ -27,13 +36,17 @@ export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
   return useMenuBarStoreProps(store, props);
 }
 
-export type MenuBarStoreState = Core.MenuBarStoreState & CompositeStoreState;
+export interface MenuBarStoreState
+  extends Core.MenuBarStoreState,
+    CompositeStoreState {}
 
-export type MenuBarStoreFunctions = Core.MenuBarStoreFunctions &
-  CompositeStoreFunctions;
+export interface MenuBarStoreFunctions
+  extends Core.MenuBarStoreFunctions,
+    CompositeStoreFunctions {}
 
-export type MenuBarStoreOptions = Core.MenuBarStoreOptions &
-  CompositeStoreOptions;
+export interface MenuBarStoreOptions
+  extends Core.MenuBarStoreOptions,
+    CompositeStoreOptions {}
 
 export type MenuBarStoreProps = MenuBarStoreOptions & Core.MenuBarStoreProps;
 

@@ -7,13 +7,13 @@ import {
 import { useMemo } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { noop } from "@ariakit/core/utils/misc";
+import { useDisclosureContent } from "../disclosure/disclosure-content";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
-import { useDisclosureContent } from "../disclosure/disclosure-content";
+} from "../utils/hooks";
 import { DialogProps } from "./dialog";
 import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref";
 
@@ -44,7 +44,7 @@ export function DialogBackdrop({
     () => ({
       ...store,
       // Override the setContentElement method to prevent the backdrop from
-      // overwriting the dialog's content element.
+      // overwriting the dialog's content element. TODO: Refactor this.
       setContentElement: noop,
     }),
     [store]

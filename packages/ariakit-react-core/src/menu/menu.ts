@@ -17,8 +17,7 @@ import { MenuBarContext, MenuContext } from "./menu-context";
 import { MenuListOptions, useMenuList } from "./menu-list";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a dropdown menu element.
+ * Returns props to create a `Menu` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -178,7 +177,7 @@ export const useMenu = createHook<MenuOptions>(
 );
 
 /**
- * A component that renders a dropdown menu element.
+ * Renders a dropdown menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -199,7 +198,8 @@ if (process.env.NODE_ENV !== "production") {
   Menu.displayName = "Menu";
 }
 
-export type MenuOptions<T extends As = "div"> = MenuListOptions<T> &
-  Omit<HovercardOptions<T>, "store">;
+export interface MenuOptions<T extends As = "div">
+  extends MenuListOptions<T>,
+    Omit<HovercardOptions<T>, "store"> {}
 
 export type MenuProps<T extends As = "div"> = Props<MenuOptions<T>>;

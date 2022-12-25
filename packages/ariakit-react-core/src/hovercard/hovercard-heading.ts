@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a heading element for a hovercard. This hook must
- * be used in a component that's wrapped with `Hovercard` so the
- * `aria-labelledby` prop is properly set on the hovercard element.
+ * Returns props to create a `HovercardHeading` component. This hook must be
+ * used in a component that's wrapped with `Hovercard` so the `aria-labelledby`
+ * prop is properly set on the hovercard element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -27,9 +26,9 @@ export const useHovercardHeading = createHook<HovercardHeadingOptions>(
 );
 
 /**
- * A component that renders a heading in a hovercard. This component must be
- * wrapped with `Hovercard` so the `aria-labelledby` prop is properly set on the
- * hovercard element.
+ * Renders a heading in a hovercard. This component must be wrapped with
+ * `Hovercard` so the `aria-labelledby` prop is properly set on the hovercard
+ * element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -50,16 +49,14 @@ if (process.env.NODE_ENV !== "production") {
   HovercardHeading.displayName = "HovercardHeading";
 }
 
-export type HovercardHeadingOptions<T extends As = "h1"> = Omit<
-  PopoverHeadingOptions<T>,
-  "store"
-> & {
+export interface HovercardHeadingOptions<T extends As = "h1">
+  extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook. If not provided, the
    * parent `Hovercard` component's context will be used.
    */
   store?: HovercardStore;
-};
+}
 
 export type HovercardHeadingProps<T extends As = "h1"> = Props<
   HovercardHeadingOptions<T>

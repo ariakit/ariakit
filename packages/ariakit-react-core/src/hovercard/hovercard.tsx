@@ -132,10 +132,7 @@ const NestedHovercardContext = createContext<
 >(null);
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a hovercard element, which is a popover that's
- * usually made visible by hovering the mouse cursor over an anchor element
- * (`HovercardAnchor`).
+ * Returns props to create a `Hovercard` component.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -352,9 +349,8 @@ export const useHovercard = createHook<HovercardOptions>(
 );
 
 /**
- * A component that renders a hovercard element, which is a popover that's
- * usually made visible by hovering the mouse cursor over an anchor element
- * (`HovercardAnchor`).
+ * Renders a hovercard element, which is a popover that's usually made visible
+ * by hovering the mouse cursor over an anchor element (`HovercardAnchor`).
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -372,10 +368,8 @@ if (process.env.NODE_ENV !== "production") {
   Hovercard.displayName = "Hovercard";
 }
 
-export type HovercardOptions<T extends As = "div"> = Omit<
-  PopoverOptions<T>,
-  "store"
-> & {
+export interface HovercardOptions<T extends As = "div">
+  extends PopoverOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook.
    */
@@ -404,6 +398,10 @@ export type HovercardOptions<T extends As = "div"> = Omit<
    * @default true
    */
   disablePointerEventsOnApproach?: BooleanOrCallback<MouseEvent>;
-};
+  /**
+   * @default false
+   */
+  modal?: PopoverOptions<T>["modal"];
+}
 
 export type HovercardProps<T extends As = "div"> = Props<HovercardOptions<T>>;

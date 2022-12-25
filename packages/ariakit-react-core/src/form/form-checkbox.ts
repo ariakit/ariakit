@@ -12,8 +12,7 @@ import { FormContext } from "./form-context";
 import { FormFieldOptions, useFormField } from "./form-field";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a checkbox as a form field.
+ * Returns props to create a `FormCheckbox` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -59,7 +58,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
 );
 
 /**
- * A component that renders a checkbox as a form field.
+ * Renders a checkbox as a form field.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -83,8 +82,9 @@ if (process.env.NODE_ENV !== "production") {
   FormCheckbox.displayName = "FormCheckbox";
 }
 
-export type FormCheckboxOptions<T extends As = "input"> = FormFieldOptions<T> &
-  Omit<CheckboxOptions<T>, "store">;
+export interface FormCheckboxOptions<T extends As = "input">
+  extends FormFieldOptions<T>,
+    Omit<CheckboxOptions<T>, "store"> {}
 
 export type FormCheckboxProps<T extends As = "input"> = Props<
   FormCheckboxOptions<T>

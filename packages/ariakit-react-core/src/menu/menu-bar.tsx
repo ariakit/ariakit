@@ -6,9 +6,7 @@ import { MenuBarStore } from "./menu-bar-store";
 import { MenuBarContext } from "./menu-context";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu bar that may contain a group of menu items
- * that control other submenus.
+ * Returns props to create a `MenuBar` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -58,8 +56,8 @@ export const useMenuBar = createHook<MenuBarOptions>(
 );
 
 /**
- * A component that renders a menu bar that may contain a group of menu items
- * that control other submenus.
+ * Renders a menu bar that may contain a group of menu items that control other
+ * submenus.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -95,14 +93,12 @@ if (process.env.NODE_ENV !== "production") {
   MenuBar.displayName = "MenuBar";
 }
 
-export type MenuBarOptions<T extends As = "div"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> & {
+export interface MenuBarOptions<T extends As = "div">
+  extends CompositeOptions<T> {
   /**
    * Object returned by the `useMenuBarStore` hook.
    */
   store: MenuBarStore;
-};
+}
 
 export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;

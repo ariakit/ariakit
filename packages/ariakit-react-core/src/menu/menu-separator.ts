@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator for menu items.
+ * Returns props to create a `MenuSeparator` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -29,7 +28,7 @@ export const useMenuSeparator = createHook<MenuSeparatorOptions>((props) => {
 });
 
 /**
- * A component that renders a separator for menu items.
+ * Renders a separator for menu items.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -52,16 +51,14 @@ if (process.env.NODE_ENV !== "production") {
   MenuSeparator.displayName = "MenuSeparator";
 }
 
-export type MenuSeparatorOptions<T extends As = "hr"> = Omit<
-  CompositeSeparatorOptions<T>,
-  "store"
-> & {
+export interface MenuSeparatorOptions<T extends As = "hr">
+  extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook. If not provided, the parent
    * `Menu` component's context will be used.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuSeparatorProps<T extends As = "hr"> = Props<
   MenuSeparatorOptions<T>

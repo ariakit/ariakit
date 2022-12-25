@@ -13,8 +13,7 @@ import { MenuItemOptions, useMenuItem } from "./menu-item";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a menu item radio inside a menu.
+ * Returns props to create a `MenuItemRadio` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -84,7 +83,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
 );
 
 /**
- * A component that renders a menu item radio inside a menu.
+ * Renders a menu item radio inside a menu.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -111,26 +110,23 @@ if (process.env.NODE_ENV !== "production") {
   MenuItemRadio.displayName = "MenuItemRadio";
 }
 
-export type MenuItemRadioOptions<T extends As = "div"> = Omit<
-  MenuItemOptions<T>,
-  "hideOnClick"
-> &
-  Omit<RadioOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useMenuStore` hook. If not provided, the parent
-     * `Menu` component's context will be used.
-     */
-    store?: MenuStore;
-    /**
-     * MenuItemRadio's name as in `menu.values`.
-     */
-    name: string;
-    /**
-     * Whether to hide the menu when the menu item radio is clicked.
-     * @default false
-     */
-    hideOnClick?: MenuItemOptions<T>["hideOnClick"];
-  };
+export interface MenuItemRadioOptions<T extends As = "div">
+  extends MenuItemOptions<T>,
+    Omit<RadioOptions<T>, "store"> {
+  /**
+   * Object returned by the `useMenuStore` hook. If not provided, the parent
+   * `Menu` component's context will be used.
+   */
+  store?: MenuStore;
+  /**
+   * MenuItemRadio's name as in `menu.values`.
+   */
+  name: string;
+  /**
+   * @default false
+   */
+  hideOnClick?: MenuItemOptions<T>["hideOnClick"];
+}
 
 export type MenuItemRadioProps<T extends As = "div"> = Props<
   MenuItemRadioOptions<T>

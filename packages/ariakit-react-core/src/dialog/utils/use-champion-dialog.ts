@@ -1,10 +1,7 @@
 import { useCallback } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
-import {
-  useForceUpdate,
-  useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
 import { flushSync } from "react-dom";
+import { useForceUpdate, useSafeLayoutEffect } from "../../utils/hooks";
 import { DialogStore } from "../dialog-store";
 
 /**

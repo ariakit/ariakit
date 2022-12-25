@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a heading element for a menu. This hook must be
- * used in a component that's wrapped with `Menu` so the `aria-labelledby` prop
- * is properly set on the menu element.
+ * Returns props to create a `MenuHeading` component. This hook must be used in
+ * a component that's wrapped with `Menu` so the `aria-labelledby` prop is
+ * properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -25,9 +24,8 @@ export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
 });
 
 /**
- * A component that renders a heading in a menu. This component must be wrapped
- * with `Menu` so the `aria-labelledby` prop is properly set on the menu
- * element.
+ * Renders a heading in a menu. This component must be wrapped with `Menu` so
+ * the `aria-labelledby` prop is properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -46,16 +44,14 @@ if (process.env.NODE_ENV !== "production") {
   MenuHeading.displayName = "MenuHeading";
 }
 
-export type MenuHeadingOptions<T extends As = "h1"> = Omit<
-  HovercardHeadingOptions<T>,
-  "store"
-> & {
+export interface MenuHeadingOptions<T extends As = "h1">
+  extends HovercardHeadingOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook. If not provided, the parent
    * `Menu` component's context will be used.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuHeadingProps<T extends As = "h1"> = Props<
   MenuHeadingOptions<T>

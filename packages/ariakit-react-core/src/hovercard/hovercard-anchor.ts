@@ -1,6 +1,6 @@
 import { MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
-import { addGlobalEventListener } from "ariakit-utils/events";
-import { BooleanOrCallback } from "ariakit-utils/types";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   useBooleanEvent,
@@ -13,9 +13,7 @@ import { As, Props } from "../utils/types";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an anchor element that will open a popover
- * (`Hovercard`) on hover.
+ * Returns props to create a `HovercardAnchor` component.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -86,8 +84,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 );
 
 /**
- * A component that renders an anchor element that will open a popover
- * (`Hovercard`) on hover.
+ * Renders an anchor element that will open a popover (`Hovercard`) on hover.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -107,7 +104,8 @@ if (process.env.NODE_ENV !== "production") {
   HovercardAnchor.displayName = "HovercardAnchor";
 }
 
-export type HovercardAnchorOptions<T extends As = "a"> = FocusableOptions<T> & {
+export interface HovercardAnchorOptions<T extends As = "a">
+  extends FocusableOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook.
    */
@@ -117,7 +115,7 @@ export type HovercardAnchorOptions<T extends As = "a"> = FocusableOptions<T> & {
    * @default true
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
-};
+}
 
 export type HovercardAnchorProps<T extends As = "a"> = Props<
   HovercardAnchorOptions<T>

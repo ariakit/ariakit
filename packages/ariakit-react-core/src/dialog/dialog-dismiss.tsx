@@ -1,18 +1,13 @@
 import { MouseEvent, useContext, useMemo } from "react";
-import { useEvent } from "@ariakit/react-core/utils/hooks";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
 import { ButtonOptions, useButton } from "../button/button";
+import { useEvent } from "../utils/hooks";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Props } from "../utils/types";
 import { DialogContext } from "./dialog-context";
 import { DialogStore } from "./dialog-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that hides a dialog.
+ * Returns props to create a `DialogDismiss` component.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -71,7 +66,7 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
 );
 
 /**
- * A component that renders a button that hides a dialog.
+ * Renders a button that hides a dialog.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -90,12 +85,13 @@ if (process.env.NODE_ENV !== "production") {
   DialogDismiss.displayName = "DialogDismiss";
 }
 
-export type DialogDismissOptions<T extends As = "button"> = ButtonOptions<T> & {
+export interface DialogDismissOptions<T extends As = "button">
+  extends ButtonOptions<T> {
   /**
    * Object returned by the `useDialogStore` hook.
    */
   store?: DialogStore;
-};
+}
 
 export type DialogDismissProps<T extends As = "button"> = Props<
   DialogDismissOptions<T>

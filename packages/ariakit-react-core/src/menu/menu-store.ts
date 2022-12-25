@@ -71,6 +71,19 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
   );
 }
 
+/**
+ * Creates a menu store.
+ * @see https://ariakit.org/components/menu
+ * @example
+ * ```jsx
+ * const menu = useMenuStore({ placement: "top" });
+ * <MenuButton store={menu}>Edit</MenuButton>
+ * <Menu store={menu}>
+ *   <MenuItem>Undo</MenuItem>
+ *   <MenuItem>Redo</MenuItem>
+ * </Menu>
+ * ```
+ */
 export function useMenuStore<T extends Values = Values>(
   props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">
 ): MenuStore<T>;
@@ -85,25 +98,34 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
 
 export type MenuStoreValues = Core.MenuStoreValues;
 
-export type MenuStoreState<T extends Values = Values> = Core.MenuStoreState<T> &
-  CompositeStoreState &
-  HovercardStoreState;
+export interface MenuStoreState<T extends Values = Values>
+  extends Core.MenuStoreState<T>,
+    CompositeStoreState,
+    HovercardStoreState {}
 
-export type MenuStoreFunctions<T extends Values = Values> =
-  Core.MenuStoreFunctions<T> &
-    CompositeStoreFunctions &
-    HovercardStoreFunctions & {
-      hideAll: () => void;
-    };
+export interface MenuStoreFunctions<T extends Values = Values>
+  extends Core.MenuStoreFunctions<T>,
+    CompositeStoreFunctions,
+    HovercardStoreFunctions {
+  /**
+   * Hides the menu and all its parent menus.
+   */
+  hideAll: () => void;
+}
 
-export type MenuStoreOptions<T extends Values = Values> =
-  Core.MenuStoreOptions<T> &
-    CompositeStoreOptions &
-    HovercardStoreOptions & {
-      setValues?: BivariantCallback<
-        (values: MenuStoreState<T>["values"]) => void
-      >;
-    };
+export interface MenuStoreOptions<T extends Values = Values>
+  extends Core.MenuStoreOptions<T>,
+    CompositeStoreOptions,
+    HovercardStoreOptions {
+  /**
+   * A callback that gets called when the `values` state changes.
+   * @param values The new values.
+   * @example
+   * const [values, setValues] = useState({});
+   * const menu = useMenuStore({ values, setValues });
+   */
+  setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
+}
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
   Core.MenuStoreProps<T>;

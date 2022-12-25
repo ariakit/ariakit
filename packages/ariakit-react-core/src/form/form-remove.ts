@@ -37,9 +37,7 @@ function findPushButton(
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that will remove an item from an array
- * field in the form when clicked.
+ * Returns props to create a `FormRemove` component.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -109,8 +107,8 @@ export const useFormRemove = createHook<FormRemoveOptions>(
 );
 
 /**
- * A component that renders a button that will remove an item from an array
- * field in the form when clicked.
+ * Renders a button that will remove an item from an array field in the form
+ * when clicked.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -140,7 +138,8 @@ if (process.env.NODE_ENV !== "production") {
   FormRemove.displayName = "FormRemove";
 }
 
-export type FormRemoveOptions<T extends As = "button"> = ButtonOptions<T> & {
+export interface FormRemoveOptions<T extends As = "button">
+  extends ButtonOptions<T> {
   /**
    * Object returned by the `useFormStore` hook. If not provided, the parent
    * `Form` component's context will be used.
@@ -160,7 +159,7 @@ export type FormRemoveOptions<T extends As = "button"> = ButtonOptions<T> & {
    * @default true
    */
   autoFocusOnClick?: boolean;
-};
+}
 
 export type FormRemoveProps<T extends As = "button"> = Props<
   FormRemoveOptions<T>

@@ -4,8 +4,7 @@ import { As, Props } from "../utils/types";
 import { FormStore } from "./form-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label in a form group. This hook must be used
+ * Returns props to create a `FormGroupLabel` component. This hook must be used
  * in a component that's wrapped with `FormGroup` so the `aria-labelledby` prop
  * is properly set on the form group element.
  * @see https://ariakit.org/components/form
@@ -24,9 +23,9 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
 );
 
 /**
- * A component that renders a label in a form group. This component must be
- * wrapped with `FormGroup` so the `aria-labelledby` prop is properly set on the
- * form group element.
+ * Renders a label in a form group. This component must be wrapped with
+ * `FormGroup` so the `aria-labelledby` prop is properly set on the form group
+ * element.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -58,14 +57,14 @@ if (process.env.NODE_ENV !== "production") {
   FormGroupLabel.displayName = "FormGroupLabel";
 }
 
-export type FormGroupLabelOptions<T extends As = "div"> =
-  GroupLabelOptions<T> & {
-    /**
-     * Object returned by the `useFormStore` hook. If not provided, the parent
-     * `Form` component's context will be used.
-     */
-    store?: FormStore;
-  };
+export interface FormGroupLabelOptions<T extends As = "div">
+  extends GroupLabelOptions<T> {
+  /**
+   * Object returned by the `useFormStore` hook. If not provided, the parent
+   * `Form` component's context will be used.
+   */
+  store?: FormStore;
+}
 
 export type FormGroupLabelProps<T extends As = "div"> = Props<
   FormGroupLabelOptions<T>

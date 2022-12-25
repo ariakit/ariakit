@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { HovercardStore } from "./hovercard-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that hides a hovercard.
+ * Returns props to create a `HovercardDismiss` component.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -27,7 +26,7 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
 );
 
 /**
- * A component that renders a button that hides a hovercard.
+ * Renders a button that hides a hovercard.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
@@ -48,16 +47,14 @@ if (process.env.NODE_ENV !== "production") {
   HovercardDismiss.displayName = "HovercardDismiss";
 }
 
-export type HovercardDismissOptions<T extends As = "button"> = Omit<
-  PopoverDismissOptions<T>,
-  "store"
-> & {
+export interface HovercardDismissOptions<T extends As = "button">
+  extends PopoverDismissOptions<T> {
   /**
    * Object returned by the `useHovercardStore` hook. If not provided, the
    * parent `Hovercard` component's context will be used.
    */
   store?: HovercardStore;
-};
+}
 
 export type HovercardDismissProps<T extends As = "button"> = Props<
   HovercardDismissOptions<T>

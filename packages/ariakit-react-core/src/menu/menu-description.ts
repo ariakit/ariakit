@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a description element for a menu. This hook must
- * be used in a component that's wrapped with `Menu` so the `aria-describedby`
- * prop is properly set on the menu element.
+ * Returns props to create a `MenuDescription` component. This hook must be used
+ * in a component that's wrapped with `Menu` so the `aria-describedby` prop is
+ * properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -27,9 +26,8 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
 );
 
 /**
- * A component that renders a description in a menu. This component must be
- * wrapped with `Menu` so the `aria-describedby` prop is properly set on the
- * menu element.
+ * Renders a description in a menu. This component must be wrapped with `Menu`
+ * so the `aria-describedby` prop is properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -50,16 +48,14 @@ if (process.env.NODE_ENV !== "production") {
   MenuDescription.displayName = "MenuDescription";
 }
 
-export type MenuDescriptionOptions<T extends As = "p"> = Omit<
-  HovercardDescriptionOptions<T>,
-  "store"
-> & {
+export interface MenuDescriptionOptions<T extends As = "p">
+  extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook. If not provided, the parent
    * `Menu` component's context will be used.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuDescriptionProps<T extends As = "p"> = Props<
   MenuDescriptionOptions<T>

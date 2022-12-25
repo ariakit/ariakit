@@ -5,8 +5,7 @@ import { As, Options, Props } from "../utils/types";
 import { GroupLabelContext } from "./group-label-context";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a group element.
+ * Returns props to create a `Group` component.
  * @see https://ariakit.org/components/group
  * @example
  * ```jsx
@@ -37,7 +36,7 @@ export const useGroup = createHook<GroupOptions>((props) => {
 });
 
 /**
- * A component that renders a group element.
+ * Renders a group element.
  * @see https://ariakit.org/components/group
  * @example
  * ```jsx

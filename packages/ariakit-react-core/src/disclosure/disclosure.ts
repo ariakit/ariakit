@@ -12,9 +12,7 @@ import { As, Props } from "../utils/types";
 import { DisclosureStore } from "./disclosure-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that controls the visibility of a
- * disclosure content element.
+ * Returns props to create a `Disclosure` component.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
@@ -83,8 +81,8 @@ export const useDisclosure = createHook<DisclosureOptions>(
 );
 
 /**
- * A component that renders an element that controls the visibility of a
- * disclosure content element.
+ * Renders an element that controls the visibility of a disclosure content
+ * element.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
@@ -102,7 +100,8 @@ if (process.env.NODE_ENV !== "production") {
   Disclosure.displayName = "Disclosure";
 }
 
-export type DisclosureOptions<T extends As = "button"> = ButtonOptions<T> & {
+export interface DisclosureOptions<T extends As = "button">
+  extends ButtonOptions<T> {
   /**
    * Object returned by the `useDisclosureStore` hook.
    */
@@ -113,7 +112,7 @@ export type DisclosureOptions<T extends As = "button"> = ButtonOptions<T> & {
    * @default true
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-};
+}
 
 export type DisclosureProps<T extends As = "button"> = Props<
   DisclosureOptions<T>

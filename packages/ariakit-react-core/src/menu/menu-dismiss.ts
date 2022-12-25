@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { MenuStore } from "./menu-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that hides a menu.
+ * Returns props to create a `MenuDismiss` component.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -25,7 +24,7 @@ export const useMenuDismiss = createHook<MenuDismissOptions>((props) => {
 });
 
 /**
- * A component that renders a button that hides a menu.
+ * Renders a button that hides a menu.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
@@ -44,16 +43,14 @@ if (process.env.NODE_ENV !== "production") {
   MenuDismiss.displayName = "MenuDismiss";
 }
 
-export type MenuDismissOptions<T extends As = "button"> = Omit<
-  HovercardDismissOptions<T>,
-  "store"
-> & {
+export interface MenuDismissOptions<T extends As = "button">
+  extends HovercardDismissOptions<T> {
   /**
    * Object returned by the `useMenuStore` hook. If not provided, the parent
    * `Menu` component's context will be used.
    */
   store?: MenuStore;
-};
+}
 
 export type MenuDismissProps<T extends As = "button"> = Props<
   MenuDismissOptions<T>

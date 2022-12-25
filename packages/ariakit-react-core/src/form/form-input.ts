@@ -12,9 +12,8 @@ import { FormContext } from "./form-context";
 import { FormFieldOptions, useFormField } from "./form-field";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a form input. Unlike `useFormField`, this hook
- * returns the `value` and `onChange` props that can be passed to a native
+ * Returns props to create a `FormInput` component. Unlike `useFormField`, this
+ * hook returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
  * @see https://ariakit.org/components/form
  * @example
@@ -63,9 +62,9 @@ export const useFormInput = createHook<FormInputOptions>(
 );
 
 /**
- * A component that renders a form input. Unlike `FormField`, this component
- * passes the `value` and `onChange` props down to the underlying element that
- * can be a native input, select or textarea elements.
+ * Renders a form input. Unlike `FormField`, this component passes the `value`
+ * and `onChange` props down to the underlying element that can be a native
+ * input, select or textarea elements.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -85,7 +84,8 @@ if (process.env.NODE_ENV !== "production") {
   FormInput.displayName = "FormInput";
 }
 
-export type FormInputOptions<T extends As = "input"> = FocusableOptions<T> &
-  FormFieldOptions<T>;
+export interface FormInputOptions<T extends As = "input">
+  extends FormFieldOptions<T>,
+    FocusableOptions<T> {}
 
 export type FormInputProps<T extends As = "input"> = Props<FormInputOptions<T>>;

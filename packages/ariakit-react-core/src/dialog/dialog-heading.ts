@@ -1,20 +1,15 @@
 import { useContext } from "react";
-import { useId, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
 import { HeadingOptions, useHeading } from "../heading/heading";
+import { useId, useSafeLayoutEffect } from "../utils/hooks";
+import { createComponent, createElement, createHook } from "../utils/system";
+import { As, Props } from "../utils/types";
 import { DialogHeadingContext } from "./dialog-context";
 import { DialogStore } from "./dialog-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a heading element for a dialog. This hook must be
- * used in a component that's wrapped with `Dialog` so the `aria-labelledby`
- * prop is properly set on the dialog element.
+ * Returns props to create a `DialogHeading` component. This hook must be used
+ * in a component that's wrapped with `Dialog` so the `aria-labelledby` prop is
+ * properly set on the dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -45,9 +40,8 @@ export const useDialogHeading = createHook<DialogHeadingOptions>(
 );
 
 /**
- * A component that renders a heading in a dialog. This component must be
- * wrapped with `Dialog` so the `aria-labelledby` prop is properly set on the
- * dialog element.
+ * Renders a heading in a dialog. This component must be wrapped with `Dialog`
+ * so the `aria-labelledby` prop is properly set on the dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
@@ -66,13 +60,14 @@ if (process.env.NODE_ENV !== "production") {
   DialogHeading.displayName = "DialogHeading";
 }
 
-export type DialogHeadingOptions<T extends As = "h1"> = HeadingOptions<T> & {
+export interface DialogHeadingOptions<T extends As = "h1">
+  extends HeadingOptions<T> {
   /**
    * Object returned by the `useDialogStore` hook. If not provided, the parent
    * `Dialog` component's context will be used.
    */
   store?: DialogStore;
-};
+}
 
 export type DialogHeadingProps<T extends As = "h1"> = Props<
   DialogHeadingOptions<T>
