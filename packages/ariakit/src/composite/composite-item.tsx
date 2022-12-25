@@ -32,7 +32,7 @@ import {
   CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
-  Item,
+  CompositeStateItem,
   findEnabledItemById,
   focusSilently,
   getContextId,
@@ -116,14 +116,17 @@ function findNextPageItemId(
   return id;
 }
 
-function useItem(items?: Item[], id?: string) {
+function useItem(items?: CompositeStateItem[], id?: string) {
   return useMemo(() => {
     if (!id) return;
     return items?.find((item) => item.id === id);
   }, [items, id]);
 }
 
-function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
+function targetIsAnotherItem(
+  event: SyntheticEvent,
+  items: CompositeStateItem[]
+) {
   if (isSelfTarget(event)) return false;
   const target = event.target as HTMLElement;
   return isItem(items, target, event.currentTarget);

@@ -37,7 +37,7 @@ import { BooleanOrCallback } from "ariakit-utils/types";
 import { FocusableOptions, useFocusable } from "../focusable/focusable";
 import {
   CompositeContext,
-  Item,
+  CompositeStateItem,
   findEnabledItemById,
   findFirstEnabledItem,
   groupItemsByRows,
@@ -46,7 +46,7 @@ import {
 } from "./__utils";
 import { CompositeState } from "./composite-state";
 
-function isGrid(items: Item[]) {
+function isGrid(items: CompositeStateItem[]) {
   return items.some((item) => !!item.rowId);
 }
 
@@ -92,7 +92,7 @@ function canProxyKeyboardEvent(
 
 function useKeyboardEventProxy(
   state: CompositeState,
-  activeItem?: Item,
+  activeItem?: CompositeStateItem,
   onKeyboardEvent?: KeyboardEventHandler,
   previousElementRef?: RefObject<HTMLElement | null>
 ) {
@@ -122,13 +122,13 @@ function useKeyboardEventProxy(
   });
 }
 
-function findFirstEnabledItemInTheLastRow(items: Item[]) {
+function findFirstEnabledItemInTheLastRow(items: CompositeStateItem[]) {
   return findFirstEnabledItem(
     flatten2DArray(reverseArray(groupItemsByRows(items)))
   );
 }
 
-function useScheduleFocus(activeItem?: Item) {
+function useScheduleFocus(activeItem?: CompositeStateItem) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
   useEffect(() => {

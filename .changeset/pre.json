@@ -14,6 +14,9 @@
     "combobox-inline-caret-at-end",
     "composite-item-move-on-key-press copy",
     "composite-move-on-key-press",
-    "composite-proxy-event-modifier-keys"
+    "composite-proxy-event-modifier-keys",
+    "react-utils",
+    "typescript-4.8",
+    "unique-type-names"
   ]
 }

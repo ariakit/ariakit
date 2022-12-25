@@ -1,5 +1,11 @@
 # ariakit-utils
 
+## 0.17.0-next.27
+
+### Minor Changes
+
+- Extracted React specific utilities from the `ariakit-utils` package to the `ariakit-react-utils` package. ([#1819](https://github.com/ariakit/ariakit/pull/1819))
+
 ## 0.17.0-next.26
 
 ### Patch Changes

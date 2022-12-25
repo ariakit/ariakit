@@ -22,7 +22,7 @@ import {
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
-type Item = CompositeState["items"][number] & {
+type ComboboxStateItem = CompositeState["items"][number] & {
   value?: string;
 };
 
@@ -88,7 +88,7 @@ export function useComboboxState({
     props.list,
     props.setList
   );
-  const composite = useCompositeState<Item>({
+  const composite = useCompositeState<ComboboxStateItem>({
     ...props,
     defaultActiveId,
     orientation,
@@ -161,7 +161,7 @@ export function useComboboxState({
   return useStorePublisher(state);
 }
 
-export type ComboboxState = CompositeState<Item> &
+export type ComboboxState = CompositeState<ComboboxStateItem> &
   PopoverState & {
     /**
      * The input value.
@@ -208,7 +208,7 @@ export type ComboboxState = CompositeState<Item> &
     matches: string[];
   };
 
-export type ComboboxStateProps = CompositeStateProps<Item> &
+export type ComboboxStateProps = CompositeStateProps<ComboboxStateItem> &
   PopoverStateProps &
   Partial<Pick<ComboboxState, "value" | "list" | "limit">> & {
     /**
