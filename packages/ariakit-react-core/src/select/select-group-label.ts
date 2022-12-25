@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label in a select group. This hook must be used
- * in a component that's wrapped with `SelectGroup` so the `aria-labelledby`
- * prop is properly set on the select group element.
+ * Returns props to create a `SelectGroupLabel` component. This hook must be
+ * used in a component that's wrapped with `SelectGroup` so the
+ * `aria-labelledby` prop is properly set on the select group element.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -27,9 +26,9 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
 );
 
 /**
- * A component that renders a label in a select group. This component must be
- * wrapped with `SelectGroup` so the `aria-labelledby` prop is properly set
- * on the select group element.
+ * Renders a label in a select group. This component must be wrapped with
+ * `SelectGroup` so the `aria-labelledby` prop is properly set on the select
+ * group element.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -60,16 +59,14 @@ if (process.env.NODE_ENV !== "production") {
   SelectGroupLabel.displayName = "SelectGroupLabel";
 }
 
-export type SelectGroupLabelOptions<T extends As = "div"> = Omit<
-  CompositeGroupLabelOptions<T>,
-  "store"
-> & {
+export interface SelectGroupLabelOptions<T extends As = "div">
+  extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `SelectList` or `SelectPopover` components' context will be used.
    */
   store?: SelectStore;
-};
+}
 
 export type SelectGroupLabelProps<T extends As = "div"> = Props<
   SelectGroupLabelOptions<T>

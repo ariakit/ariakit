@@ -33,8 +33,7 @@ function useComputedStyle(store: PopoverStore) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow inside a popover element.
+ * Returns props to create a `PopoverArrow` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -104,7 +103,7 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
 );
 
 /**
- * A component that renders an arrow inside a `Popover` component.
+ * Renders an arrow inside a `Popover` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -124,7 +123,7 @@ if (process.env.NODE_ENV !== "production") {
   PopoverArrow.displayName = "PopoverArrow";
 }
 
-export type PopoverArrowOptions<T extends As = "div"> = Options<T> & {
+export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `usePopoverStore` hook. If not provided, the parent
    * `Popover` component's context will be used.
@@ -135,7 +134,7 @@ export type PopoverArrowOptions<T extends As = "div"> = Options<T> & {
    * @default 30
    */
   size?: number;
-};
+}
 
 export type PopoverArrowProps<T extends As = "div"> = Props<
   PopoverArrowOptions<T>

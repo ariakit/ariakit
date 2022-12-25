@@ -59,8 +59,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select button.
+ * Returns props to create a `Select` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -271,7 +270,7 @@ export const useSelect = createHook<SelectOptions>(
 );
 
 /**
- * A component that renders a select button.
+ * Renders a select button.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -292,44 +291,45 @@ if (process.env.NODE_ENV !== "production") {
   Select.displayName = "Select";
 }
 
-export type SelectOptions<T extends As = "button"> = Omit<
-  PopoverDisclosureOptions<T>,
-  "store" | "toggleOnClick"
-> &
-  Pick<SelectHTMLAttributes<HTMLSelectElement>, "name" | "form" | "required"> &
-  Omit<CompositeTypeaheadOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useSelectStore` hook.
-     */
-    store: SelectStore;
-    /**
-     * Determines whether the select list will be shown when the user presses
-     * arrow keys while the select element is focused.
-     * @default true
-     */
-    showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-    /**
-     * Determines whether pressing arrow keys will move the active item even
-     * when the select list is hidden.
-     * @default false
-     */
-    moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-    /**
-     * Determines whether `store.toggle()` will be called on click. By default,
-     * the select list will be shown on press (on mouse down and on key down).
-     * If this prop is set to `true`, the select list will be shown on click
-     * instead.
-     * @default false
-     */
-    toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Determines whether pressing space, enter or mouse down will toggle the
-     * select list. This will be ignored if `toggleOnClick` is set to `true`.
-     * @default true
-     */
-    toggleOnPress?: BooleanOrCallback<
-      MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-    >;
-  };
+export interface SelectOptions<T extends As = "button">
+  extends PopoverDisclosureOptions<T>,
+    CompositeTypeaheadOptions<T>,
+    Pick<
+      SelectHTMLAttributes<HTMLSelectElement>,
+      "name" | "form" | "required"
+    > {
+  /**
+   * Object returned by the `useSelectStore` hook.
+   */
+  store: SelectStore;
+  /**
+   * Determines whether the select list will be shown when the user presses
+   * arrow keys while the select element is focused.
+   * @default true
+   */
+  showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Determines whether pressing arrow keys will move the active item even
+   * when the select list is hidden.
+   * @default false
+   */
+  moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Determines whether `store.toggle()` will be called on click. By default,
+   * the select list will be shown on press (on mouse down and on key down).
+   * If this prop is set to `true`, the select list will be shown on click
+   * instead.
+   * @default false
+   */
+  toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Determines whether pressing space, enter or mouse down will toggle the
+   * select list. This will be ignored if `toggleOnClick` is set to `true`.
+   * @default true
+   */
+  toggleOnPress?: BooleanOrCallback<
+    MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
+  >;
+}
 
 export type SelectProps<T extends As = "button"> = Props<SelectOptions<T>>;

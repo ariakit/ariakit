@@ -11,8 +11,7 @@ import { As, Props } from "../utils/types";
 import { ToolbarStore } from "./toolbar-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an interactive element in a toolbar.
+ * Returns props to create a `ToolbarItem` component.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -31,7 +30,7 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
 );
 
 /**
- * A component that renders an interactive element in a toolbar.
+ * Renders an interactive element in a toolbar.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -50,16 +49,14 @@ if (process.env.NODE_ENV !== "production") {
   ToolbarItem.displayName = "ToolbarItem";
 }
 
-export type ToolbarItemOptions<T extends As = "button"> = Omit<
-  CompositeItemOptions<T>,
-  "store"
-> & {
+export interface ToolbarItemOptions<T extends As = "button">
+  extends CompositeItemOptions<T> {
   /**
    * Object returned by the `useToolbarStore` hook. If not provided, the parent
    * `Toolbar` component's context will be used.
    */
   store?: ToolbarStore;
-};
+}
 
 export type ToolbarItemProps<T extends As = "button"> = Props<
   ToolbarItemOptions<T>

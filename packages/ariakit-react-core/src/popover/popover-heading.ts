@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { PopoverStore } from "./popover-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a heading element for a popover. This hook must
- * be used in a component that's wrapped with `Popover` so the `aria-labelledby`
- * prop is properly set on the popover element.
+ * Returns props to create a `PopoverHeading` component. This hook must be used
+ * in a component that's wrapped with `Popover` so the `aria-labelledby` prop is
+ * properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -25,9 +24,8 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
 });
 
 /**
- * A component that renders a heading in a popover. This component must be
- * wrapped with `Popover` so the `aria-labelledby` prop is properly set on the
- * popover element.
+ * Renders a heading in a popover. This component must be wrapped with `Popover`
+ * so the `aria-labelledby` prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -48,16 +46,14 @@ if (process.env.NODE_ENV !== "production") {
   PopoverHeading.displayName = "PopoverHeading";
 }
 
-export type PopoverHeadingOptions<T extends As = "h1"> = Omit<
-  DialogHeadingOptions<T>,
-  "store"
-> & {
+export interface PopoverHeadingOptions<T extends As = "h1">
+  extends DialogHeadingOptions<T> {
   /**
    * Object returned by the `usePopoverStore` hook. If not provided, the parent
    * `Popover` component's context will be used.
    */
   store?: PopoverStore;
-};
+}
 
 export type PopoverHeadingProps<T extends As = "h1"> = Props<
   PopoverHeadingOptions<T>

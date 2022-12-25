@@ -2,10 +2,9 @@ import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Options, Props } from "../utils/types";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component. When applying the props returned by this hook to a
- * component, the component will be visually hidden, but still accessible to
- * screen readers.
+ * Returns props to create a `VisuallyHidden` component. When applying the props
+ * returned by this hook to a component, the component will be visually hidden,
+ * but still accessible to screen readers.
  * @see https://ariakit.org/components/visually-hidden
  * @example
  * ```jsx
@@ -35,8 +34,8 @@ export const useVisuallyHidden = createHook<VisuallyHiddenOptions>((props) => {
 });
 
 /**
- * A component that renders an element that's visually hidden, but still
- * accessible to screen readers.
+ * Renders an element that's visually hidden, but still accessible to screen
+ * readers.
  * @see https://ariakit.org/components/visually-hidden
  * @example
  * ```jsx

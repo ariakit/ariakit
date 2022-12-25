@@ -19,6 +19,16 @@ export function useTooltipStoreProps<T extends TooltipStore>(
   return usePopoverStoreProps(store, props);
 }
 
+/**
+ * Creates a tooltip store.
+ * @see https://ariakit.org/components/tooltip
+ * @example
+ * ```jsx
+ * const tooltip = useTooltipStore();
+ * <TooltipAnchor store={tooltip}>Anchor</TooltipAnchor>
+ * <Tooltip store={tooltip}>Tooltip</Tooltip>
+ * ```
+ */
 export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
   const options = useTooltipStoreOptions(props);
   const store = useStore(() =>
@@ -27,13 +37,17 @@ export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
   return useTooltipStoreProps(store, props);
 }
 
-export type TooltipStoreState = Core.TooltipStoreState & PopoverStoreState;
+export interface TooltipStoreState
+  extends Core.TooltipStoreState,
+    PopoverStoreState {}
 
-export type TooltipStoreFunctions = Core.TooltipStoreFunctions &
-  PopoverStoreFunctions;
+export interface TooltipStoreFunctions
+  extends Core.TooltipStoreFunctions,
+    PopoverStoreFunctions {}
 
-export type TooltipStoreOptions = Core.TooltipStoreOptions &
-  PopoverStoreOptions;
+export interface TooltipStoreOptions
+  extends Core.TooltipStoreOptions,
+    PopoverStoreOptions {}
 
 export type TooltipStoreProps = TooltipStoreOptions & Core.TooltipStoreProps;
 

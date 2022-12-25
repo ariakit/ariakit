@@ -11,8 +11,7 @@ import { SelectContext } from "./select-context";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select row.
+ * Returns props to create a `SelectRow` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -50,7 +49,7 @@ export const useSelectRow = createHook<SelectRowOptions>(
 );
 
 /**
- * A component that renders a select row.
+ * Renders a select row.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -77,15 +76,13 @@ if (process.env.NODE_ENV !== "production") {
   SelectRow.displayName = "SelectRow";
 }
 
-export type SelectRowOptions<T extends As = "div"> = Omit<
-  CompositeRowOptions<T>,
-  "store"
-> & {
+export interface SelectRowOptions<T extends As = "div">
+  extends CompositeRowOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `SelectList` or `SelectPopover` components' context will be used.
    */
   store?: SelectStore;
-};
+}
 
 export type SelectRowProps<T extends As = "div"> = Props<SelectRowOptions<T>>;

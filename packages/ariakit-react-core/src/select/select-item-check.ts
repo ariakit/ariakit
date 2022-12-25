@@ -9,10 +9,9 @@ import { SelectItemCheckedContext } from "./select-context";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a checkmark inside a `SelectItem` component. This
- * hook must be used in a component that's wrapped with `SelectItem` or the
- * `checked` prop must be explicitly passed to the component.
+ * Returns props to create a `SelectItemCheck` component. This hook must be used
+ * in a component that's wrapped with `SelectItem` or the `checked` prop must be
+ * explicitly passed to the component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -30,9 +29,9 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
 );
 
 /**
- * A component that renders a checkmark inside a `SelectItem` component. This
- * component must be wrapped with `SelectItem` or the `checked` prop must be
- * explicitly passed to the component.
+ * Renders a checkmark inside a `SelectItem` component. This component must be
+ * wrapped with `SelectItem` or the `checked` prop must be explicitly passed to
+ * the component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -61,10 +60,8 @@ if (process.env.NODE_ENV !== "production") {
   SelectItemCheck.displayName = "SelectItemCheck";
 }
 
-export type SelectItemCheckOptions<T extends As = "span"> = Omit<
-  CheckboxCheckOptions<T>,
-  "store" | "checked"
-> & {
+export interface SelectItemCheckOptions<T extends As = "span">
+  extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `SelectList` or `SelectPopover` components' context will be used.
@@ -76,7 +73,7 @@ export type SelectItemCheckOptions<T extends As = "span"> = Omit<
    * will override the inferred value.
    */
   checked?: boolean;
-};
+}
 
 export type SelectItemCheckProps<T extends As = "span"> = Props<
   SelectItemCheckOptions<T>

@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { ToolbarStore } from "./toolbar-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator for toolbar items.
+ * Returns props to create a `ToolbarSeparator` component.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -29,7 +28,7 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
 );
 
 /**
- * A component that renders a separator for toolbar items.
+ * Renders a separator for toolbar items.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -52,16 +51,14 @@ if (process.env.NODE_ENV !== "production") {
   ToolbarSeparator.displayName = "ToolbarSeparator";
 }
 
-export type ToolbarSeparatorOptions<T extends As = "hr"> = Omit<
-  CompositeSeparatorOptions<T>,
-  "store"
-> & {
+export interface ToolbarSeparatorOptions<T extends As = "hr">
+  extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the `useToolbarStore` hook. If not provided, the parent
    * `Toolbar` component's context will be used.
    */
   store?: ToolbarStore;
-};
+}
 
 export type ToolbarSeparatorProps<T extends As = "hr"> = Props<
   ToolbarSeparatorOptions<T>

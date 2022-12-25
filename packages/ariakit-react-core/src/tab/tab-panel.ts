@@ -16,8 +16,7 @@ import { As, Props } from "../utils/types";
 import { TabStore } from "./tab-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a tab panel element.
+ * Returns props to create a `TabPanel` component.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -80,7 +79,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
 );
 
 /**
- * A component that renders a tab panel element.
+ * Renders a tab panel element.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -102,18 +101,19 @@ if (process.env.NODE_ENV !== "production") {
   TabPanel.displayName = "TabPanel";
 }
 
-export type TabPanelOptions<T extends As = "div"> = FocusableOptions<T> &
-  Omit<CollectionItemOptions, "store"> &
-  Omit<DisclosureContentOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useTabStore` hook.
-     */
-    store: TabStore;
-    /**
-     * The id of the tab that controls this panel. By default, this value will
-     * be inferred based on the order of the tabs and the panels.
-     */
-    tabId?: string | null;
-  };
+export interface TabPanelOptions<T extends As = "div">
+  extends FocusableOptions<T>,
+    CollectionItemOptions<T>,
+    Omit<DisclosureContentOptions<T>, "store"> {
+  /**
+   * Object returned by the `useTabStore` hook.
+   */
+  store: TabStore;
+  /**
+   * The id of the tab that controls this panel. By default, this value will
+   * be inferred based on the order of the tabs and the panels.
+   */
+  tabId?: string | null;
+}
 
 export type TabPanelProps<T extends As = "div"> = Props<TabPanelOptions<T>>;

@@ -38,6 +38,16 @@ export function usePopoverStoreProps<T extends PopoverStore>(
   return store;
 }
 
+/**
+ * Creates a popover store.
+ * @see https://ariakit.org/components/popover
+ * @example
+ * ```jsx
+ * const popover = usePopoverStore();
+ * <PopoverDisclosure store={popover}>Disclosure</PopoverDisclosure>
+ * <Popover store={popover}>Popover</Popover>
+ * ```
+ */
 export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
   const options = usePopoverStoreOptions(props);
   const store = useStore(() =>
@@ -46,12 +56,17 @@ export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
   return usePopoverStoreProps(store, props);
 }
 
-export type PopoverStoreState = Core.PopoverStoreState & DialogStoreState;
+export interface PopoverStoreState
+  extends Core.PopoverStoreState,
+    DialogStoreState {}
 
-export type PopoverStoreFunctions = Core.PopoverStoreFunctions &
-  DialogStoreFunctions;
+export interface PopoverStoreFunctions
+  extends Core.PopoverStoreFunctions,
+    DialogStoreFunctions {}
 
-export type PopoverStoreOptions = Core.PopoverStoreOptions & DialogStoreOptions;
+export interface PopoverStoreOptions
+  extends Core.PopoverStoreOptions,
+    DialogStoreOptions {}
 
 export type PopoverStoreProps = PopoverStoreOptions & Core.PopoverStoreProps;
 

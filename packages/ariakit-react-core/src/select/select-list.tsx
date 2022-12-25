@@ -19,8 +19,7 @@ import { SelectContext } from "./select-context";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select list.
+ * Returns props to create a `SelectList` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -121,10 +120,10 @@ export const useSelectList = createHook<SelectListOptions>(
 );
 
 /**
- * A component that renders a select list. The `role` prop is set to `listbox`
- * by default, but can be overriden by any other valid select popup role
- * (`listbox`, `menu`, `tree`, `grid` or `dialog`). The `aria-labelledby` prop
- * is set to the select input element's `id` by default.
+ * Renders a select list. The `role` prop is set to `listbox` by default, but
+ * can be overriden by any other valid select popup role (`listbox`, `menu`,
+ * `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the select
+ * input element's `id` by default.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -145,28 +144,26 @@ if (process.env.NODE_ENV !== "production") {
   SelectList.displayName = "SelectList";
 }
 
-export type SelectListOptions<T extends As = "div"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> &
-  Omit<CompositeTypeaheadOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useSelectStore` hook.
-     */
-    store: SelectStore;
-    /**
-     * Whether the select value should be reset to the value before the list got
-     * shown when Escape is pressed. This has effect only when `selectOnMove` is
-     * `true` on the select store.
-     * @default true
-     */
-    resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-    /**
-     * Whether the select list should be hidden when the user presses Enter or
-     * Space while the list is focused (that is, no item is selected).
-     * @default true
-     */
-    hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-  };
+export interface SelectListOptions<T extends As = "div">
+  extends CompositeOptions<T>,
+    CompositeTypeaheadOptions<T> {
+  /**
+   * Object returned by the `useSelectStore` hook.
+   */
+  store: SelectStore;
+  /**
+   * Whether the select value should be reset to the value before the list got
+   * shown when Escape is pressed. This has effect only when `selectOnMove` is
+   * `true` on the select store.
+   * @default true
+   */
+  resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Whether the select list should be hidden when the user presses Enter or
+   * Space while the list is focused (that is, no item is selected).
+   * @default true
+   */
+  hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+}
 
 export type SelectListProps<T extends As = "div"> = Props<SelectListOptions<T>>;

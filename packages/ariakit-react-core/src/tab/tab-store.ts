@@ -26,6 +26,20 @@ export function useTabStoreProps<T extends Store<Core.TabStore>>(
   return useMemo(() => ({ ...store, panels }), []);
 }
 
+/**
+ * Creates a tab store.
+ * @see https://ariakit.org/components/tab
+ * @example
+ * ```jsx
+ * const tab = useTabStore();
+ * <TabList store={tab}>
+ *   <Tab>Tab 1</Tab>
+ *   <Tab>Tab 2</Tab>
+ * </TabList>
+ * <TabPanel store={tab}>Panel 1</TabPanel>
+ * <TabPanel store={tab}>Panel 2</TabPanel>
+ * ```
+ */
 export function useTabStore(props: TabStoreProps = {}): TabStore {
   const options = useTabStoreOptions(props);
   const store = useStore(() => Core.createTabStore({ ...props, ...options }));
@@ -34,27 +48,32 @@ export function useTabStore(props: TabStoreProps = {}): TabStore {
 
 export type TabStoreItem = Item;
 
-export type TabStoreState = Core.TabStoreState & CompositeStoreState<Item>;
+export interface TabStoreState
+  extends Core.TabStoreState,
+    CompositeStoreState<Item> {}
 
-export type TabStoreFunctions = Core.TabStoreFunctions &
-  CompositeStoreFunctions<Item> & {
-    panels: Store<Core.TabStoreFunctions["panels"]>;
-  };
+export interface TabStoreFunctions
+  extends Core.TabStoreFunctions,
+    CompositeStoreFunctions<Item> {
+  panels: Store<Core.TabStoreFunctions["panels"]>;
+}
 
-export type TabStoreOptions = Core.TabStoreOptions &
-  CompositeStoreOptions<Item> & {
-    /**
-     * Function that will be called when setting the tab `selectedId` state.
-     * @example
-     * function Tabs({ visibleTab, onTabChange }) {
-     *   const tab = useTabStore({
-     *     selectedId: visibleTab,
-     *     setSelectedId: onTabChange,
-     *   });
-     * }
-     */
-    setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
-  };
+export interface TabStoreOptions
+  extends Core.TabStoreOptions,
+    CompositeStoreOptions<Item> {
+  /**
+   * Function that will be called when the `selectedId` state changes.
+   * @param selectedId The new selected id.
+   * @example
+   * function Tabs({ visibleTab, onTabChange }) {
+   *   const tab = useTabStore({
+   *     selectedId: visibleTab,
+   *     setSelectedId: onTabChange,
+   *   });
+   * }
+   */
+  setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
+}
 
 export type TabStoreProps = TabStoreOptions & Core.TabStoreProps;
 

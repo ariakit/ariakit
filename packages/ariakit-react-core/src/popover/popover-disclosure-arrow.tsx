@@ -15,9 +15,7 @@ const pointsMap = {
 };
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow pointing to the popover position. It's
- * usually rendered inside the `PopoverDisclosure` component.
+ * Returns props to create a `PopoverDisclosureArrow` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -81,8 +79,8 @@ export const usePopoverDisclosureArrow =
   );
 
 /**
- * A component that renders an arrow pointing to the popover position. It's
- * usually rendered inside the `PopoverDisclosure` component.
+ * Renders an arrow pointing to the popover position. It's usually rendered
+ * inside the `PopoverDisclosure` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -104,19 +102,19 @@ if (process.env.NODE_ENV !== "production") {
   PopoverDisclosureArrow.displayName = "PopoverDisclosureArrow";
 }
 
-export type PopoverDisclosureArrowOptions<T extends As = "span"> =
-  Options<T> & {
-    /**
-     * Object returned by the `usePopoverStore` hook. If not provided, the
-     * parent `PopoverDisclosure` component's context will be used.
-     */
-    store?: PopoverStore;
-    /**
-     * Placement to which the arrow should point. If not provided, the parent
-     * `PopoverDisclosure` component's context will be used.
-     */
-    placement?: PopoverStoreState["placement"];
-  };
+export interface PopoverDisclosureArrowOptions<T extends As = "span">
+  extends Options<T> {
+  /**
+   * Object returned by the `usePopoverStore` hook. If not provided, the parent
+   * `PopoverDisclosure` component's context will be used.
+   */
+  store?: PopoverStore;
+  /**
+   * Placement to which the arrow should point. If not provided, the parent
+   * `PopoverDisclosure` component's context will be used.
+   */
+  placement?: PopoverStoreState["placement"];
+}
 
 export type PopoverDisclosureArrowProps<T extends As = "span"> = Props<
   PopoverDisclosureArrowOptions<T>

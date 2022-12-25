@@ -38,6 +38,19 @@ export function useSelectStoreProps<T extends SelectStore>(
   return store;
 }
 
+/**
+ * Creates a select store.
+ * @see https://ariakit.org/components/select
+ * @example
+ * ```jsx
+ * const select = useSelectState({ defaultValue: "Apple" });
+ * <Select state={select} />
+ * <SelectPopover state={select}>
+ *   <SelectItem value="Apple" />
+ *   <SelectItem value="Orange" />
+ * </SelectPopover>
+ * ```
+ */
 export function useSelectStore<T extends Value = Value>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
 ): SelectStore<T>;
@@ -56,22 +69,30 @@ export type SelectStoreItem = Item;
 
 export type SelectStoreValue = Value;
 
-export type SelectStoreState<T extends Value = Value> =
-  Core.SelectStoreState<T> & CompositeStoreState<Item> & PopoverStoreState;
+export interface SelectStoreState<T extends Value = Value>
+  extends Core.SelectStoreState<T>,
+    CompositeStoreState<Item>,
+    PopoverStoreState {}
 
-export type SelectStoreFunctions<T extends Value = Value> =
-  Core.SelectStoreFunctions<T> &
-    CompositeStoreFunctions<Item> &
-    PopoverStoreFunctions;
+export interface SelectStoreFunctions<T extends Value = Value>
+  extends Core.SelectStoreFunctions<T>,
+    CompositeStoreFunctions<Item>,
+    PopoverStoreFunctions {}
 
-export type SelectStoreOptions<T extends Value = Value> =
-  Core.SelectStoreOptions<T> &
-    CompositeStoreOptions<Item> &
-    PopoverStoreOptions & {
-      setValue?: BivariantCallback<
-        (value: SelectStoreState<T>["value"]) => void
-      >;
-    };
+export interface SelectStoreOptions<T extends Value = Value>
+  extends Core.SelectStoreOptions<T>,
+    CompositeStoreOptions<Item>,
+    PopoverStoreOptions {
+  /**
+   * Function that will be called when the `value` state changes.
+   * @param value The new value.
+   * @example
+   * function MySelect({ value, onChange }) {
+   *   const select = useSelectStore({ value, setValue: onChange });
+   * }
+   */
+  setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
+}
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
   Core.SelectStoreProps<T>;

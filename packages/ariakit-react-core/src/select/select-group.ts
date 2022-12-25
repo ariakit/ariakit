@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select group.
+ * Returns props to create a `SelectGroup` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -30,7 +29,7 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
 });
 
 /**
- * A component that renders a select group.
+ * Renders a select group.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -54,16 +53,14 @@ if (process.env.NODE_ENV !== "production") {
   SelectGroup.displayName = "SelectGroup";
 }
 
-export type SelectGroupOptions<T extends As = "div"> = Omit<
-  CompositeGroupOptions<T>,
-  "store"
-> & {
+export interface SelectGroupOptions<T extends As = "div">
+  extends CompositeGroupOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `SelectList` or `SelectPopover` components' context will be used.
    */
   store?: SelectStore;
-};
+}
 
 export type SelectGroupProps<T extends As = "div"> = Props<
   SelectGroupOptions<T>

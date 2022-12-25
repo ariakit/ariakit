@@ -7,8 +7,7 @@ import { TooltipContext } from "./tooltip-context";
 import { TooltipStore } from "./tooltip-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow inside a tooltip element.
+ * Returns props to create a `TooltipArrow` component.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -40,7 +39,7 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
 );
 
 /**
- * A component that renders an arrow inside a `Tooltip` component.
+ * Renders an arrow inside a `Tooltip` component.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -61,16 +60,14 @@ if (process.env.NODE_ENV !== "production") {
   TooltipArrow.displayName = "TooltipArrow";
 }
 
-export type TooltipArrowOptions<T extends As = "div"> = Omit<
-  PopoverArrowOptions<T>,
-  "store"
-> & {
+export interface TooltipArrowOptions<T extends As = "div">
+  extends PopoverArrowOptions<T> {
   /**
    * Object returned by the `useTooltipStore` hook. If not provided, the parent
    * `Tooltip` component's context will be used.
    */
   store?: TooltipStore;
-};
+}
 
 export type TooltipArrowProps<T extends As = "div"> = Props<
   TooltipArrowOptions<T>

@@ -11,9 +11,7 @@ import { As, Props } from "../utils/types";
 import { ToolbarItemOptions, useToolbarItem } from "./toolbar-item";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a container for interactive widgets inside
- * toolbar items.
+ * Returns props to create a `ToolbarContainer` component.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -35,8 +33,7 @@ export const useToolbarContainer = createHook<ToolbarContainerOptions>(
 );
 
 /**
- * A component that renders a container for interactive widgets inside toolbar
- * items.
+ * Renders a container for interactive widgets inside toolbar items.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -59,11 +56,9 @@ if (process.env.NODE_ENV !== "production") {
   ToolbarContainer.displayName = "ToolbarContainer";
 }
 
-export type ToolbarContainerOptions<T extends As = "div"> = Omit<
-  CompositeContainerOptions<T>,
-  "store"
-> &
-  ToolbarItemOptions<T>;
+export interface ToolbarContainerOptions<T extends As = "div">
+  extends ToolbarItemOptions<T>,
+    CompositeContainerOptions<T> {}
 
 export type ToolbarContainerProps<T extends As = "div"> = Props<
   ToolbarContainerOptions<T>

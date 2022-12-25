@@ -2,8 +2,7 @@ import { createComponent, createElement, createHook } from "../utils/system";
 import { As, Options, Props } from "../utils/types";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator element.
+ * Returns props to create a `Separator` component.
  * @see https://ariakit.org/components/separator
  * @example
  * ```jsx
@@ -23,7 +22,7 @@ export const useSeparator = createHook<SeparatorOptions>(
 );
 
 /**
- * A component that renders a separator element.
+ * Renders a separator element.
  * @see https://ariakit.org/components/separator
  * @example
  * ```jsx
@@ -39,12 +38,12 @@ if (process.env.NODE_ENV !== "production") {
   Separator.displayName = "Separator";
 }
 
-export type SeparatorOptions<T extends As = "hr"> = Options<T> & {
+export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
   /**
    * The orientation of the separator.
    * @default "horizontal"
    */
   orientation?: "horizontal" | "vertical";
-};
+}
 
 export type SeparatorProps<T extends As = "hr"> = Props<SeparatorOptions<T>>;

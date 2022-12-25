@@ -20,28 +20,45 @@ export function useRadioStoreProps<
   return store;
 }
 
+/**
+ * Creates a radio store.
+ * @see https://ariakit.org/components/radio
+ * @example
+ * ```jsx
+ * const radio = useRadioStore();
+ * <RadioGroup store={radio}>
+ *   <Radio value="Apple" />
+ *   <Radio value="Orange" />
+ * </RadioGroup>
+ * ```
+ */
 export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
   const options = useRadioStoreOptions(props);
   const store = useStore(() => Core.createRadioStore({ ...props, ...options }));
   return useRadioStoreProps(store, props);
 }
 
-export type RadioStoreState = Core.RadioStoreState & CompositeStoreState;
+export interface RadioStoreState
+  extends Core.RadioStoreState,
+    CompositeStoreState {}
 
-export type RadioStoreFunctions = Core.RadioStoreFunctions &
-  CompositeStoreFunctions;
+export interface RadioStoreFunctions
+  extends Core.RadioStoreFunctions,
+    CompositeStoreFunctions {}
 
-export type RadioStoreOptions = Core.RadioStoreOptions &
-  CompositeStoreOptions & {
-    /**
-     * Function that will be called when setting the radio `value` state.
-     * @example
-     * function RadioGroup({ value, onChange }) {
-     *   const radio = useRadioStore({ value, setValue: onChange });
-     * }
-     */
-    setValue?: (value: RadioStoreState["value"]) => void;
-  };
+export interface RadioStoreOptions
+  extends Core.RadioStoreOptions,
+    CompositeStoreOptions {
+  /**
+   * Function that will be called when the `value` state changes.
+   * @param value The new value.
+   * @example
+   * function RadioGroup({ value, onChange }) {
+   *   const radio = useRadioStore({ value, setValue: onChange });
+   * }
+   */
+  setValue?: (value: RadioStoreState["value"]) => void;
+}
 
 export type RadioStoreProps = RadioStoreOptions & Core.RadioStoreProps;
 

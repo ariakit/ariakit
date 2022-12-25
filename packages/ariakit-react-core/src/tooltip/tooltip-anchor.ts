@@ -9,10 +9,7 @@ import { As, Props } from "../utils/types";
 import { TooltipStore } from "./tooltip-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that will be labelled or described by
- * a `Tooltip` component. This component will also be used as the reference to
- * position the tooltip on the screen.
+ * Returns props to create a `TooltipAnchor` component.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -78,9 +75,9 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 );
 
 /**
- * A component that renders an element that will be labelled or described by
- * a `Tooltip` component. This component will also be used as the reference to
- * position the tooltip on the screen.
+ * Renders an element that will be labelled or described by a `Tooltip`
+ * component. This component will also be used as the reference to position the
+ * tooltip on the screen.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -98,10 +95,8 @@ if (process.env.NODE_ENV !== "production") {
   TooltipAnchor.displayName = "TooltipAnchor";
 }
 
-export type TooltipAnchorOptions<T extends As = "div"> = Omit<
-  PopoverAnchorOptions<T>,
-  "store"
-> & {
+export interface TooltipAnchorOptions<T extends As = "div">
+  extends PopoverAnchorOptions<T> {
   /**
    * Object returned by the `useTooltipStore` hook.
    */
@@ -122,7 +117,7 @@ export type TooltipAnchorOptions<T extends As = "div"> = Omit<
    * ```
    */
   described?: boolean;
-};
+}
 
 export type TooltipAnchorProps<T extends As = "div"> = Props<
   TooltipAnchorOptions<T>

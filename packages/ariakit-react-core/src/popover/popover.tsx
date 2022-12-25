@@ -11,8 +11,7 @@ import { PopoverContext } from "./popover-context";
 import { PopoverStore } from "./popover-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a popover element.
+ * Returns props to create a `Popover` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -124,7 +123,7 @@ export const usePopover = createHook<PopoverOptions>(
 );
 
 /**
- * A component that renders a popover element.
+ * Renders a popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -142,10 +141,7 @@ if (process.env.NODE_ENV !== "production") {
   Popover.displayName = "Popover";
 }
 
-export type PopoverOptions<T extends As = "div"> = Omit<
-  DialogOptions<T>,
-  "store"
-> & {
+export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   /**
    * Object returned by the `usePopoverStore` hook.
    */
@@ -155,6 +151,6 @@ export type PopoverOptions<T extends As = "div"> = Omit<
    * be used to position the popover.
    */
   wrapperProps?: HTMLAttributes<HTMLDivElement>;
-};
+}
 
 export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;

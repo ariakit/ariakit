@@ -7,9 +7,7 @@ import { As, Props } from "../utils/types";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an arrow pointing to the select popover position.
- * It's usually rendered inside the `Select` component.
+ * Returns props to create a `SelectArrow` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -33,8 +31,8 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
 );
 
 /**
- * A component that renders an arrow pointing to the select popover position.
- * It's usually rendered inside the `Select` component.
+ * Renders an arrow pointing to the select popover position. It's usually
+ * rendered inside the `Select` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -58,16 +56,14 @@ if (process.env.NODE_ENV !== "production") {
   SelectArrow.displayName = "SelectArrow";
 }
 
-export type SelectArrowOptions<T extends As = "span"> = Omit<
-  PopoverDisclosureArrowOptions<T>,
-  "store"
-> & {
+export interface SelectArrowOptions<T extends As = "span">
+  extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `Select` component's context will be used.
    */
   store?: SelectStore;
-};
+}
 
 export type SelectArrowProps<T extends As = "span"> = Props<
   SelectArrowOptions<T>

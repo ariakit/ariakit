@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a separator element for select items.
+ * Returns props to create a `SelectSeparator` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -30,7 +29,7 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
 );
 
 /**
- * A component that renders a separator element for select items.
+ * Renders a separator element for select items.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -55,16 +54,14 @@ if (process.env.NODE_ENV !== "production") {
   SelectSeparator.displayName = "SelectSeparator";
 }
 
-export type SelectSeparatorOptions<T extends As = "hr"> = Omit<
-  CompositeSeparatorOptions<T>,
-  "store"
-> & {
+export interface SelectSeparatorOptions<T extends As = "hr">
+  extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `SelectList` or `SelectPopover` components' context will be used.
    */
   store?: SelectStore;
-};
+}
 
 export type SelectSeparatorProps<T extends As = "hr"> = Props<
   SelectSeparatorOptions<T>

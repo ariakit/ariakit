@@ -7,10 +7,9 @@ import { As, Props } from "../utils/types";
 import { PopoverStore } from "./popover-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a description element for a popover. This hook
- * must be used in a component that's wrapped with `Popover` so the
- * `aria-describedby` prop is properly set on the popover element.
+ * Returns props to create a `PopoverDescription` component. This hook must be
+ * used in a component that's wrapped with `Popover` so the `aria-describedby`
+ * prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -27,9 +26,9 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
 );
 
 /**
- * A component that renders a description in a popover. This component must be
- * wrapped with `Popover` so the `aria-describedby` prop is properly set on the
- * popover element.
+ * Renders a description in a popover. This component must be wrapped with
+ * `Popover` so the `aria-describedby` prop is properly set on the popover
+ * element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -50,16 +49,14 @@ if (process.env.NODE_ENV !== "production") {
   PopoverDescription.displayName = "PopoverDescription";
 }
 
-export type PopoverDescriptionOptions<T extends As = "p"> = Omit<
-  DialogDescriptionOptions<T>,
-  "store"
-> & {
+export interface PopoverDescriptionOptions<T extends As = "p">
+  extends DialogDescriptionOptions<T> {
   /**
    * Object returned by the `usePopoverStore` hook. If not provided, the parent
    * `Popover` component's context will be used.
    */
   store?: PopoverStore;
-};
+}
 
 export type PopoverDescriptionProps<T extends As = "p"> = Props<
   PopoverDescriptionOptions<T>

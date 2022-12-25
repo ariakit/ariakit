@@ -31,8 +31,7 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select item.
+ * Returns props to create a `SelectItem` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -157,12 +156,12 @@ export const useSelectItem = createHook<SelectItemOptions>(
 );
 
 /**
- * A component that renders a select item inside a select list or select
- * popover. The `role` prop will be automatically set based on the `SelectList`
- * or `SelectPopover` own `role` prop. For example, if the `SelectPopover`
- * component's `role` prop is set to `listbox` (default), the `SelectItem`
- * `role` will be set to `option`. By default, the `value` prop will be rendered
- * as the children, but this can be overriden.
+ * Renders a select item inside a select list or select popover. The `role` prop
+ * will be automatically set based on the `SelectList` or `SelectPopover` own
+ * `role` prop. For example, if the `SelectPopover` component's `role` prop is
+ * set to `listbox` (default), the `SelectItem` `role` will be set to `option`.
+ * By default, the `value` prop will be rendered as the children, but this can
+ * be overriden.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -183,49 +182,44 @@ if (process.env.NODE_ENV !== "production") {
   SelectItem.displayName = "SelectItem";
 }
 
-export type SelectItemOptions<T extends As = "div"> = Omit<
-  CompositeItemOptions<T>,
-  "store" | "preventScrollOnKeyDown"
-> &
-  Omit<CompositeHoverOptions<T>, "store"> & {
-    /**
-     * Object returned by the `useSelectStore` hook. If not provided, the
-     * parent `SelectList` or `SelectPopover` components' context will be
-     * used.
-     */
-    store?: SelectStore;
-    /**
-     * The value of the item. This will be rendered as the children by default.
-     *   - If `setValueOnClick` is set to `true` on this component, the
-     *     `select.value` state will be set to this value when the user clicks
-     *     on it.
-     *   - If `select.setValueOnMove` is set to `true` on the select store, the
-     *     `select.value` state will be set to this value when the user moves to
-     *     it (which is usually the case when moving through the items using the
-     *     keyboard).
-     * @example
-     * ```jsx
-     * <SelectItem value="Apple" />
-     * ```
-     */
-    value?: string;
-    /**
-     * Whether to hide the select when this item is clicked. By default, it's
-     * `true` when the `value` prop is also provided.
-     */
-    hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether to set the select value with this item's value, if any, when this
-     * item is clicked. By default, it's `true` when the `value` prop is also
-     * provided.
-     */
-    setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-    /**
-     * Whether the scroll behavior should be prevented when pressing arrow keys
-     * on the first or the last items.
-     * @default true
-     */
-    preventScrollOnKeyDown?: CompositeItemOptions["preventScrollOnKeyDown"];
-  };
+export interface SelectItemOptions<T extends As = "div">
+  extends CompositeItemOptions<T>,
+    CompositeHoverOptions<T> {
+  /**
+   * Object returned by the `useSelectStore` hook. If not provided, the parent
+   * `SelectList` or `SelectPopover` components' context will be used.
+   */
+  store?: SelectStore;
+  /**
+   * The value of the item. This will be rendered as the children by default.
+   *   - If `setValueOnClick` is set to `true` on this component, the
+   *     `select.value` state will be set to this value when the user clicks on
+   *     it.
+   *   - If `select.setValueOnMove` is set to `true` on the select store, the
+   *     `select.value` state will be set to this value when the user moves to
+   *     it (which is usually the case when moving through the items using the
+   *     keyboard).
+   * @example
+   * ```jsx
+   * <SelectItem value="Apple" />
+   * ```
+   */
+  value?: string;
+  /**
+   * Whether to hide the select when this item is clicked. By default, it's
+   * `true` when the `value` prop is also provided.
+   */
+  hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether to set the select value with this item's value, if any, when this
+   * item is clicked. By default, it's `true` when the `value` prop is also
+   * provided.
+   */
+  setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * @default true
+   */
+  preventScrollOnKeyDown?: CompositeItemOptions["preventScrollOnKeyDown"];
+}
 
 export type SelectItemProps<T extends As = "div"> = Props<SelectItemOptions<T>>;

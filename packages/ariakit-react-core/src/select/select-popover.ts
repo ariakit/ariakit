@@ -12,8 +12,7 @@ import { As, Props } from "../utils/types";
 import { SelectListOptions, useSelectList } from "./select-list";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a select popover.
+ * Returns props to create a `SelectPopover` component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -93,9 +92,9 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
 );
 
 /**
- * A component that renders a select popover. The `role` prop is set to
- * `listbox` by default, but can be overriden by any other valid select popup
- * role (`listbox`, `menu`, `tree`, `grid` or `dialog`).
+ * Renders a select popover. The `role` prop is set to `listbox` by default, but
+ * can be overriden by any other valid select popup role (`listbox`, `menu`,
+ * `tree`, `grid` or `dialog`).
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -116,8 +115,9 @@ if (process.env.NODE_ENV !== "production") {
   SelectPopover.displayName = "SelectPopover";
 }
 
-export type SelectPopoverOptions<T extends As = "div"> = SelectListOptions<T> &
-  Omit<PopoverOptions<T>, "store">;
+export interface SelectPopoverOptions<T extends As = "div">
+  extends SelectListOptions<T>,
+    Omit<PopoverOptions<T>, "store"> {}
 
 export type SelectPopoverProps<T extends As = "div"> = Props<
   SelectPopoverOptions<T>

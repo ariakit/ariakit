@@ -15,10 +15,7 @@ import { TabContext } from "./tab-context";
 import { TabStore } from "./tab-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a tab element. The underlying element must be
- * wrapped in a `TabList` component or a component that implements the
- * `useTabList` props.
+ * Returns props to create a `Tab` component.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -99,8 +96,8 @@ export const useTab = createHook<TabOptions>(
 );
 
 /**
- * A component that renders a tab element. The underlying element must be
- * wrapped in a `TabList` component.
+ * Renders a tab element. The underlying element must be wrapped in a `TabList`
+ * component.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -122,15 +119,17 @@ if (process.env.NODE_ENV !== "production") {
   Tab.displayName = "Tab";
 }
 
-export type TabOptions<T extends As = "button"> = Omit<
-  CompositeItemOptions<T>,
-  "store"
-> & {
+export interface TabOptions<T extends As = "button">
+  extends CompositeItemOptions<T> {
   /**
    * Object returned by the `useTabStore` hook. If not provided, the parent
    * `TabList` component's context will be used.
    */
   store?: TabStore;
-};
+  /**
+   * @default true
+   */
+  accessibleWhenDisabled?: CompositeItemOptions["accessibleWhenDisabled"];
+}
 
 export type TabProps<T extends As = "button"> = Props<TabOptions<T>>;

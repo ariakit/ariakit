@@ -4,9 +4,7 @@ import { As, Options, Props } from "../utils/types";
 import { PopoverStore } from "./popover-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element that will serve as the popover's
- * anchor. The popover will be positioned relative to this element.
+ * Returns props to create a `PopoverAnchor` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -27,8 +25,8 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
 );
 
 /**
- * A component that renders an element that will serve as the popover's anchor.
- * The popover will be positioned relative to this element.
+ * Renders an element that will serve as the popover's anchor. The popover will
+ * be positioned relative to this element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -46,12 +44,12 @@ if (process.env.NODE_ENV !== "production") {
   PopoverAnchor.displayName = "PopoverAnchor";
 }
 
-export type PopoverAnchorOptions<T extends As = "div"> = Options<T> & {
+export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `usePopoverStore` hook.
    */
   store: PopoverStore;
-};
+}
 
 export type PopoverAnchorProps<T extends As = "div"> = Props<
   PopoverAnchorOptions<T>

@@ -6,8 +6,7 @@ import { RadioContext } from "./radio-context";
 import { RadioStore } from "./radio-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a radio group element.
+ * Returns props to create a `RadioGroup` component.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
@@ -41,7 +40,7 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
 );
 
 /**
- * A component that renders a radio group element.
+ * Renders a radio group element.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
@@ -61,14 +60,12 @@ if (process.env.NODE_ENV !== "production") {
   RadioGroup.displayName = "RadioGroup";
 }
 
-export type RadioGroupOptions<T extends As = "div"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> & {
+export interface RadioGroupOptions<T extends As = "div">
+  extends CompositeOptions<T> {
   /**
    * Object returned by the `useRadioStore` hook.
    */
   store: RadioStore;
-};
+}
 
 export type RadioGroupProps<T extends As = "div"> = Props<RadioGroupOptions<T>>;

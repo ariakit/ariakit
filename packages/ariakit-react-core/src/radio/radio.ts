@@ -38,8 +38,7 @@ function isNativeRadio(tagName?: string, type?: string) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a radio button element.
+ * Returns props to create a `Radio` component.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
@@ -138,7 +137,7 @@ export const useRadio = createHook<RadioOptions>(
 );
 
 /**
- * A component that renders a radio button element.
+ * Renders a radio button element.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
@@ -158,10 +157,8 @@ if (process.env.NODE_ENV !== "production") {
   Radio.displayName = "Radio";
 }
 
-export type RadioOptions<T extends As = "input"> = Omit<
-  CompositeItemOptions<T>,
-  "store"
-> & {
+export interface RadioOptions<T extends As = "input">
+  extends CompositeItemOptions<T> {
   /**
    * Object returned by the `useRadioStore` hook. If not provided, the parent
    * `RadioGroup` component's context will be used.
@@ -181,6 +178,6 @@ export type RadioOptions<T extends As = "input"> = Omit<
   onChange?: BivariantCallback<
     (event: SyntheticEvent<HTMLInputElement>) => void
   >;
-};
+}
 
 export type RadioProps<T extends As = "input"> = Props<RadioOptions<T>>;

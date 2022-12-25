@@ -10,9 +10,7 @@ import { PopoverAnchorOptions, usePopoverAnchor } from "./popover-anchor";
 import { PopoverContext } from "./popover-context";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that controls the visibility of the
- * popover when clicked.
+ * Returns props to create a `PopoverDisclosure` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -54,8 +52,7 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
 );
 
 /**
- * A component that renders a button that controls the visibility of the popover
- * when clicked.
+ * Renders a button that controls the visibility of the popover when clicked.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -75,11 +72,9 @@ if (process.env.NODE_ENV !== "production") {
   PopoverDisclosure.displayName = "PopoverDisclosure";
 }
 
-export type PopoverDisclosureOptions<T extends As = "button"> = Omit<
-  DialogDisclosureOptions<T>,
-  "store"
-> &
-  PopoverAnchorOptions<T>;
+export interface PopoverDisclosureOptions<T extends As = "button">
+  extends PopoverAnchorOptions<T>,
+    Omit<DialogDisclosureOptions<T>, "store"> {}
 
 export type PopoverDisclosureProps<T extends As = "button"> = Props<
   PopoverDisclosureOptions<T>

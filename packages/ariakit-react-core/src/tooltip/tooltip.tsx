@@ -17,8 +17,7 @@ import { TooltipContext } from "./tooltip-context";
 import { TooltipStore } from "./tooltip-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a tooltip element.
+ * Returns props to create a `Tooltip` component.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -122,7 +121,7 @@ export const useTooltip = createHook<TooltipOptions>(
 );
 
 /**
- * A component that renders a tooltip element.
+ * Renders a tooltip element.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx
@@ -140,35 +139,33 @@ if (process.env.NODE_ENV !== "production") {
   Tooltip.displayName = "Tooltip";
 }
 
-export type TooltipOptions<T extends As = "div"> = Omit<
-  DisclosureContentOptions<T>,
-  "store"
-> &
-  Omit<PortalOptions<T>, "preserveTabOrder"> & {
-    /**
-     * Object returned by the `useTooltipStore` hook.
-     */
-    store: TooltipStore;
-    /**
-     * Determines whether the tooltip will be hidden when the user presses the
-     * Escape key.
-     * @default true
-     */
-    hideOnEscape?: BooleanOrCallback<KeyboardEvent>;
-    /**
-     * Determines whether the tooltip will be hidden when the user presses the
-     * Control key. This has been proposed as an alternative to the Escape key,
-     * which may introduce some issues, especially when tooltips are used within
-     * dialogs that also hide on Escape. See
-     * https://github.com/w3c/aria-practices/issues/1506
-     * @default false
-     */
-    hideOnControl?: BooleanOrCallback<KeyboardEvent>;
-    /**
-     * Props that will be passed to the popover wrapper element. This element
-     * will be used to position the popover.
-     */
-    wrapperProps?: HTMLAttributes<HTMLDivElement>;
-  };
+export interface TooltipOptions<T extends As = "div">
+  extends DisclosureContentOptions<T>,
+    Omit<PortalOptions<T>, "preserveTabOrder"> {
+  /**
+   * Object returned by the `useTooltipStore` hook.
+   */
+  store: TooltipStore;
+  /**
+   * Determines whether the tooltip will be hidden when the user presses the
+   * Escape key.
+   * @default true
+   */
+  hideOnEscape?: BooleanOrCallback<KeyboardEvent>;
+  /**
+   * Determines whether the tooltip will be hidden when the user presses the
+   * Control key. This has been proposed as an alternative to the Escape key,
+   * which may introduce some issues, especially when tooltips are used within
+   * dialogs that also hide on Escape. See
+   * https://github.com/w3c/aria-practices/issues/1506
+   * @default false
+   */
+  hideOnControl?: BooleanOrCallback<KeyboardEvent>;
+  /**
+   * Props that will be passed to the popover wrapper element. This element
+   * will be used to position the popover.
+   */
+  wrapperProps?: HTMLAttributes<HTMLDivElement>;
+}
 
 export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;

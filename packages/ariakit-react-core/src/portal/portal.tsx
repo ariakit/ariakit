@@ -56,8 +56,7 @@ function queueFocus(element?: HTMLElement | null) {
 }
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an element using `ReactDOM.createPortal`.
+ * Returns props to create a `Portal` component.
  * @see https://ariakit.org/components/portal
  * @example
  * ```jsx
@@ -252,7 +251,7 @@ export const usePortal = createHook<PortalOptions>(
 );
 
 /**
- * A component that renders an element using `ReactDOM.createPortal`.
+ * Renders an element using `ReactDOM.createPortal`.
  * @see https://ariakit.org/components/portal
  * @example
  * ```jsx
@@ -268,7 +267,7 @@ if (process.env.NODE_ENV !== "production") {
   Portal.displayName = "Portal";
 }
 
-export type PortalOptions<T extends As = "div"> = Options<T> & {
+export interface PortalOptions<T extends As = "div"> extends Options<T> {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
    * same as the order in which the `Portal` component was mounted in the React
@@ -312,6 +311,6 @@ export type PortalOptions<T extends As = "div"> = Options<T> & {
     | ((element: HTMLElement) => HTMLElement | null)
     | HTMLElement
     | null;
-};
+}
 
 export type PortalProps<T extends As = "div"> = Props<PortalOptions<T>>;

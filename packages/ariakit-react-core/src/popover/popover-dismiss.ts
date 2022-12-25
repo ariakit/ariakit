@@ -7,8 +7,7 @@ import { As, Props } from "../utils/types";
 import { PopoverStore } from "./popover-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a button that hides a popover.
+ * Returns props to create a `PopoverDismiss` component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -25,7 +24,7 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>((props) => {
 });
 
 /**
- * A component that renders a button that hides a popover.
+ * Renders a button that hides a popover.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
@@ -46,16 +45,14 @@ if (process.env.NODE_ENV !== "production") {
   PopoverDismiss.displayName = "PopoverDismiss";
 }
 
-export type PopoverDismissOptions<T extends As = "button"> = Omit<
-  DialogDismissOptions<T>,
-  "store"
-> & {
+export interface PopoverDismissOptions<T extends As = "button">
+  extends DialogDismissOptions<T> {
   /**
    * Object returned by the `usePopoverStore` hook. If not provided, the parent
    * `Popover` component's context will be used.
    */
   store?: PopoverStore;
-};
+}
 
 export type PopoverDismissProps<T extends As = "button"> = Props<
   PopoverDismissOptions<T>

@@ -11,8 +11,7 @@ import { As, Props } from "../utils/types";
 import { ToolbarItemOptions, useToolbarItem } from "./toolbar-item";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render an input as a toolbar item.
+ * Returns props to create a `ToolbarInput` component.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -32,7 +31,7 @@ export const useToolbarInput = createHook<ToolbarInputOptions>(
 );
 
 /**
- * A component that renders an input as a toolbar item.
+ * Renders an input as a toolbar item.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
@@ -53,11 +52,9 @@ if (process.env.NODE_ENV !== "production") {
   ToolbarInput.displayName = "ToolbarInput";
 }
 
-export type ToolbarInputOptions<T extends As = "input"> = Omit<
-  CompositeInputOptions<T>,
-  "store"
-> &
-  ToolbarItemOptions<T>;
+export interface ToolbarInputOptions<T extends As = "input">
+  extends ToolbarItemOptions<T>,
+    CompositeInputOptions<T> {}
 
 export type ToolbarInputProps<T extends As = "input"> = Props<
   ToolbarInputOptions<T>

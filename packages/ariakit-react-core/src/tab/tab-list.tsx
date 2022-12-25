@@ -6,8 +6,7 @@ import { TabContext } from "./tab-context";
 import { TabStore } from "./tab-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a tab list element.
+ * Returns props to create a `TabList` component.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -46,7 +45,7 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
 });
 
 /**
- * A component that renders a tab list element.
+ * Renders a tab list element.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
@@ -68,14 +67,12 @@ if (process.env.NODE_ENV !== "production") {
   TabList.displayName = "TabList";
 }
 
-export type TabListOptions<T extends As = "div"> = Omit<
-  CompositeOptions<T>,
-  "store"
-> & {
+export interface TabListOptions<T extends As = "div">
+  extends CompositeOptions<T> {
   /**
    * Object returned by the `useTabStore` hook.
    */
   store: TabStore;
-};
+}
 
 export type TabListProps<T extends As = "div"> = Props<TabListOptions<T>>;

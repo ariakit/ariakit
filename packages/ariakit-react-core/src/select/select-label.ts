@@ -9,11 +9,10 @@ import { As, Options, Props } from "../utils/types";
 import { SelectStore } from "./select-store";
 
 /**
- * A component hook that returns props that can be passed to `Role` or any other
- * Ariakit component to render a label for the `Select` component. Since it's
- * not a native select element, we can't use the native label element. The
- * `SelectLabel` component will move focus and click on the `Select` component
- * when the user clicks on the label.
+ * Returns props to create a `SelectLabel` component. Since it's not a native
+ * select element, we can't use the native label element. The `SelectLabel`
+ * component will move focus and click on the `Select` component when the user
+ * clicks on the label.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -58,10 +57,10 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
 );
 
 /**
- * A component that renders a label for the `Select` component. Since it's not a
- * native select element, we can't use the native label element. The
- * `SelectLabel` component will move focus and click on the `Select` component
- * when the user clicks on the label.
+ * Renders a label for the `Select` component. Since it's not a native select
+ * element, we can't use the native label element. The `SelectLabel` component
+ * will move focus and click on the `Select` component when the user clicks on
+ * the label.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -83,13 +82,13 @@ if (process.env.NODE_ENV !== "production") {
   SelectLabel.displayName = "SelectLabel";
 }
 
-export type SelectLabelOptions<T extends As = "div"> = Options<T> & {
+export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `Select` component's context will be used.
    */
   store: SelectStore;
-};
+}
 
 export type SelectLabelProps<T extends As = "div"> = Props<
   SelectLabelOptions<T>
