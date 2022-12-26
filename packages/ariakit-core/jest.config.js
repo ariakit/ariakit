@@ -3,7 +3,8 @@ const { join } = require("path");
 const config = require("../../jest.config");
 const pkg = require("./package.json");
 
-const { projects, ...baseConfig } = config;
+const { projects, collectCoverageFrom, reporters, testTimeout, ...baseConfig } =
+  config;
 
 /** @type {import("@jest/types").Config.ProjectConfig} */
 module.exports = {

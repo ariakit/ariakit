@@ -1,0 +1,51 @@
+@import url("../button/style.css");
+
+[data-backdrop] {
+  @apply
+    flex
+    justify-center
+    items-center
+    md:items-start
+    [backdrop-filter:blur(4px)]
+    bg-black/10
+    dark:bg-black/50
+  ;
+}
+
+.dialog {
+  @apply
+    w-full
+    max-w-[calc(100%-theme("spacing.4")*2)]
+    max-h-[calc(100%-theme("spacing.4")*2)]
+    md:max-h-[calc(100%-theme("spacing.24")*2)]
+    h-fit
+    sm:w-[420px]
+    my-4
+    md:my-24
+    overflow-auto
+    z-50
+    flex
+    flex-col
+    gap-4
+    p-4
+    sm:p-6
+    rounded-2xl
+    dark:border
+    dark:border-solid
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
+    shadow-2xl
+    focus-visible:ariakit-outline
+  ;
+}
+
+.heading {
+  @apply
+    m-0
+    text-xl
+    font-semibold
+  ;
+}

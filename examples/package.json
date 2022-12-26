@@ -1,0 +1,8 @@
+{
+  "name": "examples",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@ariakit/react": "0.0.1"
+  }
+}

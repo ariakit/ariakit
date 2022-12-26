@@ -4,7 +4,8 @@ const React = require("react");
 const config = require("../../jest.config");
 const pkg = require("./package.json");
 
-const { projects, ...baseConfig } = config;
+const { projects, collectCoverageFrom, reporters, testTimeout, ...baseConfig } =
+  config;
 
 const react18OnlyTests = ["playground"];
 

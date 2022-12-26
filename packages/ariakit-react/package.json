@@ -1,0 +1,51 @@
+{
+  "name": "@ariakit/react",
+  "version": "0.0.1",
+  "description": "Toolkit for building accessible web apps with React",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://ariakit.org",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "unpkg": "umd/ariakit-react.min.js",
+  "types": "ts/index.d.ts",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-react"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "scripts": {
+    "lint": "eslint . --ext js,ts,tsx",
+    "build": "node ../../scripts/build",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "keywords": [
+    "ariakit",
+    "react",
+    "a11y",
+    "ui",
+    "toolkit",
+    "components"
+  ],
+  "dependencies": {
+    "@ariakit/core": "0.0.1",
+    "@ariakit/react-core": "0.0.1",
+    "@floating-ui/dom": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
+  }
+}

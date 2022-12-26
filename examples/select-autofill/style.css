@@ -1,0 +1,30 @@
+@import url("../select/style.css");
+
+.input {
+  @apply
+    h-10
+    px-4
+    text-base
+    w-full
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
+    text-black
+    dark:text-white
+    bg-gray-150/40
+    dark:bg-gray-850
+    hover:bg-gray-150
+    dark:hover:bg-gray-900
+    shadow-input
+    dark:shadow-input-dark
+    focus-visible:ariakit-outline-input
+  ;
+}
+
+.select {
+  @apply
+    [&[data-autofill]]:bg-[rgb(219_237_255)]
+    [&[data-autofill]]:dark:bg-[rgb(36_107_179)]
+  ;
+}

@@ -1,0 +1,79 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
+.select {
+  @apply
+    flex
+    w-[200px]
+    h-10
+    cursor-default
+    items-center
+    justify-between
+    gap-1
+    rounded-md
+    px-4
+    text-base
+    whitespace-nowrap
+    bg-black/[7.5%]
+    hover:bg-black/[11.25%]
+    aria-expanded:bg-black/[11.25%]
+    dark:bg-white/[7.5%]
+    dark:hover:bg-white/[11.25%]
+    dark:aria-expanded:bg-white/[11.25%]
+    shadow-button
+    dark:shadow-button-dark
+    focus-visible:ariakit-outline-input
+    aria-disabled:opacity-50
+  ;
+}
+
+.popover {
+  @apply
+    z-50
+    flex
+    flex-col
+    rounded-lg
+    border
+    p-2
+    overflow-auto
+    overscroll-contain
+    border-solid
+    border-gray-250
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
+    shadow-lg
+    dark:shadow-lg-dark
+    focus-visible:ariakit-outline-input
+    max-h-[min(var(--popover-available-height,300px),300px)]
+  ;
+}
+
+.select-item {
+  @apply
+    flex
+    gap-2
+    items-center
+    scroll-m-2
+    cursor-default
+    rounded
+    p-2
+    ![outline:none]
+    aria-disabled:opacity-50
+    active-item:text-white
+    active-item:bg-blue-600
+  ;
+}

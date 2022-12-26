@@ -1,0 +1,39 @@
+@import url("../select-combobox/style.css");
+@import url("../button/style.css");
+
+.wrapper {
+  @apply
+    p-4
+    border-l-4
+    border-transparent
+  ;
+}
+
+.focus-within {
+  @apply
+    border-blue-200
+    dark:border-blue-600/40
+  ;
+}
+
+.combobox {
+  @apply
+    pr-10
+  ;
+}
+
+.combobox-cancel {
+  @apply
+    opacity-0
+    pointer-events-none
+    absolute
+    h-8
+    w-8
+    p-0
+    top-3
+    right-1
+    rounded
+    [&[data-visible]]:opacity-100
+    [&[data-visible]]:pointer-events-auto
+  ;
+}

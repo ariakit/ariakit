@@ -1,0 +1,20 @@
+@import url("../combobox/style.css");
+@import url("../separator/style.css");
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default
+    [&+*]:scroll-mt-11
+  ;
+}
+
+.no-results {
+  @apply
+    gap-2
+    p-2
+  ;
+}

@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/core",
-  "version": "0.1.0-next.26",
+  "version": "0.0.1",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",
@@ -31,8 +31,5 @@
   "keywords": [
     "ariakit",
     "core"
-  ],
-  "dependencies": {
-    "ariakit-utils": "0.17.0-next.26"
-  }
+  ]
 }

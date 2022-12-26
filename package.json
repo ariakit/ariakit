@@ -35,7 +35,8 @@
     "prepare": "husky install"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples"
   ],
   "lerna": {
     "version": "independent"

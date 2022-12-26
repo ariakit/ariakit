@@ -1,0 +1,34 @@
+@import url("../select/style.css");
+
+.photo {
+  @apply
+    w-12
+    h-12
+    rounded-full
+  ;
+}
+
+.select {
+  @apply
+    w-80
+    justify-start
+    h-auto
+    gap-3
+    p-4
+  ;
+}
+
+.value {
+  @apply
+    flex
+    flex-col
+    items-start
+    flex-1
+  ;
+}
+
+.email {
+  @apply
+    opacity-80
+  ;
+}

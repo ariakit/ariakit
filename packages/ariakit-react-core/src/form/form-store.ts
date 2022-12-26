@@ -114,7 +114,7 @@ export interface FormStoreFunctions<T extends Values = Values>
    *   }
    * });
    */
-  useValidate: (callback: Core.FormStoreCallback) => void;
+  useValidate: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
   /**
    * Custom hook that accepts a callback that will be used to submit the form
    * when `form.submit` is called.
@@ -128,7 +128,7 @@ export interface FormStoreFunctions<T extends Values = Values>
    *   }
    * });
    */
-  useSubmit: (callback: Core.FormStoreCallback) => void;
+  useSubmit: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
 }
 
 export interface FormStoreOptions<T extends Values = Values>

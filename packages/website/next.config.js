@@ -1,9 +1,14 @@
 // @ts-check
+const path = require("path");
 const transpileModules = require("next-transpile-modules");
 const PagesWebpackPlugin = require("../../scripts/pages/pages-webpack-plugin");
 const pages = require("./pages.config");
 
-const withTranspileModules = transpileModules(["ariakit"]);
+const withTranspileModules = transpileModules([
+  "ariakit",
+  "@ariakit/react",
+  path.resolve(__dirname, "../../examples"),
+]);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {

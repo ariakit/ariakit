@@ -1,0 +1,27 @@
+@import url("../menu/style.css");
+
+.menu {
+  @apply
+    max-h-max
+    overflow-visible
+    [--menu-origin-inline:calc(var(--popover-anchor-width)/2)]
+    [&[data-placement^="bottom"]]:origin-[var(--menu-origin-inline)_-11px]
+    [&[data-placement^="top"]]:origin-[var(--menu-origin-inline)_calc(100%+11px)]
+  ;
+}
+
+.menu-arrow {
+  @apply
+    [&>svg]:fill-white
+    [&>svg]:stroke-gray-250
+    [&>svg]:dark:fill-gray-700
+    [&>svg]:dark:stroke-gray-600
+  ;
+}
+
+.menu-item {
+  @apply
+    aria-disabled:text-black/30
+    dark:aria-disabled:text-white/30
+  ;
+}

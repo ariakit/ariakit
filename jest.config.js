@@ -9,14 +9,14 @@ module.exports = {
     printBasicPrototype: false,
   },
   projects: [
-    "<rootDir>/packages/*/jest.config.js",
     "<rootDir>/blog/jest.config.js",
     "<rootDir>/docs/jest.config.js",
+    "<rootDir>/examples/jest.config.js",
+    "<rootDir>/packages/*/jest.config.js",
   ],
   collectCoverageFrom: [
-    "packages/ariakit/src/**/*.{js,ts,tsx}",
-    "packages/ariakit-utils/src/**/*.{js,ts,tsx}",
-    "!**/__examples__/**",
+    "packages/@ariakit/core/src/**/*.{js,ts,tsx}",
+    "packages/@ariakit/react-core/src/**/*.{js,ts,tsx}",
     "!**/*test.{js,ts,tsx}",
     "!**/test-*.{js,ts}",
   ],

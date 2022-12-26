@@ -22,9 +22,6 @@ module.exports = [
     sourceRegExp: /src\/[^\/]+\/[^\/]+\.md$/,
     componentPath,
     metaPath,
-    /**
-     * @param {string} filename
-     */
     getGroup: (filename) => {
       const component = path.basename(path.dirname(filename));
       if (
@@ -46,18 +43,15 @@ module.exports = [
   },
   {
     name: "examples",
-    sourceContext: path.resolve(__dirname, ".."),
-    sourceRegExp: /__examples__\/[^\/]+\/(index\.[tj]sx?|readme\.md)$/,
+    sourceContext: path.resolve(__dirname, "../../examples"),
+    sourceRegExp: /examples\/[^\/]+\/(index\.[tj]sx?|readme\.md)$/,
     componentPath,
     metaPath,
-    /**
-     * @param {string} filename
-     */
-    getGroup: (filename) => {
-      if (!filename.includes("ariakit/src")) return null;
-      const group = path.basename(path.resolve(filename, "../../../"));
-      return upperFirst(camelCase(group));
-    },
+    // getGroup: (filename) => {
+    //   if (!filename.includes("ariakit/src")) return null;
+    //   const group = path.basename(path.resolve(filename, "../../../"));
+    //   return upperFirst(camelCase(group));
+    // },
   },
   {
     name: "blog",

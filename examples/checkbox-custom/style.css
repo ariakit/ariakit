@@ -1,0 +1,19 @@
+@import url("../checkbox/style.css");
+
+.checkbox {
+  @apply
+    w-5
+    h-5
+    rounded
+    flex
+    justify-center
+    items-center
+    border
+    text-blue-900
+    bg-blue-200/40
+    border-blue-600
+    dark:text-blue-100
+    dark:bg-blue-600/25
+    dark:border-blue-200/40
+  ;
+}

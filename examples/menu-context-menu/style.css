@@ -1,0 +1,16 @@
+@import url("../menu/style.css");
+
+.wrapper {
+  @apply
+    flex
+    items-center
+    justify-center
+    py-10
+    px-16
+    rounded-lg
+    border-2
+    border-dashed
+    border-gray-250
+    dark:border-gray-450
+  ;
+}

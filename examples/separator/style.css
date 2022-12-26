@@ -1,0 +1,10 @@
+.separator {
+  @apply
+    w-full
+    my-2
+    h-0
+    border-t
+    border-gray-250
+    dark:border-gray-550
+  ;
+}
