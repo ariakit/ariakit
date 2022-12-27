@@ -1,4 +1,4 @@
-import { getByRole, hover, press, render } from "ariakit-test";
+import { getByRole, hover, press, render } from "@ariakit/test";
 import Example from ".";
 
 const getToolbar = () => getByRole("toolbar");

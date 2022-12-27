@@ -1,4 +1,4 @@
-import { click, getByRole, press, render } from "ariakit-test";
+import { click, getByRole, press, render } from "@ariakit/test";
 import Example from ".";
 
 function getTab(name: string) {

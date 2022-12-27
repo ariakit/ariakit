@@ -6,7 +6,7 @@ import {
   queryByRole,
   render,
   select,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getPopover = () => queryByRole("dialog", { hidden: true });

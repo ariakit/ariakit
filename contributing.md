@@ -255,7 +255,7 @@ Let's create a test for our example:
 `packages/ariakit/src/my-component/__examples__/my-component/test.tsx`
 
 ```tsx
-import { render, getByText } from "ariakit-test";
+import { render, getByText } from "@ariakit/test";
 import Example from ".";
 
 test("my component", () => {

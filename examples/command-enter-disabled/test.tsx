@@ -1,4 +1,4 @@
-import { getByText, press, render } from "ariakit-test";
+import { getByText, press, render } from "@ariakit/test";
 import Example from ".";
 
 test("enter doesn't trigger the alert", async () => {

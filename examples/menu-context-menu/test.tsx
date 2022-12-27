@@ -5,8 +5,8 @@ import {
   getByText,
   press,
   render,
-} from "ariakit-test";
-import { nextFrame } from "ariakit-test/__utils";
+} from "@ariakit/test";
+import { nextFrame } from "@ariakit/test/__utils";
 import Example from ".";
 
 const getContextMenuArea = () => getByText("Right click here");

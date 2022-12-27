@@ -1,4 +1,4 @@
-import { getByRole, render } from "ariakit-test";
+import { getByRole, render } from "@ariakit/test";
 import Example from ".";
 
 test("markup", () => {

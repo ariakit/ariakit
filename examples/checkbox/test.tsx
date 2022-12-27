@@ -1,4 +1,4 @@
-import { click, getByLabelText, getByRole, press, render } from "ariakit-test";
+import { click, getByLabelText, getByRole, press, render } from "@ariakit/test";
 import Example from ".";
 
 test("markup", async () => {

@@ -1,4 +1,4 @@
-import { click, getByRole, press, queryByRole, render } from "ariakit-test";
+import { click, getByRole, press, queryByRole, render } from "@ariakit/test";
 import Example from ".";
 
 const getDisclosure = () => getByRole("link", { name: "Tweet" });

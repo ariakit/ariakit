@@ -1,4 +1,4 @@
-import { getByRole, press, render } from "ariakit-test";
+import { getByRole, press, render } from "@ariakit/test";
 import Example from ".";
 
 test("show focus-within styles", async () => {

@@ -1,4 +1,4 @@
-import { getByRole, press, render } from "ariakit-test";
+import { getByRole, press, render } from "@ariakit/test";
 import Example from ".";
 
 const getButton = (name: string) => getByRole("button", { name });

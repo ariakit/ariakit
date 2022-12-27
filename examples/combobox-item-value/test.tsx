@@ -1,4 +1,4 @@
-import { getByRole, press, render, type } from "ariakit-test";
+import { getByRole, press, render, type } from "@ariakit/test";
 import Example from ".";
 
 const getOption = (name: string) =>

@@ -8,7 +8,7 @@ import {
   sleep,
   type,
   waitFor,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getMenuButton = () => getByRole("button", { name: "Edit" });

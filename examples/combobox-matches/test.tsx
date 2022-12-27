@@ -6,7 +6,7 @@ import {
   press,
   render,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import list from "./list";
 import Example from ".";
 

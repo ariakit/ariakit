@@ -5,7 +5,7 @@ import {
   getByRole,
   render,
   waitFor,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getNativeSelect = () => getAllByLabelText("Role")[0]!;

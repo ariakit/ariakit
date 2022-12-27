@@ -5,7 +5,7 @@ import {
   queryAllByText,
   render,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getInput = (name: string) => getByRole("textbox", { name });

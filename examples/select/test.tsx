@@ -7,7 +7,7 @@ import {
   render,
   sleep,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getLabel = () => getByText("Favorite fruit");

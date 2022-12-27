@@ -6,7 +6,7 @@ import {
   queryAllByText,
   render,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getSubmit = () => getByRole("button", { name: "Submit" });

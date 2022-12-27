@@ -1,4 +1,11 @@
-import { click, getByRole, getByText, press, render, type } from "ariakit-test";
+import {
+  click,
+  getByRole,
+  getByText,
+  press,
+  render,
+  type,
+} from "@ariakit/test";
 import Example from ".";
 
 const getCombobox = () => getByRole("combobox");

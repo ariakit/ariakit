@@ -7,7 +7,7 @@ import {
   render,
   sleep,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getMenu = (name: string) =>

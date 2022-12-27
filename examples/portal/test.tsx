@@ -1,4 +1,4 @@
-import { getByText, render } from "ariakit-test";
+import { getByText, render } from "@ariakit/test";
 import { axe } from "jest-axe";
 import PortalExample from ".";
 

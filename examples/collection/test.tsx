@@ -1,4 +1,4 @@
-import { findByText, render } from "ariakit-test";
+import { findByText, render } from "@ariakit/test";
 import Example from ".";
 
 test("render correctly", async () => {

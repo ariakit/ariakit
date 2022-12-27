@@ -6,7 +6,7 @@ import {
   press,
   render,
   type,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 const getMenuButton = () => getByRole("button", { name: "Actions" });

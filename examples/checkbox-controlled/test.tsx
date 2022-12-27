@@ -1,4 +1,4 @@
-import { click, getByRole, render } from "ariakit-test";
+import { click, getByRole, render } from "@ariakit/test";
 import Example from ".";
 
 test("change controlled state", async () => {

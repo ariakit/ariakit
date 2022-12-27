@@ -5,7 +5,7 @@ import {
   getByText,
   press,
   render,
-} from "ariakit-test";
+} from "@ariakit/test";
 import Example from ".";
 
 test("correctly traps focus", async () => {

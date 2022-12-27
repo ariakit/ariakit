@@ -1,4 +1,4 @@
-import { blur, getByRole, hover, press, render, waitFor } from "ariakit-test";
+import { blur, getByRole, hover, press, render, waitFor } from "@ariakit/test";
 import Example from ".";
 
 test("show tooltip on hover after timeout", async () => {

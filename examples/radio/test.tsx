@@ -1,4 +1,4 @@
-import { click, getByLabelText, press, render } from "ariakit-test";
+import { click, getByLabelText, press, render } from "@ariakit/test";
 import Example from ".";
 
 test("check radio button on click", async () => {

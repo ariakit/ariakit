@@ -1,4 +1,4 @@
-import { getByRole, getByText, render, waitFor } from "ariakit-test";
+import { getByRole, getByText, render, waitFor } from "@ariakit/test";
 import Example from ".";
 
 test("loading button", async () => {
