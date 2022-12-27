@@ -1,17 +1,19 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { useQuery } from "@tanstack/react-query";
-import pkg from "ariakit/package.json";
+import pkg from "@ariakit/react/package.json";
 import {
   Select,
   SelectArrow,
+  SelectGroup,
+  SelectGroupLabel,
   SelectItem,
   SelectItemCheck,
   SelectLabel,
   SelectPopover,
   SelectSeparator,
   useSelectStore,
-} from "ariakit/select/store";
+} from "@ariakit/react/select";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import tw from "../../utils/tw";
@@ -37,6 +39,13 @@ const style = {
     shadow-button dark:shadow-button-dark
     focus-visible:ariakit-outline-input
   `,
+  group: tw`
+    flex flex-col
+  `,
+  groupLabel: tw`
+    p-2
+    text-sm font-medium text-black/60 dark:text-white/50
+  `,
   item: tw`
     group
     flex items-center gap-1
@@ -55,7 +64,7 @@ const style = {
   `,
 };
 
-async function fetchTags(): Promise<Record<string, string>> {
+async function fetchTags(): Promise<Record<string, Record<string, string>>> {
   return fetch("/api/versions").then((res) => res.json());
 }
 
@@ -68,7 +77,7 @@ export default function VersionSelect() {
     staleTime: process.env.NODE_ENV === "production" ? Infinity : 0,
   });
 
-  const tags = data || { latest: pkg.version };
+  const tags = data || { [pkg.name]: { latest: pkg.version } };
 
   const select = useSelectStore({
     gutter: 4,
@@ -116,10 +125,19 @@ export default function VersionSelect() {
       {selectMounted && (
         <SelectPopover store={select} className={cx(popoverStyle, "text-sm")}>
           <div role="presentation" className={popoverScrollerStyle}>
-            {Object.entries(tags).map(([tag, version]) =>
-              renderItem(version, tag)
-            )}
-            <SelectSeparator className={separatorStyle} />
+            {Object.entries(tags).map(([lib, versions]) => (
+              <Fragment key={lib}>
+                <SelectGroup className={style.group}>
+                  <SelectGroupLabel className={style.groupLabel}>
+                    {lib}
+                  </SelectGroupLabel>
+                  {Object.entries(versions).map(([tag, version]) =>
+                    renderItem(version, tag)
+                  )}
+                </SelectGroup>
+                <SelectSeparator className={separatorStyle} />
+              </Fragment>
+            ))}
             <SelectItem
               as="a"
               href="https://github.com/ariakit/ariakit/blob/main/packages/ariakit/CHANGELOG.md"

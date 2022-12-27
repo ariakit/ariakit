@@ -1,24 +1,23 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import { Playground as PlaygroundContainer } from "@ariakit/playground/playground";
 import { usePlaygroundStore } from "@ariakit/playground/playground-store";
 import vscodeTheme from "@ariakit/playground/themes/vscode";
-import { css } from "@emotion/react";
+import { CompositeOverflow } from "@ariakit/react-core/composite/composite-overflow";
+import { CompositeOverflowDisclosure } from "@ariakit/react-core/composite/composite-overflow-disclosure";
+import { useCompositeOverflowStore } from "@ariakit/react-core/composite/composite-overflow-store";
 import {
   useEvent,
   useId,
   useLazyValue,
   useLiveRef,
   useUpdateEffect,
-} from "ariakit-react-utils/hooks";
-import { hasOwnProperty } from "ariakit-utils/misc";
-import {
-  CompositeOverflow,
-  CompositeOverflowDisclosure,
-  useCompositeOverflowState,
-} from "ariakit/composite";
-import { TabList, TabPanel, useTabState } from "ariakit/tab";
+} from "@ariakit/react-core/utils/hooks";
+
+import { TabList, TabPanel, useTabStore } from "@ariakit/react/tab";
+import { css } from "@emotion/react";
 import dynamic from "next/dynamic";
-import useOverflowList from "packages/website/utils/use-overflow-list";
+import useOverflowList from "../../utils/use-overflow-list";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
@@ -60,16 +59,17 @@ export default function Playground(props: PlaygroundProps) {
   const [firstFile = ""] = Object.keys(playgroundValues);
   const baseId = useId();
   const firstFileId = getTabId(firstFile, baseId);
-  const tab = useTabState({
+  const tab = useTabStore({
     orientation: "both",
     defaultSelectedId: firstFileId,
     selectOnMove: false,
   });
+  const tabSelectedId = tab.useState("selectedId");
   const [expanded, setExpanded] = useState(false);
   const expandedRef = useLiveRef(expanded);
   const filesString = Object.keys(playgroundValues).join(", ");
   const files = useMemo(() => Object.keys(playgroundValues), [filesString]);
-  const overflow = useCompositeOverflowState({
+  const overflow = useCompositeOverflowStore({
     placement: "bottom-end",
     flip: false,
     shift: -4,
@@ -77,39 +77,42 @@ export default function Playground(props: PlaygroundProps) {
   });
   const [visibleTabs, hiddenTabs] = useOverflowList({
     list: files,
-    getContainer: useEvent(() => tab.baseRef.current),
-    getElements: useEvent(() => tab.items.map((item) => item.ref.current)),
+    getContainer: useEvent(() => tab.getState().baseElement),
+    getElements: useEvent(() =>
+      tab.getState().items.map((item) => item.element || null)
+    ),
     setList: useCallback(
       ([nextVisible, nextHidden]: [string[], string[]]) => {
         const nextHiddenFile =
-          tab.selectedId &&
-          nextHidden.find((file) => getTabId(file, baseId) === tab.selectedId);
+          tabSelectedId &&
+          nextHidden.find((file) => getTabId(file, baseId) === tabSelectedId);
         if (nextHiddenFile) {
           const lastVisibleFile = nextVisible.pop();
           if (lastVisibleFile) {
             nextHidden = nextHidden.filter(
-              (file) => getTabId(file, baseId) !== tab.selectedId
+              (file) => getTabId(file, baseId) !== tabSelectedId
             );
             nextHidden.unshift(lastVisibleFile);
           }
           nextVisible.push(nextHiddenFile);
         }
         if (expandedRef.current) {
-          tab.move(tab.selectedId);
+          tab.move(tabSelectedId);
         }
         return [nextVisible, nextHidden] as [string[], string[]];
       },
-      [tab.selectedId, baseId, tab.move]
+      [tab, tabSelectedId, baseId]
     ),
   });
 
+  const tabActiveId = tab.useState("activeId");
   const beenSelected = useLazyValue(() => new Set<string>());
 
   useEffect(() => {
-    if (tab.selectedId) {
-      beenSelected.add(tab.selectedId);
+    if (tabSelectedId) {
+      beenSelected.add(tabSelectedId);
     }
-  }, [tab.activeId]);
+  }, [tabActiveId]);
 
   useUpdateEffect(() => {
     playground.setValues(props.defaultValues);
@@ -155,20 +158,20 @@ export default function Playground(props: PlaygroundProps) {
           <Suspense>
             <div className="flex justify-between p-2 pb-1">
               <TabList
-                state={tab}
+                store={tab}
                 className="flex w-full flex-row gap-2 overflow-x-auto p-2"
               >
                 {visibleTabs.map((file) => renderTab(file))}
                 {!!hiddenTabs.length && (
                   <>
                     <CompositeOverflowDisclosure
-                      state={overflow}
+                      store={overflow}
                       className="h-10 rounded px-4 text-base text-black/75 hover:bg-black/5 focus-visible:ariakit-outline-input aria-expanded:bg-black/10 dark:text-white/75 dark:hover:bg-white/5 dark:aria-expanded:bg-black sm:h-8 sm:px-3 sm:text-sm"
                     >
                       +{hiddenTabs.length}
                     </CompositeOverflowDisclosure>
                     <CompositeOverflow
-                      state={overflow}
+                      store={overflow}
                       as={Popup}
                       className="flex flex-col gap-2 p-2"
                       elevation={2}
@@ -185,7 +188,7 @@ export default function Playground(props: PlaygroundProps) {
             {files.map((file) => (
               <TabPanel
                 key={file}
-                state={tab}
+                store={tab}
                 tabId={getTabId(file, baseId)}
                 focusable={false}
                 className="rounded-[inherit] bg-[color:inherit]"

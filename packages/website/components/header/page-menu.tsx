@@ -25,12 +25,12 @@ import {
   ComboboxItem,
   ComboboxList,
   useComboboxStore,
-} from "ariakit/combobox/store";
+} from "@ariakit/react/combobox";
 import {
   CompositeGroup,
   CompositeGroupLabel,
   CompositeSeparator,
-} from "ariakit/composite/store";
+} from "@ariakit/react/composite";
 import {
   Menu,
   MenuButton,
@@ -38,16 +38,16 @@ import {
   MenuItem,
   MenuList,
   useMenuStore,
-} from "ariakit/menu/store";
-import { PopoverDismiss } from "ariakit/popover";
-import { Role } from "ariakit/role";
+} from "@ariakit/react/menu";
+import { PopoverDismiss } from "@ariakit/react/popover";
+import { Role } from "@ariakit/react/role";
 import {
   Select,
   SelectItem,
   SelectPopover,
   useSelectStore,
-} from "ariakit/select/store";
-import { VisuallyHidden } from "ariakit/visually-hidden";
+} from "@ariakit/react/select";
+import { VisuallyHidden } from "@ariakit/react/visually-hidden";
 import Link from "next/link";
 import tw from "../../utils/tw";
 import useIdle from "../../utils/use-idle";

@@ -10,8 +10,8 @@ module.exports = {
   },
   projects: [
     "<rootDir>/blog/jest.config.js",
-    "<rootDir>/docs/jest.config.js",
     "<rootDir>/examples/jest.config.js",
+    "<rootDir>/guide/jest.config.js",
     "<rootDir>/packages/*/jest.config.js",
   ],
   collectCoverageFrom: [

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { Heading, HeadingLevel } from "ariakit/heading";
+import { Heading, HeadingLevel } from "@ariakit/react";
 import SEO from "../seo";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { getActiveElement } from "ariakit-utils/dom";
+import { getActiveElement } from "@ariakit/core/utils/dom";
 import { DirtiableElement } from "./__utils";
 import { act } from "./act";
 import { fireEvent } from "./fire-event";

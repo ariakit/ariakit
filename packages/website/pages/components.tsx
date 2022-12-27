@@ -1,4 +1,4 @@
-import { Heading, HeadingLevel } from "ariakit/heading";
+import { Heading, HeadingLevel } from "@ariakit/react/heading";
 import groupBy from "lodash/groupBy";
 import Components from "../components/icons/components";
 import Page from "../components/page";

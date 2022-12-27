@@ -5,7 +5,9 @@ const PagesWebpackPlugin = require("../../scripts/pages/pages-webpack-plugin");
 const pages = require("./pages.config");
 
 const withTranspileModules = transpileModules([
-  "ariakit",
+  "@ariakit/core",
+  "@ariakit/playground",
+  "@ariakit/react-core",
   "@ariakit/react",
   path.resolve(__dirname, "../../examples"),
 ]);

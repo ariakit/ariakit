@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { cx } from "@ariakit/core/utils/misc";
+import { Button, ButtonProps } from "@ariakit/react-core/button/button";
 import {
   useControlledState,
   useEvent,
@@ -23,7 +24,6 @@ import {
 } from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { ClassNames, SerializedStyles } from "@emotion/react";
-import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";
 import { getValue } from "./__utils/get-value";

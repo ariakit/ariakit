@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { cx } from "ariakit-utils/misc";
-import { Command, CommandProps } from "ariakit/command";
+import { cx } from "@ariakit/core/utils/misc";
+import { Command, CommandProps } from "@ariakit/react/command";
 
 export default function PlaygroundError(props: CommandProps<"pre">) {
   const [expanded, setExpanded] = useState(false);

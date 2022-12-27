@@ -1,5 +1,5 @@
 import { cx } from "@ariakit/core/utils/misc";
-import { VisuallyHidden } from "ariakit/visually-hidden";
+import { VisuallyHidden } from "@ariakit/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import GlobalNotification from "../global-notification";

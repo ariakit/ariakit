@@ -1,7 +1,7 @@
 import "./mock-get-client-rects";
 
-import { getActiveElement } from "ariakit-utils/dom";
-import { isFocusable } from "ariakit-utils/focus";
+import { getActiveElement } from "@ariakit/core/utils/dom";
+import { isFocusable } from "@ariakit/core/utils/focus";
 import { DirtiableElement } from "./__utils";
 import { act } from "./act";
 import { fireEvent } from "./fire-event";

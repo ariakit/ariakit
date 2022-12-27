@@ -9,9 +9,9 @@ import {
 } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
+import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
-import { PopoverDisclosureArrow, PopoverDismiss } from "ariakit/popover/store";
 import groupBy from "lodash/groupBy";
 import { useRouter } from "next/router";
 import { flushSync } from "react-dom";

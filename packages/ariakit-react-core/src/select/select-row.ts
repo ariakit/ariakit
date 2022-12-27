@@ -1,6 +1,6 @@
 import { useContext } from "react";
+import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import { getPopupRole } from "ariakit-utils/dom";
 import {
   CompositeRowOptions,
   useCompositeRow,

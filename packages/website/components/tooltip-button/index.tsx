@@ -1,33 +1,32 @@
 import { ElementType, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { createComponent } from "@ariakit/react-core/utils/system";
-import { Button } from "ariakit/button";
+import { Button } from "@ariakit/react/button";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipAnchorOptions,
   TooltipProps,
-  useTooltipState,
-} from "ariakit/tooltip";
+  useTooltipStore,
+} from "@ariakit/react/tooltip";
 
-export type TooltipButtonOptions<T extends ElementType = "button"> = Omit<
-  TooltipAnchorOptions<T>,
-  "state"
-> & {
+export interface TooltipButtonOptions<T extends ElementType = "button">
+  extends Omit<TooltipAnchorOptions<T>, "store"> {
   title: ReactNode;
-  tooltipProps?: Omit<TooltipProps, "state">;
-};
+  tooltipProps?: Omit<TooltipProps, "store">;
+}
 
 const TooltipButton = createComponent<TooltipButtonOptions>(
   ({ title, tooltipProps, ...props }) => {
-    const tooltip = useTooltipState({ timeout: 750 });
+    const tooltip = useTooltipStore({ timeout: 500 });
+    const mounted = tooltip.useState("mounted");
     return (
       <>
-        <TooltipAnchor as={Button} {...props} state={tooltip} />
-        {tooltip.mounted && (
+        <TooltipAnchor as={Button} {...props} store={tooltip} />
+        {mounted && (
           <Tooltip
             {...tooltipProps}
-            state={tooltip}
+            store={tooltip}
             className={cx(
               "z-40 rounded-md py-1 px-2 text-sm",
               "drop-shadow-sm dark:drop-shadow-sm-dark",

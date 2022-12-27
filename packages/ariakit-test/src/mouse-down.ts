@@ -1,7 +1,7 @@
 import "./mock-get-client-rects";
 
-import { getDocument } from "ariakit-utils/dom";
-import { getClosestFocusable, isFocusable } from "ariakit-utils/focus";
+import { getDocument } from "@ariakit/core/utils/dom";
+import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { blur } from "./blur";
 import { fireEvent } from "./fire-event";
 import { focus } from "./focus";

@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
-import { cx } from "ariakit-utils/misc";
-import { Tab } from "ariakit/tab";
+import { cx } from "@ariakit/core/utils/misc";
+import { Tab } from "@ariakit/react/tab";
 
 type PlaygroundTabProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   hidden?: boolean;

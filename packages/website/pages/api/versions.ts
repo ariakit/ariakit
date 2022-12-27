@@ -1,16 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse) {
-  const [ariakit, reakit] = await Promise.all([
-    fetch("https://registry.npmjs.org/ariakit"),
-    fetch("https://registry.npmjs.org/reakit"),
+  const [react, vue] = await Promise.all([
+    fetch("https://registry.npmjs.org/@ariakit/react"),
+    fetch("https://registry.npmjs.org/@ariakit/vue"),
   ]);
-  const ariakitData = await ariakit.json();
-  const reakitData = await reakit.json();
+  const reactData = await react.json();
+  const vueData = await vue.json();
 
   const versions = {
-    ...ariakitData["dist-tags"],
-    v1: reakitData["dist-tags"].latest,
+    "@ariakit/react": reactData["dist-tags"],
+    "@ariakit/vue": vueData["dist-tags"],
   };
 
   if (process.env.NODE_ENV === "production") {

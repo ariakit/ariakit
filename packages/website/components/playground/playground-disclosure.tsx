@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
-import { cx } from "ariakit-utils/misc";
-import { ButtonProps, useButton } from "ariakit/button";
-import { Role } from "ariakit/role";
+import { cx } from "@ariakit/core/utils/misc";
+import { ButtonProps, Role, useButton } from "@ariakit/react";
 
 export type PlaygroundDisclosureProps = ButtonProps;
 

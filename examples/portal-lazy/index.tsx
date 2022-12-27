@@ -3,7 +3,7 @@ import { Portal } from "@ariakit/react";
 import "./style.css";
 
 const Button = lazy(() =>
-  import("ariakit/button").then((mod) => ({ default: mod.Button }))
+  import("@ariakit/react/button").then((mod) => ({ default: mod.Button }))
 );
 
 export default function Example() {
