@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { SandpackBundlerFiles } from "@codesandbox/sandpack-client";
-import { useUpdateEffect } from "ariakit-react-utils/hooks";
 import { PlaygroundState } from "../playground-state";
 
 const DEFAULT_DEPENDENCIES = {

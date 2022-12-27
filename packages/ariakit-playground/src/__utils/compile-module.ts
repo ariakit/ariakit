@@ -1,7 +1,7 @@
 import * as React from "react";
+import { hasOwnProperty } from "@ariakit/core/utils/misc";
+import { AnyObject } from "@ariakit/core/utils/types";
 import { availablePresets, transform } from "@babel/standalone";
-import { hasOwnProperty } from "ariakit-utils/misc";
-import { AnyObject } from "ariakit-utils/types";
 import { createCSSModule } from "./css-module";
 import { getExtension } from "./get-extension";
 

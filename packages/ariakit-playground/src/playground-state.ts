@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { useControlledState } from "ariakit-react-utils/hooks";
+import { SetState } from "@ariakit/core/utils/types";
+import { useControlledState } from "@ariakit/react-core/utils/hooks";
 import { useStorePublisher } from "ariakit-react-utils/store";
-import { SetState } from "ariakit-utils/types";
 
 export function usePlaygroundState(
   props: PlaygroundStateProps = {}

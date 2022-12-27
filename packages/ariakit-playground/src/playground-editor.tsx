@@ -8,6 +8,18 @@ import {
   useRef,
   useState,
 } from "react";
+import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
+import {
+  CommandOptions,
+  useCommand,
+} from "@ariakit/react-core/command/command";
+import { Role, RoleProps } from "@ariakit/react-core/role/role";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "@ariakit/react-core/utils/system";
+import { As, Props } from "@ariakit/react-core/utils/types";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import {
   defaultKeymap,
@@ -44,15 +56,6 @@ import {
   useWrapElement,
 } from "ariakit-react-utils/hooks";
 import { useStore } from "ariakit-react-utils/store";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-react-utils/system";
-import { As, Props } from "ariakit-react-utils/types";
-import { isFocusEventOutside, isSelfTarget } from "ariakit-utils/events";
-import { CommandOptions, useCommand } from "ariakit/command";
-import { Role, RoleProps } from "ariakit/role";
 import { getExtension } from "./__utils/get-extension";
 import { getValue } from "./__utils/get-value";
 import { PlaygroundContext } from "./__utils/playground-context";

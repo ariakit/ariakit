@@ -1,25 +1,28 @@
 // @ts-check
+const { readdirSync } = require("fs");
 const path = require("path");
 const { camelCase, upperFirst } = require("lodash");
 
 const componentPath = path.join(__dirname, "components/markdown-page");
 const metaPath = path.join(__dirname, "meta.js");
 
-/**
- * @type {import("../../scripts/pages/types").Pages}
- */
+const components = readdirSync(path.join(__dirname, "../../components")).map(
+  (filename) => path.basename(filename, ".md")
+);
+
+/** @type {import("../../scripts/pages/types").Pages} */
 module.exports = [
   {
     name: "guide",
-    sourceContext: path.resolve(__dirname, "../../docs"),
+    sourceContext: path.resolve(__dirname, "../../guide"),
     sourceRegExp: /\.md$/,
     componentPath,
     metaPath,
   },
   {
     name: "components",
-    sourceContext: path.resolve(__dirname, "../ariakit/src"),
-    sourceRegExp: /src\/[^\/]+\/[^\/]+\.md$/,
+    sourceContext: path.resolve(__dirname, "../../components"),
+    sourceRegExp: /\.md$/,
     componentPath,
     metaPath,
     getGroup: (filename) => {
@@ -47,11 +50,13 @@ module.exports = [
     sourceRegExp: /examples\/[^\/]+\/(index\.[tj]sx?|readme\.md)$/,
     componentPath,
     metaPath,
-    // getGroup: (filename) => {
-    //   if (!filename.includes("ariakit/src")) return null;
-    //   const group = path.basename(path.resolve(filename, "../../../"));
-    //   return upperFirst(camelCase(group));
-    // },
+    getGroup: (filename) => {
+      const component = components.find((c) =>
+        path.basename(path.dirname(filename)).startsWith(c)
+      );
+      if (!component) return null;
+      return upperFirst(camelCase(component));
+    },
   },
   {
     name: "blog",

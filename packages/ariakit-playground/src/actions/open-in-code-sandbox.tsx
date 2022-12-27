@@ -1,12 +1,12 @@
-import { useWrapElement } from "ariakit-react-utils/hooks";
-import { useStore } from "ariakit-react-utils/store";
+import { ButtonOptions, useButton } from "@ariakit/react-core/button/button";
+import { useWrapElement } from "@ariakit/react-core/utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-react-utils/system";
-import { As, Props } from "ariakit-react-utils/types";
-import { ButtonOptions, useButton } from "ariakit/button";
+} from "@ariakit/react-core/utils/system";
+import { As, Props } from "@ariakit/react-core/utils/types";
+import { useStore } from "ariakit-react-utils/store";
 import { getParameters } from "codesandbox-import-utils/lib/api/define";
 import {
   getCodeSandboxDependencies,

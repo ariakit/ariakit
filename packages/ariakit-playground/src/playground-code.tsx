@@ -8,17 +8,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { ClassNames, SerializedStyles } from "@emotion/react";
+import { cx } from "@ariakit/core/utils/misc";
 import {
   useControlledState,
   useEvent,
   useForkRef,
   useWrapElement,
-} from "ariakit-react-utils/hooks";
+} from "@ariakit/react-core/utils/hooks";
+import { createElement, createHook } from "@ariakit/react-core/utils/system";
+import { As, Options, Props } from "@ariakit/react-core/utils/types";
+import { ClassNames, SerializedStyles } from "@emotion/react";
 import { createMemoComponent, useStore } from "ariakit-react-utils/store";
-import { createElement, createHook } from "ariakit-react-utils/system";
-import { As, Options, Props } from "ariakit-react-utils/types";
-import { cx } from "ariakit-utils/misc";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";

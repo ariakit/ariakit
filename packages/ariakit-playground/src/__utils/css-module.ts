@@ -1,8 +1,6 @@
-import { AnyObject } from "ariakit-utils/types";
-
 const CSS_EXPORT = Symbol("css");
 
-export function getCSSModule(module: AnyObject) {
+export function getCSSModule(module: Record<keyof any, any>) {
   return module[CSS_EXPORT];
 }
 

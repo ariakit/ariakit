@@ -7,17 +7,17 @@ import {
   useEffect,
   useState,
 } from "react";
-import { ClassNames } from "@emotion/react";
+import { PortalContext } from "@ariakit/react-core/portal/portal-context";
+import { Role, RoleProps } from "@ariakit/react-core/role/role";
 import {
   useLiveRef,
   useUpdateEffect,
   useWrapElement,
-} from "ariakit-react-utils/hooks";
+} from "@ariakit/react-core/utils/hooks";
+import { createElement, createHook } from "@ariakit/react-core/utils/system";
+import { As, Options, Props } from "@ariakit/react-core/utils/types";
+import { ClassNames } from "@emotion/react";
 import { createMemoComponent, useStore } from "ariakit-react-utils/store";
-import { createElement, createHook } from "ariakit-react-utils/system";
-import { As, Options, Props } from "ariakit-react-utils/types";
-import { PortalContext } from "ariakit/portal";
-import { Role, RoleProps } from "ariakit/role";
 import { compileComponent } from "./__utils/compile-component";
 import { compileModule } from "./__utils/compile-module";
 import { getCSSModule } from "./__utils/css-module";

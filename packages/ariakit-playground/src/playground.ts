@@ -1,10 +1,10 @@
-import { useStoreProvider } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-react-utils/system";
-import { As, Options, Props } from "ariakit-react-utils/types";
+} from "@ariakit/react-core/utils/system";
+import { As, Options, Props } from "@ariakit/react-core/utils/types";
+import { useStoreProvider } from "ariakit-react-utils/store";
 import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundState } from "./playground-state";
 

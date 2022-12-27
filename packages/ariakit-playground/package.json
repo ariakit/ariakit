@@ -33,6 +33,8 @@
     "playground"
   ],
   "dependencies": {
+    "@ariakit/core": "0.0.1",
+    "@ariakit/react-core": "0.0.1",
     "@babel/standalone": "^7.17.2",
     "@codemirror/autocomplete": "^6.0.0",
     "@codemirror/commands": "^6.0.0",
