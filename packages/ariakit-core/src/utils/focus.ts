@@ -357,6 +357,7 @@ export function focusIntoView(
   options?: ScrollIntoViewOptions
 ) {
   if (!("scrollIntoView" in element)) {
+    // @ts-ignore
     element.focus();
   } else {
     element.focus({ preventScroll: true });

@@ -9,7 +9,7 @@ export const isBrowser =
   !navigator.userAgent.includes("jsdom") &&
   !("happyDOM" in window);
 
-const noopAct = ((callback) => callback()) as typeof reactAct;
+const noopAct: typeof reactAct = (callback: any) => callback();
 
 export const act = isBrowser ? noopAct : reactAct;
 
@@ -18,7 +18,7 @@ export function queuedMicrotasks(): Promise<void> {
 }
 
 export function nextFrame(): Promise<void> {
-  return act(
+  return act<void>(
     () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
   );
 }
