@@ -18,13 +18,7 @@
       "@ariakit/react/*": ["packages/ariakit-react/src/*"],
 
       "ariakit-test": ["packages/ariakit-test/src"],
-      "ariakit-test/*": ["packages/ariakit-test/src/*"],
-
-      "ariakit-utils": ["packages/ariakit-utils/src"],
-      "ariakit-utils/*": ["packages/ariakit-utils/src/*"],
-
-      "ariakit-react-utils": ["packages/ariakit-react-utils/src"],
-      "ariakit-react-utils/*": ["packages/ariakit-react-utils/src/*"]
+      "ariakit-test/*": ["packages/ariakit-test/src/*"]
     }
   }
 }
