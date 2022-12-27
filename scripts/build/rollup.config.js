@@ -83,9 +83,9 @@ function getOutput(isUMD) {
       format: "umd",
       exports: "named",
       globals: {
-        ariakit: "Ariakit",
         react: "React",
         "react-dom": "ReactDOM",
+        "@ariakit/react": "Ariakit",
         "@testing-library/react": "TestingLibraryReact",
         "@testing-library/dom": "TestingLibraryDom",
       },

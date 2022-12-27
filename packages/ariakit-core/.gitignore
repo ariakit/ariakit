@@ -1,6 +1,21 @@
 # Automatically generated
+/checkbox
 /cjs
+/collection
+/combobox
+/composite
+/dialog
 /disclosure
 /esm
+/form
+/hovercard
+/menu
+/popover
+/radio
+/select
+/tab
+/toolbar
+/tooltip
 /ts
 /umd
+/utils

@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/menu/menu-bar-store";
-import { Store, useStore } from "@ariakit/react-core/utils/store";
 import {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -7,6 +6,7 @@ import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store";
+import { Store, useStore } from "../utils/store";
 
 export function useMenuBarStoreOptions(props: MenuBarStoreProps) {
   return useCompositeStoreOptions(props);

@@ -238,19 +238,19 @@ export function getKeys<T extends object>(obj: T) {
  * Returns the first value that is not `undefined`.
  */
 export function defaultValue<T extends readonly any[]>(...values: T) {
-  type DefinedArray<T extends readonly any[]> = {
-    [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
-      ? [Exclude<T[K], undefined>, never]
-      : [T[K]];
-  };
-
-  type DefaultValue<T extends readonly any[]> =
-    DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
-      ? T[number]
-      : DefinedArray<T>[keyof DefinedArray<T>][0];
-
   for (const value of values) {
     if (value !== undefined) return value as DefaultValue<T>;
   }
   return undefined as DefaultValue<T>;
 }
+
+type DefinedArray<T extends readonly any[]> = {
+  [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
+    ? [Exclude<T[K], undefined>, never]
+    : [T[K]];
+};
+
+type DefaultValue<T extends readonly any[]> =
+  DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
+    ? T[number]
+    : DefinedArray<T>[keyof DefinedArray<T>][0];
