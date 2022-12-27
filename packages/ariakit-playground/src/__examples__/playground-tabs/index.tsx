@@ -2,10 +2,10 @@ import {
   Playground,
   PlaygroundEditor,
   PlaygroundPreview,
-  usePlaygroundState,
-} from "ariakit-playground";
-import theme from "ariakit-playground/themes/default";
-import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
+  usePlaygroundStore,
+} from "@ariakit/playground";
+import theme from "@ariakit/playground/themes/default";
+import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import "./style.css";
 
 const defaultValues = {
@@ -22,13 +22,14 @@ export default function Example() {
 };
 
 export default function Example() {
-  const tab = useTabState({ defaultSelectedId: "tab-index.js" });
-  const playground = usePlaygroundState({ defaultValues });
-  const files = Object.keys(playground.values);
+  const tab = useTabStore({ defaultSelectedId: "tab-index.js" });
+  const playground = usePlaygroundStore({ defaultValues });
+  const values = playground.useState("values");
+  const files = Object.keys(values);
   return (
-    <Playground state={playground} className="playground">
+    <Playground store={playground} className="playground">
       <div>
-        <TabList state={tab} className="tab-list">
+        <TabList store={tab} className="tab-list">
           {files.map((file) => (
             <Tab key={file} id={`tab-${file}`} className="tab">
               {file}
@@ -36,7 +37,7 @@ export default function Example() {
           ))}
         </TabList>
         {files.map((file) => (
-          <TabPanel state={tab} key={file} tabId={`tab-${file}`}>
+          <TabPanel store={tab} key={file} tabId={`tab-${file}`}>
             <PlaygroundEditor theme={theme} file={file} className="editor" />
           </TabPanel>
         ))}

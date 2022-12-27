@@ -1,8 +1,8 @@
 // TODO: Refactor this entire page
 import { Fragment, createElement, useEffect, useMemo, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { PlaygroundCode } from "ariakit-playground/playground-code";
-import theme from "ariakit-playground/themes/vscode";
+import { PlaygroundCode } from "@ariakit/playground/playground-code";
+import theme from "@ariakit/playground/themes/vscode";
 import Link from "next/link";
 import RehypeReact from "rehype-react";
 import { visit } from "unist-util-visit";

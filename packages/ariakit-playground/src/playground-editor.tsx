@@ -3,17 +3,28 @@ import {
   KeyboardEvent,
   MouseEvent,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import {
   CommandOptions,
   useCommand,
 } from "@ariakit/react-core/command/command";
 import { Role, RoleProps } from "@ariakit/react-core/role/role";
+import {
+  useControlledState,
+  useEvent,
+  useForkRef,
+  useId,
+  useInitialValue,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "@ariakit/react-core/utils/hooks";
 import {
   createComponent,
   createElement,
@@ -46,21 +57,11 @@ import {
   scrollPastEnd,
 } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
-import {
-  useControlledState,
-  useEvent,
-  useForkRef,
-  useId,
-  useInitialValue,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "ariakit-react-utils/hooks";
-import { useStore } from "ariakit-react-utils/store";
 import { getExtension } from "./__utils/get-extension";
 import { getValue } from "./__utils/get-value";
 import { PlaygroundContext } from "./__utils/playground-context";
 import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code";
-import { PlaygroundState } from "./playground-state";
+import { PlaygroundStore } from "./playground-store";
 
 function getLanguage(file: string) {
   const extension = getExtension(file);
@@ -127,7 +128,7 @@ const defaultExtensions = [
 
 export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
   ({
-    state,
+    store,
     file,
     lineNumbers: showLineNumbers = true,
     keyboardDescription = "Press Enter to edit the code",
@@ -138,13 +139,18 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     setExpanded: setExpandedProp,
     ...props
   }) => {
-    state = useStore(state || PlaygroundContext, [
-      useCallback((s: PlaygroundState) => getValue(s, file), [file]),
-      "setValue",
-    ]);
+    const context = useContext(PlaygroundContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "PlaygroundEditor must be wrapped in a Playground component"
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const editorRef = useRef<EditorView | null>(null);
-    const value = getValue(state, file);
+    const value = store.useState((state) => getValue(state, file));
     const initialValue = useInitialValue(value);
     const [editorDOM, setEditorDOM] = useState<HTMLElement | null>(null);
     const [editable, setEditable] = useState(false);
@@ -164,7 +170,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
       const updateListener = EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           const doc = update.state.doc;
-          state?.setValue(file, doc.toString());
+          store?.setValue(file, doc.toString());
         }
       });
       return [
@@ -175,7 +181,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
         showLineNumbers && lineNumbers(),
         expanded && scrollPastEnd(),
       ].filter(Boolean) as Extension[];
-    }, [expanded, state?.setValue, file, showLineNumbers]);
+    }, [expanded, store?.setValue, file, showLineNumbers]);
 
     const initialExtensions = useInitialValue(extensions);
 
@@ -277,7 +283,7 @@ export const usePlaygroundEditor = createHook<PlaygroundEditorOptions>(
     props = useCommand({ as: "div", ...props });
 
     props = usePlaygroundCode({
-      state,
+      store,
       file,
       lineNumbers: showLineNumbers,
       ...props,
@@ -324,7 +330,7 @@ export const PlaygroundEditor = createComponent<PlaygroundEditorOptions>(
 export type PlaygroundEditorOptions<T extends As = "div"> =
   PlaygroundCodeOptions<T> &
     CommandOptions<T> & {
-      state?: PlaygroundState;
+      store?: PlaygroundStore;
       file: string;
       lineNumbers?: boolean;
       keyboardDescription?: string;

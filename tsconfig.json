@@ -8,14 +8,14 @@
       "@ariakit/core": ["packages/ariakit-core/src"],
       "@ariakit/core/*": ["packages/ariakit-core/src/*"],
 
-      "ariakit-playground": ["packages/ariakit-playground/src"],
-      "ariakit-playground/*": ["packages/ariakit-playground/src/*"],
-
-      "@ariakit/react": ["packages/ariakit-react/src"],
-      "@ariakit/react/*": ["packages/ariakit-react/src/*"],
+      "@ariakit/playground": ["packages/ariakit-playground/src"],
+      "@ariakit/playground/*": ["packages/ariakit-playground/src/*"],
 
       "@ariakit/react-core": ["packages/ariakit-react-core/src"],
       "@ariakit/react-core/*": ["packages/ariakit-react-core/src/*"],
+
+      "@ariakit/react": ["packages/ariakit-react/src"],
+      "@ariakit/react/*": ["packages/ariakit-react/src/*"],
 
       "ariakit-test": ["packages/ariakit-test/src"],
       "ariakit-test/*": ["packages/ariakit-test/src/*"],

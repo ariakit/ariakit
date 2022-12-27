@@ -1,16 +1,24 @@
+import { useWrapElement } from "@ariakit/react-core/utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
-import { useStoreProvider } from "ariakit-react-utils/store";
 import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundState } from "./playground-state";
+import { PlaygroundStore } from "./playground-store";
 
 export const usePlayground = createHook<PlaygroundOptions>(
-  ({ state, ...props }) => {
-    props = useStoreProvider({ state, ...props }, PlaygroundContext);
+  ({ store, ...props }) => {
+    props = useWrapElement(
+      props,
+      (element) => (
+        <PlaygroundContext.Provider value={store}>
+          {element}
+        </PlaygroundContext.Provider>
+      ),
+      [store]
+    );
     return props;
   }
 );
@@ -20,8 +28,8 @@ export const Playground = createComponent<PlaygroundOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
-export type PlaygroundOptions<T extends As = "div"> = Options<T> & {
-  state: PlaygroundState;
-};
+export interface PlaygroundOptions<T extends As = "div"> extends Options<T> {
+  store: PlaygroundStore;
+}
 
 export type PlaygroundProps<T extends As = "div"> = Props<PlaygroundOptions<T>>;

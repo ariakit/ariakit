@@ -1,4 +1,6 @@
-import { createStoreContext } from "ariakit-react-utils/store";
-import { PlaygroundState } from "../playground-state";
+import { createContext } from "react";
+import { PlaygroundStore } from "../playground-store";
 
-export const PlaygroundContext = createStoreContext<PlaygroundState>();
+export const PlaygroundContext = createContext<PlaygroundStore | undefined>(
+  undefined
+);

@@ -1,8 +1,8 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Playground as PlaygroundContainer } from "@ariakit/playground/playground";
+import { usePlaygroundStore } from "@ariakit/playground/playground-store";
+import vscodeTheme from "@ariakit/playground/themes/vscode";
 import { css } from "@emotion/react";
-import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
-import { usePlaygroundState } from "ariakit-playground/playground-state";
-import vscodeTheme from "ariakit-playground/themes/vscode";
 import {
   useEvent,
   useId,
@@ -55,8 +55,9 @@ function getTabId(name: string, prefix?: string) {
 }
 
 export default function Playground(props: PlaygroundProps) {
-  const playground = usePlaygroundState({ defaultValues: props.defaultValues });
-  const [firstFile = ""] = Object.keys(playground.values);
+  const playground = usePlaygroundStore({ defaultValues: props.defaultValues });
+  const playgroundValues = playground.useState("values");
+  const [firstFile = ""] = Object.keys(playgroundValues);
   const baseId = useId();
   const firstFileId = getTabId(firstFile, baseId);
   const tab = useTabState({
@@ -66,8 +67,8 @@ export default function Playground(props: PlaygroundProps) {
   });
   const [expanded, setExpanded] = useState(false);
   const expandedRef = useLiveRef(expanded);
-  const filesString = Object.keys(playground.values).join(", ");
-  const files = useMemo(() => Object.keys(playground.values), [filesString]);
+  const filesString = Object.keys(playgroundValues).join(", ");
+  const files = useMemo(() => Object.keys(playgroundValues), [filesString]);
   const overflow = useCompositeOverflowState({
     placement: "bottom-end",
     flip: false,
@@ -138,7 +139,7 @@ export default function Playground(props: PlaygroundProps) {
   return (
     <div className="!max-w-4xl">
       <PlaygroundContainer
-        state={playground}
+        store={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
         <div className="relative w-full rounded-lg bg-gray-150 dark:bg-gray-850 sm:rounded-xl">
@@ -196,7 +197,7 @@ export default function Playground(props: PlaygroundProps) {
                       <PlaygroundEditor
                         lineNumbers
                         className="bg-[color:inherit] focus-visible:ariakit-outline-input"
-                        state={playground}
+                        store={playground}
                         file={file}
                         theme={theme}
                         expanded={expanded}

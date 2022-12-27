@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import { ButtonOptions, useButton } from "@ariakit/react-core/button/button";
 import { useWrapElement } from "@ariakit/react-core/utils/hooks";
 import {
@@ -6,7 +8,6 @@ import {
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Props } from "@ariakit/react-core/utils/types";
-import { useStore } from "ariakit-react-utils/store";
 import { getParameters } from "codesandbox-import-utils/lib/api/define";
 import {
   getCodeSandboxDependencies,
@@ -15,9 +16,9 @@ import {
 } from "../__utils/code-sandbox";
 import { getFile } from "../__utils/get-file";
 import { PlaygroundContext } from "../__utils/playground-context";
-import { PlaygroundState } from "../playground-state";
+import { PlaygroundStore, PlaygroundStoreState } from "../playground-store";
 
-function getCodeSandboxParameters(values: PlaygroundState["values"]) {
+function getCodeSandboxParameters(values: PlaygroundStoreState["values"]) {
   const file = getFile(values);
 
   return getParameters({
@@ -39,10 +40,18 @@ function getCodeSandboxParameters(values: PlaygroundState["values"]) {
 }
 
 export const useOpenInCodeSandbox = createHook<OpenInCodeSandboxOptions>(
-  ({ state, ...props }) => {
-    state = useStore(state || PlaygroundContext, ["values"]);
-    const file = getFile(state?.values);
-    const values = state?.values || {};
+  ({ store, ...props }) => {
+    const context = useContext(PlaygroundContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "OpenInCodeSandbox must be wrapped in a Playground component"
+    );
+
+    const values = store.useState("values");
+    const file = getFile(values);
 
     props = useWrapElement(
       props,
@@ -84,10 +93,10 @@ export const OpenInCodeSandbox = createComponent<OpenInCodeSandboxOptions>(
   }
 );
 
-export type OpenInCodeSandboxOptions<T extends As = "button"> =
-  ButtonOptions<T> & {
-    state?: PlaygroundState;
-  };
+export interface OpenInCodeSandboxOptions<T extends As = "button">
+  extends ButtonOptions<T> {
+  store?: PlaygroundStore;
+}
 
 export type OpenInCodeSandboxProps<T extends As = "button"> = Props<
   OpenInCodeSandboxOptions<T>

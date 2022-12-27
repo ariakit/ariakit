@@ -1,7 +1,7 @@
-import { PlaygroundState } from "../playground-state";
+import { PlaygroundStoreState } from "../playground-store";
 
 export function getFile(
-  values: PlaygroundState["values"] = {},
+  values: PlaygroundStoreState["values"] = {},
   filename = Object.keys(values)[0] || ""
 ) {
   return filename;

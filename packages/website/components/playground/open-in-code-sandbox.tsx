@@ -1,7 +1,7 @@
 import {
   OpenInCodeSandbox as Action,
   OpenInCodeSandboxProps as ActionProps,
-} from "ariakit-playground/actions/open-in-code-sandbox";
+} from "@ariakit/playground/actions/open-in-code-sandbox";
 import { cx } from "ariakit-utils/misc";
 import NewWindow from "../icons/new-window";
 import TooltipButton, { TooltipButtonOptions } from "../tooltip-button";

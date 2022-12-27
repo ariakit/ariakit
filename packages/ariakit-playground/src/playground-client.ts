@@ -1,13 +1,17 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import {
   useForkRef,
   useInitialValue,
   useUpdateEffect,
 } from "@ariakit/react-core/utils/hooks";
-import { createElement, createHook } from "@ariakit/react-core/utils/system";
+import {
+  createElement,
+  createHook,
+  createMemoComponent,
+} from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { SandpackClient } from "@codesandbox/sandpack-client";
-import { createMemoComponent, useStore } from "ariakit-react-utils/store";
 import {
   getCodeSandboxEntryContent,
   getSandpackFiles,
@@ -15,14 +19,22 @@ import {
 } from "./__utils/code-sandbox";
 import { getFile } from "./__utils/get-file";
 import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundState } from "./playground-state";
+import { PlaygroundStore } from "./playground-store";
 
 const ENTRY_FILE = "/index.js";
 
 export const usePlaygroundClient = createHook<PlaygroundClientOptions>(
-  ({ state, file, ...props }) => {
-    state = useStore(state || PlaygroundContext, ["values"]);
-    const values = state?.values || {};
+  ({ store, file, ...props }) => {
+    const context = useContext(PlaygroundContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "PlaygroundClient must be wrapped in a Playground component"
+    );
+
+    const values = store.useState("values");
     const initialValues = useInitialValue(values);
     const filename = getFile(values, file);
     const ref = useRef<HTMLIFrameElement>(null);
@@ -91,10 +103,11 @@ export const PlaygroundClient = createMemoComponent<PlaygroundClientOptions>(
   }
 );
 
-export type PlaygroundClientOptions<T extends As = "iframe"> = Options<T> & {
-  state?: PlaygroundState;
+export interface PlaygroundClientOptions<T extends As = "iframe">
+  extends Options<T> {
+  store?: PlaygroundStore;
   file?: string;
-};
+}
 
 export type PlaygroundClientProps<T extends As = "iframe"> = Props<
   PlaygroundClientOptions<T>

@@ -4,9 +4,11 @@ import {
   ReactNode,
   cloneElement,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import { PortalContext } from "@ariakit/react-core/portal/portal-context";
 import { Role, RoleProps } from "@ariakit/react-core/role/role";
 import {
@@ -14,17 +16,20 @@ import {
   useUpdateEffect,
   useWrapElement,
 } from "@ariakit/react-core/utils/hooks";
-import { createElement, createHook } from "@ariakit/react-core/utils/system";
+import {
+  createElement,
+  createHook,
+  createMemoComponent,
+} from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { ClassNames } from "@emotion/react";
-import { createMemoComponent, useStore } from "ariakit-react-utils/store";
 import { compileComponent } from "./__utils/compile-component";
 import { compileModule } from "./__utils/compile-module";
 import { getCSSModule } from "./__utils/css-module";
 import { getFile } from "./__utils/get-file";
 import { PlaygroundContext } from "./__utils/playground-context";
 import { resolveModule } from "./__utils/resolve-module";
-import { PlaygroundState } from "./playground-state";
+import { PlaygroundStore } from "./playground-store";
 
 function ErrorMessage(props: RoleProps<any>) {
   return <Role role="status" {...props} />;
@@ -108,12 +113,21 @@ function PlaygroundPortal({ children, className }: PlaygroundPortalProps) {
 }
 
 export const usePlaygroundPreview = createHook<PlaygroundPreviewOptions>(
-  ({ state, file, errorProps, getModule: getModuleProp, ...props }) => {
-    state = useStore(state || PlaygroundContext, ["values"]);
+  ({ store, file, errorProps, getModule: getModuleProp, ...props }) => {
+    // store = useStore(store || PlaygroundContext, ["values"]);
+    const context = useContext(PlaygroundContext);
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "PlaygroundPreview must be wrapped in a Playground component"
+    );
+
     const [error, setError] = useState<Error | null>(null);
     const [cssModule, setCssModule] = useState("");
     const cssModuleRef = useLiveRef(cssModule);
-    const values = state?.values || {};
+    const values = store.useState("values");
     const filename = getFile(values, file);
     const debouncedValues = useDebouncedValue(values, 750);
     const value = debouncedValues[filename] || "";
@@ -215,12 +229,13 @@ export const PlaygroundPreview = createMemoComponent<PlaygroundPreviewOptions>(
   }
 );
 
-export type PlaygroundPreviewOptions<T extends As = "div"> = Options<T> & {
-  state?: PlaygroundState;
+export interface PlaygroundPreviewOptions<T extends As = "div">
+  extends Options<T> {
+  store?: PlaygroundStore;
   file?: string;
   getModule?: (path: string) => any;
   errorProps?: RoleProps<ElementType>;
-};
+}
 
 export type PlaygroundPreviewProps<T extends As = "div"> = Props<
   PlaygroundPreviewOptions<T>

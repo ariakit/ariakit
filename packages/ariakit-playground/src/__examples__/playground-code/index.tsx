@@ -1,5 +1,5 @@
-import { PlaygroundCode } from "ariakit-playground";
-import theme from "ariakit-playground/themes/default";
+import { PlaygroundCode } from "@ariakit/playground";
+import theme from "@ariakit/playground/themes/default";
 
 const value = `function Example() {
   return <div>Hello World</div>;

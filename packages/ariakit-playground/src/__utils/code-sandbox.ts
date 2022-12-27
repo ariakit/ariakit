@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { SandpackBundlerFiles } from "@codesandbox/sandpack-client";
-import { PlaygroundState } from "../playground-state";
+import { PlaygroundStoreState } from "../playground-store";
 
 const DEFAULT_DEPENDENCIES = {
   react: "latest",
@@ -39,7 +39,7 @@ body {
 `;
 }
 
-export function getSandpackFiles(values: PlaygroundState["values"]) {
+export function getSandpackFiles(values: PlaygroundStoreState["values"]) {
   const files: SandpackBundlerFiles = {
     "/style.css": { code: getCodeSandboxStyleContent() },
   };
@@ -49,7 +49,7 @@ export function getSandpackFiles(values: PlaygroundState["values"]) {
   return files;
 }
 
-export function getCodeSandboxFiles(values: PlaygroundState["values"]) {
+export function getCodeSandboxFiles(values: PlaygroundStoreState["values"]) {
   const files: Record<string, { content: string; isBinary: boolean }> = {
     "/style.css": {
       content: getCodeSandboxStyleContent(),
@@ -63,7 +63,7 @@ export function getCodeSandboxFiles(values: PlaygroundState["values"]) {
 }
 
 export function getCodeSandboxDependencies(
-  values: PlaygroundState["values"],
+  values: PlaygroundStoreState["values"],
   dependencies: Record<string, string> = DEFAULT_DEPENDENCIES
 ) {
   let hasNewDependencies = false;
@@ -93,7 +93,7 @@ export function getCodeSandboxDependencies(
 }
 
 export function useCodeSandboxDependencies(
-  values: PlaygroundState["values"],
+  values: PlaygroundStoreState["values"],
   timeout = 2000
 ) {
   const [dependencies, setDependencies] = useState(() =>

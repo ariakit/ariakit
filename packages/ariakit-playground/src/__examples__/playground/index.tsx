@@ -2,9 +2,9 @@ import {
   Playground,
   PlaygroundEditor,
   PlaygroundPreview,
-  usePlaygroundState,
-} from "ariakit-playground";
-import theme from "ariakit-playground/themes/default";
+  usePlaygroundStore,
+} from "@ariakit/playground";
+import theme from "@ariakit/playground/themes/default";
 import "./style.css";
 
 const defaultValues = {
@@ -15,9 +15,9 @@ const defaultValues = {
 };
 
 export default function Example() {
-  const playground = usePlaygroundState({ defaultValues });
+  const playground = usePlaygroundStore({ defaultValues });
   return (
-    <Playground state={playground} className="playground">
+    <Playground store={playground} className="playground">
       <PlaygroundEditor theme={theme} file="index.js" className="editor" />
       <PlaygroundPreview className="preview" />
     </Playground>

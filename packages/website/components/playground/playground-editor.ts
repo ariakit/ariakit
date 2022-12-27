@@ -1,1 +1,1 @@
-export { PlaygroundEditor as default } from "ariakit-playground/playground-editor";
+export { PlaygroundEditor as default } from "@ariakit/playground/playground-editor";

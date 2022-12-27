@@ -2,7 +2,7 @@ import {
   ElementType,
   MouseEvent,
   cloneElement,
-  useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -15,16 +15,20 @@ import {
   useForkRef,
   useWrapElement,
 } from "@ariakit/react-core/utils/hooks";
-import { createElement, createHook } from "@ariakit/react-core/utils/system";
+import { useStoreState } from "@ariakit/react-core/utils/store";
+import {
+  createElement,
+  createHook,
+  createMemoComponent,
+} from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { ClassNames, SerializedStyles } from "@emotion/react";
-import { createMemoComponent, useStore } from "ariakit-react-utils/store";
 import { Button, ButtonProps } from "ariakit/button";
 import { highlight, languages } from "prismjs";
 import { getExtension } from "./__utils/get-extension";
 import { getValue } from "./__utils/get-value";
 import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundState } from "./playground-state";
+import { PlaygroundStore } from "./playground-store";
 
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
@@ -33,7 +37,7 @@ import "prismjs/components/prism-markup";
 
 export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
   ({
-    state,
+    store,
     file,
     lineNumbers,
     highlight: shouldHighlight = true,
@@ -47,11 +51,13 @@ export const usePlaygroundCode = createHook<PlaygroundCodeOptions>(
     theme,
     ...props
   }) => {
-    state = useStore(state || PlaygroundContext, [
-      useCallback((s: PlaygroundState) => getValue(s, file), [file]),
-    ]);
+    const context = useContext(PlaygroundContext);
+    store = store || context;
+
     const ref = useRef<HTMLDivElement>(null);
-    const value = valueProp ?? getValue(state, file);
+    const value =
+      useStoreState(store, (state) => valueProp ?? getValue(state, file)) ??
+      valueProp;
 
     const [collapsible, setCollapsible] = useState(false);
 
@@ -207,8 +213,9 @@ export const PlaygroundCode = createMemoComponent<PlaygroundCodeOptions>(
   }
 );
 
-export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
-  state?: PlaygroundState;
+export interface PlaygroundCodeOptions<T extends As = "div">
+  extends Options<T> {
+  store?: PlaygroundStore;
   file?: string;
   value?: string;
   language?: string;
@@ -220,7 +227,7 @@ export type PlaygroundCodeOptions<T extends As = "div"> = Options<T> & {
   setExpanded?: (expanded: boolean) => void;
   defaultExpanded?: boolean;
   theme?: SerializedStyles;
-};
+}
 
 export type PlaygroundCodeProps<T extends As = "div"> = Props<
   PlaygroundCodeOptions<T>
