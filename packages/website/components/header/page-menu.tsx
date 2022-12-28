@@ -599,7 +599,11 @@ export const PageMenuItem = forwardRef<any, PageMenuItemProps>(
         </Role>
       );
       if (isLink && !isExternalLink) {
-        return <Link href={href}>{item}</Link>;
+        return (
+          <Link href={href} legacyBehavior>
+            {item}
+          </Link>
+        );
       }
       return item;
     };

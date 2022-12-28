@@ -72,18 +72,19 @@ const { Compiler: renderAst } = new RehypeReact({
         );
       } else if (href?.startsWith("#")) {
         return (
-          <Link href={href}>
-            <a {...props} className="inline-flex flex-row-reverse items-center">
-              <span>{props.children}</span>
-              <Hashtag className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
-            </a>
+          <Link
+            href={href}
+            className="inline-flex flex-row-reverse items-center"
+          >
+            <span>{props.children}</span>
+            <Hashtag className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
           </Link>
         );
       } else if (href?.startsWith("/api-reference")) {
         return <span>{props.children}</span>;
       } else if (href) {
         return (
-          <Link href={href}>
+          <Link href={href} legacyBehavior>
             <a {...props} />
           </Link>
         );

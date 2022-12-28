@@ -12,9 +12,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/font": "13.1.1",
     "@tanstack/react-query": "4.20.4",
     "fast-fuzzy": "1.12.0",
-    "next": "12.3.4",
+    "next": "13.1.1",
     "rehype-react": "7.1.1"
   },
   "devDependencies": {

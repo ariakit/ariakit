@@ -1,9 +1,10 @@
-import React from "react";
+"use client";
+
 import GlobalNotification from "../components/global-notification";
 import Hero from "../components/hero";
 import Showcase from "../components/showcase";
 
-export default function Home() {
+export default function Page() {
   return (
     <>
       <div className="flex justify-center p-3 sm:p-4">

@@ -8,8 +8,6 @@ body {
   margin: 0;
 }
 
-html { font-family: Inter, sans-serif; }
-
 body {
   @apply
     bg-gray-50

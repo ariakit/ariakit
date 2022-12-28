@@ -1,23 +1,15 @@
 // @ts-check
-const path = require("path");
-const transpileModules = require("next-transpile-modules");
 const PagesWebpackPlugin = require("../../scripts/pages/pages-webpack-plugin");
 const pages = require("./pages.config");
-
-const withTranspileModules = transpileModules([
-  "@ariakit/core",
-  "@ariakit/playground",
-  "@ariakit/react-core",
-  "@ariakit/react",
-  path.resolve(__dirname, "../../examples"),
-]);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
     scrollRestoration: true,
+    appDir: true,
   },
   reactStrictMode: true,
+  transpilePackages: ["@ariakit/playground", "@ariakit/react"],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -51,4 +43,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withTranspileModules(nextConfig);
+module.exports = nextConfig;

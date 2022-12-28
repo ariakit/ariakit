@@ -13,7 +13,7 @@ import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import groupBy from "lodash/groupBy";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { flushSync } from "react-dom";
 import { PageContent } from "../../pages.contents";
 import pageIndex, { PageIndexDetail } from "../../pages.index";
@@ -482,8 +482,8 @@ const NavMenu = memo(
 );
 
 export default function Nav() {
-  const router = useRouter();
-  const [, category, page] = router.pathname.split("/");
+  const pathname = usePathname() || "/";
+  const [, category, page] = pathname.split("/");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [pageOpen, setPageOpen] = useState(false);
   const [categorySearchValue, setCategorySearchValue] = useState<string>();

@@ -1,5 +1,5 @@
+import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { useId } from "@ariakit/react-core/utils/hooks";
 import Link from "next/link";
 import tw from "packages/website/utils/tw";
 import NewWindow from "../icons/new-window";
@@ -85,8 +85,8 @@ export default function Footer() {
                       <NewWindow className="h-4 w-4 opacity-60" />
                     </a>
                   ) : (
-                    <Link href={link.href}>
-                      <a className={style.link}>{link.title}</a>
+                    <Link href={link.href} className={style.link}>
+                      {link.title}
                     </Link>
                   )}
                 </li>

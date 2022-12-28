@@ -1,5 +1,4 @@
 import "../styles/globals.css";
-import { createStore } from "@ariakit/core/utils/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
@@ -7,8 +6,6 @@ import Script from "next/script";
 import Footer from "../components/footer";
 import Header from "../components/header";
 import SEO from "../components/seo";
-
-createStore({});
 
 const queryClient = new QueryClient();
 

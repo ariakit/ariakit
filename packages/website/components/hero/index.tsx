@@ -37,20 +37,19 @@ export default function Hero() {
         </p>
       </div>
       <div className="mb-20 flex flex-col items-center gap-4 sm:flex-row">
-        <Link href="/guide/getting-started">
-          <a
-            className={cx(
-              "flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-lg",
-              "bg-blue-600 text-white hover:bg-blue-800",
-              "shadow-xl focus-visible:ariakit-outline"
-            )}
-          >
-            Get started
-          </a>
+        <Link
+          href="/guide/getting-started"
+          className={cx(
+            "flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-8 text-lg",
+            "bg-blue-600 text-white hover:bg-blue-800",
+            "shadow-xl focus-visible:ariakit-outline"
+          )}
+        >
+          Get started
         </Link>
-        <Link href="/components">
-          <a
-            className={tw`
+        <Link
+          href="/components"
+          className={tw`
               group
               flex h-12 items-center justify-center
               gap-2 whitespace-nowrap rounded-lg
@@ -58,10 +57,9 @@ export default function Hero() {
               hover:bg-gray-150 focus-visible:ariakit-outline-input
               dark:hover:bg-gray-700
             `}
-          >
-            Explore components{" "}
-            <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
-          </a>
+        >
+          Explore components{" "}
+          <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
     </div>

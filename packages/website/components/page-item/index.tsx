@@ -49,61 +49,60 @@ export default function PageItem({
 }: Props) {
   const id = useId();
   return (
-    <Link href={href}>
-      <a
-        aria-labelledby={title && `${id}-title`}
-        aria-describedby={description ? `${id}-description` : undefined}
-        {...props}
-        className={cx(
-          style.wrapper,
-          props.className,
-          size === "sm" && "gap-2 p-2",
-          size === "md" && "gap-3 p-3",
-          size === "lg" && "gap-4 p-4"
-        )}
-      >
-        {props.children}
-        {thumbnail && (
-          <div
+    <Link
+      href={href}
+      aria-labelledby={title && `${id}-title`}
+      aria-describedby={description ? `${id}-description` : undefined}
+      {...props}
+      className={cx(
+        style.wrapper,
+        props.className,
+        size === "sm" && "gap-2 p-2",
+        size === "md" && "gap-3 p-3",
+        size === "lg" && "gap-4 p-4"
+      )}
+    >
+      {props.children}
+      {thumbnail && (
+        <div
+          className={cx(
+            style.thumbnail,
+            size === "sm" && "h-16 w-16",
+            size === "md" && "h-20 w-20",
+            size === "lg" && "h-28 w-28"
+          )}
+        >
+          {thumbnail}
+        </div>
+      )}
+      {title && (
+        <div className={style.textWrapper}>
+          <span
+            id={`${id}-title`}
             className={cx(
-              style.thumbnail,
-              size === "sm" && "h-16 w-16",
-              size === "md" && "h-20 w-20",
-              size === "lg" && "h-28 w-28"
+              style.title,
+              size === "sm" && "text-base",
+              size === "md" && "pb-1 text-lg",
+              size === "lg" && "pb-2 text-xl"
             )}
           >
-            {thumbnail}
-          </div>
-        )}
-        {title && (
-          <div className={style.textWrapper}>
+            {title}
+          </span>
+          {description && (
             <span
-              id={`${id}-title`}
+              id={`${id}-description`}
               className={cx(
-                style.title,
-                size === "sm" && "text-base",
-                size === "md" && "pb-1 text-lg",
-                size === "lg" && "pb-2 text-xl"
+                style.description,
+                size === "sm" && "text-sm truncate-[2]",
+                size === "md" && "text-base truncate-[2]",
+                size === "lg" && "text-base truncate-[3]"
               )}
             >
-              {title}
+              {description}
             </span>
-            {description && (
-              <span
-                id={`${id}-description`}
-                className={cx(
-                  style.description,
-                  size === "sm" && "text-sm truncate-[2]",
-                  size === "md" && "text-base truncate-[2]",
-                  size === "lg" && "text-base truncate-[3]"
-                )}
-              >
-                {description}
-              </span>
-            )}
-          </div>
-        )}
-      </a>
+          )}
+        </div>
+      )}
     </Link>
   );
 }

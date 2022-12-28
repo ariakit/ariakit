@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pkg from "@ariakit/react/package.json";
 import {
@@ -15,7 +15,6 @@ import {
 } from "@ariakit/react/select";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import tw from "../../utils/tw";
 import NewWindow from "../icons/new-window";
 import {
@@ -84,26 +83,25 @@ export default function VersionSelect() {
     defaultValue: pkg.version,
   });
 
-  const router = useRouter();
+  // TODO:
+  // const router = useRouter();
 
-  useEffect(() => {
-    router.events.on("routeChangeComplete", select.render);
-    return () => {
-      router.events.off("routeChangeComplete", select.render);
-    };
-  }, []);
+  // useEffect(() => {
+  //   router.events.on("routeChangeComplete", select.render);
+  //   return () => {
+  //     router.events.off("routeChangeComplete", select.render);
+  //   };
+  // }, []);
 
   const renderItem = (version: string, tag: string) => {
     const url = tag === "v1" ? "https://reakit.io" : "";
     return (
       <SelectItem key={version} value={version} className={style.item}>
         {(props) => (
-          <Link href={url}>
-            <a {...props}>
-              <SelectItemCheck />
-              <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
-              <span className={style.itemBadge}>{tag}</span>
-            </a>
+          <Link href={url} {...props}>
+            <SelectItemCheck />
+            <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
+            <span className={style.itemBadge}>{tag}</span>
           </Link>
         )}
       </SelectItem>

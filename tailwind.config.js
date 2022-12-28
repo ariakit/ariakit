@@ -9,6 +9,7 @@ module.exports = {
   content: [
     path.join(__dirname, "packages/website/components/**/*.{js,jsx,ts,tsx}"),
     path.join(__dirname, "packages/website/pages/**/*.{js,jsx,ts,tsx}"),
+    path.join(__dirname, "packages/website/app/**/*.{js,jsx,ts,tsx}"),
   ],
   darkMode: "class",
   theme: {
