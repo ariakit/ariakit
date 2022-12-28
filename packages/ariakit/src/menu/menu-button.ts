@@ -5,15 +5,15 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { getPopupItemRole, getPopupRole } from "ariakit-utils/dom";
-import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
-import { useStore } from "ariakit-utils/store";
+import { useEvent, useForkRef, useId } from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { getPopupItemRole, getPopupRole } from "ariakit-utils/dom";
 import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,

@@ -1,62 +1,49 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { css } from "@emotion/react";
 import { Playground as PlaygroundContainer } from "ariakit-playground/playground";
-import { PlaygroundEditorProps } from "ariakit-playground/playground-editor";
-import { PlaygroundPreviewProps } from "ariakit-playground/playground-preview";
 import { usePlaygroundState } from "ariakit-playground/playground-state";
-import darkTheme from "ariakit-playground/themes/vscode-dark";
+import vscodeTheme from "ariakit-playground/themes/vscode";
 import {
   useEvent,
   useId,
   useLazyValue,
   useLiveRef,
   useUpdateEffect,
-} from "ariakit-utils/hooks";
-import { cx, hasOwnProperty } from "ariakit-utils/misc";
+} from "ariakit-react-utils/hooks";
+import { hasOwnProperty } from "ariakit-utils/misc";
 import {
   CompositeOverflow,
   CompositeOverflowDisclosure,
   useCompositeOverflowState,
 } from "ariakit/composite";
-import { Tab, TabList, TabPanel, useTabState } from "ariakit/tab";
+import { TabList, TabPanel, useTabState } from "ariakit/tab";
 import dynamic from "next/dynamic";
 import useOverflowList from "packages/website/utils/use-overflow-list";
 import Popup from "../popup";
 import PlaygroundDisclosure from "./playground-disclosure";
 import PlaygroundError from "./playground-error";
+import { PlaygroundTab } from "./playground-tab";
 
 const theme = css`
-  ${darkTheme}
+  ${vscodeTheme}
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
   max-height: min(max(calc(100vh - 640px), 480px), 800px);
-
-  .cm-scroller {
-    padding-top: 0.5rem;
-  }
 `;
 
 const errorProps = { as: PlaygroundError };
 
-const PlaygroundEditor = dynamic<PlaygroundEditorProps>(
-  () =>
-    import("ariakit-playground/playground-editor").then(
-      (mod) => mod.PlaygroundEditor
-    ),
-  {
-    loading: () => (
-      <div className="h-2 rounded-b-[inherit] bg-canvas-1 dark:bg-canvas-1-dark" />
-    ),
-  }
-);
+const PlaygroundEditor = dynamic(() => import("./playground-editor"), {
+  suspense: true,
+});
 
-const PlaygroundPreview = dynamic<PlaygroundPreviewProps>(() =>
-  import("ariakit-playground/playground-preview").then(
-    (mod) => mod.PlaygroundPreview
-  )
-);
+const PlaygroundPreview = dynamic(() => import("./playground-preview"), {
+  suspense: true,
+});
 
-const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"));
+const OpenInCodeSandbox = dynamic(() => import("./open-in-code-sandbox"), {
+  suspense: true,
+});
 
 type PlaygroundProps = {
   defaultValues: Record<string, string>;
@@ -138,23 +125,14 @@ export default function Playground(props: PlaygroundProps) {
   );
 
   const renderTab = (file: string, hidden = false) => (
-    <Tab
-      className={cx(
-        hidden ? "rounded-sm" : "rounded-md sm:rounded",
-        "h-10 whitespace-nowrap bg-alpha-2 px-4 text-base sm:h-8 sm:px-3 sm:text-sm",
-        "text-black-fade hover:bg-alpha-2-hover aria-selected:bg-primary-2",
-        "aria-selected:text-primary-2 aria-selected:hover:to-primary-2-hover",
-        "dark:text-white-fade dark:hover:bg-alpha-2-dark-hover",
-        "dark:aria-selected:bg-primary-2-dark dark:aria-selected:text-primary-2-dark",
-        "dark:aria-selected:hover:bg-primary-2-dark-hover",
-        "flex-start flex items-center focus-visible:ariakit-outline"
-      )}
+    <PlaygroundTab
+      hidden={hidden}
       key={file}
       id={getTabId(file, baseId)}
       onClick={() => setExpanded(true)}
     >
       {file}
-    </Tab>
+    </PlaygroundTab>
   );
 
   return (
@@ -163,83 +141,78 @@ export default function Playground(props: PlaygroundProps) {
         state={playground}
         className="flex w-full flex-col items-center gap-3 sm:gap-4 md:gap-6"
       >
-        <div className="relative w-full">
-          <PlaygroundPreview
-            getModule={getModule}
-            errorProps={errorProps}
-            className="flex min-h-[300px] items-center
-            justify-center rounded-lg border border-canvas-3 bg-canvas-3
-            p-4 dark:border-0 dark:bg-canvas-3-dark md:p-6"
-          />
+        <div className="relative w-full rounded-lg bg-gray-150 dark:bg-gray-850 sm:rounded-xl">
+          <Suspense>
+            <PlaygroundPreview
+              getModule={getModule}
+              errorProps={errorProps}
+              className="relative flex min-h-[300px] items-center justify-center rounded-lg p-4 md:p-6"
+            />
+          </Suspense>
         </div>
-        <div className="dark relative w-full max-w-3xl rounded-lg">
-          <div
-            className="flex justify-between rounded-tl-[inherit] rounded-tr-[inherit] bg-canvas-1
-            p-3 pb-1 text-sm
-            dark:bg-canvas-1-dark"
-          >
-            <TabList
-              state={tab}
-              className="flex w-full flex-row gap-2 overflow-x-auto p-1"
-            >
-              {visibleTabs.map((file) => renderTab(file))}
-              {!!hiddenTabs.length && (
-                <>
-                  <CompositeOverflowDisclosure
-                    state={overflow}
-                    className="h-10 rounded bg-alpha-2 px-4 text-base text-black-fade hover:bg-alpha-2-hover
-                    focus-visible:ariakit-outline aria-expanded:bg-alpha-1 dark:text-white-fade
-                    dark:hover:bg-alpha-2-dark-hover dark:aria-expanded:bg-alpha-1-dark
-                    sm:h-8 sm:px-3
-                    sm:text-sm"
-                  >
-                    +{hiddenTabs.length}
-                  </CompositeOverflowDisclosure>
-                  <CompositeOverflow
-                    state={overflow}
-                    as={Popup}
-                    className="flex flex-col gap-2 p-2"
-                    elevation={2}
-                  >
-                    {hiddenTabs.map((file) => renderTab(file, true))}
-                  </CompositeOverflow>
-                </>
-              )}
-            </TabList>
-            <div className="flex gap-2 p-1">
-              <OpenInCodeSandbox />
+        <div className="relative w-full max-w-3xl rounded-lg border border-gray-250 bg-white shadow-md dark:border-gray-650 dark:bg-gray-850 dark:shadow-md-dark sm:rounded-xl">
+          <Suspense>
+            <div className="flex justify-between p-2 pb-1">
+              <TabList
+                state={tab}
+                className="flex w-full flex-row gap-2 overflow-x-auto p-2"
+              >
+                {visibleTabs.map((file) => renderTab(file))}
+                {!!hiddenTabs.length && (
+                  <>
+                    <CompositeOverflowDisclosure
+                      state={overflow}
+                      className="h-10 rounded px-4 text-base text-black/75 hover:bg-black/5 focus-visible:ariakit-outline-input aria-expanded:bg-black/10 dark:text-white/75 dark:hover:bg-white/5 dark:aria-expanded:bg-black sm:h-8 sm:px-3 sm:text-sm"
+                    >
+                      +{hiddenTabs.length}
+                    </CompositeOverflowDisclosure>
+                    <CompositeOverflow
+                      state={overflow}
+                      as={Popup}
+                      className="flex flex-col gap-2 p-2"
+                      elevation={2}
+                    >
+                      {hiddenTabs.map((file) => renderTab(file, true))}
+                    </CompositeOverflow>
+                  </>
+                )}
+              </TabList>
+              <div className="flex gap-2 p-2">
+                <OpenInCodeSandbox />
+              </div>
             </div>
-          </div>
-          {files.map((file) => (
-            <TabPanel
-              key={file}
-              state={tab}
-              tabId={getTabId(file, baseId)}
-              focusable={false}
-              className="rounded-[inherit]"
-            >
-              {(props) =>
-                (!props.hidden || beenSelected.has(getTabId(file, baseId))) && (
-                  <div {...props}>
-                    <PlaygroundEditor
-                      lineNumbers
-                      className="bg-canvas-1 focus-visible:ariakit-outline-input dark:bg-canvas-1-dark"
-                      state={playground}
-                      file={file}
-                      theme={theme}
-                      expanded={expanded}
-                      maxHeight={260}
-                      setExpanded={setExpanded}
-                      disclosureProps={{ as: PlaygroundDisclosure }}
-                      keyboardDescriptionProps={{
-                        style: { display: "none" },
-                      }}
-                    />
-                  </div>
-                )
-              }
-            </TabPanel>
-          ))}
+            {files.map((file) => (
+              <TabPanel
+                key={file}
+                state={tab}
+                tabId={getTabId(file, baseId)}
+                focusable={false}
+                className="rounded-[inherit] bg-[color:inherit]"
+              >
+                {(props) =>
+                  (!props.hidden ||
+                    beenSelected.has(getTabId(file, baseId))) && (
+                    <div {...props}>
+                      <PlaygroundEditor
+                        lineNumbers
+                        className="bg-[color:inherit] focus-visible:ariakit-outline-input"
+                        state={playground}
+                        file={file}
+                        theme={theme}
+                        expanded={expanded}
+                        maxHeight={260}
+                        setExpanded={setExpanded}
+                        disclosureProps={{ as: PlaygroundDisclosure }}
+                        keyboardDescriptionProps={{
+                          style: { display: "none" },
+                        }}
+                      />
+                    </div>
+                  )
+                }
+              </TabPanel>
+            ))}
+          </Suspense>
         </div>
       </PlaygroundContainer>
     </div>

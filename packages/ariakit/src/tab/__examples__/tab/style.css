@@ -2,18 +2,21 @@
   @apply
     flex
     flex-col
-    gap-4
+    p-2
+    gap-2
     rounded-lg
-    border
-    border-canvas-3
-    bg-canvas-3
-    p-4
-    dark:border-canvas-3-dark
-    dark:bg-canvas-3-dark;
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
 }
 
 .tab-list {
-  @apply flex gap-2;
+  @apply
+    flex
+    gap-2
+  ;
 }
 
 .tab {
@@ -23,18 +26,25 @@
     items-center
     justify-center
     gap-2
-    rounded-md
+    rounded
     border-none
     px-4
     text-base
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
-    hover:bg-black/5
-    aria-selected:bg-primary-2
-    aria-selected:text-primary-2
-    aria-selected:hover:bg-primary-2-hover
-    dark:hover:bg-white/5
-    dark:aria-selected:bg-primary-2-dark
-    dark:aria-selected:text-primary-2-dark
-    dark:aria-selected:hover:bg-primary-2-dark-hover;
+    hover:bg-black/10
+    dark:hover:bg-white/10
+    aria-selected:bg-blue-600
+    aria-selected:text-white
+    aria-selected:hover:bg-blue-800
+    dark:aria-selected:bg-blue-600
+    dark:aria-selected:text-white
+    dark:aria-selected:hover:bg-blue-800
+  ;
+}
+
+.panels {
+  @apply
+    p-2
+  ;
 }

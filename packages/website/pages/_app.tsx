@@ -1,8 +1,13 @@
 import "../styles/globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
+import Footer from "../components/footer";
+import Header from "../components/header";
 import SEO from "../components/seo";
+
+const queryClient = new QueryClient();
 
 // https://github.com/vercel/next.js/discussions/13387#discussioncomment-101564
 const noOverlayWorkaroundScript = `
@@ -16,9 +21,8 @@ const noOverlayWorkaroundScript = `
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Head>
-        <link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any" />
         <link
           rel="apple-touch-icon"
           href="/apple-touch-icon.png"
@@ -36,6 +40,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           href="/favicon-16x16.png"
           sizes="16x16"
         />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        <link
+          rel="icon"
+          type="image/svg+xml"
+          href="/icon-dark.svg"
+          media="(prefers-color-scheme: dark)"
+        />
       </Head>
       <SEO />
       {process.env.NODE_ENV !== "production" && (
@@ -44,8 +55,14 @@ function MyApp({ Component, pageProps }: AppProps) {
           dangerouslySetInnerHTML={{ __html: noOverlayWorkaroundScript }}
         />
       )}
-      <Component {...pageProps} />
-    </>
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <Component {...pageProps} />
+        <div className="mt-auto flex">
+          <Footer />
+        </div>
+      </div>
+    </QueryClientProvider>
   );
 }
 

@@ -1,13 +1,21 @@
-@import "../menu/style.css";
+@import url("../menu/style.css");
 
 .menu {
-  @apply overflow-visible;
+  @apply
+    overflow-visible
+  ;
 }
 
 .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
-  @apply text-current bg-black/10 dark:bg-white/10;
+  @apply
+    text-current
+    bg-black/10
+    dark:bg-white/10
+  ;
 }
 
 .menu-item .label {
-  @apply flex-1;
+  @apply
+    flex-1
+  ;
 }

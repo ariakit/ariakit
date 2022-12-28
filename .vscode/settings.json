@@ -10,6 +10,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.stylelint": true
   },
+  "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
   "eslint.enable": true,
   "editor.formatOnSave": true,
   "eslint.format.enable": true,

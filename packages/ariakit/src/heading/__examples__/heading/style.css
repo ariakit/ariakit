@@ -1,15 +1,33 @@
 .wrapper {
-  @apply flex flex-col;
+  @apply
+    flex
+    flex-col
+    gap-4
+  ;
 }
 
 h1 {
-  @apply text-xl;
+  @apply
+    my-0
+    text-2xl
+    font-normal
+  ;
 }
 
 h2 {
-  @apply mt-4 text-lg;
+  @apply
+    my-0
+    text-xl
+    font-normal
+    text-black/60
+    dark:text-white/60
+  ;
 }
 
 h3 {
-  @apply mt-4 text-base;
+  @apply
+    my-0
+    text-base
+    font-normal
+  ;
 }

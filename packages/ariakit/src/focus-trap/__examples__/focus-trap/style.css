@@ -1,6 +1,17 @@
-@import "../../../button/__examples__/button/style.css";
-@import "../../../checkbox/__examples__/checkbox/style.css";
+@import url("../../../button/__examples__/button/style.css");
+@import url("../../../checkbox/__examples__/checkbox/style.css");
 
 .wrapper {
-  @apply flex gap-2 flex-col rounded-lg border border-canvas-3 dark:border-canvas-3-dark p-3 w-56;
+  @apply
+    flex
+    flex-col
+    w-56
+    p-4
+    gap-2
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
 }

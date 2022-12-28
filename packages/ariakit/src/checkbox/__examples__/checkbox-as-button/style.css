@@ -1,32 +1,21 @@
-.checkbox {
+@import url("../../../button/__examples__/button/style.css");
+
+.button {
   @apply
-    flex
-    h-10
-    cursor-pointer
-    items-center
-    justify-center
-    gap-1
-    rounded-lg
-    border-none
-    px-4
-    text-base
-    focus-visible:ariakit-outline
-    /* Base Unchecked */
-    bg-primary-1
-    text-primary-1
-    hover:bg-primary-1-hover
-    /* Base Dark Unchecked */
-    dark:bg-primary-1-dark
-    dark:text-primary-1-dark
-    dark:hover:bg-primary-1-dark-hover
-    /* Base Checked */
-    aria-checked:bg-primary-2
-    aria-checked:text-primary-2
-    aria-checked:hover:bg-primary-2-hover
-    /* Base Dark Checked */
-    dark:aria-checked:bg-primary-2-dark
-    dark:aria-checked:text-primary-2-dark
-    dark:aria-checked:hover:bg-primary-2-dark-hover
-    /* disabled */
-    aria-disabled:opacity-50;
+    text-blue-900
+    bg-blue-200/40
+    hover:bg-blue-200/60
+
+    dark:text-blue-100
+    dark:bg-blue-600/25
+    dark:hover:bg-blue-600/40
+
+    aria-checked:text-white
+    aria-checked:bg-blue-600
+    aria-checked:hover:bg-blue-800
+
+    dark:aria-checked:text-white
+    dark:aria-checked:bg-blue-600
+    dark:aria-checked:hover:bg-blue-800
+  ;
 }

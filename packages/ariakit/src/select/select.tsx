@@ -8,22 +8,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { getPopupRole } from "ariakit-utils/dom";
-import { queueBeforeEvent } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useRefId,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { useStoreProvider } from "ariakit-utils/store";
+} from "ariakit-react-utils/hooks";
+import { useStoreProvider } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { getPopupRole } from "ariakit-utils/dom";
+import { queueBeforeEvent } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,
@@ -33,7 +34,11 @@ import {
   usePopoverDisclosure,
 } from "../popover/popover-disclosure";
 import { VisuallyHidden } from "../visually-hidden";
-import { Item, SelectContext, findFirstEnabledItemWithValue } from "./__utils";
+import {
+  SelectContext,
+  SelectStateItem,
+  findFirstEnabledItemWithValue,
+} from "./__utils";
 import { SelectArrow } from "./select-arrow";
 import { SelectState } from "./select-state";
 
@@ -45,7 +50,7 @@ function getSelectedValues(select: HTMLSelectElement) {
 
 // When moving through the items when the select list is closed, we don't want
 // to move to items without value, so we filter them out here.
-function nextWithValue(items: Item[], next: SelectState["next"]) {
+function nextWithValue(items: SelectStateItem[], next: SelectState["next"]) {
   return () => {
     const nextId = next();
     if (!nextId) return;

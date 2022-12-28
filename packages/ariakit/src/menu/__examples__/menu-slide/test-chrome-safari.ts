@@ -1,13 +1,13 @@
 import { Locator, Page, expect, test } from "@playwright/test";
 
 const getMenuButton = (locator: Page | Locator) =>
-  locator.locator(`role=button[name='Options']`);
+  locator.getByRole("button", { name: "Options" });
 
 const getMenu = (locator: Page | Locator, name: string) =>
-  locator.locator(`role=menu[name='${name}']`);
+  locator.getByRole("menu", { name });
 
 const getMenuWrapper = (locator: Page) =>
-  locator.locator("role=menu[name='Options'] >> xpath=..");
+  getMenu(locator, "Options").locator("..");
 
 const getMenuItem = (
   locator: Page | Locator,

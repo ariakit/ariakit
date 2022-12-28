@@ -1,12 +1,20 @@
-@import "../select/style.css";
+@import url("../select/style.css");
 
 .popover {
-  @apply pt-0;
+  @apply
+    pt-0
+  ;
 }
 
 .combobox-wrapper {
-  background-color: inherit;
-  @apply sticky top-0 pt-2 mb-2 w-fit;
+  @apply
+    sticky
+    bg-inherit
+    top-0
+    pt-2
+    mb-2
+    w-fit
+  ;
 }
 
 .combobox {
@@ -17,15 +25,18 @@
     px-4
     w-full
     text-base
-    bg-canvas-1
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline-input;
+    bg-gray-150
+    text-black
+    hover:bg-gray-200
+    dark:bg-gray-850
+    dark:text-white
+    dark:hover:bg-gray-900
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .select-item {
-  @apply scroll-mt-14;
+  @apply
+    scroll-mt-14
+  ;
 }

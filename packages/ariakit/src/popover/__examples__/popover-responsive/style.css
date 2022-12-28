@@ -1,13 +1,16 @@
-@import "../popover/style.css";
+@import url("../popover/style.css");
 
 .popover {
   @apply
     max-h-[calc(100vh-200px)]
     w-full
     max-w-none
-    sm:max-w-[min(calc(100vw-16px),_320px)];
+    sm:max-w-[min(calc(100vw-16px),_320px)]
+  ;
 }
 
 [data-backdrop] {
-  background-color: rgb(0 0 0 / 10%);
+  @apply
+    bg-black/30
+  ;
 }

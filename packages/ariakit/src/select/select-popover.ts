@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { toArray } from "ariakit-utils/array";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { toArray } from "ariakit-utils/array";
 import { PopoverOptions, usePopover } from "../popover/popover";
-import { Item, findEnabledItemByValue } from "./__utils";
+import { SelectStateItem, findEnabledItemByValue } from "./__utils";
 import { SelectListOptions, useSelectList } from "./select-list";
 
 /**
@@ -28,7 +28,7 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ state, ...props }) => {
     const values = toArray(state.value);
     const value = values[values.length - 1] ?? "";
-    const [item, setItem] = useState<Item | null>(null);
+    const [item, setItem] = useState<SelectStateItem | null>(null);
 
     // Sets the initial focus ref.
     useEffect(() => {

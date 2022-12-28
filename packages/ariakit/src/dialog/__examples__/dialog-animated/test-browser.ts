@@ -1,8 +1,8 @@
 import { Page, expect, test } from "@playwright/test";
 
-const getDialog = (page: Page) => page.locator("role=dialog[name='Apples']");
+const getDialog = (page: Page) => page.getByRole("dialog", { name: "Success" });
 const getButton = (page: Page, name: string) =>
-  page.locator(`role=button[name='${name}']`);
+  page.getByRole("button", { name });
 
 const createTransition = (duration = 100) => {
   const then = performance.now();
@@ -17,15 +17,15 @@ test("show/hide", async ({ page }) => {
   await page.goto("/examples/dialog-animated");
   await expect(getDialog(page)).not.toBeVisible();
   const isEntering = createTransition();
-  await getButton(page, "View details").click();
+  await getButton(page, "Show modal").click();
   await expect(getDialog(page)).toBeVisible();
   if (isEntering()) {
-    await expect(getButton(page, "View details")).toBeFocused();
+    await expect(getButton(page, "Show modal")).toBeFocused();
   }
-  await expect(getButton(page, "Dismiss popup")).toBeFocused();
+  await expect(getButton(page, "OK")).toBeFocused();
   const isLeaving = createTransition();
-  await getButton(page, "Dismiss popup").click();
-  await expect(getButton(page, "View details")).toBeFocused();
+  await getButton(page, "OK").click();
+  await expect(getButton(page, "Show modal")).toBeFocused();
   if (isLeaving()) {
     await expect(getDialog(page)).toBeVisible();
   }

@@ -1,12 +1,12 @@
 import { KeyboardEvent, useRef } from "react";
-import { useEvent, useForkRef, useId } from "ariakit-utils/hooks";
-import { useStoreProvider } from "ariakit-utils/store";
+import { useEvent, useForkRef, useId } from "ariakit-react-utils/hooks";
+import { useStoreProvider } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { ComboboxContext } from "./__utils";
 import { ComboboxState } from "./combobox-state";
 

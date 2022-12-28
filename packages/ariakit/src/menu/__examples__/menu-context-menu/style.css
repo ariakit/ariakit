@@ -1,4 +1,4 @@
-@import "../menu/style.css";
+@import url("../menu/style.css");
 
 .wrapper {
   @apply
@@ -10,6 +10,7 @@
     rounded-lg
     border-2
     border-dashed
-    border-canvas-5
-    dark:border-canvas-5-dark;
+    border-gray-250
+    dark:border-gray-450
+  ;
 }

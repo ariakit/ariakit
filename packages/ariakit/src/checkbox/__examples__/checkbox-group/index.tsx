@@ -5,7 +5,7 @@ import "./style.css";
 export default function Example() {
   const checkbox = useCheckboxState({ defaultValue: [] });
   return (
-    <Group>
+    <Group className="wrapper">
       <GroupLabel>Your favorite fruits</GroupLabel>
       <label className="label">
         <Checkbox state={checkbox} value="apple" className="checkbox" /> Apple

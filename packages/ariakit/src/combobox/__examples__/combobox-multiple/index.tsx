@@ -7,7 +7,7 @@ export default function Example() {
   const [values, setValues] = useState<string[]>(["Bacon"]);
   const [matches, setMatches] = useState<string[]>([]);
   return (
-    <div>
+    <div className="wrapper">
       <ComboboxMultiple
         label="Your favorite food"
         placeholder="e.g., Apple, Burger"

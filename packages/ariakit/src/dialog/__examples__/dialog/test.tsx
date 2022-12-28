@@ -1,9 +1,9 @@
 import { click, getByRole, press, render } from "ariakit-test";
 import Example from ".";
 
-const getDisclosure = () => getByRole("button", { name: "View details" });
+const getDisclosure = () => getByRole("button", { name: "Show modal" });
 const getDialog = () => getByRole("dialog", { hidden: true });
-const getDismiss = () => getByRole("button", { name: "Dismiss popup" });
+const getDismiss = () => getByRole("button", { name: "OK" });
 
 test("show on disclosure click", async () => {
   render(<Example />);

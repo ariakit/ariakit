@@ -1,12 +1,12 @@
 import { Page, expect, test } from "@playwright/test";
 
 const getMenuButton = (page: Page) =>
-  page.locator("role=button[name='Options']");
+  page.getByRole("button", { name: "Options" });
 
-const getMenu = (page: Page) => page.locator("role=menu");
+const getMenu = (page: Page) => page.getByRole("menu");
 
 const getMenuItem = (page: Page, name: string) =>
-  page.locator(`role=menuitem[name='${name}']`);
+  page.getByRole("menuitem", { name });
 
 const getWrapper = (page: Page) => getMenuButton(page).locator("..");
 
@@ -21,6 +21,8 @@ const createTransition = (duration = 500) => {
 
 test("open/hide with click", async ({ page, headless }, testInfo) => {
   testInfo.snapshotSuffix = "";
+  const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
+  await page.setViewportSize({ width: 1024, height: 1024 });
   await page.goto("/examples/menu-framer-motion");
   await expect(getMenu(page)).not.toBeVisible();
   const isEntering = createTransition();
@@ -31,7 +33,7 @@ test("open/hide with click", async ({ page, headless }, testInfo) => {
     await expect(getMenuButton(page)).toBeFocused();
   }
   await expect(getMenu(page)).toBeFocused();
-  if (headless) {
+  if (headless && isMac) {
     expect(await getWrapper(page).screenshot()).toMatchSnapshot();
   }
   const isLeaving = createTransition();

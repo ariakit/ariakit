@@ -1,10 +1,19 @@
-@import "../dialog/style.css";
+@import url("../dialog/style.css");
 
 .button {
-  appearance: none;
+  @apply
+    appearance-none
+    [&::marker]:hidden
+    [&::-webkit-details-marker]:hidden
+  ;
 }
 
-.button::marker,
-.button::-webkit-details-marker {
-  display: none;
+.dialog {
+  @apply
+    fixed
+    top-0
+    left-1/2
+    sm:ml-[calc(var(--scrollbar-width,0)*-0.5)]
+    [transform:translateX(-50%)]
+  ;
 }

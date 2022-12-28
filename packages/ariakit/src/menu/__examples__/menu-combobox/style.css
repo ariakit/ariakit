@@ -1,8 +1,11 @@
-@import "../menu/style.css";
+@import url("../menu/style.css");
 
 .menu {
-  max-height: min(var(--popover-available-height, 300px), 300px);
-  @apply p-0 overflow-visible;
+  @apply
+    p-0
+    overflow-visible
+    max-h-[min(var(--popover-available-height,300px),300px)]
+  ;
 }
 
 .combobox {
@@ -11,27 +14,29 @@
     h-10
     rounded
     border-none
-    bg-canvas-1
     px-4
     m-2
     flex-none
     text-base
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover
-    focus-visible:ariakit-outline-input;
+    text-black
+    dark:text-white
+    bg-gray-150
+    hover:bg-gray-200
+    dark:bg-gray-850
+    dark:hover:bg-gray-900
+    focus-visible:ariakit-outline-input
+  ;
 }
 
 .combobox-list {
-  border-bottom-left-radius: inherit;
-  border-bottom-right-radius: inherit;
   @apply
     p-2
     overflow-auto
     overscroll-contain
+    rounded-bl-[inherit]
+    rounded-br-[inherit]
     border-t
-    border-t-canvas-4
-    dark:border-t-canvas-4-dark;
+    border-t-gray-250
+    dark:border-t-gray-550
+  ;
 }

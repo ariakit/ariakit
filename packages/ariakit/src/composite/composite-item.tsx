@@ -9,8 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
-import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
 import {
   useBooleanEvent,
   useEvent,
@@ -18,10 +16,13 @@ import {
   useId,
   useSafeLayoutEffect,
   useWrapElement,
-} from "ariakit-utils/hooks";
-import { createMemoComponent, useStore } from "ariakit-utils/store";
-import { createElement, createHook } from "ariakit-utils/system";
-import { As, BooleanOrCallback, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/hooks";
+import { createMemoComponent, useStore } from "ariakit-react-utils/store";
+import { createElement, createHook } from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
+import { getScrollingElement, isButton, isTextField } from "ariakit-utils/dom";
+import { isPortalEvent, isSelfTarget } from "ariakit-utils/events";
+import { BooleanOrCallback } from "ariakit-utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,
@@ -31,7 +32,7 @@ import {
   CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
-  Item,
+  CompositeStateItem,
   findEnabledItemById,
   focusSilently,
   getContextId,
@@ -115,14 +116,17 @@ function findNextPageItemId(
   return id;
 }
 
-function useItem(items?: Item[], id?: string) {
+function useItem(items?: CompositeStateItem[], id?: string) {
   return useMemo(() => {
     if (!id) return;
     return items?.find((item) => item.id === id);
   }, [items, id]);
 }
 
-function targetIsAnotherItem(event: SyntheticEvent, items: Item[]) {
+function targetIsAnotherItem(
+  event: SyntheticEvent,
+  items: CompositeStateItem[]
+) {
   if (isSelfTarget(event)) return false;
   const target = event.target as HTMLElement;
   return isItem(items, target, event.currentTarget);

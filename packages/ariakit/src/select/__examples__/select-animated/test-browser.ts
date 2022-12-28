@@ -1,13 +1,13 @@
 import { Page, expect, test } from "@playwright/test";
 
 const getButton = (page: Page) =>
-  page.locator("role=combobox[name='Favorite fruit']");
+  page.getByRole("combobox", { name: "Favorite fruit" });
 
 const getPopover = (page: Page) =>
-  page.locator(`role=listbox[name='Favorite fruit']`);
+  page.getByRole("listbox", { name: "Favorite fruit" });
 
 const getOption = (page: Page, name: string) =>
-  page.locator(`role=option[name='${name}']`);
+  page.getByRole("option", { name });
 
 const expectActiveOption = (page: Page, name: string) =>
   expect(getOption(page, name)).toHaveAttribute("data-active-item", "");

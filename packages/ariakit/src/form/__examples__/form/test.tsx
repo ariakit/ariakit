@@ -2,7 +2,7 @@ import {
   click,
   getByRole,
   press,
-  queryByText,
+  queryAllByText,
   render,
   type,
 } from "ariakit-test";
@@ -10,7 +10,7 @@ import { axe } from "jest-axe";
 import Example from ".";
 
 const getInput = (name: string) => getByRole("textbox", { name });
-const getError = () => queryByText("Constraints not satisfied");
+const getErrors = () => queryAllByText("Constraints not satisfied");
 
 const spyOnAlert = () =>
   jest.spyOn(window, "alert").mockImplementation(() => {});
@@ -39,23 +39,25 @@ test("focus on the first input by tabbing", async () => {
 
 test("show error on blur", async () => {
   render(<Example />);
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Tab();
   await press.Tab();
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(1);
+  await press.Tab();
+  expect(getErrors()).toHaveLength(2);
 });
 
 test("show error on submit", async () => {
   render(<Example />);
   await press.Tab();
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(0);
   await press.Enter();
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(2);
 });
 
 test("focus on input with error on submit", async () => {
   render(<Example />);
-  await click(getByRole("button", { name: "Submit" }));
+  await click(getByRole("button", { name: "Add" }));
   expect(getInput("Name")).toHaveFocus();
 });
 
@@ -64,9 +66,9 @@ test("fix error on change", async () => {
   await press.Tab();
   await press.Tab();
   await press.ShiftTab();
-  expect(getError()).toBeInTheDocument();
+  expect(getErrors()).toHaveLength(2);
   await type("John");
-  expect(getError()).not.toBeInTheDocument();
+  expect(getErrors()).toHaveLength(1);
 });
 
 test("reset form on reset", async () => {
@@ -84,14 +86,21 @@ test("submit form", async () => {
   render(<Example />);
   await press.Tab();
   await type("John");
+  await press.Tab();
+  await type("john@example.com");
   await press.Enter();
-  expect(alert).toHaveBeenCalledWith(JSON.stringify({ name: "John" }));
+  expect(alert).toHaveBeenCalledWith(
+    JSON.stringify({ name: "John", email: "john@example.com" })
+  );
 });
 
 test("reset form on submit", async () => {
   render(<Example />);
   await press.Tab();
   await type("John");
+  await press.Tab();
+  await type("john@example.com");
   await press.Enter();
   expect(getInput("Name")).toHaveValue("");
+  expect(getInput("Email")).toHaveValue("");
 });

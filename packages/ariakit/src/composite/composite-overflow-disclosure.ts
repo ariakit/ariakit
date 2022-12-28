@@ -1,11 +1,15 @@
 import { FocusEvent, useRef, useState } from "react";
-import { useEvent, useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import {
+  useEvent,
+  useForkRef,
+  useSafeLayoutEffect,
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,

@@ -55,7 +55,7 @@ export default function Example() {
   };
 
   return (
-    <div>
+    <div className="wrapper">
       <label className="label">
         Links
         <Combobox

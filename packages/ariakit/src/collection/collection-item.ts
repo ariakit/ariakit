@@ -1,13 +1,13 @@
 import { useContext, useRef } from "react";
-import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
-import { useStore } from "ariakit-utils/store";
+import { useForkRef, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
-import { CollectionItemContext, Item } from "./__utils";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { CollectionItemContext, CollectionStateItem } from "./__utils";
 import { CollectionState } from "./collection-state";
 
 function identity<T>(value: T) {
@@ -95,7 +95,7 @@ export type CollectionItemOptions<T extends As = "div"> = Options<T> & {
    * <CollectionItem state={state} getItem={getItem} />
    * ```
    */
-  getItem?: (props: Item) => Item;
+  getItem?: (props: CollectionStateItem) => CollectionStateItem;
 };
 
 export type CollectionItemProps<T extends As = "div"> = Props<

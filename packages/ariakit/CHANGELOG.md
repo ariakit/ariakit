@@ -1,5 +1,17 @@
 # ariakit
 
+## 2.0.0-next.42
+
+### Patch Changes
+
+- Extracted React specific utilities from the `ariakit-utils` package to the `ariakit-react-utils` package. ([#1819](https://github.com/ariakit/ariakit/pull/1819))
+
+- Fixed type errors in TypeScript v4.8. ([#1885](https://github.com/ariakit/ariakit/pull/1885))
+
+- **TypeScript**: Renamed types to have unique names matching their pattern. ([#2153](https://github.com/ariakit/ariakit/pull/2153))
+
+- Updated dependencies: `ariakit-utils@0.17.0-next.27`, `ariakit-react-utils@0.17.0-next.27`.
+
 ## 2.0.0-next.41
 
 ### Minor Changes

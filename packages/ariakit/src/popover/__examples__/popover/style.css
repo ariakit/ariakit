@@ -1,7 +1,6 @@
-@import "../../../button/__examples__/button/style.css";
+@import url("../../../button/__examples__/button/style.css");
 
 .popover {
-  max-width: min(calc(100vw - 16px), 320px);
   @apply
     z-50
     flex
@@ -11,25 +10,32 @@
     border
     border-solid
     p-4
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    drop-shadow
+    max-w-[min(calc(100vw-16px),320px)]
+    shadow-lg
+    dark:shadow-lg-dark
     focus-visible:ariakit-outline
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    dark:drop-shadow-dark;
+    border-gray-250
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
+  ;
 }
 
-.arrow svg {
+.arrow {
   @apply
-    fill-canvas-4
-    stroke-canvas-4
-    dark:fill-canvas-4-dark
-    dark:stroke-canvas-4-dark;
+    [&>svg]:fill-white
+    [&>svg]:stroke-gray-250
+    [&>svg]:dark:fill-gray-700
+    [&>svg]:dark:stroke-gray-600
+  ;
 }
 
 .heading {
-  @apply m-0 text-xl font-medium;
+  @apply
+    m-0
+    text-xl
+    font-medium
+  ;
 }

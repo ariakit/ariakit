@@ -13,7 +13,7 @@ test("markup", async () => {
     <div>
       <button
         aria-checked="false"
-        class="checkbox"
+        class="button"
         data-command=""
         role="checkbox"
       >

@@ -1,6 +1,8 @@
-@import "../form/style.css";
-@import "../../../select/__examples__/select/style.css";
+@import url("../../../select/__examples__/select/style.css");
+@import url("../form/style.css");
 
 .select {
-  @apply w-full;
+  @apply
+    w-full
+  ;
 }

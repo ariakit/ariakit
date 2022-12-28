@@ -1,27 +1,50 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
 .label {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
 }
 
 .combobox {
-  width: 250px;
   @apply
     h-10
     px-4
-    rounded-lg
-    border-none
+    w-[250px]
     text-base
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
+    text-black
+    dark:text-white
+    bg-gray-150/40
+    dark:bg-gray-850
+    hover:bg-gray-150
+    dark:hover:bg-gray-900
+    shadow-input
+    dark:shadow-input-dark
     focus-visible:ariakit-outline-input
-    bg-canvas-1
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+  ;
 }
 
 .popover {
-  max-height: min(var(--popover-available-height, 300px), 300px);
   @apply
+    max-h-[min(var(--popover-available-height,300px),300px)]
     relative
     flex
     flex-col
@@ -33,19 +56,20 @@
     rounded-lg
     border
     border-solid
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark;
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    drop-shadow-lg
+    dark:drop-shadow-lg-dark
+  ;
 }
 
 .combobox-item {
-  outline: none !important;
   @apply
+    ![outline:none]
     flex
     gap-2
     p-2
@@ -53,10 +77,10 @@
     cursor-default
     items-center
     rounded
-    hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    active-item:dark:bg-primary-2-dark
-    active-item:dark:text-primary-2-dark;
+    hover:bg-blue-200/40
+    dark:hover:bg-blue-600/25
+    active-item:bg-blue-600
+    active-item:text-white
+    active-item:dark:bg-blue-600
+  ;
 }

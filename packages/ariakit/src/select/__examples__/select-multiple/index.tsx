@@ -20,6 +20,7 @@ export default function Example() {
   const select = useSelectState({
     defaultValue: ["Apple", "Cake"],
     sameWidth: true,
+    gutter: 4,
   });
   return (
     <div className="wrapper">

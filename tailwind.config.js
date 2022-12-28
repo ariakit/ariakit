@@ -1,10 +1,8 @@
 const path = require("path");
 const plugin = require("tailwindcss/plugin");
 
-const black = "hsl(204, 10%, 10%)";
-const blackFade = "hsla(204, 10%, 10%, 75%)";
-const white = "hsl(0, 0%, 100%)";
-const whiteFade = "hsla(204, 3%, 97%, 75%)";
+const black = "hsl(204 10% 10%)";
+const white = "hsl(204 20% 100%)";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
@@ -14,250 +12,123 @@ module.exports = {
   ],
   darkMode: "class",
   theme: {
-    colors: {
-      black: {
-        DEFAULT: black,
-        text: black,
-      },
-      "black-fade": {
-        DEFAULT: blackFade,
-        text: blackFade,
-      },
-      white: {
-        DEFAULT: white,
-        text: white,
-      },
-      "white-fade": {
-        DEFAULT: whiteFade,
-        text: whiteFade,
-      },
-      current: {
-        DEFAULT: "currentColor",
-        border: "currentColor",
-        text: "currentColor",
-      },
-      transparent: {
-        DEFAULT: "transparent",
-        border: "transparent",
-      },
-      link: {
-        text: "hsl(204, 100%, 38%)",
-        dark: {
-          text: "hsl(204, 100%, 62%)",
+    extend: {
+      colors: {
+        inherit: "inherit",
+        black,
+        white,
+        gray: {
+          50: "hsl(204 20% 99%)",
+          100: "hsl(204 20% 96%)",
+          150: "hsl(204 20% 94%)",
+          200: "hsl(204 20% 91%)",
+          250: "hsl(204 20% 88%)",
+          300: "hsl(204 20% 82%)",
+          350: "hsl(204 10% 70%)",
+          400: "hsl(204 10% 50%)",
+          450: "hsl(204 3% 34%)",
+          500: "hsl(204 3% 30%)",
+          550: "hsl(204 3% 28%)",
+          600: "hsl(204 3% 26%)",
+          650: "hsl(204 3% 22%)",
+          700: "hsl(204 3% 18%)",
+          750: "hsl(204 3% 16%)",
+          800: "hsl(204 3% 14%)",
+          850: "hsl(204 3% 12%)",
+          900: "hsl(204 3% 10%)",
         },
-      },
-      "canvas-1": {
-        DEFAULT: "hsl(204, 20%, 94%)",
-        hover: "hsl(204, 20%, 91%)",
-        border: "hsl(204, 20%, 82%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204, 3%, 12%)",
-          hover: "hsl(204, 3%, 10%)",
-          border: "hsl(204, 3%, 24%)",
-          text: white,
+        blue: {
+          50: "hsl(204 100% 90%)",
+          100: "hsl(204 100% 86%)",
+          200: "hsl(204 100% 80%)",
+          300: "hsl(204 100% 72%)",
+          400: "hsl(204 100% 64%)",
+          500: "hsl(204 100% 58%)",
+          600: "hsl(204 100% 40%)",
+          700: "hsl(204 100% 35%)",
+          800: "hsl(204 100% 32%)",
+          900: "hsl(204 100% 30%)",
         },
-      },
-      "canvas-2": {
-        DEFAULT: "hsl(204, 20%, 97%)",
-        hover: "hsl(204, 20%, 94%)",
-        border: "hsl(204, 20%, 85%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204, 3%, 16%)",
-          hover: "hsl(204, 3%, 14%)",
-          border: "hsl(204, 3%, 28%)",
-          text: white,
-        },
-      },
-      "canvas-3": {
-        DEFAULT: "hsl(204, 20%, 99%)",
-        hover: "hsl(204, 20%, 95%)",
-        border: "hsl(204, 20%, 87%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204, 3%, 18%)",
-          hover: "hsl(204, 3%, 16%)",
-          border: "hsl(204, 3%, 30%)",
-          text: white,
-        },
-      },
-      "canvas-4": {
-        DEFAULT: "hsl(204, 20%, 100%)",
-        hover: "hsl(204, 20%, 96%)",
-        border: "hsl(204, 20%, 88%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204, 3%, 20%)",
-          hover: "hsl(204, 3%, 18%)",
-          border: "hsl(204, 3%, 32%)",
-          text: white,
-        },
-      },
-      "canvas-5": {
-        DEFAULT: "hsl(204, 20%, 100%)",
-        hover: "hsl(204, 20%, 96%)",
-        border: "hsl(204, 20%, 88%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(204, 3%, 24%)",
-          hover: "hsl(204, 3%, 20%)",
-          border: "hsl(204, 3%, 36%)",
-          text: white,
-        },
-      },
-      "alpha-1": {
-        DEFAULT: "hsla(204, 10%, 89%, 50%)",
-        hover: "hsla(204, 10%, 83%, 50%)",
-        border: "hsla(204, 10%, 72%, 50%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsla(204, 5%, 8%, 50%)",
-          hover: "hsla(204, 5%, 4%, 50%)",
-          border: "hsla(204, 5%, 45%, 50%)",
-          text: white,
-        },
-      },
-      "alpha-2": {
-        DEFAULT: "hsla(204, 10%, 100%, 0%)",
-        hover: "hsla(204, 10%, 87%, 50%)",
-        border: "currentColor",
-        text: black,
-        dark: {
-          DEFAULT: "hsla(204, 5%, 8%, 0%)",
-          hover: "hsla(204, 5%, 24%, 50%)",
-          border: "currentColor",
-          text: white,
-        },
-      },
-      "alpha-3": {
-        DEFAULT: "hsla(204, 10%, 100%, 75%)",
-        hover: "hsla(204, 10%, 89%, 75%)",
-        border: "hsla(204, 10%, 85%, 75%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsla(204, 5%, 24%, 50%)",
-          hover: "hsla(204, 5%, 32%, 50%)",
-          border: "hsla(204, 5%, 70%, 50%)",
-          text: white,
-        },
-      },
-      "primary-1": {
-        DEFAULT: "hsl(204, 100%, 90%)",
-        hover: "hsl(204, 100%, 86%)",
-        border: "hsl(204, 100%, 72%)",
-        text: "hsl(204, 100%, 30%)",
-        dark: {
-          DEFAULT: "hsl(204, 25%, 23%)",
-          hover: "hsl(204, 25%, 27%)",
-          border: "hsl(204, 25%, 36%)",
-          text: "hsl(204, 100%, 80%)",
-        },
-      },
-      "primary-2": {
-        DEFAULT: "hsl(204, 100%, 40%)",
-        hover: "hsl(204, 100%, 32%)",
-        border: "hsl(204, 100%, 30%)",
-        text: white,
-        dark: {
-          DEFAULT: "hsl(204, 100%, 40%)",
-          hover: "hsl(204, 100%, 32%)",
-          border: "hsl(204, 100%, 80%)",
-          text: white,
-        },
-      },
-      "danger-1": {
-        DEFAULT: "hsl(357, 56%, 90%)",
-        hover: "hsl(357, 56%, 86%)",
-        border: "hsl(357, 56%, 72%)",
-        text: "hsl(357, 100%, 30%)",
-        dark: {
-          DEFAULT: "hsl(357, 25%, 25%)",
-          hover: "hsl(357, 25%, 29%)",
-          border: "hsl(357, 25%, 38%)",
-          text: "hsl(357, 100%, 90%)",
-        },
-      },
-      "danger-2": {
-        DEFAULT: "hsl(357, 56%, 50%)",
-        hover: "hsl(357, 56%, 42%)",
-        border: "hsl(357, 56%, 30%)",
-        text: white,
-        dark: {
-          DEFAULT: "hsl(357, 56%, 50%)",
-          hover: "hsl(357, 56%, 42%)",
-          border: "hsl(357, 56%, 80%)",
-          text: white,
-        },
-      },
-      "warn-1": {
-        DEFAULT: "hsl(43, 91%, 86%)",
-        hover: "hsl(43, 91%, 81%)",
-        border: "hsl(43, 91%, 55%)",
-        text: "hsl(43, 100%, 20%)",
-        dark: {
-          DEFAULT: "hsl(43, 25%, 23%)",
-          hover: "hsl(43, 25%, 27%)",
-          border: "hsl(43, 25%, 36%)",
-          text: "hsl(43, 100%, 90%)",
-        },
-      },
-      "warn-2": {
-        DEFAULT: "hsl(43, 91%, 62%)",
-        hover: "hsl(43, 91%, 54%)",
-        border: "hsl(43, 91%, 42%)",
-        text: black,
-        dark: {
-          DEFAULT: "hsl(43, 75%, 50%)",
-          hover: "hsl(43, 75%, 60%)",
-          border: "hsl(43, 91%, 90%)",
-          text: black,
+        red: {
+          50: "hsl(357 100% 90%)",
+          100: "hsl(357 56% 90%)",
+          200: "hsl(357 56% 86%)",
+          300: "hsl(357 56% 80%)",
+          400: "hsl(357 56% 72%)",
+          500: "hsl(357 56% 64%)",
+          600: "hsl(357 56% 50%)",
+          700: "hsl(357 56% 42%)",
+          800: "hsl(357 100% 30%)",
+          900: "hsl(357 56% 30%)",
         },
       },
     },
-
-    borderColor: (theme) => {
-      const colors = theme("colors");
-      return Object.entries(colors).reduce((acc, [key, color]) => {
-        acc[key] = {
-          DEFAULT: color.border,
-          dark: color.dark && color.dark.border,
-        };
-        return acc;
-      }, {});
-    },
-
-    textColor: (theme) => {
-      const colors = theme("colors");
-      const textColor = Object.entries(colors).reduce((acc, [key, color]) => {
-        acc[key] = {
-          DEFAULT: color.text,
-          dark: color.dark && color.dark.text,
-        };
-        return acc;
-      }, {});
-
-      return {
-        ...textColor,
-        disabled: {
-          DEFAULT: "hsla(204, 10%, 10%, 30%)",
-          dark: "hsla(0, 0%, 100%, 30%)",
-        },
-      };
-    },
-
-    fill: (theme) => theme("colors"),
-    stroke: (theme) => theme("borderColor"),
 
     dropShadow: {
-      DEFAULT: "0 4px 6px rgba(0, 0, 0, 15%)",
-      dark: "0 4px 6px rgba(0, 0, 0, 40%)",
-      sm: "0 2px 3px rgba(0, 0, 0, 15%)",
-      "sm-dark": "0 2px 3px rgba(0, 0, 0, 40%)",
-      md: "0 8px 12px rgba(0, 0, 0, 15%)",
-      "md-dark": "0 8px 12px rgba(0, 0, 0, 40%)",
-      lg: "0 16px 24px rgba(0, 0, 0, 15%)",
-      "lg-dark": "0 16px 24px rgba(0, 0, 0, 40%)",
+      sm: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))",
+      "sm-dark": "drop-shadow(0 1px 1px rgb(0 0 0 / 0.15))",
+
+      DEFAULT:
+        "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
+      dark: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.3)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
+
+      md: "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+      "md-dark":
+        "drop-shadow(0 4px 3px rgb(0 0 0 / 0.21)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+
+      lg: "drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
+      "lg-dark":
+        "drop-shadow(0 10px 8px rgb(0 0 0 / 0.12)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
+
+      xl: "drop-shadow(0 18px 10px rgb(0 0 0 / 0.04)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
+      "xl-dark":
+        "drop-shadow(0 18px 10px rgb(0 0 0 / 0.12)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
+
+      "2xl": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.15))",
+      "2xl-dark": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.34))",
+
+      none: "drop-shadow(0 0 #0000)",
+    },
+
+    boxShadow: {
+      sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      "sm-dark": "0 1px 2px 0 rgb(0 0 0 / 0.15)",
+
+      DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+      dark: "0 1px 3px 0 rgb(0 0 0 / 0.25), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+
+      md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+      "md-dark":
+        "0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+
+      lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      "lg-dark":
+        "0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+
+      xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
+      "xl-dark":
+        "0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.08)",
+
+      "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+      "2xl-dark": "0 25px 50px -12px rgb(0 0 0 / 0.75)",
+
+      inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+      "inner-dark": "inset 0 2px 4px 0 rgb(0 0 0 / 0.15)",
+
+      button: "inset 0 -1px 2px 0 rgb(0 0 0 / 0.05)",
+      "button-dark":
+        "0 1px 2px 0 rgb(0 0 0 / 0.15), inset 0 1px 0 0 rgb(255 255 255 / 0.05)",
+
+      input:
+        "inset 0 0 0 1px rgba(0 0 0 / 0.1), inset 0 2px 5px 0 rgba(0 0 0 / 0.05)",
+      "input-dark":
+        "inset 0 0 0 1px rgba(255 255 255 / 0.12), inset 0 -1px 0 0 rgba(255 255 255 / 0.05), inset 0 2px 5px 0 rgba(0 0 0 / 0.15)",
+
+      none: "0 0 #0000",
+    },
+
+    fontFamily: {
+      mono: ["Menlo", "Consolas", "Courier New", "monospace"],
     },
   },
   corePlugins: {
@@ -265,35 +136,70 @@ module.exports = {
     borderOpacity: false,
     textOpacity: false,
     dropShadow: false,
+    boxShadow: false,
   },
   plugins: [
-    plugin(({ addUtilities, addVariant, theme }) => {
-      const shadows = theme("dropShadow");
-      const shadowUtilities = Object.entries(shadows).reduce(
+    plugin(({ addUtilities, matchUtilities, addVariant, theme }) => {
+      const dropShadow = theme("dropShadow");
+      const dropShadowUtils = Object.entries(dropShadow).reduce(
         (acc, [key, shadow]) => {
           acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-            filter: `drop-shadow(${shadow})`,
+            filter: shadow,
           };
           return acc;
         },
         {}
       );
 
-      addUtilities(shadowUtilities);
+      addUtilities(dropShadowUtils);
+
+      const boxShadow = theme("boxShadow");
+      const boxShadowUtils = Object.entries(boxShadow).reduce(
+        (acc, [key, shadow]) => {
+          acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+            "box-shadow": `${shadow}`,
+          };
+          return acc;
+        },
+        {}
+      );
+
+      addUtilities(boxShadowUtils);
 
       addUtilities({
         ".ariakit-outline": {
-          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+          outline: `2px solid ${theme("colors.blue.600")}`,
           outlineOffset: "2px",
         },
         ".ariakit-outline-input": {
-          outline: `2px solid ${theme("colors.primary-2.DEFAULT")}`,
+          outline: `2px solid ${theme("colors.blue.600")}`,
         },
       });
+
+      matchUtilities(
+        {
+          truncate: (value) =>
+            value === 1
+              ? null
+              : {
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  "-webkit-box-orient": "vertical",
+                  "-webkit-line-clamp": value,
+                },
+        },
+        { values: { DEFAULT: 1 } }
+      );
+
+      addVariant(
+        "supports-backdrop-blur",
+        "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
+      );
 
       addVariant("enter", "&[data-enter]");
       addVariant("leave", "&[data-leave]");
       addVariant("active-item", "&[data-active-item]");
+      addVariant("group-active-item", ":merge(.group)[data-active-item] &");
 
       addVariant("active", ["&:active", "&[data-active]"]);
       addVariant("ariakit-focus-visible", "&[data-focus-visible]");

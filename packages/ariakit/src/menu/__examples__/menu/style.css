@@ -1,10 +1,11 @@
-@import "../../../button/__examples__/button/style.css";
+@import url("../../../button/__examples__/button/style.css");
+@import url("../../../separator/__examples__/separator/style.css");
 
 .menu {
-  max-height: var(--popover-available-height);
-  min-width: 180px;
-  outline: none !important;
   @apply
+    max-h-[var(--popover-available-height)]
+    min-w-[180px]
+    ![outline:none]
     relative
     z-50
     p-2
@@ -15,19 +16,20 @@
     border-solid
     overflow-auto
     overscroll-contain
-    border-canvas-4
-    bg-canvas-4
-    text-canvas-4
-    dark:border-canvas-4-dark
-    dark:bg-canvas-4-dark
-    dark:text-canvas-4-dark
-    drop-shadow
-    dark:drop-shadow-dark;
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    shadow-lg
+    dark:shadow-lg-dark
+  ;
 }
 
 .menu-item {
-  outline: none !important;
   @apply
+    ![outline:none]
     flex
     cursor-default
     scroll-m-2
@@ -36,19 +38,8 @@
     rounded
     p-2
     aria-disabled:opacity-25
-    active:bg-primary-2-hover
-    dark:active:bg-primary-2-dark-hover
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark;
-}
-
-.separator {
-  @apply
-    my-2
-    h-0
-    border-t
-    border-canvas-4
-    dark:border-canvas-4-dark;
+    active-item:bg-blue-600
+    active-item:text-white
+    active:bg-blue-800
+  ;
 }

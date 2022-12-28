@@ -1,46 +1,107 @@
-@import "../../../button/__examples__/button/style.css";
+@import url("../../../button/__examples__/button/style.css");
 
-.form {
-  width: 280px;
-  min-height: 320px;
-  @apply flex flex-col gap-4 py-10;
+.wrapper {
+  @apply
+    flex
+    flex-col
+    gap-6
+    w-[320px]
+    max-w-full
+    p-4
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
+.heading {
+  @apply
+    m-0
+    text-xl
+    mt-2
+    font-semibold
+    text-black
+    dark:text-white
+  ;
 }
 
 .field {
-  @apply flex flex-col gap-2;
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
 }
 
 .field input {
   @apply
-    w-full
     h-10
-    rounded-lg
-    border-none
     px-4
     text-base
+    w-full
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
+    text-black
+    dark:text-white
+    bg-gray-150/40
+    dark:bg-gray-850
+    hover:bg-gray-150
+    dark:hover:bg-gray-900
+    shadow-input
+    dark:shadow-input-dark
     focus-visible:ariakit-outline-input
-    bg-canvas-1
-    text-canvas-1
-    hover:bg-canvas-1-hover
-    dark:bg-canvas-1-dark
-    dark:text-canvas-1-dark
-    dark:hover:bg-canvas-1-dark-hover;
+  ;
 }
 
 .error:empty {
-  @apply absolute;
+  @apply
+    absolute
+  ;
 }
 
 .error:not(:empty) {
   @apply
-    rounded-lg
-    border
-    border-danger-1
-    bg-danger-1
+    w-fit
+    rounded-md
     py-2
     px-4
-    text-danger-1
-    dark:border-danger-1-dark
-    dark:bg-danger-1-dark
-    dark:text-danger-1-dark;
+    border
+    border-red-300
+    bg-red-300/40
+    text-red-800
+    dark:border-red-600/40
+    dark:bg-red-700/25
+    dark:text-red-50
+  ;
+}
+
+.buttons {
+  @apply
+    flex
+    gap-4
+    pt-4
+  ;
+}
+
+.button {
+  @apply
+    rounded-md
+    flex-1
+  ;
+}
+
+.button.reset {
+  @apply
+    font-semibold
+    text-black/70
+    dark:text-white/70
+    border
+    border-solid
+    border-gray-250
+    dark:border-gray-600
+  ;
 }

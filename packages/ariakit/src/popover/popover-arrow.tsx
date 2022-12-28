@@ -1,12 +1,12 @@
 import { useContext, useMemo, useState } from "react";
-import { getWindow } from "ariakit-utils/dom";
-import { useForkRef, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import { useForkRef, useSafeLayoutEffect } from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
+import { getWindow } from "ariakit-utils/dom";
 import { POPOVER_ARROW_PATH } from "./__popover-arrow-path";
 import { PopoverContext } from "./__utils";
 import { PopoverState } from "./popover-state";

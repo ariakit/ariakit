@@ -6,7 +6,6 @@ import "./style.css";
 export default function Example() {
   const checkbox = useCheckboxState<boolean>();
   const [focusVisible, setFocusVisible] = useState(false);
-
   return (
     <label className="label">
       <VisuallyHidden>

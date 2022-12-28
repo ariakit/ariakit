@@ -1,12 +1,12 @@
 import { MouseEvent, useCallback, useEffect, useState } from "react";
-import { useEvent } from "ariakit-utils/hooks";
-import { useStore } from "ariakit-utils/store";
+import { useEvent } from "ariakit-react-utils/hooks";
+import { useStore } from "ariakit-react-utils/store";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Props } from "ariakit-react-utils/types";
 import { ButtonOptions, useButton } from "../button";
 import {
   CollectionItemOptions,

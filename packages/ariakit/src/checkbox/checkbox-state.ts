@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useControlledState } from "ariakit-utils/hooks";
+import { useControlledState } from "ariakit-react-utils/hooks";
 import { SetState } from "ariakit-utils/types";
 
-type Value = boolean | string | number | Array<string | number>;
+type CheckboxStateValue = boolean | string | number | Array<string | number>;
 
 /**
  * Provides state for the `Checkbox` component.
@@ -13,9 +13,9 @@ type Value = boolean | string | number | Array<string | number>;
  * <Checkbox state={checkbox} />
  * ```
  */
-export function useCheckboxState<T extends Value = Value>(
-  props: CheckboxStateProps<T> = {}
-): CheckboxState<T> {
+export function useCheckboxState<
+  T extends CheckboxStateValue = CheckboxStateValue
+>(props: CheckboxStateProps<T> = {}): CheckboxState<T> {
   const [value, setValue] = useControlledState(
     props.defaultValue ?? (false as T),
     props.value,
@@ -25,7 +25,7 @@ export function useCheckboxState<T extends Value = Value>(
   return state;
 }
 
-export type CheckboxState<T extends Value = Value> = {
+export type CheckboxState<T extends CheckboxStateValue = CheckboxStateValue> = {
   /**
    * The checked state of the checkbox.
    */
@@ -39,9 +39,9 @@ export type CheckboxState<T extends Value = Value> = {
   setValue: SetState<T>;
 };
 
-export type CheckboxStateProps<T extends Value = Value> = Partial<
-  Pick<CheckboxState<T>, "value">
-> & {
+export type CheckboxStateProps<
+  T extends CheckboxStateValue = CheckboxStateValue
+> = Partial<Pick<CheckboxState<T>, "value">> & {
   /**
    * The default value of the checkbox.
    * @default false

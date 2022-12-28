@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useForkRef, useId, useSafeLayoutEffect } from "ariakit-utils/hooks";
+import {
+  useForkRef,
+  useId,
+  useSafeLayoutEffect,
+} from "ariakit-react-utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { flushSync } from "react-dom";
 import { DisclosureState } from "./disclosure-state";
 

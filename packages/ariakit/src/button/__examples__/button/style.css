@@ -2,7 +2,6 @@
   @apply
     flex
     h-10
-    cursor-pointer
     items-center
     justify-center
     gap-1
@@ -10,15 +9,14 @@
     border-none
     px-4
     text-base
+    no-underline
     whitespace-nowrap
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
-    bg-primary-2
-    text-primary-2
-    hover:bg-primary-2-hover
-    dark:bg-primary-2-dark
-    dark:text-primary-2-dark
-    dark:hover:bg-primary-2-dark-hover;
+    bg-blue-600
+    text-white
+    hover:bg-blue-800
+  ;
 }
 
 .secondary {
@@ -27,5 +25,6 @@
     bg-transparent
     dark:bg-transparent
     hover:bg-black/5
-    dark:hover:bg-white/5;
+    dark:hover:bg-white/5
+  ;
 }

@@ -1,4 +1,4 @@
-@import "../checkbox/style.css";
+@import url("../checkbox/style.css");
 
 .checkbox {
   @apply
@@ -9,10 +9,11 @@
     justify-center
     items-center
     border
-    bg-primary-1
-    border-primary-1
-    text-primary-1
-    dark:bg-primary-1-dark
-    dark:border-primary-1-dark
-    dark:text-primary-1-dark;
+    text-blue-900
+    bg-blue-200/40
+    border-blue-600
+    dark:text-blue-100
+    dark:bg-blue-600/25
+    dark:border-blue-200/40
+  ;
 }

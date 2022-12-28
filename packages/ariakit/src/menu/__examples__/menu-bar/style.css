@@ -1,36 +1,48 @@
-@import "../menu/style.css";
+@import url("../menu/style.css");
 
 .menu-bar {
-  @apply flex gap-2;
+  @apply
+    flex
+    rounded-lg
+    p-0.5
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
 }
 
 .menu-bar:not(:focus-within) > .menu-item {
-  background-color: transparent;
-  color: inherit;
+  @apply
+    bg-transparent
+    text-inherit
+  ;
 }
 
 .menu-bar > .menu-item {
   @apply
-    px-6
+    px-4
     h-10
-    rounded-lg
-    hover:bg-primary-1-hover
-    dark:hover:bg-primary-1-dark-hover
-    active:bg-primary-2-hover
-    dark:active:bg-primary-2-dark-hover;
+    rounded-md
+    hover:bg-blue-200/40
+    dark:hover:bg-blue-600/40
+  ;
 }
 
 .menu-bar:focus-within > .menu-item {
   @apply
-    active-item:bg-primary-2
-    active-item:text-primary-2
-    dark:active-item:bg-primary-2-dark
-    dark:active-item:text-primary-2-dark;
+    active-item:bg-blue-600
+    active-item:text-white
+  ;
 }
 
 .menu-bar:not(:focus) .menu-item:not(:focus)[aria-expanded="true"],
 .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
-  @apply text-current bg-black/10 dark:bg-white/10;
+  @apply
+    text-current
+    bg-black/10
+    dark:bg-white/10
+  ;
 }
 
 .menu {
@@ -39,9 +51,14 @@
       var(--popover-available-width),
       calc(100% - calc(var(--popover-overflow-padding) * 2))
     );
-  @apply w-max;
+  @apply
+    w-max
+  ;
 }
 
 .menu .menu-item .label {
-  @apply flex-1 pr-8;
+  @apply
+    flex-1
+    pr-8
+  ;
 }

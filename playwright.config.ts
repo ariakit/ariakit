@@ -1,7 +1,5 @@
 import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
 
-process.env.PLAYWRIGHT_EXPERIMENTAL_FEATURES = "1";
-
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
 }
@@ -17,18 +15,19 @@ const config: PlaywrightTestConfig = {
   },
   expect: {
     toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : 0.025,
+      maxDiffPixelRatio: headed ? 1 : 0.05,
     },
   },
   use: {
     screenshot: "only-on-failure",
+    trace: "on-first-retry",
   },
-  reporter: process.env.CI ? [["github"], ["dot"]] : "list",
+  reporter: process.env.CI ? [["github"], ["dot"]] : [["list"]],
+  retries: 1,
   projects: [
     {
       name: "chrome",
       testMatch: [/\/test[^\/]*\-chrome/, /\/test[^\/]*\-browser/],
-      retries: 1,
       use: { ...devices["Desktop Chrome"], launchOptions },
     },
     {
@@ -40,7 +39,6 @@ const config: PlaywrightTestConfig = {
     {
       name: "safari",
       testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
-      retries: 1,
       use: { ...devices["Desktop Safari"], launchOptions },
     },
   ],

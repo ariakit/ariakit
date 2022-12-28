@@ -33,18 +33,15 @@ const PlaygroundDisclosure = forwardRef<
     <Role
       as="button"
       {...buttonProps}
-      style={{
-        background: expanded
-          ? undefined
-          : "linear-gradient(hsla(204, 3%, 12%, 0), hsl(204, 3%, 12%) 3.25em)",
-        ...buttonProps.style,
-      }}
       className={cx(
-        "flex w-full items-center justify-center gap-1 border-none text-base",
-        "cursor-pointer text-[color:inherit] hover:underline focus-visible:ariakit-outline",
-        expanded && "rounded bg-none p-2",
+        "flex w-full items-center justify-center gap-1",
+        "text-base text-[color:inherit] md:text-sm",
+        "cursor-pointer hover:underline focus-visible:ariakit-outline-input",
+        expanded && "absolute top-full rounded bg-none p-2",
         !expanded &&
-          "absolute bottom-0 rounded-bl-[inherit] rounded-br-[inherit] p-4 pt-12 text-canvas-1-dark",
+          "bg-gradient-to-b from-white/0 to-[theme(colors.white)_3.25em] dark:from-gray-850/0 dark:to-[theme(colors.gray.850)_3.25em]",
+        !expanded &&
+          "absolute bottom-0 rounded-bl-[inherit] rounded-br-[inherit] p-4 pt-12 text-black dark:text-white",
         buttonProps.className
       )}
     >

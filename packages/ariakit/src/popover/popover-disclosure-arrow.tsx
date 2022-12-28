@@ -3,8 +3,8 @@ import {
   createComponent,
   createElement,
   createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+} from "ariakit-react-utils/system";
+import { As, Options, Props } from "ariakit-react-utils/types";
 import { PopoverContext } from "./__utils";
 import { PopoverState } from "./popover-state";
 

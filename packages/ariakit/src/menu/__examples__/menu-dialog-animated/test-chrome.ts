@@ -1,10 +1,12 @@
 import { Locator, Page, expect, test } from "@playwright/test";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
-  locator.locator(`role=button[name^='Add to list ${count}']`);
+  locator.getByRole("button", {
+    name: count !== "" ? `Add to list ${count}` : /^Add to list/,
+  });
 
 const getMenu = (locator: Page | Locator) =>
-  locator.locator(`role=menu[name='Lists']`);
+  locator.getByRole("menu", { name: "Lists" });
 
 const getMenuItem = (
   locator: Page | Locator,
@@ -16,16 +18,15 @@ const getMenuItemCheckbox = (locator: Page | Locator, name: string) =>
   getMenuItem(locator, name, "menuitemcheckbox");
 
 const getDialog = (locator: Page | Locator, name: string) =>
-  locator.locator(`role=dialog[name='${name}']`);
+  locator.getByRole("dialog", { name });
 
 const getButton = (locator: Page | Locator, name: string) =>
-  locator.locator(`role=button[name='${name}']`);
+  locator.getByRole("button", { name });
 
 const getTextbox = (locator: Page | Locator) =>
-  locator.locator(`role=textbox[name='List name']`);
+  locator.getByRole("textbox", { name: "List name" });
 
-const getError = (locator: Page | Locator) =>
-  locator.locator("text=Please fill");
+const getError = (locator: Page | Locator) => locator.getByText("Please fill");
 
 const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
@@ -91,10 +92,16 @@ test("create list", async ({ page }) => {
   await getMenuItem(page, "Create list").click();
   await getTextbox(page).click();
   await page.keyboard.press("Enter");
+  // Wait for the submission to complete.
+  await expect(getButton(page, "Create")).not.toHaveAttribute(
+    "aria-disabled",
+    "true"
+  );
   await expect(getError(page)).toBeVisible();
   await page.keyboard.type("F");
   await expect(getError(page)).not.toBeVisible();
   await page.keyboard.type("avorites");
+  await expect(getTextbox(page)).toHaveValue("Favorites");
   await page.keyboard.press("Enter");
   await expect(getDialog(page, "Create list")).not.toBeVisible();
   await expect(getMenu(page)).toBeVisible();
