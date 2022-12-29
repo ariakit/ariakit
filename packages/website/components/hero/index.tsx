@@ -2,14 +2,14 @@ import { cx } from "@ariakit/core/utils/misc";
 import Link from "next/link";
 import tw from "packages/website/utils/tw";
 import ArrowRight from "../icons/arrow-right";
-import shapes from "./shapes.svg";
+// import shapes from "./shapes.svg";
 
 export default function Hero() {
   return (
     <div
-      style={{ backgroundImage: `url(${shapes.src})` }}
+      // style={{ backgroundImage: `url(${shapes.src})` }}
       className={cx(
-        "bg-top bg-no-repeat",
+        // "bg-top bg-no-repeat",
         "flex flex-col items-center gap-8 p-5 px-3 sm:px-4 md:px-8"
       )}
     >

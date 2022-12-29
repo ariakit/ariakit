@@ -9,9 +9,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": [
-    "**/*.tsx",
-    "**/*.ts",
-    ".next/types/**/*.ts"
-  ]
+  "include": ["**/*.tsx", "**/*.ts", ".next/types/**/*.ts"]
 }

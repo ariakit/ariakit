@@ -2,8 +2,8 @@ import "../styles/globals.css";
 
 import { PropsWithChildren } from "react";
 import localFont from "@next/font/local";
-import Footer from "../components/footer";
-import Header2 from "./header";
+import Footer from "./components/footer";
+import Header from "./components/header";
 import QueryProvider from "./query-provider";
 
 const darkModeScript = `
@@ -24,12 +24,12 @@ if (!("theme" in localStorage)) {
 const inter = localFont({
   src: [
     {
-      path: "./Inter-roman.var.woff2",
+      path: "./assets/Inter-roman.var.woff2",
       style: "normal",
       weight: "100 900",
     },
     {
-      path: "./Inter-italic.var.woff2",
+      path: "./assets/Inter-italic.var.woff2",
       style: "italic",
       weight: "100 900",
     },
@@ -38,12 +38,13 @@ const inter = localFont({
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className={inter.className}>
-      <body>
+    <html lang="en" suppressHydrationWarning className={inter.className}>
+      <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         <QueryProvider>
           <div className="flex min-h-screen flex-col">
-            <Header2 />
+            {/* @ts-expect-error Server Component */}
+            <Header />
             {children}
             <div className="mt-auto flex">
               <Footer />

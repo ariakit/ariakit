@@ -1,8 +1,6 @@
-"use client";
-
-import GlobalNotification from "../components/global-notification";
-import Hero from "../components/hero";
 import Showcase from "../components/showcase";
+import GlobalNotification from "./components/global-notification";
+import Hero from "./components/hero";
 
 export default function Page() {
   return (

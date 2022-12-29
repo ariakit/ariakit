@@ -1,3 +1,6 @@
+import SEODescription from "./components/seo-description";
+import SEOTitle from "./components/seo-title";
+
 export default function Head() {
   const title = "Ariakit - Toolkit for building accessible UIs";
   const description =
@@ -7,14 +10,13 @@ export default function Head() {
 
   return (
     <>
-      <title>{title}</title>
-      <meta name="description" key="description" content={description} />
+      <SEOTitle value={title} />
+      <SEODescription value={description} />
+
       <meta name="keywords" key="keywords" content={keywords} />
 
-      <meta name="og:title" key="og:title" content={title} />
       <meta name="og:type" key="og:type" content="website" />
       <meta name="og:url" key="og:url" content={url} />
-      <meta name="og:description" key="og:description" content={description} />
 
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:site" content="@ariakitjs" />
