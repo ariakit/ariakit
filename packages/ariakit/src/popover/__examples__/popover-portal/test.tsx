@@ -2,8 +2,8 @@ import { getByRole, press, render } from "ariakit-test";
 import Example from ".";
 
 const getPopover = () => getByRole("dialog", { hidden: true });
-
 const getDisclosure = () => getByRole("button", { name: "Open" });
+
 test("navigation when using keyboard on a popover with portal", async () => {
   render(<Example />);
   await press.Tab();
