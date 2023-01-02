@@ -181,7 +181,14 @@ export const usePortal = createHook<PortalOptions>(
                 ref={beforeInsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    queueFocus(getNextTabbable());
+                    const nextFocusableElement = getNextTabbable();
+
+                    // When no other focusable element is found, prevent the focus trap
+                    // to focus on each other which leads to an infinite loop.
+                    // See https://github.com/ariakit/ariakit/issues/2168
+                    if (nextFocusableElement !== afterInsideRef.current) {
+                      queueFocus(nextFocusableElement);
+                    }
                   } else {
                     queueFocus(beforeOutsideRef.current);
                   }
@@ -194,7 +201,14 @@ export const usePortal = createHook<PortalOptions>(
                 ref={afterInsideRef}
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    queueFocus(getPreviousTabbable());
+                    const previousFocusableElement = getPreviousTabbable();
+
+                    // When no other focusable element is found, prevent the focus trap
+                    // to focus on each other which leads to an infinite loop.
+                    // See https://github.com/ariakit/ariakit/issues/2168
+                    if (previousFocusableElement !== beforeInsideRef.current) {
+                      queueFocus(previousFocusableElement);
+                    }
                   } else {
                     queueFocus(afterOutsideRef.current);
                   }
