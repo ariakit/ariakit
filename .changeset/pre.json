@@ -15,6 +15,7 @@
     "composite-item-move-on-key-press copy",
     "composite-move-on-key-press",
     "composite-proxy-event-modifier-keys",
+    "portal-focus-loop",
     "react-utils",
     "typescript-4.8",
     "unique-type-names"
