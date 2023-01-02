@@ -1,5 +1,11 @@
 # ariakit
 
+## 2.0.0-next.43
+
+### Patch Changes
+
+- Fixed infinite loop when rendering `<Popover portal>` with no tabbable elements inside. ([#2170](https://github.com/ariakit/ariakit/pull/2170))
+
 ## 2.0.0-next.42
 
 ### Patch Changes
