@@ -19,7 +19,7 @@ const style = tw`
   [&:focus-visible]:ariakit-outline-input
 `;
 
-export default function ThemeSwitch(props: Props) {
+export default function HeaderThemeSwitch(props: Props) {
   return (
     <TooltipButton
       title={

@@ -2,9 +2,9 @@ import Link from "next/link";
 import tw from "../../utils/tw";
 import HeaderGlobalNotification from "./header-global-notification";
 import HeaderLogo from "./header-logo";
-// import Nav from "./nav";
-import ThemeSwitch from "./theme-switch";
-import VersionSelect from "./version-select";
+import HeaderNav from "./header-nav";
+import HeaderThemeSwitch from "./header-theme-switch";
+import HeaderVersionSelect from "./header-version-select";
 
 async function fetchVersions() {
   const [react] = await Promise.all([
@@ -32,8 +32,7 @@ export default async function Header() {
   return (
     <div
       className={tw`
-      sticky top-0 left-0 z-40 flex
-      w-full justify-center
+      sticky top-0 left-0 z-40 flex w-full justify-center
       bg-gray-50 backdrop-blur supports-backdrop-blur:bg-gray-50/80
       dark:bg-gray-800  dark:supports-backdrop-blur:bg-gray-800/80`}
     >
@@ -47,12 +46,12 @@ export default async function Header() {
           <HeaderLogo />
         </Link>
         <div className="flex items-center gap-1">
-          <VersionSelect versions={versions} />
-          {/* <Nav /> */}
+          <HeaderVersionSelect versions={versions} />
+          <HeaderNav />
         </div>
         <div className="flex-1" />
         <HeaderGlobalNotification />
-        <ThemeSwitch />
+        <HeaderThemeSwitch />
       </div>
     </div>
   );

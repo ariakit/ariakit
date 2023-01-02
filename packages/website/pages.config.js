@@ -26,7 +26,7 @@ module.exports = [
     componentPath,
     metaPath,
     getGroup: (filename) => {
-      const component = path.basename(path.dirname(filename));
+      const component = path.basename(filename, ".md");
       if (
         [
           "collection",

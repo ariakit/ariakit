@@ -101,18 +101,20 @@ function getChangeLogUrl(pkg: { name: string; version: string }) {
   return `https://github.com/ariakit/ariakit/blob/main/packages/${packageName}/CHANGELOG.md`;
 }
 
-interface VersionSelectProps {
+interface Props {
   versions: Record<string, Record<string, string>>;
 }
 
-export default function VersionSelect({ versions }: VersionSelectProps) {
+export default function HeaderVersionSelect({ versions }: Props) {
   const select = useSelectStore({
-    gutter: 4,
     defaultValue: getValueFromPkg(pkg),
+    gutter: 4,
+    shift: -1,
   });
 
   const renderItem = (value: string, tag: string) => {
     const { version } = getPkgFromValue(value);
+
     return (
       <SelectItem key={value} value={value} className={style.item}>
         {(props) => (
