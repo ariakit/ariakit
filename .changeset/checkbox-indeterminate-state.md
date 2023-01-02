@@ -1,5 +1,5 @@
 ---
-"ariakit": minor
+"ariakit": patch
 ---
 
-Fixed the `getStateChecked` to consider mixed or undetermined states
+Added an example of a checkbox in the indeterminate (or mixed) state.

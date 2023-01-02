@@ -1,13 +1,14 @@
-import * as React from "react";
-
+import { useEffect } from "react";
 import { Checkbox, useCheckboxState } from "ariakit/checkbox";
+
 import "./style.css";
 
 function useTreeState({ values }: { values: Array<string | number> }) {
   const group = useCheckboxState();
   const items = useCheckboxState<Array<string | number>>({ defaultValue: [] });
+
   // updates items when group is toggled
-  React.useEffect(() => {
+  useEffect(() => {
     if (group.value === true) {
       items.setValue(values);
     } else if (group.value === false) {
@@ -16,7 +17,7 @@ function useTreeState({ values }: { values: Array<string | number> }) {
   }, [group.value]);
 
   // updates group when items is toggled
-  React.useEffect(() => {
+  useEffect(() => {
     if (items.value.length === values.length) {
       group.setValue(true);
     } else if (items.value.length) {
@@ -31,14 +32,20 @@ function useTreeState({ values }: { values: Array<string | number> }) {
 
 export default function Example() {
   const values = ["Apple", "Orange", "Mango"];
-
   const { group, items } = useTreeState({ values });
-
   return (
     <ul>
       <li>
         <label>
-          <Checkbox state={group} /> Fruits
+          <Checkbox
+            state={group}
+            {...(group.value === "mixed"
+              ? {
+                  checked: "mixed",
+                }
+              : {})}
+          />
+          Fruits
         </label>
       </li>
       <ul>
