@@ -185,6 +185,7 @@ export const usePortal = createHook<PortalOptions>(
 
                     // When no other focusable element is found, prevent the focus trap
                     // to focus on each other which leads to an infinite loop.
+                    // See https://github.com/ariakit/ariakit/issues/2168
                     if (nextFocusableElement !== afterInsideRef.current) {
                       queueFocus(nextFocusableElement);
                     }
@@ -204,6 +205,7 @@ export const usePortal = createHook<PortalOptions>(
 
                     // When no other focusable element is found, prevent the focus trap
                     // to focus on each other which leads to an infinite loop.
+                    // See https://github.com/ariakit/ariakit/issues/2168
                     if (previousFocusableElement !== beforeInsideRef.current) {
                       queueFocus(previousFocusableElement);
                     }

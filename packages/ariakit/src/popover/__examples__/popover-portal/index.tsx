@@ -1,6 +1,6 @@
 import { Button } from "ariakit/button";
 import { Popover, usePopoverState } from "ariakit/popover";
-import "../popover/style.css";
+import "./style.css";
 
 export default function Example() {
   const popover = usePopoverState();
