@@ -85,7 +85,7 @@
     "fs-extra": "11.1.0",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
-    "husky": "8.0.2",
+    "husky": "8.0.3",
     "jest": "29.3.1",
     "jest-axe": "6.0.1",
     "jest-environment-jsdom": "29.3.1",
