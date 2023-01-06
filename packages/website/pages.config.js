@@ -3,7 +3,8 @@ const { readdirSync } = require("fs");
 const path = require("path");
 const { camelCase, upperFirst } = require("lodash");
 
-const componentPath = path.join(__dirname, "components/markdown-page");
+const pageComponentPath = path.join(__dirname, "components/markdown-page");
+const playgroundComponentPath = path.join(__dirname, "components/playground");
 const metaPath = path.join(__dirname, "meta.js");
 
 const components = readdirSync(path.join(__dirname, "../../components")).map(
@@ -16,14 +17,16 @@ module.exports = [
     name: "guide",
     sourceContext: path.resolve(__dirname, "../../guide"),
     sourceRegExp: /\.md$/,
-    componentPath,
+    pageComponentPath,
+    playgroundComponentPath,
     metaPath,
   },
   {
     name: "components",
     sourceContext: path.resolve(__dirname, "../../components"),
     sourceRegExp: /\.md$/,
-    componentPath,
+    pageComponentPath,
+    playgroundComponentPath,
     metaPath,
     getGroup: (filename) => {
       const component = path.basename(filename, ".md");
@@ -48,7 +51,8 @@ module.exports = [
     name: "examples",
     sourceContext: path.resolve(__dirname, "../../examples"),
     sourceRegExp: /examples\/[^\/]+\/(index\.[tj]sx?|readme\.md)$/,
-    componentPath,
+    pageComponentPath,
+    playgroundComponentPath,
     metaPath,
     getGroup: (filename) => {
       const component = components.find((c) =>
@@ -62,7 +66,8 @@ module.exports = [
     name: "blog",
     sourceContext: path.resolve(__dirname, "../../blog"),
     sourceRegExp: /\.md$/,
-    componentPath,
+    pageComponentPath,
+    playgroundComponentPath,
     metaPath,
   },
 ];

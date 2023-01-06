@@ -142,6 +142,7 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
       const isValidExpression =
         isImportDeclaration || isExportDeclaration || isCallExpression;
       if (!isValidExpression) return;
+
       // @ts-expect-error
       if (isExportDeclaration && !nodePath.node.source) return;
       if (isCallExpression && !t.isImport(nodePath.node.callee)) return;
@@ -152,6 +153,7 @@ function getPageImports({ filename, dest, originalSource, importerFilePath }) {
           nodePath.node.arguments[0].value
         : // @ts-expect-error
           nodePath.node.source.value;
+
       const mod = resolveModuleName(source, filename);
       const relativeFilename = pathToPosix(
         path.relative(dest, mod.resolvedFileName)
@@ -266,19 +268,39 @@ function getPageTreeFromFile(filename) {
 }
 
 /**
+ * @param {ReturnType<typeof getPageImports>[number]} importInfo
+ */
+function getImportDeclaration(importInfo) {
+  if (!importInfo.identifier) {
+    return `import "${importInfo.source}";`;
+  }
+  if (importInfo.defaultExport) {
+    return `import ${importInfo.identifier} from "${importInfo.source}";`;
+  }
+  return `import * as ${importInfo.identifier} from "${importInfo.source}";`;
+}
+
+/**
  * @param {object} options
  * @param {string} options.filename The filename that will be used as a source
  * to write the page.
  * @param {string} options.dest The directory where the page will be written.
- * @param {string} options.componentPath The path to the component that will be
- * used to render the page.
+ * @param {string} options.pageComponentPath The path to the component that will
+ * be used to render the page.
+ * @param {string} options.playgroundComponentPath The path to the component
+ * that will be used to render the playground
  */
-async function getPageContent({ filename, dest, componentPath }) {
+async function getPageContent({
+  filename,
+  dest,
+  pageComponentPath,
+  playgroundComponentPath,
+}) {
   const isMarkdown = /\.md$/.test(filename);
 
   /** @type {Record<string, ReturnType<typeof getPageImports>>} */
   const imports = isMarkdown
-    ? { default: getPageImports({ filename, dest }) }
+    ? { page: getPageImports({ filename, dest }) }
     : {};
 
   const { visit } = await import("unist-util-visit");
@@ -296,80 +318,133 @@ async function getPageContent({ filename, dest, componentPath }) {
     });
   });
 
-  const importsFlat = Object.values(imports).flat();
+  {
+    // const importsFlat = Object.values(imports).flat();
+    // const importDeclarations = uniq(
+    //   importsFlat.map((item, i, array) => {
+    //     const isDuplicate = array
+    //       .slice(0, i)
+    //       .some(({ identifier }) => identifier === item.identifier);
+    //     if (!item.identifier || isDuplicate) {
+    //       return `import "${item.source}";`;
+    //     } else if (item.defaultExport) {
+    //       return `import ${item.identifier} from "${item.source}";`;
+    //     }
+    //     return `import * as ${item.identifier} from "${item.source}";`;
+    //   })
+    // );
+    // const { default: _, ...markdownImports } = imports;
+    // TODO: markdownImports is already an object whose keys are the playgrounds.
+    // const defaultValues = Object.entries(markdownImports).map(([key, value]) => {
+    //   return `"${key}": {
+    //     ${value
+    //       .filter((i) => i.defaultExport)
+    //       .map((i, _, array) => {
+    //         const getName = (item = i) =>
+    //           getPageFilename(item.filename, path.extname(item.filename));
+    //         const name = getName();
+    //         // If the filename already exists, we use the original filename.
+    //         if (array.some((item) => item !== i && getName(item) === name)) {
+    //           return `"${path.basename(i.filename)}": ${i.identifier},`;
+    //         }
+    //         return `"${name}": ${i.identifier},`;
+    //       })
+    //       .join("\n")}
+    //   },`;
+    // });
+    // const deps = Object.entries(markdownImports).map(([key, value]) => {
+    //   return `"${key}": {
+    //     ${value
+    //       .filter((i) => !i.defaultExport)
+    //       .map((i) => `"${i.originalSource}": ${i.identifier},`)
+    //       .join("\n")}
+    //   },`;
+    // });
+  }
 
-  const importDeclarations = uniq(
-    importsFlat.map((item, i, array) => {
-      const isDuplicate = array
-        .slice(0, i)
-        .some(({ identifier }) => identifier === item.identifier);
-      if (!item.identifier || isDuplicate) {
-        return `import "${item.source}";`;
-      } else if (item.defaultExport) {
-        return `import ${item.identifier} from "${item.source}";`;
-      }
-      return `import * as ${item.identifier} from "${item.source}";`;
-    })
+  const playgroundSource = pathToPosix(
+    path.relative(dest, playgroundComponentPath)
   );
-
-  const { default: _, ...markdownImports } = imports;
-
-  const defaultValues = Object.entries(markdownImports).map(([key, value]) => {
-    return `"${key}": {
-      ${value
-        .filter((i) => i.defaultExport)
-        .map((i, _, array) => {
-          const getName = (item = i) =>
-            getPageFilename(item.filename, path.extname(item.filename));
-          const name = getName();
-          // If the filename already exists, we use the original filename.
-          if (array.some((item) => item !== i && getName(item) === name)) {
-            return `"${path.basename(i.filename)}": ${i.identifier},`;
-          }
-          return `"${name}": ${i.identifier},`;
-        })
-        .join("\n")}
-    },`;
-  });
-
-  const deps = Object.entries(markdownImports).map(([key, value]) => {
-    return `"${key}": {
-      ${value
-        .filter((i) => !i.defaultExport)
-        .map((i) => `"${i.originalSource}": ${i.identifier},`)
-        .join("\n")}
-    },`;
-  });
-
-  const componentSource = pathToPosix(path.relative(dest, componentPath));
+  const componentSource = pathToPosix(path.relative(dest, pageComponentPath));
 
   const markdown =
-    imports.default && imports.default[0]
-      ? imports.default[0].identifier
+    imports.page && imports.page[0]
+      ? imports.page[0].identifier
       : JSON.stringify(tree);
 
   const content = `
-    /* Automatically generated */
     /* eslint-disable */
-    ${importDeclarations.join("\n")}
+    ${imports.page ? imports.page.map(getImportDeclaration) : ""}
+    ${Object.keys(imports)
+      .filter((key) => key !== "page")
+      .map(
+        (href) =>
+          `import ${pathToIdentifier(href)} from "./${pathToIdentifier(href)}";`
+      )}
     import Component from "${componentSource}";
 
     const props = {
       markdown: ${markdown},
-      defaultValues: {
-        ${defaultValues.join("\n")}
+      playgrounds: {
+        ${Object.keys(imports)
+          .filter((key) => key !== "page")
+          .map(
+            (href) => `${pathToIdentifier(href)}: <${pathToIdentifier(href)}/>,`
+          )}
       },
-      deps: {
-        ${deps.join("\n")}
-      },
-    };
+    }
 
     export default function Page() {
       return <Component {...props} />;
     }
   `;
 
-  return prettier.format(content, { parser: "babel" });
+  const contents = {
+    "page.js": prettier.format(content, { parser: "babel" }),
+  };
+
+  for (const [href, items] of Object.entries(imports)) {
+    if (href === "page") continue;
+    const content = `
+      /* eslint-disable */
+      "use client";
+      ${items.map(getImportDeclaration).join("\n")}
+      import Component from "${playgroundSource}";
+
+      const props = {
+        defaultValues: {
+          ${items
+            .filter((i) => i.defaultExport)
+            .map((i, _, array) => {
+              const getName = (item = i) =>
+                getPageFilename(item.filename, path.extname(item.filename));
+              const name = getName();
+              // If the filename already exists, we use the original filename.
+              if (array.some((item) => item !== i && getName(item) === name)) {
+                return `"${path.basename(i.filename)}": ${i.identifier},`;
+              }
+              return `"${name}": ${i.identifier},`;
+            })
+            .join("\n")}
+        },
+        deps: {
+          ${items
+            .filter((i) => !i.defaultExport)
+            .map((i) => `"${i.originalSource}": ${i.identifier},`)
+            .join("\n")}
+        },
+      };
+
+      export default function Playground() {
+        return <Component {...props} />;
+      }
+    `;
+    contents[`${pathToIdentifier(href)}.js`] = prettier.format(content, {
+      parser: "babel",
+    });
+  }
+
+  return contents;
 }
 
 /**
@@ -481,27 +556,36 @@ function getPageContentsPath(buildDir) {
  * @param {string} options.filename
  * @param {string} options.name
  * @param {string} options.buildDir
- * @param {string} options.componentPath
+ * @param {string} options.pageComponentPath
+ * @param {string} options.playgroundComponentPath
  * @param {import("./types").Page["getGroup"]} [options.getGroup]
  */
 async function writePage({
   filename,
   name,
   buildDir,
-  componentPath,
+  pageComponentPath,
+  playgroundComponentPath,
   getGroup,
 }) {
-  const dest = path.join(buildDir, name);
   // If there's already a readme.md file in the same directory, we'll generate
   // the page from that, so we can just return the source here for the index.js
   // file.
   if (getReadmePathFromIndex(filename)) return;
-  const pagePath = path.join(dest, getPageFilename(filename));
-  fs.mkdirSync(path.dirname(pagePath), { recursive: true });
-  fs.writeFileSync(
-    pagePath,
-    await getPageContent({ filename, dest, componentPath })
-  );
+  const dest = path.join(getPagesDir(), name, getPageName(filename));
+
+  fs.mkdirSync(dest, { recursive: true });
+
+  const pageContents = await getPageContent({
+    filename,
+    dest,
+    pageComponentPath,
+    playgroundComponentPath,
+  });
+
+  for (const [filename, content] of Object.entries(pageContents)) {
+    fs.writeFileSync(path.join(dest, filename), content, "utf8");
+  }
 
   const ext = path.extname(filename);
 
@@ -568,7 +652,9 @@ function getFiles(dir, pattern, files = []) {
  * @param {string} [pagesDir]
  */
 function getPagesDir(pagesDir) {
-  return pagesDir || path.join(process.cwd(), "pages");
+  // TODO: Can't create symlinks. Generate files in the app directory instead
+  // (generated-pages) and add it to .gitignore.
+  return pagesDir || path.join(process.cwd(), "app/(generated-pages)");
 }
 
 /**

@@ -14,9 +14,8 @@ const { writePage } = require("./utils");
  */
 async function pageLoader(source) {
   const filename = this.resourcePath;
-  const { name, buildDir, componentPath, getGroup } = this.getOptions();
 
-  await writePage({ filename, name, buildDir, componentPath, getGroup });
+  await writePage({ filename, ...this.getOptions() });
 
   if (/\.md$/.test(filename)) {
     // If the file is a markdown file, we'll need to convert it to AST.

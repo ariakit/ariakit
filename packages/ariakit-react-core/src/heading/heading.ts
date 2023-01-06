@@ -5,7 +5,7 @@ import { As, Options, Props } from "../utils/types";
 import { HeadingContext } from "./heading-context";
 import { HeadingLevels } from "./utils";
 
-type HeadingElements = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+type HeadingElements = `h${HeadingLevels}`;
 
 /**
  * Returns props to create a `Heading` component. The element type (or the

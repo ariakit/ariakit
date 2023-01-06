@@ -81,13 +81,14 @@ async function run() {
         filename,
         buildDir,
         name: page.name,
-        componentPath: page.componentPath,
+        pageComponentPath: page.pageComponentPath,
+        playgroundComponentPath: page.playgroundComponentPath,
         getGroup: page.getGroup,
       });
     }
 
     writeEntryFile(page.sourceContext, page.sourceRegExp, entryPath);
-    writeSymlinks(page.name, buildDir, pagesDir);
+    // writeSymlinks(page.name, buildDir, pagesDir);
   }
 }
 

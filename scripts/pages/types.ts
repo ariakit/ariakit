@@ -16,7 +16,12 @@ export type Page = {
   /**
    * The path to the React component file that will be used to render the page.
    */
-  componentPath: string;
+  pageComponentPath: string;
+  /**
+   * The path to the React component file that will be used to render the
+   * playgrounds.
+   */
+  playgroundComponentPath: string;
   /**
    * The directory where the build files should be placed.
    * @default `${process.cwd()}/.pages`

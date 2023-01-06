@@ -38,3 +38,4 @@ yarn-error.log*
 
 # pages
 /.pages/
+app/(generated-pages)

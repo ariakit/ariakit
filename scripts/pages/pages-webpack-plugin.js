@@ -17,7 +17,8 @@ class PagesWebpackPlugin {
     this.name = options.name;
     this.sourceContext = options.sourceContext;
     this.sourceRegExp = options.sourceRegExp;
-    this.componentPath = options.componentPath;
+    this.pageComponentPath = options.pageComponentPath;
+    this.playgroundComponentPath = options.playgroundComponentPath;
     this.buildDir = getBuildDir(options.buildDir);
     this.entryPath = getEntryPath(this.name, this.buildDir);
     this.getGroup = options.getGroup;
@@ -38,7 +39,8 @@ class PagesWebpackPlugin {
       options: {
         name: this.name,
         buildDir: this.buildDir,
-        componentPath: this.componentPath,
+        pageComponentPath: this.pageComponentPath,
+        playgroundComponentPath: this.playgroundComponentPath,
         getGroup: this.getGroup,
       },
     });
