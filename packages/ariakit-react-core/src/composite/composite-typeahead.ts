@@ -26,7 +26,6 @@ function isValidTypeaheadEvent(event: KeyboardEvent) {
     !event.ctrlKey &&
     !event.altKey &&
     !event.metaKey &&
-    // Matches any letter or number of any language.
     /^[\p{Letter}\p{Number}]$/u.test(event.key)
   );
 }

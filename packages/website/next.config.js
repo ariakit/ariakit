@@ -1,4 +1,5 @@
 // @ts-check
+const path = require("path");
 const PagesWebpackPlugin = require("../../scripts/pages/pages-webpack-plugin");
 const pages = require("./pages.config");
 
@@ -16,6 +17,7 @@ const nextConfig = {
   webpack(config) {
     const plugins = pages.map((page) => new PagesWebpackPlugin(page));
     config.plugins.unshift(...plugins);
+    config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
     return config;
   },

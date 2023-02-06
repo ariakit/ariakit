@@ -3,7 +3,7 @@ const { readdirSync } = require("fs");
 const path = require("path");
 const { camelCase, upperFirst } = require("lodash");
 
-const pageComponentPath = path.join(__dirname, "components/markdown-page");
+const pageComponentPath = path.join(__dirname, "app/components/markdown-page");
 const playgroundComponentPath = path.join(__dirname, "components/playground");
 const metaPath = path.join(__dirname, "meta.js");
 
@@ -12,7 +12,8 @@ const components = readdirSync(path.join(__dirname, "../../components")).map(
 );
 
 /** @type {import("../../scripts/pages/types").Pages} */
-module.exports = [
+module.exports = [];
+[
   {
     name: "guide",
     sourceContext: path.resolve(__dirname, "../../guide"),

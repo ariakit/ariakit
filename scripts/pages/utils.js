@@ -388,9 +388,7 @@ async function getPageContent({
       playgrounds: {
         ${Object.keys(imports)
           .filter((key) => key !== "page")
-          .map(
-            (href) => `${pathToIdentifier(href)}: <${pathToIdentifier(href)}/>,`
-          )}
+          .map((href) => `"${href}": <${pathToIdentifier(href)}/>,`)}
       },
     }
 
@@ -572,20 +570,20 @@ async function writePage({
   // the page from that, so we can just return the source here for the index.js
   // file.
   if (getReadmePathFromIndex(filename)) return;
-  const dest = path.join(getPagesDir(), name, getPageName(filename));
+  // const dest = path.join(getPagesDir(), name, getPageName(filename));
 
-  fs.mkdirSync(dest, { recursive: true });
+  // fs.mkdirSync(dest, { recursive: true });
 
-  const pageContents = await getPageContent({
-    filename,
-    dest,
-    pageComponentPath,
-    playgroundComponentPath,
-  });
+  // const pageContents = await getPageContent({
+  //   filename,
+  //   dest,
+  //   pageComponentPath,
+  //   playgroundComponentPath,
+  // });
 
-  for (const [filename, content] of Object.entries(pageContents)) {
-    fs.writeFileSync(path.join(dest, filename), content, "utf8");
-  }
+  // for (const [filename, content] of Object.entries(pageContents)) {
+  //   fs.writeFileSync(path.join(dest, filename), content, "utf8");
+  // }
 
   const ext = path.extname(filename);
 

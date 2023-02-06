@@ -6,7 +6,13 @@ import HeaderNav from "./header-nav";
 import HeaderThemeSwitch from "./header-theme-switch";
 import HeaderVersionSelect from "./header-version-select";
 
+let cache: Record<string, Record<string, string>> | null = null;
+
 async function fetchVersions() {
+  if (process.env.NODE_ENV !== "production" && cache) {
+    return cache;
+  }
+
   const [react] = await Promise.all([
     fetch("https://registry.npmjs.org/@ariakit/react"),
     // fetch("https://registry.npmjs.org/@ariakit/dom"),
@@ -23,6 +29,8 @@ async function fetchVersions() {
     "@ariakit/react": reactData["dist-tags"] as Record<string, string>,
     // "@ariakit/dom": domData["dist-tags"],
   };
+
+  cache = versions;
 
   return versions;
 }

@@ -12,9 +12,10 @@ export function useRadioStoreOptions(props: RadioStoreProps) {
   return useCompositeStoreOptions(props);
 }
 
-export function useRadioStoreProps<
-  T extends Omit<RadioStore, "useValue" | "useValidate" | "useSubmit">
->(store: T, props: RadioStoreProps) {
+export function useRadioStoreProps<T extends RadioStore>(
+  store: T,
+  props: RadioStoreProps
+) {
   store = useCompositeStoreProps(store, props);
   useStoreProps(store, props, "value", "setValue");
   return store;

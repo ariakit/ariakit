@@ -56,6 +56,7 @@ for (const page of pages) {
 }
 
 async function run() {
+  return;
   for (const page of pages) {
     const buildDir = getBuildDir(page.buildDir);
     const pagesDir = getPagesDir(page.pagesDir);
