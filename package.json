@@ -45,7 +45,7 @@
     "*.css": "stylelint --fix"
   },
   "devDependencies": {
-    "@argos-ci/cli": "0.3.2",
+    "@argos-ci/cli": "0.4.4",
     "@babel/core": "7.20.12",
     "@babel/preset-env": "7.20.2",
     "@babel/preset-react": "7.18.6",
