@@ -91,8 +91,8 @@ export default async function handler(
 
   if (process.env.NODE_ENV === "production") {
     res.setHeader(
-      "cache-control",
-      "public, s-maxage=1200, stale-while-revalidate=600"
+      "Cache-Control",
+      "public, s-maxage=1800, stale-while-revalidate=86400"
     );
   }
 

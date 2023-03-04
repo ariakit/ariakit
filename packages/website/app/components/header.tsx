@@ -36,7 +36,7 @@ async function fetchVersions() {
 }
 
 export default async function Header() {
-  const versions = await fetchVersions();
+  // const versions = await fetchVersions();
   return (
     <div
       className={tw`
@@ -54,7 +54,7 @@ export default async function Header() {
           <HeaderLogo />
         </Link>
         <div className="flex items-center gap-1">
-          <HeaderVersionSelect versions={versions} />
+          {/* <HeaderVersionSelect versions={versions} /> */}
           <HeaderNav />
         </div>
         <div className="flex-1" />

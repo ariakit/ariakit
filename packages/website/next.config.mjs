@@ -1,7 +1,29 @@
 // @ts-check
-const path = require("path");
-const PagesWebpackPlugin = require("../../scripts/pages/pages-webpack-plugin");
-const pages = require("./pages.config");
+import path from "path";
+import PagesWebpackPlugin from "../../scripts/pages/pages-webpack-plugin.mjs";
+// const pages = require("./pages.config");
+
+export const PAGE_INDEX_FILE_REGEX = /\/[^\/]+\/(index\.[tj]sx?|readme\.md)/i;
+export const PAGE_FILE_REGEX = new RegExp(
+  `(${PAGE_INDEX_FILE_REGEX.source}|\.md)$`,
+  "i"
+);
+
+const plugin = new PagesWebpackPlugin({
+  buildDir: new URL(".pages", import.meta.url).pathname,
+  pages: [
+    {
+      name: "Examples",
+      sourceContext: new URL("../../examples", import.meta.url).pathname,
+      sourceRegExp: PAGE_FILE_REGEX,
+    },
+    {
+      name: "Components",
+      sourceContext: new URL("../../components", import.meta.url).pathname,
+      sourceRegExp: PAGE_FILE_REGEX,
+    },
+  ],
+});
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
@@ -14,9 +36,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  webpack(config) {
-    const plugins = pages.map((page) => new PagesWebpackPlugin(page));
-    config.plugins.unshift(...plugins);
+  webpack(config, context) {
+    if (!context.isServer) {
+      config.plugins.unshift(plugin);
+    }
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
     return config;
@@ -45,4 +68,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

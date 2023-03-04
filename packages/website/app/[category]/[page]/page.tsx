@@ -4,7 +4,9 @@ import { getKeys } from "@ariakit/core/utils/misc";
 import matter from "gray-matter";
 import { toString } from "hast-util-to-string";
 import { marked } from "marked";
+import ReactMarkdown from "react-markdown";
 import rehypeParse from "rehype-parse";
+import rehypeRaw from "rehype-raw";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import Comp from "./comp";
@@ -111,13 +113,19 @@ async function getSourceFiles(category: keyof typeof paths, page: string) {
     if (typeof href !== "string") return;
     const nextFilename = resolve(dirname(pageFile), href);
     const pageDeps = parsePageDeps(nextFilename);
-    deps[href] = pageDeps;
+    deps[nextFilename] = pageDeps;
   });
 
   return deps;
 }
 
 export function generateStaticParams() {
+  const importsFile = join(process.cwd(), ".pages/imports.ts");
+  const depsFile = join(process.cwd(), ".pages/deps.ts");
+
+  // writeFileSync(importsFile, "export default {\n};\n");
+  // writeFileSync(depsFile, "export default {\n};\n");
+
   const params = getKeys(paths).flatMap((category) => {
     const pages = getPageNames(paths[category], PAGE_FILE_REGEX);
     return pages.map((page) => ({ category, page }));
@@ -135,16 +143,21 @@ export default async function Page({ params }: PageProps) {
   // Also parse the contents for search here.
   const { category, page } = params;
 
+  return null;
+
   const sourceFiles = await getSourceFiles(category, page);
   const externalDeps = Object.values(sourceFiles).flatMap((deps) =>
     Object.values(deps.external)
   );
 
-  const depsFile = join(process.cwd(), ".pages/deps.ts");
+  const importsFile = join(process.cwd(), ".pages/imports.ts");
+  const imports = Object.keys(sourceFiles).map(
+    (key) => `  "${page}": () => import("${key}"),`
+  );
 
-  if (!existsSync(depsFile)) {
-    writeFileSync(depsFile, "export default {\n};\n");
-  }
+  // writeFileSync(importsFile, `export default {\n${imports.join("\n")}\n};\n`);
+
+  const depsFile = join(process.cwd(), ".pages/deps.ts");
 
   const contents = readFileSync(depsFile, "utf8");
   const added = new Set<string>();
@@ -178,7 +191,47 @@ export default async function Page({ params }: PageProps) {
       .flatMap((deps) => Object.values(deps.css))
       .map(parseCSSFile)
   );
-  console.log(style);
+
+  const pageFiles = getPageFiles(paths[category], PAGE_FILE_REGEX);
+  const pageFile = pageFiles.find((file) => getPageName(file) === page);
+  if (!pageFile) return [];
+
+  const isMarkdown = extname(pageFile) === ".md";
+  const content = isMarkdown
+    ? readFileSync(pageFile, "utf8")
+    : createPageContent(pageFile);
+
+  return (
+    <ReactMarkdown
+      rehypePlugins={[rehypeRaw]}
+      components={{
+        h1: () => <h1>Lol</h1>,
+        p: ({ node, ...props }) => {
+          if (
+            props.children[0] &&
+            props.children[0].props &&
+            "data-playground" in props.children[0].props
+          ) {
+            return <Comp page={page} imports={externalDeps} />;
+          }
+          return <p {...props} />;
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+
+  // const processor = unified()
+  //   .use(remarkParse)
+  //   .use(remarkToRehype, { allowDangerousHtml: true })
+  //   .use(rehypeToReact, {
+  //     createElement,
+  //     Fragment,
+  //     components: { h1: (props) => <h1>Lol</h1> },
+  //   });
+
+  // return processor.processSync(content).result;
 
   return <Comp imports={externalDeps} />;
 }

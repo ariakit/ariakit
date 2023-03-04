@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { MotionProps, useReducedMotion } from "framer-motion";
 import { Menu, MenuItem, MenuSeparator } from "./menu";

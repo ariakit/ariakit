@@ -14,25 +14,6 @@ export type Page = {
    */
   sourceRegExp: RegExp;
   /**
-   * The path to the React component file that will be used to render the page.
-   */
-  pageComponentPath: string;
-  /**
-   * The path to the React component file that will be used to render the
-   * playgrounds.
-   */
-  playgroundComponentPath: string;
-  /**
-   * The directory where the build files should be placed.
-   * @default `${process.cwd()}/.pages`
-   */
-  buildDir?: string;
-  /**
-   * The directory where the symlink files should be placed.
-   * @default `${process.cwd()}/pages`
-   */
-  pagesDir?: string;
-  /**
    * A function that returns the group name for the page or null if the page
    * should not be grouped.
    */
