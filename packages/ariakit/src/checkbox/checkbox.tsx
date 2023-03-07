@@ -101,7 +101,8 @@ export const useCheckbox = createHook<CheckboxOptions>(
 
       state?.setValue((prevValue) => {
         if (!value) return elementChecked;
-        if (!Array.isArray(prevValue)) return value;
+        if (!Array.isArray(prevValue))
+          return prevValue === value ? false : value;
         if (elementChecked) return [...prevValue, value];
         return prevValue.filter((v) => v !== value);
       });
