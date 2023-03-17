@@ -2,7 +2,8 @@
 import { ReactNode, use, useEffect, useState, version } from "react";
 import { PortalContext } from "@ariakit/react";
 // import deps from "website/pages.deps";
-// import examples from "website/pages.examples";
+import { getPageName } from "scripts/pages/get-page-name.mjs";
+import pages from "website/pages.imports";
 
 // interface CompProps {
 //   imports: Array<keyof typeof deps>;
@@ -19,18 +20,18 @@ import { PortalContext } from "@ariakit/react";
 //   return promise;
 // }
 
-const page2 = "";
-const cache2 = Promise<any>;
+let page2 = "";
+let cache2 = Promise<any>;
 
-// function importPage(page: string) {
-//   if (page2 === page && cache2) {
-//     return cache2;
-//   }
-//   const promise = examples[page] ? examples[page]() : Promise.resolve(null);
-//   page2 = page;
-//   cache2 = promise;
-//   return promise;
-// }
+function importPage(page: string) {
+  if (page2 === page && cache2) {
+    return cache2;
+  }
+  const promise = pages[page] ? pages[page]() : Promise.resolve(null);
+  page2 = page;
+  cache2 = promise;
+  return promise;
+}
 
 type PlaygroundPortalProps = {
   children: ReactNode;
@@ -62,14 +63,15 @@ function PlaygroundPortal({ children, className }: PlaygroundPortalProps) {
 export default function Comp({ imports, page, value }) {
   // export default function Comp({ imports, page, value }: CompProps) {
   // const deps2 = use(importAll(imports));
-  // const page2 = use(importPage(page));
+  const page2 = use(importPage(page));
+  console.log(page2);
   // console.log(page2);
-  return null;
   if (!page2) return null;
   const Component = page2.default;
+  const className = `page-${getPageName(page)}`;
   return (
-    <div className={`${page}1`}>
-      <PlaygroundPortal className={`${page}1`}>
+    <div className={className}>
+      <PlaygroundPortal className={className}>
         <Component />
       </PlaygroundPortal>
     </div>

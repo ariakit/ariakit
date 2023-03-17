@@ -1,9 +1,8 @@
 // @ts-check
 import { writeFileSync } from "fs";
-import { dirname, join, resolve } from "path";
+import { dirname, join } from "path";
 import { getDepsFromFile } from "./get-deps-from-file.mjs";
 import { getPageEntryFiles } from "./get-page-entry-files.mjs";
-import { getPageName } from "./get-page-name.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
 
 /**
@@ -14,12 +13,19 @@ function getBuildDir(buildDir) {
 }
 
 /**
+ * @param {string} path
+ */
+function pathToImport(path) {
+  return path.replace(/\.[tj]sx?$/, "");
+}
+
+/**
  * @param {string} buildDir
  * @param {import("./types").Page[]} pages
  */
-function processStuff(buildDir, pages) {
+function writeFiles(buildDir, pages) {
   const entryFiles = pages.flatMap((page) =>
-    getPageEntryFiles(page.sourceContext, page.sourceRegExp)
+    getPageEntryFiles(page.sourceContext)
   );
 
   const deps = entryFiles.reduce(
@@ -40,9 +46,7 @@ function processStuff(buildDir, pages) {
   const importsFile = join(buildDir, "pages.ts");
 
   const importsContents = `export default {\n${imports
-    .map(
-      (path) => `  "${path}": () => import("${path.replace(/\.[tj]sx?$/, "")}")`
-    )
+    .map((path) => `  "${path}": () => import("${pathToImport(path)}")`)
     .join(",\n")}\n};\n`;
 
   writeFileSync(importsFile, importsContents);
@@ -64,17 +68,15 @@ class PagesWebpackPlugin {
    * @param {import("webpack").Compiler} compiler
    */
   apply(compiler) {
-    console.log("apply");
     const pages = this.pages;
 
-    processStuff(this.buildDir, pages);
+    writeFiles(this.buildDir, pages);
 
     compiler.hooks.compilation.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;
       for (const page of pages) {
-        const { sourceContext, sourceRegExp } = page;
-        compilation.contextDependencies.add(sourceContext);
-        getPageEntryFiles(sourceContext, sourceRegExp).forEach((file) => {
+        compilation.contextDependencies.add(page.sourceContext);
+        getPageEntryFiles(page.sourceContext).forEach((file) => {
           compilation.fileDependencies.add(file);
           compilation.contextDependencies.add(dirname(file));
         });
@@ -87,8 +89,8 @@ class PagesWebpackPlugin {
       if (!removedFiles) return;
 
       for (const file of removedFiles) {
-        console.log("removed page", getPageName(file));
-        processStuff(this.buildDir, pages);
+        // removed page: getPageName(file)
+        writeFiles(this.buildDir, pages);
         return;
       }
 
@@ -97,8 +99,8 @@ class PagesWebpackPlugin {
           modifiedFiles.has(page.sourceContext)
         );
         if (page) {
-          console.log("modified page", page.sourceContext);
-          processStuff(this.buildDir, pages);
+          // modified page: page.sourceContext
+          writeFiles(this.buildDir, pages);
           return;
         }
       }
@@ -106,8 +108,9 @@ class PagesWebpackPlugin {
       for (const file of modifiedFiles) {
         if (pages.some((page) => file === page.sourceContext)) continue;
         if (!pages.some((page) => file.includes(page.sourceContext))) continue;
-        console.log("modified page", getPageName(file));
-        processStuff(this.buildDir, pages);
+        // modified page: getPageName(file)
+        writeFiles(this.buildDir, pages);
+        return;
       }
     });
   }

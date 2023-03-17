@@ -1,7 +1,6 @@
 // @ts-check
-import path from "path";
 import PagesWebpackPlugin from "../../scripts/pages/pages-webpack-plugin.mjs";
-// const pages = require("./pages.config");
+import pagesConfig from "./pages.config.js";
 
 export const PAGE_INDEX_FILE_REGEX = /\/[^\/]+\/(index\.[tj]sx?|readme\.md)/i;
 export const PAGE_FILE_REGEX = new RegExp(
@@ -9,21 +8,7 @@ export const PAGE_FILE_REGEX = new RegExp(
   "i"
 );
 
-const plugin = new PagesWebpackPlugin({
-  buildDir: new URL(".pages", import.meta.url).pathname,
-  pages: [
-    {
-      name: "Examples",
-      sourceContext: new URL("../../examples", import.meta.url).pathname,
-      sourceRegExp: PAGE_FILE_REGEX,
-    },
-    {
-      name: "Components",
-      sourceContext: new URL("../../components", import.meta.url).pathname,
-      sourceRegExp: PAGE_FILE_REGEX,
-    },
-  ],
-});
+const plugin = new PagesWebpackPlugin(pagesConfig);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {

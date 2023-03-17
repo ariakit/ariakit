@@ -1,6 +1,7 @@
 // @ts-check
 import { readdirSync } from "fs";
 import { join } from "path";
+import { PAGE_FILE_REGEX } from "./const.mjs";
 import { getPageName } from "./get-page-name.mjs";
 import { pathToPosix } from "./path-to-posix.mjs";
 
@@ -11,7 +12,11 @@ import { pathToPosix } from "./path-to-posix.mjs";
  * @param {RegExp} pattern
  * @param {string[]} [files]
  */
-export function getPageEntryFiles(context, pattern, files = []) {
+export function getPageEntryFiles(
+  context,
+  pattern = PAGE_FILE_REGEX,
+  files = []
+) {
   const items = readdirSync(context, { withFileTypes: true });
   for (const item of items) {
     const itemPath = join(context, item.name);
