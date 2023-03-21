@@ -23,7 +23,6 @@ async function fetchVersions() {
 
   const reactData = await react.json();
   // const domData = await dom.json();
-  console.log(reactData["dist-tags"]);
 
   const versions = {
     "@ariakit/react": reactData["dist-tags"] as Record<string, string>,

@@ -5,6 +5,7 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import { camelCase, upperFirst } from "lodash";
 import { terser } from "rollup-plugin-terser";
+import typescript from "rollup-plugin-typescript2";
 
 const {
   getIndexPath,
@@ -67,8 +68,7 @@ function getPlugins(isUMD) {
       }),
     ];
   }
-
-  return commonPlugins;
+  return [...commonPlugins, typescript()];
 }
 
 /**

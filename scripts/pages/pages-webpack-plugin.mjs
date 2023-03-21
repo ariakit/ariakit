@@ -1,20 +1,16 @@
 // @ts-check
 import { writeFileSync } from "fs";
 import { dirname, join } from "path";
-import { getDepsFromFile } from "./get-deps-from-file.mjs";
 import { getPageEntryFiles } from "./get-page-entry-files.mjs";
+import { getPageExternalDeps } from "./get-page-external-deps.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
 
-/**
- * @param {string} [buildDir]
- */
+/** @param {string} [buildDir] */
 function getBuildDir(buildDir) {
   return buildDir || join(process.cwd(), ".pages");
 }
 
-/**
- * @param {string} path
- */
+/** @param {string} path */
 function pathToImport(path) {
   return path.replace(/\.[tj]sx?$/, "");
 }
@@ -23,7 +19,7 @@ function pathToImport(path) {
  * @param {string} buildDir
  * @param {import("./types").Page[]} pages
  */
-async function writeFiles(buildDir, pages) {
+function writeFiles(buildDir, pages) {
   const entryFiles = pages.flatMap((page) =>
     getPageEntryFiles(page.sourceContext)
   );
@@ -32,15 +28,9 @@ async function writeFiles(buildDir, pages) {
   let deps = {};
 
   for (const file of entryFiles) {
-    const fileDeps = await getDepsFromFile(file);
+    const fileDeps = getPageExternalDeps(file);
     deps = { ...deps, ...fileDeps };
   }
-
-  // const deps = entryFiles.reduce(
-  //   /** @param {Record<string, string>} deps */
-  //   (deps, file) => ({ ...deps, ...getDepsFromFile(file) }),
-  //   {}
-  // );
 
   const depsFile = join(buildDir, "deps.ts");
 
@@ -80,7 +70,8 @@ class PagesWebpackPlugin {
 
     writeFiles(this.buildDir, pages);
 
-    // TODO: Refactor
+    // Find the CSS rule and exclude the pages from it so we can handle the CSS
+    // ourselves.
     const rule = compiler.options.module.rules.find(
       (rule) => typeof rule === "object" && typeof rule.oneOf === "object"
     );
@@ -98,13 +89,13 @@ class PagesWebpackPlugin {
           ? [...cssRule.exclude, ...excludes]
           : excludes;
       });
-    }
 
-    compiler.options.module.rules.push({
-      include: pages.map((page) => page.sourceContext),
-      test: /\.css$/,
-      loader: "null-loader",
-    });
+      compiler.options.module.rules.push({
+        include: pages.map((page) => page.sourceContext),
+        test: /\.css$/,
+        loader: "null-loader",
+      });
+    }
 
     compiler.hooks.make.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;

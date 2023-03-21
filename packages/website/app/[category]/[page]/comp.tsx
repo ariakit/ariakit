@@ -71,11 +71,13 @@ export default function Comp({ imports, page, value }) {
   const className = `page-${getPageName(page)}`;
   return (
     <div className={className}>
-      {Component && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <Component />
-        </Suspense>
-      )}
+      <PlaygroundPortal className={className}>
+        {Component && (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Component />
+          </Suspense>
+        )}
+      </PlaygroundPortal>
     </div>
   );
 }

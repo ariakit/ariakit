@@ -27,7 +27,8 @@ function resolveDir(dir) {
  * @returns {object}
  */
 function getPackage(rootPath) {
-  return require(join(rootPath, "package.json"));
+  const pkg = require(join(rootPath, "package.json"));
+  return { ...pkg, ...pkg.publishConfig };
 }
 
 /**

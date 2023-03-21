@@ -1,14 +1,17 @@
 import { isValidElement } from "react";
-import { basename, dirname, resolve } from "path";
+import { basename, dirname, extname, resolve } from "path";
+import { Metadata } from "next";
 import { notFound } from "next/navigation.js";
+import pagesConfig from "packages/website/pages.config.js";
+import pagesIndex from "packages/website/pages.index.js";
+import { getNextPageMetadata } from "packages/website/utils/get-next-page-metadata.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { getExampleDeps } from "scripts/pages/get-example-deps.mjs";
 import { getPageContent } from "scripts/pages/get-page-content.mjs";
 import { getPageEntryFiles } from "scripts/pages/get-page-entry-files.mjs";
 import { getPageName } from "scripts/pages/get-page-name.mjs";
 import { parseCSSFile } from "scripts/pages/parse-css-file.mjs";
-import { parseDeps } from "scripts/pages/parse-deps.mjs";
-import pagesConfig from "../../../pages.config.js";
 import Comp from "./comp.jsx";
 
 const { pages } = pagesConfig;
@@ -30,6 +33,25 @@ export function generateStaticParams() {
 
 interface PageProps {
   params: ReturnType<typeof generateStaticParams>[number];
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { category, page } = params;
+
+  const data = pagesIndex[category]?.find((item) => item.slug === page);
+
+  if (!data) {
+    // Pages without a readme.md file
+    return getNextPageMetadata({
+      title: `${page} - Ariakit`,
+      index: false,
+    });
+  }
+
+  return getNextPageMetadata({
+    title: `${data.title} - Ariakit`,
+    description: data.content,
+  });
 }
 
 export default async function Page({ params }: PageProps) {
@@ -61,13 +83,23 @@ export default async function Page({ params }: PageProps) {
           if (!("data-playground" in child.props)) return paragraph;
           if (!child.props.href) return paragraph;
           const filename = resolve(dirname(file), child.props.href);
-          const deps = await parseDeps(filename);
+          const deps = getExampleDeps(filename);
           const styles = Object.values(deps)
             .flatMap((deps) =>
               Object.values(deps).filter((dep) => dep.endsWith(".css"))
             )
             .filter(Boolean);
-          const css = await Promise.all(styles.map(parseCSSFile));
+          const css = await Promise.all(
+            styles.map((style) =>
+              parseCSSFile(style, {
+                pageClassName: `page-${getPageName(filename)}`,
+                tailwindConfig: resolve(
+                  process.cwd(),
+                  "../../tailwind.config.js"
+                ),
+              })
+            )
+          );
           const cssContent = css.join("\n");
 
           return (

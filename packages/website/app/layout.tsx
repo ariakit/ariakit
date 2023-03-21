@@ -2,6 +2,7 @@ import "../styles/globals.css";
 
 import { PropsWithChildren } from "react";
 import localFont from "@next/font/local";
+import { getNextPageMetadata } from "../utils/get-next-page-metadata.js";
 import Footer from "./components/footer.jsx";
 import Header from "./components/header.jsx";
 import QueryProvider from "./query-provider.jsx";
@@ -31,6 +32,10 @@ const inter = localFont({
     },
   ],
 });
+
+export function generateMetadata() {
+  return getNextPageMetadata();
+}
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (

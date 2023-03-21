@@ -21,10 +21,10 @@ const cwd = process.cwd();
 makeGitignore(cwd);
 makeProxies(cwd);
 
-if (hasTSConfig(cwd)) {
-  onExit(makeTSConfigProd(cwd));
-  spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
-}
+// if (hasTSConfig(cwd)) {
+//   onExit(makeTSConfigProd(cwd));
+//   spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
+// }
 
 spawn.sync(
   "rollup",

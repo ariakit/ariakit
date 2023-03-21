@@ -16,7 +16,7 @@
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "marked": "4.2.12",
-    "next": "13.1.5",
+    "next": "13.2.4",
     "react-markdown": "8.0.5",
     "rehype": "12.0.1",
     "rehype-parse": "8.0.4",
