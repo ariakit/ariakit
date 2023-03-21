@@ -1,14 +1,14 @@
 // @ts-check
-import { dirname, join } from "path";
-import chalk from "chalk";
 import {
-  ensureDirSync,
   existsSync,
   lstatSync,
   readFileSync,
   readdirSync,
   writeFileSync,
-} from "fs-extra";
+} from "fs";
+import { dirname, join } from "path";
+import chalk from "chalk";
+import fsExtra from "fs-extra";
 import { rimrafSync } from "rimraf";
 
 /**
@@ -275,7 +275,7 @@ export function makeProxies(rootPath) {
   const pkg = getPackage(rootPath);
   const created = [];
   getProxyFolders(rootPath).forEach((name) => {
-    ensureDirSync(name);
+    fsExtra.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name)
