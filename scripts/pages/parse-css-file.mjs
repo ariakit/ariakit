@@ -1,14 +1,22 @@
 // @ts-check
 import { readFileSync } from "fs";
 import { basename, dirname } from "path";
-import postcss from "postcss";
+import _postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";
 // @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
 // @ts-expect-error
 import prettify from "postcss-prettify";
-import tailwindcss from "tailwindcss";
+import _tailwindcss from "tailwindcss";
+
+/** @type {import("postcss")["default"]} */
+// @ts-expect-error
+const postcss = _postcss;
+
+/** @type {import("tailwindcss")["default"]} */
+// @ts-expect-error
+const tailwindcss = _tailwindcss;
 
 /** @type {import("postcss").PluginCreator<{ className?: string }>} */
 const plugin = (opts = {}) => {
