@@ -12,10 +12,5 @@
     "moduleResolution": "node16",
     "strictNullChecks": true
   },
-  "include": [
-    "**/*.tsx",
-    "**/*.ts",
-    ".pages/**/*.ts",
-    ".next/types/**/*.ts"
-  ]
+  "include": ["**/*.tsx", "**/*.ts", ".pages/**/*.ts", ".next/types/**/*.ts"]
 }

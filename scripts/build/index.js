@@ -1,14 +1,8 @@
 const { join } = require("path");
 const spawn = require("cross-spawn");
-const {
-  hasTSConfig,
-  makeTSConfigProd,
-  makeProxies,
-  makeGitignore,
-  onExit,
-} = require("./utils");
+const { makeProxies, makeGitignore } = require("./utils");
 
-require("./clean");
+require("./clean.mjs");
 
 process.env.NODE_ENV = "production";
 
@@ -20,11 +14,6 @@ const cwd = process.cwd();
 
 makeGitignore(cwd);
 makeProxies(cwd);
-
-// if (hasTSConfig(cwd)) {
-//   onExit(makeTSConfigProd(cwd));
-//   spawn.sync("tsc", ["--emitDeclarationOnly"], { stdio: "inherit" });
-// }
 
 spawn.sync(
   "rollup",

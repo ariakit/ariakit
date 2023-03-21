@@ -12,8 +12,8 @@
     "./package.json": "./package.json"
   },
   "publishConfig": {
-    "main": "./cjs/index.js",
-    "module": "./esm/index.js",
+    "main": "cjs/index.js",
+    "module": "esm/index.js",
     "exports": {
       ".": {
         "import": "./esm/index.js",
@@ -42,8 +42,8 @@
   },
   "scripts": {
     "lint": "eslint . --ext js,ts,tsx",
-    "build": "node ../../scripts/build",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "node ../../scripts/build/build.mjs",
+    "clean": "node ../../scripts/build/clean.mjs"
   },
   "keywords": [
     "ariakit",
