@@ -1,6 +1,6 @@
-import Showcase from "../components/showcase";
-import GlobalNotification from "./components/global-notification";
-import Hero from "./components/hero";
+import Showcase from "../components/showcase/index.jsx";
+import GlobalNotification from "./components/global-notification.jsx";
+import Hero from "./components/hero.jsx";
 
 export default function Page() {
   return (

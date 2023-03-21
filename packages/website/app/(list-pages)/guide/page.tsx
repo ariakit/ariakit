@@ -1,9 +1,9 @@
-import groupBy from "lodash/groupBy";
-import index from "../../../pages.index";
-import Guide from "../../icons/guide";
-import ListPage from "../list-page";
-import ListPageItem from "../list-page-item";
-import ListPageSection from "../list-page-section";
+import groupBy from "lodash/groupBy.js";
+import index from "../../../pages.index.js";
+import Guide from "../../icons/guide.jsx";
+import ListPageItem from "../list-page-item.jsx";
+import ListPageSection from "../list-page-section.jsx";
+import ListPage from "../list-page.jsx";
 
 const pages = index.guide;
 const groups = groupBy(pages, "group");

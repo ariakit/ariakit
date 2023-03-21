@@ -1,6 +1,6 @@
-import Link from "next/link";
-import tw from "../../utils/tw";
-import ArrowRight from "../icons/arrow-right";
+import tw from "../../utils/tw.js";
+import ArrowRight from "../icons/arrow-right.jsx";
+import Link from "./link.js";
 
 export default function Hero() {
   return (

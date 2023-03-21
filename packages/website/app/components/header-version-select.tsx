@@ -15,12 +15,12 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import Link from "next/link";
-import tw from "../../utils/tw";
-import NewWindow from "../icons/new-window";
-import React from "../icons/react";
-import Vue from "../icons/vue";
-import HeaderPopover from "./header-popover";
+import tw from "../../utils/tw.js";
+import NewWindow from "../icons/new-window.jsx";
+import React from "../icons/react.jsx";
+import Vue from "../icons/vue.jsx";
+import HeaderPopover from "./header-popover.jsx";
+import Link from "./link.js";
 
 const style = {
   select: tw`

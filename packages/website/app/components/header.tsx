@@ -1,10 +1,10 @@
-import Link from "next/link";
-import tw from "../../utils/tw";
-import HeaderGlobalNotification from "./header-global-notification";
-import HeaderLogo from "./header-logo";
-import HeaderNav from "./header-nav";
-import HeaderThemeSwitch from "./header-theme-switch";
-import HeaderVersionSelect from "./header-version-select";
+import tw from "../../utils/tw.js";
+import HeaderGlobalNotification from "./header-global-notification.jsx";
+import HeaderLogo from "./header-logo.jsx";
+import HeaderNav from "./header-nav.jsx";
+import HeaderThemeSwitch from "./header-theme-switch.jsx";
+import HeaderVersionSelect from "./header-version-select.jsx";
+import Link from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;
 
@@ -12,7 +12,6 @@ async function fetchVersions() {
   if (process.env.NODE_ENV !== "production" && cache) {
     return cache;
   }
-
   const [react] = await Promise.all([
     fetch("https://registry.npmjs.org/@ariakit/react"),
     // fetch("https://registry.npmjs.org/@ariakit/dom"),
@@ -24,6 +23,7 @@ async function fetchVersions() {
 
   const reactData = await react.json();
   // const domData = await dom.json();
+  console.log(reactData["dist-tags"]);
 
   const versions = {
     "@ariakit/react": reactData["dist-tags"] as Record<string, string>,
@@ -36,7 +36,7 @@ async function fetchVersions() {
 }
 
 export default async function Header() {
-  // const versions = await fetchVersions();
+  const versions = await fetchVersions();
   return (
     <div
       className={tw`
@@ -54,7 +54,7 @@ export default async function Header() {
           <HeaderLogo />
         </Link>
         <div className="flex items-center gap-1">
-          {/* <HeaderVersionSelect versions={versions} /> */}
+          <HeaderVersionSelect versions={versions} />
           <HeaderNav />
         </div>
         <div className="flex-1" />

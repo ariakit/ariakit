@@ -50,15 +50,15 @@ import {
   useSelectStore,
 } from "@ariakit/react/select";
 import { VisuallyHidden } from "@ariakit/react/visually-hidden";
-import Link from "next/link";
-import tw from "../../utils/tw";
-import useIdle from "../../utils/use-idle";
-import whenIdle from "../../utils/when-idle";
-import ChevronRight from "../icons/chevron-right";
-import NewWindow from "../icons/new-window";
-import Search from "../icons/search";
-import Spinner from "../icons/spinner";
-import HeaderPopover from "./header-popover";
+import tw from "../../utils/tw.js";
+import useIdle from "../../utils/use-idle.js";
+import whenIdle from "../../utils/when-idle.js";
+import ChevronRight from "../icons/chevron-right.jsx";
+import NewWindow from "../icons/new-window.jsx";
+import Search from "../icons/search.jsx";
+import Spinner from "../icons/spinner.jsx";
+import HeaderPopover from "./header-popover.jsx";
+import Link from "./link.js";
 
 const style = {
   button: tw`

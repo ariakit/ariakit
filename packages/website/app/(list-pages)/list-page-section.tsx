@@ -2,7 +2,7 @@
 
 import { PropsWithChildren } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react/heading";
-import tw from "../../utils/tw";
+import tw from "../../utils/tw.js";
 
 interface Props {
   title: string;

@@ -1,6 +1,6 @@
 import { HTMLAttributes, forwardRef } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import tw from "../../utils/tw";
+import tw from "packages/website/utils/tw.js";
 
 interface HeaderPopoverProps extends HTMLAttributes<HTMLDivElement> {
   renderScoller?: (props: HTMLAttributes<HTMLDivElement>) => JSX.Element;

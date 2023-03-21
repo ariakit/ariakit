@@ -14,23 +14,23 @@ import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
-import groupBy from "lodash/groupBy";
-import { usePathname } from "next/navigation";
+import groupBy from "lodash/groupBy.js";
+import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
-import { PageContent } from "../../pages.contents";
-import pageIndex, { PageIndexDetail } from "../../pages.index";
-import tw from "../../utils/tw";
-import useDelayedValue from "../../utils/use-delayed-value";
-import Blog from "../icons/blog";
-import Components from "../icons/components";
-import Examples from "../icons/examples";
-import Guide from "../icons/guide";
+import { PageContent } from "../../pages.contents.js";
+import pageIndex, { PageIndexDetail } from "../../pages.index.js";
+import tw from "../../utils/tw.js";
+import useDelayedValue from "../../utils/use-delayed-value.js";
+import Blog from "../icons/blog.jsx";
+import Components from "../icons/components.jsx";
+import Examples from "../icons/examples.jsx";
+import Guide from "../icons/guide.jsx";
 import {
   HeaderMenu,
   HeaderMenuGroup,
   HeaderMenuItem,
   HeaderMenuSeparator,
-} from "./header-menu";
+} from "./header-menu.jsx";
 
 type Data = Array<
   PageContent & { keywords: string[]; score?: number; key?: string }

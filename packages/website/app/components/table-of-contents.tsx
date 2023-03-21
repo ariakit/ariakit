@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Link from "next/link";
+import Link from "./link.js";
 
 type TableOfContents = Array<{
   id: string;

@@ -5,11 +5,29 @@
   "sideEffects": false,
   "license": "MIT",
   "homepage": "https://ariakit.org",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "types": "ts/index.d.ts",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": [
+      "./src/*.ts",
+      "./src/*.tsx"
+    ],
+    "./package.json": "./package.json"
+  },
   "publishConfig": {
-    "tag": "latest"
+    "main": "cjs/index.js",
+    "module": "esm/index.js",
+    "exports": {
+      ".": {
+        "import": "./esm/index.js",
+        "require": "./cjs/index.js"
+      },
+      "./*": {
+        "import": "./esm/*.js",
+        "require": "./cjs/*.js"
+      },
+      "./package.json": "./package.json"
+    }
   },
   "repository": {
     "type": "git",

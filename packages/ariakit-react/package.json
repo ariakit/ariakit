@@ -6,8 +6,6 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "main": "src/index.js",
-  "module": "src/index.js",
-  "unpkg": "./umd/ariakit-react.min.js",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts",

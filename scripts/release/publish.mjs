@@ -3,9 +3,7 @@ import { readFileSync, writeFileSync } from "fs";
 import spawn from "cross-spawn";
 import { globSync } from "glob";
 
-/**
- * @param {NodeJS.ExitListener} callback
- */
+/** @param {NodeJS.ExitListener} callback */
 function onExit(callback) {
   process.on("exit", callback);
   process.on("SIGINT", callback);

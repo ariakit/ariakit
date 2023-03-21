@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import ListPageContainer from "./list-page-container";
+import ListPageContainer from "./list-page-container.jsx";
 
 interface Props {
   title?: string;

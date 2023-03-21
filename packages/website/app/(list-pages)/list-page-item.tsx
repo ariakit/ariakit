@@ -1,7 +1,7 @@
 import { AnchorHTMLAttributes, ReactNode, useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Link from "next/link";
-import tw from "../../utils/tw";
+import tw from "../../utils/tw.js";
+import Link from "../components/link.js";
 
 const style = {
   wrapper: tw`

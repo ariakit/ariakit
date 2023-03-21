@@ -1,4 +1,4 @@
-import afterTimeout from "./after-timeout";
+import afterTimeout from "./after-timeout.js";
 
 export default function whenIdle(callback: () => void, timeout?: number) {
   if (!window.requestIdleCallback) {

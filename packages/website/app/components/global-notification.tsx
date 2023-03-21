@@ -1,5 +1,5 @@
-import ChevronRight from "../icons/chevron-right";
-import NewWindow from "../icons/new-window";
+import ChevronRight from "../icons/chevron-right.jsx";
+import NewWindow from "../icons/new-window.jsx";
 
 type Props = {
   size?: "sm" | "md";

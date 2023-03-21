@@ -2,12 +2,6 @@
   "extends": "./tsconfig.prod.json",
   "compilerOptions": {
     "paths": {
-      "@ariakit/core": ["packages/ariakit-core/src"],
-      "@ariakit/core/*": ["packages/ariakit-core/src/*"],
-
-      "@ariakit/playground": ["packages/ariakit-playground/src"],
-      "@ariakit/playground/*": ["packages/ariakit-playground/src/*"],
-
       "@ariakit/react-core": ["packages/ariakit-react-core/src"],
       "@ariakit/react-core/*": ["packages/ariakit-react-core/src/*"],
 

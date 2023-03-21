@@ -1,12 +1,4 @@
 {
   "extends": "../../tsconfig.prod.json",
-  "compilerOptions": {
-    "outDir": "ts"
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/**/__*"
-  ]
+  "include": ["src"]
 }
