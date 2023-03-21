@@ -10,7 +10,13 @@
     "noEmit": true,
     "module": "esnext",
     "moduleResolution": "node16",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowJs": true
   },
-  "include": ["**/*.tsx", "**/*.ts", ".pages/**/*.ts", ".next/types/**/*.ts"]
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    ".pages/**/*.ts",
+    ".next/types/**/*.ts"
+  ]
 }

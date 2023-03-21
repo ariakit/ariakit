@@ -26,8 +26,12 @@ const plugin = (opts = {}) => {
       const filename = result.root.source?.input.file;
       if (!filename) return {};
       const className = opts.className || basename(dirname(filename));
+      /** @type {Set<import("postcss").Rule>} */
+      const rulesSeen = new Set();
       return {
         Rule(rule) {
+          if (rulesSeen.has(rule)) return;
+          rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
             if (selector.includes(".dark ")) {
               const selectorWithoutDark = selector.replace(".dark ", "");

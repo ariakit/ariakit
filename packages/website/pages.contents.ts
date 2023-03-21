@@ -1,4 +1,4 @@
-import { PageContent, PageContents } from "../../scripts/pages/types";
+import { PageContent, PageContents } from "../../scripts/pages/types.js";
 // @ts-ignore
 import contents from "./.pages/contents.json";
 

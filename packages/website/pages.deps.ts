@@ -1,4 +1,4 @@
 // @ts-ignore
-import deps from "./.pages/deps";
+import deps from "./.pages/deps.js";
 
 export default deps as any;

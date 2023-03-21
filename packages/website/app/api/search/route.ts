@@ -1,6 +1,6 @@
 import { Searcher, search } from "fast-fuzzy";
-import { NextApiRequest, NextApiResponse } from "next";
-import contents from "../../pages.contents";
+import { NextRequest } from "next/server.js";
+import contents from "../../../pages.contents.js";
 
 const contentsWithoutInstallation = contents.filter(
   (page) => page.title === "Getting started" || page.section !== "Installation"
@@ -78,26 +78,22 @@ function truncate(
   return final + suffix;
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const query = Array.isArray(req.query.q)
-    ? req.query.q.join(" ")
-    : req.query.q || null;
-  const category = Array.isArray(req.query.category)
-    ? req.query.category[0] || null
-    : req.query.category || null;
+export async function GET(req: NextRequest) {
+  const query = req.nextUrl.searchParams.get("q");
+  const category = req.nextUrl.searchParams.get("category");
+  const headers = new Headers();
+
+  headers.set("content-type", "application/json; charset=utf-8");
 
   if (process.env.NODE_ENV === "production") {
-    res.setHeader(
+    headers.set(
       "Cache-Control",
       "public, s-maxage=1800, stale-while-revalidate=86400"
     );
   }
 
   if (!query) {
-    return res.status(200).json([]);
+    return new Response("[]", { status: 200, headers });
   }
 
   const searchTerm = query;
@@ -139,5 +135,7 @@ export default async function handler(
       keywords: Array.from(new Set(keywords.slice(0, 5))),
     };
   });
-  res.status(200).json(items.slice(0, 15));
+
+  const body = JSON.stringify(items.slice(0, 15));
+  return new Response(body, { status: 200, headers });
 }

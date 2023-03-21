@@ -2,12 +2,6 @@
 import PagesWebpackPlugin from "../../scripts/pages/pages-webpack-plugin.mjs";
 import pagesConfig from "./pages.config.js";
 
-export const PAGE_INDEX_FILE_REGEX = /\/[^\/]+\/(index\.[tj]sx?|readme\.md)/i;
-export const PAGE_FILE_REGEX = new RegExp(
-  `(${PAGE_INDEX_FILE_REGEX.source}|\.md)$`,
-  "i"
-);
-
 const plugin = new PagesWebpackPlugin(pagesConfig);
 
 /** @type {import("next").NextConfig} */

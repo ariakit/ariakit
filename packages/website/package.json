@@ -10,14 +10,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/font": "13.1.5",
-    "@tanstack/react-query": "4.20.4",
+    "@next/font": "13.2.4",
+    "@tanstack/react-query": "4.28.0",
     "fast-fuzzy": "1.12.0",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "marked": "4.2.12",
     "next": "13.2.4",
-    "react-markdown": "8.0.5",
+    "react-markdown": "8.0.6",
     "rehype": "12.0.1",
     "rehype-parse": "8.0.4",
     "rehype-raw": "6.1.1",
