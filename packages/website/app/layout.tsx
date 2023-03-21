@@ -2,9 +2,9 @@ import "../styles/globals.css";
 
 import { PropsWithChildren } from "react";
 import localFont from "@next/font/local";
-import Footer from "./components/footer";
-import Header from "./components/header";
-import QueryProvider from "./query-provider";
+import Footer from "./components/footer.jsx";
+import Header from "./components/header.jsx";
+import QueryProvider from "./query-provider.jsx";
 
 const darkModeScript = `
 function classList(action) {
@@ -21,16 +21,12 @@ if (!("theme" in localStorage)) {
   }
 }`;
 
+// @ts-expect-error
 const inter = localFont({
   src: [
     {
       path: "./assets/Inter-roman.var.woff2",
       style: "normal",
-      weight: "100 900",
-    },
-    {
-      path: "./assets/Inter-italic.var.woff2",
-      style: "italic",
       weight: "100 900",
     },
   ],

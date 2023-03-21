@@ -1,9 +1,9 @@
 "use client";
-import { ReactNode, use, useEffect, useState, version } from "react";
+import { ReactNode, Suspense, use, useEffect, useState, version } from "react";
 import { PortalContext } from "@ariakit/react";
 // import deps from "website/pages.deps";
 import { getPageName } from "scripts/pages/get-page-name.mjs";
-import pages from "website/pages.imports";
+import examples from "website/pages.examples.js";
 
 // interface CompProps {
 //   imports: Array<keyof typeof deps>;
@@ -27,7 +27,7 @@ function importPage(page: string) {
   if (page2 === page && cache2) {
     return cache2;
   }
-  const promise = pages[page] ? pages[page]() : Promise.resolve(null);
+  const promise = examples[page] ? examples[page]() : Promise.resolve(null);
   page2 = page;
   cache2 = promise;
   return promise;
@@ -63,17 +63,19 @@ function PlaygroundPortal({ children, className }: PlaygroundPortalProps) {
 export default function Comp({ imports, page, value }) {
   // export default function Comp({ imports, page, value }: CompProps) {
   // const deps2 = use(importAll(imports));
-  const page2 = use(importPage(page));
-  console.log(page2);
+  // const page2 = use(importPage(page));
   // console.log(page2);
-  if (!page2) return null;
-  const Component = page2.default;
+  // console.log(page2);
+  // if (!page2) return null;
+  const Component = examples[page];
   const className = `page-${getPageName(page)}`;
   return (
     <div className={className}>
-      <PlaygroundPortal className={className}>
-        <Component />
-      </PlaygroundPortal>
+      {Component && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Component />
+        </Suspense>
+      )}
     </div>
   );
 }

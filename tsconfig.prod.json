@@ -2,8 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "jsx": "preserve",
     "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
     "lib": ["dom", "dom.iterable", "esnext"],

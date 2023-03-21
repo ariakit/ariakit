@@ -1,13 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "module": "esnext"
   },
-  "include": ["**/*.tsx", "**/*.ts", ".next/types/**/*.ts"]
+  "include": ["**/*.tsx", "**/*.ts", ".pages/**/*.ts", ".next/types/**/*.ts"]
 }

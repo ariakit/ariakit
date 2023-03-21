@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import startCase from "lodash/startCase";
+import startCase from "lodash/startCase.js";
 import "./style.css";
 
 function renderValue(email: string) {

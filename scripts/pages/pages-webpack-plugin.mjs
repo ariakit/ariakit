@@ -23,16 +23,24 @@ function pathToImport(path) {
  * @param {string} buildDir
  * @param {import("./types").Page[]} pages
  */
-function writeFiles(buildDir, pages) {
+async function writeFiles(buildDir, pages) {
   const entryFiles = pages.flatMap((page) =>
     getPageEntryFiles(page.sourceContext)
   );
 
-  const deps = entryFiles.reduce(
-    /** @param {Record<string, string>} deps */
-    (deps, file) => ({ ...deps, ...getDepsFromFile(file) }),
-    {}
-  );
+  /** @type {Record<string, string>} */
+  let deps = {};
+
+  for (const file of entryFiles) {
+    const fileDeps = await getDepsFromFile(file);
+    deps = { ...deps, ...fileDeps };
+  }
+
+  // const deps = entryFiles.reduce(
+  //   /** @param {Record<string, string>} deps */
+  //   (deps, file) => ({ ...deps, ...getDepsFromFile(file) }),
+  //   {}
+  // );
 
   const depsFile = join(buildDir, "deps.ts");
 
@@ -42,14 +50,14 @@ function writeFiles(buildDir, pages) {
 
   writeFileSync(depsFile, depsContents);
 
-  const imports = [...new Set(entryFiles.flatMap(getPageSourceFiles))];
-  const importsFile = join(buildDir, "pages.ts");
+  const examples = [...new Set(entryFiles.flatMap(getPageSourceFiles))];
+  const examplesFile = join(buildDir, "examples.ts");
 
-  const importsContents = `export default {\n${imports
-    .map((path) => `  "${path}": () => import("${pathToImport(path)}")`)
+  const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
+    .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
     .join(",\n")}\n};\n`;
 
-  writeFileSync(importsFile, importsContents);
+  writeFileSync(examplesFile, examplesContents);
 }
 
 class PagesWebpackPlugin {
@@ -72,7 +80,33 @@ class PagesWebpackPlugin {
 
     writeFiles(this.buildDir, pages);
 
-    compiler.hooks.compilation.tap("PagesWebpackPlugin", (compilation) => {
+    // TODO: Refactor
+    const rule = compiler.options.module.rules.find(
+      (rule) => typeof rule === "object" && typeof rule.oneOf === "object"
+    );
+
+    const cssRules =
+      typeof rule === "object" &&
+      rule.oneOf?.filter(
+        (rule) => rule.test && /\.css/.test(rule.test.toString())
+      );
+
+    if (cssRules) {
+      const excludes = pages.map((page) => page.sourceContext);
+      cssRules.forEach((cssRule) => {
+        cssRule.exclude = Array.isArray(cssRule.exclude)
+          ? [...cssRule.exclude, ...excludes]
+          : excludes;
+      });
+    }
+
+    compiler.options.module.rules.push({
+      include: pages.map((page) => page.sourceContext),
+      test: /\.css$/,
+      loader: "null-loader",
+    });
+
+    compiler.hooks.make.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;
       for (const page of pages) {
         compilation.contextDependencies.add(page.sourceContext);
@@ -90,8 +124,7 @@ class PagesWebpackPlugin {
 
       for (const file of removedFiles) {
         // removed page: getPageName(file)
-        writeFiles(this.buildDir, pages);
-        return;
+        return writeFiles(this.buildDir, pages);
       }
 
       if (modifiedFiles.size === 1) {
@@ -100,8 +133,7 @@ class PagesWebpackPlugin {
         );
         if (page) {
           // modified page: page.sourceContext
-          writeFiles(this.buildDir, pages);
-          return;
+          return writeFiles(this.buildDir, pages);
         }
       }
 
@@ -109,8 +141,7 @@ class PagesWebpackPlugin {
         if (pages.some((page) => file === page.sourceContext)) continue;
         if (!pages.some((page) => file.includes(page.sourceContext))) continue;
         // modified page: getPageName(file)
-        writeFiles(this.buildDir, pages);
-        return;
+        return writeFiles(this.buildDir, pages);
       }
     });
   }

@@ -1,9 +1,10 @@
 {
   "name": "website",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next-remote-watch ../../{blog,components,examples,guide}/**/*.md",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

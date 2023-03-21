@@ -8,20 +8,30 @@ import { parseDeps } from "./parse-deps.mjs";
 /**
  * @param {string} filename
  */
-export function getDepsFromFile(filename) {
+export async function getDepsFromFile(filename) {
   const tree = getPageTreeFromFile(filename);
 
   /** @type {Record<string, string>} */
   let deps = {};
+
+  /** @type {ReturnType<typeof parseDeps>[]} */
+  const promises = [];
 
   visit(tree, "element", (node) => {
     if (!isPlaygroundNode(node)) return;
     const href = node.properties?.href;
     if (typeof href !== "string") return;
     const nextFilename = resolve(dirname(filename), href);
-    const pageDeps = parseDeps(nextFilename);
-    deps = { ...deps, ...pageDeps.dependencies };
+    promises.push(parseDeps(nextFilename));
+    // const pageDeps = parseDeps(nextFilename);
+    // deps = { ...deps, ...pageDeps.dependencies };
   });
+
+  const allPageDeps = await Promise.all(promises);
+
+  for (const pageDeps of allPageDeps) {
+    deps = { ...deps, ...pageDeps.dependencies };
+  }
 
   return deps;
 }

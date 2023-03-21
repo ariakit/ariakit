@@ -8,9 +8,6 @@
       "@ariakit/playground": ["packages/ariakit-playground/src"],
       "@ariakit/playground/*": ["packages/ariakit-playground/src/*"],
 
-      "@ariakit/react": ["packages/ariakit-react/src"],
-      "@ariakit/react/*": ["packages/ariakit-react/src/*"],
-
       "@ariakit/react-core": ["packages/ariakit-react-core/src"],
       "@ariakit/react-core/*": ["packages/ariakit-react-core/src/*"],
 

@@ -1,7 +1,7 @@
 // @ts-check
-const { readdirSync } = require("fs");
-const { basename, dirname, resolve } = require("path");
-const { camelCase, upperFirst } = require("lodash");
+import { readdirSync } from "fs";
+import { basename, dirname, resolve } from "path";
+import { camelCase, upperFirst } from "lodash-es";
 
 const components = readdirSync(resolve(process.cwd(), "../../components")).map(
   (filename) => basename(filename, ".md")
@@ -9,7 +9,7 @@ const components = readdirSync(resolve(process.cwd(), "../../components")).map(
 
 const buildDir = resolve(process.cwd(), ".pages");
 
-/** @type {import("../../scripts/pages/types").Page[]} */
+/** @type {import("../../scripts/pages/types.js").Page[]} */
 const pages = [
   {
     sourceContext: resolve(process.cwd(), "../../blog"),
@@ -50,4 +50,4 @@ const pages = [
   },
 ];
 
-module.exports = { buildDir, pages };
+export default { buildDir, pages };

@@ -1,9 +1,9 @@
 import { useId } from "react";
-import { cx } from "@ariakit/core/utils/misc";
-import Link from "next/link";
-import tw from "../../utils/tw";
-import NewWindow from "../icons/new-window";
-import Logo from "./logo";
+import { cx } from "@ariakit/core/utils/misc.js";
+import Link from "next/link.js";
+import tw from "../../utils/tw.js";
+import NewWindow from "../icons/new-window.jsx";
+import Logo from "./logo.jsx";
 
 const style = {
   link: tw`
@@ -85,6 +85,7 @@ export default function Footer() {
                       <NewWindow className="h-4 w-4 opacity-60" />
                     </a>
                   ) : (
+                    // @ts-expect-error
                     <Link href={link.href} className={style.link}>
                       {link.title}
                     </Link>

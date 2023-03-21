@@ -1,13 +1,17 @@
-import { Children, ReactNode, isValidElement } from "react";
+import { isValidElement } from "react";
 import { basename, dirname, resolve } from "path";
-import { notFound } from "next/navigation";
+import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { getPageContent } from "scripts/pages/get-page-content.mjs";
 import { getPageEntryFiles } from "scripts/pages/get-page-entry-files.mjs";
 import { getPageName } from "scripts/pages/get-page-name.mjs";
-import { pages } from "../../../pages.config";
-import Comp from "./comp";
+import { parseCSSFile } from "scripts/pages/parse-css-file.mjs";
+import { parseDeps } from "scripts/pages/parse-deps.mjs";
+import pagesConfig from "../../../pages.config.js";
+import Comp from "./comp.jsx";
+
+const { pages } = pagesConfig;
 
 export const dynamicParams = false;
 
@@ -47,8 +51,8 @@ export default async function Page({ params }: PageProps) {
     <ReactMarkdown
       rehypePlugins={[rehypeRaw]}
       components={{
-        h1: () => <h1>Lol</h1>,
-        p: ({ node, ...props }) => {
+        h1: ({ node, level, ...props }) => <h1 {...props} />,
+        p: async ({ node, ...props }) => {
           const paragraph = <p {...props} />;
           const child = props.children[0];
           if (!child) return paragraph;
@@ -57,7 +61,21 @@ export default async function Page({ params }: PageProps) {
           if (!("data-playground" in child.props)) return paragraph;
           if (!child.props.href) return paragraph;
           const filename = resolve(dirname(file), child.props.href);
-          return <Comp page={filename} />;
+          const deps = await parseDeps(filename);
+          const styles = Object.values(deps)
+            .flatMap((deps) =>
+              Object.values(deps).filter((dep) => dep.endsWith(".css"))
+            )
+            .filter(Boolean);
+          const css = await Promise.all(styles.map(parseCSSFile));
+          const cssContent = css.join("\n");
+
+          return (
+            <>
+              <style dangerouslySetInnerHTML={{ __html: cssContent }} />
+              <Comp page={filename} />
+            </>
+          );
         },
       }}
     >
