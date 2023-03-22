@@ -7,8 +7,13 @@ const plugin = new PagesWebpackPlugin(pagesConfig);
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
-    scrollRestoration: true,
     appDir: true,
+    scrollRestoration: true,
+    serverComponentsExternalPackages: [
+      "@babel/core",
+      "@babel/types",
+      "typescript",
+    ],
   },
   reactStrictMode: true,
   transpilePackages: ["@ariakit/playground", "@ariakit/react"],

@@ -1,7 +1,5 @@
 import "./style.css";
 
-// TODO: dependencies and then work on page contents build
-
 import { PropsWithChildren } from "react";
 import localFont from "next/font/local";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";

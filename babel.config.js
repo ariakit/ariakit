@@ -1,13 +1,10 @@
 const test = process.env.NODE_ENV === "test";
-const prod = process.env.NODE_ENV === "production";
-
-const { warn } = console;
 
 /** @type {import("@babel/core").ParserOptions} */
 module.exports = {
   presets: [
     [
-      require("@babel/preset-env"),
+      "@babel/preset-env",
       {
         loose: true,
         targets: test
@@ -17,7 +14,7 @@ module.exports = {
             },
       },
     ],
-    [require("@babel/preset-react"), { runtime: "automatic" }],
-    require("@babel/preset-typescript"),
+    ["@babel/preset-react", { runtime: "automatic" }],
+    "@babel/preset-typescript",
   ],
 };
