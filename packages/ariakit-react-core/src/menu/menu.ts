@@ -9,16 +9,12 @@ import {
   useState,
 } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { HovercardOptions, useHovercard } from "../hovercard/hovercard.jsx";
+import { HovercardOptions, useHovercard } from "../hovercard/hovercard.js";
 import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
-import { MenuListOptions, useMenuList } from "./menu-list.jsx";
+import { MenuListOptions, useMenuList } from "./menu-list.js";
 
 /**
  * Returns props to create a `Menu` component.

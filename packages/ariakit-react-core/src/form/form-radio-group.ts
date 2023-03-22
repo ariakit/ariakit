@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { FormGroupOptions, useFormGroup } from "./form-group.js";
 

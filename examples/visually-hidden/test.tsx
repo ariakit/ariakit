@@ -1,5 +1,5 @@
 import { getByRole, getByText, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("render properly", () => {
   render(<Example />);

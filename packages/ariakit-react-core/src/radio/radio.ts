@@ -10,14 +10,14 @@ import { BivariantCallback } from "@ariakit/core/utils/types";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item.jsx";
+} from "../composite/composite-item.js";
 import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
+import { useStoreState } from "../utils/store.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { RadioContext } from "./radio-context.js";
 import { RadioStore, RadioStoreState } from "./radio-store.js";

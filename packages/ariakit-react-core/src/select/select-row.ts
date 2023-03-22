@@ -4,12 +4,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import {
   CompositeRowOptions,
   useCompositeRow,
-} from "../composite/composite-row.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+} from "../composite/composite-row.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { SelectContext } from "./select-context.js";
 import { SelectStore } from "./select-store.js";

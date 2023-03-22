@@ -1,4 +1,4 @@
-import ArrowRight from "website/icons/arrow-right.jsx";
+import ArrowRight from "website/icons/arrow-right.js";
 import tw from "website/utils/tw.js";
 import Link from "./link.js";
 

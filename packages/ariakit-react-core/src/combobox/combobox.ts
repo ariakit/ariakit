@@ -16,7 +16,7 @@ import {
 } from "@ariakit/core/utils/events";
 import { normalizeString } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { CompositeOptions, useComposite } from "../composite/composite.js";
 import {
   PopoverAnchorOptions,
   usePopoverAnchor,
@@ -31,11 +31,7 @@ import {
   useUpdateEffect,
   useUpdateLayoutEffect,
 } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 

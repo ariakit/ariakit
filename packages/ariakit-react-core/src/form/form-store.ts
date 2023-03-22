@@ -10,7 +10,7 @@ import {
   useCollectionStoreProps,
 } from "../collection/collection-store.js";
 import { useSafeLayoutEffect } from "../utils/hooks.js";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;

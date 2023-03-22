@@ -15,12 +15,12 @@ import {
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
 import { useEvent, useForkRef } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
+import { useStoreState } from "../utils/store.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { CompositeContext } from "./composite-context.js";
 import { CompositeStore } from "./composite-store.js";

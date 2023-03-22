@@ -5,11 +5,7 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { useEvent } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";

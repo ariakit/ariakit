@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useForkRef, useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { DisclosureStore } from "./disclosure-store.js";
 

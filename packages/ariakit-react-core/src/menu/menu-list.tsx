@@ -3,14 +3,10 @@ import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,
 } from "../composite/composite-typeahead.js";
-import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { CompositeOptions, useComposite } from "../composite/composite.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { useStoreState } from "../utils/store.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
 import { MenuStore } from "./menu-store.js";

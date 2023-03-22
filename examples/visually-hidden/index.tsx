@@ -1,5 +1,5 @@
 import { Button, VisuallyHidden } from "@ariakit/react";
-import { undo } from "./icons.jsx";
+import { undo } from "./icons.js";
 import "./style.css";
 
 export default function Example() {

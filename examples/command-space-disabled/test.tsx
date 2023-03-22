@@ -1,5 +1,5 @@
 import { getByText, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("enter does trigger the alert", async () => {
   const alertMock = jest.spyOn(window, "alert").mockImplementation();

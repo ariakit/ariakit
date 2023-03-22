@@ -18,18 +18,14 @@ import {
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
-} from "../popover/popover-disclosure.jsx";
+} from "../popover/popover-disclosure.js";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useWrapElement,
 } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { SelectArrow } from "./select-arrow.js";

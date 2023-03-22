@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
-import { CheckboxOptions, useCheckbox } from "../checkbox/checkbox.jsx";
+import { CheckboxOptions, useCheckbox } from "../checkbox/checkbox.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
 import { FormFieldOptions, useFormField } from "./form-field.js";

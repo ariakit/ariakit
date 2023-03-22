@@ -2,11 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import { CommandOptions, useCommand } from "../command/command.js";
 import { useForkRef, useTagName } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 
 /**

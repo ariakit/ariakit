@@ -1,10 +1,6 @@
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { GroupLabelContext } from "./group-label-context.js";
 

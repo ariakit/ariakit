@@ -7,7 +7,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
 const getPopover = () => queryByRole("dialog", { hidden: true });

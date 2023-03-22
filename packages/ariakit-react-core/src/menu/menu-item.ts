@@ -10,14 +10,14 @@ import {
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item.jsx";
+} from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
+import { useStoreState } from "../utils/store.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuBarStore } from "./menu-bar-store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";

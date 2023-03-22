@@ -1,5 +1,5 @@
 import { getByRole, hover, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getToolbar = () => getByRole("toolbar");
 const getButton = (name: string) => getByRole("button", { name });

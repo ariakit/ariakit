@@ -1,9 +1,5 @@
-import { GroupOptions, useGroup } from "../group/group.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { GroupOptions, useGroup } from "../group/group.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { CompositeStore } from "./composite-store.js";
 

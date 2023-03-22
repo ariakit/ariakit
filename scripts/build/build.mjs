@@ -1,7 +1,8 @@
 // import { fileURLToPath } from "url";
-// import spawn from "cross-spawn";
+import spawn from "cross-spawn";
 import { build } from "esbuild";
 import {
+  getModuleDir,
   getPackage,
   getPublicFiles,
   getSourcePath,
@@ -25,8 +26,16 @@ const entryPoints = getPublicFiles(sourcePath);
 makeGitignore(cwd);
 makeProxies(cwd);
 
+// spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", getModuleDir(cwd)], {
+//   stdio: "inherit",
+// });
+
 await build({
   entryPoints,
+  sourceRoot: sourcePath,
+  outdir: getModuleDir(cwd),
+  platform: "node",
+  format: "esm",
 });
 
 // const configPath = fileURLToPath(new URL("rollup.config.mjs", import.meta.url));

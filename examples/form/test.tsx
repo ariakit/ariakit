@@ -6,7 +6,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getInput = (name: string) => getByRole("textbox", { name });
 const getErrors = () => queryAllByText("Constraints not satisfied");

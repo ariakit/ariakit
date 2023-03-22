@@ -7,7 +7,7 @@ import {
   useDialogStoreProps,
 } from "../dialog/dialog-store.js";
 import { useEvent } from "../utils/hooks.js";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 export function usePopoverStoreOptions(props: PopoverStoreProps) {
   const getAnchorRect = useEvent(props.getAnchorRect);

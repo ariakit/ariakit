@@ -2,11 +2,7 @@ import {
   CompositeSeparatorOptions,
   useCompositeSeparator,
 } from "../composite/composite-separator.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { ToolbarStore } from "./toolbar-store.js";
 

@@ -1,11 +1,7 @@
 import { CSSProperties, FocusEvent } from "react";
-import { PopoverOptions, usePopover } from "../popover/popover.jsx";
+import { PopoverOptions, usePopover } from "../popover/popover.js";
 import { useEvent } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { CompositeOverflowStore } from "./composite-overflow-store.js";
 

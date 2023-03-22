@@ -13,7 +13,7 @@ import {
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 export function useComboboxStoreOptions(props: ComboboxStoreProps) {
   return {

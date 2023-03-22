@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { bold, italic, redo, underline, undo } from "./icons.jsx";
+import { bold, italic, redo, underline, undo } from "./icons.js";
 import "./style.css";
 
 export default function Example() {

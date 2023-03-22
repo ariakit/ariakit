@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import Icon from "./icon.jsx";
+import Icon from "./icon.js";
 import "./style.css";
 
 export default function Example() {

@@ -32,10 +32,10 @@ import {
   DisclosureContentProps,
   useDisclosureContent,
 } from "../disclosure/disclosure-content.js";
-import { useFocusTrapRegion } from "../focus-trap/focus-trap-region.jsx";
+import { useFocusTrapRegion } from "../focus-trap/focus-trap-region.js";
 import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
-import { HeadingLevel } from "../heading/heading-level.jsx";
-import { PortalOptions, usePortal } from "../portal/portal.jsx";
+import { HeadingLevel } from "../heading/heading-level.js";
+import { PortalOptions, usePortal } from "../portal/portal.js";
 import {
   useBooleanEvent,
   useForkRef,
@@ -45,13 +45,9 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
-import { DialogBackdrop } from "./dialog-backdrop.jsx";
+import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogContext,
   DialogDescriptionContext,
@@ -64,7 +60,7 @@ import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useChampionDialog } from "./utils/use-champion-dialog.js";
 import { useFocusOnChildUnmount } from "./utils/use-focus-on-child-unmount.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
-import { useNestedDialogs } from "./utils/use-nested-dialogs.jsx";
+import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 
 const isSafariBrowser = isSafari();

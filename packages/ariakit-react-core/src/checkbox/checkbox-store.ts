@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import { PickRequired, SetStateOption } from "@ariakit/core/utils/types";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 type Value = Core.CheckboxStoreValue;
 

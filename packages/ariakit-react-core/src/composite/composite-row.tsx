@@ -1,11 +1,7 @@
 import { useContext, useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { CompositeContext, CompositeRowContext } from "./composite-context.js";
 import { CompositeStore } from "./composite-store.js";

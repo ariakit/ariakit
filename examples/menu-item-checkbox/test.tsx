@@ -1,5 +1,5 @@
 import { click, getByRole, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getMenuButton = (name: string) => getByRole("button", { name });
 const getMenuItem = (name: string) => getByRole("menuitemcheckbox", { name });

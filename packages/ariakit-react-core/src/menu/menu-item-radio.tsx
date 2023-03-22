@@ -6,7 +6,7 @@ import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuContext, MenuItemCheckedContext } from "./menu-context.js";
 import { MenuItemOptions, useMenuItem } from "./menu-item.js";

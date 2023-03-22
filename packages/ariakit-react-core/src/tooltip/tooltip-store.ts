@@ -6,7 +6,7 @@ import {
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store.js";
-import { Store, useStore } from "../utils/store.jsx";
+import { Store, useStore } from "../utils/store.js";
 
 export function useTooltipStoreOptions(props: TooltipStoreProps) {
   return usePopoverStoreOptions(props);

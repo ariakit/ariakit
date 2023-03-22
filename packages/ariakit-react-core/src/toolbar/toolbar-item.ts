@@ -1,12 +1,12 @@
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item.jsx";
+} from "../composite/composite-item.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { ToolbarStore } from "./toolbar-store.js";
 

@@ -1,9 +1,9 @@
 import tw from "website/utils/tw.js";
-import HeaderGlobalNotification from "./header-global-notification.jsx";
-import HeaderLogo from "./header-logo.jsx";
-import HeaderNav from "./header-nav.jsx";
-import HeaderThemeSwitch from "./header-theme-switch.jsx";
-import HeaderVersionSelect from "./header-version-select.jsx";
+import HeaderGlobalNotification from "./header-global-notification.js";
+import HeaderLogo from "./header-logo.js";
+import HeaderNav from "./header-nav.js";
+import HeaderThemeSwitch from "./header-theme-switch.js";
+import HeaderVersionSelect from "./header-version-select.js";
 import Link from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;

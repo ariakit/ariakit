@@ -8,7 +8,7 @@ import {
   sleep,
   type,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getLabel = () => getByText("Favorite fruit");
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });

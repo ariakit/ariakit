@@ -1,1 +1,1 @@
-export * from "./open-in-code-sandbox.jsx";
+export * from "./open-in-code-sandbox.js";

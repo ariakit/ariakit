@@ -1,5 +1,5 @@
 import { click, getByRole, press, queryByRole, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getPopover = () => queryByRole("dialog", { hidden: true });
 const getDisclosure = () => getByRole("button", { name: "Accept invite" });

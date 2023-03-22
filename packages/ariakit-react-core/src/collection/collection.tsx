@@ -1,9 +1,5 @@
 import { useWrapElement } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { CollectionContext } from "./collection-context.js";
 import { CollectionStore } from "./collection-store.js";

@@ -1,5 +1,5 @@
 import { click, getByRole, hover, press, render, type } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getCombobox = () => getByRole("combobox");
 const getOption = (name: string) => getByRole("option", { name });

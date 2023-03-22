@@ -1,5 +1,5 @@
 import { blur, getByRole, hover, press, render, waitFor } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("show tooltip on hover after timeout", async () => {
   const { baseElement } = render(<Example />);

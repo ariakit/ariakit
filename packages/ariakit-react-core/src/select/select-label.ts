@@ -4,7 +4,7 @@ import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system.jsx";
+} from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import { SelectStore } from "./select-store.js";
 

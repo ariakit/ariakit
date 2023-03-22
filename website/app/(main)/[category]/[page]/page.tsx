@@ -10,7 +10,7 @@ import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.mjs"
 import { getPageName } from "website/build-pages/get-page-name.mjs";
 import pagesIndex from "website/build-pages/index.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.mjs";
-import PageExample from "website/components/page-example.jsx";
+import PageExample from "website/components/page-example.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 
 const { pages } = pagesConfig;

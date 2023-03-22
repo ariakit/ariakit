@@ -3,12 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import {
   PopoverArrowOptions,
   usePopoverArrow,
-} from "../popover/popover-arrow.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+} from "../popover/popover-arrow.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { TooltipContext } from "./tooltip-context.js";
 import { TooltipStore } from "./tooltip-store.js";

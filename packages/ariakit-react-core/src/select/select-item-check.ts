@@ -2,12 +2,8 @@ import { useContext } from "react";
 import {
   CheckboxCheckOptions,
   useCheckboxCheck,
-} from "../checkbox/checkbox-check.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+} from "../checkbox/checkbox-check.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { SelectItemCheckedContext } from "./select-context.js";
 import { SelectStore } from "./select-store.js";

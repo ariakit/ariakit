@@ -2,15 +2,11 @@ import { FocusEvent, useEffect, useRef, useState } from "react";
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
-} from "../popover/popover-disclosure.jsx";
+} from "../popover/popover-disclosure.js";
 import { useEvent, useForkRef } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
-import { CompositeItemOptions, useCompositeItem } from "./composite-item.jsx";
+import { CompositeItemOptions, useCompositeItem } from "./composite-item.js";
 import { CompositeOverflowStore } from "./composite-overflow-store.js";
 
 /**

@@ -1,5 +1,5 @@
 import { getByText, render } from "@ariakit/test";
-import PortalExample from "./index.jsx";
+import PortalExample from "./index.js";
 
 test("render correctly", async () => {
   render(<PortalExample />);

@@ -1,5 +1,5 @@
 import { click, focus, getByRole, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 function getTab(name: string) {
   return getByRole("tab", { name });

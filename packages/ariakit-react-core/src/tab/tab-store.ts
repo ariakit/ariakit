@@ -7,7 +7,7 @@ import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.TabStoreItem;
 

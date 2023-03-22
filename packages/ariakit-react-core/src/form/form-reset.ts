@@ -1,11 +1,7 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { ButtonOptions, useButton } from "../button/button.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
 import { FormStore } from "./form-store.js";

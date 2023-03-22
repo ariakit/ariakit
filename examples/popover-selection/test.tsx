@@ -7,7 +7,7 @@ import {
   render,
   select,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getPopover = () => queryByRole("dialog", { hidden: true });
 const getParagraph = () => getByText(/^Lorem ipsum dolor/);

@@ -7,7 +7,7 @@ import {
   useCollectionStoreOptions,
   useCollectionStoreProps,
 } from "../collection/collection-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.jsx";
+import { Store, useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.CompositeStoreItem;
 

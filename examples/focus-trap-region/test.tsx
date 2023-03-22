@@ -1,5 +1,5 @@
 import { getByRole, getByText, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("correctly traps focus in region", async () => {
   // Focus trap is on by default in the Example

@@ -18,14 +18,10 @@ import {
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
-} from "../popover/popover-disclosure.jsx";
+} from "../popover/popover-disclosure.js";
 import { useEvent, useForkRef, useId } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { useStoreState } from "../utils/store.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
 import { MenuStore } from "./menu-store.js";

@@ -2,10 +2,10 @@
 
 import { ButtonHTMLAttributes } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Moon from "website/icons/moon.jsx";
-import Sun from "website/icons/sun.jsx";
+import Moon from "website/icons/moon.js";
+import Sun from "website/icons/sun.js";
 import tw from "website/utils/tw.js";
-import TooltipButton from "./tooltip-button.jsx";
+import TooltipButton from "./tooltip-button.js";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 

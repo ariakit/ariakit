@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MotionProps, useReducedMotion } from "framer-motion";
-import { Menu, MenuItem, MenuSeparator } from "./menu.jsx";
+import { Menu, MenuItem, MenuSeparator } from "./menu.js";
 import "./style.css";
 
 export default function Example() {

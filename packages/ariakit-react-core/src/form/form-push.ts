@@ -13,11 +13,7 @@ import {
   useCollectionItem,
 } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
 import { FormStore, FormStoreState } from "./form-store.js";

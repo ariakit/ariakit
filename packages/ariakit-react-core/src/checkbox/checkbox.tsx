@@ -6,12 +6,8 @@ import {
   useTagName,
   useWrapElement,
 } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { useStoreState } from "../utils/store.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
 import { CheckboxStore } from "./checkbox-store.js";

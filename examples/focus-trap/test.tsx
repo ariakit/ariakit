@@ -6,7 +6,7 @@ import {
   press,
   render,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("correctly traps focus", async () => {
   // Focus trap is on by default in the Example

@@ -11,11 +11,7 @@ import {
   useDialogDisclosure,
 } from "../dialog/dialog-disclosure.js";
 import { useEvent, useForkRef } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { HovercardStore } from "./hovercard-store.js";

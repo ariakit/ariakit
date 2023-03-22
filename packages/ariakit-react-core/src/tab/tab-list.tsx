@@ -1,10 +1,6 @@
-import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { CompositeOptions, useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { TabContext } from "./tab-context.js";
 import { TabStore } from "./tab-store.js";

@@ -20,7 +20,7 @@ import {
   useStore,
   useStoreProps,
   useStoreState,
-} from "../utils/store.jsx";
+} from "../utils/store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;

@@ -1,11 +1,7 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { SeparatorOptions, useSeparator } from "../separator/separator.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { CompositeContext } from "./composite-context.js";
 import { CompositeStore } from "./composite-store.js";

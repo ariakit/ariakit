@@ -1,5 +1,5 @@
 import { click, getByRole, getByText, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getContent = () => getByText(/Vegetables are parts of plants/);
 const getDisclosure = () =>

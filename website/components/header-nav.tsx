@@ -19,10 +19,10 @@ import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
 import { PageContent } from "website/build-pages/contents.js";
 import pageIndex, { PageIndexDetail } from "website/build-pages/index.js";
-import Blog from "website/icons/blog.jsx";
-import Components from "website/icons/components.jsx";
-import Examples from "website/icons/examples.jsx";
-import Guide from "website/icons/guide.jsx";
+import Blog from "website/icons/blog.js";
+import Components from "website/icons/components.js";
+import Examples from "website/icons/examples.js";
+import Guide from "website/icons/guide.js";
 import tw from "website/utils/tw.js";
 import useDelayedValue from "website/utils/use-delayed-value.js";
 import {
@@ -30,7 +30,7 @@ import {
   HeaderMenuGroup,
   HeaderMenuItem,
   HeaderMenuSeparator,
-} from "./header-menu.jsx";
+} from "./header-menu.js";
 
 type Data = Array<
   PageContent & { keywords: string[]; score?: number; key?: string }

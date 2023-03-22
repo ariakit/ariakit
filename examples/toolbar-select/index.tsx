@@ -5,13 +5,13 @@ import {
   bold,
   italic,
   underline,
-} from "./icons.jsx";
+} from "./icons.js";
 import {
   Toolbar,
   ToolbarButton,
   ToolbarSelect,
   ToolbarSeparator,
-} from "./toolbar.jsx";
+} from "./toolbar.js";
 import "./style.css";
 
 const alignmentOptions = [

@@ -1,9 +1,5 @@
 import { DisclosureOptions, useDisclosure } from "../disclosure/disclosure.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { DialogStore } from "./dialog-store.js";
 

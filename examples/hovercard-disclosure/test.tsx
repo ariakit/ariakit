@@ -7,7 +7,7 @@ import {
   render,
   waitFor,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
 const getHovercard = () => getByRole("dialog", { hidden: true });

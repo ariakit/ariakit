@@ -61,10 +61,7 @@ import { tags as t } from "@lezer/highlight";
 import { getExtension } from "./__utils/get-extension.js";
 import { getValue } from "./__utils/get-value.js";
 import { PlaygroundContext } from "./__utils/playground-context.js";
-import {
-  PlaygroundCodeOptions,
-  usePlaygroundCode,
-} from "./playground-code.jsx";
+import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code.js";
 import { PlaygroundStore } from "./playground-store.js";
 
 function getLanguage(file: string) {

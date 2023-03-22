@@ -2,11 +2,7 @@ import {
   CompositeGroupOptions,
   useCompositeGroup,
 } from "../composite/composite-group.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { ComboboxStore } from "./combobox-store.js";
 

@@ -6,7 +6,7 @@ import {
   render,
   waitFor,
 } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getNativeSelect = () => getAllByLabelText("Role")[0]!;
 const getSelect = () => getByRole("combobox", { name: "Role" });

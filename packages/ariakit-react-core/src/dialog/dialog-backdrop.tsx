@@ -14,7 +14,7 @@ import {
   useForkRef,
   useSafeLayoutEffect,
 } from "../utils/hooks.js";
-import { DialogProps } from "./dialog.jsx";
+import { DialogProps } from "./dialog.js";
 import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref.js";
 
 type DialogBackdropProps = Pick<

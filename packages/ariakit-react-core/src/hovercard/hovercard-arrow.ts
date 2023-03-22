@@ -1,12 +1,8 @@
 import {
   PopoverArrowOptions,
   usePopoverArrow,
-} from "../popover/popover-arrow.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+} from "../popover/popover-arrow.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { HovercardStore } from "./hovercard-store.js";
 

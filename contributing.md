@@ -256,7 +256,7 @@ Let's create a test for our example:
 
 ```tsx
 import { render, getByText } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("my component", () => {
   render(<Example />);

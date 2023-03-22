@@ -1,10 +1,6 @@
 import { useContext, useMemo } from "react";
 import { invariant, normalizeString } from "@ariakit/core/utils/misc";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Options, Props } from "../utils/types.js";
 import {
   ComboboxContext,

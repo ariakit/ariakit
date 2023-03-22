@@ -1,5 +1,5 @@
 import { getByRole, press, queryByRole, render, type } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 const getTextarea = () => getByRole("combobox");
 const getPopover = () => queryByRole("listbox", { hidden: true });

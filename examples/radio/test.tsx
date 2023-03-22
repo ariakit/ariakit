@@ -1,5 +1,5 @@
 import { click, getByLabelText, press, render } from "@ariakit/test";
-import Example from "./index.jsx";
+import Example from "./index.js";
 
 test("check radio button on click", async () => {
   render(<Example />);

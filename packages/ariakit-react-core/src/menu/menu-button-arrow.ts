@@ -1,12 +1,8 @@
 import {
   PopoverDisclosureArrowOptions,
   usePopoverDisclosureArrow,
-} from "../popover/popover-disclosure-arrow.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+} from "../popover/popover-disclosure-arrow.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import { As, Props } from "../utils/types.js";
 import { MenuStore } from "./menu-store.js";
 
