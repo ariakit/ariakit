@@ -30,22 +30,21 @@ function PortalProvider({ children, id }: PortalProviderProps) {
 
 interface PageExampleProps {
   path: string;
-  id: string;
+  id?: string;
   css?: string;
 }
 
 export default function PageExample({ path, id, css }: PageExampleProps) {
   const Component = examples[path];
+  const preview = Component && (
+    <Suspense>
+      <Component />
+    </Suspense>
+  );
   return (
     <div className={id}>
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-      <PortalProvider id={id}>
-        {Component && (
-          <Suspense>
-            <Component />
-          </Suspense>
-        )}
-      </PortalProvider>
+      {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}
     </div>
   );
 }

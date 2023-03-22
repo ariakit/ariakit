@@ -1,5 +1,5 @@
 import { isValidElement } from "react";
-import { basename, dirname, resolve } from "path";
+import { dirname, resolve } from "path";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -10,8 +10,8 @@ import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.mjs"
 import { getPageName } from "website/build-pages/get-page-name.mjs";
 import pagesIndex from "website/build-pages/index.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.mjs";
+import PageExample from "website/components/page-example.jsx";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import PageExample from "./page-example.jsx";
 
 const { pages } = pagesConfig;
 
@@ -24,7 +24,7 @@ function getPageNames(dir: string) {
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
     const pages = getPageNames(page.sourceContext);
-    const category = basename(page.sourceContext);
+    const category = page.slug;
     return pages.map((page) => ({ category, page }));
   });
   return params;
