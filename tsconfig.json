@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "esnext",
-    "module": "esnext",
+    "module": "node16",
     "moduleResolution": "node16",
     "jsx": "preserve",
     "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
@@ -25,6 +25,6 @@
     "stripInternal": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "vitest.config.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "vitest.config.mts"],
   "exclude": ["node_modules"]
 }

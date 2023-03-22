@@ -1,6 +1,13 @@
-import { fileURLToPath } from "url";
-import spawn from "cross-spawn";
-import { makeGitignore, makeProxies } from "./utils.mjs";
+// import { fileURLToPath } from "url";
+// import spawn from "cross-spawn";
+import { build } from "esbuild";
+import {
+  getPackage,
+  getPublicFiles,
+  getSourcePath,
+  makeGitignore,
+  makeProxies,
+} from "./utils.mjs";
 
 import "./clean.mjs";
 
@@ -11,10 +18,17 @@ if (process.argv.includes("--no-umd")) {
 }
 
 const cwd = process.cwd();
+const pkg = getPackage(cwd);
+const sourcePath = getSourcePath(cwd);
+const entryPoints = getPublicFiles(sourcePath);
 
 makeGitignore(cwd);
 makeProxies(cwd);
 
-const configPath = fileURLToPath(new URL("rollup.config.mjs", import.meta.url));
+await build({
+  entryPoints,
+});
 
-spawn.sync("rollup", ["-c", configPath], { stdio: "inherit" });
+// const configPath = fileURLToPath(new URL("rollup.config.mjs", import.meta.url));
+
+// spawn.sync("rollup", ["-c", configPath], { stdio: "inherit" });
