@@ -1,9 +1,13 @@
-import { CompositeOptions, useComposite } from "../composite/composite";
-import { useWrapElement } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ToolbarContext } from "./toolbar-context";
-import { ToolbarStore } from "./toolbar-store";
+import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ToolbarContext } from "./toolbar-context.js";
+import { ToolbarStore } from "./toolbar-store.js";
 
 /**
  * Returns props to create a `Toolbar` component.

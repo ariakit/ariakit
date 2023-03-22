@@ -5,7 +5,7 @@ import {
   DisclosureStoreProps,
   DisclosureStoreState,
   createDisclosureStore,
-} from "../disclosure/disclosure-store";
+} from "../disclosure/disclosure-store.js";
 
 /**
  * Creates a dialog store.

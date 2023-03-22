@@ -3,17 +3,21 @@ import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import {
   CollectionItemOptions,
   useCollectionItem,
-} from "../collection/collection-item";
+} from "../collection/collection-item.js";
 import {
   DisclosureContentOptions,
   useDisclosureContent,
-} from "../disclosure/disclosure-content";
-import { useDisclosureStore } from "../disclosure/disclosure-store";
-import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { useForkRef, useId } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TabStore } from "./tab-store";
+} from "../disclosure/disclosure-content.js";
+import { useDisclosureStore } from "../disclosure/disclosure-store.js";
+import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import { useForkRef, useId } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TabStore } from "./tab-store.js";
 
 /**
  * Returns props to create a `TabPanel` component.

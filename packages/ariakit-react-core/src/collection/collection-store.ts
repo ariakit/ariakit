@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/collection/collection-store";
 import { BivariantCallback, PickRequired } from "@ariakit/core/utils/types";
-import { Store, useStore, useStoreProps } from "../utils/store";
+import { Store, useStore, useStoreProps } from "../utils/store.jsx";
 
 type Item = Core.CollectionStoreItem;
 

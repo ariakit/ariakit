@@ -4,16 +4,16 @@ import { invariant } from "@ariakit/core/utils/misc";
 import {
   CollectionItemOptions,
   useCollectionItem,
-} from "../collection/collection-item";
-import { useForkRef, useId } from "../utils/hooks";
+} from "../collection/collection-item.js";
+import { useForkRef, useId } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormContext } from "./form-context";
-import { FormStore } from "./form-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormContext } from "./form-context.js";
+import { FormStore } from "./form-store.js";
 
 /**
  * Returns props to create a `FormDescription` component.

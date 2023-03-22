@@ -5,8 +5,8 @@ import {
   CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
-} from "../composite/composite-store";
-import { Store, useStore, useStoreProps } from "../utils/store";
+} from "../composite/composite-store.js";
+import { Store, useStore, useStoreProps } from "../utils/store.jsx";
 
 export function useRadioStoreOptions(props: RadioStoreProps) {
   return useCompositeStoreOptions(props);

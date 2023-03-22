@@ -1,6 +1,11 @@
-import { defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { PickRequired, SetState, ToPrimitive } from "../utils/types";
+import { defaultValue } from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
+import { PickRequired, SetState, ToPrimitive } from "../utils/types.js";
 
 type Value = boolean | string | number | Array<string | number>;
 

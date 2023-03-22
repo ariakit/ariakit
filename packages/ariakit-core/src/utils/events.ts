@@ -1,5 +1,5 @@
-import { contains } from "./dom";
-import { isApple } from "./platform";
+import { contains } from "./dom.js";
+import { isApple } from "./platform.js";
 
 /**
  * Returns `true` if `event` has been fired within a React Portal element.

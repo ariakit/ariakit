@@ -1,27 +1,27 @@
-import { ComboboxStore } from "../combobox/combobox-store";
+import { ComboboxStore } from "../combobox/combobox-store.js";
 import {
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
+} from "../composite/composite-store.js";
 import {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
-import { toArray } from "../utils/array";
-import { defaultValue } from "../utils/misc";
+} from "../popover/popover-store.js";
+import { toArray } from "../utils/array.js";
+import { defaultValue } from "../utils/misc.js";
 import {
   Store,
   StoreOptions,
   StoreProps,
   createStore,
   mergeStore,
-} from "../utils/store";
-import { PickRequired, SetState } from "../utils/types";
+} from "../utils/store.js";
+import { PickRequired, SetState } from "../utils/types.js";
 
 type Value = string | string[];
 type MutableValue<T extends Value = Value> = T extends string ? string : T;

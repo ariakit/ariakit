@@ -1,9 +1,13 @@
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
 import {
   VisuallyHiddenOptions,
   useVisuallyHidden,
-} from "../visually-hidden/visually-hidden";
+} from "../visually-hidden/visually-hidden.js";
 
 /**
  * Returns props to create a `FocusTrap` component.

@@ -1,16 +1,20 @@
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import { CommandOptions, useCommand } from "../command/command";
+import { CommandOptions, useCommand } from "../command/command.js";
 import {
   useEvent,
   useForkRef,
   useTagName,
   useWrapElement,
-} from "../utils/hooks";
-import { useStoreState } from "../utils/store";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { CheckboxCheckedContext } from "./checkbox-checked-context";
-import { CheckboxStore } from "./checkbox-store";
+} from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
+import { CheckboxStore } from "./checkbox-store.js";
 
 function setMixed(element: HTMLInputElement, mixed?: boolean) {
   if (mixed) {

@@ -14,23 +14,27 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,
-} from "../composite/composite-typeahead";
+} from "../composite/composite-typeahead.js";
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
-} from "../popover/popover-disclosure";
+} from "../popover/popover-disclosure.jsx";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { VisuallyHidden } from "../visually-hidden/visually-hidden";
-import { SelectArrow } from "./select-arrow";
-import { SelectContext } from "./select-context";
-import { SelectStore } from "./select-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
+import { SelectArrow } from "./select-arrow.js";
+import { SelectContext } from "./select-context.js";
+import { SelectStore } from "./select-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

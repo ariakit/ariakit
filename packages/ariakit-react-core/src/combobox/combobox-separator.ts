@@ -3,11 +3,15 @@ import { invariant } from "@ariakit/core/utils/misc";
 import {
   CompositeSeparatorOptions,
   useCompositeSeparator,
-} from "../composite/composite-separator";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxContext } from "./combobox-context";
-import { ComboboxStore } from "./combobox-store";
+} from "../composite/composite-separator.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ComboboxContext } from "./combobox-context.js";
+import { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props a `ComboboxSeparator` component for combobox items.

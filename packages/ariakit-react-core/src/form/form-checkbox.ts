@@ -1,15 +1,15 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { CheckboxOptions, useCheckbox } from "../checkbox/checkbox";
-import { useCheckboxStore } from "../checkbox/checkbox-store";
+import { useCheckboxStore } from "../checkbox/checkbox-store.js";
+import { CheckboxOptions, useCheckbox } from "../checkbox/checkbox.jsx";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormContext } from "./form-context";
-import { FormFieldOptions, useFormField } from "./form-field";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormContext } from "./form-context.js";
+import { FormFieldOptions, useFormField } from "./form-field.js";
 
 /**
  * Returns props to create a `FormCheckbox` component.

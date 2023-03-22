@@ -16,11 +16,11 @@ import {
 } from "@ariakit/core/utils/events";
 import { normalizeString } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { CompositeOptions, useComposite } from "../composite/composite";
+import { CompositeOptions, useComposite } from "../composite/composite.jsx";
 import {
   PopoverAnchorOptions,
   usePopoverAnchor,
-} from "../popover/popover-anchor";
+} from "../popover/popover-anchor.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -30,10 +30,14 @@ import {
   useSafeLayoutEffect,
   useUpdateEffect,
   useUpdateLayoutEffect,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxStore, ComboboxStoreState } from "./combobox-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 
 function isFirstItemAutoSelected(
   items: ComboboxStoreState["items"],

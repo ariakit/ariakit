@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { flushSync } from "react-dom";
-import { useForceUpdate, useSafeLayoutEffect } from "../../utils/hooks";
-import { DialogStore } from "../dialog-store";
+import { useForceUpdate, useSafeLayoutEffect } from "../../utils/hooks.js";
+import { DialogStore } from "../dialog-store.js";
 
 /**
  * Controls which dialog is the champion that will control global behavior such

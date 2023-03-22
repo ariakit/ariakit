@@ -7,20 +7,23 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
-} from "../composite/composite-hover";
+} from "../composite/composite-hover.js";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks";
+} from "../composite/composite-item.jsx";
+import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxContext, ComboboxItemValueContext } from "./combobox-context";
-import { ComboboxStore } from "./combobox-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import {
+  ComboboxContext,
+  ComboboxItemValueContext,
+} from "./combobox-context.js";
+import { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props to create a `ComboboxItem` component.

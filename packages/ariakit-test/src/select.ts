@@ -1,8 +1,8 @@
-import { fireEvent } from "./fire-event";
-import { hover } from "./hover";
-import { mouseDown } from "./mouse-down";
-import { mouseUp } from "./mouse-up";
-import { sleep } from "./sleep";
+import { fireEvent } from "./fire-event.js";
+import { hover } from "./hover.js";
+import { mouseDown } from "./mouse-down.js";
+import { mouseUp } from "./mouse-up.js";
+import { sleep } from "./sleep.js";
 
 export async function select(
   text: string,

@@ -7,16 +7,20 @@ import {
 } from "react";
 import { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
-import { ButtonOptions, useButton } from "../button/button";
+import { ButtonOptions, useButton } from "../button/button.js";
 import {
   CollectionItemOptions,
   useCollectionItem,
-} from "../collection/collection-item";
-import { useEvent } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormContext } from "./form-context";
-import { FormStore, FormStoreState } from "./form-store";
+} from "../collection/collection-item.js";
+import { useEvent } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormContext } from "./form-context.js";
+import { FormStore, FormStoreState } from "./form-store.js";
 
 function getFirstFieldsByName(
   items: FormStoreState["items"] | undefined,

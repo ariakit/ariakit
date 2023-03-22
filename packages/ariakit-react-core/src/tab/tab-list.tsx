@@ -1,9 +1,13 @@
-import { CompositeOptions, useComposite } from "../composite/composite";
-import { useWrapElement } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TabContext } from "./tab-context";
-import { TabStore } from "./tab-store";
+import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TabContext } from "./tab-context.js";
+import { TabStore } from "./tab-store.js";
 
 /**
  * Returns props to create a `TabList` component.

@@ -1,8 +1,12 @@
 import { useContext } from "react";
-import { useId, useSafeLayoutEffect } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { GroupLabelContext } from "./group-label-context";
+import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { GroupLabelContext } from "./group-label-context.js";
 
 /**
  * Returns props to create a `GroupLabel` component. This hook must be used in a

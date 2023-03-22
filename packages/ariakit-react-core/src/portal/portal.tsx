@@ -15,16 +15,20 @@ import {
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
 import { createPortal } from "react-dom";
-import { FocusTrap } from "../focus-trap/focus-trap";
+import { FocusTrap } from "../focus-trap/focus-trap.js";
 import {
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { setRef } from "../utils/misc";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { PortalContext } from "./portal-context";
+} from "../utils/hooks.js";
+import { setRef } from "../utils/misc.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { PortalContext } from "./portal-context.js";
 
 function getRootElement(element?: Element | null) {
   return getDocument(element).body;

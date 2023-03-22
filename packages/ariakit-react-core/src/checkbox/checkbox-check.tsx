@@ -1,8 +1,12 @@
 import { useContext } from "react";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { CheckboxCheckedContext } from "./checkbox-checked-context";
-import { CheckboxStore } from "./checkbox-store";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
+import { CheckboxStore } from "./checkbox-store.js";
 
 const checkmark = (
   <svg

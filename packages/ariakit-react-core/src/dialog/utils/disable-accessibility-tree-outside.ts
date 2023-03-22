@@ -1,4 +1,4 @@
-import { walkTreeOutside } from "./walk-tree-outside";
+import { walkTreeOutside } from "./walk-tree-outside.js";
 
 type Elements = Array<Element | null>;
 

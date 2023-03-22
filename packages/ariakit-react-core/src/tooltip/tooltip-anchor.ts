@@ -2,11 +2,15 @@ import { FocusEvent, MouseEvent } from "react";
 import {
   PopoverAnchorOptions,
   usePopoverAnchor,
-} from "../popover/popover-anchor";
-import { useEvent } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TooltipStore } from "./tooltip-store";
+} from "../popover/popover-anchor.js";
+import { useEvent } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TooltipStore } from "./tooltip-store.js";
 
 /**
  * Returns props to create a `TooltipAnchor` component.

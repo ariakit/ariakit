@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "Ariakit playground",
   "sideEffects": false,
-  "type": "module",
   "license": "MIT",
   "homepage": "https://ariakit.org",
+  "type": "module",
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",

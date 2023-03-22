@@ -1,6 +1,10 @@
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormGroupOptions, useFormGroup } from "./form-group";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormGroupOptions, useFormGroup } from "./form-group.js";
 
 /**
  * Returns props to create a `FormRadioGroup` component.

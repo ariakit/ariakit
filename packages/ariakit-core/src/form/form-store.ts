@@ -4,16 +4,26 @@ import {
   CollectionStoreOptions,
   CollectionStoreState,
   createCollectionStore,
-} from "../collection/collection-store";
-import { applyState, defaultValue, isInteger, isObject } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
+} from "../collection/collection-store.js";
+import {
+  applyState,
+  defaultValue,
+  isInteger,
+  isObject,
+} from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
 import {
   AnyObject,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types";
-import { DeepMap, DeepPartial, Names, StringLike } from "./types";
+} from "../utils/types.js";
+import { DeepMap, DeepPartial, Names, StringLike } from "./types.js";
 
 type Values = AnyObject;
 type ErrorMessage = string | undefined | null;

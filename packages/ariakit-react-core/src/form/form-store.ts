@@ -8,9 +8,9 @@ import {
   CollectionStoreState,
   useCollectionStoreOptions,
   useCollectionStoreProps,
-} from "../collection/collection-store";
-import { useSafeLayoutEffect } from "../utils/hooks";
-import { Store, useStore, useStoreProps } from "../utils/store";
+} from "../collection/collection-store.js";
+import { useSafeLayoutEffect } from "../utils/hooks.js";
+import { Store, useStore, useStoreProps } from "../utils/store.jsx";
 
 type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;

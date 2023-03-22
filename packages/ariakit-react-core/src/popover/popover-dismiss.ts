@@ -1,10 +1,14 @@
 import {
   DialogDismissOptions,
   useDialogDismiss,
-} from "../dialog/dialog-dismiss";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { PopoverStore } from "./popover-store";
+} from "../dialog/dialog-dismiss.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { PopoverStore } from "./popover-store.js";
 
 /**
  * Returns props to create a `PopoverDismiss` component.

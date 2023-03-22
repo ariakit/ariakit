@@ -1,11 +1,11 @@
-import "./mock-get-client-rects";
+import "./mock-get-client-rects.js";
 
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
-import { DirtiableElement, TextField, queuedMicrotasks } from "./__utils";
-import { fireEvent } from "./fire-event";
-import { focus } from "./focus";
-import { sleep } from "./sleep";
+import { DirtiableElement, TextField, queuedMicrotasks } from "./__utils.js";
+import { fireEvent } from "./fire-event.js";
+import { focus } from "./focus.js";
+import { sleep } from "./sleep.js";
 
 function getKeyFromChar(key: string) {
   if (key === "\x7f") return "Delete";

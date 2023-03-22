@@ -1,10 +1,14 @@
 import {
   CompositeSeparatorOptions,
   useCompositeSeparator,
-} from "../composite/composite-separator";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { SelectStore } from "./select-store";
+} from "../composite/composite-separator.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { SelectStore } from "./select-store.js";
 
 /**
  * Returns props to create a `SelectSeparator` component.

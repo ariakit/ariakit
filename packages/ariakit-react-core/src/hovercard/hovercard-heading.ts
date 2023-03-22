@@ -1,10 +1,14 @@
 import {
   PopoverHeadingOptions,
   usePopoverHeading,
-} from "../popover/popover-heading";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { HovercardStore } from "./hovercard-store";
+} from "../popover/popover-heading.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardHeading` component. This hook must be

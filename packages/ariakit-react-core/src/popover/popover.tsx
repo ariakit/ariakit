@@ -1,14 +1,18 @@
 import { HTMLAttributes, useState } from "react";
-import { DialogOptions, useDialog } from "../dialog/dialog";
+import { DialogOptions, useDialog } from "../dialog/dialog.jsx";
 import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { PopoverContext } from "./popover-context";
-import { PopoverStore } from "./popover-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { PopoverContext } from "./popover-context.js";
+import { PopoverStore } from "./popover-store.js";
 
 /**
  * Returns props to create a `Popover` component.

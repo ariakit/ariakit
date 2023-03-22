@@ -5,8 +5,8 @@ import {
   PopoverStoreState,
   usePopoverStoreOptions,
   usePopoverStoreProps,
-} from "../popover/popover-store";
-import { Store, useStore } from "../utils/store";
+} from "../popover/popover-store.js";
+import { Store, useStore } from "../utils/store.jsx";
 
 export function useHovercardStoreOptions(props: HovercardStoreProps) {
   return usePopoverStoreOptions(props);

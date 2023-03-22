@@ -10,22 +10,26 @@ import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
 import {
   CompositeTypeaheadOptions,
   useCompositeTypeahead,
-} from "../composite/composite-typeahead";
+} from "../composite/composite-typeahead.js";
 import {
   HovercardAnchorOptions,
   useHovercardAnchor,
-} from "../hovercard/hovercard-anchor";
+} from "../hovercard/hovercard-anchor.js";
 import {
   PopoverDisclosureOptions,
   usePopoverDisclosure,
-} from "../popover/popover-disclosure";
-import { useEvent, useForkRef, useId } from "../utils/hooks";
-import { useStoreState } from "../utils/store";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { MenuBarContext, MenuContext } from "./menu-context";
-import { MenuStore } from "./menu-store";
-import { hasExpandedMenuButton } from "./utils";
+} from "../popover/popover-disclosure.jsx";
+import { useEvent, useForkRef, useId } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { MenuBarContext, MenuContext } from "./menu-context.js";
+import { MenuStore } from "./menu-store.js";
+import { hasExpandedMenuButton } from "./utils.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

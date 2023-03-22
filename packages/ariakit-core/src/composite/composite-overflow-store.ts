@@ -5,7 +5,7 @@ import {
   PopoverStoreProps,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
+} from "../popover/popover-store.js";
 
 /**
  * Creates a composite overflow store.

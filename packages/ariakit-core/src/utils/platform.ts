@@ -1,4 +1,4 @@
-import { canUseDOM } from "./dom";
+import { canUseDOM } from "./dom.js";
 
 /**
  * Detects if the device has touch capabilities.

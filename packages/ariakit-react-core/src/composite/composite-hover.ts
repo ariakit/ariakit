@@ -3,15 +3,15 @@ import { closest, contains } from "@ariakit/core/utils/dom";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useBooleanEvent, useEvent, useIsMouseMoving } from "../utils/hooks";
+import { useBooleanEvent, useEvent, useIsMouseMoving } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { CompositeContext } from "./composite-context";
-import { CompositeStore } from "./composite-store";
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { CompositeContext } from "./composite-context.js";
+import { CompositeStore } from "./composite-store.js";
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;

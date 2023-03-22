@@ -1,7 +1,12 @@
-import { getDocument } from "../utils/dom";
-import { chain, defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { BivariantCallback } from "../utils/types";
+import { getDocument } from "../utils/dom.js";
+import { chain, defaultValue } from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
+import { BivariantCallback } from "../utils/types.js";
 
 type Item = {
   id: string;

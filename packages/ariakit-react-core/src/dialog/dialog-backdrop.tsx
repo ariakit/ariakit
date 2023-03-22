@@ -7,15 +7,15 @@ import {
 import { useMemo } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { noop } from "@ariakit/core/utils/misc";
-import { useDisclosureContent } from "../disclosure/disclosure-content";
+import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
-} from "../utils/hooks";
-import { DialogProps } from "./dialog";
-import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref";
+} from "../utils/hooks.js";
+import { DialogProps } from "./dialog.jsx";
+import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref.js";
 
 type DialogBackdropProps = Pick<
   DialogProps,

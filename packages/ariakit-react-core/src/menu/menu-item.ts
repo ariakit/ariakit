@@ -6,23 +6,23 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
-} from "../composite/composite-hover";
+} from "../composite/composite-hover.js";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item";
-import { useBooleanEvent, useEvent } from "../utils/hooks";
-import { useStoreState } from "../utils/store";
+} from "../composite/composite-item.jsx";
+import { useBooleanEvent, useEvent } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.jsx";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { MenuBarStore } from "./menu-bar-store";
-import { MenuBarContext, MenuContext } from "./menu-context";
-import { MenuStore } from "./menu-store";
-import { hasExpandedMenuButton } from "./utils";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { MenuBarStore } from "./menu-bar-store.js";
+import { MenuBarContext, MenuContext } from "./menu-context.js";
+import { MenuStore } from "./menu-store.js";
+import { hasExpandedMenuButton } from "./utils.js";
 
 /**
  * Returns props to create a `MenuItem` component.

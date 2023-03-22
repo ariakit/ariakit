@@ -1,12 +1,16 @@
 import { useContext, useMemo, useState } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import { useForkRef, useSafeLayoutEffect } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { POPOVER_ARROW_PATH } from "./popover-arrow-path";
-import { PopoverContext } from "./popover-context";
-import { PopoverStore } from "./popover-store";
+import { useForkRef, useSafeLayoutEffect } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
+import { PopoverContext } from "./popover-context.js";
+import { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

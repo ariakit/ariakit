@@ -1,15 +1,19 @@
 import { MouseEvent, useRef, useState } from "react";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { ButtonOptions, useButton } from "../button/button";
+import { ButtonOptions, useButton } from "../button/button.js";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { DisclosureStore } from "./disclosure-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { DisclosureStore } from "./disclosure-store.js";
 
 /**
  * Returns props to create a `Disclosure` component.

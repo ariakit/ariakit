@@ -1,4 +1,4 @@
-import "./mock-get-client-rects";
+import "./mock-get-client-rects.js";
 
 import { isTextField } from "@ariakit/core/utils/dom";
 import {
@@ -6,12 +6,12 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { queuedMicrotasks } from "./__utils";
-import { blur } from "./blur";
-import { fireEvent } from "./fire-event";
-import { focus } from "./focus";
-import { sleep } from "./sleep";
-import { type } from "./type";
+import { queuedMicrotasks } from "./__utils.js";
+import { blur } from "./blur.js";
+import { fireEvent } from "./fire-event.js";
+import { focus } from "./focus.js";
+import { sleep } from "./sleep.js";
+import { type } from "./type.js";
 
 type KeyActionMap = Record<
   string,

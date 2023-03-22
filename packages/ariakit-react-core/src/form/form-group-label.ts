@@ -1,7 +1,11 @@
-import { GroupLabelOptions, useGroupLabel } from "../group/group-label";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormStore } from "./form-store";
+import { GroupLabelOptions, useGroupLabel } from "../group/group-label.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormStore } from "./form-store.js";
 
 /**
  * Returns props to create a `FormGroupLabel` component. This hook must be used

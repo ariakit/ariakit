@@ -1,10 +1,14 @@
 import {
   CompositeGroupOptions,
   useCompositeGroup,
-} from "../composite/composite-group";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxStore } from "./combobox-store";
+} from "../composite/composite-group.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props to create a `ComboboxGroup` component.

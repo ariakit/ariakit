@@ -1,5 +1,5 @@
-import { isBrowser, nextFrame } from "./__utils";
-import { act } from "./act";
+import { isBrowser, nextFrame } from "./__utils.js";
+import { act } from "./act.js";
 
 const defaultMs = isBrowser ? 150 : 16;
 

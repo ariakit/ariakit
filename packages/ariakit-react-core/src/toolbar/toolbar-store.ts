@@ -5,8 +5,8 @@ import {
   CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
-} from "../composite/composite-store";
-import { Store, useStore } from "../utils/store";
+} from "../composite/composite-store.js";
+import { Store, useStore } from "../utils/store.jsx";
 
 export function useToolbarStoreOptions(props: ToolbarStoreProps) {
   return useCompositeStoreOptions(props);

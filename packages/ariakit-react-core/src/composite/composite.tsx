@@ -18,29 +18,33 @@ import {
 } from "@ariakit/core/utils/events";
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { FocusableOptions, useFocusable } from "../focusable/focusable";
+import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
   useForkRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { CompositeContext } from "./composite-context";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { CompositeContext } from "./composite-context.js";
 import {
   CompositeStore,
   CompositeStoreItem,
   CompositeStoreState,
-} from "./composite-store";
+} from "./composite-store.js";
 import {
   findFirstEnabledItem,
   getEnabledItem,
   groupItemsByRows,
   isItem,
   silentlyFocused,
-} from "./utils";
+} from "./utils.js";
 
 function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);

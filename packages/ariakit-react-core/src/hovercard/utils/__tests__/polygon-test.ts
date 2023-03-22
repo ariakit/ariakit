@@ -1,4 +1,4 @@
-import { Polygon, isPointInPolygon } from "../polygon";
+import { Polygon, isPointInPolygon } from "../polygon.js";
 
 test("isPointInPolygon", () => {
   const polygon: Polygon = [

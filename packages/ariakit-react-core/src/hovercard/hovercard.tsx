@@ -12,7 +12,7 @@ import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { chain } from "@ariakit/core/utils/misc";
 import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { PopoverOptions, usePopover } from "../popover/popover";
+import { PopoverOptions, usePopover } from "../popover/popover.jsx";
 import {
   useBooleanEvent,
   useEvent,
@@ -21,16 +21,20 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { HovercardStore } from "./hovercard-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { HovercardStore } from "./hovercard-store.js";
 import {
   Point,
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,
-} from "./utils/polygon";
+} from "./utils/polygon.js";
 
 function isMovingOnHovercard(
   target: Node | null,

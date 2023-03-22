@@ -1,9 +1,13 @@
 import { MouseEvent } from "react";
-import { ButtonOptions, useButton } from "../button/button";
-import { useEvent } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxStore } from "./combobox-store";
+import { ButtonOptions, useButton } from "../button/button.js";
+import { useEvent } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ComboboxStore } from "./combobox-store.js";
 
 const children = (
   <svg

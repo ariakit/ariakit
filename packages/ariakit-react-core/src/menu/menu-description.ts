@@ -1,10 +1,14 @@
 import {
   HovercardDescriptionOptions,
   useHovercardDescription,
-} from "../hovercard/hovercard-description";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { MenuStore } from "./menu-store";
+} from "../hovercard/hovercard-description.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuDescription` component. This hook must be used

@@ -1,10 +1,14 @@
 import { useContext } from "react";
-import { HeadingOptions, useHeading } from "../heading/heading";
-import { useId, useSafeLayoutEffect } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { DialogHeadingContext } from "./dialog-context";
-import { DialogStore } from "./dialog-store";
+import { HeadingOptions, useHeading } from "../heading/heading.js";
+import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { DialogHeadingContext } from "./dialog-context.js";
+import { DialogStore } from "./dialog-store.js";
 
 /**
  * Returns props to create a `DialogHeading` component. This hook must be used

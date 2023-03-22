@@ -3,10 +3,15 @@ import {
   CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
-import { defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../composite/composite-store.js";
+import { defaultValue } from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
+import { SetState } from "../utils/types.js";
 
 /**
  * Creates a radio store.

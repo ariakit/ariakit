@@ -10,17 +10,17 @@ import { BivariantCallback } from "@ariakit/core/utils/types";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item";
-import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks";
-import { useStoreState } from "../utils/store";
+} from "../composite/composite-item.jsx";
+import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.jsx";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { RadioContext } from "./radio-context";
-import { RadioStore, RadioStoreState } from "./radio-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { RadioContext } from "./radio-context.js";
+import { RadioStore, RadioStoreState } from "./radio-store.js";
 
 function getIsChecked(
   value: RadioOptions["value"],

@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { useForkRef, useId, useSafeLayoutEffect } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { DisclosureStore } from "./disclosure-store";
+import { useForkRef, useId, useSafeLayoutEffect } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { DisclosureStore } from "./disclosure-store.js";
 
 type TransitionState = "enter" | "leave" | null;
 

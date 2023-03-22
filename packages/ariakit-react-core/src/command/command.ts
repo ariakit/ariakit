@@ -6,10 +6,10 @@ import {
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
 import { isFirefox } from "@ariakit/core/utils/platform";
-import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { useEvent, useForkRef, useTagName } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
+import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
+import { As, Props } from "../utils/types.js";
 
 function isNativeClick(event: KeyboardEvent) {
   if (!event.isTrusted) return false;

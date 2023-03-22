@@ -1,5 +1,5 @@
 import { getDocument, isTextField } from "@ariakit/core/utils/dom";
-import { CompositeStore, CompositeStoreItem } from "./composite-store";
+import { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 
 const NULL_ITEM = { id: null as unknown as string };
 

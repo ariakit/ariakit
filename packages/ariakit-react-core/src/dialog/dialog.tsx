@@ -31,11 +31,11 @@ import {
   DisclosureContentOptions,
   DisclosureContentProps,
   useDisclosureContent,
-} from "../disclosure/disclosure-content";
-import { useFocusTrapRegion } from "../focus-trap/focus-trap-region";
-import { FocusableOptions, useFocusable } from "../focusable/focusable";
-import { HeadingLevel } from "../heading/heading-level";
-import { PortalOptions, usePortal } from "../portal/portal";
+} from "../disclosure/disclosure-content.js";
+import { useFocusTrapRegion } from "../focus-trap/focus-trap-region.jsx";
+import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import { HeadingLevel } from "../heading/heading-level.jsx";
+import { PortalOptions, usePortal } from "../portal/portal.jsx";
 import {
   useBooleanEvent,
   useForkRef,
@@ -44,24 +44,28 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { DialogBackdrop } from "./dialog-backdrop";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { DialogBackdrop } from "./dialog-backdrop.jsx";
 import {
   DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
-} from "./dialog-context";
-import { DialogStore } from "./dialog-store";
-import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside";
-import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside";
-import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss";
-import { useChampionDialog } from "./utils/use-champion-dialog";
-import { useFocusOnChildUnmount } from "./utils/use-focus-on-child-unmount";
-import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside";
-import { useNestedDialogs } from "./utils/use-nested-dialogs";
-import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll";
+} from "./dialog-context.js";
+import { DialogStore } from "./dialog-store.js";
+import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
+import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside.js";
+import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
+import { useChampionDialog } from "./utils/use-champion-dialog.js";
+import { useFocusOnChildUnmount } from "./utils/use-focus-on-child-unmount.js";
+import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
+import { useNestedDialogs } from "./utils/use-nested-dialogs.jsx";
+import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 
 const isSafariBrowser = isSafari();
 

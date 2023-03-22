@@ -4,11 +4,15 @@ import {
   getTextboxSelection,
   isTextField,
 } from "@ariakit/core/utils/dom";
-import { useEvent } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { CompositeStore } from "./composite-store";
-import { selectTextField } from "./utils";
+import { useEvent } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { CompositeStore } from "./composite-store.js";
+import { selectTextField } from "./utils.js";
 
 function getValueLength(element: HTMLElement) {
   if (isTextField(element)) {

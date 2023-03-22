@@ -1,10 +1,14 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { ButtonOptions, useButton } from "../button/button";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormContext } from "./form-context";
-import { FormStore } from "./form-store";
+import { ButtonOptions, useButton } from "../button/button.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormContext } from "./form-context.js";
+import { FormStore } from "./form-store.js";
 
 /**
  * Returns props to create a `FormReset` component.

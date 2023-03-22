@@ -1,9 +1,13 @@
-import { CompositeOptions, useComposite } from "../composite/composite";
-import { useWrapElement } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { MenuBarStore } from "./menu-bar-store";
-import { MenuBarContext } from "./menu-context";
+import { CompositeOptions, useComposite } from "../composite/composite.jsx";
+import { useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { MenuBarStore } from "./menu-bar-store.js";
+import { MenuBarContext } from "./menu-context.js";
 
 /**
  * Returns props to create a `MenuBar` component.

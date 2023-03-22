@@ -7,7 +7,7 @@ import {
   Options,
   Props,
   RenderProp,
-} from "./types";
+} from "./types.js";
 
 function isRenderProp(children: any): children is RenderProp {
   return typeof children === "function";

@@ -9,12 +9,16 @@ import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import {
   DialogDisclosureOptions,
   useDialogDisclosure,
-} from "../dialog/dialog-disclosure";
-import { useEvent, useForkRef } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { useVisuallyHidden } from "../visually-hidden/visually-hidden";
-import { HovercardStore } from "./hovercard-store";
+} from "../dialog/dialog-disclosure.js";
+import { useEvent, useForkRef } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
+import { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardDisclosure` component.

@@ -2,9 +2,9 @@
 import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
-import { useSafeLayoutEffect } from "../../utils/hooks";
-import { DialogStore } from "../dialog-store";
-import { useChampionDialog } from "./use-champion-dialog";
+import { useSafeLayoutEffect } from "../../utils/hooks.js";
+import { DialogStore } from "../dialog-store.js";
+import { useChampionDialog } from "./use-champion-dialog.js";
 
 function assignStyle(
   element: HTMLElement | null | undefined,

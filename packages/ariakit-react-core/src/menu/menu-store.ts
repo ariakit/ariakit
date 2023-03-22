@@ -7,16 +7,21 @@ import {
   CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
-} from "../composite/composite-store";
+} from "../composite/composite-store.js";
 import {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
   useHovercardStoreOptions,
   useHovercardStoreProps,
-} from "../hovercard/hovercard-store";
-import { Store, useStore, useStoreProps, useStoreState } from "../utils/store";
-import { MenuBarContext, MenuContext } from "./menu-context";
+} from "../hovercard/hovercard-store.js";
+import {
+  Store,
+  useStore,
+  useStoreProps,
+  useStoreState,
+} from "../utils/store.jsx";
+import { MenuBarContext, MenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;
 

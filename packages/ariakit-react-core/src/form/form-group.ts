@@ -1,7 +1,11 @@
-import { GroupOptions, useGroup } from "../group/group";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { FormStore } from "./form-store";
+import { GroupOptions, useGroup } from "../group/group.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { FormStore } from "./form-store.js";
 
 /**
  * Returns props to create a `FormGroup` component.

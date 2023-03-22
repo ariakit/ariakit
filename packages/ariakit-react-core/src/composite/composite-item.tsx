@@ -20,8 +20,8 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CollectionItemOptions,
   useCollectionItem,
-} from "../collection/collection-item";
-import { CommandOptions, useCommand } from "../command/command";
+} from "../collection/collection-item.js";
+import { CommandOptions, useCommand } from "../command/command.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -29,20 +29,20 @@ import {
   useId,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
+} from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
 import {
   CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
-} from "./composite-context";
-import { CompositeStore } from "./composite-store";
-import { focusSilently, getEnabledItem, isItem } from "./utils";
+} from "./composite-context.js";
+import { CompositeStore } from "./composite-store.js";
+import { focusSilently, getEnabledItem, isItem } from "./utils.js";
 
 function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;

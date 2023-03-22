@@ -1,7 +1,11 @@
-import { GroupLabelOptions, useGroupLabel } from "../group/group-label";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { CompositeStore } from "./composite-store";
+import { GroupLabelOptions, useGroupLabel } from "../group/group-label.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { CompositeStore } from "./composite-store.js";
 
 /**
  * Returns props to create a `CompositeGroupLabel` component. This hook must be

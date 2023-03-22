@@ -5,9 +5,9 @@ import {
   CompositeStoreProps,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
-import { defaultValue } from "../utils/misc";
-import { StoreOptions } from "../utils/store";
+} from "../composite/composite-store.js";
+import { defaultValue } from "../utils/misc.js";
+import { StoreOptions } from "../utils/store.js";
 
 /**
  * Creates a toolbar store.

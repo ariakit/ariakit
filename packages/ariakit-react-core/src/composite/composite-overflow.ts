@@ -1,9 +1,13 @@
 import { CSSProperties, FocusEvent } from "react";
-import { PopoverOptions, usePopover } from "../popover/popover";
-import { useEvent } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { CompositeOverflowStore } from "./composite-overflow-store";
+import { PopoverOptions, usePopover } from "../popover/popover.jsx";
+import { useEvent } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { CompositeOverflowStore } from "./composite-overflow-store.js";
 
 // Hiding the popover with `display: none` would prevent the hidden items to be
 // focused, so we just make it transparent and disable pointer events.

@@ -2,12 +2,16 @@ import { MouseEvent } from "react";
 import {
   DialogDisclosureOptions,
   useDialogDisclosure,
-} from "../dialog/dialog-disclosure";
-import { useEvent, useWrapElement } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { PopoverAnchorOptions, usePopoverAnchor } from "./popover-anchor";
-import { PopoverContext } from "./popover-context";
+} from "../dialog/dialog-disclosure.js";
+import { useEvent, useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { PopoverAnchorOptions, usePopoverAnchor } from "./popover-anchor.js";
+import { PopoverContext } from "./popover-context.js";
 
 /**
  * Returns props to create a `PopoverDisclosure` component.

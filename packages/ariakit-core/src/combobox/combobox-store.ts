@@ -4,25 +4,25 @@ import {
   CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
-import { MenuStore } from "../menu/menu-store";
+} from "../composite/composite-store.js";
+import { MenuStore } from "../menu/menu-store.js";
 import {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
-import { SelectStore } from "../select/select-store";
-import { defaultValue } from "../utils/misc";
-import { isSafari, isTouchDevice } from "../utils/platform";
+} from "../popover/popover-store.js";
+import { SelectStore } from "../select/select-store.js";
+import { defaultValue } from "../utils/misc.js";
+import { isSafari, isTouchDevice } from "../utils/platform.js";
 import {
   Store,
   StoreOptions,
   StoreProps,
   createStore,
   mergeStore,
-} from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../utils/store.js";
+import { SetState } from "../utils/types.js";
 
 type Item = CompositeStoreItem & {
   value?: string;

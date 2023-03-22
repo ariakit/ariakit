@@ -3,16 +3,16 @@ import { invariant } from "@ariakit/core/utils/misc";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item";
-import { useEvent, useId } from "../utils/hooks";
+} from "../composite/composite-item.jsx";
+import { useEvent, useId } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TabContext } from "./tab-context";
-import { TabStore } from "./tab-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TabContext } from "./tab-context.js";
+import { TabStore } from "./tab-store.js";
 
 /**
  * Returns props to create a `Tab` component.

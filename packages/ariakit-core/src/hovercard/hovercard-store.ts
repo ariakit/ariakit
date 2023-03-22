@@ -3,10 +3,15 @@ import {
   PopoverStoreOptions,
   PopoverStoreState,
   createPopoverStore,
-} from "../popover/popover-store";
-import { defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../popover/popover-store.js";
+import { defaultValue } from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
+import { SetState } from "../utils/types.js";
 
 /**
  * Creates a hovercard store.

@@ -5,15 +5,15 @@ import {
   CompositeStoreState,
   useCompositeStoreOptions,
   useCompositeStoreProps,
-} from "../composite/composite-store";
+} from "../composite/composite-store.js";
 import {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
   usePopoverStoreOptions,
   usePopoverStoreProps,
-} from "../popover/popover-store";
-import { Store, useStore, useStoreProps } from "../utils/store";
+} from "../popover/popover-store.js";
+import { Store, useStore, useStoreProps } from "../utils/store.jsx";
 
 export function useComboboxStoreOptions(props: ComboboxStoreProps) {
   return {

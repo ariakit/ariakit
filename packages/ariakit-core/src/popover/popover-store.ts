@@ -13,16 +13,16 @@ import {
   DialogStoreOptions,
   DialogStoreState,
   createDialogStore,
-} from "../dialog/dialog-store";
-import { defaultValue } from "../utils/misc";
+} from "../dialog/dialog-store.js";
+import { defaultValue } from "../utils/misc.js";
 import {
   Store,
   StoreOptions,
   StoreProps,
   createStore,
   mergeStore,
-} from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../utils/store.js";
+import { SetState } from "../utils/types.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

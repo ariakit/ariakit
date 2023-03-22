@@ -7,11 +7,15 @@ import {
   useTagName,
   useUpdateEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { FormContext } from "./form-context";
-import { FormStore, FormStoreState } from "./form-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { FormContext } from "./form-context.js";
+import { FormStore, FormStoreState } from "./form-store.js";
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(

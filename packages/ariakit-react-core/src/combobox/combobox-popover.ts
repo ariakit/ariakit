@@ -1,9 +1,13 @@
 import { matches } from "@ariakit/core/utils/dom";
-import { PopoverOptions, usePopover } from "../popover/popover";
-import { useLiveRef } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { ComboboxListOptions, useComboboxList } from "./combobox-list";
+import { PopoverOptions, usePopover } from "../popover/popover.jsx";
+import { useLiveRef } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { ComboboxListOptions, useComboboxList } from "./combobox-list.jsx";
 
 function isController(
   target: EventTarget | Element | null,

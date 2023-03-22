@@ -6,20 +6,20 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   CompositeHoverOptions,
   useCompositeHover,
-} from "../composite/composite-hover";
+} from "../composite/composite-hover.js";
 import {
   CompositeItemOptions,
   useCompositeItem,
-} from "../composite/composite-item";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks";
+} from "../composite/composite-item.jsx";
+import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { SelectContext, SelectItemCheckedContext } from "./select-context";
-import { SelectStore } from "./select-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { SelectContext, SelectItemCheckedContext } from "./select-context.js";
+import { SelectStore } from "./select-store.js";
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
   if (storeValue == null) return false;

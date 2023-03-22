@@ -1,10 +1,17 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { PopoverArrowOptions, usePopoverArrow } from "../popover/popover-arrow";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TooltipContext } from "./tooltip-context";
-import { TooltipStore } from "./tooltip-store";
+import {
+  PopoverArrowOptions,
+  usePopoverArrow,
+} from "../popover/popover-arrow.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TooltipContext } from "./tooltip-context.js";
+import { TooltipStore } from "./tooltip-store.js";
 
 /**
  * Returns props to create a `TooltipArrow` component.

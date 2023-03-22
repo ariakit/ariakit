@@ -1,11 +1,15 @@
 import { RefCallback, useCallback, useContext, useRef } from "react";
 import { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity, invariant } from "@ariakit/core/utils/misc";
-import { useForkRef, useId } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { CollectionContext } from "./collection-context";
-import { CollectionStore } from "./collection-store";
+import { useForkRef, useId } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { CollectionContext } from "./collection-context.js";
+import { CollectionStore } from "./collection-store.js";
 
 /**
  * Returns props to create a `CollectionItem` component. This hook will register

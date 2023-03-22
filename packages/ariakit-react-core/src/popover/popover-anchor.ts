@@ -1,7 +1,11 @@
-import { useForkRef } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { PopoverStore } from "./popover-store";
+import { useForkRef } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { PopoverStore } from "./popover-store.js";
 
 /**
  * Returns props to create a `PopoverAnchor` component.

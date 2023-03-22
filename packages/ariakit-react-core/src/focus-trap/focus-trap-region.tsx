@@ -1,9 +1,13 @@
 import { useRef } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { useForkRef, useWrapElement } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { FocusTrap } from "./focus-trap";
+import { useForkRef, useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { FocusTrap } from "./focus-trap.js";
 
 /**
  * Returns props to create a `FocusTrapRegion` component.

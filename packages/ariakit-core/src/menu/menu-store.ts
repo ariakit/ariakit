@@ -1,30 +1,30 @@
-import { ComboboxStore } from "../combobox/combobox-store";
+import { ComboboxStore } from "../combobox/combobox-store.js";
 import {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
+} from "../composite/composite-store.js";
 import {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
   createHovercardStore,
-} from "../hovercard/hovercard-store";
-import { applyState, defaultValue } from "../utils/misc";
+} from "../hovercard/hovercard-store.js";
+import { applyState, defaultValue } from "../utils/misc.js";
 import {
   Store,
   StoreOptions,
   StoreProps,
   createStore,
   mergeStore,
-} from "../utils/store";
+} from "../utils/store.js";
 import {
   BivariantCallback,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types";
+} from "../utils/types.js";
 
 type Values = Record<
   string,

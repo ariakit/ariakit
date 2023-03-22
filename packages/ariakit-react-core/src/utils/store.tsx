@@ -12,7 +12,7 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
   useUpdateLayoutEffect,
-} from "./hooks";
+} from "./hooks.js";
 
 type UseState<S> = {
   /**

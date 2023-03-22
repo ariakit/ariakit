@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
-import { CommandOptions, useCommand } from "../command/command";
-import { useForkRef, useTagName } from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
+import { CommandOptions, useCommand } from "../command/command.js";
+import { useForkRef, useTagName } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
 
 /**
  * Returns props to create a `Button` component. If the element is not a native

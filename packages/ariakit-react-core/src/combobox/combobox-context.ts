@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { ComboboxStore } from "./combobox-store";
+import { ComboboxStore } from "./combobox-store.js";
 
 export const ComboboxContext = createContext<ComboboxStore | undefined>(
   undefined

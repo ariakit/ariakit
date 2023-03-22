@@ -1,10 +1,10 @@
-import "./mock-get-client-rects";
+import "./mock-get-client-rects.js";
 
 import { getDocument } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
-import { blur } from "./blur";
-import { fireEvent } from "./fire-event";
-import { focus } from "./focus";
+import { blur } from "./blur.js";
+import { fireEvent } from "./fire-event.js";
+import { focus } from "./focus.js";
 
 export function mouseDown(element: Element, options?: MouseEventInit) {
   const { disabled } = element as HTMLButtonElement;

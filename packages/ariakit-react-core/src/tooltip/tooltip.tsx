@@ -4,17 +4,21 @@ import { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   DisclosureContentOptions,
   useDisclosureContent,
-} from "../disclosure/disclosure-content";
-import { PortalOptions, usePortal } from "../portal/portal";
+} from "../disclosure/disclosure-content.js";
+import { PortalOptions, usePortal } from "../portal/portal.jsx";
 import {
   useBooleanEvent,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { TooltipContext } from "./tooltip-context";
-import { TooltipStore } from "./tooltip-store";
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { TooltipContext } from "./tooltip-context.js";
+import { TooltipStore } from "./tooltip-store.js";
 
 /**
  * Returns props to create a `Tooltip` component.

@@ -14,17 +14,17 @@ import {
   getFirstTabbableIn,
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
-import { useEvent, useForkRef } from "../utils/hooks";
-import { useStoreState } from "../utils/store";
+import { useEvent, useForkRef } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.jsx";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Options, Props } from "../utils/types";
-import { CompositeContext } from "./composite-context";
-import { CompositeStore } from "./composite-store";
-import { selectTextField } from "./utils";
+} from "../utils/system.jsx";
+import { As, Options, Props } from "../utils/types.js";
+import { CompositeContext } from "./composite-context.js";
+import { CompositeStore } from "./composite-store.js";
+import { selectTextField } from "./utils.js";
 
 function getFirstTabbable(container: HTMLElement) {
   restoreFocusIn(container);

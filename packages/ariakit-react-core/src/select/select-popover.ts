@@ -6,10 +6,14 @@ import {
   useState,
 } from "react";
 import { toArray } from "@ariakit/core/utils/array";
-import { PopoverOptions, usePopover } from "../popover/popover";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Props } from "../utils/types";
-import { SelectListOptions, useSelectList } from "./select-list";
+import { PopoverOptions, usePopover } from "../popover/popover.jsx";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { SelectListOptions, useSelectList } from "./select-list.jsx";
 
 /**
  * Returns props to create a `SelectPopover` component.

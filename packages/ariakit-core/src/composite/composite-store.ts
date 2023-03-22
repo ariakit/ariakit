@@ -4,11 +4,16 @@ import {
   CollectionStoreOptions,
   CollectionStoreState,
   createCollectionStore,
-} from "../collection/collection-store";
-import { flatten2DArray, reverseArray } from "../utils/array";
-import { defaultValue } from "../utils/misc";
-import { Store, StoreOptions, StoreProps, createStore } from "../utils/store";
-import { SetState } from "../utils/types";
+} from "../collection/collection-store.js";
+import { flatten2DArray, reverseArray } from "../utils/array.js";
+import { defaultValue } from "../utils/misc.js";
+import {
+  Store,
+  StoreOptions,
+  StoreProps,
+  createStore,
+} from "../utils/store.js";
+import { SetState } from "../utils/types.js";
 
 type Orientation = "horizontal" | "vertical" | "both";
 

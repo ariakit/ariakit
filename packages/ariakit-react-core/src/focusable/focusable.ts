@@ -28,9 +28,9 @@ import {
   useForkRef,
   useSafeLayoutEffect,
   useTagName,
-} from "../utils/hooks";
-import { createComponent, createElement, createHook } from "../utils/system";
-import { As, Options, Props } from "../utils/types";
+} from "../utils/hooks.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
+import { As, Options, Props } from "../utils/types.js";
 
 const isSafariBrowser = isSafari();
 

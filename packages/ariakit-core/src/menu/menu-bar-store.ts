@@ -5,8 +5,8 @@ import {
   CompositeStoreProps,
   CompositeStoreState,
   createCompositeStore,
-} from "../composite/composite-store";
-import { defaultValue } from "../utils/misc";
+} from "../composite/composite-store.js";
+import { defaultValue } from "../utils/misc.js";
 
 /**
  * Creates a menu bar store.

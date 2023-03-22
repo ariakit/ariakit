@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import { blur } from "../blur";
-import { render } from "../render";
-import { useAllEvents } from "./use-all-events";
+import { blur } from "../blur.js";
+import { render } from "../render.js";
+import { useAllEvents } from "./use-all-events.js";
 
 test("blur", async () => {
   const stack = [] as any[];

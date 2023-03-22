@@ -5,8 +5,8 @@ import {
   DisclosureStoreState,
   useDisclosureStoreOptions,
   useDisclosureStoreProps,
-} from "../disclosure/disclosure-store";
-import { Store, useStore } from "../utils/store";
+} from "../disclosure/disclosure-store.js";
+import { Store, useStore } from "../utils/store.jsx";
 
 export function useDialogStoreOptions(props: DialogStoreProps) {
   return useDisclosureStoreOptions(props);

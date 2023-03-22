@@ -1,16 +1,16 @@
 import { ChangeEvent, useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { RadioOptions, useRadio } from "../radio/radio";
-import { useWrapElement } from "../utils/hooks";
+import { RadioOptions, useRadio } from "../radio/radio.js";
+import { useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
-} from "../utils/system";
-import { As, Props } from "../utils/types";
-import { MenuContext, MenuItemCheckedContext } from "./menu-context";
-import { MenuItemOptions, useMenuItem } from "./menu-item";
-import { MenuStore } from "./menu-store";
+} from "../utils/system.jsx";
+import { As, Props } from "../utils/types.js";
+import { MenuContext, MenuItemCheckedContext } from "./menu-context.js";
+import { MenuItemOptions, useMenuItem } from "./menu-item.js";
+import { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuItemRadio` component.
