@@ -6,6 +6,8 @@ import { getPageEntryFiles } from "./get-page-entry-files.mjs";
 import { getPageExternalDeps } from "./get-page-external-deps.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
 
+// TODO: Pass these files to website and move website to the root.
+
 /** @param {string} [buildDir] */
 function getBuildDir(buildDir) {
   return buildDir || join(process.cwd(), ".pages");

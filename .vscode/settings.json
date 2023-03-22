@@ -25,11 +25,5 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
-  "search.exclude": {
-    "/packages/website/pages/blog": true,
-    "/packages/website/pages/components": true,
-    "/packages/website/pages/examples": true,
-    "/packages/website/pages/guide": true
   }
 }

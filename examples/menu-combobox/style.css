@@ -2,7 +2,7 @@
 
 .menu {
   @apply
-    p-2
+    p-0
     overflow-visible
     max-h-[min(var(--popover-available-height,300px),300px)]
   ;

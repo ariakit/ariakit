@@ -251,7 +251,7 @@ jobs:
       - name: Cache Next.js
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
           restore-keys: nextjs-
 
@@ -300,7 +300,7 @@ jobs:
       - name: Restore website
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
 
       - name: CPU cores
@@ -364,7 +364,7 @@ jobs:
       - name: Restore website
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
 
       - name: CPU cores

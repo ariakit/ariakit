@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "node16",
+    "strictNullChecks": true,
+    "allowJs": true
+  },
+  "include": ["**/*.tsx", "**/*.ts", "build-pages", ".next/types/**/*.ts"]
+}
