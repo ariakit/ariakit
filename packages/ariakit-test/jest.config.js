@@ -1,6 +1,6 @@
 // @ts-check
-const { join } = require("path");
 const React = require("react");
+const { join } = require("path");
 const config = require("../../jest.config");
 const pkg = require("./package.json");
 

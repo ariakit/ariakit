@@ -7,7 +7,7 @@ const contentsWithoutInstallation = contents.filter(
 );
 
 const searcherOptions = {
-  keySelector: (obj: typeof contents[number]) => [
+  keySelector: (obj: (typeof contents)[number]) => [
     obj.title || "",
     obj.parentSection || "",
     obj.section || "",
@@ -46,7 +46,7 @@ function removeConnectors(string: string) {
   return string.replace(/\b(a|an|and|the|on|in|at|to|or|for)\b/gi, "");
 }
 
-function getKeyFromOriginal(item: typeof contents[number], original: string) {
+function getKeyFromOriginal(item: (typeof contents)[number], original: string) {
   const { title, section, content, category, slug } = item;
   if (original === title) return "title";
   if (original === section) return "section";

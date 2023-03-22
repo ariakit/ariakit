@@ -2,7 +2,6 @@
 
 import { ElementType, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { createComponent } from "@ariakit/react-core/utils/system";
 import { Button } from "@ariakit/react/button";
 import {
   Tooltip,
@@ -11,6 +10,7 @@ import {
   TooltipProps,
   useTooltipStore,
 } from "@ariakit/react/tooltip";
+import { createComponent } from "@ariakit/react-core/utils/system";
 
 export interface TooltipButtonOptions<T extends ElementType = "button">
   extends Omit<TooltipAnchorOptions<T>, "store"> {

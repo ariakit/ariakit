@@ -17,11 +17,6 @@ import {
 } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import {
-  useEvent,
-  useId,
-  useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
-import {
   Combobox,
   ComboboxCancel,
   ComboboxItem,
@@ -50,6 +45,11 @@ import {
   useSelectStore,
 } from "@ariakit/react/select";
 import { VisuallyHidden } from "@ariakit/react/visually-hidden";
+import {
+  useEvent,
+  useId,
+  useSafeLayoutEffect,
+} from "@ariakit/react-core/utils/hooks";
 import ChevronRight from "website/icons/chevron-right.jsx";
 import NewWindow from "website/icons/new-window.jsx";
 import Search from "website/icons/search.jsx";
