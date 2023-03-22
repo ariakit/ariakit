@@ -9,8 +9,5 @@
       "./*.ts",
       "./*.tsx"
     ]
-  },
-  "dependencies": {
-    "@ariakit/react": "0.0.1"
   }
 }

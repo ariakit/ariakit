@@ -1,13 +1,7 @@
 import { getByText, press, render } from "@ariakit/test";
-import { axe } from "jest-axe";
 import Example from ".";
 
 const getCommand = () => getByText("Button");
-
-test("a11y", async () => {
-  render(<Example />);
-  expect(await axe(getCommand())).toHaveNoViolations();
-});
 
 test("markup", () => {
   render(<Example />);

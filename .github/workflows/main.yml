@@ -100,7 +100,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Type check
-        run: npm run type-check
+        run: npm run tsc
 
   build:
     name: Build packages
@@ -311,12 +311,6 @@ jobs:
         id: test
         run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
 
-      - name: Upload test results to Argos
-        if: failure() && steps.test.outcome == 'failure'
-        run: npx argos upload test-results
-        env:
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
-
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v3
@@ -378,12 +372,6 @@ jobs:
           --project firefox
           --project safari
           --workers ${{ steps.cpu-cores.outputs.count }}
-
-      - name: Upload test results to Argos
-        if: failure() && steps.test.outcome == 'failure'
-        run: npx argos upload test-results
-        env:
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

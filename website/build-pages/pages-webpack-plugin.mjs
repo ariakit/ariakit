@@ -20,7 +20,7 @@ function pathToImport(path) {
 
 /**
  * @param {string} buildDir
- * @param {import("./types").Page[]} pages
+ * @param {import("./types.js").Page[]} pages
  */
 function writeFiles(buildDir, pages) {
   const entryFiles = pages.flatMap((page) =>
@@ -58,7 +58,7 @@ class PagesWebpackPlugin {
    * @param {object} options
    * @param {string} options.buildDir The directory where the build files should
    * be placed.
-   * @param {import("./types").Page[]} options.pages
+   * @param {import("./types.js").Page[]} options.pages
    */
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
