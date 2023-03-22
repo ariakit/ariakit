@@ -38,7 +38,6 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "test": "jest",
     "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build/build.mjs",
     "clean": "node ../../scripts/build/clean.mjs"

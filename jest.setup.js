@@ -1,5 +1,4 @@
 const jestDOMMatchers = require("@testing-library/jest-dom/matchers");
-const { toHaveNoViolations: axeMatchers } = require("jest-axe");
 const failOnConsole = require("jest-fail-on-console");
 const {
   matcherHint,
@@ -38,4 +37,4 @@ function toHaveFocus(element) {
 }
 
 const { __esModule, ...matchers } = jestDOMMatchers;
-expect.extend({ ...matchers, ...axeMatchers, toHaveFocus });
+expect.extend({ ...matchers, toHaveFocus });

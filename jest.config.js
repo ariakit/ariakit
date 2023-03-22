@@ -5,14 +5,18 @@ module.exports = {
   testTimeout: process.env.CI ? 10000 : 5000,
   testEnvironment: "jsdom",
   reporters: ["default", "github-actions"],
+  // transform: {
+  //   "\\.[jt]sx?$": ["es-jest", { jsx: "automatic" }],
+  // },
+  // extensionsToTreatAsEsm: [".ts", ".tsx", ".jsx"],
   snapshotFormat: {
     printBasicPrototype: false,
   },
   projects: [
-    "<rootDir>/blog/jest.config.js",
-    "<rootDir>/examples/jest.config.js",
-    "<rootDir>/guide/jest.config.js",
-    "<rootDir>/packages/*/jest.config.js",
+    // "<rootDir>/blog/jest.config.js",
+    "<rootDir>/examples/jest.config.cjs",
+    // "<rootDir>/guide/jest.config.js",
+    "<rootDir>/packages/*/jest.config.cjs",
   ],
   collectCoverageFrom: [
     "packages/@ariakit/core/src/**/*.{js,ts,tsx}",
@@ -23,5 +27,5 @@ module.exports = {
   moduleNameMapper: {
     "\\.css$": "<rootDir>/jest.mock.js",
   },
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  // setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 };

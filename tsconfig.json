@@ -25,6 +25,6 @@
     "stripInternal": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "vitest.config.ts"],
   "exclude": ["node_modules"]
 }
