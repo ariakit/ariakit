@@ -24,6 +24,7 @@
         "import": "./esm/*.js",
         "require": "./cjs/*.js"
       },
+      "./__chunks/*": null,
       "./package.json": "./package.json"
     }
   },

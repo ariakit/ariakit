@@ -1,9 +1,8 @@
-// import { fileURLToPath } from "url";
 import spawn from "cross-spawn";
 import { build } from "esbuild";
 import {
+  getMainDir,
   getModuleDir,
-  getPackage,
   getPublicFiles,
   getSourcePath,
   makeGitignore,
@@ -19,25 +18,30 @@ if (process.argv.includes("--no-umd")) {
 }
 
 const cwd = process.cwd();
-const pkg = getPackage(cwd);
 const sourcePath = getSourcePath(cwd);
 const entryPoints = getPublicFiles(sourcePath);
 
 makeGitignore(cwd);
 makeProxies(cwd);
 
-// spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", getModuleDir(cwd)], {
-//   stdio: "inherit",
-// });
+const builds = [
+  { outdir: getMainDir(cwd), format: "cjs" },
+  { outdir: getModuleDir(cwd), format: "esm" },
+];
 
-await build({
-  entryPoints,
-  sourceRoot: sourcePath,
-  outdir: getModuleDir(cwd),
-  platform: "node",
-  format: "esm",
-});
-
-// const configPath = fileURLToPath(new URL("rollup.config.mjs", import.meta.url));
-
-// spawn.sync("rollup", ["-c", configPath], { stdio: "inherit" });
+for (const { outdir, format } of builds) {
+  spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", outdir], {
+    stdio: "inherit",
+  });
+  await build({
+    entryPoints,
+    outdir,
+    format,
+    platform: "node",
+    target: ["es2015"],
+    bundle: true,
+    splitting: true,
+    packages: "external",
+    chunkNames: "__chunks/[hash]",
+  });
+}

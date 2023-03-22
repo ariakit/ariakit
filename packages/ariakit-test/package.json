@@ -2,7 +2,6 @@
   "name": "@ariakit/test",
   "version": "0.0.1",
   "description": "Ariakit test utils",
-  "sideEffects": false,
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
@@ -24,6 +23,7 @@
         "import": "./esm/*.js",
         "require": "./cjs/*.js"
       },
+      "./__chunks/*": null,
       "./package.json": "./package.json"
     }
   },
