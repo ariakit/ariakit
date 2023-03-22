@@ -8,7 +8,7 @@ import {
 } from "fs";
 import { dirname, join } from "path";
 import chalk from "chalk";
-import fsExtra from "fs-extra";
+import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
 
 /**
@@ -275,7 +275,7 @@ export function makeProxies(rootPath) {
   const pkg = getPackage(rootPath);
   const created = [];
   getProxyFolders(rootPath).forEach((name) => {
-    fsExtra.ensureDirSync(name);
+    fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name)
