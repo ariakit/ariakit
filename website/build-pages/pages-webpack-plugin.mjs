@@ -6,8 +6,6 @@ import { getPageEntryFiles } from "./get-page-entry-files.mjs";
 import { getPageExternalDeps } from "./get-page-external-deps.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
 
-// TODO: Pass these files to website and move website to the root.
-
 /** @param {string} [buildDir] */
 function getBuildDir(buildDir) {
   return buildDir || join(process.cwd(), ".pages");
@@ -63,6 +61,8 @@ class PagesWebpackPlugin {
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
     this.pages = options.pages;
+
+    writeFiles(this.buildDir, this.pages);
   }
 
   /**
@@ -70,8 +70,6 @@ class PagesWebpackPlugin {
    */
   apply(compiler) {
     const pages = this.pages;
-
-    writeFiles(this.buildDir, pages);
 
     // Find the CSS rule and exclude the pages from it so we can handle the CSS
     // ourselves.
