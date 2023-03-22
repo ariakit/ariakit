@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
-import groupBy from "lodash/groupBy";
+import groupBy from "lodash/groupBy.js";
 import { matchSorter } from "match-sorter";
 import food from "./food";
 import "./style.css";

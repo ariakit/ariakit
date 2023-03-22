@@ -1,9 +1,12 @@
 // @ts-check
 import { writeFileSync } from "fs";
 import { dirname, join } from "path";
+import chalk from "chalk";
 import { getPageEntryFiles } from "./get-page-entry-files.mjs";
 import { getPageExternalDeps } from "./get-page-external-deps.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
+
+// TODO: Pass these files to website and move website to the root.
 
 /** @param {string} [buildDir] */
 function getBuildDir(buildDir) {
@@ -12,7 +15,7 @@ function getBuildDir(buildDir) {
 
 /** @param {string} path */
 function pathToImport(path) {
-  return path.replace(/\.[tj]sx?$/, "");
+  return path.replace(/\.[tj](sx?)$/, ".j$1");
 }
 
 /**
@@ -41,7 +44,7 @@ function writeFiles(buildDir, pages) {
   writeFileSync(depsFile, depsContents);
 
   const examples = [...new Set(entryFiles.flatMap(getPageSourceFiles))];
-  const examplesFile = join(buildDir, "examples.ts");
+  const examplesFile = join(buildDir, "examples.js");
 
   const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
     .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
@@ -113,8 +116,17 @@ class PagesWebpackPlugin {
       if (!modifiedFiles) return;
       if (!removedFiles) return;
 
+      /** @param {string} file */
+      const log = (file, removed = false) => {
+        console.log(
+          `${
+            removed ? chalk.red("Removed page") : chalk.yellow("Updated page")
+          }: ${file}`
+        );
+      };
+
       for (const file of removedFiles) {
-        // removed page: getPageName(file)
+        log(file, true);
         return writeFiles(this.buildDir, pages);
       }
 
@@ -123,7 +135,7 @@ class PagesWebpackPlugin {
           modifiedFiles.has(page.sourceContext)
         );
         if (page) {
-          // modified page: page.sourceContext
+          log(page.sourceContext);
           return writeFiles(this.buildDir, pages);
         }
       }
@@ -131,7 +143,7 @@ class PagesWebpackPlugin {
       for (const file of modifiedFiles) {
         if (pages.some((page) => file === page.sourceContext)) continue;
         if (!pages.some((page) => file.includes(page.sourceContext))) continue;
-        // modified page: getPageName(file)
+        log(file);
         return writeFiles(this.buildDir, pages);
       }
     });
