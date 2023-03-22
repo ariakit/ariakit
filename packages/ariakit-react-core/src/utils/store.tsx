@@ -6,7 +6,7 @@ import {
   StoreState,
 } from "@ariakit/core/utils/store";
 import { AnyFunction, PickByValue, SetState } from "@ariakit/core/utils/types";
-import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
 import {
   useLazyValue,
   useLiveRef,
