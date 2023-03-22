@@ -5,7 +5,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "jsx": "preserve"
   },
-  "include": ["**/*.tsx", "**/*.ts", ".next/types/**/*.ts"]
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    ".next/types/**/*.ts"
+  ]
 }

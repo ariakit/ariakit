@@ -36,7 +36,7 @@ await build({
   outdir: esmDir,
   format: "esm",
   platform: "node",
-  target: ["es2015"],
+  target: ["chrome58", "edge18", "firefox57", "safari11"],
   bundle: true,
   splitting: true,
   packages: "external",
@@ -53,6 +53,6 @@ await build({
   entryPoints: builtFiles,
   outdir: cjsDir,
   format: "cjs",
-  target: ["es2015"],
+  platform: "node",
   allowOverwrite: true,
 });

@@ -27,7 +27,7 @@ const nextConfig = {
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
     config.resolve.extensionAlias = {
-      ".js": [".js", ".ts"],
+      ".js": [".js", ".ts", ".tsx"],
       ".jsx": [".jsx", ".tsx"],
     };
     return config;
