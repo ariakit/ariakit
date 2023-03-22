@@ -25,10 +25,10 @@ import {
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { ClassNames, SerializedStyles } from "@emotion/react";
 import { highlight, languages } from "prismjs";
-import { getExtension } from "./__utils/get-extension";
-import { getValue } from "./__utils/get-value";
-import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundStore } from "./playground-store";
+import { getExtension } from "./__utils/get-extension.js";
+import { getValue } from "./__utils/get-value.js";
+import { PlaygroundContext } from "./__utils/playground-context.js";
+import { PlaygroundStore } from "./playground-store.js";
 
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";

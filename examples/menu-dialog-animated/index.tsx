@@ -1,8 +1,8 @@
 import { RefObject, useRef, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { Dialog } from "./dialog";
-import { add, playlistAdd } from "./icons";
-import { Menu } from "./menu";
+import { Dialog } from "./dialog.jsx";
+import { add, playlistAdd } from "./icons.jsx";
+import { Menu } from "./menu.jsx";
 import "./style.css";
 
 function useDisclosure(defaultOpen = false) {

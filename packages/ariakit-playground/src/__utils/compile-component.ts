@@ -1,4 +1,4 @@
-import { compileModule } from "./compile-module";
+import { compileModule } from "./compile-module.js";
 
 export function compileComponent(
   code: string,

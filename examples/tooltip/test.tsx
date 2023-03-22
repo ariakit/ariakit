@@ -1,5 +1,5 @@
 import { blur, getByRole, hover, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("show tooltip on hover", async () => {
   const { baseElement } = render(<Example />);

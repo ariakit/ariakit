@@ -2,8 +2,8 @@ import * as React from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import { AnyObject } from "@ariakit/core/utils/types";
 import { availablePresets, transform } from "@babel/standalone";
-import { createCSSModule } from "./css-module";
-import { getExtension } from "./get-extension";
+import { createCSSModule } from "./css-module.js";
+import { getExtension } from "./get-extension.js";
 
 const requireCache = Object.create(null);
 

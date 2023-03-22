@@ -1,5 +1,5 @@
 import { getByRole, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("show focus-within styles", async () => {
   render(<Example />);

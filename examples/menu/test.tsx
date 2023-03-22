@@ -7,7 +7,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getMenuButton = () => getByRole("button", { name: "Actions" });
 const getMenu = () => getByRole("menu", { hidden: true });

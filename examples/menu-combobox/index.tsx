@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import list from "./list";
+import list from "./list.js";
 import "./style.css";
 
 export default function Example() {

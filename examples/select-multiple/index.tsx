@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import list from "./list";
+import list from "./list.js";
 import "./style.css";
 
 function renderValue(value: string[]) {

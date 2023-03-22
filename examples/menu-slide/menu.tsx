@@ -6,11 +6,11 @@ import {
   forwardRef,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
 } from "react";
 import * as Ariakit from "@ariakit/react";
 import { flushSync } from "react-dom";
-import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 type MenuContextProps = {
   getWrapper: () => HTMLElement | null;
@@ -54,7 +54,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     // By default, submenus don't automatically receive focus when they open.
     // But here we want them to always receive focus.
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       if (!autoFocusOnShow) {
         menu.setAutoFocusOnShow(true);
       }
@@ -62,7 +62,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     // We only want to delay hiding the menu, so we immediately stop the
     // animation when it's opening.
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       if (open) {
         menu.stopAnimation();
       }

@@ -8,7 +8,7 @@ import {
   sleep,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getMenu = (name: string) =>
   queryByLabelText(name, { selector: "[role='menu']" });

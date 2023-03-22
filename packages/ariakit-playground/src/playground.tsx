@@ -5,8 +5,8 @@ import {
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
-import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundStore } from "./playground-store";
+import { PlaygroundContext } from "./__utils/playground-context.js";
+import { PlaygroundStore } from "./playground-store.js";
 
 export const usePlayground = createHook<PlaygroundOptions>(
   ({ store, ...props }) => {

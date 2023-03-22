@@ -1,6 +1,10 @@
-import { ButtonHTMLAttributes, ReactNode, forwardRef } from "react";
+import {
+  ButtonHTMLAttributes,
+  ReactNode,
+  forwardRef,
+  useLayoutEffect,
+} from "react";
 import * as Ariakit from "@ariakit/react";
-import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 export type MenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: ReactNode;
@@ -40,7 +44,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
     });
     const mounted = menu.useState("mounted");
 
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       if (!mounted) {
         onUnmount?.();
       }

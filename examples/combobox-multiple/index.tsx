@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { ComboboxMultiple, ComboboxMultipleItem } from "./combobox-multiple";
-import list from "./list";
+import {
+  ComboboxMultiple,
+  ComboboxMultipleItem,
+} from "./combobox-multiple.jsx";
+import list from "./list.js";
 import "./style.css";
 
 export default function Example() {

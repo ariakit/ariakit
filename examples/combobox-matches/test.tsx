@@ -7,8 +7,8 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import list from "./list";
-import Example from ".";
+import Example from "./index.jsx";
+import list from "./list.js";
 
 test("show entire list", async () => {
   render(<Example />);

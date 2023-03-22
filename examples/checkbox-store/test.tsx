@@ -1,5 +1,5 @@
 import { click, getByLabelText, getByRole, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("check checkbox on click", async () => {
   render(<Example />);

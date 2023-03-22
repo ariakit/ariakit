@@ -1,5 +1,5 @@
 import { click, getByRole, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getDisclosure = () => getByRole("button", { name: "Show modal" });
 const getDialog = () => getByRole("dialog", { hidden: true });

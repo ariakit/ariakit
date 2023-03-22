@@ -7,7 +7,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getSubmit = () => getByRole("button", { name: "Submit" });
 const getLabel = () => getByText("Favorite fruit");

@@ -1,5 +1,5 @@
 import { getByRole, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getButton = (name: string) => getByRole("button", { name });
 const getSelect = () => getByRole("combobox", { name: "Text alignment" });

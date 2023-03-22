@@ -2,12 +2,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node16",
     "jsx": "preserve",
     "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowJs": true,
     "strict": true,
+    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -18,8 +23,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "stripInternal": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true
+    "noUncheckedIndexedAccess": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

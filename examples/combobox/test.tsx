@@ -6,7 +6,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });

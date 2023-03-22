@@ -1,5 +1,5 @@
 import { getByRole, press, render, type } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getOption = (name: string) =>
   getByRole("option", { name: (_content, node) => node.textContent == name });

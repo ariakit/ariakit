@@ -1,5 +1,5 @@
 import { findByText, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("render correctly", async () => {
   render(<Example />);

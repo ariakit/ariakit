@@ -1,5 +1,5 @@
 import { click, getByRole, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("change controlled state", async () => {
   render(<Example />);

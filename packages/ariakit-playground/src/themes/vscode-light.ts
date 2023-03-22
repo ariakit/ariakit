@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import defaultTheme from "./default";
+import defaultTheme from "./default.js";
 
 const foreground = "hsl(204, 3%, 16%)";
 const identifier = "hsl(233, 100%, 25%)";

@@ -1,5 +1,5 @@
 import { render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("render horizontal separator", () => {
   const { container } = render(<Example />);

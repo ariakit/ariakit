@@ -56,12 +56,16 @@ import {
   lineNumbers,
   scrollPastEnd,
 } from "@codemirror/view";
+// @ts-expect-error
 import { tags as t } from "@lezer/highlight";
-import { getExtension } from "./__utils/get-extension";
-import { getValue } from "./__utils/get-value";
-import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code";
-import { PlaygroundStore } from "./playground-store";
+import { getExtension } from "./__utils/get-extension.js";
+import { getValue } from "./__utils/get-value.js";
+import { PlaygroundContext } from "./__utils/playground-context.js";
+import {
+  PlaygroundCodeOptions,
+  usePlaygroundCode,
+} from "./playground-code.jsx";
+import { PlaygroundStore } from "./playground-store.js";
 
 function getLanguage(file: string) {
   const extension = getExtension(file);

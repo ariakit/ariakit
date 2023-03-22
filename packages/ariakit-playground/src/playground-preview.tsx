@@ -23,13 +23,13 @@ import {
 } from "@ariakit/react-core/utils/system";
 import { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { ClassNames } from "@emotion/react";
-import { compileComponent } from "./__utils/compile-component";
-import { compileModule } from "./__utils/compile-module";
-import { getCSSModule } from "./__utils/css-module";
-import { getFile } from "./__utils/get-file";
-import { PlaygroundContext } from "./__utils/playground-context";
-import { resolveModule } from "./__utils/resolve-module";
-import { PlaygroundStore } from "./playground-store";
+import { compileComponent } from "./__utils/compile-component.js";
+import { compileModule } from "./__utils/compile-module.js";
+import { getCSSModule } from "./__utils/css-module.js";
+import { getFile } from "./__utils/get-file.js";
+import { PlaygroundContext } from "./__utils/playground-context.js";
+import { resolveModule } from "./__utils/resolve-module.js";
+import { PlaygroundStore } from "./playground-store.js";
 
 function ErrorMessage(props: RoleProps<any>) {
   return <Role role="status" {...props} />;

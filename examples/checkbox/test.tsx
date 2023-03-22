@@ -1,5 +1,5 @@
 import { click, getByLabelText, getByRole, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("markup", async () => {
   const { container } = render(<Example />);

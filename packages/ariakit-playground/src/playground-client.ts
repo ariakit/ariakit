@@ -16,10 +16,10 @@ import {
   getCodeSandboxEntryContent,
   getSandpackFiles,
   useCodeSandboxDependencies,
-} from "./__utils/code-sandbox";
-import { getFile } from "./__utils/get-file";
-import { PlaygroundContext } from "./__utils/playground-context";
-import { PlaygroundStore } from "./playground-store";
+} from "./__utils/code-sandbox.js";
+import { getFile } from "./__utils/get-file.js";
+import { PlaygroundContext } from "./__utils/playground-context.js";
+import { PlaygroundStore } from "./playground-store.js";
 
 const ENTRY_FILE = "/index.js";
 

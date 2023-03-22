@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   KeyboardEvent,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -9,8 +10,7 @@ import {
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import getCaretCoordinates from "textarea-caret";
-import useLayoutEffect from "use-isomorphic-layout-effect";
-import { defaultTriggers, getList, getValue } from "./list";
+import { defaultTriggers, getList, getValue } from "./list.js";
 import "./style.css";
 
 export default function Example() {

@@ -1,6 +1,5 @@
-import { HTMLAttributes, forwardRef } from "react";
+import { HTMLAttributes, forwardRef, useLayoutEffect } from "react";
 import * as Ariakit from "@ariakit/react";
-import useIsomorphicLayoutEffect from "use-isomorphic-layout-effect";
 
 export type DialogProps = HTMLAttributes<HTMLDivElement> & {
   title: string;
@@ -27,7 +26,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     const mounted = dialog.useState("mounted");
 
-    useIsomorphicLayoutEffect(() => {
+    useLayoutEffect(() => {
       if (!mounted) {
         onUnmount?.();
       }

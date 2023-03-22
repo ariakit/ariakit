@@ -7,7 +7,7 @@ import {
   sleep,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getSelect = () => getByRole("combobox", { name: "Position" });
 const getGrid = () => getByRole("grid", { hidden: true });

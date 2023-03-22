@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import { NewWindow } from "./icons";
+import { NewWindow } from "./icons.jsx";
 import "./style.css";
 
 const links = [
@@ -41,7 +41,7 @@ export default function Example() {
     [value]
   );
 
-  const renderItem = (item: typeof links[number], i: number) => {
+  const renderItem = (item: (typeof links)[number], i: number) => {
     return (
       <Ariakit.ComboboxItem
         key={item.children + i}

@@ -1,5 +1,5 @@
 import { render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("markup", () => {
   const { container } = render(<Example />);

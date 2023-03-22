@@ -1,5 +1,5 @@
 import { getByRole, getByText, render, waitFor } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 test("loading button", async () => {
   render(<Example />);

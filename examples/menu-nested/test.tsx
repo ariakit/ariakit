@@ -9,7 +9,7 @@ import {
   type,
   waitFor,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getMenuButton = () => getByRole("button", { name: "Edit" });
 const getMenu = (name: string) =>

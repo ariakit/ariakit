@@ -1,5 +1,5 @@
 import { click, getByRole, getByText, hover, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite food" });
 const getList = () => getByRole("listbox", { hidden: true });

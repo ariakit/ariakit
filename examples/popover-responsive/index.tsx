@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import assignStyle from "./assign-style";
-import useMedia from "./use-media";
+import assignStyle from "./assign-style.js";
+import useMedia from "./use-media.js";
 import "./style.css";
 
 function applyMobileStyles(

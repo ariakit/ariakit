@@ -1,4 +1,4 @@
-import { PlaygroundStoreState } from "../playground-store";
+import { PlaygroundStoreState } from "../playground-store.js";
 
 export function getValue(state?: PlaygroundStoreState, filename?: string) {
   if (!state) return "";

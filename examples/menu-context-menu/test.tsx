@@ -7,7 +7,7 @@ import {
   render,
 } from "@ariakit/test";
 import { nextFrame } from "@ariakit/test/__utils";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getContextMenuArea = () => getByText("Right click here");
 const getMenu = () => getByRole("menu", { hidden: true });

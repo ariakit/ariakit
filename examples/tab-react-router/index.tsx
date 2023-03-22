@@ -4,7 +4,7 @@ import {
   TabLinkList,
   TabLinkPanel,
   useTabLinkStore,
-} from "./tab-link";
+} from "./tab-link.jsx";
 import "./style.css";
 
 function Tabs() {

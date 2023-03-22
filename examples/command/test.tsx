@@ -1,5 +1,5 @@
 import { getByText, press, render } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getCommand = () => getByText("Button");
 

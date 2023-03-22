@@ -7,7 +7,7 @@ import {
   render,
   type,
 } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getInput = () => getByRole("combobox", { name: "Your favorite food" });
 const getOption = (name: string) => getByRole("option", { name });

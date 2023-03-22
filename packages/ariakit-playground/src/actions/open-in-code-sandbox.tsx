@@ -8,15 +8,15 @@ import {
   createHook,
 } from "@ariakit/react-core/utils/system";
 import { As, Props } from "@ariakit/react-core/utils/types";
-import { getParameters } from "codesandbox-import-utils/lib/api/define";
+import { getParameters } from "codesandbox-import-utils/lib/api/define.js";
 import {
   getCodeSandboxDependencies,
   getCodeSandboxEntryContent,
   getCodeSandboxFiles,
-} from "../__utils/code-sandbox";
-import { getFile } from "../__utils/get-file";
-import { PlaygroundContext } from "../__utils/playground-context";
-import { PlaygroundStore, PlaygroundStoreState } from "../playground-store";
+} from "../__utils/code-sandbox.js";
+import { getFile } from "../__utils/get-file.js";
+import { PlaygroundContext } from "../__utils/playground-context.js";
+import { PlaygroundStore, PlaygroundStoreState } from "../playground-store.js";
 
 function getCodeSandboxParameters(values: PlaygroundStoreState["values"]) {
   const file = getFile(values);

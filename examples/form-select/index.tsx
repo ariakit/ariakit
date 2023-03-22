@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { Select, SelectItem } from "./select";
+import { Select, SelectItem } from "./select.jsx";
 import "./style.css";
 
 export default function Example() {

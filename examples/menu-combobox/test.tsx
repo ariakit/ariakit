@@ -1,5 +1,5 @@
 import { click, getByRole, hover, press, render, type } from "@ariakit/test";
-import Example from ".";
+import Example from "./index.jsx";
 
 const getMenuButton = () => getByRole("button", { name: "Add block" });
 const getMenu = () => getByRole("dialog", { hidden: true });
