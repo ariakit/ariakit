@@ -6,8 +6,8 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts",

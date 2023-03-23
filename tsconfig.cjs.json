@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "target": "ES5",
-    "module": "CommonJS",
-    "moduleResolution": "node"
-  }
-}

@@ -25,15 +25,15 @@ function resolveDir(dir) {
 /**
  * @param {string} path
  */
-function removeExt(path) {
-  return path.replace(/\.[^.]+$/, "");
+function isDirectory(path) {
+  return lstatSync(path).isDirectory();
 }
 
 /**
  * @param {string} path
  */
-function isDirectory(path) {
-  return lstatSync(path).isDirectory();
+export function removeExt(path) {
+  return path.replace(/\.[^.]+$/, "");
 }
 
 /**
