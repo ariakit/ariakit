@@ -47,6 +47,7 @@ export function getPackage(rootPath) {
     ...pkg,
     main: "cjs/index.cjs",
     module: "esm/index.js",
+    types: "cjs/index.d.ts",
     exports: {
       ".": {
         import: "./esm/index.js",
@@ -62,6 +63,7 @@ export function getPackage(rootPath) {
     __dev: {
       main: pkg.main,
       module: pkg.module,
+      types: pkg.types,
       exports: pkg.exports,
       ...pkg.__dev,
     },

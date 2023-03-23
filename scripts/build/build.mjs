@@ -34,28 +34,6 @@ spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
 
 fse.copySync(esmDir, cjsDir);
 
-// "target": "ES5",
-//     "module": "CommonJS",
-//     "moduleResolution": "classic"
-
-// spawn.sync(
-//   "tsc",
-//   [
-//     "--emitDeclarationOnly",
-//     "--target",
-//     "es5",
-//     "--module",
-//     "commonjs",
-//     "--moduleResolution",
-//     "node",
-//     "--outDir",
-//     cjsDir,
-//   ],
-//   {
-//     stdio: "inherit",
-//   }
-// );
-
 const builds = [
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
