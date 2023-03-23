@@ -1,9 +1,6 @@
 // @ts-check
-import { renameSync } from "fs";
-import { join } from "path";
+import { fileURLToPath } from "url";
 import spawn from "cross-spawn";
-import fse from "fs-extra";
-import { globSync } from "glob";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -36,13 +33,17 @@ spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
   stdio: "inherit",
 });
 
-fse.copySync(esmDir, cjsDir);
+const cjsConfigPath = fileURLToPath(
+  new URL("../../tsconfig.cjs.json", import.meta.url)
+);
 
-const dts = globSync("**/*.d.ts", { cwd: cjsDir });
-
-for (const file of dts) {
-  renameSync(join(cjsDir, file), join(cjsDir, file.replace(/\.ts$/, ".cts")));
-}
+spawn.sync(
+  "tsc",
+  ["--emitDeclarationOnly", "--project", cjsConfigPath, "--outDir", cjsDir],
+  {
+    stdio: "inherit",
+  }
+);
 
 const builds = [
   { format: "esm", outDir: esmDir },
