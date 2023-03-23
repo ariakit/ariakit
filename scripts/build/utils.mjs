@@ -16,7 +16,7 @@ import { rimrafSync } from "rimraf";
  * @param {string} dir
  */
 function resolveDir(dir) {
-  if (!/\.(t|j)s$/.test(dir)) {
+  if (!/\.(c|m)?(t|j)s$/.test(dir)) {
     return dir;
   }
   return dirname(dir);
@@ -27,33 +27,6 @@ function resolveDir(dir) {
  */
 function removeExt(path) {
   return path.replace(/\.[^.]+$/, "");
-}
-
-/**
- * @param {string} path
- */
-function getRootPath(path) {
-  return path.replace(/^([^/]+).*$/, "$1");
-}
-
-/**
- * @param {string} path
- * @param {number} _
- * @param {string[]} array
- */
-function isRootModule(path, _, array) {
-  const rootPath = getRootPath(path);
-  return path === rootPath || !array.includes(rootPath);
-}
-
-/**
- * @param {string[]} array
- * @param {string} path
- */
-function reduceToRootPaths(array, path) {
-  const rootPath = getRootPath(path);
-  if (array.includes(rootPath)) return array;
-  return [...array, rootPath];
 }
 
 /**
@@ -228,6 +201,33 @@ export function getBuildFolders(rootPath) {
     getTypesDir(rootPath),
     ...getProxyFolders(rootPath),
   ].filter(Boolean);
+}
+
+/**
+ * @param {string} path
+ */
+function getRootPath(path) {
+  return path.replace(/^([^/]+).*$/, "$1");
+}
+
+/**
+ * @param {string} path
+ * @param {number} _
+ * @param {string[]} array
+ */
+function isRootModule(path, _, array) {
+  const rootPath = getRootPath(path);
+  return path === rootPath || !array.includes(rootPath);
+}
+
+/**
+ * @param {string[]} array
+ * @param {string} path
+ */
+function reduceToRootPaths(array, path) {
+  const rootPath = getRootPath(path);
+  if (array.includes(rootPath)) return array;
+  return [...array, rootPath];
 }
 
 /**
