@@ -8,7 +8,6 @@
     "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
-    "incremental": true,
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,

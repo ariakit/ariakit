@@ -1,18 +1,15 @@
-import "./clean.mjs";
-import { join } from "path";
-import { fileURLToPath } from "url";
 import spawn from "cross-spawn";
-// import { build } from "esbuild";
 import fse from "fs-extra";
-import { globSync } from "glob";
 import { build } from "tsup";
 import {
+  cleanBuild,
   getMainDir,
   getModuleDir,
   getPublicFiles,
   getSourcePath,
   makeGitignore,
   makeProxies,
+  writeBuildPackage,
 } from "./utils.mjs";
 
 process.env.NODE_ENV = "production";
@@ -22,63 +19,37 @@ if (process.argv.includes("--no-umd")) {
 }
 
 const cwd = process.cwd();
-const sourcePath = getSourcePath(cwd);
-const publicFiles = getPublicFiles(sourcePath);
 
+cleanBuild(cwd);
+
+writeBuildPackage(cwd);
 makeGitignore(cwd);
 makeProxies(cwd);
 
-await build({
-  entry: publicFiles,
-  format: "cjs",
-  outDir: getMainDir(cwd),
-  splitting: true,
-  clean: true,
+const sourcePath = getSourcePath(cwd);
+const entry = getPublicFiles(sourcePath);
+
+const esmDir = getModuleDir(cwd);
+const cjsDir = getMainDir(cwd);
+
+spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
+  stdio: "inherit",
 });
 
-// spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
-//   stdio: "inherit",
-// });
+fse.copySync(esmDir, cjsDir);
 
-// await build({
-//   entryPoints: publicFiles,
-//   outdir: esmDir,
-//   format: "esm",
-//   platform: "node",
-//   target: ["chrome58", "edge18", "firefox57", "safari11"],
-//   bundle: true,
-//   splitting: true,
-//   packages: "external",
-//   chunkNames: "__chunks/[hash]",
-// });
+const builds = [
+  { format: "esm", outDir: esmDir },
+  { format: "cjs", outDir: cjsDir },
+];
 
-// const cjsDir = getMainDir(cwd);
-
-// fse.copySync(esmDir, cjsDir, {
-//   filter: (src) => src.endsWith(".d.ts"),
-// });
-
-// const builtFiles = globSync(`${esmDir}/**/*.js`);
-
-// await build({
-//   entryPoints: builtFiles,
-//   outdir: cjsDir,
-//   format: "cjs",
-//   platform: "node",
-//   outExtension: { ".js": ".cjs" },
-//   plugins: [
-//     {
-//       name: "add-cjs",
-//       setup(build) {
-//         build.onLoad({ filter: /\.js$/ }, (args) => {
-//           return {
-//             path: args.path
-//               .replace(/^\.\/esm/, "./cjs")
-//               .replace(/\.js$/, ".cjs"),
-//             namespace: args.resolveDir,
-//           };
-//         });
-//       },
-//     },
-//   ],
-// });
+for (const { format, outDir } of builds) {
+  await build({
+    entry,
+    format,
+    outDir,
+    esbuildOptions(options) {
+      options.chunkNames = "__chunks/[hash]";
+    },
+  });
+}

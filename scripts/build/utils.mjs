@@ -23,52 +23,6 @@ function resolveDir(dir) {
 }
 
 /**
- * @param {string} rootPath
- * @returns {Record<string, any>}
- */
-export function getPackage(rootPath) {
-  const pkgPath = join(rootPath, "package.json");
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
-  return { ...pkg, ...pkg.publishConfig };
-}
-
-/**
- * @param {string} rootPath
- */
-export function getModuleDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  if (!pkg.module) return false;
-  return resolveDir(pkg.module);
-}
-
-/**
- * @param {string} rootPath
- */
-export function getUnpkgDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  if (!pkg.unpkg) return false;
-  return resolveDir(pkg.unpkg);
-}
-
-/**
- * @param {string} rootPath
- */
-export function getTypesDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  const types = pkg.types || pkg.typings;
-  if (!types) return false;
-  return resolveDir(types);
-}
-
-/**
- * @param {string} rootPath
- */
-export function getMainDir(rootPath) {
-  const { main } = getPackage(rootPath);
-  return resolveDir(main);
-}
-
-/**
  * @param {string} path
  */
 function removeExt(path) {
@@ -107,6 +61,94 @@ function reduceToRootPaths(array, path) {
  */
 function isDirectory(path) {
   return lstatSync(path).isDirectory();
+}
+
+/**
+ * @param {string} rootPath
+ * @returns {Record<string, any>}
+ */
+export function getPackage(rootPath) {
+  const pkgPath = join(rootPath, "package.json");
+  const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+  const nextPkg = {
+    ...pkg,
+    main: "cjs/index.cjs",
+    module: "esm/index.js",
+    exports: {
+      ".": {
+        import: "./esm/index.js",
+        require: "./cjs/index.cjs",
+      },
+      "./*": {
+        import: "./esm/*.js",
+        require: "./cjs/*.cjs",
+      },
+      "./__chunks/*": null,
+      "./package.json": "./package.json",
+    },
+    __dev: {
+      main: pkg.main,
+      module: pkg.module,
+      exports: pkg.exports,
+      ...pkg.__dev,
+    },
+  };
+  return nextPkg;
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function writeBuildPackage(rootPath) {
+  const pkgPath = join(rootPath, "package.json");
+  const pkg = getPackage(rootPath);
+  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function restoreBuildPackage(rootPath) {
+  const pkgPath = join(rootPath, "package.json");
+  const { __dev, ...pkg } = getPackage(rootPath);
+  const nextPkg = { ...pkg, ...__dev };
+  writeFileSync(pkgPath, JSON.stringify(nextPkg, null, 2));
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getModuleDir(rootPath) {
+  const pkg = getPackage(rootPath);
+  if (!pkg.module) return false;
+  return resolveDir(pkg.module);
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getUnpkgDir(rootPath) {
+  const pkg = getPackage(rootPath);
+  if (!pkg.unpkg) return false;
+  return resolveDir(pkg.unpkg);
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getTypesDir(rootPath) {
+  const pkg = getPackage(rootPath);
+  const types = pkg.types || pkg.typings;
+  if (!types) return false;
+  return resolveDir(types);
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getMainDir(rootPath) {
+  const { main } = getPackage(rootPath);
+  return resolveDir(main);
 }
 
 /**
@@ -193,7 +235,10 @@ export function getBuildFolders(rootPath) {
  */
 export function cleanBuild(rootPath) {
   const pkg = getPackage(rootPath);
-  const cleaned = [];
+
+  restoreBuildPackage(rootPath);
+  const cleaned = [chalk.bold(chalk.gray("package.json"))];
+
   getBuildFolders(rootPath)
     .filter(isRootModule)
     .reduce(reduceToRootPaths, [])
@@ -201,6 +246,7 @@ export function cleanBuild(rootPath) {
       rimrafSync(name);
       cleaned.push(chalk.bold(chalk.gray(name)));
     });
+
   if (cleaned.length) {
     console.log(
       ["", `Cleaned in ${chalk.bold(pkg.name)}:`, `${cleaned.join(", ")}`].join(
