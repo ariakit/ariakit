@@ -92,28 +92,9 @@ export function restoreBuildPackage(rootPath) {
  * @param {string} rootPath
  */
 export function getModuleDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  if (!pkg.module) return false;
-  return resolveDir(pkg.module);
-}
-
-/**
- * @param {string} rootPath
- */
-export function getUnpkgDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  if (!pkg.unpkg) return false;
-  return resolveDir(pkg.unpkg);
-}
-
-/**
- * @param {string} rootPath
- */
-export function getTypesDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  const types = pkg.types || pkg.typings;
-  if (!types) return false;
-  return resolveDir(types);
+  const { module } = getPackage(rootPath);
+  if (!module) return "esm";
+  return resolveDir(module);
 }
 
 /**
@@ -121,6 +102,7 @@ export function getTypesDir(rootPath) {
  */
 export function getMainDir(rootPath) {
   const { main } = getPackage(rootPath);
+  if (!main) return "cjs";
   return resolveDir(main);
 }
 
@@ -193,14 +175,11 @@ export function getProxyFolders(rootPath) {
  * @returns {string[]}
  */
 export function getBuildFolders(rootPath) {
-  // @ts-expect-error
   return [
     getMainDir(rootPath),
-    getUnpkgDir(rootPath),
     getModuleDir(rootPath),
-    getTypesDir(rootPath),
     ...getProxyFolders(rootPath),
-  ].filter(Boolean);
+  ];
 }
 
 /**
@@ -298,18 +277,13 @@ function getProxyPackageContents(rootPath, moduleName) {
   const { name } = getPackage(rootPath);
   const mainDir = getMainDir(rootPath);
   const moduleDir = getModuleDir(rootPath);
-  const typesDir = getTypesDir(rootPath);
   const prefix = "../".repeat(moduleName.split("/").length);
-  const tsModuleName = existsSync(join(getSourcePath(rootPath), moduleName))
-    ? `${moduleName}/index.d.ts`
-    : `${moduleName}.d.ts`;
   const json = {
     name: `${name}/${moduleName}`,
     private: true,
     sideEffects: false,
     main: join(prefix, mainDir, moduleName),
-    ...(moduleDir ? { module: join(prefix, moduleDir, moduleName) } : {}),
-    ...(typesDir ? { types: join(prefix, typesDir, tsModuleName) } : {}),
+    module: join(prefix, moduleDir, moduleName),
   };
   return JSON.stringify(json, null, 2);
 }

@@ -1,5 +1,9 @@
+// @ts-check
+import { renameSync } from "fs";
+import { join } from "path";
 import spawn from "cross-spawn";
 import fse from "fs-extra";
+import { globSync } from "glob";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -13,10 +17,6 @@ import {
 } from "./utils.mjs";
 
 process.env.NODE_ENV = "production";
-
-if (process.argv.includes("--no-umd")) {
-  process.env.NO_UMD = true;
-}
 
 const cwd = process.cwd();
 
@@ -37,6 +37,12 @@ spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
 });
 
 fse.copySync(esmDir, cjsDir);
+
+const dts = globSync("**/*.d.ts", { cwd: cjsDir });
+
+for (const file of dts) {
+  renameSync(join(cjsDir, file), join(cjsDir, file.replace(/\.ts$/, ".cts")));
+}
 
 const builds = [
   { format: "esm", outDir: esmDir },
