@@ -7,26 +7,11 @@
   "homepage": "https://ariakit.org",
   "type": "module",
   "main": "src/index.js",
+  "module": "src/index.js",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts",
     "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "main": "cjs/index.js",
-    "module": "esm/index.js",
-    "exports": {
-      ".": {
-        "import": "./esm/index.js",
-        "require": "./cjs/index.js"
-      },
-      "./*": {
-        "import": "./esm/*.js",
-        "require": "./cjs/*.js"
-      },
-      "./__chunks/*": null,
-      "./package.json": "./package.json"
-    }
   },
   "repository": {
     "type": "git",

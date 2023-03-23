@@ -102,7 +102,7 @@ export function getPackage(rootPath) {
 export function writeBuildPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
   const pkg = getPackage(rootPath);
-  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
 /**
@@ -112,7 +112,7 @@ export function restoreBuildPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
   const { __dev, ...pkg } = getPackage(rootPath);
   const nextPkg = { ...pkg, ...__dev };
-  writeFileSync(pkgPath, JSON.stringify(nextPkg, null, 2));
+  writeFileSync(pkgPath, `${JSON.stringify(nextPkg, null, 2)}\n`);
 }
 
 /**

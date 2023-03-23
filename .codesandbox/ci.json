@@ -1,6 +1,6 @@
 {
   "packages": ["packages/*"],
-  "buildCommand": "build-codesandbox",
+  "buildCommand": "build",
   "sandboxes": ["m4n32vjkoj"],
   "node": "18"
 }
