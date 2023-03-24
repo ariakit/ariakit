@@ -13,7 +13,12 @@ import {
   writeBuildPackage,
 } from "./utils.mjs";
 
-Object.defineProperty(process.env, "NODE_ENV", { value: "production" });
+Object.defineProperty(process.env, "NODE_ENV", {
+  configurable: true,
+  writable: true,
+  enumerable: true,
+  value: "production",
+});
 
 const cwd = process.cwd();
 
