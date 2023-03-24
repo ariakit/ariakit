@@ -131,16 +131,22 @@ export function getDevPackage(rootPath) {
  */
 export function writeBuildPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
-  const pkg = getBuildPackage(rootPath);
-  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+  const currentContents = readFileSync(pkgPath, "utf-8");
+  const buildPkg = getBuildPackage(rootPath);
+  const nextContents = `${JSON.stringify(buildPkg, null, 2)}\n`;
+  if (currentContents === nextContents) return;
+  writeFileSync(pkgPath, nextContents);
 }
 /**
  * @param {string} rootPath
  */
 export function writeDevPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
-  const pkg = getDevPackage(rootPath);
-  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+  const currentContents = readFileSync(pkgPath, "utf-8");
+  const devPkg = getDevPackage(rootPath);
+  const nextContents = `${JSON.stringify(devPkg, null, 2)}\n`;
+  if (currentContents === nextContents) return;
+  writeFileSync(pkgPath, nextContents);
 }
 
 export function getSourceDir() {
