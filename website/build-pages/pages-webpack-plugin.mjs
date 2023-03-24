@@ -2,8 +2,10 @@
 import { writeFileSync } from "fs";
 import { dirname, join } from "path";
 import chalk from "chalk";
+import { groupBy } from "lodash-es";
 import { getPageEntryFiles } from "./get-page-entry-files.mjs";
 import { getPageExternalDeps } from "./get-page-external-deps.mjs";
+import { getPageSections } from "./get-page-sections.mjs";
 import { getPageSourceFiles } from "./get-page-source-files.mjs";
 
 /** @param {string} [buildDir] */
@@ -25,6 +27,7 @@ function writeFiles(buildDir, pages) {
     getPageEntryFiles(page.sourceContext)
   );
 
+  // deps.ts
   /** @type {Record<string, string>} */
   let deps = {};
 
@@ -41,6 +44,7 @@ function writeFiles(buildDir, pages) {
 
   writeFileSync(depsFile, depsContents);
 
+  // examples.js
   const examples = [...new Set(entryFiles.flatMap(getPageSourceFiles))];
   const examplesFile = join(buildDir, "examples.js");
 
@@ -49,6 +53,34 @@ function writeFiles(buildDir, pages) {
     .join(",\n")}\n};\n`;
 
   writeFileSync(examplesFile, examplesContents);
+
+  // index.json and contents.json
+  const markdownFiles = entryFiles.filter((file) => file.endsWith(".md"));
+
+  const indexFile = join(buildDir, "index.json");
+  const contentsFile = join(buildDir, "contents.json");
+
+  const meta = markdownFiles.map((file) => {
+    const page = pages.find((page) => file.startsWith(page.sourceContext));
+    if (!page) throw new Error(`Could not find page for file: ${file}`);
+    return getPageSections(file, page.slug, page.getGroup);
+  });
+
+  const categories = groupBy(meta, (page) => page.category);
+  const contents = meta.flatMap((page) => page.sections);
+
+  const index = Object.entries(categories).reduce((acc, [category, pages]) => {
+    acc[category] = pages.map((page) => ({
+      group: page.group,
+      slug: page.slug,
+      title: page.title,
+      content: page.content,
+    }));
+    return acc;
+  }, {});
+
+  writeFileSync(indexFile, JSON.stringify(index, null, 2));
+  writeFileSync(contentsFile, JSON.stringify(contents, null, 2));
 }
 
 class PagesWebpackPlugin {

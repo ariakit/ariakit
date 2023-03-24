@@ -14,8 +14,6 @@ export type Page = {
   getGroup?: (filename: string) => string | null;
 };
 
-export type Pages = Page[];
-
 export type PageIndexDetail = {
   /**
    * The name of the group that the page belongs to. This string is returned by
@@ -36,8 +34,6 @@ export type PageIndexDetail = {
   content: string;
 };
 
-export type PageIndex = Record<string, PageIndexDetail[]>;
-
 export type PageContent = PageIndexDetail & {
   /**
    * The category that the page belongs to (e.g., "components", "examples").
@@ -57,5 +53,24 @@ export type PageContent = PageIndexDetail & {
    */
   section: string | null;
 };
+
+export type TableOfContents = Array<{
+  /**
+   * The id of the section heading that can be used to link to the section.
+   */
+  id: string;
+  /**
+   * The title of the section.
+   */
+  text: string;
+  /**
+   * The nested sections if any.
+   */
+  children?: TableOfContents;
+}>;
+
+export type Pages = Page[];
+
+export type PageIndex = Record<string, PageIndexDetail[]>;
 
 export type PageContents = PageContent[];
