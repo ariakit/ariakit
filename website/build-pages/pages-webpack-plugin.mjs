@@ -95,7 +95,6 @@ class PagesWebpackPlugin {
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
     this.pages = options.pages;
-    console.log("pqp");
     rimrafSync(this.buildDir);
     fse.ensureDirSync(this.buildDir);
     writeFiles(this.buildDir, this.pages);
