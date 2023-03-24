@@ -9,11 +9,6 @@
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
-  "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts",
-    "./package.json": "./package.json"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -32,5 +27,35 @@
   "keywords": [
     "ariakit",
     "core"
-  ]
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./utils/types": "./src/utils/types.ts",
+    "./utils/store": "./src/utils/store.ts",
+    "./utils/platform": "./src/utils/platform.ts",
+    "./utils/misc": "./src/utils/misc.ts",
+    "./utils/focus": "./src/utils/focus.ts",
+    "./utils/events": "./src/utils/events.ts",
+    "./utils/dom": "./src/utils/dom.ts",
+    "./utils/array": "./src/utils/array.ts",
+    "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
+    "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
+    "./tab/tab-store": "./src/tab/tab-store.ts",
+    "./select/select-store": "./src/select/select-store.ts",
+    "./radio/radio-store": "./src/radio/radio-store.ts",
+    "./popover/popover-store": "./src/popover/popover-store.ts",
+    "./menu/menu-store": "./src/menu/menu-store.ts",
+    "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
+    "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
+    "./form/types": "./src/form/types.ts",
+    "./form/form-store": "./src/form/form-store.ts",
+    "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
+    "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
+    "./composite/composite-store": "./src/composite/composite-store.ts",
+    "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
+    "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
+    "./collection/collection-store": "./src/collection/collection-store.ts",
+    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
+    "./package.json": "./package.json"
+  }
 }
