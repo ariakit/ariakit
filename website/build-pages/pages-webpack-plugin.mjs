@@ -2,7 +2,9 @@
 import { writeFileSync } from "fs";
 import { dirname, join } from "path";
 import chalk from "chalk";
+import fse from "fs-extra";
 import { groupBy } from "lodash-es";
+import { rimrafSync } from "rimraf";
 import { getPageEntryFiles } from "./get-page-entry-files.mjs";
 import { getPageExternalDeps } from "./get-page-external-deps.mjs";
 import { getPageSections } from "./get-page-sections.mjs";
@@ -93,6 +95,9 @@ class PagesWebpackPlugin {
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
     this.pages = options.pages;
+    console.log("pqp");
+    rimrafSync(this.buildDir);
+    fse.ensureDirSync(this.buildDir);
     writeFiles(this.buildDir, this.pages);
   }
 
