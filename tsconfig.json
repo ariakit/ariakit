@@ -7,6 +7,7 @@
     "jsx": "react-jsx",
     "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
     "lib": ["dom", "dom.iterable", "esnext"],
+    "incremental": true,
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": true,
@@ -24,6 +25,6 @@
     "stripInternal": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "vitest.config.mts"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
   "exclude": ["node_modules"]
 }

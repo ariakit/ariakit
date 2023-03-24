@@ -8,7 +8,7 @@
     "dev": "npm run dev -w website",
     "dev-react17": "npm run react17 && npm run dev; npm i",
     "dev-reactnext": "npm run reactnext && npm run dev; npm i",
-    "test": "jest",
+    "test": "vitest run",
     "test-watch": "npm test -- --watch",
     "test-react17": "npm run react17 && npm test; npm i",
     "test-reactnext": "npm run reactnext && npm test; npm i",

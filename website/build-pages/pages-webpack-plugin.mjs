@@ -61,7 +61,6 @@ class PagesWebpackPlugin {
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
     this.pages = options.pages;
-
     writeFiles(this.buildDir, this.pages);
   }
 

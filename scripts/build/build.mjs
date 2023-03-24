@@ -4,8 +4,8 @@ import fse from "fs-extra";
 import { build } from "tsup";
 import {
   cleanBuild,
-  getMainDir,
-  getModuleDir,
+  getCJSDir,
+  getESMDir,
   getPublicFiles,
   getSourcePath,
   makeGitignore,
@@ -13,7 +13,7 @@ import {
   writeBuildPackage,
 } from "./utils.mjs";
 
-process.env.NODE_ENV = "production";
+Object.defineProperty(process.env, "NODE_ENV", { value: "production" });
 
 const cwd = process.cwd();
 
@@ -25,8 +25,8 @@ makeProxies(cwd);
 
 const sourcePath = getSourcePath(cwd);
 const entry = getPublicFiles(sourcePath);
-const esmDir = getModuleDir(cwd);
-const cjsDir = getMainDir(cwd);
+const esmDir = getESMDir();
+const cjsDir = getCJSDir();
 
 spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
   stdio: "inherit",

@@ -1,7 +1,12 @@
-import { configDefaults, defineConfig } from "vitest/config";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    exclude: [...configDefaults.exclude, "packages/template/*"],
+    globals: true,
+    deps: {
+      registerNodeLoader: true,
+    },
+    include: ["examples/button/test.tsx"],
+    environment: "jsdom",
   },
 });

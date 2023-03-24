@@ -42,32 +42,87 @@ export function removeExt(path) {
  */
 export function getPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+  return JSON.parse(readFileSync(pkgPath, "utf-8"));
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getBuildPackage(rootPath) {
+  const { exports: _, ...pkg } = getPackage(rootPath);
+  const sourcePath = getSourcePath(rootPath);
+  const publicFiles = getPublicFiles(sourcePath);
+  const cjsDir = getCJSDir();
+  const esmDir = getESMDir();
+
+  /** @param {string} path */
+  const getExports = (path) => {
+    path = removeExt(path).replace(sourcePath, "");
+    return {
+      import: `./${join(esmDir, path)}.js`,
+      require: `./${join(cjsDir, path)}.cjs`,
+    };
+  };
+
+  const moduleExports = Object.entries(publicFiles).reduce(
+    (acc, [name, path]) => {
+      if (name === "index") {
+        return { ".": getExports(path), ...acc };
+      }
+      const pathname = `./${name.replace(/\/index$/, "")}`;
+      return { ...acc, [pathname]: getExports(path) };
+    },
+    {}
+  );
+
   const nextPkg = {
     ...pkg,
-    main: "cjs/index.cjs",
-    module: "esm/index.js",
-    types: "cjs/index.d.ts",
+    main: join(cjsDir, "index.cjs"),
+    module: join(esmDir, "index.js"),
+    types: join(cjsDir, "index.d.ts"),
     exports: {
-      ".": {
-        import: "./esm/index.js",
-        require: "./cjs/index.cjs",
-      },
-      "./*": {
-        import: "./esm/*.js",
-        require: "./cjs/*.cjs",
-      },
-      "./__chunks/*": null,
+      ...moduleExports,
       "./package.json": "./package.json",
     },
-    __dev: {
-      main: pkg.main,
-      module: pkg.module,
-      types: pkg.types,
-      exports: pkg.exports,
-      ...pkg.__dev,
+  };
+
+  return nextPkg;
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getDevPackage(rootPath) {
+  const { exports: _, ...pkg } = getPackage(rootPath);
+  const sourcePath = getSourcePath(rootPath);
+  const publicFiles = getPublicFiles(sourcePath);
+  const sourceDir = getSourceDir();
+
+  /** @param {string} path */
+  const getExports = (path) => path.replace(sourcePath, `./${sourceDir}`);
+
+  const moduleExports = Object.entries(publicFiles).reduce(
+    (acc, [name, path]) => {
+      if (name === "index") {
+        return { ".": getExports(path), ...acc };
+      }
+      const pathname = `./${name.replace(/\/index$/, "")}`;
+      return { ...acc, [pathname]: getExports(path) };
+    },
+    {}
+  );
+
+  const nextPkg = {
+    ...pkg,
+    main: join(sourceDir, "index.ts"),
+    module: join(sourceDir, "index.ts"),
+    types: join(sourceDir, "index.ts"),
+    exports: {
+      ...moduleExports,
+      "./package.json": "./package.json",
     },
   };
+
   return nextPkg;
 }
 
@@ -76,43 +131,35 @@ export function getPackage(rootPath) {
  */
 export function writeBuildPackage(rootPath) {
   const pkgPath = join(rootPath, "package.json");
-  const pkg = getPackage(rootPath);
+  const pkg = getBuildPackage(rootPath);
+  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+}
+/**
+ * @param {string} rootPath
+ */
+export function writeDevPackage(rootPath) {
+  const pkgPath = join(rootPath, "package.json");
+  const pkg = getDevPackage(rootPath);
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 }
 
-/**
- * @param {string} rootPath
- */
-export function restoreBuildPackage(rootPath) {
-  const pkgPath = join(rootPath, "package.json");
-  const { __dev, ...pkg } = getPackage(rootPath);
-  const nextPkg = { ...pkg, ...__dev };
-  writeFileSync(pkgPath, `${JSON.stringify(nextPkg, null, 2)}\n`);
+export function getSourceDir() {
+  return "src";
 }
 
-/**
- * @param {string} rootPath
- */
-export function getModuleDir(rootPath) {
-  const { module } = getPackage(rootPath);
-  if (!module) return "esm";
-  return resolveDir(module);
+export function getESMDir() {
+  return "esm";
 }
 
-/**
- * @param {string} rootPath
- */
-export function getMainDir(rootPath) {
-  const { main } = getPackage(rootPath);
-  if (!main) return "cjs";
-  return resolveDir(main);
+export function getCJSDir() {
+  return "cjs";
 }
 
 /**
  * @param {string} rootPath
  */
 export function getSourcePath(rootPath) {
-  return join(rootPath, "src");
+  return join(rootPath, getSourceDir());
 }
 
 /**
@@ -138,16 +185,16 @@ function isPublicModule(rootPath, filename) {
 
 /**
  * Returns { index: "path/to/index", moduleName: "path/to/moduleName" }
- * @param {string} rootPath
+ * @param {string} sourcePath
  * @param {string} prefix
  * @returns {Record<string, string>}
  */
-export function getPublicFiles(rootPath, prefix = "") {
-  return readdirSync(rootPath)
-    .filter((filename) => isPublicModule(rootPath, filename))
+export function getPublicFiles(sourcePath, prefix = "") {
+  return readdirSync(sourcePath)
+    .filter((filename) => isPublicModule(sourcePath, filename))
     .sort() // Ensure consistent order across platforms
     .reduce((acc, filename) => {
-      const path = join(rootPath, filename);
+      const path = join(sourcePath, filename);
       const childFiles =
         isDirectory(path) && getPublicFiles(path, join(prefix, filename));
       return {
@@ -177,11 +224,7 @@ export function getProxyFolders(rootPath) {
  * @returns {string[]}
  */
 export function getBuildFolders(rootPath) {
-  return [
-    getMainDir(rootPath),
-    getModuleDir(rootPath),
-    ...getProxyFolders(rootPath),
-  ];
+  return [getCJSDir(), getESMDir(), ...getProxyFolders(rootPath)];
 }
 
 /**
@@ -217,7 +260,7 @@ function reduceToRootPaths(array, path) {
 export function cleanBuild(rootPath) {
   const pkg = getPackage(rootPath);
 
-  restoreBuildPackage(rootPath);
+  writeDevPackage(rootPath);
   const cleaned = [chalk.bold(chalk.gray("package.json"))];
 
   getBuildFolders(rootPath)
@@ -241,7 +284,9 @@ export function cleanBuild(rootPath) {
  * @param {string} path
  */
 export function getIndexPath(path) {
-  const index = readdirSync(path).find((file) => /^index\.(j|t)sx?/.test(file));
+  const index = readdirSync(path).find((file) =>
+    /^index\.(c|m)?(j|t)sx?/.test(file)
+  );
   if (!index) {
     throw new Error(`Missing index file in ${path}`);
   }
@@ -277,8 +322,8 @@ export function makeGitignore(rootPath) {
  */
 function getProxyPackageContents(rootPath, moduleName) {
   const { name } = getPackage(rootPath);
-  const mainDir = getMainDir(rootPath);
-  const moduleDir = getModuleDir(rootPath);
+  const mainDir = getCJSDir();
+  const moduleDir = getESMDir();
   const prefix = "../".repeat(moduleName.split("/").length);
   const json = {
     name: `${name}/${moduleName}`,
