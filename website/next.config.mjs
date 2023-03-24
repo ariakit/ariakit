@@ -2,7 +2,9 @@
 import pagesConfig from "./build-pages/config.mjs";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.mjs";
 
-const plugin = new PagesWebpackPlugin(pagesConfig);
+const isBuild = process.env.NODE_ENV === "production";
+
+const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
@@ -16,19 +18,18 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true,
-  transpilePackages: ["@ariakit/playground", "@ariakit/react"],
+  transpilePackages: !isBuild ? ["@ariakit/react", "@ariakit/playground"] : [],
   typescript: {
     ignoreBuildErrors: true,
   },
   webpack(config, context) {
     if (!context.isServer) {
-      config.plugins.unshift(plugin);
+      config.plugins.unshift(pagesPlugin);
     }
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
     config.resolve.extensionAlias = {
       ".js": [".js", ".ts", ".tsx"],
-      ".jsx": [".jsx", ".tsx"],
     };
     return config;
   },

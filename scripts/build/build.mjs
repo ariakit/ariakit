@@ -14,9 +14,9 @@ import {
 } from "./utils.mjs";
 
 Object.defineProperty(process.env, "NODE_ENV", {
-  configurable: true,
   writable: true,
   enumerable: true,
+  configurable: true,
   value: "production",
 });
 

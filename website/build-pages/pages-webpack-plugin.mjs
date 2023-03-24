@@ -13,7 +13,7 @@ function getBuildDir(buildDir) {
 
 /** @param {string} path */
 function pathToImport(path) {
-  return path.replace(/\.[tj](sx?)$/, ".j$1");
+  return path.replace(/\.[tj](sx?)$/, ".js");
 }
 
 /**

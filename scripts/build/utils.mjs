@@ -258,26 +258,11 @@ function reduceToRootPaths(array, path) {
  * @param {string} rootPath
  */
 export function cleanBuild(rootPath) {
-  const pkg = getPackage(rootPath);
-
   writeDevPackage(rootPath);
-  const cleaned = [chalk.bold(chalk.gray("package.json"))];
-
   getBuildFolders(rootPath)
     .filter(isRootModule)
     .reduce(reduceToRootPaths, [])
-    .forEach((name) => {
-      rimrafSync(name);
-      cleaned.push(chalk.bold(chalk.gray(name)));
-    });
-
-  if (cleaned.length) {
-    console.log(
-      ["", `Cleaned in ${chalk.bold(pkg.name)}:`, `${cleaned.join(", ")}`].join(
-        "\n"
-      )
-    );
-  }
+    .forEach((name) => rimrafSync(name));
 }
 
 /**

@@ -1,4 +1,5 @@
 import {
+  act,
   click,
   fireEvent,
   getByRole,
@@ -6,8 +7,13 @@ import {
   press,
   render,
 } from "@ariakit/test";
-import { nextFrame } from "@ariakit/test/__utils";
 import Example from "./index.js";
+
+function nextFrame(): Promise<void> {
+  return act<void>(
+    () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+  );
+}
 
 const getContextMenuArea = () => getByText("Right click here");
 const getMenu = () => getByRole("menu", { hidden: true });
