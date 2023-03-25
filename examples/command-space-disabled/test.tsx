@@ -2,7 +2,7 @@ import { getByText, press, render } from "@ariakit/test";
 import Example from "./index.js";
 
 test("enter does trigger the alert", async () => {
-  const alertMock = jest.spyOn(window, "alert").mockImplementation();
+  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
 
   render(<Example />);
   await press.Tab();
@@ -14,7 +14,7 @@ test("enter does trigger the alert", async () => {
 });
 
 test("space doesn't trigger the alert", async () => {
-  const alertMock = jest.spyOn(window, "alert").mockImplementation();
+  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
 
   render(<Example />);
   await press.Tab();

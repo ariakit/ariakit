@@ -16,7 +16,7 @@ const getDisclosure = () =>
 const getFollowLink = () => getByRole("link", { name: "Follow" });
 
 const waitForHovercardToShow = (timeout = 600) =>
-  waitFor(expect(getHovercard()).toBeVisible, { timeout });
+  waitFor(() => expect(getHovercard()).toBeVisible(), { timeout });
 
 const expectDisclosureToBeHidden = () =>
   expect(getDisclosure()).toHaveStyle({ height: "1px" });

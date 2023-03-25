@@ -13,17 +13,13 @@ const getMenuButton = () => getByRole("button", { name: "Actions" });
 const getMenu = () => getByRole("menu", { hidden: true });
 const getMenuItem = (name: string) => getByRole("menuitem", { name });
 
-const spyOnAlert = () =>
-  jest.spyOn(window, "alert").mockImplementation(() => {});
+const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 let alert = spyOnAlert();
 
 beforeEach(() => {
   alert = spyOnAlert();
-});
-
-afterEach(() => {
-  alert.mockClear();
+  return () => alert.mockClear();
 });
 
 test("show/hide on click", async () => {

@@ -13,10 +13,10 @@ const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
 const getHovercard = () => getByRole("dialog", { hidden: true });
 
 const waitForHovercardToShow = (timeout = 600) =>
-  waitFor(expect(getHovercard()).toBeVisible, { timeout });
+  waitFor(() => expect(getHovercard()).toBeVisible(), { timeout });
 
 const waitForHovercardToHide = (timeout = 600) =>
-  waitFor(expect(getHovercard()).not.toBeVisible, { timeout });
+  waitFor(() => expect(getHovercard()).not.toBeVisible(), { timeout });
 
 const hoverOutside = async () => {
   await hover(document.body);

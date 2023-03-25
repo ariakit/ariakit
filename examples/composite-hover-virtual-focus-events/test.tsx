@@ -1,10 +1,11 @@
 import { getByRole, hover, press, render } from "@ariakit/test";
+import { SpyInstance } from "vitest";
 import Example from "./index.js";
 
 const getToolbar = () => getByRole("toolbar");
 const getButton = (name: string) => getByRole("button", { name });
 
-function expectCalls(mock: jest.SpyInstance) {
+function expectCalls(mock: SpyInstance) {
   const calls = mock.mock.calls.flat();
   mock.mockClear();
   return expect(calls);
@@ -18,7 +19,7 @@ test("events", async () => {
     </>
   );
 
-  const log = jest.spyOn(console, "log").mockImplementation(() => {});
+  const log = vi.spyOn(console, "log").mockImplementation(() => {});
 
   await press.Tab();
   await press.Tab();

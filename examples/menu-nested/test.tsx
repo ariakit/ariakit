@@ -102,7 +102,7 @@ test("show/hide submenu on mouse hover", async () => {
   // The submenu shouldn't be immediately visible
   expect(getMenu("Find")).not.toBeVisible();
   // Wait for show timeout
-  await waitFor(expect(getMenu("Find")).toBeVisible);
+  await waitFor(() => expect(getMenu("Find")).toBeVisible());
   expect(getMenuItem("Find")).toHaveFocus();
   // Hover on submenu item
   await hover(getMenuItem("Find Next"));
@@ -114,7 +114,7 @@ test("show/hide submenu on mouse hover", async () => {
   expect(getMenuItem("Speech")).toHaveFocus();
   expect(getMenu("Find")).not.toBeVisible();
   expect(getMenu("Speech")).not.toBeVisible();
-  await waitFor(expect(getMenu("Speech")).toBeVisible);
+  await waitFor(() => expect(getMenu("Speech")).toBeVisible());
 });
 
 test("hide submenu on escape", async () => {

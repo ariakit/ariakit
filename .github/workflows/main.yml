@@ -163,19 +163,8 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: >
-          npm test --
-          --coverage
-          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
-          --shard ${{ matrix.shard }}
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        run: npm test -- --shard ${{ matrix.shard }}
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -211,15 +200,8 @@ jobs:
       - name: Install React 17
         run: npm run react17
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: >
-          npm test --
-          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
-          --shard ${{ matrix.shard }}
+        run: npm test -- --shard ${{ matrix.shard }}
 
   website:
     name: Build website

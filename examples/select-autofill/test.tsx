@@ -22,5 +22,5 @@ test("focusing on native select moves focus to custom select", async () => {
   render(<Example />);
   expect(getSelect()).not.toHaveFocus();
   focus(getNativeSelect());
-  await waitFor(expect(getSelect()).toHaveFocus);
+  await waitFor(() => expect(getSelect()).toHaveFocus());
 });

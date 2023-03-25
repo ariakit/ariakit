@@ -25,7 +25,7 @@ test("tab", async () => {
 });
 
 test("enter", async () => {
-  const alertMock = jest.spyOn(window, "alert").mockImplementation();
+  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
   render(<Example />);
   await press.Tab();
   expect(getCommand()).toHaveFocus();
@@ -35,7 +35,7 @@ test("enter", async () => {
 });
 
 test("space", async () => {
-  const alertMock = jest.spyOn(window, "alert").mockImplementation();
+  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
   render(<Example />);
   await press.Tab();
   expect(getCommand()).toHaveFocus();

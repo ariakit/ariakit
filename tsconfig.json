@@ -5,7 +5,7 @@
     "module": "esnext",
     "moduleResolution": "node16",
     "jsx": "react-jsx",
-    "types": ["node", "jest", "jest-axe", "@testing-library/jest-dom"],
+    "types": ["node", "vitest/globals"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
     "noEmit": true,

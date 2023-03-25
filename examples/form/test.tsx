@@ -11,17 +11,13 @@ import Example from "./index.js";
 const getInput = (name: string) => getByRole("textbox", { name });
 const getErrors = () => queryAllByText("Constraints not satisfied");
 
-const spyOnAlert = () =>
-  jest.spyOn(window, "alert").mockImplementation(() => {});
+const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 let alert = spyOnAlert();
 
 beforeEach(() => {
   alert = spyOnAlert();
-});
-
-afterEach(() => {
-  alert.mockClear();
+  return () => alert.mockClear();
 });
 
 test("focus on the first input by tabbing", async () => {

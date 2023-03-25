@@ -5,12 +5,11 @@
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["import", "jest"],
+  "plugins": ["import", "vitest"],
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true,
-    "jest": true
+    "node": true
   },
   "settings": {
     "react": {
@@ -45,7 +44,7 @@
         "pathGroupsExcludedImportTypes": ["react"]
       }
     ],
-    "jest/consistent-test-it": [
+    "vitest/consistent-test-it": [
       "error",
       {
         "fn": "test",
