@@ -1,12 +1,4 @@
-import {
-  click,
-  getByRole,
-  hover,
-  press,
-  render,
-  type,
-  waitFor,
-} from "@ariakit/test";
+import { click, getByRole, hover, press, render, type } from "@ariakit/test";
 import Example from "./index.js";
 
 const getCombobox = () => getByRole("combobox");
@@ -35,7 +27,7 @@ test("auto select with inline autocomplete on typing", async () => {
   expect(getCombobox()).toHaveValue("ae");
   expect(getSelectionValue(getCombobox())).toBe("");
   await type("\b\bv");
-  await waitFor(() => expect(getCombobox()).toHaveValue("vodka"));
+  expect(getCombobox()).toHaveValue("vodka");
   expect(getSelectionValue(getCombobox())).toBe("odka");
   await type("\bo");
   expect(getCombobox()).toHaveValue("vodka");
@@ -60,7 +52,7 @@ test("auto select with inline autocomplete on typing + arrow down", async () => 
   render(<Example />);
   await press.Tab();
   await type("av");
-  await waitFor(() => expect(getCombobox()).toHaveValue("avocado"));
+  expect(getCombobox()).toHaveValue("avocado");
   expect(getSelectionValue(getCombobox())).toBe("ocado");
   await type("\b");
   expect(getCombobox()).toHaveValue("av");
@@ -78,7 +70,7 @@ test("auto select with inline autocomplete on typing + arrow down", async () => 
     await press.ArrowLeft(null, { shiftKey: true });
   }
   await type("p");
-  await waitFor(() => expect(getCombobox()).toHaveValue("papaya"));
+  expect(getCombobox()).toHaveValue("papaya");
   expect(getOption("Papaya")).toHaveFocus();
   expect(getSelectionValue(getCombobox())).toBe("apaya");
   await type("\b");
@@ -110,7 +102,7 @@ test("autocomplete on focus on hover", async () => {
   render(<Example />);
   await click(getCombobox());
   await type("g");
-  await waitFor(() => expect(getCombobox()).toHaveValue("gelato"));
+  expect(getCombobox()).toHaveValue("gelato");
   await hover(getOption("Pudding"));
   expect(getCombobox()).toHaveValue("g");
 });

@@ -5,7 +5,7 @@
     "start": "npm start -w website",
     "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12",
     "reactnext": "npm i --no-save react@next react-dom@next",
-    "dev-packages": "chokidar 'packages/**/*.{ts,tsx}' --initial -c 'node scripts/build/dev-packages.mjs'",
+    "dev-packages": "chokidar 'packages/*/src/**/*.{ts,tsx}' --initial -c 'node scripts/build/dev-packages.mjs'",
     "dev": "npm run dev-packages & npm run dev -w website",
     "dev-react17": "npm run react17 && npm run dev; npm i",
     "dev-reactnext": "npm run reactnext && npm run dev; npm i",
