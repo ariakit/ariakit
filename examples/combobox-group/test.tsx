@@ -60,7 +60,7 @@ test("auto select with inline autocomplete on typing + arrow down", async () => 
   render(<Example />);
   await press.Tab();
   await type("av");
-  expect(getCombobox()).toHaveValue("avocado");
+  await waitFor(() => expect(getCombobox()).toHaveValue("avocado"));
   expect(getSelectionValue(getCombobox())).toBe("ocado");
   await type("\b");
   expect(getCombobox()).toHaveValue("av");
