@@ -40,7 +40,7 @@ export function removeExt(path) {
  * @param {string} rootPath
  * @returns {Record<string, any>}
  */
-export function getPackage(rootPath) {
+export function readPackageJson(rootPath) {
   const pkgPath = join(rootPath, "package.json");
   return JSON.parse(readFileSync(pkgPath, "utf-8"));
 }
@@ -48,15 +48,19 @@ export function getPackage(rootPath) {
 /**
  * @param {string} rootPath
  */
-export function getBuildPackage(rootPath) {
-  const { exports: _, ...pkg } = getPackage(rootPath);
+export function getPackageJson(rootPath, prod = false) {
+  const { exports: _, ...pkg } = readPackageJson(rootPath);
   const sourcePath = getSourcePath(rootPath);
   const publicFiles = getPublicFiles(sourcePath);
+  const sourceDir = getSourceDir();
   const cjsDir = getCJSDir();
   const esmDir = getESMDir();
 
   /** @param {string} path */
   const getExports = (path) => {
+    if (!prod) {
+      return path.replace(sourcePath, `./${sourceDir}`);
+    }
     path = removeExt(path).replace(sourcePath, "");
     return {
       import: `./${join(esmDir, path)}.js`,
@@ -75,11 +79,12 @@ export function getBuildPackage(rootPath) {
     {}
   );
 
+  /** @type {Record<string, any>} */
   const nextPkg = {
     ...pkg,
-    main: join(cjsDir, "index.cjs"),
-    module: join(esmDir, "index.js"),
-    types: join(cjsDir, "index.d.ts"),
+    main: prod ? join(cjsDir, "index.cjs") : join(sourceDir, "index.ts"),
+    module: prod ? join(esmDir, "index.js") : join(sourceDir, "index.ts"),
+    types: prod ? join(cjsDir, "index.d.ts") : join(sourceDir, "index.ts"),
     exports: {
       ...moduleExports,
       "./package.json": "./package.json",
@@ -92,61 +97,14 @@ export function getBuildPackage(rootPath) {
 /**
  * @param {string} rootPath
  */
-export function getDevPackage(rootPath) {
-  const { exports: _, ...pkg } = getPackage(rootPath);
-  const sourcePath = getSourcePath(rootPath);
-  const publicFiles = getPublicFiles(sourcePath);
-  const sourceDir = getSourceDir();
-
-  /** @param {string} path */
-  const getExports = (path) => path.replace(sourcePath, `./${sourceDir}`);
-
-  const moduleExports = Object.entries(publicFiles).reduce(
-    (acc, [name, path]) => {
-      if (name === "index") {
-        return { ".": getExports(path), ...acc };
-      }
-      const pathname = `./${name.replace(/\/index$/, "")}`;
-      return { ...acc, [pathname]: getExports(path) };
-    },
-    {}
-  );
-
-  const nextPkg = {
-    ...pkg,
-    main: join(sourceDir, "index.ts"),
-    module: join(sourceDir, "index.ts"),
-    types: join(sourceDir, "index.ts"),
-    exports: {
-      ...moduleExports,
-      "./package.json": "./package.json",
-    },
-  };
-
-  return nextPkg;
-}
-
-/**
- * @param {string} rootPath
- */
-export function writeBuildPackage(rootPath) {
+export function writePackageJson(rootPath, prod = false) {
   const pkgPath = join(rootPath, "package.json");
   const currentContents = readFileSync(pkgPath, "utf-8");
-  const buildPkg = getBuildPackage(rootPath);
-  const nextContents = `${JSON.stringify(buildPkg, null, 2)}\n`;
+  const pkg = getPackageJson(rootPath, prod);
+  const nextContents = `${JSON.stringify(pkg, null, 2)}\n`;
   if (currentContents === nextContents) return;
   writeFileSync(pkgPath, nextContents);
-}
-/**
- * @param {string} rootPath
- */
-export function writeDevPackage(rootPath) {
-  const pkgPath = join(rootPath, "package.json");
-  const currentContents = readFileSync(pkgPath, "utf-8");
-  const devPkg = getDevPackage(rootPath);
-  const nextContents = `${JSON.stringify(devPkg, null, 2)}\n`;
-  if (currentContents === nextContents) return;
-  writeFileSync(pkgPath, nextContents);
+  console.log(`${chalk.blue(pkg.name)} - Updated package.json`);
 }
 
 export function getSourceDir() {
@@ -264,7 +222,7 @@ function reduceToRootPaths(array, path) {
  * @param {string} rootPath
  */
 export function cleanBuild(rootPath) {
-  writeDevPackage(rootPath);
+  writePackageJson(rootPath);
   getBuildFolders(rootPath)
     .filter(isRootModule)
     .reduce(reduceToRootPaths, [])
@@ -288,7 +246,7 @@ export function getIndexPath(path) {
  * @param {string} rootPath
  */
 export function makeGitignore(rootPath) {
-  const pkg = getPackage(rootPath);
+  const pkg = readPackageJson(rootPath);
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
@@ -312,7 +270,7 @@ export function makeGitignore(rootPath) {
  * @param {string} moduleName
  */
 function getProxyPackageContents(rootPath, moduleName) {
-  const { name } = getPackage(rootPath);
+  const { name } = readPackageJson(rootPath);
   const mainDir = getCJSDir();
   const moduleDir = getESMDir();
   const prefix = "../".repeat(moduleName.split("/").length);
@@ -330,7 +288,7 @@ function getProxyPackageContents(rootPath, moduleName) {
  * @param {string} rootPath
  */
 export function makeProxies(rootPath) {
-  const pkg = getPackage(rootPath);
+  const pkg = readPackageJson(rootPath);
   const created = [];
   getProxyFolders(rootPath).forEach((name) => {
     fse.ensureDirSync(name);

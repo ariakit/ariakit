@@ -10,7 +10,7 @@ import {
   getSourcePath,
   makeGitignore,
   makeProxies,
-  writeBuildPackage,
+  writePackageJson,
 } from "./utils.mjs";
 
 Object.defineProperty(process.env, "NODE_ENV", {
@@ -24,7 +24,7 @@ const cwd = process.cwd();
 
 cleanBuild(cwd);
 
-writeBuildPackage(cwd);
+writePackageJson(cwd, true);
 makeGitignore(cwd);
 makeProxies(cwd);
 
