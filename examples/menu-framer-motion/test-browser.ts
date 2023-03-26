@@ -19,7 +19,7 @@ const createTransition = (duration = 500) => {
   return isPending;
 };
 
-test("open/hide with click", async ({ page, headless }, testInfo) => {
+test("open/hide with click", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
   const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
   await page.setViewportSize({ width: 1024, height: 1024 });
@@ -33,7 +33,7 @@ test("open/hide with click", async ({ page, headless }, testInfo) => {
     await expect(getMenuButton(page)).toBeFocused();
   }
   await expect(getMenu(page)).toBeFocused();
-  if (headless && isMac) {
+  if (isMac) {
     expect(await getWrapper(page).screenshot()).toMatchSnapshot();
   }
   const isLeaving = createTransition();

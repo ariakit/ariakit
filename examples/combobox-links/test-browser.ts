@@ -12,7 +12,7 @@ const getClickModifier = async (page: Page) => {
 };
 
 test("click on link with mouse", async ({ page }) => {
-  await page.goto("/examples/combobox-links");
+  await page.goto("/previews/combobox-links");
   await getCombobox(page).click();
   await getOption(page, "Ariakit.org").click();
   await expect(page).toHaveURL(/https:\/\/ariakit.org/);
@@ -23,7 +23,7 @@ test("click on link with middle button", async ({
   context,
   browserName,
 }) => {
-  await page.goto("/examples/combobox-links");
+  await page.goto("/previews/combobox-links");
   await getCombobox(page).click();
   await expect(getCombobox(page)).toHaveValue("");
   if (browserName === "webkit") {
@@ -41,7 +41,7 @@ test("click on link with middle button", async ({
 });
 
 test("click on link with cmd/ctrl", async ({ page, context }) => {
-  await page.goto("/examples/combobox-links");
+  await page.goto("/previews/combobox-links");
   await getCombobox(page).click();
   const modifier = await getClickModifier(page);
   const [newPage] = await Promise.all([
@@ -58,7 +58,7 @@ test("click on link with cmd/ctrl + enter", async ({
   context,
   browserName,
 }) => {
-  await page.goto("/examples/combobox-links");
+  await page.goto("/previews/combobox-links");
   await getCombobox(page).click();
   const modifier = await getClickModifier(page);
   await page.keyboard.press("ArrowUp");
@@ -79,7 +79,7 @@ test("click on link with cmd/ctrl + enter", async ({
 });
 
 test("click on target blank link", async ({ page, context }) => {
-  await page.goto("/examples/combobox-links");
+  await page.goto("/previews/combobox-links");
   await getCombobox(page).click();
   await expect(getCombobox(page)).toHaveValue("");
   const [newPage] = await Promise.all([

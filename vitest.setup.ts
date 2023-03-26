@@ -1,19 +1,19 @@
+import { version } from "react";
 import matchers, {
   TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers";
 // @ts-expect-error
 import failOnConsole from "vitest-fail-on-console";
 
-failOnConsole();
-
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Vi {
     interface JestAssertion<T = any>
       extends jest.Matchers<void, T>,
         TestingLibraryMatchers<T, void> {}
   }
 }
+
+failOnConsole();
 
 expect.extend(matchers);
 
@@ -49,3 +49,13 @@ expect.extend({
     };
   },
 });
+
+if (version.startsWith("17")) {
+  vi.mock("react", async () => {
+    const actual = await vi.importActual<typeof import("react")>("react");
+    return {
+      ...actual,
+      useDeferredValue: <T>(v: T) => v,
+    };
+  });
+}

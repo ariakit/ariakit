@@ -15,7 +15,7 @@ const getMenuItem = (
   role = "menuitem"
 ) => locator.locator(`role=${role}[name='${name}']`);
 
-test("show/hide with click", async ({ page, headless }, testInfo) => {
+test("show/hide with click", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
   await page.goto("/examples/menu-slide");
   await getMenuButton(page).click();
@@ -27,9 +27,7 @@ test("show/hide with click", async ({ page, headless }, testInfo) => {
     wrapper!
   );
   await expect(getMenu(page, "History")).toBeVisible();
-  if (headless) {
-    expect(await wrapper?.screenshot()).toMatchSnapshot();
-  }
+  expect(await wrapper?.screenshot()).toMatchSnapshot();
   await page.waitForTimeout(500);
   await getMenuItem(page, "Recently closed windows").click();
   await page.waitForFunction(

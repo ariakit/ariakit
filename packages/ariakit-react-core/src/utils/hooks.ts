@@ -23,19 +23,11 @@ import { AnyFunction, SetState } from "@ariakit/core/utils/types";
 import { setRef } from "./misc.js";
 import { WrapElement } from "./types.js";
 
-// @ts-ignore Access React v18 hooks using string concatenation in order to
-// prevent Webpack from inferring that they are not present in React v17. For
-// example, React.useId will raise a compile time error when using React v17,
-// but React['use' + 'Id'] will not.
-const useReactId = React["use" + "Id"] as typeof React.useId | undefined;
-// @ts-ignore
-const useReactDeferredValue = React["use" + "DeferredValue"] as
-  | typeof React.useDeferredValue
-  | undefined;
-// @ts-ignore
-const useInsertionEffect = React["use" + "InsertionEffect"] as
-  | typeof React.useInsertionEffect
-  | undefined;
+// See https://github.com/webpack/webpack/issues/14814
+const _React = { ...React };
+const useReactId = _React.useId;
+const useReactDeferredValue = _React.useDeferredValue;
+const useReactInsertionEffect = _React.useInsertionEffect;
 
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -110,8 +102,8 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
   const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
-  if (useInsertionEffect) {
-    useInsertionEffect(() => {
+  if (useReactInsertionEffect) {
+    useReactInsertionEffect(() => {
       ref.current = callback;
     });
   } else {

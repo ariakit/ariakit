@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { NewWindow } from "./icons.js";
@@ -31,14 +31,15 @@ export default function Example() {
 
   const mounted = combobox.useState("mounted");
   const value = combobox.useState("value");
+  const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(
     () =>
-      matchSorter(links, value, {
+      matchSorter(links, deferredValue, {
         keys: ["children"],
         baseSort: (a, b) => (a.index < b.index ? -1 : 1),
       }),
-    [value]
+    [deferredValue]
   );
 
   const renderItem = (item: (typeof links)[number], i: number) => {

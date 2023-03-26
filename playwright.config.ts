@@ -1,47 +1,54 @@
-import { LaunchOptions, PlaywrightTestConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
 }
 
 const headed = process.env.PWHEADED === "true";
-const launchOptions: LaunchOptions = headed ? { slowMo: 150 } : {};
+const ci = process.env.CI;
 
-const config: PlaywrightTestConfig = {
+export default defineConfig({
+  fullyParallel: !headed,
+  ignoreSnapshots: headed,
+  workers: headed ? 1 : "50%",
+  forbidOnly: !!ci,
+  reportSlowTests: null,
+  reporter: ci ? [["github"], ["dot"]] : [["list"]],
+  timeout: ci ? 30000 : 8000,
+  retries: 1,
   webServer: {
     command: "npm start",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !ci,
     port: 3000,
   },
   expect: {
     toMatchSnapshot: {
-      maxDiffPixelRatio: headed ? 1 : 0.05,
+      maxDiffPixelRatio: 0.05,
     },
   },
   use: {
     screenshot: "only-on-failure",
     trace: "on-first-retry",
+    launchOptions: {
+      slowMo: headed ? 150 : undefined,
+    },
   },
-  reporter: process.env.CI ? [["github"], ["dot"]] : [["list"]],
-  retries: 1,
   projects: [
     {
       name: "chrome",
       testMatch: [/\/test[^\/]*\-chrome/, /\/test[^\/]*\-browser/],
-      use: { ...devices["Desktop Chrome"], launchOptions },
+      use: devices["Desktop Chrome"],
     },
     {
       name: "firefox",
       testMatch: [/\/test[^\/]*\-firefox/, /\/test[^\/]*\-browser/],
       retries: 2,
-      use: { ...devices["Desktop Firefox"], launchOptions },
+      use: devices["Desktop Firefox"],
     },
     {
       name: "safari",
       testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
-      use: { ...devices["Desktop Safari"], launchOptions },
+      use: devices["Desktop Safari"],
     },
   ],
-};
-
-export default config;
+});

@@ -9,6 +9,7 @@ import pagesIndex from "website/build-pages/index.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.mjs";
 import PageExample from "website/components/page-example.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
+import tw from "website/utils/tw.js";
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.js");
 
@@ -66,7 +67,10 @@ export default async function Page({ params }: PageProps) {
   const cssContent = css.join("\n");
 
   return (
-    <div className="flex min-h-screen justify-center pt-[min(10vh,100px)]">
+    <div
+      className={tw`flex min-h-[200vh] w-full justify-center bg-gray-150
+      pt-[min(30vh,400px)] dark:bg-gray-850`}
+    >
       <PageExample path={source} css={cssContent} />
     </div>
   );

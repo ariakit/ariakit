@@ -7,7 +7,7 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test("combobox show/hide animation", async ({ page }) => {
-  await page.goto("/examples/combobox-animated");
+  await page.goto("/previews/combobox-animated");
   await getCombobox(page).click();
   await expect(getListbox(page)).toBeVisible();
   await getOption(page, "🍎 Apple").click();
