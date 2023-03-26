@@ -14,7 +14,6 @@ export default defineConfig({
   forbidOnly: !!ci,
   reportSlowTests: null,
   reporter: ci ? [["github"], ["dot"]] : [["list"]],
-  timeout: ci ? 30000 : 8000,
   retries: 1,
   webServer: {
     command: "npm start",

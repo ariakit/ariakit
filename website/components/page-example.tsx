@@ -43,8 +43,8 @@ export default function PageExample({ path, id, css }: PageExampleProps) {
   );
   return (
     <div className={id}>
-      {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
       {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}
+      {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
     </div>
   );
 }
