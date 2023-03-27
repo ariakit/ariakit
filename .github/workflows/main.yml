@@ -350,7 +350,7 @@ jobs:
       - name: Test
         id: test
         run: >
-          npx playwright test
+          npm run playwright --
           --project firefox
           --project safari
           --workers ${{ steps.cpu-cores.outputs.count }}

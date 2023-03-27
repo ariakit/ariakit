@@ -13,7 +13,7 @@ const getClickModifier = async (page: Page) => {
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/combobox-links");
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(150);
 });
 
 test("click on link with mouse", async ({ page }) => {
