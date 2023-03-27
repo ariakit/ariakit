@@ -1,4 +1,4 @@
-import { Fragment, useDeferredValue, useMemo } from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import groupBy from "lodash/groupBy.js";
 import { matchSorter } from "match-sorter";
@@ -8,9 +8,9 @@ import "./style.css";
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({ gutter: 4, sameWidth: true });
   const value = combobox.useState("value");
-  const deferredValue = useDeferredValue(value);
+  const deferredValue = React.useDeferredValue(value);
 
-  const matches = useMemo(() => {
+  const matches = React.useMemo(() => {
     const items = matchSorter(food, deferredValue, { keys: ["name"] });
     return Object.entries(groupBy(items, "type"));
   }, [deferredValue]);
@@ -30,7 +30,7 @@ export default function Example() {
       <Ariakit.ComboboxPopover store={combobox} className="popover">
         {!!matches.length ? (
           matches.map(([type, items], i) => (
-            <Fragment key={type}>
+            <React.Fragment key={type}>
               <Ariakit.ComboboxGroup className="group">
                 <Ariakit.ComboboxGroupLabel className="group-label">
                   {type}
@@ -47,7 +47,7 @@ export default function Example() {
               {i < matches.length - 1 && (
                 <Ariakit.ComboboxSeparator className="separator" />
               )}
-            </Fragment>
+            </React.Fragment>
           ))
         ) : (
           <div className="no-results">No results found</div>

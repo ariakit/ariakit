@@ -8,39 +8,29 @@ const getMenu = (page: Page) => page.getByRole("menu");
 const getMenuItem = (page: Page, name: string) =>
   page.getByRole("menuitem", { name });
 
-const getWrapper = (page: Page) => getMenuButton(page).locator("..");
-
-const createTransition = (duration = 500) => {
-  const then = performance.now();
-  const isPending = () => {
-    const now = performance.now();
-    return now - then < duration;
-  };
-  return isPending;
-};
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/menu-framer-motion");
+  await page.waitForTimeout(150);
+});
 
 test("open/hide with click", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
   const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
-  await page.setViewportSize({ width: 1024, height: 1024 });
-  await page.goto("/examples/menu-framer-motion");
+  await page.setViewportSize({ width: 480, height: 480 });
   await expect(getMenu(page)).not.toBeVisible();
-  const isEntering = createTransition();
-  await getMenuButton(page).click();
+  const menuButton = getMenuButton(page);
+  await menuButton.click();
   await expect(getMenu(page)).toBeVisible();
-  if (isEntering()) {
-    // The menu button should be focused while the menu is animating.
-    await expect(getMenuButton(page)).toBeFocused();
-  }
   await expect(getMenu(page)).toBeFocused();
   if (isMac) {
-    expect(await getWrapper(page).screenshot()).toMatchSnapshot();
+    expect(await page.screenshot()).toMatchSnapshot();
   }
-  const isLeaving = createTransition();
   await getMenuItem(page, "Report").click();
-  if (isLeaving()) {
-    await expect(getMenuButton(page)).toBeFocused();
-    await expect(getMenu(page)).toBeVisible();
-  }
   await expect(getMenu(page)).not.toBeVisible();
+  await expect(menuButton).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(getMenuItem(page, "Edit")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Enter");
+  await expect(getMenuItem(page, "Edit")).toBeFocused();
 });

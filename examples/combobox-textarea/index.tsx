@@ -1,23 +1,21 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import getCaretCoordinates from "textarea-caret";
-import { defaultTriggers, getList, getValue } from "./list.js";
+import { getList, getValue } from "./list.js";
+import {
+  getAnchorRect,
+  getSearchValue,
+  getTrigger,
+  getTriggerOffset,
+  replaceValue,
+} from "./utils.js";
 import "./style.css";
 
 export default function Example() {
-  const ref = useRef<HTMLTextAreaElement>(null);
-  const [value, setValue] = useState("");
-  const [trigger, setTrigger] = useState<string | null>(null);
-  const [caretOffset, setCaretOffset] = useState<number | null>(null);
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = React.useState("");
+  const [trigger, setTrigger] = React.useState<string | null>(null);
+  const [caretOffset, setCaretOffset] = React.useState<number | null>(null);
 
   const combobox = Ariakit.useComboboxStore({
     fitViewport: true,
@@ -30,21 +28,21 @@ export default function Example() {
 
   const searchValue = combobox.useState("value");
   const mounted = combobox.useState("mounted");
+  const deferredSearchValue = React.useDeferredValue(searchValue);
 
-  // TODO: Use deferred values
-  const matches = useMemo(() => {
-    return matchSorter(getList(trigger), searchValue, {
+  const matches = React.useMemo(() => {
+    return matchSorter(getList(trigger), deferredSearchValue, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
     }).slice(0, 10);
-  }, [trigger, searchValue]);
+  }, [trigger, deferredSearchValue]);
 
   const hasMatches = !!matches.length;
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     combobox.setOpen(hasMatches);
   }, [combobox, hasMatches]);
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     if (caretOffset != null) {
       ref.current?.setSelectionRange(caretOffset, caretOffset);
     }
@@ -52,15 +50,15 @@ export default function Example() {
 
   // Re-calculates the position of the combobox popover in case the changes on
   // the textarea value have shifted the trigger character.
-  useEffect(combobox.render, [combobox, value]);
+  React.useEffect(combobox.render, [combobox, value]);
 
-  const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       combobox.hide();
     }
   };
 
-  const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const trigger = getTrigger(event.target);
     const searchValue = getSearchValue(event.target);
     // If there's a trigger character, we'll show the combobox popover.
@@ -146,67 +144,4 @@ export default function Example() {
       )}
     </div>
   );
-}
-
-function getTriggerOffset(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers
-) {
-  const { value, selectionStart } = element;
-  for (let i = selectionStart; i >= 0; i--) {
-    const char = value[i];
-    if (char && triggers.includes(char)) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-function getTrigger(element: HTMLTextAreaElement, triggers = defaultTriggers) {
-  const { value, selectionStart } = element;
-  const previousChar = value[selectionStart - 1];
-  if (!previousChar) return null;
-  const secondPreviousChar = value[selectionStart - 2];
-  const isIsolated = !secondPreviousChar || /\s/.test(secondPreviousChar);
-  if (!isIsolated) return null;
-  if (triggers.includes(previousChar)) return previousChar;
-  return null;
-}
-
-function getSearchValue(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers
-) {
-  const offset = getTriggerOffset(element, triggers);
-  if (offset === -1) return "";
-  return element.value.slice(offset + 1, element.selectionStart);
-}
-
-function getAnchorRect(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers
-) {
-  const offset = getTriggerOffset(element, triggers);
-  const { left, top, height } = getCaretCoordinates(element, offset + 1);
-  const { x, y } = element.getBoundingClientRect();
-  return {
-    x: left + x - element.scrollLeft,
-    y: top + y - element.scrollTop,
-    height,
-  };
-}
-
-function replaceValue(
-  offset: number,
-  searchValue: string,
-  displayValue: string
-) {
-  return (prevValue: string) => {
-    const nextValue =
-      prevValue.slice(0, offset) +
-      displayValue +
-      " " +
-      prevValue.slice(offset + searchValue.length + 1);
-    return nextValue;
-  };
 }

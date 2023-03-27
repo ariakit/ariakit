@@ -1,13 +1,8 @@
-import {
-  ButtonHTMLAttributes,
-  ReactNode,
-  forwardRef,
-  useLayoutEffect,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
-export type MenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  label: ReactNode;
+export type MenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  label: React.ReactNode;
   title?: string;
   animated?: boolean;
   values?: Ariakit.MenuStoreProps["values"];
@@ -18,7 +13,7 @@ export type MenuProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   initialFocusRef?: Ariakit.MenuProps["initialFocusRef"];
 };
 
-export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
+export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
   (
     {
       label,
@@ -44,7 +39,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(
     });
     const mounted = menu.useState("mounted");
 
-    useLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       if (!mounted) {
         onUnmount?.();
       }

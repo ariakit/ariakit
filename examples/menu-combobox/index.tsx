@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
@@ -8,12 +8,13 @@ export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
   const menu = Ariakit.useMenuStore({ combobox });
   const value = combobox.useState("value");
+  const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(() => {
-    return matchSorter(list, value, {
+    return matchSorter(list, deferredValue, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
     });
-  }, [value]);
+  }, [deferredValue]);
 
   return (
     <>

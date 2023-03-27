@@ -13,6 +13,7 @@ const getClickModifier = async (page: Page) => {
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/combobox-links");
+  // Wait for React hydration
   await page.waitForTimeout(150);
 });
 

@@ -1,7 +1,7 @@
-import { HTMLAttributes, forwardRef, useLayoutEffect } from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
-export type DialogProps = HTMLAttributes<HTMLDivElement> & {
+export type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
   title: string;
   animated?: boolean;
   open?: boolean;
@@ -12,7 +12,7 @@ export type DialogProps = HTMLAttributes<HTMLDivElement> & {
   finalFocusRef?: Ariakit.DialogProps["finalFocusRef"];
 };
 
-export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
+export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
   ({ title, animated, open, onClose, onUnmount, ...props }, ref) => {
     const dialog = Ariakit.useDialogStore({
       animated,
@@ -26,7 +26,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     const mounted = dialog.useState("mounted");
 
-    useLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       if (!mounted) {
         onUnmount?.();
       }

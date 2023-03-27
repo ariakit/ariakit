@@ -285,13 +285,9 @@ jobs:
           path: website/.next
           key: nextjs-${{ github.run_id }}
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
         id: test
-        run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
+        run: npm run test-chrome
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -343,17 +339,9 @@ jobs:
           path: website/.next
           key: nextjs-${{ github.run_id }}
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
         id: test
-        run: >
-          npm run playwright --
-          --project firefox
-          --project safari
-          --workers ${{ steps.cpu-cores.outputs.count }}
+        run: npm run playwright -- --project firefox --project safari
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

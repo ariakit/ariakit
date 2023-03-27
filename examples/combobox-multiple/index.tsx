@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { ComboboxMultiple, ComboboxMultipleItem } from "./combobox-multiple.js";
 import list from "./list.js";
@@ -7,8 +7,12 @@ import "./style.css";
 export default function Example() {
   const [value, setValue] = useState("");
   const [values, setValues] = useState<string[]>(["Bacon"]);
+  const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(() => matchSorter(list, value), [value]);
+  const matches = useMemo(
+    () => matchSorter(list, deferredValue),
+    [deferredValue]
+  );
 
   return (
     <div className="wrapper">

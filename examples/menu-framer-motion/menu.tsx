@@ -1,25 +1,25 @@
-import { HTMLAttributes, ReactNode, forwardRef, useState } from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { HTMLMotionProps, motion } from "framer-motion";
 
-export type MenuProps = HTMLAttributes<HTMLDivElement> & {
+export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
   open?: boolean;
   setOpen?: (open: boolean) => void;
-  label: ReactNode;
+  label: React.ReactNode;
   disabled?: boolean;
   animate?: HTMLMotionProps<"div">["animate"];
   transition?: HTMLMotionProps<"div">["transition"];
   variants?: HTMLMotionProps<"div">["variants"];
 };
 
-export const Menu = forwardRef<HTMLDivElement, MenuProps>(
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   (
     { open, setOpen, label, children, animate, transition, variants, ...props },
     ref
   ) => {
     const menu = Ariakit.useMenuStore({ animated: !!animate, open, setOpen });
     const currentPlacement = menu.useState("currentPlacement");
-    const [currentAnimation, setCurrentAnimation] = useState<unknown>();
+    const [currentAnimation, setCurrentAnimation] = React.useState<unknown>();
     return (
       <>
         <Ariakit.MenuButton
@@ -45,6 +45,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
           // keep track of the current animation so we can stop it correctly.
           onAnimationStart={setCurrentAnimation}
           onAnimationComplete={(animation: string) => {
+            console.log(animation, currentAnimation);
             if (currentAnimation !== animation) return;
             if (!menu.getState().animating) return;
             menu.stopAnimation();
@@ -58,29 +59,31 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   }
 );
 
-export type MenuItemProps = HTMLMotionProps<"div"> & {
-  label?: ReactNode;
+export type MenuItemProps = Omit<HTMLMotionProps<"div">, "children"> & {
+  label?: React.ReactNode;
+  children?: React.ReactNode;
   disabled?: boolean;
 };
 
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   ({ label, ...props }, ref) => {
     return (
       <Ariakit.MenuItem
         as={motion.div}
         ref={ref}
-        children={label}
         className="menu-item"
+        children={label}
         {...props}
       />
     );
   }
 );
 
-export type MenuSeparatorProps = HTMLAttributes<HTMLHRElement>;
+export type MenuSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
 
-export const MenuSeparator = forwardRef<HTMLHRElement, MenuSeparatorProps>(
-  (props, ref) => {
-    return <Ariakit.MenuSeparator ref={ref} className="separator" {...props} />;
-  }
-);
+export const MenuSeparator = React.forwardRef<
+  HTMLHRElement,
+  MenuSeparatorProps
+>((props, ref) => {
+  return <Ariakit.MenuSeparator ref={ref} className="separator" {...props} />;
+});

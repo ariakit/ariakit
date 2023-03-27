@@ -41,8 +41,12 @@ const createTransition = (duration = 100) => {
   return isPending;
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/menu-dialog-animated");
+  await page.waitForTimeout(150);
+});
+
 test("interact with menu", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await expect(getMenu(page)).not.toBeVisible();
   const isEntering = createTransition();
   await getMenuButton(page).click();
@@ -65,7 +69,6 @@ test("interact with menu", async ({ page }) => {
 });
 
 test("show/hide create list dialog", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).press("Enter");
   await expect(getMenuItem(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.type("cr");
@@ -84,7 +87,6 @@ test("show/hide create list dialog", async ({ page }) => {
 });
 
 test("create list", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page, 1).click();
   await expect(getMenu(page)).toBeFocused();
   await page.keyboard.press("PageDown");
@@ -112,7 +114,6 @@ test("create list", async ({ page }) => {
 });
 
 test("show/hide manage lists dialog", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
   const isEntering = createTransition();
@@ -129,7 +130,6 @@ test("show/hide manage lists dialog", async ({ page }) => {
 });
 
 test("show/hide information dialog", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
@@ -148,7 +148,6 @@ test("show/hide information dialog", async ({ page }) => {
 });
 
 test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
@@ -166,7 +165,6 @@ test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
 });
 
 test("repeatedly showing/hiding information dialog", async ({ page }) => {
-  await page.goto("/examples/menu-dialog-animated");
   await getMenuButton(page).click();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();

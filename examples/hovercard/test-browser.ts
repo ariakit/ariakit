@@ -5,8 +5,12 @@ const getAnchor = (page: Page) =>
 const getHovercard = (page: Page) =>
   page.getByRole("dialog", { name: "Ariakit" });
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/hovercard");
+  await page.waitForTimeout(150);
+});
+
 test("show/hide hovercard after scrolling", async ({ page }) => {
-  await page.goto("/examples/hovercard");
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
   await page.mouse.move(0, 0);

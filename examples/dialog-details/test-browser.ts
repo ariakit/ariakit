@@ -6,16 +6,15 @@ const getButton = (page: Page, name: string) =>
 
 test("show before JS", async ({ page }) => {
   await page.addInitScript(() => {
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("load", () => {
       const details = document.querySelector<HTMLDetailsElement>("details");
       if (details) {
         details.open = true;
       }
     });
   });
-  await page.goto("/examples/dialog-details", {
-    waitUntil: "domcontentloaded",
-  });
+  await page.goto("/previews/dialog-details");
+  await page.waitForTimeout(150);
   await expect(getDialog(page)).toBeVisible();
   await expect(getButton(page, "OK")).toBeFocused();
 });

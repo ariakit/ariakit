@@ -203,9 +203,14 @@ export const useCombobox = createHook<ComboboxOptions>(
     // needs to be a layout effect to avoid a flash of unselected content.
     useUpdateEffect(() => {
       if (!autoSelect) return;
-      if (!items.length) return;
       if (!valueChangedRef.current) return;
-      store.move(store.first());
+      const firstId = store.first();
+      if (!firstId) {
+        // TODO: Comment type Fr
+        store.setState("moves", (moves) => moves + 1);
+      } else {
+        store.move(firstId);
+      }
     }, [store, valueUpdated, storeValue, autoSelect, items]);
 
     // Focus on the combobox input on type.

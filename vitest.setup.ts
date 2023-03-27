@@ -1,4 +1,5 @@
-import { version } from "react";
+import { createElement, version } from "react";
+import { render } from "@ariakit/test";
 import _matchers, {
   TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers.js";
@@ -62,3 +63,13 @@ if (version.startsWith("17")) {
     };
   });
 }
+
+beforeEach(async ({ meta }) => {
+  const filename = meta.file?.name;
+  if (!filename) return;
+  const match = filename.match(/examples\/(.*)\/test.ts$/);
+  if (!match) return;
+  const [, example] = match;
+  const { default: Component } = await import(`examples/${example}/index.tsx`);
+  render(createElement(Component));
+});

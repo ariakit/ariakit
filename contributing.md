@@ -242,15 +242,10 @@ One of the goals of having use cases written like that is so we can write automa
 
 Let's create a test for our example:
 
-`examples/my-component/test.tsx`
+`examples/my-component/test.ts`
 
 ```tsx
-import { render, getByText } from "@ariakit/test";
-import Example from "./index.js";
-
-beforeEach(() => {
-  render(<Example />);
-});
+import { getByText } from "@ariakit/test";
 
 test("my component", () => {
   expect(getByText("My component")).toBeInTheDocument();

@@ -1,12 +1,7 @@
-import {
-  ButtonHTMLAttributes,
-  HTMLAttributes,
-  forwardRef,
-  useRef,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
-export type SelectProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type SelectProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   name?: string;
   value?: string;
   setValue?: (value: string) => void;
@@ -15,9 +10,9 @@ export type SelectProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   onTouch?: () => void;
 };
 
-export const Select = forwardRef<HTMLButtonElement, SelectProps>(
+export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   ({ children, value, setValue, defaultValue, onTouch, ...props }, ref) => {
-    const portalRef = useRef<HTMLDivElement>(null);
+    const portalRef = React.useRef<HTMLDivElement>(null);
     const select = Ariakit.useSelectStore({
       gutter: 4,
       value,
@@ -66,11 +61,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
   }
 );
 
-export type SelectItemProps = HTMLAttributes<HTMLDivElement> & {
+export type SelectItemProps = React.HTMLAttributes<HTMLDivElement> & {
   value?: string;
 };
 
-export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
+export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   (props, ref) => {
     return <Ariakit.SelectItem ref={ref} className="select-item" {...props} />;
   }

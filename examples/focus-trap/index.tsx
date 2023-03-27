@@ -1,9 +1,9 @@
 import { FocusEvent, useRef } from "react";
-import { Checkbox, FocusTrap, useCheckboxStore } from "@ariakit/react";
+import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const checkbox = useCheckboxStore({ defaultValue: true });
+  const checkbox = Ariakit.useCheckboxStore({ defaultValue: true });
   const firstRef = useRef<HTMLInputElement>(null);
   const lastRef = useRef<HTMLButtonElement>(null);
 
@@ -19,10 +19,14 @@ export default function Example() {
 
   return (
     <>
-      {focusTrapped && <FocusTrap onFocus={onTrapFocus} />}
+      {focusTrapped && <Ariakit.FocusTrap onFocus={onTrapFocus} />}
       <div className="wrapper">
         <label className="label">
-          <Checkbox store={checkbox} ref={firstRef} className="checkbox" />
+          <Ariakit.Checkbox
+            store={checkbox}
+            ref={firstRef}
+            className="checkbox"
+          />
           Trap focus
         </label>
 
@@ -30,7 +34,7 @@ export default function Example() {
           Button
         </button>
       </div>
-      {focusTrapped && <FocusTrap onFocus={onTrapFocus} />}
+      {focusTrapped && <Ariakit.FocusTrap onFocus={onTrapFocus} />}
     </>
   );
 }

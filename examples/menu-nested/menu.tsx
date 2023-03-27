@@ -1,22 +1,15 @@
-import {
-  HTMLAttributes,
-  ReactNode,
-  RefAttributes,
-  createContext,
-  forwardRef,
-  useContext,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
 // Use React Context so we can determine if the menu is a submenu or not.
-const MenuContext = createContext(false);
+const MenuContext = React.createContext(false);
 
-export type MenuItemProps = HTMLAttributes<HTMLDivElement> & {
-  label: ReactNode;
+export type MenuItemProps = React.HTMLAttributes<HTMLDivElement> & {
+  label: React.ReactNode;
   disabled?: boolean;
 };
 
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   ({ label, ...props }, ref) => {
     return (
       <Ariakit.MenuItem className="menu-item" ref={ref} {...props}>
@@ -26,17 +19,17 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
   }
 );
 
-export type MenuProps = HTMLAttributes<HTMLDivElement> & {
-  label: ReactNode;
+export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
+  label: React.ReactNode;
   disabled?: boolean;
 };
 
-type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
-  RefAttributes<HTMLDivElement>;
+type MenuButtonProps = React.HTMLAttributes<HTMLDivElement> &
+  React.RefAttributes<HTMLDivElement>;
 
-export const Menu = forwardRef<HTMLDivElement, MenuProps>(
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const nested = useContext(MenuContext);
+    const nested = React.useContext(MenuContext);
     const menu = Ariakit.useMenuStore({
       gutter: 8,
       shift: nested ? -9 : 0,

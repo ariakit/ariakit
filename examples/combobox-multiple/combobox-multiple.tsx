@@ -1,13 +1,8 @@
-import {
-  HTMLAttributes,
-  InputHTMLAttributes,
-  forwardRef,
-  useEffect,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
 export type ComboboxMultipleProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
+  React.InputHTMLAttributes<HTMLInputElement>,
   "autoComplete" | "onChange"
 > & {
   label?: string;
@@ -19,7 +14,7 @@ export type ComboboxMultipleProps = Omit<
   onValuesChange?: (values: string[]) => void;
 };
 
-export const ComboboxMultiple = forwardRef<
+export const ComboboxMultiple = React.forwardRef<
   HTMLInputElement,
   ComboboxMultipleProps
 >((props, ref) => {
@@ -57,7 +52,7 @@ export const ComboboxMultiple = forwardRef<
   const selectValue = select.useState("value");
 
   // Reset the combobox value whenever an item is checked or unchecked.
-  useEffect(() => {
+  React.useEffect(() => {
     combobox.setValue("");
   }, [selectValue, combobox]);
 
@@ -100,11 +95,11 @@ export const ComboboxMultiple = forwardRef<
   );
 });
 
-export type ComboboxMultipleItemProps = HTMLAttributes<HTMLDivElement> & {
+export type ComboboxMultipleItemProps = React.HTMLAttributes<HTMLDivElement> & {
   value?: string;
 };
 
-export const ComboboxMultipleItem = forwardRef<
+export const ComboboxMultipleItem = React.forwardRef<
   HTMLDivElement,
   ComboboxMultipleItemProps
 >(({ value, ...props }, ref) => {

@@ -1,22 +1,25 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/combobox-textarea");
+});
+
 test("popover is positioned correctly", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
-  await page.goto("/examples/combobox-textarea");
-  const textarea = await page.getByRole("combobox", { name: "Comment" });
+  const textarea = page.getByRole("combobox", { name: "Comment" });
   await textarea.click({ position: { x: 10, y: 10 } });
   await textarea.type("Hello @a");
-  const popover = await page.locator(".popover[role='listbox']");
+  const popover = page.locator(".popover[role='listbox']");
   await expect(popover).toBeVisible();
-  expect(await textarea.screenshot()).toMatchSnapshot();
+  expect(await page.screenshot()).toMatchSnapshot();
   await textarea.type("\n\n\n\n\n\n\n\n\n\n");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.press("ArrowUp");
   await textarea.type("@");
-  expect(await textarea.screenshot()).toMatchSnapshot();
+  expect(await page.screenshot()).toMatchSnapshot();
   await page.mouse.wheel(0, -50);
   await page.waitForTimeout(250);
-  expect(await textarea.screenshot()).toMatchSnapshot();
+  expect(await page.screenshot()).toMatchSnapshot();
 });

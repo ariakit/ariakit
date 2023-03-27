@@ -13,8 +13,13 @@ const createTransition = (duration = 100) => {
   return isPending;
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/dialog-animated");
+  // Wait for React hydration to complete.
+  await page.waitForTimeout(150);
+});
+
 test("show/hide", async ({ page }) => {
-  await page.goto("/examples/dialog-animated");
   await expect(getDialog(page)).not.toBeVisible();
   const isEntering = createTransition();
   await getButton(page, "Show modal").click();

@@ -4,20 +4,20 @@ if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
 }
 
-const headed = process.env.PWHEADED === "true";
-const ci = process.env.CI;
+const CI = !!process.env.CI;
+const HEADED = process.env.PWHEADED === "true";
 
 export default defineConfig({
-  fullyParallel: !headed,
-  ignoreSnapshots: headed,
-  workers: headed ? 1 : "50%",
-  forbidOnly: !!ci,
+  fullyParallel: !HEADED,
+  ignoreSnapshots: HEADED,
+  workers: HEADED ? 1 : CI ? "100%" : "80%",
+  forbidOnly: CI,
   reportSlowTests: null,
-  reporter: ci ? [["github"], ["dot"]] : [["list"]],
+  reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   webServer: {
     command: "npm start",
-    reuseExistingServer: !ci,
+    reuseExistingServer: !CI,
     port: 3000,
   },
   expect: {
@@ -29,7 +29,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
-      slowMo: headed ? 150 : undefined,
+      slowMo: HEADED ? 150 : undefined,
     },
   },
   projects: [
