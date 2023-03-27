@@ -44,8 +44,8 @@ jobs:
         with:
           title: Publish
           commit: Publish
-          version: node scripts/release/version.mjs
-          publish: node scripts/release/publish.mjs
+          version: node scripts/release/version.js
+          publish: node scripts/release/publish.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

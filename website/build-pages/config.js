@@ -2,7 +2,7 @@
 import { readdirSync } from "fs";
 import { basename, join, resolve } from "path";
 import { camelCase, upperFirst } from "lodash-es";
-import { getPageName } from "./get-page-name.mjs";
+import { getPageName } from "./get-page-name.js";
 
 const root = resolve(process.cwd(), "..");
 

@@ -1,9 +1,11 @@
 import { version } from "react";
-import matchers, {
+import _matchers, {
   TestingLibraryMatchers,
-} from "@testing-library/jest-dom/matchers";
+} from "@testing-library/jest-dom/matchers.js";
 // @ts-expect-error
 import failOnConsole from "vitest-fail-on-console";
+
+const matchers = _matchers as unknown as typeof _matchers.default;
 
 declare global {
   namespace Vi {
@@ -56,6 +58,7 @@ if (version.startsWith("17")) {
     return {
       ...actual,
       useDeferredValue: <T>(v: T) => v,
+      useInsertionEffect: undefined,
     };
   });
 }

@@ -1,6 +1,6 @@
 import { groupBy } from "lodash";
 import { notFound } from "next/navigation.js";
-import pagesConfig from "website/build-pages/config.mjs";
+import pagesConfig from "website/build-pages/config.js";
 import index from "website/build-pages/index.js";
 import Blog from "website/icons/blog.js";
 import Components from "website/icons/components.js";

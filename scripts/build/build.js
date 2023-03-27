@@ -11,7 +11,7 @@ import {
   makeGitignore,
   makeProxies,
   writePackageJson,
-} from "./utils.mjs";
+} from "./utils.js";
 
 Object.defineProperty(process.env, "NODE_ENV", {
   writable: true,

@@ -1,9 +1,9 @@
 // @ts-check
 import { dirname, resolve } from "path";
 import { visit } from "unist-util-visit";
-import { isPlaygroundNode } from "./ast.mjs";
-import { getExampleDeps } from "./get-example-deps.mjs";
-import { getPageTreeFromFile } from "./get-page-tree.mjs";
+import { isPlaygroundNode } from "./ast.js";
+import { getExampleDeps } from "./get-example-deps.js";
+import { getPageTreeFromFile } from "./get-page-tree.js";
 
 /**
  * @param {string} filename

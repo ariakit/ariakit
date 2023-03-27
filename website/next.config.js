@@ -1,6 +1,6 @@
 // @ts-check
-import pagesConfig from "./build-pages/config.mjs";
-import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.mjs";
+import pagesConfig from "./build-pages/config.js";
+import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 
 const isBuild = process.env.NODE_ENV === "production";
 

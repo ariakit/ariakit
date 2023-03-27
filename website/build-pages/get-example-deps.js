@@ -6,7 +6,6 @@ import * as t from "@babel/types";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
-import babelConfig from "../../babel.config.js";
 
 const host = ts.createCompilerHost({});
 
@@ -57,7 +56,14 @@ function getPackageVersion(source) {
 export function getExampleDeps(filename, deps = { dependencies: {} }) {
   if (!/\.[tj]sx?$/.test(filename)) return deps;
   const content = readFileSync(filename, "utf8");
-  const parsed = parseSync(content, { filename, ...babelConfig });
+  const parsed = parseSync(content, {
+    filename,
+    presets: [
+      "@babel/preset-env",
+      "@babel/preset-typescript",
+      ["@babel/preset-react", { runtime: "automatic" }],
+    ],
+  });
 
   if (!deps[filename]) {
     deps[filename] = {};

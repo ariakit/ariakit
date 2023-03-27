@@ -5,7 +5,7 @@ import { marked } from "marked";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
-import { getPageContent } from "./get-page-content.mjs";
+import { getPageContent } from "./get-page-content.js";
 
 /**
  * Returns the page tree from a markdown content string.

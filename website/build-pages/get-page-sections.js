@@ -1,9 +1,9 @@
 // @ts-check
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
-import { isPlaygroundParagraphNode } from "./ast.mjs";
-import { getPageIndexDetail } from "./get-page-index-detail.mjs";
-import { getPageTreeFromFile } from "./get-page-tree.mjs";
+import { isPlaygroundParagraphNode } from "./ast.js";
+import { getPageIndexDetail } from "./get-page-index-detail.js";
+import { getPageTreeFromFile } from "./get-page-tree.js";
 
 /**
  * @param {string} filename

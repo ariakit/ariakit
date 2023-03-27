@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: ci ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   webServer: {
-    command: "NODE_OPTIONS=--loader=esm-loader-typescript npm start",
+    command: "npm start",
     reuseExistingServer: !ci,
     port: 3000,
   },

@@ -5,10 +5,10 @@ import chalk from "chalk";
 import fse from "fs-extra";
 import { groupBy } from "lodash-es";
 import { rimrafSync } from "rimraf";
-import { getPageEntryFiles } from "./get-page-entry-files.mjs";
-import { getPageExternalDeps } from "./get-page-external-deps.mjs";
-import { getPageSections } from "./get-page-sections.mjs";
-import { getPageSourceFiles } from "./get-page-source-files.mjs";
+import { getPageEntryFiles } from "./get-page-entry-files.js";
+import { getPageExternalDeps } from "./get-page-external-deps.js";
+import { getPageSections } from "./get-page-sections.js";
+import { getPageSourceFiles } from "./get-page-source-files.js";
 
 /** @param {string} [buildDir] */
 function getBuildDir(buildDir) {

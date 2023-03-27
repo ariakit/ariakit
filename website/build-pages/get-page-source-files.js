@@ -1,8 +1,8 @@
 // @ts-check
 import { dirname, extname, resolve } from "path";
 import { visit } from "unist-util-visit";
-import { isPlaygroundNode } from "./ast.mjs";
-import { getPageTreeFromFile } from "./get-page-tree.mjs";
+import { isPlaygroundNode } from "./ast.js";
+import { getPageTreeFromFile } from "./get-page-tree.js";
 
 /**
  * Returns all source files for a page.

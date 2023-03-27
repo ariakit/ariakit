@@ -1,9 +1,9 @@
 // @ts-check
 import { readdirSync } from "fs";
 import { join } from "path";
-import { PAGE_FILE_REGEX } from "./const.mjs";
-import { getPageName } from "./get-page-name.mjs";
-import { pathToPosix } from "./path-to-posix.mjs";
+import { PAGE_FILE_REGEX } from "./const.js";
+import { getPageName } from "./get-page-name.js";
+import { pathToPosix } from "./path-to-posix.js";
 
 /**
  * Reads a directory recursively and returns a list of files that match the

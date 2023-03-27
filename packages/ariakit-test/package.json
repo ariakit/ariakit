@@ -20,8 +20,8 @@
   },
   "scripts": {
     "lint": "eslint . --ext js,ts,tsx",
-    "build": "node ../../scripts/build/build.mjs",
-    "clean": "node ../../scripts/build/clean.mjs"
+    "build": "node ../../scripts/build/build.js",
+    "clean": "node ../../scripts/build/clean.js"
   },
   "keywords": [
     "ariakit",

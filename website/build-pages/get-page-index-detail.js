@@ -1,8 +1,8 @@
 // @ts-check
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
-import { getPageName } from "./get-page-name.mjs";
-import { getPageTreeFromFile } from "./get-page-tree.mjs";
+import { getPageName } from "./get-page-name.js";
+import { getPageTreeFromFile } from "./get-page-tree.js";
 
 /**
  * @param {string} filename

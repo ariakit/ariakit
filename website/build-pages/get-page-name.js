@@ -1,6 +1,6 @@
 // @ts-check
 import { basename, dirname, extname } from "path";
-import { PAGE_INDEX_FILE_REGEX } from "./const.mjs";
+import { PAGE_INDEX_FILE_REGEX } from "./const.js";
 
 /**
  * Returns the page name from a file path. It's usually the file name, but for

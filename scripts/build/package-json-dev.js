@@ -2,7 +2,7 @@
 import { join } from "path";
 import { watch } from "chokidar";
 import { globSync } from "glob";
-import { writePackageJson } from "./utils.mjs";
+import { writePackageJson } from "./utils.js";
 
 /** @param {string} path */
 function processDevPackage(path) {

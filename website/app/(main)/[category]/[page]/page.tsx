@@ -3,19 +3,19 @@ import { dirname, resolve } from "path";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import pagesConfig from "website/build-pages/config.mjs";
-import { getExampleDeps } from "website/build-pages/get-example-deps.mjs";
-import { getPageContent } from "website/build-pages/get-page-content.mjs";
-import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.mjs";
-import { getPageName } from "website/build-pages/get-page-name.mjs";
+import pagesConfig from "website/build-pages/config.js";
+import { getExampleDeps } from "website/build-pages/get-example-deps.js";
+import { getPageContent } from "website/build-pages/get-page-content.js";
+import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
+import { getPageName } from "website/build-pages/get-page-name.js";
 import pagesIndex from "website/build-pages/index.js";
-import { parseCSSFile } from "website/build-pages/parse-css-file.mjs";
+import { parseCSSFile } from "website/build-pages/parse-css-file.js";
 import PageExample from "website/components/page-example.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 
 const { pages } = pagesConfig;
 
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.js");
+const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
 function getPageNames(dir: string) {
   return getPageEntryFiles(dir).map(getPageName);

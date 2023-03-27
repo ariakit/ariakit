@@ -1,8 +1,8 @@
 // @ts-check
 import { readFileSync } from "fs";
 import { basename, extname } from "path";
-import { getPageName } from "./get-page-name.mjs";
-import { pathToPosix } from "./path-to-posix.mjs";
+import { getPageName } from "./get-page-name.js";
+import { pathToPosix } from "./path-to-posix.js";
 
 /**
  * Creates a page content string from a file path.
