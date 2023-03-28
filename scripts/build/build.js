@@ -33,9 +33,11 @@ const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 
-spawn.sync("tsc", ["--emitDeclarationOnly", "--outDir", esmDir], {
-  stdio: "inherit",
-});
+spawn.sync(
+  "tsc",
+  ["--emitDeclarationOnly", "--noEmit", "false", "--outDir", esmDir],
+  { stdio: "inherit" }
+);
 
 fse.copySync(esmDir, cjsDir);
 
