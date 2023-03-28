@@ -11,8 +11,5 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "13.2.5-canary.10"
   }
 }
