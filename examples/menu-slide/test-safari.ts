@@ -16,14 +16,12 @@ const getMenuItem = (
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-slide");
+  await page.goto("/previews/menu-slide", { waitUntil: "networkidle" });
 });
 
 test("hide with wheel", async ({ page }) => {
-  await expect(async () => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page, "Options")).toBeVisible();
-  }).toPass();
+  await getMenuButton(page).click();
+  await expect(getMenu(page, "Options")).toBeVisible();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await getMenuItem(page, "History").click();
   await page.waitForFunction(

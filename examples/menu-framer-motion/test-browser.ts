@@ -9,16 +9,14 @@ const getMenuItem = (page: Page, name: string) =>
   page.getByRole("menuitem", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-framer-motion");
+  await page.goto("/previews/menu-framer-motion", { waitUntil: "networkidle" });
 });
 
 test("open/hide with click", async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 480 });
   await expect(getMenu(page)).not.toBeVisible();
-  await expect(async () => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page)).toBeVisible();
-  }).toPass();
+  await getMenuButton(page).click();
+  await expect(getMenu(page)).toBeVisible();
   await expect(getMenu(page)).toBeFocused();
   await getMenuItem(page, "Report").click();
   await expect(getMenu(page)).not.toBeVisible();

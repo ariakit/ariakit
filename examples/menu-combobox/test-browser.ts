@@ -12,14 +12,12 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-combobox");
+  await page.goto("/previews/menu-combobox", { waitUntil: "networkidle" });
 });
 
 test("auto select first option", async ({ page }) => {
-  await expect(async () => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page)).toBeVisible();
-  }).toPass();
+  await getMenuButton(page).click();
+  await expect(getMenu(page)).toBeVisible();
   await getCombobox(page).type("a");
   await expect(getOption(page, "Audio")).toHaveAttribute(
     "data-active-item",

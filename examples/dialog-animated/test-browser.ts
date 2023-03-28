@@ -14,15 +14,13 @@ const createTransition = (duration = 100) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-animated");
+  await page.goto("/previews/dialog-animated", { waitUntil: "networkidle" });
 });
 
 test("show/hide", async ({ page }) => {
   await expect(getDialog(page)).not.toBeVisible();
-  await expect(async () => {
-    await getButton(page, "Show modal").click();
-    await expect(getDialog(page)).toBeVisible();
-  }).toPass();
+  await getButton(page, "Show modal").click();
+  await expect(getDialog(page)).toBeVisible();
   await expect(getButton(page, "OK")).toBeFocused();
   const isLeaving = createTransition();
   await getButton(page, "OK").click();

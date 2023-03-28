@@ -16,15 +16,13 @@ const getMenuItem = (
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-slide");
+  await page.goto("/previews/menu-slide", { waitUntil: "networkidle" });
 });
 
 test("show/hide with click", async ({ page }) => {
   test.info().snapshotSuffix = "";
-  await expect(async () => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page, "Options")).toBeVisible();
-  }).toPass();
+  await getMenuButton(page).click();
+  await expect(getMenu(page, "Options")).toBeVisible();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await getMenuItem(page, "History").click();
   await page.waitForFunction(
@@ -51,10 +49,8 @@ test("show/hide with click", async ({ page }) => {
 
 test("show/hide with keyboard", async ({ page }) => {
   await getMenuButton(page).focus();
-  await expect(async () => {
-    await page.keyboard.press("ArrowDown");
-    await expect(getMenuItem(page, "New Tab")).toBeFocused();
-  }).toPass();
+  await page.keyboard.press("ArrowDown");
+  await expect(getMenuItem(page, "New Tab")).toBeFocused();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await page.keyboard.type("h");
   await page.keyboard.press("Enter");

@@ -7,14 +7,12 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-animated");
+  await page.goto("/previews/combobox-animated", { waitUntil: "networkidle" });
 });
 
 test("combobox show/hide animation", async ({ page }) => {
-  await expect(async () => {
-    await getCombobox(page).click();
-    await expect(getListbox(page)).toBeVisible();
-  }).toPass();
+  await getCombobox(page).click();
+  await expect(getListbox(page)).toBeVisible();
   await getOption(page, "🍎 Apple").click();
   await expect(getListbox(page)).not.toBeVisible();
 });
