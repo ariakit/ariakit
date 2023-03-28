@@ -5,12 +5,16 @@ const getButton = (page: Page | Locator, name: string) =>
 const getPopover = (page: Page | Locator) =>
   page.getByRole("dialog", { name: "Team meeting" });
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/popover-standalone");
+  await page.waitForTimeout(150);
+});
+
 test("do not scroll when opening the popover", async ({ page }) => {
-  await page.goto("/examples/popover-standalone");
   await getButton(page, "Accept invite").focus();
   const prevScrollY = await page.evaluate(() => window.scrollY);
   await page.keyboard.press("Enter");
-  const popover = await getPopover(page);
+  const popover = getPopover(page);
   await expect(popover).toBeVisible();
   await expect(getButton(popover, "Accept")).toBeFocused();
   const scrollY = await page.evaluate(() => window.scrollY);

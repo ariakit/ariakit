@@ -10,9 +10,12 @@ const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/select-group");
+});
+
 test("scroll into view", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
-  await page.goto("/examples/select-group");
   await getButton(page).click();
   await expect(getPopover(page)).toBeFocused();
   await repeat(() => page.keyboard.press("ArrowDown"), 7);

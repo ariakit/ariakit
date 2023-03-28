@@ -1,22 +1,22 @@
-import { Radio, RadioGroup, useRadioStore } from "@ariakit/react";
+import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const radio = useRadioStore();
+  const radio = Ariakit.useRadioStore();
   return (
-    <RadioGroup store={radio}>
+    <Ariakit.RadioGroup store={radio}>
       <label className="label">
-        <Radio className="radio" value="apple" />
+        <Ariakit.Radio className="radio" value="apple" />
         apple
       </label>
       <label className="label">
-        <Radio className="radio" value="orange" />
+        <Ariakit.Radio className="radio" value="orange" />
         orange
       </label>
       <label className="label">
-        <Radio className="radio" value="watermelon" />
+        <Ariakit.Radio className="radio" value="watermelon" />
         watermelon
       </label>
-    </RadioGroup>
+    </Ariakit.RadioGroup>
   );
 }

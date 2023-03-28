@@ -3,10 +3,8 @@ import {
   getByPlaceholderText,
   getByRole,
   press,
-  render,
   type,
 } from "@ariakit/test";
-import Example from "./index.js";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
 const getPopover = () => getByRole("dialog", { hidden: true });
@@ -14,7 +12,6 @@ const getCombobox = () => getByPlaceholderText("Search...");
 const getOption = (name: string) => getByRole("option", { name });
 
 test("show/hide on click", async () => {
-  render(<Example />);
   expect(getPopover()).not.toBeVisible();
   await click(getSelect());
   expect(getPopover()).toBeVisible();
@@ -26,7 +23,6 @@ test("show/hide on click", async () => {
 });
 
 test("show/hide on enter", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Enter();
   expect(getPopover()).toBeVisible();
@@ -41,7 +37,6 @@ test("show/hide on enter", async () => {
 });
 
 test("show/hide on space", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Space();
   expect(getPopover()).toBeVisible();
@@ -56,7 +51,6 @@ test("show/hide on space", async () => {
 });
 
 test("show on arrow down", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getPopover()).toBeVisible();
@@ -65,7 +59,6 @@ test("show on arrow down", async () => {
 });
 
 test("show on arrow up", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowUp();
   expect(getPopover()).toBeVisible();
@@ -74,7 +67,6 @@ test("show on arrow up", async () => {
 });
 
 test("type on combobox", async () => {
-  render(<Example />);
   await click(getSelect());
   await type("gr");
   expect(getCombobox()).toHaveValue("gr");
@@ -90,7 +82,6 @@ test("type on combobox", async () => {
 });
 
 test("select value after filtering", async () => {
-  render(<Example />);
   await click(getSelect());
   await type("ba");
   await click(getOption("Banana"));

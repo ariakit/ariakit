@@ -1,5 +1,4 @@
-import { getByRole, press, render } from "@ariakit/test";
-import Example from "./index.js";
+import { getByRole, press } from "@ariakit/test";
 
 const getButton = (name: string) => getByRole("button", { name });
 const getSelect = () => getByRole("combobox", { name: "Text alignment" });
@@ -7,7 +6,6 @@ const getList = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
 
 test("navigate with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   expect(getButton("Bold")).toHaveFocus();
   await press.ArrowRight();

@@ -1,20 +1,10 @@
-import {
-  click,
-  getByRole,
-  hover,
-  press,
-  render,
-  sleep,
-  type,
-} from "@ariakit/test";
-import Example from "./index.js";
+import { click, getByRole, hover, press, sleep, type } from "@ariakit/test";
 
 const getSelect = () => getByRole("combobox", { name: "Position" });
 const getGrid = () => getByRole("grid", { hidden: true });
 const getCell = (name: string) => getByRole("gridcell", { name });
 
 test("default value", async () => {
-  render(<Example />);
   expect(getSelect()).toHaveTextContent("Center");
   await click(getSelect());
   expect(getGrid()).toBeVisible();
@@ -22,7 +12,6 @@ test("default value", async () => {
 });
 
 test("change expanded select value with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Enter();
   await press.ArrowUp();
@@ -50,7 +39,6 @@ test("change expanded select value with keyboard", async () => {
 });
 
 test("change collapsed select value with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getGrid()).not.toBeVisible();
@@ -74,7 +62,6 @@ test("change collapsed select value with keyboard", async () => {
 });
 
 test("change value on hover", async () => {
-  render(<Example />);
   await click(getSelect());
   await hover(getCell("Top Left"));
   expect(getCell("Top Left")).toHaveFocus();
@@ -91,16 +78,16 @@ test("change value on hover", async () => {
 });
 
 test("keep value on tab", async () => {
-  render(
-    <>
-      <Example />
-      <div tabIndex={0} />
-    </>
-  );
+  const div = document.createElement("div");
+  div.tabIndex = 0;
+  document.body.append(div);
+
   await click(getSelect());
   expect(getGrid()).toBeVisible();
   await press.ArrowDown();
   await press.Tab();
   expect(getGrid()).not.toBeVisible();
   expect(getSelect()).toHaveTextContent("Bottom Center");
+
+  div.remove();
 });

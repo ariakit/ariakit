@@ -1,17 +1,11 @@
-import {
-  ButtonHTMLAttributes,
-  HTMLAttributes,
-  ReactNode,
-  forwardRef,
-  useState,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
 type SelectComboboxProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
   "onChange"
 > & {
-  label?: ReactNode;
+  label?: React.ReactNode;
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -22,7 +16,7 @@ type SelectComboboxProps = Omit<
   onToggle?: (isOpen: boolean) => void;
 };
 
-export const SelectCombobox = forwardRef<
+export const SelectCombobox = React.forwardRef<
   HTMLButtonElement,
   SelectComboboxProps
 >(
@@ -59,7 +53,7 @@ export const SelectCombobox = forwardRef<
       setValue: onChange,
     });
 
-    const [popoverFocused, setPopoverFocused] = useState(false);
+    const [popoverFocused, setPopoverFocused] = React.useState(false);
     const showComboboxCancel = combobox.useState(
       (state) => popoverFocused || state.value !== ""
     );
@@ -109,11 +103,11 @@ export const SelectCombobox = forwardRef<
   }
 );
 
-type SelectComboboxItemProps = HTMLAttributes<HTMLDivElement> & {
+type SelectComboboxItemProps = React.HTMLAttributes<HTMLDivElement> & {
   value?: string;
 };
 
-export const SelectComboboxItem = forwardRef<
+export const SelectComboboxItem = React.forwardRef<
   HTMLDivElement,
   SelectComboboxItemProps
 >(({ value, children, ...props }, ref) => {

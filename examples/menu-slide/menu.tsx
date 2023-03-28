@@ -1,14 +1,4 @@
-import {
-  HTMLAttributes,
-  ReactNode,
-  RefAttributes,
-  createContext,
-  forwardRef,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-} from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { flushSync } from "react-dom";
 
@@ -18,19 +8,19 @@ type MenuContextProps = {
   getOffsetRight: () => number;
 };
 
-const MenuContext = createContext<MenuContextProps | null>(null);
+const MenuContext = React.createContext<MenuContextProps | null>(null);
 
-export type MenuProps = HTMLAttributes<HTMLDivElement> & {
-  label: ReactNode;
+export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
+  label: React.ReactNode;
   disabled?: boolean;
 };
 
-type MenuButtonProps = HTMLAttributes<HTMLDivElement> &
-  RefAttributes<HTMLDivElement>;
+type MenuButtonProps = React.HTMLAttributes<HTMLDivElement> &
+  React.RefAttributes<HTMLDivElement>;
 
-export const Menu = forwardRef<HTMLDivElement, MenuProps>(
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
-    const parent = useContext(MenuContext);
+    const parent = React.useContext(MenuContext);
     const isSubmenu = !!parent;
 
     const menu = Ariakit.useMenuStore({
@@ -54,7 +44,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     // By default, submenus don't automatically receive focus when they open.
     // But here we want them to always receive focus.
-    useLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       if (!autoFocusOnShow) {
         menu.setAutoFocusOnShow(true);
       }
@@ -62,13 +52,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
 
     // We only want to delay hiding the menu, so we immediately stop the
     // animation when it's opening.
-    useLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       if (open) {
         menu.stopAnimation();
       }
     }, [open, menu]);
 
-    const contextValue = useMemo<MenuContextProps>(
+    const contextValue = React.useMemo<MenuContextProps>(
       () => ({
         getWrapper: () =>
           parent?.getWrapper() || menu.getState().popoverElement,
@@ -81,7 +71,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
     );
 
     // Hide the submenu when it's not visible on scroll.
-    useEffect(() => {
+    React.useEffect(() => {
       if (!parent) return;
       const parentWrapper = parent.getWrapper();
       if (!parentWrapper) return;
@@ -190,12 +180,12 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(
   }
 );
 
-export type MenuItemProps = HTMLAttributes<HTMLButtonElement> & {
-  label: ReactNode;
+export type MenuItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  label: React.ReactNode;
   disabled?: boolean;
 };
 
-export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(
+export const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
   ({ label, ...props }, ref) => {
     return (
       <Ariakit.MenuItem
@@ -211,19 +201,20 @@ export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(
   }
 );
 
-export type MenuSeparatorProps = HTMLAttributes<HTMLHRElement>;
+export type MenuSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
 
-export const MenuSeparator = forwardRef<HTMLHRElement, MenuSeparatorProps>(
-  (props, ref) => {
-    return <Ariakit.MenuSeparator ref={ref} className="separator" {...props} />;
-  }
-);
+export const MenuSeparator = React.forwardRef<
+  HTMLHRElement,
+  MenuSeparatorProps
+>((props, ref) => {
+  return <Ariakit.MenuSeparator ref={ref} className="separator" {...props} />;
+});
 
-export type MenuGroupProps = HTMLAttributes<HTMLDivElement> & {
+export type MenuGroupProps = React.HTMLAttributes<HTMLDivElement> & {
   label?: string;
 };
 
-export const MenuGroup = forwardRef<HTMLDivElement, MenuGroupProps>(
+export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
   ({ label, ...props }, ref) => {
     return (
       <Ariakit.MenuGroup ref={ref} className="group" {...props}>

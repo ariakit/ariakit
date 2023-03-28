@@ -1,24 +1,14 @@
-import {
-  click,
-  getByRole,
-  press,
-  queryByRole,
-  render,
-  type,
-} from "@ariakit/test";
-import Example from "./index.js";
+import { click, getByRole, press, queryByRole, type } from "@ariakit/test";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite food" });
 const getList = () => queryByRole("listbox");
 const getOption = (name: string) => getByRole("option", { name });
 
 test("default value", () => {
-  render(<Example />);
   expect(getSelect()).toHaveTextContent("2 food selected");
 });
 
 test("show/hide on click", async () => {
-  render(<Example />);
   expect(getList()).not.toBeInTheDocument();
   await click(getSelect());
   expect(getList()).toBeVisible();
@@ -33,7 +23,6 @@ test("show/hide on click", async () => {
 });
 
 test("show/hide on enter", async () => {
-  render(<Example />);
   expect(getList()).not.toBeInTheDocument();
   await press.Tab();
   await press.Enter();
@@ -50,7 +39,6 @@ test("show/hide on enter", async () => {
 });
 
 test("show/hide on space", async () => {
-  render(<Example />);
   expect(getList()).not.toBeInTheDocument();
   await press.Tab();
   await press.Space();
@@ -67,7 +55,6 @@ test("show/hide on space", async () => {
 });
 
 test("select with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getOption("Cake")).toHaveFocus();
@@ -90,7 +77,6 @@ test("select with keyboard", async () => {
 });
 
 test("select on click", async () => {
-  render(<Example />);
   await click(getSelect());
   await click(getOption("Chocolate"));
   expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "true");

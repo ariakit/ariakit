@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/playground-client");
+});
+
 test("updating code reflects on preview", async ({ page }) => {
-  await page.goto("/examples/playground-client");
-  const editor = await page.getByRole("textbox", { name: "index.js" });
-  const preview = await page.frameLocator(".preview");
+  const editor = page.getByRole("textbox", { name: "index.js" });
+  const preview = page.frameLocator(".preview");
   await expect(preview.getByRole("button", { name: "Button" })).toBeVisible({
     timeout: 15000,
   });

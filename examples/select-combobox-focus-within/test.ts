@@ -4,10 +4,8 @@ import {
   getByRole,
   press,
   queryByRole,
-  render,
   type,
 } from "@ariakit/test";
-import Example from "./index.js";
 
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
 const getPopover = () => queryByRole("dialog", { hidden: true });
@@ -15,13 +13,17 @@ const getCombobox = () => getByPlaceholderText("Search...");
 const getCancelButton = () => getByRole("button", { name: "Clear input" });
 const getOption = (name: string) => getByRole("option", { name });
 
+function setup() {
+  const externalButton = document.createElement("button");
+  externalButton.textContent = "External button";
+  document.body.append(externalButton);
+  return () => {
+    externalButton.remove();
+  };
+}
+
 test("show/hide cancel button", async () => {
-  render(
-    <>
-      <Example />
-      <button>External button</button>
-    </>
-  );
+  const cleanup = setup();
   await click(getSelect());
   expect(getCombobox()).toHaveFocus();
   expect(getCancelButton()).toHaveAttribute("data-visible");
@@ -48,15 +50,11 @@ test("show/hide cancel button", async () => {
   await press.Tab();
   await press.Tab();
   expect(getPopover()).not.toBeInTheDocument();
+  cleanup();
 });
 
 test("show focus-within styles", async () => {
-  render(
-    <>
-      <Example />
-      <button>External button</button>
-    </>
-  );
+  const cleanup = setup();
   expect(getByRole("group")).not.toHaveClass("focus-within");
   await press.Tab();
   expect(getByRole("group")).toHaveClass("focus-within");
@@ -68,4 +66,5 @@ test("show focus-within styles", async () => {
   await press.Tab();
   await press.Tab();
   expect(getByRole("group")).not.toHaveClass("focus-within");
+  cleanup();
 });

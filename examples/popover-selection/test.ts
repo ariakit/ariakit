@@ -4,10 +4,8 @@ import {
   getByText,
   press,
   queryByRole,
-  render,
   select,
 } from "@ariakit/test";
-import Example from "./index.js";
 
 const getPopover = () => queryByRole("dialog", { hidden: true });
 const getParagraph = () => getByText(/^Lorem ipsum dolor/);
@@ -26,7 +24,6 @@ Range.prototype.getBoundingClientRect = () => ({
 });
 
 test("show/hide popover on text selection", async () => {
-  render(<Example />);
   expect(getPopover()).not.toBeVisible();
   await select("dolor, sit");
   expect(getPopover()).toBeVisible();
@@ -35,7 +32,6 @@ test("show/hide popover on text selection", async () => {
 });
 
 test("tab to popover", async () => {
-  render(<Example />);
   await select("amet");
   expect(getPopover()).toBeVisible();
   await press.ShiftTab();
@@ -44,7 +40,6 @@ test("tab to popover", async () => {
 });
 
 test("click on popover button", async () => {
-  render(<Example />);
   await select("maxime.");
   expect(getPopover()).toBeVisible();
   await click(getButton("Bookmark"));

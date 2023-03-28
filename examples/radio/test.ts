@@ -1,8 +1,6 @@
-import { click, getByLabelText, press, render } from "@ariakit/test";
-import Example from "./index.js";
+import { click, getByLabelText, press } from "@ariakit/test";
 
 test("check radio button on click", async () => {
-  render(<Example />);
   expect(getByLabelText("apple")).toHaveAttribute("aria-checked", "false");
   expect(getByLabelText("orange")).toHaveAttribute("aria-checked", "false");
   expect(getByLabelText("watermelon")).toHaveAttribute("aria-checked", "false");
@@ -16,11 +14,9 @@ test("check radio button on click", async () => {
 });
 
 test("tab", async () => {
-  render(<Example />);
   expect(getByLabelText("apple")).not.toHaveFocus();
   expect(getByLabelText("orange")).not.toHaveFocus();
   expect(getByLabelText("watermelon")).not.toHaveFocus();
-
   await press.Tab();
   expect(getByLabelText("apple")).toHaveFocus();
   expect(getByLabelText("apple")).not.toBeChecked();
@@ -29,7 +25,6 @@ test("tab", async () => {
 });
 
 test("space", async () => {
-  render(<Example />);
   await press.Tab();
   expect(getByLabelText("apple")).toHaveFocus();
   expect(getByLabelText("apple")).not.toBeChecked();
@@ -39,7 +34,6 @@ test("space", async () => {
 });
 
 test("arrow right", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowRight();
   expect(getByLabelText("orange")).toHaveFocus();
@@ -51,7 +45,6 @@ test("arrow right", async () => {
 });
 
 test("arrow down", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getByLabelText("orange")).toHaveFocus();
@@ -63,7 +56,6 @@ test("arrow down", async () => {
 });
 
 test("arrow left", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowLeft();
   expect(getByLabelText("watermelon")).toHaveFocus();
@@ -75,7 +67,6 @@ test("arrow left", async () => {
 });
 
 test("arrow up", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowUp();
   expect(getByLabelText("watermelon")).toHaveFocus();

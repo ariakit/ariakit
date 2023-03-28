@@ -4,11 +4,9 @@ import {
   getByText,
   hover,
   press,
-  render,
   sleep,
   type,
 } from "@ariakit/test";
-import Example from "./index.js";
 
 const getLabel = () => getByText("Favorite fruit");
 const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
@@ -16,12 +14,10 @@ const getList = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
 
 test("default value", () => {
-  render(<Example />);
   expect(getSelect()).toHaveTextContent("Apple");
 });
 
 test("click on label", async () => {
-  render(<Example />);
   expect(getSelect()).not.toHaveFocus();
   await click(getLabel());
   expect(getSelect()).toHaveFocus();
@@ -30,7 +26,6 @@ test("click on label", async () => {
 });
 
 test("show/hide on click", async () => {
-  render(<Example />);
   expect(getList()).not.toBeVisible();
   await click(getSelect());
   expect(getList()).toBeVisible();
@@ -45,7 +40,6 @@ test("show/hide on click", async () => {
 });
 
 test("show/hide on enter", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Enter();
   expect(getList()).toBeVisible();
@@ -59,7 +53,6 @@ test("show/hide on enter", async () => {
 });
 
 test("show/hide on space", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Space();
   expect(getList()).toBeVisible();
@@ -73,7 +66,6 @@ test("show/hide on space", async () => {
 });
 
 test("show on arrow keys", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getList()).toBeVisible();
@@ -89,7 +81,6 @@ test("show on arrow keys", async () => {
 });
 
 test("hide on escape", async () => {
-  render(<Example />);
   await click(getSelect());
   expect(getList()).toBeVisible();
   await press.Escape();
@@ -97,15 +88,13 @@ test("hide on escape", async () => {
 });
 
 test("hide on click outside", async () => {
-  const { baseElement } = render(<Example />);
   await click(getSelect());
   expect(getList()).toBeVisible();
-  await click(baseElement);
+  await click(document.body);
   expect(getList()).not.toBeVisible();
 });
 
 test("hide on click on label", async () => {
-  render(<Example />);
   await click(getSelect());
   expect(getList()).toBeVisible();
   await click(getLabel());
@@ -114,7 +103,6 @@ test("hide on click on label", async () => {
 });
 
 test("navigate through items with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowDown();
   expect(getOption("Apple")).toHaveFocus();
@@ -144,7 +132,6 @@ test("navigate through items with keyboard", async () => {
 });
 
 test("typeahead open", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Enter();
   await type("b");
@@ -159,7 +146,6 @@ test("typeahead open", async () => {
 });
 
 test("typeahead hidden", async () => {
-  render(<Example />);
   await press.Tab();
   await type("g");
   expect(getSelect()).toHaveTextContent("Apple");
@@ -171,7 +157,6 @@ test("typeahead hidden", async () => {
 });
 
 test("select with enter", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Enter();
   await press.ArrowDown();
@@ -186,7 +171,6 @@ test("select with enter", async () => {
 });
 
 test("select with space", async () => {
-  render(<Example />);
   await press.Tab();
   await press.Space();
   await press.ArrowDown();
@@ -202,7 +186,6 @@ test("select with space", async () => {
 });
 
 test("select with click", async () => {
-  render(<Example />);
   await click(getSelect());
   await click(getOption("Banana"));
   expect(getSelect()).toHaveTextContent("Banana");
@@ -219,7 +202,6 @@ test("select with click", async () => {
 });
 
 test("hover on item", async () => {
-  render(<Example />);
   await click(getSelect());
   await hover(getOption("Banana"));
   expect(getOption("Banana")).toHaveFocus();

@@ -1,4 +1,4 @@
-import { HTMLAttributes, RefObject, forwardRef, useRef } from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
 export {
@@ -8,15 +8,15 @@ export {
   PopoverHeading,
 } from "@ariakit/react";
 
-export type PopoverProps = HTMLAttributes<HTMLDivElement> & {
+export type PopoverProps = React.HTMLAttributes<HTMLDivElement> & {
   placement?: Ariakit.PopoverStoreProps["placement"];
   isOpen?: boolean;
-  anchorRef?: RefObject<HTMLElement>;
+  anchorRef?: React.RefObject<HTMLElement>;
   getAnchorRect?: () => DOMRect | null;
   onClose?: () => void;
 };
 
-export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
+export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
   (props, ref) => {
     const {
       placement,
@@ -26,7 +26,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       onClose,
       ...rest
     } = props;
-    const fallbackRef = useRef<HTMLSpanElement>(null);
+    const fallbackRef = React.useRef<HTMLSpanElement>(null);
     const popover = Ariakit.usePopoverStore({
       placement,
       open: isOpen,

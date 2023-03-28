@@ -15,9 +15,13 @@ const getMenuItem = (
   role = "menuitem"
 ) => locator.locator(`role=${role}[name='${name}']`);
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/menu-slide");
+  await page.waitForTimeout(150);
+});
+
 test("show/hide with click", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
-  await page.goto("/examples/menu-slide");
   await getMenuButton(page).click();
   await expect(getMenu(page, "Options")).toBeVisible();
   const wrapper = await getMenuWrapper(page).elementHandle();
@@ -45,7 +49,6 @@ test("show/hide with click", async ({ page }, testInfo) => {
 });
 
 test("show/hide with keyboard", async ({ page }) => {
-  await page.goto("/examples/menu-slide");
   await getMenuButton(page).focus();
   await page.keyboard.press("ArrowDown");
   await expect(getMenuItem(page, "New Tab")).toBeFocused();

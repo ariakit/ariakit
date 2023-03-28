@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/popover-flip");
+});
+
 test("popover flip", async ({ page }, testInfo) => {
   testInfo.snapshotSuffix = "";
-  await page.goto("/previews/popover-flip");
   await page.getByRole("button", { name: "Accept invite" }).click();
   await expect(
     page.getByRole("dialog", { name: "Team meeting" })

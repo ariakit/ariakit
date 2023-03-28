@@ -1,5 +1,4 @@
-import { click, getByRole, press, render } from "@ariakit/test";
-import Example from "./index.js";
+import { click, getByRole, press } from "@ariakit/test";
 
 function getTab(name: string) {
   return getByRole("tab", { name });
@@ -10,13 +9,11 @@ function getPanel(name: string) {
 }
 
 test("default selected tab", () => {
-  render(<Example />);
   expect(getTab("Fruits")).toHaveAttribute("aria-selected", "true");
   expect(getPanel("Fruits")).toBeVisible();
 });
 
 test("select with keyboard", async () => {
-  render(<Example />);
   await press.Tab();
   await press.ArrowRight();
   expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
@@ -37,7 +34,6 @@ test("select with keyboard", async () => {
 });
 
 test("select with mouse", async () => {
-  render(<Example />);
   await click(getTab("Vegetables"));
   expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
   expect(getTab("Vegetables")).toHaveFocus();

@@ -24,8 +24,11 @@ const createTransition = (duration = 100) => {
   return isPending;
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/select-animated");
+});
+
 test("show/hide", async ({ page }) => {
-  await page.goto("/examples/select-animated");
   await expect(getPopover(page)).not.toBeVisible();
   const isEntering = createTransition();
   await getButton(page).click();
@@ -59,7 +62,6 @@ test("show/hide", async ({ page }) => {
 });
 
 test("https://github.com/ariakit/ariakit/issues/1684", async ({ page }) => {
-  await page.goto("/examples/select-animated");
   await getButton(page).focus();
   await page.keyboard.press("Enter");
   await page.mouse.click(1, 1);

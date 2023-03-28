@@ -1,8 +1,6 @@
-import { getByRole, getByText, render } from "@ariakit/test";
-import Example from "./index.js";
+import { getByRole, getByText } from "@ariakit/test";
 
 test("render properly", () => {
-  render(<Example />);
   expect(getByRole("button", { name: "Undo" })).toBeInTheDocument();
   expect(getByText("Undo")).toMatchInlineSnapshot(`
     <span

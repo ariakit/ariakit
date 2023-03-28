@@ -15,8 +15,12 @@ const getMenuItem = (
   role = "menuitem"
 ) => locator.locator(`role=${role}[name='${name}']`);
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/menu-slide");
+  await page.waitForTimeout(150);
+});
+
 test("hide with wheel", async ({ page }) => {
-  await page.goto("/examples/menu-slide");
   await getMenuButton(page).click();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await getMenuItem(page, "History").click();

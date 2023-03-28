@@ -1,8 +1,6 @@
-import { blur, getByRole, hover, press, render, waitFor } from "@ariakit/test";
-import Example from "./index.js";
+import { blur, getByRole, hover, press, waitFor } from "@ariakit/test";
 
 test("show tooltip on hover after timeout", async () => {
-  render(<Example />);
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await hover(getByRole("button"));
   await waitFor(
@@ -14,7 +12,6 @@ test("show tooltip on hover after timeout", async () => {
 });
 
 test("show tooltip on focus after timeout", async () => {
-  render(<Example />);
   expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await press.Tab();
   await waitFor(
