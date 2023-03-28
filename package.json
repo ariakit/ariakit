@@ -76,6 +76,7 @@
     "@types/use-sync-external-store": "0.0.3",
     "@typescript-eslint/eslint-plugin": "5.56.0",
     "@typescript-eslint/parser": "5.56.0",
+    "@vercel/analytics": "0.1.11",
     "@vitest/coverage-c8": "0.29.7",
     "autoprefixer": "10.4.14",
     "chalk": "5.2.0",

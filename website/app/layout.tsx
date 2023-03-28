@@ -1,6 +1,7 @@
 import "./style.css";
 
 import { PropsWithChildren } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import localFont from "next/font/local";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 
@@ -40,6 +41,7 @@ export default function Layout({ children }: PropsWithChildren) {
       <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         {children}
+        <Analytics />
       </body>
     </html>
   );
