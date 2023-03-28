@@ -35,7 +35,15 @@ const cjsDir = getCJSDir();
 
 spawn.sync(
   "tsc",
-  ["--emitDeclarationOnly", "--noEmit", "false", "--outDir", esmDir],
+  [
+    "--emitDeclarationOnly",
+    "--project",
+    "tsconfig.build.json",
+    "--noEmit",
+    "false",
+    "--outDir",
+    esmDir,
+  ],
   { stdio: "inherit" }
 );
 
