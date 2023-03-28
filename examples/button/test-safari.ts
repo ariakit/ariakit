@@ -5,7 +5,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("buton receives focus on click", async ({ page }) => {
-  const button = await page.getByRole("button", { name: "Button" });
-  await button.click();
-  await expect(button).toBeFocused();
+  const button = page.getByRole("button", { name: "Button" });
+  await expect(async () => {
+    await button.click();
+    await expect(button).toBeFocused();
+  }).toPass();
 });

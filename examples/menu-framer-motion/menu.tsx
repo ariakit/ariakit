@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { HTMLMotionProps, motion } from "framer-motion";
+import { flushSync } from "react-dom";
 
 export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
   open?: boolean;
@@ -43,9 +44,10 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           // leave animation may complete right after the enter animation starts
           // when the menu is closed and open fast enough. That's why we need to
           // keep track of the current animation so we can stop it correctly.
-          onAnimationStart={setCurrentAnimation}
-          onAnimationComplete={(animation: string) => {
-            console.log(animation, currentAnimation);
+          onAnimationStart={(animation: unknown) => {
+            flushSync(() => setCurrentAnimation(animation));
+          }}
+          onAnimationComplete={(animation: unknown) => {
             if (currentAnimation !== animation) return;
             if (!menu.getState().animating) return;
             menu.stopAnimation();

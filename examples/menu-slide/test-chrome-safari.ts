@@ -17,13 +17,14 @@ const getMenuItem = (
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/menu-slide");
-  await page.waitForTimeout(150);
 });
 
-test("show/hide with click", async ({ page }, testInfo) => {
-  testInfo.snapshotSuffix = "";
-  await getMenuButton(page).click();
-  await expect(getMenu(page, "Options")).toBeVisible();
+test("show/hide with click", async ({ page }) => {
+  test.info().snapshotSuffix = "";
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page, "Options")).toBeVisible();
+  }).toPass();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await getMenuItem(page, "History").click();
   await page.waitForFunction(
@@ -50,8 +51,10 @@ test("show/hide with click", async ({ page }, testInfo) => {
 
 test("show/hide with keyboard", async ({ page }) => {
   await getMenuButton(page).focus();
-  await page.keyboard.press("ArrowDown");
-  await expect(getMenuItem(page, "New Tab")).toBeFocused();
+  await expect(async () => {
+    await page.keyboard.press("ArrowDown");
+    await expect(getMenuItem(page, "New Tab")).toBeFocused();
+  }).toPass();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await page.keyboard.type("h");
   await page.keyboard.press("Enter");

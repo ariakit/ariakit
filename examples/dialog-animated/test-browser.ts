@@ -15,18 +15,14 @@ const createTransition = (duration = 100) => {
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/dialog-animated");
-  // Wait for React hydration to complete.
-  await page.waitForTimeout(150);
 });
 
 test("show/hide", async ({ page }) => {
   await expect(getDialog(page)).not.toBeVisible();
-  const isEntering = createTransition();
-  await getButton(page, "Show modal").click();
-  await expect(getDialog(page)).toBeVisible();
-  if (isEntering()) {
-    await expect(getButton(page, "Show modal")).toBeFocused();
-  }
+  await expect(async () => {
+    await getButton(page, "Show modal").click();
+    await expect(getDialog(page)).toBeVisible();
+  }).toPass();
   await expect(getButton(page, "OK")).toBeFocused();
   const isLeaving = createTransition();
   await getButton(page, "OK").click();

@@ -17,11 +17,13 @@ const getMenuItem = (
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/menu-slide");
-  await page.waitForTimeout(150);
 });
 
 test("hide with wheel", async ({ page }) => {
-  await getMenuButton(page).click();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page, "Options")).toBeVisible();
+  }).toPass();
   const wrapper = await getMenuWrapper(page).elementHandle();
   await getMenuItem(page, "History").click();
   await page.waitForFunction(

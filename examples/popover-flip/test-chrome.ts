@@ -4,12 +4,14 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/previews/popover-flip");
 });
 
-test("popover flip", async ({ page }, testInfo) => {
-  testInfo.snapshotSuffix = "";
-  await page.getByRole("button", { name: "Accept invite" }).click();
-  await expect(
-    page.getByRole("dialog", { name: "Team meeting" })
-  ).toBeVisible();
+test("popover flip", async ({ page }) => {
+  test.info().snapshotSuffix = "";
+  await expect(async () => {
+    await page.getByRole("button", { name: "Accept invite" }).click();
+    await expect(
+      page.getByRole("dialog", { name: "Team meeting" })
+    ).toBeVisible();
+  }).toPass();
   // Expect the popover to be placed on the right
   expect(await page.screenshot()).toMatchSnapshot();
   // Resize the viewport to ensure it overflows

@@ -56,20 +56,20 @@ function isMovingOnHovercard(
 // element is clicked. We have to reset it to false when the hovercard element
 // gets hidden or is unmounted.
 function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
-  const mounted = store.useState("mounted");
-  const mountedRef = useLiveRef(mounted);
+  const open = store.useState("open");
+  const openRef = useLiveRef(open);
 
   // Resets autoFocusOnShow
   useEffect(() => {
-    if (!mounted) {
+    if (!open) {
       store.setAutoFocusOnShow(false);
     }
-  }, [mounted, store]);
+  }, [open, store]);
 
   // On unmount as well.
   useEffect(
     () => () => {
-      if (!mountedRef.current) {
+      if (!openRef.current) {
         store.setAutoFocusOnShow(false);
       }
     },

@@ -14,8 +14,8 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/previews/select-group");
 });
 
-test("scroll into view", async ({ page }, testInfo) => {
-  testInfo.snapshotSuffix = "";
+test("scroll into view", async ({ page }) => {
+  test.info().snapshotSuffix = "";
   await getButton(page).click();
   await expect(getPopover(page)).toBeFocused();
   await repeat(() => page.keyboard.press("ArrowDown"), 7);

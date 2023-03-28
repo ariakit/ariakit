@@ -13,12 +13,13 @@ const getClickModifier = async (page: Page) => {
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/combobox-links");
-  // Wait for React hydration
-  await page.waitForTimeout(150);
 });
 
 test("click on link with mouse", async ({ page }) => {
-  await getCombobox(page).click();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getPopover(page)).toBeVisible();
+  }).toPass();
   await getOption(page, "Ariakit.org").click();
   await expect(page).toHaveURL(/https:\/\/ariakit.org/);
 });
@@ -28,7 +29,10 @@ test("click on link with middle button", async ({
   context,
   browserName,
 }) => {
-  await getCombobox(page).click();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getPopover(page)).toBeVisible();
+  }).toPass();
   await expect(getCombobox(page)).toHaveValue("");
   if (browserName === "webkit") {
     await getOption(page, "Ariakit.org").click({ button: "middle" });
@@ -45,7 +49,10 @@ test("click on link with middle button", async ({
 });
 
 test("click on link with cmd/ctrl", async ({ page, context }) => {
-  await getCombobox(page).click();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getPopover(page)).toBeVisible();
+  }).toPass();
   const modifier = await getClickModifier(page);
   const [newPage] = await Promise.all([
     context.waitForEvent("page"),
@@ -61,7 +68,10 @@ test("click on link with cmd/ctrl + enter", async ({
   context,
   browserName,
 }) => {
-  await getCombobox(page).click();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getPopover(page)).toBeVisible();
+  }).toPass();
   const modifier = await getClickModifier(page);
   await page.keyboard.press("ArrowUp");
   // Safari doesn't support Cmd+Enter to open a link in a new tab
@@ -81,7 +91,10 @@ test("click on link with cmd/ctrl + enter", async ({
 });
 
 test("click on target blank link", async ({ page, context }) => {
-  await getCombobox(page).click();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getPopover(page)).toBeVisible();
+  }).toPass();
   await expect(getCombobox(page)).toHaveValue("");
   const [newPage] = await Promise.all([
     context.waitForEvent("page"),

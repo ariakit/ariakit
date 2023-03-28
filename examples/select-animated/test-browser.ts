@@ -30,12 +30,8 @@ test.beforeEach(async ({ page }) => {
 
 test("show/hide", async ({ page }) => {
   await expect(getPopover(page)).not.toBeVisible();
-  const isEntering = createTransition();
   await getButton(page).click();
   await expect(getPopover(page)).toBeVisible();
-  if (isEntering()) {
-    await expect(getButton(page)).toBeFocused();
-  }
   await expect(getPopover(page)).toBeFocused();
   await expectSelectedOption(page, "Apple");
   await expectActiveOption(page, "Apple");

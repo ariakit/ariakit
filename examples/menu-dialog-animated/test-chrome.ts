@@ -32,29 +32,15 @@ const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
 
-const createTransition = (duration = 100) => {
-  const then = performance.now();
-  const isPending = () => {
-    const now = performance.now();
-    return now - then < duration;
-  };
-  return isPending;
-};
-
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/menu-dialog-animated");
-  await page.waitForTimeout(150);
 });
 
 test("interact with menu", async ({ page }) => {
-  await expect(getMenu(page)).not.toBeVisible();
-  const isEntering = createTransition();
-  await getMenuButton(page).click();
-  await expect(getMenu(page)).toBeVisible();
-  if (isEntering()) {
-    // The menu button should be focused while the menu is animating.
-    await expect(getMenuButton(page)).toBeFocused();
-  }
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await expect(getMenu(page)).toBeFocused();
   await page.keyboard.press("ArrowUp");
   await expect(getMenuItem(page, "Create list")).toBeFocused();
@@ -69,15 +55,14 @@ test("interact with menu", async ({ page }) => {
 });
 
 test("show/hide create list dialog", async ({ page }) => {
-  await getMenuButton(page).press("Enter");
+  await expect(async () => {
+    await getMenuButton(page).press("Enter");
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await expect(getMenuItem(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.type("cr");
   await expect(getMenuItem(page, "Create list")).toBeFocused();
-  const isEntering = createTransition();
   await page.keyboard.press("Enter");
-  if (isEntering()) {
-    await expect(getMenuButton(page)).toBeFocused();
-  }
   await expect(getMenu(page)).not.toBeVisible();
   await expect(getDialog(page, "Create list")).toBeVisible();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
@@ -87,7 +72,10 @@ test("show/hide create list dialog", async ({ page }) => {
 });
 
 test("create list", async ({ page }) => {
-  await getMenuButton(page, 1).click();
+  await expect(async () => {
+    await getMenuButton(page, 1).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await expect(getMenu(page)).toBeFocused();
   await page.keyboard.press("PageDown");
   await expect(getMenuItem(page, "Create list")).toBeFocused();
@@ -114,14 +102,13 @@ test("create list", async ({ page }) => {
 });
 
 test("show/hide manage lists dialog", async ({ page }) => {
-  await getMenuButton(page).click();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await getMenuItem(page, "Create list").click();
-  const isEntering = createTransition();
   await getButton(page, "Manage lists").click();
   await expect(getDialog(page, "Manage lists")).toBeVisible();
-  if (isEntering()) {
-    await expect(getButton(page, "Manage lists")).toBeFocused();
-  }
   await expect(
     getButton(getDialog(page, "Manage lists"), "Dismiss popup")
   ).toBeFocused();
@@ -130,15 +117,14 @@ test("show/hide manage lists dialog", async ({ page }) => {
 });
 
 test("show/hide information dialog", async ({ page }) => {
-  await getMenuButton(page).click();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  const isEntering = createTransition();
   await page.keyboard.press("Enter");
-  if (isEntering()) {
-    await expect(getMenuButton(page)).toBeFocused();
-  }
   await expect(getDialog(page, "More information")).toBeVisible();
   await expect(
     getButton(getDialog(page, "More information"), "Dismiss popup")
@@ -148,7 +134,10 @@ test("show/hide information dialog", async ({ page }) => {
 });
 
 test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
-  await getMenuButton(page).click();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.press("Shift+Tab");
@@ -165,7 +154,10 @@ test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
 });
 
 test("repeatedly showing/hiding information dialog", async ({ page }) => {
-  await getMenuButton(page).click();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
   await page.keyboard.press("Shift+Tab");

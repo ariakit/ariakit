@@ -199,18 +199,14 @@ export const useCombobox = createHook<ComboboxOptions>(
     }, [open]);
 
     // Auto select the first item on type. This effect runs both when the value
-    // changes and when the items change so we also catch async items. This
-    // needs to be a layout effect to avoid a flash of unselected content.
+    // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!valueChangedRef.current) return;
-      const firstId = store.first();
-      if (!firstId) {
-        // TODO: Comment type Fr
-        store.setState("moves", (moves) => moves + 1);
-      } else {
-        store.move(firstId);
-      }
+      // If there's no first item (that is, there no items or all items are
+      // disabled), we should move the focus to the input (null), otherwise,
+      // with async items, the activeValue won't be reset.
+      store.move(store.first() ?? null);
     }, [store, valueUpdated, storeValue, autoSelect, items]);
 
     // Focus on the combobox input on type.

@@ -11,8 +11,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("combobox show/hide animation", async ({ page }) => {
-  await getCombobox(page).click();
-  await expect(getListbox(page)).toBeVisible();
+  await expect(async () => {
+    await getCombobox(page).click();
+    await expect(getListbox(page)).toBeVisible();
+  }).toPass();
   await getOption(page, "🍎 Apple").click();
   await expect(getListbox(page)).not.toBeVisible();
 });

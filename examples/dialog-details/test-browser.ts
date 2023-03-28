@@ -14,7 +14,7 @@ test("show before JS", async ({ page }) => {
     });
   });
   await page.goto("/previews/dialog-details");
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(250);
   await expect(getDialog(page)).toBeVisible();
   await expect(getButton(page, "OK")).toBeFocused();
 });

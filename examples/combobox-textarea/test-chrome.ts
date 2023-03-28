@@ -2,10 +2,11 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/combobox-textarea");
+  await page.waitForTimeout(500);
 });
 
-test("popover is positioned correctly", async ({ page }, testInfo) => {
-  testInfo.snapshotSuffix = "";
+test("popover is positioned correctly", async ({ page }) => {
+  test.info().snapshotSuffix = "";
   const textarea = page.getByRole("combobox", { name: "Comment" });
   await textarea.click({ position: { x: 10, y: 10 } });
   await textarea.type("Hello @a");

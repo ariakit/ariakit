@@ -20,8 +20,12 @@ function useDisclosure(defaultOpen = false) {
 export default function Example() {
   const [menuInitialFocusRef, setMenuInitialFocusRef] =
     useState<RefObject<HTMLElement>>();
+
+  const createDialogInitialFocusRef = useRef<HTMLElement | null>(null);
+  const manageDialogDisclosureRef = useRef<HTMLButtonElement>(null);
+  const infoDialogDisclosureRef = useRef<HTMLButtonElement>(null);
+
   const lastItemRef = useRef<HTMLDivElement>(null);
-  const infoDialogFinalFocusRef = useRef<HTMLButtonElement>(null);
 
   const [lists, setLists] = useState(["Future ideas", "My stack"]);
   const [values, setValues] = useState({ selectedLists: ["My stack"] });
@@ -97,7 +101,11 @@ export default function Example() {
         title="Create list"
         animated
         open={createDialog.open}
-        onClose={createDialog.hide}
+        onClose={() => {
+          createDialog.hide();
+          createDialogInitialFocusRef.current = null;
+        }}
+        initialFocusRef={createDialogInitialFocusRef}
         onUnmount={() => {
           form.reset();
           createDialog.unmount();
@@ -118,13 +126,14 @@ export default function Example() {
           <Ariakit.FormSubmit className="button">Create</Ariakit.FormSubmit>
         </Ariakit.Form>
         <Ariakit.Button
+          ref={manageDialogDisclosureRef}
           onClick={manageDialog.show}
           className="button secondary"
         >
           Manage lists
         </Ariakit.Button>
         <Ariakit.DialogDismiss
-          ref={infoDialogFinalFocusRef}
+          ref={infoDialogDisclosureRef}
           onClick={infoDialog.show}
           className="button secondary"
         >
@@ -143,6 +152,8 @@ export default function Example() {
           onClose={() => {
             manageDialog.hide();
             createDialog.show();
+            createDialogInitialFocusRef.current =
+              manageDialogDisclosureRef.current;
           }}
           onUnmount={manageDialog.unmount}
         >
@@ -159,12 +170,13 @@ export default function Example() {
         <Dialog
           title="More information"
           animated
-          finalFocusRef={infoDialogFinalFocusRef}
           backdrop={!createDialog.mounted}
           open={infoDialog.open}
           onClose={() => {
             infoDialog.hide();
             createDialog.show();
+            createDialogInitialFocusRef.current =
+              infoDialogDisclosureRef.current;
           }}
           onUnmount={infoDialog.unmount}
         >

@@ -131,9 +131,6 @@ export const useDialog = createHook<DialogOptions>(
     );
     const open = store.useState("open");
     const openRef = useRef(open);
-    const openStable = store.useState(
-      (state) => state.open && !state.animating
-    );
 
     // Usually, we only want to disable the accessibility tree outside if the
     // dialog is a modal. But the Portal component can't preserve the tab order
@@ -148,7 +145,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Sets disclosure element.
     useEffect(() => {
-      if (!openStable) return;
+      if (!open) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -156,7 +153,7 @@ export const useDialog = createHook<DialogOptions>(
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
-    }, [openStable]);
+    }, [open]);
 
     const nested = useNestedDialogs(store, modal);
     const { nestedDialogs, openModals, wrapElement } = nested;
@@ -232,7 +229,7 @@ export const useDialog = createHook<DialogOptions>(
     const shouldDisableOutside = useChampionDialog(
       "data-dialog-disable-outside",
       store,
-      openStable && !openModals.length && shouldDisableAccessibilityTree
+      open && !openModals.length && shouldDisableAccessibilityTree
     );
 
     // Disables/enables the element tree around the modal dialog element.
@@ -264,7 +261,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Auto focus on show.
     useEffect(() => {
-      if (!openStable) return;
+      if (!open) return;
       if (!mayAutoFocusOnShow) return;
       // Makes sure to wait for the portalNode to be created before moving
       // focus. This is useful for when the Dialog component is unmounted when
@@ -305,7 +302,7 @@ export const useDialog = createHook<DialogOptions>(
       element.focus();
     }, [
       contentElement,
-      openStable,
+      open,
       mayAutoFocusOnShow,
       domReady,
       initialFocusRef,

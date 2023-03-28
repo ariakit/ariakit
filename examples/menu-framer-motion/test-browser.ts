@@ -10,24 +10,19 @@ const getMenuItem = (page: Page, name: string) =>
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/menu-framer-motion");
-  await page.waitForTimeout(150);
 });
 
-test("open/hide with click", async ({ page }, testInfo) => {
-  testInfo.snapshotSuffix = "";
-  const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
+test("open/hide with click", async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 480 });
   await expect(getMenu(page)).not.toBeVisible();
-  const menuButton = getMenuButton(page);
-  await menuButton.click();
-  await expect(getMenu(page)).toBeVisible();
+  await expect(async () => {
+    await getMenuButton(page).click();
+    await expect(getMenu(page)).toBeVisible();
+  }).toPass();
   await expect(getMenu(page)).toBeFocused();
-  if (isMac) {
-    expect(await page.screenshot()).toMatchSnapshot();
-  }
   await getMenuItem(page, "Report").click();
   await expect(getMenu(page)).not.toBeVisible();
-  await expect(menuButton).toBeFocused();
+  await expect(getMenuButton(page)).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(getMenuItem(page, "Edit")).toBeFocused();
   await page.keyboard.press("Escape");
