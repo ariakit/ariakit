@@ -134,6 +134,9 @@ export function createSelectStore({
   select.setup(() =>
     select.sync(
       (state) => {
+        // TODO: Revisit this. See test "open with keyboard, then try to open
+        // again"
+        if (combobox) return;
         if (state.mounted) return;
         const values = toArray(state.value);
         const lastValue = values[values.length - 1];

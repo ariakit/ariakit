@@ -42,6 +42,7 @@ export const ComboboxMultiple = React.forwardRef<
     setValue: onChange,
     resetValueOnHide: true,
   });
+
   const select = Ariakit.useSelectStore({
     combobox,
     defaultValue: defaultValues,
@@ -85,6 +86,7 @@ export const ComboboxMultiple = React.forwardRef<
             // Disable typeahead so it doesn't conflict with typing on the
             // combobox input.
             typeahead={false}
+            aria-multiselectable
             {...popoverProps}
           >
             {children}

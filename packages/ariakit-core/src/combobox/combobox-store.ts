@@ -137,7 +137,7 @@ export function createComboboxStore({
 
   // Resets the state when the combobox popover is hidden.
   combobox.setup(() =>
-    combobox.sync(
+    combobox.syncBatch(
       (state) => {
         if (state.open) return;
         combobox.setState("activeId", activeId);

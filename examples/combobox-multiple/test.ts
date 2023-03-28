@@ -8,6 +8,7 @@ import {
 } from "@ariakit/test";
 
 const getInput = () => getByRole("combobox", { name: "Your favorite food" });
+const getPopover = () => getByRole("listbox", { hidden: true });
 const getOption = (name: string) => getByRole("option", { name });
 const queryOption = (name: string) => queryByRole("option", { name });
 
@@ -59,6 +60,21 @@ test("check/uncheck item after filtering", async () => {
   expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Pineapple")).toHaveAttribute("aria-selected", "true");
   expect(getInput()).toHaveValue("");
+});
+
+test("open with keyboard, then try to open again", async () => {
+  await press.Tab();
+  await press.ArrowDown();
+  expect(getPopover()).toBeVisible();
+  await press.ArrowDown();
+  expect(getOption("Apple")).toHaveFocus();
+  await press.Escape();
+  expect(getPopover()).not.toBeVisible();
+  expect(getInput()).toHaveFocus();
+  await press.ArrowDown();
+  expect(getPopover()).toBeVisible();
+  await press.ArrowDown();
+  expect(getOption("Apple")).toHaveFocus();
 });
 
 test("no result", async () => {
