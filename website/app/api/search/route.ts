@@ -2,7 +2,7 @@ import { Searcher, search } from "fast-fuzzy";
 import { NextRequest } from "next/server.js";
 import contents from "website/build-pages/contents.js";
 
-export const runtime = "experimental-edge";
+export const runtime = "edge";
 
 const contentsWithoutInstallation = contents.filter(
   (page) => page.title === "Getting started" || page.section !== "Installation"
