@@ -1,10 +1,8 @@
-import {
-  DialogHeadingOptions,
-  useDialogHeading,
-} from "../dialog/dialog-heading.js";
+import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
+import { useDialogHeading } from "../dialog/dialog-heading.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { PopoverStore } from "./popover-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { PopoverStore } from "./popover-store.js";
 
 /**
  * Returns props to create a `PopoverHeading` component. This hook must be used

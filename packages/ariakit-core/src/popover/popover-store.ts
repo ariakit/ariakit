@@ -1,5 +1,5 @@
+import type { Middleware } from "@floating-ui/dom";
 import {
-  Middleware,
   arrow,
   autoUpdate,
   computePosition,
@@ -8,21 +8,16 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
-import {
+import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
-  createDialogStore,
 } from "../dialog/dialog-store.js";
+import { createDialogStore } from "../dialog/dialog-store.js";
 import { defaultValue } from "../utils/misc.js";
-import {
-  Store,
-  StoreOptions,
-  StoreProps,
-  createStore,
-  mergeStore,
-} from "../utils/store.js";
-import { SetState } from "../utils/types.js";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { createStore, mergeStore } from "../utils/store.js";
+import type { SetState } from "../utils/types.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

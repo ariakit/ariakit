@@ -1,4 +1,4 @@
-import { SVGAttributes } from "react";
+import type { SVGAttributes } from "react";
 
 export default function Vue(props: SVGAttributes<SVGSVGElement>) {
   return (

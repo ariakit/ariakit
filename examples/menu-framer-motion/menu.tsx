@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import { HTMLMotionProps, motion } from "framer-motion";
+import type { HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import { flushSync } from "react-dom";
 
 export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {

@@ -1,13 +1,11 @@
-import {
+import type {
   ComponentProps,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
   SyntheticEvent,
-  useEffect,
-  useRef,
-  useState,
 } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   closest,
   contains,
@@ -26,16 +24,18 @@ import {
 } from "@ariakit/core/utils/focus";
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type {
   DisclosureContentOptions,
   DisclosureContentProps,
-  useDisclosureContent,
 } from "../disclosure/disclosure-content.js";
+import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useFocusTrapRegion } from "../focus-trap/focus-trap-region.js";
-import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.js";
+import { useFocusable } from "../focusable/focusable.js";
 import { HeadingLevel } from "../heading/heading-level.js";
-import { PortalOptions, usePortal } from "../portal/portal.js";
+import type { PortalOptions } from "../portal/portal.js";
+import { usePortal } from "../portal/portal.js";
 import {
   useBooleanEvent,
   useForkRef,
@@ -46,14 +46,14 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
 } from "./dialog-context.js";
-import { DialogStore } from "./dialog-store.js";
+import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";

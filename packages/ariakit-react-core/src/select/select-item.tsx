@@ -1,25 +1,22 @@
-import { MouseEvent, useCallback, useContext } from "react";
+import type { MouseEvent } from "react";
+import { useCallback, useContext } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CompositeHoverOptions,
-  useCompositeHover,
-} from "../composite/composite-hover.js";
-import {
-  CompositeItemOptions,
-  useCompositeItem,
-} from "../composite/composite-item.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeHoverOptions } from "../composite/composite-hover.js";
+import { useCompositeHover } from "../composite/composite-hover.js";
+import type { CompositeItemOptions } from "../composite/composite-item.js";
+import { useCompositeItem } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { SelectContext, SelectItemCheckedContext } from "./select-context.js";
-import { SelectStore } from "./select-store.js";
+import type { SelectStore } from "./select-store.js";
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
   if (storeValue == null) return false;

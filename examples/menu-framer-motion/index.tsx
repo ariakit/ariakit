@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MotionProps, useReducedMotion } from "framer-motion";
+import type { MotionProps } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { Menu, MenuItem, MenuSeparator } from "./menu.js";
 import "./style.css";
 

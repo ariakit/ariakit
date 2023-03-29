@@ -1,7 +1,8 @@
-import { DisclosureOptions, useDisclosure } from "../disclosure/disclosure.js";
+import type { DisclosureOptions } from "../disclosure/disclosure.js";
+import { useDisclosure } from "../disclosure/disclosure.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { DialogStore } from "./dialog-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { DialogStore } from "./dialog-store.js";
 
 /**
  * Returns props to create a `DialogDisclosure` component.

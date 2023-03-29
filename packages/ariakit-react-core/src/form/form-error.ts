@@ -1,19 +1,17 @@
 import { useCallback, useContext, useRef } from "react";
-import { StringLike } from "@ariakit/core/form/types";
+import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
 import { useForkRef, useId } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormStore } from "./form-store.js";
+import type { FormStore } from "./form-store.js";
 
 /**
  * Returns props to create a `FormDescription` component.

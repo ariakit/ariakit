@@ -1,10 +1,8 @@
-import {
-  CompositeGroupOptions,
-  useCompositeGroup,
-} from "../composite/composite-group.js";
+import type { CompositeGroupOptions } from "../composite/composite-group.js";
+import { useCompositeGroup } from "../composite/composite-group.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { SelectStore } from "./select-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { SelectStore } from "./select-store.js";
 
 /**
  * Returns props to create a `SelectGroup` component.

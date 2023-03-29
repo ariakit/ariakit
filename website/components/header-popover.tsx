@@ -1,4 +1,5 @@
-import { HTMLAttributes, forwardRef } from "react";
+import type { HTMLAttributes } from "react";
+import { forwardRef } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import tw from "website/utils/tw.js";
 

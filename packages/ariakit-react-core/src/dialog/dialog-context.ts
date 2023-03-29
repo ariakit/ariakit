@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { SetState } from "@ariakit/core/utils/types";
-import { DialogStore } from "./dialog-store.js";
+import type { SetState } from "@ariakit/core/utils/types";
+import type { DialogStore } from "./dialog-store.js";
 
 export const DialogContext = createContext<DialogStore | undefined>(undefined);
 

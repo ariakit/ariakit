@@ -1,16 +1,13 @@
 import { defaultValue } from "@ariakit/core/utils/misc";
-import {
+import type {
   Store as CoreStore,
   StoreOptions,
   StoreProps,
-  createStore,
 } from "@ariakit/core/utils/store";
-import { SetState } from "@ariakit/core/utils/types";
-import {
-  Store,
-  useStore,
-  useStoreProps,
-} from "@ariakit/react-core/utils/store";
+import { createStore } from "@ariakit/core/utils/store";
+import type { SetState } from "@ariakit/core/utils/types";
+import type { Store } from "@ariakit/react-core/utils/store";
+import { useStore, useStoreProps } from "@ariakit/react-core/utils/store";
 
 export function usePlaygroundStore(
   props: PlaygroundStoreProps = {}

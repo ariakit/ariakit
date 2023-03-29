@@ -1,9 +1,9 @@
-import {
+import type {
   KeyboardEvent,
   MouseEvent as ReactMouseEvent,
   ReactNode,
-  useRef,
 } from "react";
+import { useRef } from "react";
 import { useMemo } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { noop } from "@ariakit/core/utils/misc";
@@ -14,7 +14,7 @@ import {
   useForkRef,
   useSafeLayoutEffect,
 } from "../utils/hooks.js";
-import { DialogProps } from "./dialog.js";
+import type { DialogProps } from "./dialog.js";
 import { usePreviousMouseDownRef } from "./utils/use-previous-mouse-down-ref.js";
 
 type DialogBackdropProps = Pick<

@@ -1,6 +1,6 @@
 import "./style.css";
 
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import localFont from "next/font/local";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";

@@ -1,4 +1,5 @@
-import { FocusEvent, FormEvent, useEffect, useRef, useState } from "react";
+import type { FocusEvent, FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import {
   useEvent,
@@ -9,9 +10,9 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormStore, FormStoreState } from "./form-store.js";
+import type { FormStore, FormStoreState } from "./form-store.js";
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(

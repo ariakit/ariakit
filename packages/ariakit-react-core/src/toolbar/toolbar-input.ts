@@ -1,14 +1,13 @@
-import {
-  CompositeInputOptions,
-  useCompositeInput,
-} from "../composite/composite-input.js";
+import type { CompositeInputOptions } from "../composite/composite-input.js";
+import { useCompositeInput } from "../composite/composite-input.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { ToolbarItemOptions, useToolbarItem } from "./toolbar-item.js";
+import type { As, Props } from "../utils/types.js";
+import type { ToolbarItemOptions } from "./toolbar-item.js";
+import { useToolbarItem } from "./toolbar-item.js";
 
 /**
  * Returns props to create a `ToolbarInput` component.

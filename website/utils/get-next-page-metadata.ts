@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 type OpenGraph = Exclude<Metadata["openGraph"], null | undefined>;
 type OpenGraphType = "article" | "book" | "website";

@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { MenuBarStore } from "./menu-bar-store.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuBarStore } from "./menu-bar-store.js";
+import type { MenuStore } from "./menu-store.js";
 
 export const MenuBarContext = createContext<MenuBarStore | undefined>(
   undefined

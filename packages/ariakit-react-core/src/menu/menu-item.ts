@@ -1,16 +1,13 @@
-import { MouseEvent, useContext } from "react";
+import type { MouseEvent } from "react";
+import { useContext } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CompositeHoverOptions,
-  useCompositeHover,
-} from "../composite/composite-hover.js";
-import {
-  CompositeItemOptions,
-  useCompositeItem,
-} from "../composite/composite-item.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeHoverOptions } from "../composite/composite-hover.js";
+import { useCompositeHover } from "../composite/composite-hover.js";
+import type { CompositeItemOptions } from "../composite/composite-item.js";
+import { useCompositeItem } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
@@ -18,10 +15,10 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { MenuBarStore } from "./menu-bar-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { MenuBarStore } from "./menu-bar-store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
 /**

@@ -1,15 +1,12 @@
-import {
-  MutableRefObject,
-  RefObject,
-  createRef,
-  useEffect,
-  useState,
-} from "react";
+import type { MutableRefObject, RefObject } from "react";
+import { createRef, useEffect, useState } from "react";
 import { toArray } from "@ariakit/core/utils/array";
-import { PopoverOptions, usePopover } from "../popover/popover.js";
+import type { PopoverOptions } from "../popover/popover.js";
+import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { SelectListOptions, useSelectList } from "./select-list.js";
+import type { As, Props } from "../utils/types.js";
+import type { SelectListOptions } from "./select-list.js";
+import { useSelectList } from "./select-list.js";
 
 /**
  * Returns props to create a `SelectPopover` component.

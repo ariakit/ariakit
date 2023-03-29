@@ -1,12 +1,15 @@
 import * as Core from "@ariakit/core/dialog/dialog-store";
-import {
+import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreState,
+} from "../disclosure/disclosure-store.js";
+import {
   useDisclosureStoreOptions,
   useDisclosureStoreProps,
 } from "../disclosure/disclosure-store.js";
-import { Store, useStore } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore } from "../utils/store.js";
 
 export function useDialogStoreOptions(props: DialogStoreProps) {
   return useDisclosureStoreOptions(props);

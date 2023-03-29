@@ -1,10 +1,8 @@
-import {
-  PopoverDismissOptions,
-  usePopoverDismiss,
-} from "../popover/popover-dismiss.js";
+import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
+import { usePopoverDismiss } from "../popover/popover-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { HovercardStore } from "./hovercard-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardDismiss` component.

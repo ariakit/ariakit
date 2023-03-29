@@ -1,5 +1,5 @@
 import { getByRole, hover, press } from "@ariakit/test";
-import { SpyInstance } from "vitest";
+import type { SpyInstance } from "vitest";
 
 const getToolbar = () => getByRole("toolbar");
 const getButton = (name: string) => getByRole("button", { name });

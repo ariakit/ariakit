@@ -1,20 +1,19 @@
-import { MouseEvent, useCallback, useContext, useRef } from "react";
-import { StringLike } from "@ariakit/core/form/types";
+import type { MouseEvent } from "react";
+import { useCallback, useContext, useRef } from "react";
+import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormStore } from "./form-store.js";
+import type { FormStore } from "./form-store.js";
 
 function supportsNativeLabel(tagName?: string) {
   return (

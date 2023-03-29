@@ -1,6 +1,7 @@
-import { ElementType, ReactElement, forwardRef, memo } from "react";
+import type { ElementType, ReactElement } from "react";
+import { forwardRef, memo } from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
-import {
+import type {
   Component,
   HTMLProps,
   Hook,

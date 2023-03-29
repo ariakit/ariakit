@@ -1,11 +1,11 @@
-import {
+import type {
   DisclosureStore,
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreProps,
   DisclosureStoreState,
-  createDisclosureStore,
 } from "../disclosure/disclosure-store.js";
+import { createDisclosureStore } from "../disclosure/disclosure-store.js";
 
 /**
  * Creates a dialog store.

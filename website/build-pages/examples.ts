@@ -1,4 +1,4 @@
-import { ComponentType, LazyExoticComponent } from "react";
+import type { ComponentType, LazyExoticComponent } from "react";
 // @ts-ignore
 import examples from "../.pages/examples.js";
 

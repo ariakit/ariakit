@@ -1,10 +1,8 @@
-import {
-  CompositeSeparatorOptions,
-  useCompositeSeparator,
-} from "../composite/composite-separator.js";
+import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
+import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { ToolbarStore } from "./toolbar-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { ToolbarStore } from "./toolbar-store.js";
 
 /**
  * Returns props to create a `ToolbarSeparator` component.

@@ -1,4 +1,4 @@
-import { MutableRefObject, RefCallback } from "react";
+import type { MutableRefObject, RefCallback } from "react";
 
 /**
  * Sets both a function and object React ref.

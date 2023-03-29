@@ -1,13 +1,10 @@
-import {
+import type {
   FocusEvent,
   KeyboardEventHandler,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
 } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import {
@@ -17,8 +14,9 @@ import {
   isSelfTarget,
 } from "@ariakit/core/utils/events";
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { FocusableOptions } from "../focusable/focusable.js";
+import { useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -27,9 +25,9 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { CompositeContext } from "./composite-context.js";
-import {
+import type {
   CompositeStore,
   CompositeStoreItem,
   CompositeStoreState,

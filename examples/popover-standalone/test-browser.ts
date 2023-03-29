@@ -1,4 +1,5 @@
-import { Locator, Page, expect, test } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const getButton = (page: Page | Locator, name: string) =>
   page.getByRole("button", { name });

@@ -72,6 +72,7 @@ function writeFiles(buildDir, pages) {
   const contents = meta.flatMap((page) => page.sections);
 
   const index = Object.entries(categories).reduce((acc, [category, pages]) => {
+    // @ts-expect-error
     acc[category] = pages.map((page) => ({
       group: page.group,
       slug: page.slug,

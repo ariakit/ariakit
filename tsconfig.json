@@ -16,15 +16,23 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "declaration": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "stripInternal": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts",
+    "**/*.cts",
+    "**/*.js",
+    "**/*.cjs",
+    "**/*.mjs"
+  ],
   "exclude": ["node_modules"]
 }

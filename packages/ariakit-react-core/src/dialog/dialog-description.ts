@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { DialogDescriptionContext } from "./dialog-context.js";
-import { DialogStore } from "./dialog-store.js";
+import type { DialogStore } from "./dialog-store.js";
 
 /**
  * Returns props to create a `DialogDescription` component. This hook must be

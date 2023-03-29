@@ -1,12 +1,15 @@
 import * as Core from "@ariakit/core/menu/menu-bar-store";
-import {
+import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
+} from "../composite/composite-store.js";
+import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.js";
-import { Store, useStore } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore } from "../utils/store.js";
 
 export function useMenuBarStoreOptions(props: MenuBarStoreProps) {
   return useCompositeStoreOptions(props);

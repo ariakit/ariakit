@@ -1,20 +1,14 @@
-import {
-  KeyboardEvent,
-  MutableRefObject,
-  RefObject,
-  createRef,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import type { KeyboardEvent, MutableRefObject, RefObject } from "react";
+import { createRef, useContext, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { HovercardOptions, useHovercard } from "../hovercard/hovercard.js";
+import type { HovercardOptions } from "../hovercard/hovercard.js";
+import { useHovercard } from "../hovercard/hovercard.js";
 import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
-import { MenuListOptions, useMenuList } from "./menu-list.js";
+import type { MenuListOptions } from "./menu-list.js";
+import { useMenuList } from "./menu-list.js";
 
 /**
  * Returns props to create a `Menu` component.

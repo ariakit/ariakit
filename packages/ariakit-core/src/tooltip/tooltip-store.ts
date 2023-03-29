@@ -1,17 +1,13 @@
 import { createDisclosureStore } from "../disclosure/disclosure-store.js";
-import {
+import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-  createPopoverStore,
 } from "../popover/popover-store.js";
+import { createPopoverStore } from "../popover/popover-store.js";
 import { defaultValue } from "../utils/misc.js";
-import {
-  Store,
-  StoreOptions,
-  StoreProps,
-  createStore,
-} from "../utils/store.js";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { createStore } from "../utils/store.js";
 
 const tooltips = createStore({ activeRef: null as symbol | null });
 

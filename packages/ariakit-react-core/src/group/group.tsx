@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { GroupLabelContext } from "./group-label-context.js";
 
 /**

@@ -3,10 +3,10 @@ import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useForkRef, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { PopoverContext } from "./popover-context.js";
-import { PopoverStore } from "./popover-store.js";
+import type { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

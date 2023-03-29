@@ -1,15 +1,15 @@
-import { KeyboardEvent, useContext, useEffect, useState } from "react";
-import {
-  CompositeTypeaheadOptions,
-  useCompositeTypeahead,
-} from "../composite/composite-typeahead.js";
-import { CompositeOptions, useComposite } from "../composite/composite.js";
+import type { KeyboardEvent } from "react";
+import { useContext, useEffect, useState } from "react";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
+import type { CompositeOptions } from "../composite/composite.js";
+import { useComposite } from "../composite/composite.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuStore } from "./menu-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

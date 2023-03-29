@@ -1,12 +1,12 @@
-import { MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { useEvent, useForkRef, useId } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
-import { SelectStore } from "./select-store.js";
+import type { As, Options, Props } from "../utils/types.js";
+import type { SelectStore } from "./select-store.js";
 
 /**
  * Returns props to create a `SelectLabel` component. Since it's not a native

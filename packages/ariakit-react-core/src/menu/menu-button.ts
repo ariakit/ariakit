@@ -1,30 +1,18 @@
-import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
-import {
-  CompositeTypeaheadOptions,
-  useCompositeTypeahead,
-} from "../composite/composite-typeahead.js";
-import {
-  HovercardAnchorOptions,
-  useHovercardAnchor,
-} from "../hovercard/hovercard-anchor.js";
-import {
-  PopoverDisclosureOptions,
-  usePopoverDisclosure,
-} from "../popover/popover-disclosure.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import { useEvent, useForkRef, useId } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";

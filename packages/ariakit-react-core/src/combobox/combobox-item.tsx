@@ -1,29 +1,26 @@
-import { KeyboardEvent, MouseEvent, useCallback, useContext } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
+import { useCallback, useContext } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CompositeHoverOptions,
-  useCompositeHover,
-} from "../composite/composite-hover.js";
-import {
-  CompositeItemOptions,
-  useCompositeItem,
-} from "../composite/composite-item.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeHoverOptions } from "../composite/composite-hover.js";
+import { useCompositeHover } from "../composite/composite-hover.js";
+import type { CompositeItemOptions } from "../composite/composite-item.js";
+import { useCompositeItem } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import {
   ComboboxContext,
   ComboboxItemValueContext,
 } from "./combobox-context.js";
-import { ComboboxStore } from "./combobox-store.js";
+import type { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props to create a `ComboboxItem` component.

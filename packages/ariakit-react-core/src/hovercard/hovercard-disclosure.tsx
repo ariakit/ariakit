@@ -1,20 +1,14 @@
-import {
-  MouseEvent,
-  FocusEvent as ReactFocusEvent,
-  useEffect,
-  useState,
-} from "react";
+import type { MouseEvent, FocusEvent as ReactFocusEvent } from "react";
+import { useEffect, useState } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import {
-  DialogDisclosureOptions,
-  useDialogDisclosure,
-} from "../dialog/dialog-disclosure.js";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useForkRef } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
-import { HovercardStore } from "./hovercard-store.js";
+import type { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardDisclosure` component.

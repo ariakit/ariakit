@@ -1,13 +1,14 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { ButtonOptions, useButton } from "@ariakit/react-core/button/button";
+import type { ButtonOptions } from "@ariakit/react-core/button/button";
+import { useButton } from "@ariakit/react-core/button/button";
 import { useWrapElement } from "@ariakit/react-core/utils/hooks";
 import {
   createComponent,
   createElement,
   createHook,
 } from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
+import type { As, Props } from "@ariakit/react-core/utils/types";
 import { getParameters } from "codesandbox-import-utils/lib/api/define.js";
 import {
   getCodeSandboxDependencies,
@@ -16,7 +17,10 @@ import {
 } from "../__utils/code-sandbox.js";
 import { getFile } from "../__utils/get-file.js";
 import { PlaygroundContext } from "../__utils/playground-context.js";
-import { PlaygroundStore, PlaygroundStoreState } from "../playground-store.js";
+import type {
+  PlaygroundStore,
+  PlaygroundStoreState,
+} from "../playground-store.js";
 
 function getCodeSandboxParameters(values: PlaygroundStoreState["values"]) {
   const file = getFile(values);

@@ -1,10 +1,8 @@
-import {
-  CompositeSeparatorOptions,
-  useCompositeSeparator,
-} from "../composite/composite-separator.js";
+import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
+import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { MenuStore } from "./menu-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuSeparator` component.

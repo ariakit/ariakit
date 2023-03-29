@@ -1,4 +1,5 @@
-import { Page, expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const getCombobox = (page: Page) =>
   page.getByRole("combobox", { name: "Your favorite fruit" });

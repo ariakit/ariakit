@@ -1,26 +1,9 @@
 // @ts-check
-import {
-  existsSync,
-  lstatSync,
-  readFileSync,
-  readdirSync,
-  writeFileSync,
-} from "fs";
-import { dirname, join } from "path";
+import { lstatSync, readFileSync, readdirSync, writeFileSync } from "fs";
+import { join } from "path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
-
-/**
- * Converts ./path/to/file.js to ./path/to
- * @param {string} dir
- */
-function resolveDir(dir) {
-  if (!/\.(c|m)?(t|j)s$/.test(dir)) {
-    return dir;
-  }
-  return dirname(dir);
-}
 
 /**
  * @param {string} path
@@ -289,6 +272,7 @@ function getProxyPackageContents(rootPath, moduleName) {
  */
 export function makeProxies(rootPath) {
   const pkg = readPackageJson(rootPath);
+  /** @type {string[]} */
   const created = [];
   getProxyFolders(rootPath).forEach((name) => {
     fse.ensureDirSync(name);

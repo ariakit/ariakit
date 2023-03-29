@@ -1,26 +1,29 @@
 import { useContext, useMemo } from "react";
 import * as Core from "@ariakit/core/menu/menu-store";
-import { BivariantCallback, PickRequired } from "@ariakit/core/utils/types";
-import {
+import type {
+  BivariantCallback,
+  PickRequired,
+} from "@ariakit/core/utils/types";
+import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
+} from "../composite/composite-store.js";
+import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.js";
-import {
+import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
+} from "../hovercard/hovercard-store.js";
+import {
   useHovercardStoreOptions,
   useHovercardStoreProps,
 } from "../hovercard/hovercard-store.js";
-import {
-  Store,
-  useStore,
-  useStoreProps,
-  useStoreState,
-} from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps, useStoreState } from "../utils/store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;

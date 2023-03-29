@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import Footer from "website/components/footer.js";
 import Header from "website/components/header.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";

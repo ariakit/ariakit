@@ -1,11 +1,11 @@
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CompositeTypeaheadOptions,
-  useCompositeTypeahead,
-} from "../composite/composite-typeahead.js";
-import { CompositeOptions, useComposite } from "../composite/composite.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
+import type { CompositeOptions } from "../composite/composite.js";
+import { useComposite } from "../composite/composite.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -14,9 +14,9 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { SelectContext } from "./select-context.js";
-import { SelectStore } from "./select-store.js";
+import type { SelectStore } from "./select-store.js";
 
 /**
  * Returns props to create a `SelectList` component.

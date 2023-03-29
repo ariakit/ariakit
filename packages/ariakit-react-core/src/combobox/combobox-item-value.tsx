@@ -1,12 +1,12 @@
 import { useContext, useMemo } from "react";
 import { invariant, normalizeString } from "@ariakit/core/utils/misc";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import {
   ComboboxContext,
   ComboboxItemValueContext,
 } from "./combobox-context.js";
-import { ComboboxStore } from "./combobox-store.js";
+import type { ComboboxStore } from "./combobox-store.js";
 
 function normalizeValue(value: string) {
   return normalizeString(value).toLowerCase();

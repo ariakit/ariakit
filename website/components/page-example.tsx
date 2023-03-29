@@ -1,5 +1,6 @@
 "use client";
-import { ReactNode, Suspense, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
 import examples from "website/build-pages/examples.js";
 

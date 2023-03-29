@@ -1,26 +1,22 @@
-import {
+import type {
   ChangeEvent,
   CompositionEvent,
   MouseEvent,
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
 } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import {
   isFocusEventOutside,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
 import { normalizeString } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { CompositeOptions, useComposite } from "../composite/composite.js";
-import {
-  PopoverAnchorOptions,
-  usePopoverAnchor,
-} from "../popover/popover-anchor.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeOptions } from "../composite/composite.js";
+import { useComposite } from "../composite/composite.js";
+import type { PopoverAnchorOptions } from "../popover/popover-anchor.js";
+import { usePopoverAnchor } from "../popover/popover-anchor.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -32,8 +28,8 @@ import {
   useUpdateLayoutEffect,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 
 function isFirstItemAutoSelected(
   items: ComboboxStoreState["items"],

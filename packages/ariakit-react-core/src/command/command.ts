@@ -1,4 +1,5 @@
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import {
   fireClickEvent,
@@ -6,10 +7,11 @@ import {
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
 import { isFirefox } from "@ariakit/core/utils/platform";
-import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.js";
+import { useFocusable } from "../focusable/focusable.js";
 import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 
 function isNativeClick(event: KeyboardEvent) {
   if (!event.isTrusted) return false;

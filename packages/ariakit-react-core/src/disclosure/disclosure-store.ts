@@ -1,5 +1,6 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useDisclosureStoreOptions(
   _props: DisclosureStoreProps

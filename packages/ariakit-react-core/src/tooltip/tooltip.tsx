@@ -1,20 +1,20 @@
-import { HTMLAttributes, useEffect } from "react";
+import type { HTMLAttributes } from "react";
+import { useEffect } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  DisclosureContentOptions,
-  useDisclosureContent,
-} from "../disclosure/disclosure-content.js";
-import { PortalOptions, usePortal } from "../portal/portal.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import { useDisclosureContent } from "../disclosure/disclosure-content.js";
+import type { PortalOptions } from "../portal/portal.js";
+import { usePortal } from "../portal/portal.js";
 import {
   useBooleanEvent,
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { TooltipContext } from "./tooltip-context.js";
-import { TooltipStore } from "./tooltip-store.js";
+import type { TooltipStore } from "./tooltip-store.js";
 
 /**
  * Returns props to create a `Tooltip` component.

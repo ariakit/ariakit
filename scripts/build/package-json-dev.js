@@ -9,6 +9,7 @@ function processDevPackage(path) {
   const match = path.match(/packages\/(.*)\/src/);
   if (!match) return;
   const [, pkg] = match;
+  if (!pkg) return;
   const pkgPath = join(process.cwd(), "packages", pkg);
   writePackageJson(pkgPath);
 }

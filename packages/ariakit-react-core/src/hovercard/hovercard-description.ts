@@ -1,10 +1,8 @@
-import {
-  PopoverDescriptionOptions,
-  usePopoverDescription,
-} from "../popover/popover-description.js";
+import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
+import { usePopoverDescription } from "../popover/popover-description.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { HovercardStore } from "./hovercard-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardDescription` component. This hook must be

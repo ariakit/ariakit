@@ -1,11 +1,11 @@
-import {
+import type {
   CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreProps,
   CompositeStoreState,
-  createCompositeStore,
 } from "../composite/composite-store.js";
+import { createCompositeStore } from "../composite/composite-store.js";
 import { defaultValue } from "../utils/misc.js";
 
 /**

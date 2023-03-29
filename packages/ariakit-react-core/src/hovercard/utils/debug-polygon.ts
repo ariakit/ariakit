@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Polygon } from "./polygon.js";
+import type { Polygon } from "./polygon.js";
 
 function getPolygon() {
   const id = "debug-polygon";

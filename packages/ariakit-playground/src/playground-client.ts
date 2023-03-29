@@ -10,7 +10,7 @@ import {
   createHook,
   createMemoComponent,
 } from "@ariakit/react-core/utils/system";
-import { As, Options, Props } from "@ariakit/react-core/utils/types";
+import type { As, Options, Props } from "@ariakit/react-core/utils/types";
 import { SandpackClient } from "@codesandbox/sandpack-client";
 import {
   getCodeSandboxEntryContent,
@@ -19,7 +19,7 @@ import {
 } from "./__utils/code-sandbox.js";
 import { getFile } from "./__utils/get-file.js";
 import { PlaygroundContext } from "./__utils/playground-context.js";
-import { PlaygroundStore } from "./playground-store.js";
+import type { PlaygroundStore } from "./playground-store.js";
 
 const ENTRY_FILE = "/index.js";
 

@@ -1,13 +1,15 @@
 "use client";
 
-import { ElementType, ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { Button } from "@ariakit/react/button";
+import type {
+  TooltipAnchorOptions,
+  TooltipProps,
+} from "@ariakit/react/tooltip";
 import {
   Tooltip,
   TooltipAnchor,
-  TooltipAnchorOptions,
-  TooltipProps,
   useTooltipStore,
 } from "@ariakit/react/tooltip";
 import { createComponent } from "@ariakit/react-core/utils/system";

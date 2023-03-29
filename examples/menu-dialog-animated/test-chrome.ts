@@ -1,4 +1,5 @@
-import { Locator, Page, expect, test } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.getByRole("button", {

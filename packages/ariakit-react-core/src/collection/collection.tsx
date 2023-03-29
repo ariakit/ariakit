@@ -1,8 +1,8 @@
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { CollectionContext } from "./collection-context.js";
-import { CollectionStore } from "./collection-store.js";
+import type { CollectionStore } from "./collection-store.js";
 
 /**
  * Returns props to create a `Collection` component. It receives the collection

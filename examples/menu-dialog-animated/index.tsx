@@ -1,4 +1,5 @@
-import { RefObject, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { useRef, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { Dialog } from "./dialog.js";
 import { add, playlistAdd } from "./icons.js";

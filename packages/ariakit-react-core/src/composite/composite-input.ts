@@ -1,4 +1,4 @@
-import { FocusEvent, KeyboardEvent } from "react";
+import type { FocusEvent, KeyboardEvent } from "react";
 import {
   getDocument,
   getTextboxSelection,
@@ -6,8 +6,8 @@ import {
 } from "@ariakit/core/utils/dom";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
-import { CompositeStore } from "./composite-store.js";
+import type { As, Options, Props } from "../utils/types.js";
+import type { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";
 
 function getValueLength(element: HTMLElement) {

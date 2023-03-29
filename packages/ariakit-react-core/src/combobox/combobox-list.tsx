@@ -1,9 +1,10 @@
-import { KeyboardEvent, useRef } from "react";
+import type { KeyboardEvent } from "react";
+import { useRef } from "react";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { ComboboxContext } from "./combobox-context.js";
-import { ComboboxStore } from "./combobox-store.js";
+import type { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props to create a `ComboboxList` component.

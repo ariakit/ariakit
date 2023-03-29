@@ -1,8 +1,7 @@
 import { createElement, version } from "react";
 import { render } from "@ariakit/test";
-import _matchers, {
-  TestingLibraryMatchers,
-} from "@testing-library/jest-dom/matchers.js";
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers.js";
+import _matchers from "@testing-library/jest-dom/matchers.js";
 // @ts-expect-error
 import failOnConsole from "vitest-fail-on-console";
 
@@ -55,6 +54,7 @@ expect.extend({
 
 if (version.startsWith("17")) {
   vi.mock("react", async () => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
     return {
       ...actual,

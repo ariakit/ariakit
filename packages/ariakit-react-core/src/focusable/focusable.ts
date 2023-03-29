@@ -1,13 +1,11 @@
-import {
+import type {
   EventHandler,
   FocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   SyntheticEvent,
-  useEffect,
-  useRef,
-  useState,
 } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
@@ -22,7 +20,7 @@ import {
   isFocusable,
 } from "@ariakit/core/utils/focus";
 import { isSafari } from "@ariakit/core/utils/platform";
-import { BivariantCallback } from "@ariakit/core/utils/types";
+import type { BivariantCallback } from "@ariakit/core/utils/types";
 import {
   useEvent,
   useForkRef,
@@ -30,7 +28,7 @@ import {
   useTagName,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 
 const isSafariBrowser = isSafari();
 

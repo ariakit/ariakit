@@ -1,10 +1,8 @@
-import {
-  CompositeGroupLabelOptions,
-  useCompositeGroupLabel,
-} from "../composite/composite-group-label.js";
+import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
+import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { ComboboxStore } from "./combobox-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { ComboboxStore } from "./combobox-store.js";
 
 /**
  * Returns props to create a `ComboboxGroupLabel` component. This hook should be

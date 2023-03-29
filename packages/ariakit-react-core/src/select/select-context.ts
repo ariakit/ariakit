@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { SelectStore } from "./select-store.js";
+import type { SelectStore } from "./select-store.js";
 
 export const SelectItemCheckedContext = createContext(false);
 

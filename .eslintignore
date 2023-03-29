@@ -1,8 +1,6 @@
+node_modules
 cjs
 esm
-umd
-ts
 coverage
-node_modules
 public
 .cache

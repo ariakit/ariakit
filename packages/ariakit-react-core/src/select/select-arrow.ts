@@ -1,10 +1,8 @@
-import {
-  PopoverDisclosureArrowOptions,
-  usePopoverDisclosureArrow,
-} from "../popover/popover-disclosure-arrow.js";
+import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
+import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { SelectStore } from "./select-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { SelectStore } from "./select-store.js";
 
 /**
  * Returns props to create a `SelectArrow` component.

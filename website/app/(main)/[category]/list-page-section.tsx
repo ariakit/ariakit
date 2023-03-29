@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react/heading";
 import tw from "website/utils/tw.js";
 

@@ -1,7 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
-  ReactNode,
   createContext,
   memo,
   useContext,
@@ -13,12 +13,14 @@ import { cx } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import type { QueryFunctionContext } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
-import { PageContent } from "website/build-pages/contents.js";
-import pageIndex, { PageIndexDetail } from "website/build-pages/index.js";
+import type { PageContent } from "website/build-pages/contents.js";
+import type { PageIndexDetail } from "website/build-pages/index.js";
+import pageIndex from "website/build-pages/index.js";
 import Blog from "website/icons/blog.js";
 import Components from "website/icons/components.js";
 import Examples from "website/icons/examples.js";

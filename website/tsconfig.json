@@ -6,7 +6,9 @@
         "name": "next"
       }
     ],
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true
   },
   "include": ["**/*.tsx", "**/*.ts", ".next/types/**/*.ts"]
 }

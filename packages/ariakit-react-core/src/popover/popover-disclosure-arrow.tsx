@@ -1,9 +1,9 @@
 import { useContext, useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { PopoverContext } from "./popover-context.js";
-import { PopoverStore, PopoverStoreState } from "./popover-store.js";
+import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

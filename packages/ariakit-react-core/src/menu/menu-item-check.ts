@@ -1,12 +1,10 @@
 import { useContext } from "react";
-import {
-  CheckboxCheckOptions,
-  useCheckboxCheck,
-} from "../checkbox/checkbox-check.js";
+import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
+import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { MenuItemCheckedContext } from "./menu-context.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuItemCheck` component.

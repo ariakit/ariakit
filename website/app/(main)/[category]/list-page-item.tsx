@@ -1,4 +1,5 @@
-import { AnchorHTMLAttributes, ReactNode, useId } from "react";
+import type { AnchorHTMLAttributes, ReactNode } from "react";
+import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import Link from "website/components/link.js";
 import tw from "website/utils/tw.js";

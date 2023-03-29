@@ -1,13 +1,16 @@
 import * as Core from "@ariakit/core/composite/composite-store";
-import { PickRequired } from "@ariakit/core/utils/types";
-import {
+import type { PickRequired } from "@ariakit/core/utils/types";
+import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
+} from "../collection/collection-store.js";
+import {
   useCollectionStoreOptions,
   useCollectionStoreProps,
 } from "../collection/collection-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.CompositeStoreItem;
 

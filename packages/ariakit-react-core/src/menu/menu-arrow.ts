@@ -1,10 +1,8 @@
-import {
-  PopoverArrowOptions,
-  usePopoverArrow,
-} from "../popover/popover-arrow.js";
+import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
+import { usePopoverArrow } from "../popover/popover-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { MenuStore } from "./menu-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuArrow` component.

@@ -1,7 +1,9 @@
-import { MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { FocusableOptions } from "../focusable/focusable.js";
+import { useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -9,8 +11,8 @@ import {
   useIsMouseMoving,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { HovercardStore } from "./hovercard-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { HovercardStore } from "./hovercard-store.js";
 
 /**
  * Returns props to create a `HovercardAnchor` component.

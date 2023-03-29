@@ -1,18 +1,17 @@
-import { MouseEvent, useCallback, useContext } from "react";
+import type { MouseEvent } from "react";
+import { useCallback, useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  CompositeItemOptions,
-  useCompositeItem,
-} from "../composite/composite-item.js";
+import type { CompositeItemOptions } from "../composite/composite-item.js";
+import { useCompositeItem } from "../composite/composite-item.js";
 import { useEvent, useId } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { TabContext } from "./tab-context.js";
-import { TabStore } from "./tab-store.js";
+import type { TabStore } from "./tab-store.js";
 
 /**
  * Returns props to create a `Tab` component.

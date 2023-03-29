@@ -1,19 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
-import {
-  DisclosureContentOptions,
-  useDisclosureContent,
-} from "../disclosure/disclosure-content.js";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
-import { FocusableOptions, useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.js";
+import { useFocusable } from "../focusable/focusable.js";
 import { useForkRef, useId } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { TabStore } from "./tab-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { TabStore } from "./tab-store.js";
 
 /**
  * Returns props to create a `TabPanel` component.

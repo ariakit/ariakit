@@ -1,14 +1,13 @@
-import {
-  CompositeContainerOptions,
-  useCompositeContainer,
-} from "../composite/composite-container.js";
+import type { CompositeContainerOptions } from "../composite/composite-container.js";
+import { useCompositeContainer } from "../composite/composite-container.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { ToolbarItemOptions, useToolbarItem } from "./toolbar-item.js";
+import type { As, Props } from "../utils/types.js";
+import type { ToolbarItemOptions } from "./toolbar-item.js";
+import { useToolbarItem } from "./toolbar-item.js";
 
 /**
  * Returns props to create a `ToolbarContainer` component.

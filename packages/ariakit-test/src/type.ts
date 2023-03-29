@@ -2,7 +2,8 @@ import "./mock-get-client-rects.js";
 
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
-import { DirtiableElement, TextField, queuedMicrotasks } from "./__utils.js";
+import type { DirtiableElement, TextField } from "./__utils.js";
+import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
 import { focus } from "./focus.js";
 import { sleep } from "./sleep.js";

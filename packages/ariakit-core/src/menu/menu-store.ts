@@ -1,25 +1,20 @@
-import { ComboboxStore } from "../combobox/combobox-store.js";
-import {
+import type { ComboboxStore } from "../combobox/combobox-store.js";
+import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-  createCompositeStore,
 } from "../composite/composite-store.js";
-import {
+import { createCompositeStore } from "../composite/composite-store.js";
+import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-  createHovercardStore,
 } from "../hovercard/hovercard-store.js";
+import { createHovercardStore } from "../hovercard/hovercard-store.js";
 import { applyState, defaultValue } from "../utils/misc.js";
-import {
-  Store,
-  StoreOptions,
-  StoreProps,
-  createStore,
-  mergeStore,
-} from "../utils/store.js";
-import {
+import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { createStore, mergeStore } from "../utils/store.js";
+import type {
   BivariantCallback,
   PickRequired,
   SetState,

@@ -8,8 +8,8 @@ import {
 } from "react";
 import { chain } from "@ariakit/core/utils/misc";
 import { useSafeLayoutEffect } from "../../utils/hooks.js";
-import { WrapElement } from "../../utils/types.js";
-import { DialogStore } from "../dialog-store.js";
+import type { WrapElement } from "../../utils/types.js";
+import type { DialogStore } from "../dialog-store.js";
 
 const NestedDialogsContext = createContext<{
   store?: DialogStore;

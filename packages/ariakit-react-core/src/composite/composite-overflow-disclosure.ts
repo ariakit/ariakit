@@ -1,13 +1,13 @@
-import { FocusEvent, useEffect, useRef, useState } from "react";
-import {
-  PopoverDisclosureOptions,
-  usePopoverDisclosure,
-} from "../popover/popover-disclosure.js";
+import type { FocusEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import { useEvent, useForkRef } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { CompositeItemOptions, useCompositeItem } from "./composite-item.js";
-import { CompositeOverflowStore } from "./composite-overflow-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { CompositeItemOptions } from "./composite-item.js";
+import { useCompositeItem } from "./composite-item.js";
+import type { CompositeOverflowStore } from "./composite-overflow-store.js";
 
 /**
  * Returns props to create a `CompositeOverflowDisclosure` component. This hook

@@ -1,10 +1,8 @@
-import {
-  CompositeGroupOptions,
-  useCompositeGroup,
-} from "../composite/composite-group.js";
+import type { CompositeGroupOptions } from "../composite/composite-group.js";
+import { useCompositeGroup } from "../composite/composite-group.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { MenuStore } from "./menu-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuGroup` component.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
-import { SandpackBundlerFiles } from "@codesandbox/sandpack-client";
-import { PlaygroundStoreState } from "../playground-store.js";
+import type { SandpackBundlerFiles } from "@codesandbox/sandpack-client";
+import type { PlaygroundStoreState } from "../playground-store.js";
 
 const DEFAULT_DEPENDENCIES = {
   react: "latest",

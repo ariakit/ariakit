@@ -1,19 +1,24 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
-import {
+import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
+} from "../composite/composite-store.js";
+import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.js";
-import {
+import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
+} from "../popover/popover-store.js";
+import {
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useComboboxStoreOptions(props: ComboboxStoreProps) {
   return {

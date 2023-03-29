@@ -1,24 +1,17 @@
-import {
+import type {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
   SelectHTMLAttributes,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
 } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CompositeTypeaheadOptions,
-  useCompositeTypeahead,
-} from "../composite/composite-typeahead.js";
-import {
-  PopoverDisclosureOptions,
-  usePopoverDisclosure,
-} from "../popover/popover-disclosure.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -26,11 +19,11 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { SelectArrow } from "./select-arrow.js";
 import { SelectContext } from "./select-context.js";
-import { SelectStore } from "./select-store.js";
+import type { SelectStore } from "./select-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

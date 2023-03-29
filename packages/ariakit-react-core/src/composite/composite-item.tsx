@@ -1,14 +1,10 @@
-import {
+import type {
   FocusEvent,
   KeyboardEvent,
   RefObject,
   SyntheticEvent,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
 } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
   getScrollingElement,
   isButton,
@@ -16,12 +12,11 @@ import {
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
-import { CommandOptions, useCommand } from "../command/command.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
+import type { CommandOptions } from "../command/command.js";
+import { useCommand } from "../command/command.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -35,13 +30,13 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import {
   CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
 } from "./composite-context.js";
-import { CompositeStore } from "./composite-store.js";
+import type { CompositeStore } from "./composite-store.js";
 import { focusSilently, getEnabledItem, isItem } from "./utils.js";
 
 function isEditableElement(element: HTMLElement) {

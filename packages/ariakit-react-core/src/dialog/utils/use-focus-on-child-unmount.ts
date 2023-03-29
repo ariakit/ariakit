@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getActiveElement, getDocument } from "@ariakit/core/utils/dom";
-import { DialogStore } from "../dialog-store.js";
+import type { DialogStore } from "../dialog-store.js";
 
 /**
  * When the focused child gets removed from the DOM, we make sure to move focus

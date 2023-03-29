@@ -1,4 +1,4 @@
-import { MenuStoreState } from "./menu-store.js";
+import type { MenuStoreState } from "./menu-store.js";
 
 export function hasExpandedMenuButton(
   items?: MenuStoreState["items"],

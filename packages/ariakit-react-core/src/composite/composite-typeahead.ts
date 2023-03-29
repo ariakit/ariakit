@@ -1,12 +1,13 @@
-import { KeyboardEvent, useContext, useRef } from "react";
+import type { KeyboardEvent } from "react";
+import { useContext, useRef } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant, normalizeString } from "@ariakit/core/utils/misc";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { CompositeContext } from "./composite-context.js";
-import { CompositeStore, CompositeStoreItem } from "./composite-store.js";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 import { flipItems } from "./utils.js";
 
 let chars = "";

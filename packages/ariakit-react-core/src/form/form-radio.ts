@@ -1,15 +1,18 @@
-import { ChangeEvent, useContext } from "react";
+import type { ChangeEvent } from "react";
+import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { RadioOptions, useRadio } from "../radio/radio.js";
+import type { RadioOptions } from "../radio/radio.js";
+import { useRadio } from "../radio/radio.js";
 import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormFieldOptions, useFormField } from "./form-field.js";
+import type { FormFieldOptions } from "./form-field.js";
+import { useFormField } from "./form-field.js";
 
 /**
  * Returns props to create a `FormRadio` component.

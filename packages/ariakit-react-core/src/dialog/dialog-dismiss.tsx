@@ -1,10 +1,12 @@
-import { MouseEvent, useContext, useMemo } from "react";
-import { ButtonOptions, useButton } from "../button/button.js";
+import type { MouseEvent } from "react";
+import { useContext, useMemo } from "react";
+import type { ButtonOptions } from "../button/button.js";
+import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { DialogContext } from "./dialog-context.js";
-import { DialogStore } from "./dialog-store.js";
+import type { DialogStore } from "./dialog-store.js";
 
 /**
  * Returns props to create a `DialogDismiss` component.

@@ -1,10 +1,8 @@
-import {
-  DialogDescriptionOptions,
-  useDialogDescription,
-} from "../dialog/dialog-description.js";
+import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
+import { useDialogDescription } from "../dialog/dialog-description.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { PopoverStore } from "./popover-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { PopoverStore } from "./popover-store.js";
 
 /**
  * Returns props to create a `PopoverDescription` component. This hook must be

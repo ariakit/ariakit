@@ -1,5 +1,5 @@
+import type { FocusEvent } from "react";
 import {
-  FocusEvent,
   createContext,
   useCallback,
   useContext,
@@ -11,8 +11,9 @@ import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { chain } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { PopoverOptions, usePopover } from "../popover/popover.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { PopoverOptions } from "../popover/popover.js";
+import { usePopover } from "../popover/popover.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -23,10 +24,10 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { HovercardStore } from "./hovercard-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { HovercardStore } from "./hovercard-store.js";
+import type { Point } from "./utils/polygon.js";
 import {
-  Point,
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,

@@ -1,11 +1,5 @@
-import {
-  MutableRefObject,
-  RefCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import type { MutableRefObject, RefCallback } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";
 import {
@@ -23,7 +17,7 @@ import {
 } from "../utils/hooks.js";
 import { setRef } from "../utils/misc.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { PortalContext } from "./portal-context.js";
 
 function getRootElement(element?: Element | null) {

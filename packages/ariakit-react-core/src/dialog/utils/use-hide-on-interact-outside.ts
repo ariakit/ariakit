@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { contains, getDocument } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEvent, useLiveRef } from "../../utils/hooks.js";
-import { DialogOptions } from "../dialog.js";
+import type { DialogOptions } from "../dialog.js";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.js";
 
 type Options = Pick<

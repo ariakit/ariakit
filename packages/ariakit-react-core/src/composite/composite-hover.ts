@@ -1,17 +1,18 @@
-import { MouseEvent as ReactMouseEvent, useContext } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import { useContext } from "react";
 import { closest, contains } from "@ariakit/core/utils/dom";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { useBooleanEvent, useEvent, useIsMouseMoving } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { CompositeContext } from "./composite-context.js";
-import { CompositeStore } from "./composite-store.js";
+import type { CompositeStore } from "./composite-store.js";
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;

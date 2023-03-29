@@ -1,16 +1,18 @@
 import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
-import { CheckboxOptions, useCheckbox } from "../checkbox/checkbox.js";
+import type { CheckboxOptions } from "../checkbox/checkbox.js";
+import { useCheckbox } from "../checkbox/checkbox.js";
 import {
   createElement,
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { MenuContext } from "./menu-context.js";
-import { MenuItemOptions, useMenuItem } from "./menu-item.js";
-import { MenuStore } from "./menu-store.js";
+import type { MenuItemOptions } from "./menu-item.js";
+import { useMenuItem } from "./menu-item.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuItemCheckbox` component.

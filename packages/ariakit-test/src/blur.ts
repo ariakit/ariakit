@@ -1,5 +1,5 @@
 import { getActiveElement } from "@ariakit/core/utils/dom";
-import { DirtiableElement } from "./__utils.js";
+import type { DirtiableElement } from "./__utils.js";
 import { act } from "./act.js";
 import { fireEvent } from "./fire-event.js";
 

@@ -1,4 +1,4 @@
-import {
+import type {
   ComponentType,
   DependencyList,
   EffectCallback,
@@ -7,6 +7,8 @@ import {
   Ref,
   RefCallback,
   RefObject,
+} from "react";
+import {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -19,9 +21,9 @@ import * as React from "react";
 import { canUseDOM } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { applyState } from "@ariakit/core/utils/misc";
-import { AnyFunction, SetState } from "@ariakit/core/utils/types";
+import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
 import { setRef } from "./misc.js";
-import { WrapElement } from "./types.js";
+import type { WrapElement } from "./types.js";
 
 // See https://github.com/webpack/webpack/issues/14814
 const _React = { ...React };

@@ -1,9 +1,9 @@
 import { useContext, useMemo, useRef } from "react";
 import { useForkRef, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 import { HeadingContext } from "./heading-context.js";
-import { HeadingLevels } from "./utils.js";
+import type { HeadingLevels } from "./utils.js";
 
 type HeadingElements = `h${HeadingLevels}`;
 

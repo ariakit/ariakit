@@ -1,13 +1,16 @@
 import * as Core from "@ariakit/core/popover/popover-store";
-import {
+import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
+} from "../dialog/dialog-store.js";
+import {
   useDialogStoreOptions,
   useDialogStoreProps,
 } from "../dialog/dialog-store.js";
 import { useEvent } from "../utils/hooks.js";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function usePopoverStoreOptions(props: PopoverStoreProps) {
   const getAnchorRect = useEvent(props.getAnchorRect);

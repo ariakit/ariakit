@@ -1,12 +1,15 @@
 import * as Core from "@ariakit/core/radio/radio-store";
-import {
+import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
+} from "../composite/composite-store.js";
+import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.js";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useRadioStoreOptions(props: RadioStoreProps) {
   return useCompositeStoreOptions(props);

@@ -7,7 +7,7 @@ import {
   hasOwnProperty,
   noop,
 } from "./misc.js";
-import { AnyObject, SetStateAction } from "./types.js";
+import type { AnyObject, SetStateAction } from "./types.js";
 
 /**
  * Creates a store.

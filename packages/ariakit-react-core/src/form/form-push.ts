@@ -1,22 +1,16 @@
-import {
-  MouseEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { StringLike } from "@ariakit/core/form/types";
+import type { MouseEvent } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
-import { ButtonOptions, useButton } from "../button/button.js";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
+import type { ButtonOptions } from "../button/button.js";
+import { useButton } from "../button/button.js";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormStore, FormStoreState } from "./form-store.js";
+import type { FormStore, FormStoreState } from "./form-store.js";
 
 function getFirstFieldsByName(
   items: FormStoreState["items"] | undefined,

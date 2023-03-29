@@ -1,10 +1,8 @@
-import {
-  HovercardHeadingOptions,
-  useHovercardHeading,
-} from "../hovercard/hovercard-heading.js";
+import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
+import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
-import { MenuStore } from "./menu-store.js";
+import type { As, Props } from "../utils/types.js";
+import type { MenuStore } from "./menu-store.js";
 
 /**
  * Returns props to create a `MenuHeading` component. This hook must be used in

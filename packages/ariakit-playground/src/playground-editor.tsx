@@ -1,7 +1,5 @@
+import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent,
   useCallback,
   useContext,
   useEffect,
@@ -11,11 +9,10 @@ import {
 } from "react";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  CommandOptions,
-  useCommand,
-} from "@ariakit/react-core/command/command";
-import { Role, RoleProps } from "@ariakit/react-core/role/role";
+import type { CommandOptions } from "@ariakit/react-core/command/command";
+import { useCommand } from "@ariakit/react-core/command/command";
+import type { RoleProps } from "@ariakit/react-core/role/role";
+import { Role } from "@ariakit/react-core/role/role";
 import {
   useControlledState,
   useEvent,
@@ -30,7 +27,7 @@ import {
   createElement,
   createHook,
 } from "@ariakit/react-core/utils/system";
-import { As, Props } from "@ariakit/react-core/utils/types";
+import type { As, Props } from "@ariakit/react-core/utils/types";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import {
   defaultKeymap,
@@ -46,7 +43,8 @@ import {
   syntaxHighlighting,
 } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
-import { EditorState, Extension, StateEffect } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
+import { EditorState, StateEffect } from "@codemirror/state";
 import {
   EditorView,
   drawSelection,
@@ -61,8 +59,9 @@ import { tags as t } from "@lezer/highlight";
 import { getExtension } from "./__utils/get-extension.js";
 import { getValue } from "./__utils/get-value.js";
 import { PlaygroundContext } from "./__utils/playground-context.js";
-import { PlaygroundCodeOptions, usePlaygroundCode } from "./playground-code.js";
-import { PlaygroundStore } from "./playground-store.js";
+import type { PlaygroundCodeOptions } from "./playground-code.js";
+import { usePlaygroundCode } from "./playground-code.js";
+import type { PlaygroundStore } from "./playground-store.js";
 
 function getLanguage(file: string) {
   const extension = getExtension(file);

@@ -1,11 +1,7 @@
 import { defaultValue } from "../utils/misc.js";
-import {
-  Store,
-  StoreOptions,
-  StoreProps,
-  createStore,
-} from "../utils/store.js";
-import { SetState } from "../utils/types.js";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { createStore } from "../utils/store.js";
+import type { SetState } from "../utils/types.js";
 
 /**
  * Creates a disclosure store.

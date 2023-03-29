@@ -1,16 +1,19 @@
 import { useCallback, useMemo } from "react";
 import * as Core from "@ariakit/core/form/form-store";
-import { StringLike } from "@ariakit/core/form/types";
-import { PickRequired } from "@ariakit/core/utils/types";
-import {
+import type { StringLike } from "@ariakit/core/form/types";
+import type { PickRequired } from "@ariakit/core/utils/types";
+import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
+} from "../collection/collection-store.js";
+import {
   useCollectionStoreOptions,
   useCollectionStoreProps,
 } from "../collection/collection-store.js";
 import { useSafeLayoutEffect } from "../utils/hooks.js";
-import { Store, useStore, useStoreProps } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;

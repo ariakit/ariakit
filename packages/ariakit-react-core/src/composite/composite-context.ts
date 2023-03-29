@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { CompositeStore } from "./composite-store.js";
+import type { CompositeStore } from "./composite-store.js";
 
 type ItemContext = { baseElement?: HTMLElement; id?: string } | undefined;
 

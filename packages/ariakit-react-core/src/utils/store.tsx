@@ -1,11 +1,15 @@
 import { useCallback, useMemo } from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import {
+import type {
   Store as CoreStore,
   State,
   StoreState,
 } from "@ariakit/core/utils/store";
-import { AnyFunction, PickByValue, SetState } from "@ariakit/core/utils/types";
+import type {
+  AnyFunction,
+  PickByValue,
+  SetState,
+} from "@ariakit/core/utils/types";
 import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
 import {
   useLazyValue,

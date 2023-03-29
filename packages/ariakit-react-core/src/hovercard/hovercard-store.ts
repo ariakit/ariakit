@@ -1,12 +1,15 @@
 import * as Core from "@ariakit/core/hovercard/hovercard-store";
-import {
+import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
+} from "../popover/popover-store.js";
+import {
   usePopoverStoreOptions,
   usePopoverStoreProps,
 } from "../popover/popover-store.js";
-import { Store, useStore } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
+import { useStore } from "../utils/store.js";
 
 export function useHovercardStoreOptions(props: HovercardStoreProps) {
   return usePopoverStoreOptions(props);

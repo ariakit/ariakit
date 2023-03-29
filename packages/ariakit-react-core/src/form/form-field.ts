@@ -1,12 +1,11 @@
-import { FocusEvent, RefObject, useCallback, useContext, useRef } from "react";
-import { StringLike } from "@ariakit/core/form/types";
+import type { FocusEvent, RefObject } from "react";
+import { useCallback, useContext, useRef } from "react";
+import type { StringLike } from "@ariakit/core/form/types";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { cx, invariant } from "@ariakit/core/utils/misc";
-import { BooleanOrCallback } from "@ariakit/core/utils/types";
-import {
-  CollectionItemOptions,
-  useCollectionItem,
-} from "../collection/collection-item.js";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { CollectionItemOptions } from "../collection/collection-item.js";
+import { useCollectionItem } from "../collection/collection-item.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -18,9 +17,9 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import { As, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { FormContext } from "./form-context.js";
-import { FormStore } from "./form-store.js";
+import type { FormStore } from "./form-store.js";
 
 type ItemType = "label" | "error" | "description";
 
