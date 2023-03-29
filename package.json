@@ -108,7 +108,7 @@
     "raw-loader": "4.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.6.1",
+    "react-router-dom": "6.10.0",
     "rehype-parse": "8.0.4",
     "rimraf": "3.0.2",
     "rollup": "3.9.1",
