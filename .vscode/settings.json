@@ -6,14 +6,18 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
+  "typescript.preferences.importModuleSpecifierEnding": "js",
   "eslint.enable": true,
   "eslint.format.enable": true,
   "editor.formatOnSave": true,
-  "typescript.preferences.importModuleSpecifierEnding": "js",
   "css.validate": false,
   "stylelint.enable": true,
   "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
     "source.fixAll.stylelint": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
