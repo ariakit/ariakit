@@ -1,5 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "extends": [
     "plugin:react/recommended",
     "plugin:prettier/recommended",
@@ -30,7 +33,10 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/consistent-type-exports": "error",
     "sort-imports": ["error", { "ignoreDeclarationSort": true }],
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
     "import/order": [
       "error",
       {
