@@ -11,6 +11,7 @@
 # next.js
 /.next/
 /out/
+.vscode
 
 # production
 /build
@@ -38,4 +39,3 @@ yarn-error.log*
 
 # pages
 /.pages/
-app/(generated-pages)

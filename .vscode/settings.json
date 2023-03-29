@@ -5,16 +5,16 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "typescript.preferences.importModuleSpecifierEnding": "js",
   "css.validate": false,
   "stylelint.enable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.stylelint": true
   },
-  "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
-  "eslint.enable": true,
-  "editor.formatOnSave": true,
-  "eslint.format.enable": true,
-  "typescript.preferences.importModuleSpecifierEnding": "js",
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
