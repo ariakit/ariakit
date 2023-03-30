@@ -4,7 +4,7 @@
   Animating a modal <a href="/components/dialog">Dialog</a> and its backdrop using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
 </p>
 
-The [`animated`](/api-reference/dialog-store#animated) prop on the [`useDialogStore`](/api-reference/dialog-store) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the dialog.
+The [`animated`](/apis/dialog-store#animated) prop on the [`useDialogStore`](/apis/dialog-store) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the dialog.
 
 <a href="./index.tsx" data-playground>Example</a>
 

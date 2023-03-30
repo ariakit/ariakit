@@ -35,7 +35,7 @@ By default, browsers apply some default styles to the `details` element. We can 
 
 ### Fixing the layout shift
 
-Since we're changing between non-modal and [`modal`](/api-reference/dialog#modal) states and, therefore, between non-portal and [`portal`](/api-reference/dialog#portal) dialogs right after it's shown, there may be a layout shift if the browser has visible scrollbars.
+Since we're changing between non-modal and [`modal`](/apis/dialog#modal) states and, therefore, between non-portal and [`portal`](/apis/dialog#portal) dialogs right after it's shown, there may be a layout shift if the browser has visible scrollbars.
 
 To fix this, we can use the `--scrollbar-width` CSS variable:
 

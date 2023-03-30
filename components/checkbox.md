@@ -17,9 +17,9 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/checkbox-store">useCheckboxStore</a>()
+<a href="/apis/checkbox-store">useCheckboxStore</a>()
 
-&lt;<a href="/api-reference/checkbox">Checkbox</a>&gt;
-  &lt;<a href="/api-reference/checkbox-check">CheckboxCheck</a> /&gt;
+&lt;<a href="/apis/checkbox">Checkbox</a>&gt;
+  &lt;<a href="/apis/checkbox-check">CheckboxCheck</a> /&gt;
 &lt;/Checkbox&gt;
 </pre>

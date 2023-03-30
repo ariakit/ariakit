@@ -17,7 +17,7 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/heading-level">HeadingLevel</a>&gt;
-  &lt;<a href="/api-reference/heading">Heading</a> /&gt;
+&lt;<a href="/apis/heading-level">HeadingLevel</a>&gt;
+  &lt;<a href="/apis/heading">Heading</a> /&gt;
 &lt;/HeadingLevel&gt;
 </pre>

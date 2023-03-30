@@ -17,9 +17,9 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/collection-store">useCollectionStore</a>()
+<a href="/apis/collection-store">useCollectionStore</a>()
 
-&lt;<a href="/api-reference/collection">Collection</a>&gt;
-  &lt;<a href="/api-reference/collection-item">CollectionItem</a> /&gt;
+&lt;<a href="/apis/collection">Collection</a>&gt;
+  &lt;<a href="/apis/collection-item">CollectionItem</a> /&gt;
 &lt;/Collection&gt;
 </pre>

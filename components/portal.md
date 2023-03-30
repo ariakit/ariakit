@@ -17,5 +17,5 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/portal">Portal</a> /&gt;
+&lt;<a href="/apis/portal">Portal</a> /&gt;
 </pre>

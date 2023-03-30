@@ -29,6 +29,7 @@ export default function Example() {
         // JavaScript finishes loading, we can't automatically move focus to the
         // dialog.
         modal={mounted}
+        portal={false}
         hidden={false}
         className="dialog"
       >

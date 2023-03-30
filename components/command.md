@@ -17,7 +17,7 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/command">Command</a> /&gt;
+&lt;<a href="/apis/command">Command</a> /&gt;
 </pre>
 
 ## Command vs. Button
@@ -26,4 +26,4 @@ In short, if you need a semantic button element, you should use the [Button](/co
 
 The `Button` component uses `Command` underneath and inherits all its features, but `Button` automatically adds the `role="button"` attribute when necessary (for example, when [rendering a non-native button](/examples/button-as-div)).
 
-If you need a clickable element with a different semantic role (e.g., `menuitem`), and you're not using the specific Ariakit component (e.g., [`MenuItem`](/api-reference/menu-item)), you can use `Command`.
+If you need a clickable element with a different semantic role (e.g., `menuitem`), and you're not using the specific Ariakit component (e.g., [`MenuItem`](/apis/menu-item)), you can use `Command`.

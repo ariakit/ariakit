@@ -6,7 +6,6 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
-  "typescript.preferences.importModuleSpecifierEnding": "js",
   "eslint.enable": true,
   "eslint.format.enable": true,
   "editor.formatOnSave": true,

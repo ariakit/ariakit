@@ -17,10 +17,10 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/tab-store">useTabStore</a>()
+<a href="/apis/tab-store">useTabStore</a>()
 
-&lt;<a href="/api-reference/tab-list">TabList</a>&gt;
-  &lt;<a href="/api-reference/tab">Tab</a> /&gt;
+&lt;<a href="/apis/tab-list">TabList</a>&gt;
+  &lt;<a href="/apis/tab">Tab</a> /&gt;
 &lt;/TabList&gt;
-&lt;<a href="/api-reference/tab-panel">TabPanel</a> /&gt;
+&lt;<a href="/apis/tab-panel">TabPanel</a> /&gt;
 </pre>

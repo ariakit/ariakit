@@ -1,6 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
 import examples from "website/build-pages/examples.js";
 
@@ -37,11 +37,7 @@ interface PageExampleProps {
 
 export default function PageExample({ path, id, css }: PageExampleProps) {
   const Component = examples[path];
-  const preview = Component && (
-    <Suspense>
-      <Component />
-    </Suspense>
-  );
+  const preview = Component && <Component />;
   return (
     <div className={id}>
       {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}

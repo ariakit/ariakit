@@ -17,12 +17,12 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/toolbar-store">useToolbarStore</a>()
+<a href="/apis/toolbar-store">useToolbarStore</a>()
 
-&lt;<a href="/api-reference/toolbar">Toolbar</a>&gt;
-  &lt;<a href="/api-reference/toolbar-container">ToolbarContainer</a> /&gt;
-  &lt;<a href="/api-reference/toolbar-input">ToolbarInput</a> /&gt;
-  &lt;<a href="/api-reference/toolbar-item">ToolbarItem</a> /&gt;
-  &lt;<a href="/api-reference/toolbar-separator">ToolbarSeparator</a> /&gt;
+&lt;<a href="/apis/toolbar">Toolbar</a>&gt;
+  &lt;<a href="/apis/toolbar-container">ToolbarContainer</a> /&gt;
+  &lt;<a href="/apis/toolbar-input">ToolbarInput</a> /&gt;
+  &lt;<a href="/apis/toolbar-item">ToolbarItem</a> /&gt;
+  &lt;<a href="/apis/toolbar-separator">ToolbarSeparator</a> /&gt;
 &lt;/Toolbar&gt;
 </pre>

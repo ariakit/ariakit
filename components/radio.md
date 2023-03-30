@@ -17,9 +17,9 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/radio-store">useRadioStore</a>()
+<a href="/apis/radio-store">useRadioStore</a>()
 
-&lt;<a href="/api-reference/radio">RadioGroup</a>&gt;
-  &lt;<a href="/api-reference/radio">Radio</a> /&gt;
+&lt;<a href="/apis/radio">RadioGroup</a>&gt;
+  &lt;<a href="/apis/radio">Radio</a> /&gt;
 &lt;/RadioGroup&gt;
 </pre>

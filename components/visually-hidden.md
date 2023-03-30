@@ -17,5 +17,5 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/visually-hidden">VisuallyHidden</a> /&gt;
+&lt;<a href="/apis/visually-hidden">VisuallyHidden</a> /&gt;
 </pre>

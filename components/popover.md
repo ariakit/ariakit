@@ -1,7 +1,7 @@
 # Popover
 
 <p data-description>
-  Show a popup dialog positioned relative to an anchor element. This component can be either <a href="/api-reference/popover#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/api-reference/dialog#portal"><code>portal</code></a>.
+  Show a popup dialog positioned relative to an anchor element. This component can be either <a href="/apis/popover#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/apis/dialog#portal"><code>portal</code></a>.
 </p>
 
 <a href="../examples/popover/index.tsx" data-playground>Example</a>
@@ -17,15 +17,15 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/popover-store">usePopoverStore</a>()
+<a href="/apis/popover-store">usePopoverStore</a>()
 
-&lt;<a href="/api-reference/popover-anchor">PopoverAnchor</a>|<a href="/api-reference/popover-disclosure">PopoverDisclosure</a>&gt;
-  &lt;<a href="/api-reference/popover-disclosure-arrow">PopoverDisclosureArrow</a> /&gt;
+&lt;<a href="/apis/popover-anchor">PopoverAnchor</a>|<a href="/apis/popover-disclosure">PopoverDisclosure</a>&gt;
+  &lt;<a href="/apis/popover-disclosure-arrow">PopoverDisclosureArrow</a> /&gt;
 &lt;/PopoverAnchor|PopoverDisclosure&gt;
-&lt;<a href="/api-reference/popover">Popover</a>&gt;
-  &lt;<a href="/api-reference/popover-arrow">PopoverArrow</a> /&gt;
-  &lt;<a href="/api-reference/popover-heading">PopoverHeading</a> /&gt;
-  &lt;<a href="/api-reference/popover-description">PopoverDescription</a> /&gt;
-  &lt;<a href="/api-reference/popover-dismiss">PopoverDismiss</a> /&gt;
+&lt;<a href="/apis/popover">Popover</a>&gt;
+  &lt;<a href="/apis/popover-arrow">PopoverArrow</a> /&gt;
+  &lt;<a href="/apis/popover-heading">PopoverHeading</a> /&gt;
+  &lt;<a href="/apis/popover-description">PopoverDescription</a> /&gt;
+  &lt;<a href="/apis/popover-dismiss">PopoverDismiss</a> /&gt;
 &lt;/Popover&gt;
 </pre>

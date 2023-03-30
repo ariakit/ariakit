@@ -15,5 +15,5 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/role">Role</a> /&gt;
+&lt;<a href="/apis/role">Role</a> /&gt;
 </pre>

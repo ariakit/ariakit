@@ -15,19 +15,19 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/composite-store">useCompositeStore</a>()
+<a href="/apis/composite-store">useCompositeStore</a>()
 
-&lt;<a href="/api-reference/composite">Composite</a>&gt;
-  &lt;<a href="/api-reference/composite-group">CompositeGroup</a>&gt;
-    &lt;<a href="/api-reference/composite-group-label">CompositeGroupLabel</a> /&gt;
-    &lt;<a href="/api-reference/composite-row">CompositeRow</a>&gt;
-      &lt;<a href="/api-reference/composite-container">CompositeContainer</a> /&gt;
-      &lt;<a href="/api-reference/composite-hover">CompositeHover</a> /&gt;
-      &lt;<a href="/api-reference/composite-input">CompositeInput</a> /&gt;
-      &lt;<a href="/api-reference/composite-item">CompositeItem</a> /&gt;
-      &lt;<a href="/api-reference/composite-separator">CompositeSeparator</a> /&gt;
+&lt;<a href="/apis/composite">Composite</a>&gt;
+  &lt;<a href="/apis/composite-group">CompositeGroup</a>&gt;
+    &lt;<a href="/apis/composite-group-label">CompositeGroupLabel</a> /&gt;
+    &lt;<a href="/apis/composite-row">CompositeRow</a>&gt;
+      &lt;<a href="/apis/composite-container">CompositeContainer</a> /&gt;
+      &lt;<a href="/apis/composite-hover">CompositeHover</a> /&gt;
+      &lt;<a href="/apis/composite-input">CompositeInput</a> /&gt;
+      &lt;<a href="/apis/composite-item">CompositeItem</a> /&gt;
+      &lt;<a href="/apis/composite-separator">CompositeSeparator</a> /&gt;
     &lt;/CompositeRow&gt;
   &lt;/CompositeGroup&gt;
 &lt;/Composite&gt;
-&lt;<a href="/api-reference/composite-typeahead">CompositeTypeahead</a> /&gt;
+&lt;<a href="/apis/composite-typeahead">CompositeTypeahead</a> /&gt;
 </pre>

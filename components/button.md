@@ -17,14 +17,14 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-&lt;<a href="/api-reference/button">Button</a> /&gt;
+&lt;<a href="/apis/button">Button</a> /&gt;
 </pre>
 
 ## Styling
 
 ### Styling the disabled state
 
-When the [`accessibleWhenDisabled`](/api-reference/button#accessiblewhendisabled) prop is `true`, the button element won't have the `disabled` attribute. This is so users can still focus on the button while it's disabled. Because of this, you should use `aria-disabled` to style the disabled state:
+When the [`accessibleWhenDisabled`](/apis/button#accessiblewhendisabled) prop is `true`, the button element won't have the `disabled` attribute. This is so users can still focus on the button while it's disabled. Because of this, you should use `aria-disabled` to style the disabled state:
 
 ```css
 .button[aria-disabled="true"] {

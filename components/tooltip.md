@@ -17,10 +17,10 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/tooltip-store">useTooltipStore</a>()
+<a href="/apis/tooltip-store">useTooltipStore</a>()
 
-&lt;<a href="/api-reference/tooltip-anchor">TooltipAnchor</a> /&gt;
-&lt;<a href="/api-reference/tooltip">Tooltip</a>&gt;
-  &lt;<a href="/api-reference/tooltip-arrow">TooltipArrow</a> /&gt;
+&lt;<a href="/apis/tooltip-anchor">TooltipAnchor</a> /&gt;
+&lt;<a href="/apis/tooltip">Tooltip</a>&gt;
+  &lt;<a href="/apis/tooltip-arrow">TooltipArrow</a> /&gt;
 &lt;/Tooltip&gt;
 </pre>

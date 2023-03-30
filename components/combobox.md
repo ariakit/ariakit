@@ -17,19 +17,19 @@ Learn more in [Getting started](/guide/getting-started).
 ## API
 
 <pre data-api>
-<a href="/api-reference/combobox-store">useComboboxStore</a>()
+<a href="/apis/combobox-store">useComboboxStore</a>()
 
-&lt;<a href="/api-reference/combobox">Combobox</a> /&gt;
-&lt;<a href="/api-reference/combobox-cancel">ComboboxCancel</a> /&gt;
-&lt;<a href="/api-reference/combobox-disclosure">ComboboxDisclosure</a> /&gt;
-&lt;<a href="/api-reference/combobox-list">ComboboxList</a>|<a href="/api-reference/combobox-popover">ComboboxPopover</a>&gt;
-  &lt;<a href="/api-reference/combobox-group">ComboboxGroup</a>&gt;
-    &lt;<a href="/api-reference/combobox-group-label">ComboboxGroupLabel</a> /&gt;
-    &lt;<a href="/api-reference/combobox-row">ComboboxRow</a>&gt;
-      &lt;<a href="/api-reference/combobox-item">ComboboxItem</a>&gt;
-        &lt;<a href="/api-reference/combobox-item-value">ComboboxItemValue</a> /&gt;
+&lt;<a href="/apis/combobox">Combobox</a> /&gt;
+&lt;<a href="/apis/combobox-cancel">ComboboxCancel</a> /&gt;
+&lt;<a href="/apis/combobox-disclosure">ComboboxDisclosure</a> /&gt;
+&lt;<a href="/apis/combobox-list">ComboboxList</a>|<a href="/apis/combobox-popover">ComboboxPopover</a>&gt;
+  &lt;<a href="/apis/combobox-group">ComboboxGroup</a>&gt;
+    &lt;<a href="/apis/combobox-group-label">ComboboxGroupLabel</a> /&gt;
+    &lt;<a href="/apis/combobox-row">ComboboxRow</a>&gt;
+      &lt;<a href="/apis/combobox-item">ComboboxItem</a>&gt;
+        &lt;<a href="/apis/combobox-item-value">ComboboxItemValue</a> /&gt;
       &lt;/ComboboxItem&gt;
-      &lt;<a href="/api-reference/combobox-separator">ComboboxSeparator</a> /&gt;
+      &lt;<a href="/apis/combobox-separator">ComboboxSeparator</a> /&gt;
     &lt;/ComboboxRow&gt;
   &lt;/ComboboxGroup&gt;
 &lt;/ComboboxList|ComboboxPopover&gt;
@@ -39,7 +39,7 @@ Learn more in [Getting started](/guide/getting-started).
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/api-reference/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/apis/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .combobox-item[data-active-item] {
