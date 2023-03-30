@@ -8,7 +8,7 @@ import { getPageTreeFromFile } from "./get-page-tree.js";
  * @param {string} filename
  * @param {import("./types.js").Page["getGroup"]} [getGroup]
  * @param {import("hast").Root} [tree]
- * @returns {import("./types.js").PageIndexDetail}
+ * TODO: Fix return type (PageIndexDetail) or update the function name
  */
 export function getPageIndexDetail(filename, getGroup, tree) {
   tree = tree || getPageTreeFromFile(filename);
