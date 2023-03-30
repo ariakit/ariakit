@@ -134,11 +134,11 @@ export function createComboboxStore({
   combobox.setup(() =>
     combobox.syncBatch(
       (state) => {
-        if (state.open) return;
+        if (state.mounted) return;
         combobox.setState("activeId", activeId);
         combobox.setState("moves", 0);
       },
-      ["open"]
+      ["mounted"]
     )
   );
 
