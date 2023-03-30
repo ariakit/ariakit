@@ -8,8 +8,8 @@ export type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
   backdrop?: boolean;
   onClose?: () => void;
   onUnmount?: () => void;
-  initialFocusRef?: Ariakit.DialogProps["initialFocusRef"];
-  finalFocusRef?: Ariakit.DialogProps["finalFocusRef"];
+  initialFocus?: Ariakit.DialogProps["initialFocus"];
+  finalFocus?: Ariakit.DialogProps["finalFocus"];
 };
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(

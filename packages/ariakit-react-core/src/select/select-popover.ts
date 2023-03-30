@@ -1,6 +1,3 @@
-import type { MutableRefObject, RefObject } from "react";
-import { createRef, useEffect, useState } from "react";
-import { toArray } from "@ariakit/core/utils/array";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -22,67 +19,11 @@ import { useSelectList } from "./select-list.js";
  * ```
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
-  ({ store, autoFocusOnShow = true, ...props }) => {
-    const value = store.useState((state) => {
-      const values = toArray(state.value);
-      return values[values.length - 1] ?? "";
-    });
-
-    const open = store.useState("open");
-    const items = store.useState("renderedItems");
-    const [canAutoFocusOnShow, setCanAutoFocusOnShow] = useState(false);
-    const [initialFocusRef, setInitialFocusRef] =
-      useState<RefObject<HTMLElement>>();
-
-    useEffect(() => {
-      if (!open) {
-        // setCanAutoFocusOnShow(false);
-      }
-    }, [open]);
-
-    // Sets the initial focus ref.
-    useEffect(() => {
-      // TODO: Refactor
-      let cleaning = false;
-      if (!canAutoFocusOnShow) return;
-      setInitialFocusRef((prevInitialFocusRef) => {
-        if (cleaning) return prevInitialFocusRef;
-        // This must be state.open instead of state.mounted, otherwise
-        // re-opening an animated popover before the leave animation is done
-        // will not restore focus to the correct item.
-        if (open && prevInitialFocusRef) {
-          if (prevInitialFocusRef.current?.isConnected) {
-            setCanAutoFocusOnShow(false);
-          }
-          return prevInitialFocusRef;
-        }
-        const item = items.find(
-          (item) => item.value === value && !item.disabled
-        );
-        const ref = createRef() as MutableRefObject<HTMLElement | null>;
-        if (item?.element) {
-          ref.current = item.element;
-        }
-        return ref;
-      });
-      return () => {
-        cleaning = true;
-      };
-    }, [canAutoFocusOnShow, open, items, value]);
-
+  ({ store, ...props }) => {
+    // TODO: Maybe pass the autoFocusOnShow value here to the children with a
+    // Provider so they can set autoFocus based on that.
     props = useSelectList({ store, ...props });
-    props = usePopover({
-      store,
-      initialFocusRef,
-      ...props,
-      autoFocusOnShow: (element) => {
-        setCanAutoFocusOnShow(true);
-        if (typeof autoFocusOnShow === "function") {
-          return autoFocusOnShow?.(element);
-        }
-        return !!autoFocusOnShow;
-      },
-    });
+    props = usePopover({ store, ...props });
 
     return props;
   }

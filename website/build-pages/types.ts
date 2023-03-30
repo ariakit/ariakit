@@ -16,6 +16,10 @@ export type Page = {
 
 export type PageIndexDetail = {
   /**
+   * The category that the page belongs to (e.g., "components", "examples").
+   */
+  category: string;
+  /**
    * The name of the group that the page belongs to. This string is returned by
    * the getGroup function.
    */
@@ -35,10 +39,6 @@ export type PageIndexDetail = {
 };
 
 export type PageContent = PageIndexDetail & {
-  /**
-   * The category that the page belongs to (e.g., "components", "examples").
-   */
-  category: string;
   /**
    * If the content is a section of another page, this is the id of the section
    * heading that can be used to link to the section.

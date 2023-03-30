@@ -81,6 +81,31 @@ test("type on combobox", async () => {
   expect(getOption("Onion")).toHaveFocus();
 });
 
+test("focus is restored after filtering and re-opening", async () => {
+  await press.Tab();
+  await press.Enter();
+  await type("f");
+  expect(getOption("Fish")).toHaveFocus();
+  await press.Escape();
+  expect(getSelect()).toHaveFocus();
+  await press.Enter();
+  expect(getCombobox()).toHaveFocus();
+  expect(getOption("Apple")).toHaveFocus();
+  await type("f");
+  expect(getOption("Fish")).toHaveFocus();
+  await press.Escape();
+  expect(getSelect()).toHaveFocus();
+  await press.Enter();
+  expect(getCombobox()).toHaveFocus();
+  expect(getOption("Apple")).toHaveFocus();
+});
+
+test("autoSelect works even with autoFocus", async () => {
+  await click(getSelect());
+  await type("p");
+  expect(getOption("Pasta")).toHaveFocus();
+});
+
 test("select value after filtering", async () => {
   await click(getSelect());
   await type("ba");

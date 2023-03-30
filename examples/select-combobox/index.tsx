@@ -40,9 +40,9 @@ export default function Example() {
           />
         </div>
         <Ariakit.ComboboxList store={combobox}>
-          {matches.map((value, i) => (
+          {matches.map((value) => (
             <Ariakit.ComboboxItem
-              key={value + i}
+              key={value}
               focusOnHover
               className="select-item"
             >

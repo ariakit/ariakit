@@ -116,6 +116,7 @@ export const ComboboxMultipleItem = React.forwardRef<
       // same element) already handles it.
       // shouldRegisterItem={false}
       className="combobox-item"
+      autoFocus={false}
       {...props}
     >
       {(itemProps) => (

@@ -335,6 +335,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
+      // TODO: See if it's necessary and refactor this valueChanged logic.
       valueChangedRef.current = false;
     });
 

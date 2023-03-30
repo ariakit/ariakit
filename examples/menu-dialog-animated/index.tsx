@@ -57,7 +57,7 @@ export default function Example() {
       <Menu
         title="Lists"
         animated
-        initialFocusRef={menuInitialFocusRef}
+        initialFocus={menuInitialFocusRef}
         values={values}
         setValues={setValues}
         open={menu.open}
@@ -106,7 +106,7 @@ export default function Example() {
           createDialog.hide();
           createDialogInitialFocusRef.current = null;
         }}
-        initialFocusRef={createDialogInitialFocusRef}
+        initialFocus={createDialogInitialFocusRef}
         onUnmount={() => {
           form.reset();
           createDialog.unmount();

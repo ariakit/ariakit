@@ -129,9 +129,9 @@ export default function Example() {
           hidden={!hasMatches}
           className="popover"
         >
-          {matches.map((value, i) => (
+          {matches.map((value) => (
             <Ariakit.ComboboxItem
-              key={value + i}
+              key={value}
               value={value}
               focusOnHover
               onClick={onItemClick(value)}

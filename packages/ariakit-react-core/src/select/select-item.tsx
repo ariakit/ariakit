@@ -27,6 +27,15 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
   return storeValue === itemValue;
 }
 
+function shouldAutoFocus(storeValue?: string | string[], itemValue?: string) {
+  if (storeValue == null) return false;
+  if (itemValue == null) return false;
+  if (Array.isArray(storeValue)) {
+    return storeValue[storeValue.length - 1] === itemValue;
+  }
+  return storeValue === itemValue;
+}
+
 /**
  * Returns props to create a `SelectItem` component.
  * @see https://ariakit.org/components/select
@@ -117,12 +126,17 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     const contentElement = store.useState("contentElement");
+    const autoFocus = store.useState((state) =>
+      shouldAutoFocus(state.value, value)
+    );
 
     props = {
       role: getPopupItemRole(contentElement),
       "aria-selected": selected,
       children: value,
       ...props,
+      // TODO: Take autoFocusOnShow prop into account.
+      autoFocus: props.autoFocus ?? autoFocus,
       onClick,
     };
 

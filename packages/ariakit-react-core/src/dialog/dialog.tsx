@@ -88,6 +88,17 @@ function isAlreadyFocusingAnotherElement(
   return false;
 }
 
+function getElementFromProp(
+  prop?: HTMLElement | RefObject<HTMLElement>,
+  focusable = false
+) {
+  if (!prop) return null;
+  const element = "current" in prop ? prop.current : prop;
+  if (!element) return null;
+  if (focusable) return isFocusable(element) ? element : null;
+  return element;
+}
+
 /**
  * Returns props to create a `Dialog` component.
  * @see https://ariakit.org/components/dialog
@@ -111,8 +122,8 @@ export const useDialog = createHook<DialogOptions>(
     preventBodyScroll = !!modal,
     autoFocusOnShow = true,
     autoFocusOnHide = true,
-    initialFocusRef,
-    finalFocusRef,
+    initialFocus,
+    finalFocus,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -255,7 +266,6 @@ export const useDialog = createHook<DialogOptions>(
       return disableAccessibilityTreeOutside(element);
     }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
 
-    const prevInitialFocusRef = useRef<HTMLElement | null>();
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
@@ -280,24 +290,21 @@ export const useDialog = createHook<DialogOptions>(
       // when the dialog element reference changes.
       const dialog = contentElement;
       if (!dialog?.isConnected) return;
-      const initialFocus = initialFocusRef?.current;
       const element =
-        initialFocus ||
+        getElementFromProp(initialFocus, true) ||
+        // If no initial focus is specified, we try to focus the first element
+        // with the `autofocus` attribute. If it's an Ariakit component, the
+        // `Focusable` component will consume the `autoFocus` prop and add the
+        // `data-autofocus` attribute to the element instead.
+        dialog.querySelector<HTMLElement>(
+          "[data-autofocus=true],[autofocus]"
+        ) ||
         // We have to fallback to the first focusable element otherwise portaled
         // dialogs with preserveTabOrder set to true will not receive focus
         // properly because the elements aren't tabbable until the dialog
         // receives focus.
         getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
         dialog;
-      const prevInitialFocus = prevInitialFocusRef.current;
-      prevInitialFocusRef.current = initialFocus;
-      // If the initial focus is the same as the previous initial focus and
-      // there's already an element with focus inside the dialog, we don't
-      // change focus here.
-      if (initialFocus && initialFocus === prevInitialFocus) {
-        const activeElement = getActiveElement(dialog, true);
-        if (activeElement && contains(dialog, activeElement)) return;
-      }
       if (!autoFocusOnShowProp(element)) return;
       element.focus();
     }, [
@@ -305,7 +312,7 @@ export const useDialog = createHook<DialogOptions>(
       open,
       mayAutoFocusOnShow,
       domReady,
-      initialFocusRef,
+      initialFocus,
       portal,
       preserveTabOrder,
       autoFocusOnShowProp,
@@ -331,7 +338,7 @@ export const useDialog = createHook<DialogOptions>(
         // dialog or on another dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog, dialogs)) return;
         let element =
-          finalFocusRef?.current || store.getState().disclosureElement;
+          getElementFromProp(finalFocus) || store.getState().disclosureElement;
         if (element) {
           if (element.id) {
             const doc = getDocument(element);
@@ -373,7 +380,7 @@ export const useDialog = createHook<DialogOptions>(
       // executed when the Dialog component gets unmounted. This is useful so we
       // can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [open, mayAutoFocusOnHide, finalFocusRef, autoFocusOnHideProp]);
+    }, [open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
@@ -595,19 +602,24 @@ export interface DialogOptions<T extends As = "div">
    */
   autoFocusOnHide?: BooleanOrCallback<HTMLElement>;
   /**
-   * Determines which element will receive focus when the dialog is shown. This
-   * has no effect if `autoFocusOnShow` is `false`. If not set, the first
-   * tabbable element inside the dialog or the dialog itself will receive focus.
+   * Specifies the element that will receive focus when the dialog is first
+   * opened. It can be an `HTMLElement` or a `React.RefObject` with an
+   * `HTMLElement`. However, if `autoFocusOnShow` is set to `false`, this prop
+   * will have no effect. If left unset, the dialog will attempt to determine
+   * the initial focus element in the following order:
+   *   1. An element with an `autoFocus` prop.
+   *   2. The first tabbable element inside the dialog.
+   *   3. The dialog element itself.
    */
-  initialFocusRef?: RefObject<HTMLElement>;
+  initialFocus?: HTMLElement | RefObject<HTMLElement>;
   /**
-   * Determines which element will receive focus when the dialog is hidden if
-   * another element hasn't been focused in the action of hiding the dialog (for
-   * example, by clicking or tabbing into another tabbable element outside of
-   * the dialog). This has no effect if `autoFocusOnHide` is `false`. If not
-   * set, the disclosure element will be used.
+   * Determines the element that will receive focus once the dialog is closed,
+   * provided that no other element has been focused while the dialog was being
+   * hidden (e.g., by clicking or tabbing into another tabbable element outside
+   * of the dialog). However, if `autoFocusOnHide` is set to `false`, this prop
+   * will have no effect. If left unset, the disclosure element will be used.
    */
-  finalFocusRef?: RefObject<HTMLElement>;
+  finalFocus?: HTMLElement | RefObject<HTMLElement>;
 }
 
 export type DialogProps<T extends As = "div"> = Props<DialogOptions<T>>;

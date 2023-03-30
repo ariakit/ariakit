@@ -31,9 +31,9 @@ export default function Example() {
           className="combobox"
         />
         <Ariakit.ComboboxList store={combobox} className="combobox-list">
-          {matches.map((value, i) => (
+          {matches.map((value) => (
             <Ariakit.ComboboxItem
-              key={value + i}
+              key={value}
               value={value}
               focusOnHover
               setValueOnClick={false}

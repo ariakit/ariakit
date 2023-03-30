@@ -112,10 +112,10 @@ function parseSearchData(data: Data) {
   return searchData;
 }
 
-function getItemKey(item: PageIndexDetail | SearchData[number], index: number) {
-  const category = "category" in item ? item.category : "";
-  const section = "section" in item ? item.section : "";
-  return category + item.slug + section + index;
+function getItemKey(item: PageIndexDetail | SearchData[number]) {
+  const category = "category" in item && item.category ? item.category : "";
+  const section = "section" in item && item.section ? item.section : "";
+  return category + item.slug + section;
 }
 
 function getAllIndexes(string: string, values: string[]) {
@@ -220,10 +220,11 @@ type HeaderNavItemProps = {
   item: PageIndexDetail | SearchData[number];
   category?: string;
   onClick?: () => void;
+  autoFocus?: boolean;
 };
 
 const HeaderNavItem = memo(
-  ({ item, category, onClick }: HeaderNavItemProps) => {
+  ({ item, category, onClick, ...props }: HeaderNavItemProps) => {
     category = category || ("category" in item ? item.category : undefined);
     if (!category) return null;
     const id = "id" in item ? item.id : null;
@@ -248,12 +249,13 @@ const HeaderNavItem = memo(
       <HeaderMenuItem
         title={nested ? section || item.title : item.title}
         description={description}
-        value={item.slug}
+        value={href}
         href={href}
         path={path}
         nested={nested}
         thumbnail={thumbnails[category]}
         onClick={onClick}
+        {...props}
       />
     );
   }
@@ -272,6 +274,7 @@ type HeaderNavMenuProps = {
   searchValue?: string;
   onBrowseAllPages?: (value: string) => void;
   size?: "sm" | "md" | "lg" | "xl";
+  href?: string;
 };
 
 const HeaderNavMenuContext = createContext(false);
@@ -290,12 +293,14 @@ const HeaderNavMenu = memo(
     searchValue: searchValueProp,
     onBrowseAllPages,
     size = "lg",
+    href,
   }: HeaderNavMenuProps) => {
     const isSubNav = useContext(HeaderNavMenuContext);
     const [_open, _setOpen] = useState(false);
     const open = openProp ?? _open;
     const setOpen = setOpenProp ?? _setOpen;
     const [searchValue, setSearchValue] = useState("");
+    const hasSearchValue = !!searchValue;
 
     if (!open && searchValue) {
       setSearchValue("");
@@ -351,18 +356,20 @@ const HeaderNavMenu = memo(
       if (!items.length && !Object.keys(groups).length) return null;
       return (
         <>
-          {items?.map((item, i) => (
+          {items?.map((item) => (
             <HeaderNavItem
-              key={getItemKey(item, i)}
+              key={getItemKey(item)}
+              autoFocus={hasSearchValue ? false : undefined}
               category={category}
               item={item}
             />
           ))}
           {Object.entries(groups).map(([group, pages]) => (
             <HeaderMenuGroup key={group} label={group}>
-              {pages.map((item, i) => (
+              {pages.map((item) => (
                 <HeaderNavItem
-                  key={getItemKey(item, i)}
+                  key={getItemKey(item)}
+                  autoFocus={hasSearchValue ? false : undefined}
                   category={category}
                   item={item}
                 />
@@ -371,20 +378,25 @@ const HeaderNavMenu = memo(
           ))}
         </>
       );
-    }, [noResults, items, groups, category, categoryTitle]);
+    }, [noResults, items, groups, category, hasSearchValue, categoryTitle]);
 
     const otherItemElements = useMemo(() => {
       if (!searchAllData?.length) return null;
       return searchAllData
         .filter((item) => item.category !== category)
-        .map((item, i) => (
-          <HeaderNavItem key={getItemKey(item, i)} item={item} />
+        .map((item) => (
+          <HeaderNavItem
+            key={getItemKey(item)}
+            autoFocus={hasSearchValue ? false : undefined}
+            item={item}
+          />
         ));
-    }, [searchAllData, category]);
+    }, [searchAllData, hasSearchValue, category]);
 
     return (
       <HeaderNavMenuContext.Provider value={true}>
         <HeaderMenu
+          href={href}
           open={open}
           onToggle={setOpen}
           label={
@@ -547,7 +559,12 @@ export default function HeaderNav() {
         const pages = pageIndex[key as keyof typeof pageIndex];
         if (!pages) return null;
         return (
-          <HeaderNavMenu key={key} category={key} label={categoryTitles[key]} />
+          <HeaderNavMenu
+            key={key}
+            href={`/${key}`}
+            category={key}
+            label={categoryTitles[key]}
+          />
         );
       }),
     []
@@ -607,7 +624,7 @@ export default function HeaderNav() {
           onBrowseAllPages={onBrowseAllPages}
           label={pageMeta.title}
           contentLabel={categoryTitle}
-          value={page}
+          value={`/${category}/${page}`}
         />
       )}
     </>

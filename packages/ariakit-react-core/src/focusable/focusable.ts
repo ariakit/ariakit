@@ -21,12 +21,7 @@ import {
 } from "@ariakit/core/utils/focus";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
-import {
-  useEvent,
-  useForkRef,
-  useSafeLayoutEffect,
-  useTagName,
-} from "../utils/hooks.js";
+import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 
@@ -374,15 +369,20 @@ export const useFocusable = createHook<FocusableOptions>(
     // anything else that's set up by React effects on the onFocus event. So we
     // don't pass the autoFocus prop to the element and instead manually focus
     // the element when it's mounted. The order in which this effect runs also
-    // matters. It must be declared here after all the event callbacks above so
-    // the event callback effects run before this one. See
+    // matters. See
     // https://twitter.com/diegohaz/status/1408180632933388289
-    useSafeLayoutEffect(() => {
+    const autoFocusRef = useEvent((element: HTMLElement | null) => {
       if (!focusable) return;
-      if (autoFocus) {
-        ref.current?.focus();
-      }
-    }, [focusable, autoFocus]);
+      if (!autoFocus) return;
+      if (!element) return;
+      // We have to queue focus so other effects and refs can be applied first.
+      // See select-animated example.
+      queueMicrotask(() => {
+        if (hasFocus(element)) return;
+        if (!isFocusable(element)) return;
+        element.focus();
+      });
+    });
 
     const tagName = useTagName(ref, props.as);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
@@ -393,9 +393,10 @@ export const useFocusable = createHook<FocusableOptions>(
 
     props = {
       "data-focus-visible": focusable && focusVisible ? "" : undefined,
+      "data-autofocus": autoFocus ? true : undefined,
       "aria-disabled": disabled ? true : undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useForkRef(ref, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex(
         focusable,

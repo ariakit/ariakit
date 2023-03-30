@@ -126,11 +126,11 @@ export const useMenu = createHook<MenuOptions>(
     // This differs from the usual dialog behavior that would automatically
     // focus on the dialog container when no initialFocusRef is set.
     const canAutoFocusOnShow =
-      !!initialFocusRef || !!props.initialFocusRef || !!props.modal;
+      !!initialFocusRef || !!props.initialFocus || !!props.modal;
 
     props = useHovercard({
       store,
-      initialFocusRef,
+      initialFocus: initialFocusRef,
       autoFocusOnShow: mayAutoFocusOnShow
         ? canAutoFocusOnShow && autoFocusOnShow
         : autoFocusOnShowState || !!props.modal,

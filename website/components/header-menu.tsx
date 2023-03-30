@@ -204,6 +204,7 @@ type HeaderMenuProps = Omit<
   loading?: boolean;
   contentLabel?: string;
   hasTitle?: boolean;
+  href?: string;
 };
 
 export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
@@ -225,6 +226,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       loading = false,
       contentLabel,
       hasTitle,
+      href,
       ...props
     },
     ref
@@ -272,7 +274,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         (state) => {
           if (!parent && state.open) {
             menu.setAutoFocusOnShow(true);
-            menu.setInitialFocus("first");
           }
         },
         ["open", "autoFocusOnShow"]
@@ -317,6 +318,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       parent ? (
         <HeaderMenuItem
           {...props}
+          href={href}
           value={itemValue}
           className="justify-between"
         >
@@ -496,11 +498,22 @@ type HeaderMenuItemProps = HTMLAttributes<HTMLElement> & {
   description?: ReactNode;
   path?: ReactNode[];
   nested?: boolean;
+  autoFocus?: boolean;
 };
 
 export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
   (
-    { children, value, title, thumbnail, description, path, nested, ...props },
+    {
+      children,
+      value,
+      title,
+      thumbnail,
+      description,
+      path,
+      nested,
+      autoFocus,
+      ...props
+    },
     ref
   ) => {
     const id = useId();
@@ -620,14 +633,19 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
 
     const hideOnClick = (event: MouseEvent) => {
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
-      if (popupType === "dialog") return false;
+      if (popupType === "dialog" && !href) return false;
       if (!hideAll) return true;
       hideAll();
       return false;
     };
 
     const renderSelectItem = (props: Props) => (
-      <SelectItem {...props} hideOnClick={hideOnClick} value={value}>
+      <SelectItem
+        {...props}
+        hideOnClick={hideOnClick}
+        autoFocus={autoFocus}
+        value={value}
+      >
         {renderItem}
       </SelectItem>
     );

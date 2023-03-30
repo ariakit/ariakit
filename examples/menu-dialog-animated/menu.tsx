@@ -10,7 +10,7 @@ export type MenuProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   open?: Ariakit.MenuStoreProps["open"];
   setOpen?: Ariakit.MenuStoreProps["setOpen"];
   onUnmount?: () => void;
-  initialFocusRef?: Ariakit.MenuProps["initialFocusRef"];
+  initialFocus?: Ariakit.MenuProps["initialFocus"];
 };
 
 export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
@@ -24,7 +24,7 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
       open,
       setOpen,
       onUnmount,
-      initialFocusRef,
+      initialFocus,
       children,
       ...props
     },
@@ -57,7 +57,7 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
         </Ariakit.MenuButton>
         <Ariakit.Menu
           store={menu}
-          initialFocusRef={initialFocusRef}
+          initialFocus={initialFocus}
           data-animated={animated ? "" : undefined}
           className="menu"
         >

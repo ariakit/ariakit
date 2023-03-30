@@ -2,7 +2,7 @@ import "./style.css";
 
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 
 const darkModeScript = `
@@ -20,16 +20,7 @@ if (!("theme" in localStorage)) {
   }
 }`;
 
-// @ts-expect-error
-const inter = localFont({
-  src: [
-    {
-      path: "../assets/Inter-roman.var.woff2",
-      style: "normal",
-      weight: "100 900",
-    },
-  ],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export function generateMetadata() {
   return getNextPageMetadata();

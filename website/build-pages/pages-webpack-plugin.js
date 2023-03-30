@@ -74,6 +74,7 @@ function writeFiles(buildDir, pages) {
   const index = Object.entries(categories).reduce((acc, [category, pages]) => {
     // @ts-expect-error
     acc[category] = pages.map((page) => ({
+      category: page.category,
       group: page.group,
       slug: page.slug,
       title: page.title,

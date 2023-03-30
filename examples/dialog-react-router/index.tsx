@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import * as Ariakit from "@ariakit/react";
 import {
   Link,
@@ -11,7 +10,6 @@ import {
 import "./style.css";
 
 function Tweet() {
-  const initialFocusRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
   const dialog = Ariakit.useDialogStore({
     open: true,
@@ -25,7 +23,6 @@ function Tweet() {
     <Ariakit.Dialog
       store={dialog}
       portal={typeof window !== "undefined"}
-      initialFocusRef={initialFocusRef}
       className="dialog"
     >
       <Ariakit.DialogDismiss
@@ -39,11 +36,12 @@ function Tweet() {
       <form className="form">
         <label>
           <Ariakit.VisuallyHidden>Tweet text</Ariakit.VisuallyHidden>
-          <textarea
-            ref={initialFocusRef}
-            placeholder="What's happening?"
+          <Ariakit.Focusable
+            as="textarea"
             className="input"
+            placeholder="What's happening?"
             rows={5}
+            autoFocus
           />
         </label>
         <Ariakit.Button onClick={dialog.toggle} className="button">

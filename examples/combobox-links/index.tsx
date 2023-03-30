@@ -42,10 +42,10 @@ export default function Example() {
     [deferredValue]
   );
 
-  const renderItem = (item: (typeof links)[number], i: number) => {
+  const renderItem = (item: (typeof links)[number]) => {
     return (
       <Ariakit.ComboboxItem
-        key={item.children + i}
+        key={item.children}
         as="a"
         focusOnHover
         hideOnClick
