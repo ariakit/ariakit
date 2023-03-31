@@ -17,10 +17,12 @@ const buildDir = join(process.cwd(), ".pages");
 const pages = [
   {
     slug: "blog",
+    title: "Blog",
     sourceContext: join(root, "blog"),
   },
   {
     slug: "components",
+    title: "Components",
     sourceContext: componentsContext,
     getGroup: (filename) => {
       const component = getPageName(filename);
@@ -42,6 +44,7 @@ const pages = [
   },
   {
     slug: "examples",
+    title: "Examples",
     sourceContext: join(root, "examples"),
     getGroup: (filename) => {
       const page = getPageName(filename);
@@ -54,6 +57,7 @@ const pages = [
   },
   {
     slug: "guide",
+    title: "Guide",
     sourceContext: join(root, "guide"),
   },
 ];

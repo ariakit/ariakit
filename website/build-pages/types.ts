@@ -4,6 +4,10 @@ export type Page = {
    */
   slug: string;
   /**
+   * The title of the category.
+   */
+  title: string;
+  /**
    * Where the source files for the page are located.
    */
   sourceContext: string;
@@ -59,6 +63,10 @@ export type TableOfContents = Array<{
    * The id of the section heading that can be used to link to the section.
    */
   id: string;
+  /**
+   * The href link to the section.
+   */
+  href: string;
   /**
    * The title of the section.
    */

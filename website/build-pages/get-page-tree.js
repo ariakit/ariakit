@@ -25,7 +25,7 @@ export function getPageTreeFromContent(content) {
     if (node.tagName === "h2") {
       const id = `${node.properties?.id}`;
       const text = toString(node);
-      tableOfContents.push({ id, text });
+      tableOfContents.push({ id, text, href: `#${id}` });
     }
     if (node.tagName === "h3") {
       const lastH2 = tableOfContents[tableOfContents.length - 1];
@@ -33,7 +33,7 @@ export function getPageTreeFromContent(content) {
       const id = `${node.properties?.id}`;
       const text = toString(node);
       lastH2.children = lastH2.children || [];
-      lastH2.children.push({ id, text });
+      lastH2.children.push({ id, text, href: `#${id}` });
     }
   });
 

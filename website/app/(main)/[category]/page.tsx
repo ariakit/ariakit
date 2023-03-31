@@ -17,22 +17,18 @@ interface Props {
 
 const meta = {
   guide: {
-    title: "Guide",
     size: "md",
     icon: <Guide className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />,
   },
   blog: {
-    title: "Blog",
     size: "lg",
     icon: <Blog className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />,
   },
   components: {
-    title: "Components",
     size: "lg",
     icon: <Components size="lg" />,
   },
   examples: {
-    title: "Examples",
     size: "md",
     icon: <Examples />,
   },
@@ -40,10 +36,9 @@ const meta = {
 
 export function generateMetadata({ params }: Props) {
   const { category } = params;
-  if (!(category in meta)) return notFound();
-  const key = category as keyof typeof meta;
-  const { title } = meta[key];
-  return getNextPageMetadata({ title: `${title} - Ariakit` });
+  const page = pagesConfig.pages.find((page) => page.slug === category);
+  if (!page) return notFound();
+  return getNextPageMetadata({ title: `${page.title} - Ariakit` });
 }
 
 export function generateStaticParams() {
@@ -56,15 +51,17 @@ export default function Page({ params }: Props) {
   const key = category as keyof typeof meta;
   const pages = index[key];
   if (!pages?.length) return notFound();
+  const page = pagesConfig.pages.find((page) => page.slug === category);
+  if (!page) return notFound();
 
-  const { title, size, icon } = meta[key];
+  const { size, icon } = meta[key];
 
   const groups = groupBy(pages, "group");
   const grouplessPages = groups.null || [];
   delete groups.null;
 
   return (
-    <ListPage title={title}>
+    <ListPage title={page.title}>
       {!!grouplessPages.length && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {grouplessPages.map((page) => (

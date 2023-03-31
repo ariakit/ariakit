@@ -13,13 +13,14 @@ import { getPageName } from "website/build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "website/build-pages/get-page-tree.js";
 import pagesIndex from "website/build-pages/index.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.js";
-import type { TableOfContents } from "website/build-pages/types.js";
+import type { TableOfContents as TableOfContentsData } from "website/build-pages/types.js";
 import Link from "website/components/link.js";
 import PageExample from "website/components/page-example.js";
 import Hashtag from "website/icons/hashtag.js";
 import NewWindow from "website/icons/new-window.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 import tw from "website/utils/tw.js";
+import TableOfContents from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
 
@@ -119,51 +120,31 @@ export default async function Page({ params }: PageProps) {
 
   const content = getPageContent(file);
   const tree = getPageTreeFromContent(content);
+  const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
+  const categoryDetail = pagesConfig.pages.find(
+    (item) => item.slug === category
+  );
 
-  const tableOfContents = tree.data?.tableOfContents as
-    | TableOfContents
-    | undefined;
+  if (!pageDetail) return notFound();
+  if (!categoryDetail) return notFound();
 
-  const activeId = null;
+  const tableOfContents: TableOfContentsData = [
+    {
+      id: "",
+      href: `/${category}`,
+      text: categoryDetail.title,
+    },
+    {
+      id: "",
+      href: `/${category}/${page}`,
+      text: pageDetail.title,
+      children: tree.data?.tableOfContents as TableOfContentsData,
+    },
+  ];
 
   return (
     <div className="flex flex-col items-start justify-center md:flex-row-reverse">
-      {tableOfContents && (
-        <nav className="flex w-[256px] flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
-          <div className="text-xs font-bold uppercase text-black/60 dark:text-white/50">
-            On this page
-          </div>
-          <ul className="flex flex-col gap-2 text-sm [&>li]:opacity-80">
-            <li className={cx(!activeId && "font-bold !opacity-100")}>
-              <a href="#">Introduction</a>
-            </li>
-            {tableOfContents.map((item) => (
-              <li
-                key={item.id}
-                className={cx(activeId === item.id && "font-bold !opacity-100")}
-              >
-                <a href={`#${item.id}`}>{item.text}</a>
-                {item.children && (
-                  <ul className="mt-2 flex flex-col gap-2 pl-4">
-                    {item.children.map((item) => (
-                      <li
-                        key={item.id}
-                        className={cx(
-                          activeId === item.id
-                            ? "font-bold !opacity-100"
-                            : "!font-normal !opacity-80"
-                        )}
-                      >
-                        <a href={`#${item.id}`}>{item.text}</a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+      <TableOfContents data={tableOfContents} />
       <div
         className={tw`relative mt-8 flex w-full min-w-[1px] max-w-5xl
         flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full
@@ -233,24 +214,30 @@ export default async function Page({ params }: PageProps) {
                     className={cx(className, "inline-flex items-center gap-1")}
                   >
                     <span>{props.children}</span>
-                    <NewWindow className="h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+                    <NewWindow
+                      className={tw`h-[1em] w-[1em] stroke-black/60
+                    dark:stroke-white/60`}
+                    />
                   </a>
-                );
-              }
-              if (href?.startsWith("#")) {
-                return (
-                  <Link
-                    {...props}
-                    href={href}
-                    className={cx(className, "inline-flex items-baseline")}
-                  >
-                    <Hashtag className="h-[1em] w-[1em] self-center stroke-black/60 dark:stroke-white/60" />
-                    <span>{props.children}</span>
-                  </Link>
                 );
               }
               if (href?.startsWith("/apis")) {
                 return <span>{props.children}</span>;
+              }
+              if (href?.startsWith("#")) {
+                return (
+                  <a
+                    {...props}
+                    href={href}
+                    className={cx(className, "inline-flex items-baseline")}
+                  >
+                    <Hashtag
+                      className={tw`h-[1em] w-[1em] self-center stroke-black/60
+                      dark:stroke-white/60`}
+                    />
+                    <span>{props.children}</span>
+                  </a>
+                );
               }
               if (href) {
                 return <Link {...props} href={href} className={className} />;
