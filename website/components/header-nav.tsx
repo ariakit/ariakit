@@ -13,7 +13,10 @@ import { cx } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import type { QueryFunctionContext } from "@tanstack/react-query";
+import type {
+  QueryFunctionContext,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
@@ -315,11 +318,13 @@ const HeaderNavMenu = memo(
     const url = `/api/search?q=${searchValue}${
       category ? `&category=${category}` : ""
     }`;
+
     const options = {
       staleTime: process.env.NODE_ENV === "production" ? Infinity : 0,
       enabled: open && !!searchValue,
       keepPreviousData: open && !!searchValue,
-    };
+    } satisfies UseQueryOptions<Data>;
+
     const { data, isFetching } = useQuery<Data>([url], queryFetch, options);
 
     const allUrl = `/api/search?q=${searchValue}`;

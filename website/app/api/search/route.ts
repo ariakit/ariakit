@@ -1,5 +1,6 @@
 import { Searcher, search } from "fast-fuzzy";
 import type { NextRequest } from "next/server.js";
+import { NextResponse } from "next/server.js";
 import contents from "website/build-pages/contents.js";
 
 export const runtime = "edge";
@@ -85,8 +86,6 @@ export async function GET(req: NextRequest) {
   const category = req.nextUrl.searchParams.get("category");
   const headers = new Headers();
 
-  headers.set("content-type", "application/json; charset=utf-8");
-
   if (process.env.NODE_ENV === "production") {
     headers.set(
       "Cache-Control",
@@ -95,7 +94,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!query) {
-    return new Response("[]", { status: 200, headers });
+    return NextResponse.json([], { status: 200, headers });
   }
 
   const searchTerm = query;
@@ -138,6 +137,5 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  const body = JSON.stringify(items.slice(0, 15));
-  return new Response(body, { status: 200, headers });
+  return NextResponse.json(items.slice(0, 15), { status: 200, headers });
 }

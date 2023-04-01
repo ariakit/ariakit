@@ -10,5 +10,14 @@
     "verbatimModuleSyntax": false,
     "isolatedModules": true
   },
-  "include": ["**/*.tsx", "**/*.ts", ".next/types/**/*.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts",
+    "**/*.cts",
+    "**/*.js",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".next/types/**/*.ts"
+  ]
 }

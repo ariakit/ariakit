@@ -11,6 +11,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": true,
+    "checkJs": true,
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
@@ -34,5 +35,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "coverage"]
 }

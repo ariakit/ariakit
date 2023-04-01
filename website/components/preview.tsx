@@ -29,13 +29,13 @@ function PortalProvider({ children, id }: PortalProviderProps) {
   );
 }
 
-interface PageExampleProps {
+interface Props {
   path: string;
   id?: string;
   css?: string;
 }
 
-export default function PageExample({ path, id, css }: PageExampleProps) {
+export default function Preview({ path, id, css }: Props) {
   const Component = examples[path];
   const preview = Component && <Component />;
   return (

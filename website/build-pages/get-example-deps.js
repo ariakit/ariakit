@@ -1,4 +1,3 @@
-// @ts-check
 import { readFileSync } from "fs";
 import { dirname } from "path";
 import { parseSync, traverse } from "@babel/core";

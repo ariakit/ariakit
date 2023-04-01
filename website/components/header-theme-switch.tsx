@@ -22,6 +22,7 @@ const style = tw`
 export default function HeaderThemeSwitch(props: Props) {
   return (
     <TooltipButton
+      fixed
       title={
         <>
           Switch to <span className="hidden dark:inline">light</span>

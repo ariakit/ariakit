@@ -18,11 +18,12 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
   extends Omit<TooltipAnchorOptions<T>, "store"> {
   title: ReactNode;
   tooltipProps?: Omit<TooltipProps, "store">;
+  fixed?: boolean;
 }
 
 const TooltipButton = createComponent<TooltipButtonOptions>(
-  ({ title, tooltipProps, ...props }) => {
-    const tooltip = useTooltipStore({ timeout: 500 });
+  ({ title, tooltipProps, fixed, ...props }) => {
+    const tooltip = useTooltipStore({ timeout: 500, fixed });
     const mounted = tooltip.useState("mounted");
     return (
       <>

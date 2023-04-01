@@ -1,30 +1,25 @@
-import { Suspense, isValidElement } from "react";
-import { dirname, resolve } from "path";
+import { isValidElement } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import pagesConfig from "website/build-pages/config.js";
-import { getExampleDeps } from "website/build-pages/get-example-deps.js";
 import { getPageContent } from "website/build-pages/get-page-content.js";
 import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
 import { getPageName } from "website/build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "website/build-pages/get-page-tree.js";
 import pagesIndex from "website/build-pages/index.js";
-import { parseCSSFile } from "website/build-pages/parse-css-file.js";
 import type { TableOfContents as TableOfContentsData } from "website/build-pages/types.js";
 import Link from "website/components/link.js";
-import PageExample from "website/components/page-example.js";
 import Hashtag from "website/icons/hashtag.js";
 import NewWindow from "website/icons/new-window.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
 import tw from "website/utils/tw.js";
+import PageExample from "./page-example.js";
 import TableOfContents from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
-
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
 const style = {
   link: tw`
@@ -180,27 +175,11 @@ export default async function Page({ params }: PageProps) {
               if (!child.props.href) return paragraph;
               return <>{props.children}</>;
             },
-            // @ts-expect-error RSC
-            a: async ({ node, href, ...props }) => {
+            a: ({ node, href, ...props }) => {
               if ("data-playground" in props && href) {
-                const filename = resolve(dirname(file), href);
-                const deps = getExampleDeps(filename);
-                const styles = Object.values(deps)
-                  .flatMap((deps) =>
-                    Object.values(deps).filter((dep) => dep.endsWith(".css"))
-                  )
-                  .filter(Boolean);
-                const id = `page-${getPageName(filename)}`;
-                const css = await Promise.all(
-                  styles.map((style) =>
-                    parseCSSFile(style, { id, tailwindConfig })
-                  )
-                );
-                const cssContent = css.join("\n");
                 return (
-                  <Suspense>
-                    <PageExample id={id} path={filename} css={cssContent} />
-                  </Suspense>
+                  // @ts-expect-error RSC
+                  <PageExample pageFilename={file} href={href} {...props} />
                 );
               }
               const className = cx(style.link, props.className);

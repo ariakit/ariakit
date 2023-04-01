@@ -13,6 +13,7 @@
     whitespace-nowrap
     focus-visible:ariakit-outline
     aria-disabled:opacity-50
+    sm:gap-2
     bg-blue-600
     text-white
     hover:bg-blue-800

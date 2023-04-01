@@ -1,4 +1,3 @@
-// @ts-check
 import { readFileSync } from "fs";
 import { basename, dirname } from "path";
 import _postcss from "postcss";

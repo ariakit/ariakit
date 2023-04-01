@@ -56,6 +56,7 @@ import ChevronRight from "website/icons/chevron-right.js";
 import NewWindow from "website/icons/new-window.js";
 import Search from "website/icons/search.js";
 import Spinner from "website/icons/spinner.js";
+import afterTimeout from "website/utils/after-timeout.js";
 import tw from "website/utils/tw.js";
 import useIdle from "website/utils/use-idle.js";
 import whenIdle from "website/utils/when-idle.js";
@@ -307,6 +308,9 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
 
     useEffect(() => {
       if (comboboxValue === searchValue) return;
+      if (process.env.NODE_ENV === "development") {
+        return afterTimeout(500, () => onSearchProp(comboboxValue));
+      }
       return whenIdle(() => onSearchProp(comboboxValue), 500);
     }, [comboboxValue, searchValue, onSearchProp]);
 

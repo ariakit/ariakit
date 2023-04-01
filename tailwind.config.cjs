@@ -1,3 +1,4 @@
+// @ts-nocheck
 const path = require("path");
 const plugin = require("tailwindcss/plugin");
 
