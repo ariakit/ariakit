@@ -3,8 +3,7 @@ import type {
   MouseEvent as ReactMouseEvent,
   ReactNode,
 } from "react";
-import { useRef } from "react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { noop } from "@ariakit/core/utils/misc";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
