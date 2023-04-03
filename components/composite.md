@@ -7,7 +7,7 @@
 ## Installation
 
 ```sh
-npm install ariakit
+npm i @ariakit/react
 ```
 
 Learn more in [Getting started](/guide/getting-started).

@@ -39,9 +39,9 @@ export default function Preview({ path, id, css }: Props) {
   const Component = examples[path];
   const preview = Component && <Component />;
   return (
-    <div className={id}>
+    <>
       {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-    </div>
+    </>
   );
 }

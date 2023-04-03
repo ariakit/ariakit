@@ -9,13 +9,13 @@
 First, make sure you have `react` and `react-dom` installed. Ariakit works with React 17 and above.
 
 ```sh
-npm install react react-dom
+npm i react react-dom
 ```
 
 Then, install Ariakit:
 
 ```sh
-npm install ariakit
+npm i @ariakit/react
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ npm install ariakit
 
 Ariakit exports a set of [unstyled](/guide/styling) React components and hooks that you can use to build accessible web apps. For example, you can use the [Button](/components/button) component to create a button:
 
-<a href="../examples/button/index.tsx" data-playground type="medium">Example</a>
+<a href="../examples/button/index.tsx" data-playground type="compact">Example</a>
 
 ## CDN
 

@@ -54,7 +54,6 @@ import {
   lineNumbers,
   scrollPastEnd,
 } from "@codemirror/view";
-// @ts-expect-error
 import { tags as t } from "@lezer/highlight";
 import { getExtension } from "./__utils/get-extension.js";
 import { getValue } from "./__utils/get-value.js";

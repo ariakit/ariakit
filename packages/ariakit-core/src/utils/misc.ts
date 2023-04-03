@@ -138,7 +138,7 @@ export function chain<T>(...fns: T[]) {
 /**
  * Returns a string with the truthy values of `args` separated by space.
  */
-export function cx(...args: Array<string | null | false | undefined>) {
+export function cx(...args: Array<string | null | false | 0 | undefined>) {
   return args.filter(Boolean).join(" ") || undefined;
 }
 

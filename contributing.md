@@ -396,7 +396,7 @@ This is my component.
 ## Installation
 
 ```bash
-npm install ariakit
+npm i @ariakit/react
 ```
 
 Learn more on [Getting Started](/guide/getting-started).

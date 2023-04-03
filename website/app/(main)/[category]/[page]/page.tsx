@@ -11,6 +11,7 @@ import { getPageName } from "website/build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "website/build-pages/get-page-tree.js";
 import pagesIndex from "website/build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "website/build-pages/types.js";
+import { CodeBlock } from "website/components/code-block.js";
 import Link from "website/components/link.js";
 import Hashtag from "website/icons/hashtag.js";
 import NewWindow from "website/icons/new-window.js";
@@ -157,9 +158,23 @@ export default async function Page({ params }: PageProps) {
             h3: ({ node, level, ...props }) => (
               <h3 {...props} className={cx(style.h3, props.className)} />
             ),
-            pre: ({ node, ...props }) => (
-              <pre {...props} className={cx(style.pre, props.className)} />
-            ),
+            pre: ({ node, ...props }) => {
+              const pre = (
+                <pre {...props} className={cx(style.pre, props.className)} />
+              );
+              const child = props.children[0];
+              if (!child) return pre;
+              if (!isValidElement(child)) return pre;
+              if (child.type !== "code") return pre;
+              if (!child.props) return pre;
+              if (!child.props.children) return pre;
+              const lang = child.props.className?.replace("language-", "");
+              const code = child.props.children[0];
+              return (
+                // @ts-expect-error RSC
+                <CodeBlock lang={lang} code={code} className="!max-w-[832px]" />
+              );
+            },
             p: ({ node, ...props }) => {
               const paragraph = (
                 <p
