@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function Blog(props: SVGAttributes<SVGSVGElement>) {
+export function Blog(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path

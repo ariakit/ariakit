@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function NewWindow(props: SVGAttributes<SVGSVGElement>) {
+export function NewWindow(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg
       aria-label="Opens in New Tab"

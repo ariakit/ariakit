@@ -1,5 +1,5 @@
-import GlobalNotification from "website/components/global-notification.js";
-import Hero from "website/components/hero.js";
+import { GlobalNotification } from "website/components/global-notification.js";
+import { Hero } from "website/components/hero.js";
 
 export default function Page() {
   return (

@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function React(props: SVGAttributes<SVGSVGElement>) {
+export function React(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg viewBox="-11.5 -10.23174 23 20.46348" {...props}>
       <circle

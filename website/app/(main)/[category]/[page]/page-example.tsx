@@ -7,8 +7,8 @@ import { getCSSFilesFromDeps } from "website/build-pages/get-css-files-from-deps
 import { getExampleDeps } from "website/build-pages/get-example-deps.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.js";
 import { CodeBlock } from "website/components/code-block.js";
-import Preview from "website/components/preview.js";
-import tw from "website/utils/tw.js";
+import { Preview } from "website/components/preview.js";
+import { tw } from "website/utils/tw.js";
 
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
@@ -31,7 +31,7 @@ function getExampleId(path: string) {
   return id;
 }
 
-export default async function PageExample({
+export async function PageExample({
   pageFilename,
   href,
   type = "wide",

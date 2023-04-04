@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function ArrowRight(props: SVGAttributes<SVGSVGElement>) {
+export function ArrowRight(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg
       fill="none"

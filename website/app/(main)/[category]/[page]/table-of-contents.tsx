@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { cx } from "packages/ariakit-core/src/utils/misc.js";
 import type { TableOfContents as Data } from "website/build-pages/types.js";
 // import HeaderPopover from "website/components/header-popover.js";
-import Link from "website/components/link.js";
+import { Link } from "website/components/link.js";
 // import List from "website/icons/list.js";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 
 interface Props {
   data: Data;
@@ -28,7 +28,7 @@ function getDataIds(data: Data): string[] {
     });
 }
 
-export default function TableOfContents({ data }: Props) {
+export function TableOfContents({ data }: Props) {
   // const popover = Ariakit.usePopoverStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const ref = useRef<HTMLElement>(null);

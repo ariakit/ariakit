@@ -21,7 +21,7 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
   fixed?: boolean;
 }
 
-const TooltipButton = createComponent<TooltipButtonOptions>(
+export const TooltipButton = createComponent<TooltipButtonOptions>(
   ({ title, tooltipProps, fixed, ...props }) => {
     const tooltip = useTooltipStore({ timeout: 500, fixed });
     const mounted = tooltip.useState("mounted");
@@ -48,5 +48,3 @@ const TooltipButton = createComponent<TooltipButtonOptions>(
     );
   }
 );
-
-export default TooltipButton;

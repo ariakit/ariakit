@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function Copy(props: SVGAttributes<SVGSVGElement>) {
+export function Copy(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg
       fill="none"

@@ -2,7 +2,7 @@ type LogoProps = {
   iconOnly?: boolean;
 };
 
-export default function Logo({ iconOnly }: LogoProps) {
+export function Logo({ iconOnly }: LogoProps) {
   return (
     <>
       <svg

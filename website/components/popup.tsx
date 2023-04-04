@@ -1,13 +1,13 @@
 import type { HTMLAttributes } from "react";
 import { forwardRef } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 
-interface HeaderPopoverProps extends HTMLAttributes<HTMLDivElement> {
+interface PopupProps extends HTMLAttributes<HTMLDivElement> {
   renderScoller?: (props: HTMLAttributes<HTMLDivElement>) => JSX.Element;
 }
 
-const HeaderPopover = forwardRef<HTMLDivElement, HeaderPopoverProps>(
+export const Popup = forwardRef<HTMLDivElement, PopupProps>(
   ({ renderScoller, children, ...props }, ref) => {
     const scrollerProps = {
       role: "presentation",
@@ -34,5 +34,3 @@ const HeaderPopover = forwardRef<HTMLDivElement, HeaderPopoverProps>(
     );
   }
 );
-
-export default HeaderPopover;

@@ -1,8 +1,8 @@
-import ArrowRight from "website/icons/arrow-right.js";
-import tw from "website/utils/tw.js";
-import Link from "./link.js";
+import { ArrowRight } from "website/icons/arrow-right.js";
+import { tw } from "website/utils/tw.js";
+import { Link } from "./link.js";
 
-export default function Hero() {
+export function Hero() {
   return (
     <div className="flex flex-col items-center gap-8 p-5 px-3 sm:px-4 md:px-8">
       <div className="mt-4 flex w-full max-w-5xl flex-col items-center gap-8 sm:mt-10 md:mt-20">

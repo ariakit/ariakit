@@ -1,8 +1,8 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Link from "website/components/link.js";
-import tw from "website/utils/tw.js";
+import { Link } from "website/components/link.js";
+import { tw } from "website/utils/tw.js";
 
 const style = {
   wrapper: tw`
@@ -39,7 +39,7 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   size?: "sm" | "md" | "lg";
 }
 
-export default function ListPageItem({
+export function ListPageItem({
   title,
   thumbnail,
   description,

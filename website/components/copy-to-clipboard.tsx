@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Check from "website/icons/check.js";
-import Copy from "website/icons/copy.js";
-import Spinner from "website/icons/spinner.js";
-import tw from "website/utils/tw.js";
-import TooltipButton from "./tooltip-button.js";
+import { Check } from "website/icons/check.js";
+import { Copy } from "website/icons/copy.js";
+import { Spinner } from "website/icons/spinner.js";
+import { tw } from "website/utils/tw.js";
+import { TooltipButton } from "./tooltip-button.js";
 
 interface CopyToClipboardProps {
   text: string;

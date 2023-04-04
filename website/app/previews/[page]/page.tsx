@@ -8,9 +8,9 @@ import { getPageName } from "website/build-pages/get-page-name.js";
 import { getPageSourceFiles } from "website/build-pages/get-page-source-files.js";
 import pagesIndex from "website/build-pages/index.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.js";
-import Preview from "website/components/preview.js";
+import { Preview } from "website/components/preview.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];

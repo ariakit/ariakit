@@ -52,16 +52,16 @@ import {
   useId,
   useSafeLayoutEffect,
 } from "@ariakit/react-core/utils/hooks";
-import ChevronRight from "website/icons/chevron-right.js";
-import NewWindow from "website/icons/new-window.js";
-import Search from "website/icons/search.js";
-import Spinner from "website/icons/spinner.js";
-import afterTimeout from "website/utils/after-timeout.js";
-import tw from "website/utils/tw.js";
-import useIdle from "website/utils/use-idle.js";
-import whenIdle from "website/utils/when-idle.js";
-import HeaderPopover from "./header-popover.js";
-import Link from "./link.js";
+import { ChevronRight } from "website/icons/chevron-right.js";
+import { NewWindow } from "website/icons/new-window.js";
+import { Search } from "website/icons/search.js";
+import { Spinner } from "website/icons/spinner.js";
+import { afterTimeout } from "website/utils/after-timeout.js";
+import { tw } from "website/utils/tw.js";
+import { useIdle } from "website/utils/use-idle.js";
+import { whenIdle } from "website/utils/when-idle.js";
+import { Link } from "./link.js";
+import { Popup } from "./popup.js";
 
 const style = {
   button: tw`
@@ -334,7 +334,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
-      <HeaderPopover
+      <Popup
         {...props}
         aria-label={contentLabel}
         aria-busy={loading}
@@ -392,7 +392,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             {footerElement}
           </ComboboxContext.Provider>
         )}
-      </HeaderPopover>
+      </Popup>
     );
 
     const selectChildren = select.useState((state) => label ?? state.value);

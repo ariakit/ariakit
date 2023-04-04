@@ -24,12 +24,12 @@ import { flushSync } from "react-dom";
 import type { PageContent } from "website/build-pages/contents.js";
 import type { PageIndexDetail } from "website/build-pages/index.js";
 import pageIndex from "website/build-pages/index.js";
-import Blog from "website/icons/blog.js";
-import Components from "website/icons/components.js";
-import Examples from "website/icons/examples.js";
-import Guide from "website/icons/guide.js";
-import tw from "website/utils/tw.js";
-import useDelayedValue from "website/utils/use-delayed-value.js";
+import { Blog } from "website/icons/blog.js";
+import { Components } from "website/icons/components.js";
+import { Examples } from "website/icons/examples.js";
+import { Guide } from "website/icons/guide.js";
+import { tw } from "website/utils/tw.js";
+import { useDelayedValue } from "website/utils/use-delayed-value.js";
 import {
   HeaderMenu,
   HeaderMenuGroup,
@@ -506,7 +506,7 @@ const HeaderNavMenu = memo(
   }
 );
 
-export default function HeaderNav() {
+export function HeaderNav() {
   const pathname = usePathname() || "/";
   const [, category, page] = pathname.split("/");
   const [categoryOpen, setCategoryOpen] = useState(false);

@@ -1,11 +1,11 @@
-import ChevronRight from "website/icons/chevron-right.js";
-import NewWindow from "website/icons/new-window.js";
+import { ChevronRight } from "website/icons/chevron-right.js";
+import { NewWindow } from "website/icons/new-window.js";
 
 type Props = {
   size?: "sm" | "md";
 };
 
-export default function GlobalNotification({ size = "md" }: Props) {
+export function GlobalNotification({ size = "md" }: Props) {
   if (size === "sm") {
     return (
       <a

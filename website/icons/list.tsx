@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function List(props: SVGAttributes<SVGSVGElement>) {
+export function List(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg
       fill="none"

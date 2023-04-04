@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useDelayedValue<T>(value: T, delay = 250): T {
+export function useDelayedValue<T>(value: T, delay = 250): T {
   const [delayedValue, setDelayedValue] = useState(value);
 
   useEffect(() => {

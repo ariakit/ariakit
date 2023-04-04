@@ -1,6 +1,6 @@
 import { cx } from "@ariakit/core/utils/misc";
 import { FontStyle, getHighlighter } from "shiki";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 
 interface Props {

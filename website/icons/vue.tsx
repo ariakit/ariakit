@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function Vue(props: SVGAttributes<SVGSVGElement>) {
+export function Vue(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 261.76 226.69" {...props}>
       <g transform="matrix(1.3333 0 0 -1.3333 -76.311 313.34)">

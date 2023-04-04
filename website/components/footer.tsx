@@ -1,9 +1,9 @@
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import NewWindow from "website/icons/new-window.js";
-import tw from "website/utils/tw.js";
-import Link from "./link.js";
-import Logo from "./logo.js";
+import { NewWindow } from "website/icons/new-window.js";
+import { tw } from "website/utils/tw.js";
+import { Link } from "./link.js";
+import { Logo } from "./logo.js";
 
 const style = {
   link: tw`
@@ -52,7 +52,7 @@ const links = [
   },
 ];
 
-export default function Footer() {
+export function Footer() {
   const id = useId();
   return (
     <footer className="mt-32 flex w-full justify-center bg-gray-150 text-black/80 dark:bg-gray-850 dark:text-white/80 sm:text-sm">

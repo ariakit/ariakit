@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import ListPageContainer from "./list-page-container.js";
+import { ListPageContainer } from "./list-page-container.js";
 
 interface Props {
   title?: string;
@@ -10,7 +10,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export default function ListPage({
+export function ListPage({
   title,
   descriptionText,
   description = descriptionText,

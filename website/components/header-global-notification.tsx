@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation.js";
-import GlobalNotification from "./global-notification.js";
+import { GlobalNotification } from "./global-notification.js";
 
-export default function HeaderGlobalNotification() {
+export function HeaderGlobalNotification() {
   const isHome = usePathname() === "/";
   if (!isHome) {
     return <GlobalNotification size="sm" />;

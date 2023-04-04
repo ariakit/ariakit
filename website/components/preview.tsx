@@ -1,4 +1,5 @@
 "use client";
+
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
@@ -35,7 +36,7 @@ interface Props {
   css?: string;
 }
 
-export default function Preview({ path, id, css }: Props) {
+export function Preview({ path, id, css }: Props) {
   const Component = examples[path];
   const preview = Component && <Component />;
   return (

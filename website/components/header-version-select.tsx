@@ -15,12 +15,12 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import NewWindow from "website/icons/new-window.js";
-import React from "website/icons/react.js";
-import Vue from "website/icons/vue.js";
-import tw from "website/utils/tw.js";
-import HeaderPopover from "./header-popover.js";
-import Link from "./link.js";
+import { NewWindow } from "website/icons/new-window.js";
+import { React } from "website/icons/react.js";
+import { Vue } from "website/icons/vue.js";
+import { tw } from "website/utils/tw.js";
+import { Link } from "./link.js";
+import { Popup } from "./popup.js";
 
 const style = {
   select: tw`
@@ -105,7 +105,7 @@ interface Props {
   versions: Record<string, Record<string, string>>;
 }
 
-export default function HeaderVersionSelect({ versions }: Props) {
+export function HeaderVersionSelect({ versions }: Props) {
   const select = useSelectStore({
     defaultValue: getValueFromPkg(pkg),
     gutter: 4,
@@ -145,7 +145,7 @@ export default function HeaderVersionSelect({ versions }: Props) {
       {selectMounted && (
         <SelectPopover store={select}>
           {(props) => (
-            <HeaderPopover
+            <Popup
               {...props}
               className={cx(props.className, "text-sm")}
               renderScoller={(props) => (
@@ -179,7 +179,7 @@ export default function HeaderVersionSelect({ versions }: Props) {
                 Changelog
                 <NewWindow className={style.itemIcon} />
               </SelectItem>
-            </HeaderPopover>
+            </Popup>
           )}
         </SelectPopover>
       )}

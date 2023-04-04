@@ -2,13 +2,13 @@
 
 import type { PropsWithChildren } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 
 interface Props {
   title?: string;
 }
 
-export default function ListPageContainer({
+export function ListPageContainer({
   title,
   children,
 }: PropsWithChildren<Props>) {

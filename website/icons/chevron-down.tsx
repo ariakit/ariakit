@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function ChevronDown(props: SVGAttributes<SVGSVGElement>) {
+export function ChevronDown(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" fill="currentColor" {...props}>
       <path

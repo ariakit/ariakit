@@ -2,7 +2,7 @@ type Props = {
   size?: "md" | "lg";
 };
 
-export default function Components({ size = "md" }: Props) {
+export function Components({ size = "md" }: Props) {
   return (
     <svg
       width={size === "md" ? 48 : 72}

@@ -2,10 +2,10 @@
 
 import type { ButtonHTMLAttributes } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import Moon from "website/icons/moon.js";
-import Sun from "website/icons/sun.js";
-import tw from "website/utils/tw.js";
-import TooltipButton from "./tooltip-button.js";
+import { Moon } from "website/icons/moon.js";
+import { Sun } from "website/icons/sun.js";
+import { tw } from "website/utils/tw.js";
+import { TooltipButton } from "./tooltip-button.js";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -19,7 +19,7 @@ const style = tw`
   [&:focus-visible]:ariakit-outline-input
 `;
 
-export default function HeaderThemeSwitch(props: Props) {
+export function HeaderThemeSwitch(props: Props) {
   return (
     <TooltipButton
       fixed

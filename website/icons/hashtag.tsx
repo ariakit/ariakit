@@ -1,6 +1,6 @@
 import type { SVGAttributes } from "react";
 
-export default function Hashtag(props: SVGAttributes<SVGSVGElement>) {
+export function Hashtag(props: SVGAttributes<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"

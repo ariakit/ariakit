@@ -2,16 +2,13 @@
 
 import type { PropsWithChildren } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react/heading";
-import tw from "website/utils/tw.js";
+import { tw } from "website/utils/tw.js";
 
 interface Props {
   title: string;
 }
 
-export default function ListPageSection({
-  title,
-  children,
-}: PropsWithChildren<Props>) {
+export function ListPageSection({ title, children }: PropsWithChildren<Props>) {
   return (
     <HeadingLevel>
       <Heading

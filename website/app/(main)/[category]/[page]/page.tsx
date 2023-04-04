@@ -1,12 +1,9 @@
 import { isValidElement } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import type { Element, Root, RootContent } from "hast";
-import { h } from "hastscript";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
-import type { Plugin } from "unified";
 import pagesConfig from "website/build-pages/config.js";
 import { getPageContent } from "website/build-pages/get-page-content.js";
 import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
@@ -15,13 +12,14 @@ import { getPageTreeFromContent } from "website/build-pages/get-page-tree.js";
 import pagesIndex from "website/build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "website/build-pages/types.js";
 import { CodeBlock } from "website/components/code-block.js";
-import Link from "website/components/link.js";
-import Hashtag from "website/icons/hashtag.js";
-import NewWindow from "website/icons/new-window.js";
+import { Link } from "website/components/link.js";
+import { Hashtag } from "website/icons/hashtag.js";
+import { NewWindow } from "website/icons/new-window.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import tw from "website/utils/tw.js";
-import PageExample from "./page-example.js";
-import TableOfContents from "./table-of-contents.js";
+import { rehypeWrapHeadings } from "website/utils/rehype-wrap-headings.js";
+import { tw } from "website/utils/tw.js";
+import { PageExample } from "./page-example.js";
+import { TableOfContents } from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
 
@@ -37,7 +35,7 @@ const style = {
   `,
   wrapper: tw`
     flex flex-col items-center justify-center gap-8 w-full
-    [&>*]:max-w-3xl [&>*]:w-full
+    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-20 sm:scroll-mt-24
 
     data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
   `,
@@ -49,20 +47,17 @@ const style = {
     text-blue-700 dark:text-blue-400
   `,
   h1: tw`
-    sm:scroll-mt-[120px]
     text-4xl sm:text-5xl font-extrabold dark:font-bold
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   h2: tw`
-    sm:scroll-mt-24
     text-2xl sm:text-3xl font-semibold dark:font-medium
     text-black/70 dark:text-white/60
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   h3: tw`
-    sm:scroll-mt-24
     text-xl font-semibold dark:font-medium
     text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
@@ -94,37 +89,6 @@ const style = {
 function getPageNames(dir: string) {
   return getPageEntryFiles(dir).map(getPageName);
 }
-
-function isValidHeading(node: RootContent): node is Element {
-  if (node.type !== "element") return false;
-  return ["h1", "h2", "h3"].includes(node.tagName);
-}
-
-const wrapHeadings: Plugin<any[], Root> = () => {
-  // Wrap headings and subsequent elements until the next h1, h2, or h3 heading
-  // with a div. This is needed to make the headings sticky.
-  return (tree) => {
-    const groups: Element[] = [];
-    for (const node of tree.children) {
-      if (node.type === "doctype") continue;
-      if (isValidHeading(node)) {
-        const wrapper = h(
-          "div",
-          { "data-level": node.tagName.replace("h", "") },
-          [node]
-        );
-        groups.push(wrapper);
-      } else if (!groups.length) {
-        const wrapper = h("div", [node]);
-        groups.push(wrapper);
-      } else {
-        const previousGroup = groups[groups.length - 1];
-        previousGroup?.children.push(node);
-      }
-    }
-    tree.children = groups;
-  };
-};
 
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
@@ -199,7 +163,7 @@ export default async function Page({ params }: PageProps) {
       <TableOfContents data={tableOfContents} />
       <main className={style.main}>
         <ReactMarkdown
-          rehypePlugins={[rehypeRaw, rehypeSlug, wrapHeadings]}
+          rehypePlugins={[rehypeRaw, rehypeSlug, rehypeWrapHeadings]}
           components={{
             div: ({ node, ...props }) => {
               if (node.properties?.dataLevel) {
@@ -215,14 +179,14 @@ export default async function Page({ params }: PageProps) {
             h1: ({ node, level, ...props }) => (
               <h1 {...props} className={cx(style.h1, props.className)} />
             ),
-            h2: ({ node, level, ...props }) => (
+            h2: ({ node, level, id, ...props }) => (
               <h2 {...props} className={cx(style.h2, props.className)}>
-                <a href={`#${props.id}`}>{props.children}</a>
+                <a href={`#${id}`}>{props.children}</a>
               </h2>
             ),
-            h3: ({ node, level, ...props }) => (
+            h3: ({ node, level, id, ...props }) => (
               <h3 {...props} className={cx(style.h3, props.className)}>
-                <a href={`#${props.id}`}>{props.children}</a>
+                <a href={`#${id}`}>{props.children}</a>
               </h3>
             ),
             ul: ({ node, ...props }) => (

@@ -2,14 +2,14 @@ import { groupBy } from "lodash";
 import { notFound } from "next/navigation.js";
 import pagesConfig from "website/build-pages/config.js";
 import index from "website/build-pages/index.js";
-import Blog from "website/icons/blog.js";
-import Components from "website/icons/components.js";
-import Examples from "website/icons/examples.js";
-import Guide from "website/icons/guide.js";
+import { Blog } from "website/icons/blog.js";
+import { Components } from "website/icons/components.js";
+import { Examples } from "website/icons/examples.js";
+import { Guide } from "website/icons/guide.js";
 import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import ListPageItem from "./list-page-item.js";
-import ListPageSection from "./list-page-section.js";
-import ListPage from "./list-page.js";
+import { ListPageItem } from "./list-page-item.js";
+import { ListPageSection } from "./list-page-section.js";
+import { ListPage } from "./list-page.js";
 
 interface Props {
   params: { category: string };

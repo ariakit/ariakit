@@ -1,10 +1,10 @@
-import tw from "website/utils/tw.js";
-import HeaderGlobalNotification from "./header-global-notification.js";
-import HeaderLogo from "./header-logo.js";
-import HeaderNav from "./header-nav.js";
-import HeaderThemeSwitch from "./header-theme-switch.js";
-import HeaderVersionSelect from "./header-version-select.js";
-import Link from "./link.js";
+import { tw } from "website/utils/tw.js";
+import { HeaderGlobalNotification } from "./header-global-notification.js";
+import { HeaderLogo } from "./header-logo.js";
+import { HeaderNav } from "./header-nav.js";
+import { HeaderThemeSwitch } from "./header-theme-switch.js";
+import { HeaderVersionSelect } from "./header-version-select.js";
+import { Link } from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;
 
@@ -34,7 +34,7 @@ async function fetchVersions() {
   return versions;
 }
 
-export default async function Header() {
+export async function Header() {
   const versions = await fetchVersions();
   return (
     <div
