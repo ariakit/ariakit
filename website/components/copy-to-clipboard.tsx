@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { Check } from "website/icons/check.js";
 import { Copy } from "website/icons/copy.js";
-import { Spinner } from "website/icons/spinner.js";
 import { tw } from "website/utils/tw.js";
 import { TooltipButton } from "./tooltip-button.js";
 
@@ -33,16 +32,11 @@ export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
       )}
       onClick={async () => {
         if (state !== "idle") return;
-        setState("copying");
-        await Promise.all([
-          navigator.clipboard.writeText(text),
-          new Promise((resolve) => setTimeout(resolve, 200)),
-        ]);
+        await navigator.clipboard.writeText(text);
         setState("copied");
       }}
     >
       {state === "idle" && <Copy className="h-5 w-5" />}
-      {state === "copying" && <Spinner className="h-5 w-5 animate-spin" />}
       {state === "copied" && <Check className="h-5 w-5" />}
     </TooltipButton>
   );

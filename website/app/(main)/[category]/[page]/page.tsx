@@ -24,18 +24,18 @@ import { TableOfContents } from "./table-of-contents.js";
 const { pages } = pagesConfig;
 
 const stickyHeading = tw`
-  sticky sm:static top-16 z-20 py-4 -my-4 sm:my-0 sm:py-0 scroll-mt-16
+  sticky md:static top-16 z-20 py-4 -my-4 md:my-0 md:py-0 scroll-mt-16
   bg-gray-50 dark:bg-gray-800
 `;
 
 const style = {
   main: tw`
-    relative mt-8 flex w-full min-w-[1px] max-w-5xl
-    flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8
+    relative flex w-full min-w-[1px] max-w-5xl
+    flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8
   `,
   wrapper: tw`
     flex flex-col items-center justify-center gap-8 w-full
-    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-20 sm:scroll-mt-24
+    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-20 md:scroll-mt-24
 
     data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
   `,
@@ -47,12 +47,12 @@ const style = {
     text-blue-700 dark:text-blue-400
   `,
   h1: tw`
-    text-4xl sm:text-5xl font-extrabold dark:font-bold
+    text-4xl md:text-5xl font-extrabold dark:font-bold
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   h2: tw`
-    text-2xl sm:text-3xl font-semibold dark:font-medium
+    text-2xl md:text-3xl font-semibold dark:font-medium
     text-black/70 dark:text-white/60
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
@@ -248,12 +248,12 @@ export default async function Page({ params }: PageProps) {
                     href={href}
                     target="_blank"
                     rel="nofollow noopener noreferrer"
-                    className={cx(className, "inline-flex items-center gap-1")}
+                    className={className}
                   >
-                    <span>{props.children}</span>
+                    {props.children}
                     <NewWindow
-                      className={tw`h-[1em] w-[1em] stroke-black/60
-                    dark:stroke-white/60`}
+                      className={tw`ml-0.5 mb-0.5 inline h-[1em] w-[1em]
+                    stroke-black/60 dark:stroke-white/60`}
                     />
                   </a>
                 );
@@ -263,16 +263,12 @@ export default async function Page({ params }: PageProps) {
               }
               if (href?.startsWith("#")) {
                 return (
-                  <a
-                    {...props}
-                    href={href}
-                    className={cx(className, "inline-flex items-baseline")}
-                  >
+                  <a {...props} href={href} className={className}>
                     <Hashtag
-                      className={tw`h-[1em] w-[1em] self-center stroke-black/60
+                      className={tw`mb-0.5 inline h-[1em] w-[1em] stroke-black/60
                       dark:stroke-white/60`}
                     />
-                    <span>{props.children}</span>
+                    {props.children}
                   </a>
                 );
               }

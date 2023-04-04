@@ -4,7 +4,6 @@ import { dirname, join } from "path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { groupBy } from "lodash-es";
-import { rimrafSync } from "rimraf";
 import { getPageEntryFiles } from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageSections } from "./get-page-sections.js";
@@ -97,7 +96,7 @@ class PagesWebpackPlugin {
   constructor(options) {
     this.buildDir = getBuildDir(options.buildDir);
     this.pages = options.pages;
-    rimrafSync(this.buildDir);
+    // rimrafSync(this.buildDir);
     fse.ensureDirSync(this.buildDir);
     writeFiles(this.buildDir, this.pages);
   }
@@ -161,6 +160,7 @@ class PagesWebpackPlugin {
       };
 
       for (const file of removedFiles) {
+        if (!pages.some((page) => file.includes(page.sourceContext))) continue;
         log(file, true);
         return writeFiles(this.buildDir, pages);
       }

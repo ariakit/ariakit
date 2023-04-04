@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-// import * as Ariakit from "@ariakit/react";
+import * as Ariakit from "@ariakit/react";
 import { cx } from "packages/ariakit-core/src/utils/misc.js";
 import type { TableOfContents as Data } from "website/build-pages/types.js";
-// import HeaderPopover from "website/components/header-popover.js";
 import { Link } from "website/components/link.js";
-// import List from "website/icons/list.js";
+import { Popup } from "website/components/popup.js";
+import { List } from "website/icons/list.js";
 import { tw } from "website/utils/tw.js";
+import { useMedia } from "website/utils/use-media.js";
 
 interface Props {
   data: Data;
@@ -22,7 +23,7 @@ const padding: Record<number, string> = {
 
 const style = {
   nav: tw`
-    m-4 flex max-h-[calc(100vh-theme(spacing.36))]
+    hidden md:flex m-4 max-h-[calc(100vh-theme(spacing.36))]
     w-[224px] flex-col gap-4 overflow-auto border-l
   border-black/10 p-3 dark:border-white/10 md:sticky
     md:top-32
@@ -63,7 +64,8 @@ function getDataIds(data: Data): string[] {
 }
 
 export function TableOfContents({ data }: Props) {
-  // const popover = Ariakit.usePopoverStore();
+  const isLarge = useMedia("(min-width: 768px)", true);
+  const popover = Ariakit.usePopoverStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const ref = useRef<HTMLElement>(null);
 
@@ -134,24 +136,31 @@ export function TableOfContents({ data }: Props) {
       );
     });
 
+  const ul = <ul className={style.list}>{renderTableOfContents(data)}</ul>;
+
   const nav = (
     <nav ref={ref} className={style.nav}>
-      <ul className={style.list}>{renderTableOfContents(data)}</ul>
+      {ul}
     </nav>
   );
 
-  return nav;
-  // return (
-  //   <>
-  //     <Ariakit.PopoverDisclosure
-  //       store={popover}
-  //       className="sticky top-[72px] right-4 z-40 flex h-12 w-12 items-center justify-center self-end rounded-full bg-black/10 dark:bg-white/10"
-  //     >
-  //       <List className="h-6 w-6" />
-  //     </Ariakit.PopoverDisclosure>
-  //     <Ariakit.Popover store={popover} modal as={HeaderPopover}>
-  //       {nav}
-  //     </Ariakit.Popover>
-  //   </>
-  // );
+  if (isLarge) return nav;
+
+  return (
+    <div
+      className={tw`sticky top-[72px] z-30 mt-8 flex h-0 w-full justify-end px-4`}
+    >
+      <Ariakit.PopoverDisclosure
+        store={popover}
+        className={tw`flex h-12 w-12
+        items-center justify-center rounded-full bg-black/10
+        dark:bg-white/10`}
+      >
+        <List className="h-6 w-6" />
+      </Ariakit.PopoverDisclosure>
+      <Ariakit.Popover store={popover} portal as={Popup}>
+        {ul}
+      </Ariakit.Popover>
+    </div>
+  );
 }

@@ -53,13 +53,13 @@ export async function PageExample({
         type === "compact" && "!max-w-[832px]"
       )}
     >
-      <div className="flex flex-col items-center justify-center gap-4 sm:gap-6">
+      <div className="flex flex-col items-center justify-center gap-4 md:gap-6">
         <div
           className={cx(
             id,
             type === "wide"
-              ? "min-h-[320px] sm:rounded-2xl md:p-8"
-              : "sm:rounded-xl md:p-6",
+              ? "min-h-[320px] md:rounded-2xl md:p-8"
+              : "md:rounded-xl md:p-6",
             tw`relative flex w-full items-center justify-center rounded-lg
             bg-gray-150 p-4 dark:bg-gray-850 `
           )}
@@ -69,8 +69,8 @@ export async function PageExample({
           </Suspense>
         </div>
         <div
-          className={tw`w-full max-w-[832px] rounded-lg border-gray-650
-          dark:border sm:rounded-xl`}
+          className={tw`w-full max-w-[832px] overflow-hidden rounded-lg
+          border-gray-650 dark:border md:rounded-xl`}
         >
           <div
             className={tw`relative z-[12] h-12 rounded-t-[inherit]
