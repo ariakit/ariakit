@@ -5,7 +5,7 @@ export default function Check(props: SVGAttributes<SVGSVGElement>) {
     <svg
       fill="none"
       viewBox="0 0 24 24"
-      strokeWidth={1.5}
+      strokeWidth={2}
       stroke="currentColor"
       {...props}
     >

@@ -72,8 +72,8 @@ export default async function PageExample({
           dark:border sm:rounded-xl`}
         >
           <div
-            className={tw`relative z-20 h-12 rounded-t-[inherit]
-            bg-gray-700 shadow-dark`}
+            className={tw`relative z-10 h-12 rounded-t-[inherit]
+            bg-gray-600 shadow-dark dark:bg-gray-750`}
           ></div>
           {/* @ts-expect-error RSC */}
           <CodeBlock

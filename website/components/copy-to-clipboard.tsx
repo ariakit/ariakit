@@ -24,7 +24,7 @@ export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
 
   return (
     <TooltipButton
-      title="Copy"
+      title={state === "copied" ? "Copied" : "Copy"}
       className={cx(
         className,
         tw`bg-transparent text-black/75 hover:bg-black/5
@@ -41,9 +41,9 @@ export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
         setState("copied");
       }}
     >
-      {state === "idle" && <Copy className="h-4 w-4" />}
-      {state === "copying" && <Spinner className="h-4 w-4 animate-spin" />}
-      {state === "copied" && <Check className="h-4 w-4 stroke-green-400" />}
+      {state === "idle" && <Copy className="h-5 w-5" />}
+      {state === "copying" && <Spinner className="h-5 w-5 animate-spin" />}
+      {state === "copied" && <Check className="h-5 w-5" />}
     </TooltipButton>
   );
 }

@@ -1,9 +1,12 @@
 import { isValidElement } from "react";
 import { cx } from "@ariakit/core/utils/misc";
+import type { Element, Root, RootContent } from "hast";
+import { h } from "hastscript";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
+import type { Plugin } from "unified";
 import pagesConfig from "website/build-pages/config.js";
 import { getPageContent } from "website/build-pages/get-page-content.js";
 import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
@@ -22,7 +25,22 @@ import TableOfContents from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
 
+const stickyHeading = tw`
+  sticky sm:static top-16 z-20 py-4 -my-4 sm:my-0 sm:py-0 scroll-mt-16
+  bg-gray-50 dark:bg-gray-800
+`;
+
 const style = {
+  main: tw`
+    relative mt-8 flex w-full min-w-[1px] max-w-5xl
+    flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8
+  `,
+  wrapper: tw`
+    flex flex-col items-center justify-center gap-8 w-full
+    [&>*]:max-w-3xl [&>*]:w-full
+
+    data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
+  `,
   link: tw`
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
     underline [text-decoration-skip-ink:none] hover:decoration-[3px]
@@ -31,21 +49,24 @@ const style = {
     text-blue-700 dark:text-blue-400
   `,
   h1: tw`
-    scroll-mt-[120px]
+    sm:scroll-mt-[120px]
     text-4xl sm:text-5xl font-extrabold dark:font-bold
     tracking-[-0.035em] dark:tracking-[-0.015em]
+    ${stickyHeading}
   `,
   h2: tw`
-    mt-6 scroll-mt-24
+    sm:scroll-mt-24
     text-2xl sm:text-3xl font-semibold dark:font-medium
     text-black/70 dark:text-white/60
     tracking-[-0.035em] dark:tracking-[-0.015em]
+    ${stickyHeading}
   `,
   h3: tw`
-    mt-2 scroll-mt-24
+    sm:scroll-mt-24
     text-xl font-semibold dark:font-medium
     text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
+    ${stickyHeading}
   `,
   paragraph: tw`
     dark:text-white/80 leading-7 tracking-[-0.02em] dark:tracking-[-0.01em]
@@ -54,11 +75,15 @@ const style = {
     data-[description]:text-black/70 dark:data-[description]:text-white/60
     data-[description]:!tracking-tight
 
-    [&_strong]:font-semibold dark:[&_strong]:text-white
-
     [&_code]:rounded [&_code]:p-1 [&_code]:text-[0.9375em]
     [&_code]:bg-black/[6.5%] dark:[&_code]:bg-white/[6.5%]
     [&_code]:font-monospace
+  `,
+  strong: tw`
+    font-semibold dark:text-white
+  `,
+  list: tw`
+    flex flex-col gap-4 pl-8 list-disc
   `,
   pre: tw`
     data-[api]:leading-8 data-[api]:tracking-wide
@@ -69,6 +94,37 @@ const style = {
 function getPageNames(dir: string) {
   return getPageEntryFiles(dir).map(getPageName);
 }
+
+function isValidHeading(node: RootContent): node is Element {
+  if (node.type !== "element") return false;
+  return ["h1", "h2", "h3"].includes(node.tagName);
+}
+
+const wrapHeadings: Plugin<any[], Root> = () => {
+  // Wrap headings and subsequent elements until the next h1, h2, or h3 heading
+  // with a div. This is needed to make the headings sticky.
+  return (tree) => {
+    const groups: Element[] = [];
+    for (const node of tree.children) {
+      if (node.type === "doctype") continue;
+      if (isValidHeading(node)) {
+        const wrapper = h(
+          "div",
+          { "data-level": node.tagName.replace("h", "") },
+          [node]
+        );
+        groups.push(wrapper);
+      } else if (!groups.length) {
+        const wrapper = h("div", [node]);
+        groups.push(wrapper);
+      } else {
+        const previousGroup = groups[groups.length - 1];
+        previousGroup?.children.push(node);
+      }
+    }
+    tree.children = groups;
+  };
+};
 
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
@@ -141,22 +197,39 @@ export default async function Page({ params }: PageProps) {
   return (
     <div className="flex flex-col items-start justify-center md:flex-row-reverse">
       <TableOfContents data={tableOfContents} />
-      <div
-        className={tw`relative mt-8 flex w-full min-w-[1px] max-w-5xl
-        flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full
-        [&>*]:max-w-3xl`}
-      >
+      <main className={style.main}>
         <ReactMarkdown
-          rehypePlugins={[rehypeRaw, rehypeSlug]}
+          rehypePlugins={[rehypeRaw, rehypeSlug, wrapHeadings]}
           components={{
+            div: ({ node, ...props }) => {
+              if (node.properties?.dataLevel) {
+                return (
+                  <div
+                    {...props}
+                    className={cx(style.wrapper, props.className)}
+                  />
+                );
+              }
+              return <div {...props} />;
+            },
             h1: ({ node, level, ...props }) => (
               <h1 {...props} className={cx(style.h1, props.className)} />
             ),
             h2: ({ node, level, ...props }) => (
-              <h2 {...props} className={cx(style.h2, props.className)} />
+              <h2 {...props} className={cx(style.h2, props.className)}>
+                <a href={`#${props.id}`}>{props.children}</a>
+              </h2>
             ),
             h3: ({ node, level, ...props }) => (
-              <h3 {...props} className={cx(style.h3, props.className)} />
+              <h3 {...props} className={cx(style.h3, props.className)}>
+                <a href={`#${props.id}`}>{props.children}</a>
+              </h3>
+            ),
+            ul: ({ node, ...props }) => (
+              <ul
+                {...props}
+                className={cx(style.list, style.paragraph, props.className)}
+              />
             ),
             pre: ({ node, ...props }) => {
               const pre = (
@@ -190,6 +263,12 @@ export default async function Page({ params }: PageProps) {
               if (!child.props.href) return paragraph;
               return <>{props.children}</>;
             },
+            strong: ({ node, ...props }) => (
+              <strong
+                {...props}
+                className={cx(style.strong, props.className)}
+              />
+            ),
             a: ({ node, href, ...props }) => {
               if ("data-playground" in props && href) {
                 return (
@@ -242,7 +321,7 @@ export default async function Page({ params }: PageProps) {
         >
           {content}
         </ReactMarkdown>
-      </div>
+      </main>
     </div>
   );
 }

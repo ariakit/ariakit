@@ -15,6 +15,8 @@ const nextConfig = {
       "@babel/core",
       "@babel/types",
       "typescript",
+      "shiki",
+      "vscode-oniguruma",
     ],
   },
   reactStrictMode: true,

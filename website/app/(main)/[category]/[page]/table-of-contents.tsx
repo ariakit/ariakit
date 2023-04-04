@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+// import * as Ariakit from "@ariakit/react";
 import { cx } from "packages/ariakit-core/src/utils/misc.js";
 import type { TableOfContents as Data } from "website/build-pages/types.js";
+// import HeaderPopover from "website/components/header-popover.js";
 import Link from "website/components/link.js";
+// import List from "website/icons/list.js";
 import tw from "website/utils/tw.js";
 
 interface Props {
@@ -26,6 +29,7 @@ function getDataIds(data: Data): string[] {
 }
 
 export default function TableOfContents({ data }: Props) {
+  // const popover = Ariakit.usePopoverStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const ref = useRef<HTMLElement>(null);
 
@@ -109,7 +113,7 @@ export default function TableOfContents({ data }: Props) {
       );
     });
 
-  return (
+  const nav = (
     <nav
       ref={ref}
       className={tw`m-4 flex max-h-[calc(100vh-theme(spacing.36))]
@@ -125,4 +129,19 @@ export default function TableOfContents({ data }: Props) {
       </ul>
     </nav>
   );
+
+  return nav;
+  // return (
+  //   <>
+  //     <Ariakit.PopoverDisclosure
+  //       store={popover}
+  //       className="sticky top-[72px] right-4 z-40 flex h-12 w-12 items-center justify-center self-end rounded-full bg-black/10 dark:bg-white/10"
+  //     >
+  //       <List className="h-6 w-6" />
+  //     </Ariakit.PopoverDisclosure>
+  //     <Ariakit.Popover store={popover} modal as={HeaderPopover}>
+  //       {nav}
+  //     </Ariakit.Popover>
+  //   </>
+  // );
 }
