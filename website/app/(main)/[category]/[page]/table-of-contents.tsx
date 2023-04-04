@@ -13,6 +13,40 @@ interface Props {
   data: Data;
 }
 
+const padding: Record<number, string> = {
+  0: "pl-0",
+  1: "pl-3",
+  2: "pl-6",
+  3: "pl-9",
+};
+
+const style = {
+  nav: tw`
+    m-4 flex max-h-[calc(100vh-theme(spacing.36))]
+    w-[224px] flex-col gap-4 overflow-auto border-l
+  border-black/10 p-3 dark:border-white/10 md:sticky
+    md:top-32
+  `,
+  list: tw`
+    flex flex-col text-sm leading-8 text-black/80
+    dark:text-white/70
+  `,
+  subList: tw`
+    flex flex-col
+  `,
+  listItem: tw`
+    flex flex-col
+  `,
+  link: tw`
+    group flex items-center gap-1 rounded-sm
+    underline-offset-[0.2em] hover:text-black focus-visible:ariakit-outline-input
+    dark:hover:text-white
+  `,
+  slash: tw`
+    w-2 flex-none text-base font-semibold opacity-40
+  `,
+};
+
 function getDataIds(data: Data): string[] {
   return data
     .slice()
@@ -69,28 +103,15 @@ export function TableOfContents({ data }: Props) {
       const active =
         (activeId && item.id === activeId) ||
         (item.children && !item.id && !activeId);
-      const padding: Record<number, string> = {
-        0: "pl-0",
-        1: "pl-3",
-        2: "pl-6",
-        3: "pl-9",
-      };
       return (
-        <li key={item.href} className="flex flex-col">
+        <li key={item.href} className={style.listItem}>
           <Component
             href={item.href}
-            className={cx(
-              padding[depth],
-              tw`group flex items-center gap-1 rounded-sm
-            underline-offset-[0.2em] hover:text-black focus-visible:ariakit-outline-input
-            dark:hover:text-white`
-            )}
+            className={cx(padding[depth], style.link)}
+            aria-current={active || undefined}
           >
             {!item.id && (
-              <span
-                aria-hidden
-                className="w-2 flex-none text-base font-semibold opacity-40"
-              >
+              <span aria-hidden className={style.slash}>
                 /
               </span>
             )}
@@ -105,7 +126,7 @@ export function TableOfContents({ data }: Props) {
             </span>
           </Component>
           {item.children && (
-            <ul className="flex flex-col">
+            <ul className={style.subList}>
               {renderTableOfContents(item.children, depth + 1)}
             </ul>
           )}
@@ -114,19 +135,8 @@ export function TableOfContents({ data }: Props) {
     });
 
   const nav = (
-    <nav
-      ref={ref}
-      className={tw`m-4 flex max-h-[calc(100vh-theme(spacing.36))]
-      w-[224px] flex-col gap-4 overflow-auto border-l
-    border-black/10 p-3 dark:border-white/10 md:sticky
-      md:top-32`}
-    >
-      <ul
-        className={tw`flex flex-col text-sm leading-8 text-black/80
-        dark:text-white/70`}
-      >
-        {renderTableOfContents(data)}
-      </ul>
+    <nav ref={ref} className={style.nav}>
+      <ul className={style.list}>{renderTableOfContents(data)}</ul>
     </nav>
   );
 

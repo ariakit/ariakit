@@ -13,7 +13,7 @@ import { tw } from "website/utils/tw.js";
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
   href: string;
-  type?: "side" | "compact" | "wide";
+  type?: "compact" | "wide";
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
@@ -47,12 +47,13 @@ export async function PageExample({
     return acc;
   }, {} as Record<string, string>);
   return (
-    <div className={cx((type === "wide" || type === "side") && "!max-w-4xl")}>
-      <div
-        className={cx(
-          "flex flex-col items-center justify-center gap-4 sm:gap-6"
-        )}
-      >
+    <div
+      className={cx(
+        type === "wide" && "!max-w-5xl",
+        type === "compact" && "!max-w-[832px]"
+      )}
+    >
+      <div className="flex flex-col items-center justify-center gap-4 sm:gap-6">
         <div
           className={cx(
             id,
@@ -68,11 +69,11 @@ export async function PageExample({
           </Suspense>
         </div>
         <div
-          className={tw`w-full max-w-3xl rounded-lg border-gray-650
+          className={tw`w-full max-w-[832px] rounded-lg border-gray-650
           dark:border sm:rounded-xl`}
         >
           <div
-            className={tw`relative z-10 h-12 rounded-t-[inherit]
+            className={tw`relative z-[12] h-12 rounded-t-[inherit]
             bg-gray-600 shadow-dark dark:bg-gray-750`}
           ></div>
           {/* @ts-expect-error RSC */}
@@ -80,7 +81,7 @@ export async function PageExample({
             type="editor"
             filename={path}
             code={contents[path]!}
-            className="max-h-80 rounded-b-[inherit]"
+            className="max-h-72 rounded-b-[inherit]"
           />
         </div>
       </div>
