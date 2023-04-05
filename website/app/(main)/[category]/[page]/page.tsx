@@ -25,7 +25,8 @@ const { pages } = pagesConfig;
 
 const stickyHeading = tw`
   sticky md:static top-16 z-20 py-4 -my-4 md:my-0 md:py-0 scroll-mt-16
-  bg-gray-50 dark:bg-gray-800
+  flex items-center md:block pr-12 md:pr-0
+  min-h-[72px] md:min-h-0 bg-gray-50 dark:bg-gray-800
 `;
 
 const style = {
