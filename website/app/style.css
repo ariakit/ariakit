@@ -29,7 +29,7 @@ button:not([type="submit"]),
   color-scheme: light;
 }
 
-@media not all and (min-resolution: 0.001dpcm) {
+@media not all and (resolution >= 0.001dpcm) {
   @supports (-webkit-appearance:none) {
     *:focus-visible,
     *[data-focus-visible] {
