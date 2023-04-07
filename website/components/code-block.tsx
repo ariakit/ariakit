@@ -72,13 +72,13 @@ export async function CodeBlock({
           <div
             className={cx(
               type === "static" && "flex px-4 sm:pl-8 sm:pr-6",
-              type === "editor" && "hidden pl-[21px] pr-[26px] sm:flex",
+              type === "editor" && "hidden pl-0 pr-[26px] sm:flex",
               tw`sticky left-0 h-full flex-col bg-inherit text-right
             text-[#858585]`
             )}
           >
             {tokens.map((_, i) => (
-              <span key={i} className={cx(type === "editor" && "min-w-[27px]")}>
+              <span key={i} className={cx(type === "editor" && "min-w-[42px]")}>
                 {i + 1}
               </span>
             ))}
@@ -89,7 +89,7 @@ export async function CodeBlock({
             type === "static" && "sm:mx-8",
             type === "static" && lineNumbers && "!ml-0",
             type === "editor" && lineNumbers && "sm:ml-0",
-            "mx-4"
+            "mx-4 ml-[26px]"
           )}
         >
           {tokens.map((line, i) => (

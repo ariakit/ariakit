@@ -7,6 +7,7 @@ import { getCSSFilesFromDeps } from "website/build-pages/get-css-files-from-deps
 import { getExampleDeps } from "website/build-pages/get-example-deps.js";
 import { parseCSSFile } from "website/build-pages/parse-css-file.js";
 import { CodeBlock } from "website/components/code-block.js";
+import { Editor } from "website/components/editor.js";
 import { Preview } from "website/components/preview.js";
 import { tw } from "website/utils/tw.js";
 
@@ -76,13 +77,15 @@ export async function PageExample({
             className={tw`relative z-[12] h-12 rounded-t-[inherit]
             bg-gray-600 shadow-dark dark:bg-gray-750`}
           ></div>
-          {/* @ts-expect-error RSC */}
-          <CodeBlock
+          {/* ts-expect-error RSC */}
+          {/* <CodeBlock
             type="editor"
             filename={path}
             code={contents[path]!}
             className="max-h-72 rounded-b-[inherit]"
-          />
+          /> */}
+          {/* @ts-expect-error RSC */}
+          <Editor files={contents} dependencies={dependencies} />
         </div>
       </div>
     </div>

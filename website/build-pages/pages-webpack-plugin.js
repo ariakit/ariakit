@@ -4,6 +4,9 @@ import { dirname, join } from "path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { groupBy } from "lodash-es";
+import resolveFrom from "resolve-from";
+import { build } from "tsup";
+import ts from "typescript";
 import { getPageEntryFiles } from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageSections } from "./get-page-sections.js";
@@ -133,6 +136,42 @@ class PagesWebpackPlugin {
         loader: "null-loader",
       });
     }
+
+    const host = ts.createCompilerHost({});
+
+    const dependencies = [
+      ...new Set(
+        pages
+          .flatMap((page) =>
+            getPageEntryFiles(page.sourceContext).map(getPageExternalDeps)
+          )
+          .reduce((acc, curr) => [...acc, ...Object.keys(curr)], [])
+      ),
+    ].map((dep) => ({
+      name: dep,
+      path:
+        ts.resolveModuleName(dep, process.cwd(), {}, host).resolvedModule
+          ?.resolvedFileName || resolveFrom(process.cwd(), dep),
+    }));
+
+    build({
+      entry: dependencies.map((dep) => dep.path),
+      splitting: true,
+      outDir: "dist",
+      dts: {
+        only: true,
+      },
+    });
+
+    //   await build({
+    //   entry,
+    //   format,
+    //   outDir,
+    //   splitting: true,
+    //   esbuildOptions(options) {
+    //     options.chunkNames = "__chunks/[hash]";
+    //   },
+    // });
 
     compiler.hooks.make.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;
