@@ -1,94 +1,67 @@
-export {
-  SelectArrow,
-  useSelectArrow,
-} from "@ariakit/react-core/select/select-arrow";
+export { SelectArrow } from "@ariakit/react-core/select/select-arrow";
 
 export type {
   SelectArrowOptions,
   SelectArrowProps,
 } from "@ariakit/react-core/select/select-arrow";
 
-export {
-  SelectGroupLabel,
-  useSelectGroupLabel,
-} from "@ariakit/react-core/select/select-group-label";
+export { SelectGroupLabel } from "@ariakit/react-core/select/select-group-label";
 
 export type {
   SelectGroupLabelOptions,
   SelectGroupLabelProps,
 } from "@ariakit/react-core/select/select-group-label";
 
-export {
-  SelectGroup,
-  useSelectGroup,
-} from "@ariakit/react-core/select/select-group";
+export { SelectGroup } from "@ariakit/react-core/select/select-group";
 
 export type {
   SelectGroupOptions,
   SelectGroupProps,
 } from "@ariakit/react-core/select/select-group";
 
-export {
-  SelectItemCheck,
-  useSelectItemCheck,
-} from "@ariakit/react-core/select/select-item-check";
+export { SelectItemCheck } from "@ariakit/react-core/select/select-item-check";
 
 export type {
   SelectItemCheckOptions,
   SelectItemCheckProps,
 } from "@ariakit/react-core/select/select-item-check";
 
-export {
-  SelectItem,
-  useSelectItem,
-} from "@ariakit/react-core/select/select-item";
+export { SelectItem } from "@ariakit/react-core/select/select-item";
 
 export type {
   SelectItemOptions,
   SelectItemProps,
 } from "@ariakit/react-core/select/select-item";
 
-export {
-  SelectLabel,
-  useSelectLabel,
-} from "@ariakit/react-core/select/select-label";
+export { SelectLabel } from "@ariakit/react-core/select/select-label";
 
 export type {
   SelectLabelOptions,
   SelectLabelProps,
 } from "@ariakit/react-core/select/select-label";
 
-export {
-  SelectList,
-  useSelectList,
-} from "@ariakit/react-core/select/select-list";
+export { SelectList } from "@ariakit/react-core/select/select-list";
 
 export type {
   SelectListOptions,
   SelectListProps,
 } from "@ariakit/react-core/select/select-list";
 
-export {
-  SelectPopover,
-  useSelectPopover,
-} from "@ariakit/react-core/select/select-popover";
+export { SelectPopover } from "@ariakit/react-core/select/select-popover";
 
 export type {
   SelectPopoverOptions,
   SelectPopoverProps,
 } from "@ariakit/react-core/select/select-popover";
 
-export { SelectRow, useSelectRow } from "@ariakit/react-core/select/select-row";
+export { SelectRow } from "@ariakit/react-core/select/select-row";
 
 export type {
   SelectRowOptions,
   SelectRowProps,
 } from "@ariakit/react-core/select/select-row";
 
-export {
-  SelectSeparator,
-  useSelectSeparator,
-} from "@ariakit/react-core/select/select-separator";
+export { SelectSeparator } from "@ariakit/react-core/select/select-separator";
 
 export type {
   SelectSeparatorOptions,
@@ -103,7 +76,7 @@ export type {
   SelectStore,
 } from "@ariakit/react-core/select/select-store";
 
-export { Select, useSelect } from "@ariakit/react-core/select/select";
+export { Select } from "@ariakit/react-core/select/select";
 
 export type {
   SelectOptions,

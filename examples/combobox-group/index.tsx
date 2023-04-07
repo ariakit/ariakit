@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import groupBy from "lodash/groupBy.js";
+import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import food from "./food.js";
 import "./style.css";

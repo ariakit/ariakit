@@ -1,17 +1,11 @@
-export {
-  Collection,
-  useCollection,
-} from "@ariakit/react-core/collection/collection";
+export { Collection } from "@ariakit/react-core/collection/collection";
 
 export type {
   CollectionProps,
   CollectionOptions,
 } from "@ariakit/react-core/collection/collection";
 
-export {
-  CollectionItem,
-  useCollectionItem,
-} from "@ariakit/react-core/collection/collection-item";
+export { CollectionItem } from "@ariakit/react-core/collection/collection-item";
 
 export type {
   CollectionItemProps,

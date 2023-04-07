@@ -1,8 +1,0 @@
-@import url("../playground/style.css");
-
-.playground {
-  @apply
-    bg-white
-    text-black
-  ;
-}

@@ -29,9 +29,9 @@ function getPageNames(dir: string) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 
-async function parseStyles(cssFiles: string[], id?: string) {
+async function parseStyles(cssFiles: string[]) {
   const styles = await Promise.all(
-    cssFiles.map((file) => parseCSSFile(file, { id, tailwindConfig }))
+    cssFiles.map((file) => parseCSSFile(file, { tailwindConfig }))
   );
   return styles.join("\n");
 }

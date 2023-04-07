@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { editor } from "monaco-editor";
+import type monaco from "monaco-editor";
+import { tw } from "website/utils/tw.js";
 import { useMedia } from "website/utils/use-media.js";
 
 interface Props {
   files: Record<string, string>;
-  theme: any;
+  theme: monaco.editor.IStandaloneThemeData;
   codeBlocks: Record<string, JSX.Element>;
-  types: Array<{ name: string; content: string }>;
 }
 
 const languages = [
@@ -44,11 +44,11 @@ const languages = [
   },
 ];
 
-export function EditorClient({ files, theme, types, codeBlocks }: Props) {
+export function EditorClient({ files, theme, codeBlocks }: Props) {
   const isLarge = useMedia("(min-width: 640px)", true);
-  const ref = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<editor.IStandaloneCodeEditor>();
-  const [done, setDone] = useState(false);
+  const domRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+  const [editorReady, setEditorReady] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -57,7 +57,7 @@ export function EditorClient({ files, theme, types, codeBlocks }: Props) {
     const initMonaco = async () => {
       const [monaco, { wireTmGrammars }, { Registry }, { loadWASM }, onigasm] =
         await Promise.all([
-          import("monaco-editor"),
+          import("monaco-editor/esm/vs/editor/editor.api.js"),
           import("monaco-editor-textmate"),
           import("monaco-textmate"),
           import("onigasm"),
@@ -67,77 +67,58 @@ export function EditorClient({ files, theme, types, codeBlocks }: Props) {
 
       if (signal?.aborted) return;
 
-      // Prevent Fast Refresh errors
+      // Catch to prevent Fast Refresh errors because loadWasm can only be
+      // called once
       await loadWASM(onigasm.default).catch(() => {});
 
       if (signal?.aborted) return;
 
+      const element = domRef.current;
+      invariant(element, "Element not found");
+
       const registry = new Registry({
         getGrammarDefinition: async (scopeName) => {
-          const language = languages.find(
-            (lang) => lang.scopeName === scopeName
-          );
+          const language = languages.find((l) => l.scopeName === scopeName);
           invariant(language, `Language not found for scope: ${scopeName}`);
           const { default: content } = await language.get();
           return { format: "json", content };
         },
       });
 
-      const grammars = new Map<string, string>();
-
-      const element = ref.current;
-      invariant(element);
-
-      monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-        jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
-      });
-
-      types.forEach(({ name, content }) => {
-        monaco.languages.typescript.typescriptDefaults.addExtraLib(
-          content,
-          `file:///node_modules/@types/${name.replace(
-            /^@([^\/]+)\//,
-            "$1__"
-          )}/index.d.ts`
-        );
-      });
-
       monaco.editor.defineTheme("dark-plus", theme);
 
-      monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      const diagnosticsOptions = {
         noSemanticValidation: true,
         noSyntaxValidation: true,
         noSuggestionDiagnostics: true,
-      });
+      } satisfies monaco.languages.typescript.DiagnosticsOptions;
 
-      monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-        // noSemanticValidation: true,
-        // noSyntaxValidation: true,
-        // noSuggestionDiagnostics: true,
-      });
+      monaco.languages.typescript?.javascriptDefaults.setDiagnosticsOptions(
+        diagnosticsOptions
+      );
+      monaco.languages.typescript?.typescriptDefaults.setDiagnosticsOptions(
+        diagnosticsOptions
+      );
 
-      let model: editor.ITextModel | undefined;
+      const grammars = new Map<string, string>();
 
       monaco.editor.getModels().forEach((model) => model.dispose());
 
-      Object.entries(files).forEach(([name, content]) => {
-        const language = languages.find((lang) => lang.pattern.test(name));
-        invariant(language, `Language not found for file: ${name}`);
+      const models = Object.entries(files).map(([file, content]) => {
+        const language = languages.find((lang) => lang.pattern.test(file));
+        invariant(language, `Language not found for file: ${file}`);
         grammars.set(language.name, language.scopeName);
-        const _model = monaco.editor.createModel(
+        return monaco.editor.createModel(
           content,
           language.name,
-          monaco.Uri.file(name.replace(/^.*\/([^\/]+)$/, "$1"))
+          monaco.Uri.file(file)
         );
-        if (!model) {
-          model = _model;
-        }
       });
 
-      const editor = monaco.editor.create(ref.current, {
+      const editor = monaco.editor.create(domRef.current, {
         // @ts-expect-error
         "bracketPairColorization.enabled": false,
-        model,
+        model: models[0],
         fontSize: 14,
         lineHeight: 21,
         fontFamily: "Menlo, Consolas, Courier New, monospace",
@@ -145,46 +126,47 @@ export function EditorClient({ files, theme, types, codeBlocks }: Props) {
         lineNumbers: isLarge ? "on" : "off",
         fixedOverflowWidgets: true,
         automaticLayout: true,
-        scrollbar: {
-          useShadows: false,
-        },
-        padding: {
-          top: 16,
-        },
+        scrollbar: { useShadows: false },
+        padding: { top: 16 },
         renderLineHighlightOnlyWhenFocus: true,
         formatOnPaste: true,
-        minimap: {
-          enabled: false,
-        },
+        minimap: { enabled: false },
       });
 
-      editorRef.current = editor;
+      monaco.editor.addKeybindingRule({
+        keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+        command: "editor.action.formatDocument",
+      });
+
       await wireTmGrammars(monaco, registry, grammars, editor);
 
-      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () =>
-        editor.getAction("editor.action.formatDocument")?.run()
-      );
+      editorRef.current = editor;
 
-      setTimeout(() => {
-        setDone(true);
-      }, 500);
+      setTimeout(() => setEditorReady(true), 750);
     };
 
     initMonaco();
 
     return () => {
-      setDone(false);
+      setEditorReady(false);
       controller.abort();
       editorRef.current?.dispose();
     };
-  }, [files, theme, types, isLarge]);
+  }, [files, theme, isLarge]);
 
-  const [key] = Object.keys(codeBlocks);
+  const key = Object.keys(codeBlocks)[1];
 
   return (
-    <>
-      {key && !done && codeBlocks[key]}
-      <div ref={ref} className={done ? "h-72" : "hidden"} />
-    </>
+    <div
+      className={tw`w-full max-w-[832px] overflow-hidden rounded-lg
+    border-gray-650 dark:border md:rounded-xl`}
+    >
+      <div
+        className={tw`relative z-[12] h-12 rounded-t-[inherit]
+      bg-gray-600 shadow-dark dark:bg-gray-750`}
+      ></div>
+      {key && !editorReady && codeBlocks[key]}
+      <div ref={domRef} className={editorReady ? "h-72" : "hidden"} />
+    </div>
   );
 }

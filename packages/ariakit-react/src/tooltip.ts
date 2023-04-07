@@ -1,17 +1,11 @@
-export {
-  TooltipAnchor,
-  useTooltipAnchor,
-} from "@ariakit/react-core/tooltip/tooltip-anchor";
+export { TooltipAnchor } from "@ariakit/react-core/tooltip/tooltip-anchor";
 
 export type {
   TooltipAnchorProps,
   TooltipAnchorOptions,
 } from "@ariakit/react-core/tooltip/tooltip-anchor";
 
-export {
-  TooltipArrow,
-  useTooltipArrow,
-} from "@ariakit/react-core/tooltip/tooltip-arrow";
+export { TooltipArrow } from "@ariakit/react-core/tooltip/tooltip-arrow";
 
 export type {
   TooltipArrowProps,
@@ -22,10 +16,11 @@ export { useTooltipStore } from "@ariakit/react-core/tooltip/tooltip-store";
 
 export type {
   TooltipStore,
+  TooltipStoreState,
   TooltipStoreProps,
 } from "@ariakit/react-core/tooltip/tooltip-store";
 
-export { Tooltip, useTooltip } from "@ariakit/react-core/tooltip/tooltip";
+export { Tooltip } from "@ariakit/react-core/tooltip/tooltip";
 
 export type {
   TooltipProps,

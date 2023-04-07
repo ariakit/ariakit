@@ -1,57 +1,39 @@
-export {
-  HovercardAnchor,
-  useHovercardAnchor,
-} from "@ariakit/react-core/hovercard/hovercard-anchor";
+export { HovercardAnchor } from "@ariakit/react-core/hovercard/hovercard-anchor";
 
 export type {
   HovercardAnchorProps,
   HovercardAnchorOptions,
 } from "@ariakit/react-core/hovercard/hovercard-anchor";
 
-export {
-  HovercardArrow,
-  useHovercardArrow,
-} from "@ariakit/react-core/hovercard/hovercard-arrow";
+export { HovercardArrow } from "@ariakit/react-core/hovercard/hovercard-arrow";
 
 export type {
   HovercardArrowProps,
   HovercardArrowOptions,
 } from "@ariakit/react-core/hovercard/hovercard-arrow";
 
-export {
-  HovercardDescription,
-  useHovercardDescription,
-} from "@ariakit/react-core/hovercard/hovercard-description";
+export { HovercardDescription } from "@ariakit/react-core/hovercard/hovercard-description";
 
 export type {
   HovercardDescriptionProps,
   HovercardDescriptionOptions,
 } from "@ariakit/react-core/hovercard/hovercard-description";
 
-export {
-  HovercardDisclosure,
-  useHovercardDisclosure,
-} from "@ariakit/react-core/hovercard/hovercard-disclosure";
+export { HovercardDisclosure } from "@ariakit/react-core/hovercard/hovercard-disclosure";
 
 export type {
   HovercardDisclosureProps,
   HovercardDisclosureOptions,
 } from "@ariakit/react-core/hovercard/hovercard-disclosure";
 
-export {
-  HovercardDismiss,
-  useHovercardDismiss,
-} from "@ariakit/react-core/hovercard/hovercard-dismiss";
+export { HovercardDismiss } from "@ariakit/react-core/hovercard/hovercard-dismiss";
 
 export type {
   HovercardDismissProps,
   HovercardDismissOptions,
 } from "@ariakit/react-core/hovercard/hovercard-dismiss";
 
-export {
-  HovercardHeading,
-  useHovercardHeading,
-} from "@ariakit/react-core/hovercard/hovercard-heading";
+export { HovercardHeading } from "@ariakit/react-core/hovercard/hovercard-heading";
 
 export type {
   HovercardHeadingProps,
@@ -66,10 +48,7 @@ export type {
   HovercardStore,
 } from "@ariakit/react-core/hovercard/hovercard-store";
 
-export {
-  Hovercard,
-  useHovercard,
-} from "@ariakit/react-core/hovercard/hovercard";
+export { Hovercard } from "@ariakit/react-core/hovercard/hovercard";
 
 export type {
   HovercardProps,

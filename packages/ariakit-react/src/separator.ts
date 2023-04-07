@@ -1,7 +1,4 @@
-export {
-  Separator,
-  useSeparator,
-} from "@ariakit/react-core/separator/separator";
+export { Separator } from "@ariakit/react-core/separator/separator";
 
 export type {
   SeparatorOptions,

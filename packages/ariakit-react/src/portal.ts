@@ -1,6 +1,6 @@
 export { PortalContext } from "@ariakit/react-core/portal/portal-context";
 
-export { Portal, usePortal } from "@ariakit/react-core/portal/portal";
+export { Portal } from "@ariakit/react-core/portal/portal";
 
 export type {
   PortalOptions,

@@ -1,7 +1,4 @@
-export {
-  CheckboxCheck,
-  useCheckboxCheck,
-} from "@ariakit/react-core/checkbox/checkbox-check";
+export { CheckboxCheck } from "@ariakit/react-core/checkbox/checkbox-check";
 
 export type {
   CheckboxCheckOptions,

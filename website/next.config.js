@@ -15,12 +15,7 @@ const nextConfig = {
       "@babel/core",
       "@babel/types",
       "typescript",
-      "vscode-oniguruma",
-      "onigasm",
-      "shiki",
-      "monaco-textmate",
       "monaco-vscode-textmate-theme-converter",
-      "rollup",
     ],
   },
   reactStrictMode: true,
@@ -33,7 +28,16 @@ const nextConfig = {
       config.plugins.unshift(pagesPlugin);
       config.plugins.push(
         new MonacoWebpackPlugin({
-          filename: "static/[name].worker.js",
+          filename: context.dev
+            ? "static/monaco/[name].worker.js"
+            : "static/monaco/[name].[contenthash].worker.js",
+          features: [
+            "!hover",
+            "!gotoError",
+            "!colorPicker",
+            "!stickyScroll",
+            "!contextmenu",
+          ],
         })
       );
     }
@@ -41,7 +45,9 @@ const nextConfig = {
       test: /\.wasm$/,
       type: "asset/resource",
       generator: {
-        filename: "static/wasm/[name].[hash][ext]",
+        filename: context.dev
+          ? "static/wasm/[name][ext]"
+          : "static/wasm/[name].[contenthash][ext]",
       },
     });
     config.experiments = {

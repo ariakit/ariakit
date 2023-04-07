@@ -1,4 +1,4 @@
-export { Command, useCommand } from "@ariakit/react-core/command/command";
+export { Command } from "@ariakit/react-core/command/command";
 
 export type {
   CommandOptions,

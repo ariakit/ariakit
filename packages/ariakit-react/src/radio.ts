@@ -1,7 +1,4 @@
-export {
-  RadioGroup,
-  useRadioGroup,
-} from "@ariakit/react-core/radio/radio-group";
+export { RadioGroup } from "@ariakit/react-core/radio/radio-group";
 
 export type {
   RadioGroupOptions,
@@ -16,6 +13,6 @@ export type {
   RadioStoreProps,
 } from "@ariakit/react-core/radio/radio-store";
 
-export { Radio, useRadio } from "@ariakit/react-core/radio/radio";
+export { Radio } from "@ariakit/react-core/radio/radio";
 
 export type { RadioOptions, RadioProps } from "@ariakit/react-core/radio/radio";

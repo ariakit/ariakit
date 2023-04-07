@@ -1,6 +1,6 @@
 /**
  *
- * @param {ReturnType<typeof import("./get-example-deps.js")["getExampleDeps"]>} deps
+ * @param {Record<string, Record<string, string>>} deps
  */
 export function getCSSFilesFromDeps(deps) {
   return Object.values(deps)
