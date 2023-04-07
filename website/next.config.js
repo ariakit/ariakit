@@ -19,7 +19,10 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true,
-  transpilePackages: !isBuild ? ["@ariakit/react", "@ariakit/playground"] : [],
+  transpilePackages: !isBuild ? ["@ariakit/react"] : [],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
