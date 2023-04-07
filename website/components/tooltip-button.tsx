@@ -33,7 +33,7 @@ export const TooltipButton = createComponent<TooltipButtonOptions>(
             {...tooltipProps}
             store={tooltip}
             className={cx(
-              "z-40 rounded-md py-1 px-2 text-sm",
+              "z-40 rounded-md px-2 py-1 text-sm",
               "drop-shadow-sm dark:drop-shadow-sm-dark",
               "bg-gray-150 dark:bg-gray-700",
               "text-black dark:text-white",

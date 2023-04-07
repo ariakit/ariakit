@@ -253,7 +253,7 @@ export default async function Page({ params }: PageProps) {
                   >
                     {props.children}
                     <NewWindow
-                      className={tw`ml-0.5 mb-0.5 inline h-[1em] w-[1em]
+                      className={tw`mb-0.5 ml-0.5 inline h-[1em] w-[1em]
                     stroke-black/60 dark:stroke-white/60`}
                     />
                   </a>

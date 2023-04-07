@@ -39,7 +39,7 @@ export async function Header() {
   return (
     <div
       className={tw`
-      sticky top-0 left-0 z-40 flex w-full justify-center
+      sticky left-0 top-0 z-40 flex w-full justify-center
       bg-gray-50 dark:bg-gray-800 sm:backdrop-blur
       sm:supports-backdrop-blur:bg-gray-50/80
       sm:dark:supports-backdrop-blur:bg-gray-800/80`}
