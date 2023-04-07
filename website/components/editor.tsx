@@ -11,7 +11,7 @@ interface Props {
 
 const theme = convertTheme({ type: "dark", ...darkPlus } as IVSCodeTheme);
 
-export async function Editor({ files, dependencies }: Props) {
+export async function Editor({ files }: Props) {
   const codeBlocks: Record<string, any> = {};
 
   Object.entries(files).forEach(([filename, code]) => {

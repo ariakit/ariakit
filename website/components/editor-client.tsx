@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type monaco from "monaco-editor";
 import { tw } from "website/utils/tw.js";
 import { useMedia } from "website/utils/use-media.js";
@@ -49,11 +50,15 @@ export function EditorClient({ files, theme, codeBlocks }: Props) {
   const domRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
   const [editorReady, setEditorReady] = useState(false);
+  const id = useId();
+  const getId = (file: string) => `${id}:${file}`;
+  const tab = useTabStore({ defaultSelectedId: getId(Object.keys(files)[0]!) });
 
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
 
+    // @ts-ignore
     const initMonaco = async () => {
       const [monaco, { wireTmGrammars }, { Registry }, { loadWASM }, onigasm] =
         await Promise.all([
@@ -145,7 +150,7 @@ export function EditorClient({ files, theme, codeBlocks }: Props) {
       setTimeout(() => setEditorReady(true), 750);
     };
 
-    initMonaco();
+    // initMonaco();
 
     return () => {
       setEditorReady(false);
@@ -153,8 +158,6 @@ export function EditorClient({ files, theme, codeBlocks }: Props) {
       editorRef.current?.dispose();
     };
   }, [files, theme, isLarge]);
-
-  const key = Object.keys(codeBlocks)[1];
 
   return (
     <div
@@ -164,8 +167,20 @@ export function EditorClient({ files, theme, codeBlocks }: Props) {
       <div
         className={tw`relative z-[12] h-12 rounded-t-[inherit]
       bg-gray-600 shadow-dark dark:bg-gray-750`}
-      ></div>
-      {key && !editorReady && codeBlocks[key]}
+      >
+        <TabList store={tab}>
+          {Object.entries(files).map(([file]) => (
+            <Tab key={file} id={getId(file)}>
+              {file}
+            </Tab>
+          ))}
+        </TabList>
+      </div>
+      {Object.entries(files).map(([file]) => (
+        <TabPanel key={file} store={tab} tabId={getId(file)}>
+          {(props) => <div {...props}>{!props.hidden && codeBlocks[file]}</div>}
+        </TabPanel>
+      ))}
       <div ref={domRef} className={editorReady ? "h-72" : "hidden"} />
     </div>
   );

@@ -1,4 +1,5 @@
 {
+  "installCommand": "npm install",
   "buildCommand": "npm run build-website",
   "outputDirectory": "website/.next"
 }
