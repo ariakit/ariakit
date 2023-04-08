@@ -12,7 +12,6 @@
     "allowJs": true,
     "checkJs": true,
     "strict": true,
-    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -23,7 +22,8 @@
     "noUnusedParameters": true,
     "stripInternal": true,
     "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true
   },
   "include": [
     "**/*.ts",
@@ -34,5 +34,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", "coverage"]
+  "exclude": ["node_modules", "website", "coverage"]
 }

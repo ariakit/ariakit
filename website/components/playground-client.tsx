@@ -10,14 +10,18 @@ import {
   useTabStore,
   useToolbarStore,
 } from "@ariakit/react";
+import { NewWindow } from "icons/new-window.js";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 import type { EditorProps } from "./editor.js";
-import { Editor } from "./editor.js";
+// import { Editor } from "./editor.js";
+import { Link } from "./link.js";
+import { TooltipButton } from "./tooltip-button.js";
 
 export interface PlaygroundClientProps extends EditorProps {
   id: string;
   dependencies?: Record<string, string>;
+  previewLink?: string;
   preview?: ReactNode;
   type?: "compact" | "wide";
 }
@@ -25,14 +29,16 @@ export interface PlaygroundClientProps extends EditorProps {
 export function PlaygroundClient({
   id,
   files,
-  theme,
+  // theme,
+  previewLink,
   preview,
-  dependencies,
+  // dependencies,
   codeBlocks,
   type = "wide",
 }: PlaygroundClientProps) {
   const getTabId = (file: string) =>
     `${id}-${file.replace("/", "__").replace(/\.([^\.]+)$/, "-$1")}`;
+
   const getFileFromTabId = (tabId: string) =>
     tabId
       .replace(`${id}-`, "")
@@ -49,6 +55,7 @@ export function PlaygroundClient({
   const selectedId = tab.useState("selectedId");
   const file = selectedId && getFileFromTabId(selectedId);
   const codeBlock = file && codeBlocks?.[file];
+  const content = file && files[file];
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 md:gap-6">
@@ -101,14 +108,39 @@ export function PlaygroundClient({
               </Tab>
             ))}
           </TabList>
-          <Toolbar store={toolbar} className="flex flex-none p-2">
-            {file && files[file] && (
+          <Toolbar store={toolbar} className="flex flex-none p-1">
+            {previewLink && (
+              <ToolbarItem
+                className={tw`
+                flex h-12 w-12 items-center justify-center rounded-lg
+                bg-transparent text-white/75 hover:bg-white/[15%] hover:text-white
+                focus-visible:ariakit-outline-input
+                dark:hover:bg-white/5 sm:h-10
+                sm:w-10`}
+              >
+                {(props) => (
+                  <TooltipButton
+                    as={Link}
+                    target="__blank"
+                    href={previewLink}
+                    title="Preview in new window"
+                    {...props}
+                  >
+                    <NewWindow className="h-5 w-5" strokeWidth={1.5} />
+                  </TooltipButton>
+                )}
+              </ToolbarItem>
+            )}
+            {content != null && (
               <ToolbarItem
                 as={CopyToClipboard}
-                text={files[file]!}
+                text={content}
                 className={tw`
-                h-10 rounded px-3 !text-white/75 hover:!bg-white/[15%]
-                hover:!text-white dark:hover:!bg-white/5 sm:h-8 sm:px-2`}
+                flex h-12 w-12 items-center justify-center rounded-lg
+                bg-transparent text-white/75 hover:bg-white/[15%]
+                hover:text-white focus-visible:ariakit-outline-input
+                dark:hover:bg-white/5 sm:h-10
+                sm:w-10`}
               />
             )}
           </Toolbar>

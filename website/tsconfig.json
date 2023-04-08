@@ -1,15 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "jsx": "preserve",
-    "verbatimModuleSyntax": false,
-    "isolatedModules": true
+    "jsx": "preserve"
   },
   "include": [
     "**/*.ts",
@@ -20,5 +14,6 @@
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts"
-  ]
+  ],
+  "exclude": ["node_modules", ".next"]
 }

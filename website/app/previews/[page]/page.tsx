@@ -68,7 +68,8 @@ export default async function Page({ params }: Props) {
 
   return (
     <div
-      className={tw`flex min-h-[200vh] w-full justify-center bg-gray-150
+      className={tw`
+      flex min-h-[200vh] w-full flex-col items-center bg-gray-150
       pt-[min(30vh,400px)] dark:bg-gray-850`}
     >
       <Preview path={source} css={css} />

@@ -2,10 +2,8 @@
 
 import type { ButtonHTMLAttributes } from "react";
 import { forwardRef, useEffect, useState } from "react";
-import { cx } from "@ariakit/core/utils/misc";
 import { Check } from "icons/check.js";
 import { Copy } from "icons/copy.js";
-import { tw } from "utils/tw.js";
 import { TooltipButton } from "./tooltip-button.js";
 
 interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,7 +13,7 @@ interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const CopyToClipboard = forwardRef<
   HTMLButtonElement,
   CopyToClipboardProps
->(({ text, className, ...props }, ref) => {
+>(({ text, ...props }, ref) => {
   const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
 
   useEffect(() => {
@@ -29,12 +27,6 @@ export const CopyToClipboard = forwardRef<
       ref={ref}
       {...props}
       title={state === "copied" ? "Copied" : "Copy"}
-      className={cx(
-        className,
-        tw`bg-transparent text-black/75 hover:bg-black/5
-        focus-visible:ariakit-outline-input dark:text-white/75
-        dark:hover:bg-white/5`
-      )}
       onClick={async () => {
         if (state !== "idle") return;
         await navigator.clipboard.writeText(text);
