@@ -1,23 +1,23 @@
 import { isValidElement } from "react";
 import { cx } from "@ariakit/core/utils/misc";
+import pagesConfig from "build-pages/config.js";
+import { getPageContent } from "build-pages/get-page-content.js";
+import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageName } from "build-pages/get-page-name.js";
+import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
+import pagesIndex from "build-pages/index.js";
+import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
+import { CodeBlock } from "components/code-block.js";
+import { Link } from "components/link.js";
+import { Hashtag } from "icons/hashtag.js";
+import { NewWindow } from "icons/new-window.js";
 import { notFound } from "next/navigation.js";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
-import pagesConfig from "website/build-pages/config.js";
-import { getPageContent } from "website/build-pages/get-page-content.js";
-import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
-import { getPageName } from "website/build-pages/get-page-name.js";
-import { getPageTreeFromContent } from "website/build-pages/get-page-tree.js";
-import pagesIndex from "website/build-pages/index.js";
-import type { TableOfContents as TableOfContentsData } from "website/build-pages/types.js";
-import { CodeBlock } from "website/components/code-block.js";
-import { Link } from "website/components/link.js";
-import { Hashtag } from "website/icons/hashtag.js";
-import { NewWindow } from "website/icons/new-window.js";
-import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import { rehypeWrapHeadings } from "website/utils/rehype-wrap-headings.js";
-import { tw } from "website/utils/tw.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
+import { tw } from "utils/tw.js";
 import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
 
@@ -142,7 +142,6 @@ export default async function Page({ params }: PageProps) {
     (item) => item.slug === category
   );
 
-  if (!pageDetail) return notFound();
   if (!categoryDetail) return notFound();
 
   const tableOfContents: TableOfContentsData = [
@@ -154,7 +153,7 @@ export default async function Page({ params }: PageProps) {
     {
       id: "",
       href: `/${category}/${page}`,
-      text: pageDetail.title,
+      text: pageDetail?.title ?? page,
       children: tree.data?.tableOfContents as TableOfContentsData,
     },
   ];

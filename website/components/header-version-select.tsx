@@ -15,10 +15,10 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import { NewWindow } from "website/icons/new-window.js";
-import { React } from "website/icons/react.js";
-import { Vue } from "website/icons/vue.js";
-import { tw } from "website/utils/tw.js";
+import { NewWindow } from "icons/new-window.js";
+import { React } from "icons/react.js";
+import { Vue } from "icons/vue.js";
+import { tw } from "utils/tw.js";
 import { Link } from "./link.js";
 import { Popup } from "./popup.js";
 

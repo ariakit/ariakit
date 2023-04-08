@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cx } from "@ariakit/core/utils/misc";
 import * as Ariakit from "@ariakit/react";
-import { cx } from "packages/ariakit-core/src/utils/misc.js";
-import type { TableOfContents as Data } from "website/build-pages/types.js";
-import { Link } from "website/components/link.js";
-import { Popup } from "website/components/popup.js";
-import { List } from "website/icons/list.js";
-import { tw } from "website/utils/tw.js";
-import { useMedia } from "website/utils/use-media.js";
+import type { TableOfContents as Data } from "build-pages/types.js";
+import { Link } from "components/link.js";
+import { Popup } from "components/popup.js";
+import { List } from "icons/list.js";
+import { tw } from "utils/tw.js";
+import { useMedia } from "utils/use-media.js";
 
 interface Props {
   data: Data;

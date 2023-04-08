@@ -28,12 +28,3 @@ button:not([type="submit"]),
 .light {
   color-scheme: light;
 }
-
-@media not all and (resolution >= 0.001dpcm) {
-  @supports (-webkit-appearance:none) {
-    *:focus-visible,
-    *[data-focus-visible] {
-      outline-style: auto !important;
-    }
-  }
-}

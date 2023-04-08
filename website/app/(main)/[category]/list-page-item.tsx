@@ -1,8 +1,8 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { Link } from "website/components/link.js";
-import { tw } from "website/utils/tw.js";
+import { Link } from "components/link.js";
+import { tw } from "utils/tw.js";
 
 const style = {
   wrapper: tw`
@@ -93,9 +93,9 @@ export function ListPageItem({
               id={`${id}-description`}
               className={cx(
                 style.description,
-                size === "sm" && "text-sm truncate-[2]",
-                size === "md" && "text-base truncate-[2]",
-                size === "lg" && "text-base truncate-[3]"
+                size === "sm" && "line-clamp-2 text-sm",
+                size === "md" && "line-clamp-2 text-base",
+                size === "lg" && "line-clamp-3 text-base"
               )}
             >
               {description}

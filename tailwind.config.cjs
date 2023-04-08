@@ -178,21 +178,6 @@ module.exports = {
         },
       });
 
-      matchUtilities(
-        {
-          truncate: (value) =>
-            value === 1
-              ? null
-              : {
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  "-webkit-box-orient": "vertical",
-                  "-webkit-line-clamp": value,
-                },
-        },
-        { values: { DEFAULT: 1 } }
-      );
-
       addVariant(
         "supports-backdrop-blur",
         "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
@@ -207,10 +192,6 @@ module.exports = {
       addVariant("ariakit-focus-visible", "&[data-focus-visible]");
       addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
       addVariant("aria-invalid", '&[aria-invalid="true"]');
-      addVariant("aria-disabled", '&[aria-disabled="true"]');
-      addVariant("aria-selected", '&[aria-selected="true"]');
-      addVariant("aria-expanded", '&[aria-expanded="true"]');
-      addVariant("aria-checked", '&[aria-checked="true"]');
     }),
   ],
 };

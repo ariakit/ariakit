@@ -1,7 +1,7 @@
+import contents from "build-pages/contents.js";
 import { Searcher, search } from "fast-fuzzy";
 import type { NextRequest } from "next/server.js";
 import { NextResponse } from "next/server.js";
-import contents from "website/build-pages/contents.js";
 
 export const runtime = "edge";
 

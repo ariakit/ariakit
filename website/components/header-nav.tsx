@@ -18,18 +18,18 @@ import type {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
+import type { PageContent } from "build-pages/contents.js";
+import type { PageIndexDetail } from "build-pages/index.js";
+import pageIndex from "build-pages/index.js";
+import { Blog } from "icons/blog.js";
+import { Components } from "icons/components.js";
+import { Examples } from "icons/examples.js";
+import { Guide } from "icons/guide.js";
 import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
-import type { PageContent } from "website/build-pages/contents.js";
-import type { PageIndexDetail } from "website/build-pages/index.js";
-import pageIndex from "website/build-pages/index.js";
-import { Blog } from "website/icons/blog.js";
-import { Components } from "website/icons/components.js";
-import { Examples } from "website/icons/examples.js";
-import { Guide } from "website/icons/guide.js";
-import { tw } from "website/utils/tw.js";
-import { useDelayedValue } from "website/utils/use-delayed-value.js";
+import { tw } from "utils/tw.js";
+import { useDelayedValue } from "utils/use-delayed-value.js";
 import {
   HeaderMenu,
   HeaderMenuGroup,

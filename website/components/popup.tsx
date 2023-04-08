@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { forwardRef } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { tw } from "website/utils/tw.js";
+import { tw } from "utils/tw.js";
 
 interface PopupProps extends HTMLAttributes<HTMLDivElement> {
   renderScoller?: (props: HTMLAttributes<HTMLDivElement>) => JSX.Element;

@@ -1,6 +1,6 @@
 import { cx } from "@ariakit/core/utils/misc";
 import { FontStyle, getHighlighter } from "shiki";
-import { tw } from "website/utils/tw.js";
+import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 
 interface Props {
@@ -63,9 +63,10 @@ export async function CodeBlock({
         className={cx(
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
-          type === "editor" && "rounded-[inherit] bg-[#1e1e1e]",
-          tw`dark relative z-10 flex max-h-[inherit] w-full overflow-auto
-        pt-4 text-sm leading-[21px] text-white [color-scheme:dark]`
+          type === "editor" && "bg-[#1e1e1e]",
+          tw`
+          dark relative z-10 flex max-h-[inherit] w-full overflow-auto
+          pt-4 text-sm leading-[21px] text-white [color-scheme:dark]`
         )}
       >
         {lineNumbers && (

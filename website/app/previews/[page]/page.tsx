@@ -1,16 +1,16 @@
 import { resolve } from "path";
+import pagesConfig from "build-pages/config.js";
+import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
+import { getExampleDeps } from "build-pages/get-example-deps.js";
+import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageName } from "build-pages/get-page-name.js";
+import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
+import pagesIndex from "build-pages/index.js";
+import { parseCSSFile } from "build-pages/parse-css-file.js";
+import { Preview } from "components/preview.js";
 import { notFound } from "next/navigation.js";
-import pagesConfig from "website/build-pages/config.js";
-import { getCSSFilesFromDeps } from "website/build-pages/get-css-files-from-deps.js";
-import { getExampleDeps } from "website/build-pages/get-example-deps.js";
-import { getPageEntryFiles } from "website/build-pages/get-page-entry-files.js";
-import { getPageName } from "website/build-pages/get-page-name.js";
-import { getPageSourceFiles } from "website/build-pages/get-page-source-files.js";
-import pagesIndex from "website/build-pages/index.js";
-import { parseCSSFile } from "website/build-pages/parse-css-file.js";
-import { Preview } from "website/components/preview.js";
-import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
-import { tw } from "website/utils/tw.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { tw } from "utils/tw.js";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];

@@ -1,4 +1,3 @@
-// @ts-check
 import { readdirSync } from "fs";
 import { basename, join, resolve } from "path";
 import { camelCase, upperFirst } from "lodash-es";

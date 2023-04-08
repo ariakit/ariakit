@@ -1,5 +1,5 @@
-import { ArrowRight } from "website/icons/arrow-right.js";
-import { tw } from "website/utils/tw.js";
+import { ArrowRight } from "icons/arrow-right.js";
+import { tw } from "utils/tw.js";
 import { Link } from "./link.js";
 
 export function Hero() {

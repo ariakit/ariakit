@@ -52,14 +52,14 @@ import {
   useId,
   useSafeLayoutEffect,
 } from "@ariakit/react-core/utils/hooks";
-import { ChevronRight } from "website/icons/chevron-right.js";
-import { NewWindow } from "website/icons/new-window.js";
-import { Search } from "website/icons/search.js";
-import { Spinner } from "website/icons/spinner.js";
-import { afterTimeout } from "website/utils/after-timeout.js";
-import { tw } from "website/utils/tw.js";
-import { useIdle } from "website/utils/use-idle.js";
-import { whenIdle } from "website/utils/when-idle.js";
+import { ChevronRight } from "icons/chevron-right.js";
+import { NewWindow } from "icons/new-window.js";
+import { Search } from "icons/search.js";
+import { Spinner } from "icons/spinner.js";
+import { afterTimeout } from "utils/after-timeout.js";
+import { tw } from "utils/tw.js";
+import { useIdle } from "utils/use-idle.js";
+import { whenIdle } from "utils/when-idle.js";
 import { Link } from "./link.js";
 import { Popup } from "./popup.js";
 
@@ -614,7 +614,7 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
                 aria-hidden
                 className={cx(
                   style.itemDescription,
-                  path ? "truncate" : "truncate-[2]"
+                  path ? "truncate" : "line-clamp-2"
                 )}
               >
                 {description}

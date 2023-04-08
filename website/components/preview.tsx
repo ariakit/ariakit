@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
-import examples from "website/build-pages/examples.js";
+import examples from "build-pages/examples.js";
 
 interface PortalProviderProps {
   children: ReactNode;
@@ -40,9 +40,9 @@ export function Preview({ path, id, css }: Props) {
   const Component = examples[path];
   const preview = Component && <Component />;
   return (
-    <>
+    <Suspense>
       {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-    </>
+    </Suspense>
   );
 }

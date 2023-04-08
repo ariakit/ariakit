@@ -11,6 +11,7 @@
   "editor.formatOnSave": true,
   "css.validate": false,
   "stylelint.enable": true,
+  "editor.snippetSuggestions": "bottom",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
     "source.fixAll.stylelint": true

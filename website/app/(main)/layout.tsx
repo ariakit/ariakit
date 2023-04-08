@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
-import { Footer } from "website/components/footer.js";
-import { Header } from "website/components/header.js";
-import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
+import { Footer } from "components/footer.js";
+import { Header } from "components/header.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import QueryProvider from "./query-provider.js";
 
 export function generateMetadata() {

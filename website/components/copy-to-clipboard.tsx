@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import type { ButtonHTMLAttributes } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { Check } from "website/icons/check.js";
-import { Copy } from "website/icons/copy.js";
-import { tw } from "website/utils/tw.js";
+import { Check } from "icons/check.js";
+import { Copy } from "icons/copy.js";
+import { tw } from "utils/tw.js";
 import { TooltipButton } from "./tooltip-button.js";
 
-interface CopyToClipboardProps {
+interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
-  className?: string;
 }
 
-export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
+export const CopyToClipboard = forwardRef<
+  HTMLButtonElement,
+  CopyToClipboardProps
+>(({ text, className, ...props }, ref) => {
   const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
 
   useEffect(() => {
@@ -23,6 +26,8 @@ export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
 
   return (
     <TooltipButton
+      ref={ref}
+      {...props}
       title={state === "copied" ? "Copied" : "Copy"}
       className={cx(
         className,
@@ -40,4 +45,4 @@ export function CopyToClipboard({ text, className }: CopyToClipboardProps) {
       {state === "copied" && <Check className="h-5 w-5" />}
     </TooltipButton>
   );
-}
+});

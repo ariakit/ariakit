@@ -3,7 +3,7 @@ import "./style.css";
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
-import { getNextPageMetadata } from "website/utils/get-next-page-metadata.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 
 const darkModeScript = `
 function classList(action) {
