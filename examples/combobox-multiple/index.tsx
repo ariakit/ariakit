@@ -1,6 +1,9 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { ComboboxMultiple, ComboboxMultipleItem } from "./combobox-multiple.js";
+import {
+  ComboboxMultiple,
+  ComboboxMultipleItem,
+} from "./combobox-multiple.jsx";
 import list from "./list.js";
 import "./style.css";
 

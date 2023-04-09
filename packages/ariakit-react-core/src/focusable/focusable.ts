@@ -57,8 +57,8 @@ function isAlwaysFocusVisible(element: HTMLElement) {
 // See https://github.com/ariakit/ariakit/issues/1257
 function isAlwaysFocusVisibleDelayed(element: HTMLElement) {
   const role = element.getAttribute("role");
-  if (role === "combobox") return true;
-  return false;
+  if (role !== "combobox") return false;
+  return !!element.dataset.name;
 }
 
 function getLabels(element: HTMLElement | HTMLInputElement) {

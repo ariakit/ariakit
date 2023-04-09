@@ -143,44 +143,31 @@ export function HeaderVersionSelect({ versions }: Props) {
         <SelectArrow />
       </Select>
       {selectMounted && (
-        <SelectPopover store={select}>
-          {(props) => (
-            <Popup
-              {...props}
-              className={cx(props.className, "text-sm")}
-              renderScoller={(props) => (
-                <div {...props} className={cx(props.className, "p-1.5")} />
-              )}
-            >
-              {Object.entries(versions).map(([name, tags]) => (
-                <Fragment key={name}>
-                  <SelectGroup className={style.group}>
-                    <SelectGroupLabel className={style.groupLabel}>
-                      {getIcon(name)}
-                      {name}
-                    </SelectGroupLabel>
-                    {Object.entries(tags).map(([tag, version]) =>
-                      renderItem(getValueFromPkg({ name, version }), tag)
-                    )}
-                  </SelectGroup>
-                  <SelectSeparator className={style.separator} />
-                </Fragment>
-              ))}
-              <SelectItem
-                as="a"
-                href={getChangeLogUrl(selectedPkg)}
-                target="_blank"
-                hideOnClick
-                className={cx(
-                  style.item,
-                  "justify-between pl-[26px] font-normal"
+        <SelectPopover store={select} as={Popup} size="small">
+          {Object.entries(versions).map(([name, tags]) => (
+            <Fragment key={name}>
+              <SelectGroup className={style.group}>
+                <SelectGroupLabel className={style.groupLabel}>
+                  {getIcon(name)}
+                  {name}
+                </SelectGroupLabel>
+                {Object.entries(tags).map(([tag, version]) =>
+                  renderItem(getValueFromPkg({ name, version }), tag)
                 )}
-              >
-                Changelog
-                <NewWindow className={style.itemIcon} />
-              </SelectItem>
-            </Popup>
-          )}
+              </SelectGroup>
+              <SelectSeparator className={style.separator} />
+            </Fragment>
+          ))}
+          <SelectItem
+            as="a"
+            href={getChangeLogUrl(selectedPkg)}
+            target="_blank"
+            hideOnClick
+            className={cx(style.item, "justify-between pl-[26px] font-normal")}
+          >
+            Changelog
+            <NewWindow className={style.itemIcon} />
+          </SelectItem>
         </SelectPopover>
       )}
     </>

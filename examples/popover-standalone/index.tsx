@@ -5,7 +5,7 @@ import {
   PopoverArrow,
   PopoverDescription,
   PopoverHeading,
-} from "./popover.js";
+} from "./popover.jsx";
 import "./style.css";
 
 export default function Example() {

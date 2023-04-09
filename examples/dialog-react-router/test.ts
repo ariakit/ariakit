@@ -1,12 +1,10 @@
-import { click, getByRole, press, queryByRole, render } from "@ariakit/test";
-import Example from "./index.js";
+import { click, getByRole, press, queryByRole } from "@ariakit/test";
 
 const getDisclosure = () => getByRole("link", { name: "Tweet" });
 const getDialog = () => queryByRole("dialog", { name: "Tweet" });
 const getInput = () => queryByRole("textbox", { name: "Tweet text" });
 
 test("show/hide on disclosure click", async () => {
-  render(<Example />);
   expect(getDialog()).not.toBeInTheDocument();
   await click(getDisclosure());
   expect(getDialog()).toBeVisible();
@@ -18,7 +16,6 @@ test("show/hide on disclosure click", async () => {
 });
 
 test("hide on escape", async () => {
-  render(<Example />);
   await click(getDisclosure());
   expect(getDialog()).toBeVisible();
   await press.Escape();
@@ -27,10 +24,9 @@ test("hide on escape", async () => {
 });
 
 test("hide on click outside", async () => {
-  const { baseElement } = render(<Example />);
   await click(getDisclosure());
   expect(getDialog()).toBeVisible();
-  await click(baseElement);
+  await click(document.body);
   expect(getDialog()).not.toBeInTheDocument();
   expect(getDisclosure()).toHaveFocus();
 });

@@ -183,43 +183,47 @@ export const useSelect = createHook<SelectOptions>(
     // onChange event is triggered and we set the autofill state to true.
     props = useWrapElement(
       props,
-      (element) => (
-        <>
-          <VisuallyHidden
-            as="select"
-            tabIndex={-1}
-            aria-hidden
-            aria-label={label}
-            aria-labelledby={labelledBy}
-            name={name}
-            form={form}
-            required={required}
-            value={value}
-            multiple={multiSelectable}
-            // Even though this element is visually hidden and is not tabbable,
-            // it's still focusable. Some autofill extensions like 1password
-            // will move focus to the next form element on autofill. In this
-            // case, we want to move focus to our custom select element.
-            onFocus={() => store.getState().selectElement?.focus()}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              nativeSelectChangedRef.current = true;
-              setAutofill(true);
-              store.setValue(
-                multiSelectable
-                  ? getSelectedValues(event.target)
-                  : event.target.value
-              );
-            }}
-          >
-            {values.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </VisuallyHidden>
-          {element}
-        </>
-      ),
+      (element) => {
+        if (!name) return element;
+        return (
+          <>
+            <VisuallyHidden
+              as="select"
+              tabIndex={-1}
+              aria-hidden
+              aria-label={label}
+              aria-labelledby={labelledBy}
+              name={name}
+              form={form}
+              required={required}
+              value={value}
+              multiple={multiSelectable}
+              // Even though this element is visually hidden and is not
+              // tabbable, it's still focusable. Some autofill extensions like
+              // 1password will move focus to the next form element on autofill.
+              // In this case, we want to move focus to our custom select
+              // element.
+              onFocus={() => store.getState().selectElement?.focus()}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                nativeSelectChangedRef.current = true;
+                setAutofill(true);
+                store.setValue(
+                  multiSelectable
+                    ? getSelectedValues(event.target)
+                    : event.target.value
+                );
+              }}
+            >
+              {values.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </VisuallyHidden>
+            {element}
+          </>
+        );
+      },
       [
         store,
         label,
@@ -248,6 +252,7 @@ export const useSelect = createHook<SelectOptions>(
       "aria-labelledby": labelId,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "data-autofill": autofill ? "" : undefined,
+      "data-name": name,
       children,
       ...props,
       ref: useForkRef(store.setSelectElement, props.ref),

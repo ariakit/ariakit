@@ -43,6 +43,7 @@ export async function CodeBlock({
 }: Props) {
   code = type === "static" ? code.trim() : code;
   const highlighter = await highlighterPromise;
+
   const tokens = highlighter.codeToThemedTokens(code, lang, "dark-plus", {
     includeExplanation: false,
   });
@@ -50,7 +51,7 @@ export async function CodeBlock({
   const oneLiner = tokens.length === 1;
 
   return (
-    <div className={cx(className, "relative w-full")}>
+    <div className={cx(className, "relative max-h-[inherit] w-full")}>
       {type === "static" && (
         <CopyToClipboard
           text={code}
@@ -64,7 +65,7 @@ export async function CodeBlock({
         className={cx(
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
-          type === "editor" && "rounded-b-md bg-[#1e1e1e] sm:rounded-b-[10px]",
+          type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-[10px]",
           tw`
           dark relative z-10 flex max-h-[inherit] w-full overflow-auto
           pt-4 text-sm leading-[21px] text-white [color-scheme:dark]`
@@ -72,11 +73,12 @@ export async function CodeBlock({
       >
         {lineNumbers && (
           <div
+            aria-hidden
             className={cx(
               type === "static" && "flex px-4 sm:pl-8 sm:pr-6",
               type === "editor" && "hidden pl-0 pr-[26px] sm:flex",
-              tw`sticky left-0 h-full flex-col bg-inherit text-right
-            text-[#858585]`
+              tw`sticky left-0 h-full select-none flex-col bg-inherit
+            text-right text-[#858585]`
             )}
           >
             {tokens.map((_, i) => (

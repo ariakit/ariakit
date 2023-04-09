@@ -9,9 +9,9 @@ export default function Example() {
   return (
     <form className="wrapper">
       <label htmlFor="email">Email</label>
-      <input type="email" id="email" className="input" />
+      <input type="email" id="email" name="email" className="input" />
       <Ariakit.SelectLabel store={select}>Role</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="select" />
+      <Ariakit.Select store={select} name="role" className="select" />
       <Ariakit.SelectPopover store={select} className="popover">
         <Ariakit.SelectItem className="select-item" value="Student" />
         <Ariakit.SelectItem className="select-item" value="Tutor" />

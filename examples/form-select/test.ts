@@ -26,6 +26,7 @@ beforeEach(() => {
 test("click on label", async () => {
   await click(getLabel());
   expect(getSelect()).toHaveFocus();
+  expect(getSelect()).toHaveAttribute("data-focus-visible");
   expect(getList()).not.toBeVisible();
 });
 

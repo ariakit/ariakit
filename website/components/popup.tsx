@@ -4,16 +4,20 @@ import { cx } from "@ariakit/core/utils/misc";
 import { tw } from "utils/tw.js";
 
 interface PopupProps extends HTMLAttributes<HTMLDivElement> {
+  size?: "small" | "medium";
   renderScoller?: (props: HTMLAttributes<HTMLDivElement>) => JSX.Element;
 }
 
 export const Popup = forwardRef<HTMLDivElement, PopupProps>(
-  ({ renderScoller, children, ...props }, ref) => {
+  ({ renderScoller, size = "medium", children, ...props }, ref) => {
     const scrollerProps = {
       role: "presentation",
       children,
-      className: tw`
-      flex flex-col p-2 overflow-auto overscroll-contain bg-[color:inherit]`,
+      className: cx(
+        size === "small" ? "p-1.5" : "p-2",
+        tw`
+        flex flex-col overflow-auto overscroll-contain bg-[color:inherit]`
+      ),
     };
     return (
       <div
@@ -21,6 +25,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(
         ref={ref}
         className={cx(
           props.className,
+          size === "small" && "text-sm",
           tw`
           z-50 flex max-h-[min(var(--popover-available-height,800px),800px)]
           flex-col overflow-hidden rounded-lg border border-gray-250

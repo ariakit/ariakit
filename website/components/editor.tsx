@@ -11,6 +11,7 @@ export interface EditorProps {
   files: Record<string, string>;
   theme: monaco.editor.IStandaloneThemeData;
   codeBlocks: Record<string, ReactNode>;
+  javascript?: Record<string, { code: string; codeBlock: ReactNode }>;
 }
 
 const languages = [
