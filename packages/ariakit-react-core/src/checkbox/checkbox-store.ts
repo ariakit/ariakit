@@ -1,5 +1,5 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
-import type { PickRequired, SetStateOption } from "@ariakit/core/utils/types";
+import type { PickRequired } from "@ariakit/core/utils/types";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -59,7 +59,7 @@ export interface CheckboxStoreOptions<T extends Value = Value>
    *   const checkbox = useCheckboxStore({ value, setValue: onChange });
    * }
    */
-  setValue?: SetStateOption<CheckboxStoreState<T>["value"]>;
+  setValue?: (value: CheckboxStoreState<T>["value"]) => void;
 }
 
 export interface CheckboxStoreProps<T extends Value = Value>

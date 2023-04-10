@@ -22,11 +22,6 @@ export type BivariantCallback<T extends AnyFunction> = {
 export type SetStateAction<T> = T | BivariantCallback<(prevState: T) => T>;
 
 /**
- * TODO: Description.
- */
-export type SetStateOption<T> = (value: T) => void;
-
-/**
  * The type of the `setState` function in `[state, setState] = useState()`.
  * @template T The type of the state.
  */
@@ -49,7 +44,13 @@ export type StringWithValue<T extends string> =
   | (string & { [key in symbol]: never });
 
 /**
- * TODO: Description.
+ * Transforms a type into a primitive type.
+ * @template T The type to transform.
+ * @example
+ * // string
+ * ToPrimitive<"a">;
+ * // number
+ * ToPrimitive<1>;
  */
 export type ToPrimitive<T> = T extends string
   ? string
@@ -62,7 +63,9 @@ export type ToPrimitive<T> = T extends string
   : T;
 
 /**
- * TODO: Description.
+ * Picks only the properties from a type that have a specific value.
+ * @template T The type to pick from.
+ * @template Value The value to pick.
  */
 export type PickByValue<T, Value> = {
   [K in keyof T as [Value] extends [T[K]]
@@ -73,7 +76,9 @@ export type PickByValue<T, Value> = {
 };
 
 /**
- * TODO: Description.
+ * Picks only the required properties from a type.
+ * @template T The type to pick from.
+ * @template P The properties to pick.
  */
 export type PickRequired<T, P extends keyof T> = T &
   {
