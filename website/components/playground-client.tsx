@@ -22,10 +22,12 @@ import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
 import { JavaScript } from "icons/javascript.js";
 import { NewWindow } from "icons/new-window.js";
+import { Stackblitz } from "icons/stackblitz.jsx";
 import { TypeScript } from "icons/typescript.js";
+import { openInStackblitz } from "utils/open-in-stackblitz.js";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
-import useLocalStorageState from "utils/use-local-storage-state.js";
+import { useLocalStorageState } from "utils/use-local-storage-state.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
@@ -36,6 +38,7 @@ import { TooltipButton } from "./tooltip-button.js";
 export interface PlaygroundClientProps extends EditorProps {
   id: string;
   dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
   previewLink?: string;
   preview?: ReactNode;
   type?: "compact" | "wide";
@@ -129,7 +132,8 @@ export function PlaygroundClient({
   // theme,
   previewLink,
   preview,
-  // dependencies,
+  dependencies,
+  devDependencies,
   codeBlocks,
   javascript,
   type = "wide",
@@ -247,7 +251,15 @@ export function PlaygroundClient({
                     as={Link}
                     target="__blank"
                     href={previewLink}
-                    title="Preview in new window"
+                    title={
+                      <span className="flex items-center gap-1.5">
+                        Preview in new tab
+                        <NewWindow
+                          strokeWidth={1.5}
+                          className="h-4 w-4 stroke-current"
+                        />
+                      </span>
+                    }
                     {...props}
                   >
                     <NewWindow className="h-5 w-5" strokeWidth={1.5} />
@@ -255,6 +267,38 @@ export function PlaygroundClient({
                 )}
               </ToolbarItem>
             )}
+            <ToolbarItem
+              as={TooltipButton}
+              onClick={() => {
+                openInStackblitz({
+                  id,
+                  files: isJS
+                    ? Object.entries(files).reduce<typeof files>(
+                        (acc, [filename, code]) => ({
+                          ...acc,
+                          [tsToJsFilename(filename)]:
+                            javascript?.[filename]?.code ?? code,
+                        }),
+                        {}
+                      )
+                    : files,
+                  dependencies,
+                  devDependencies,
+                });
+              }}
+              title={
+                <span className="flex items-center gap-1.5">
+                  Open in StackBlitz
+                  <NewWindow
+                    strokeWidth={1.5}
+                    className="h-4 w-4 stroke-current"
+                  />
+                </span>
+              }
+              className={cx(style.toolbarItem, "!cursor-pointer")}
+            >
+              <Stackblitz className="h-[18px] w-[18px]" />
+            </ToolbarItem>
             {content != null && (
               <ToolbarItem
                 as={CopyToClipboard}

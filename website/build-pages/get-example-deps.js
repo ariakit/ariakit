@@ -9,15 +9,41 @@ import ts from "typescript";
 const host = ts.createCompilerHost({});
 
 /**
+ * @typedef {{ [file: string]: Record<string, string>, dependencies:
+ *  Record<string, string>, devDependencies: Record<string, string> }} Deps
+ */
+
+/**
+ * @param {Deps} deps
  * @param {string} source
  * @param {string} filename
  */
-function resolveModule(source, filename) {
-  const res = ts.resolveModuleName(source, filename, {}, host);
-  if (res.resolvedModule && !res.resolvedModule.isExternalLibraryImport) {
-    return res.resolvedModule.resolvedFileName;
+function assignExternal(deps, source, filename) {
+  const { resolvedModule } = ts.resolveModuleName(source, filename, {}, host);
+  const external =
+    resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
+
+  const resolvedSource =
+    resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
+      ? resolvedModule.resolvedFileName
+      : resolveFrom(dirname(filename), source);
+
+  const result = { resolvedSource, external };
+
+  if (external) {
+    const version = getPackageVersion(resolvedSource);
+    deps.dependencies[source] = version;
+
+    const resolvedFilename = resolvedModule?.resolvedFileName;
+    if (!resolvedFilename) return result;
+    if (!resolvedFilename.includes("node_modules/@types/")) return result;
+    const typePkgName = getPackageName(resolvedFilename);
+    if (!typePkgName) return result;
+
+    deps.devDependencies[typePkgName] = getPackageVersion(resolvedFilename);
   }
-  return resolveFrom(dirname(filename), source);
+
+  return result;
 }
 
 /** @param {import("@babel/core").NodePath<t.Node>} nodePath */
@@ -36,23 +62,34 @@ function getSourceValue(nodePath) {
   return source.node.value;
 }
 
-/** @type {Record<string, string | undefined>} */
-const versionsCache = {};
+/** @type {Map<string, import("read-pkg-up").NormalizedReadResult>}} */
+const packageCache = new Map();
+
+/** @param {string} source */
+function getPackageName(source) {
+  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  if (!result) return null;
+  packageCache.set(source, result);
+  return result.packageJson.name;
+}
 
 /** @param {string} source */
 function getPackageVersion(source) {
-  if (versionsCache[source]) return versionsCache[source];
-  const result = readPackageUpSync({ cwd: source });
-  versionsCache[source] = result?.packageJson.version;
-  return result?.packageJson.version;
+  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  if (!result) return "*";
+  packageCache.set(source, result);
+  return result.packageJson.version;
 }
 
 /**
  * @param {string} filename
- * @param {{ dependencies: Record<string, string>, [file: string]:
- * Record<string, string> }} deps
+ * @param {{ [file: string]: Record<string, string>, dependencies:
+ * Record<string, string>, devDependencies: Record<string, string>, }} deps
  */
-export function getExampleDeps(filename, deps = { dependencies: {} }) {
+export function getExampleDeps(
+  filename,
+  deps = { dependencies: {}, devDependencies: {} }
+) {
   if (!/\.[tj]sx?$/.test(filename)) return deps;
   const content = readFileSync(filename, "utf8");
   const parsed = parseSync(content, {
@@ -64,6 +101,9 @@ export function getExampleDeps(filename, deps = { dependencies: {} }) {
     ],
   });
 
+  assignExternal(deps, "react", filename);
+  assignExternal(deps, "react-dom", filename);
+
   if (!deps[filename]) {
     deps[filename] = {};
   }
@@ -74,14 +114,10 @@ export function getExampleDeps(filename, deps = { dependencies: {} }) {
 
       if (!source) return;
 
-      const resolvedSource = resolveModule(source, filename);
-      const external = !source.startsWith(".");
+      const resolved = assignExternal(deps, source, filename);
+      const { resolvedSource, external } = resolved;
 
-      if (external) {
-        const version = getPackageVersion(resolvedSource) || "latest";
-        deps.dependencies[source] = version;
-        return;
-      }
+      if (external) return;
 
       if (!deps[filename]?.[source]) {
         deps[filename] = { ...deps[filename], [source]: resolvedSource };

@@ -65,7 +65,7 @@ export async function CodeBlock({
         className={cx(
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
-          type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-[10px]",
+          type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-xl",
           tw`
           dark relative z-10 flex max-h-[inherit] w-full overflow-auto
           pt-4 text-sm leading-[21px] text-white [color-scheme:dark]`

@@ -59,6 +59,7 @@
     "@babel/types": "7.21.4",
     "@changesets/cli": "2.26.1",
     "@playwright/test": "1.32.2",
+    "@stackblitz/sdk": "1.9.0",
     "@tanstack/react-query": "4.28.0",
     "@testing-library/dom": "8.19.1",
     "@testing-library/jest-dom": "5.16.5",
@@ -148,7 +149,7 @@
     "typescript": "5.0.4",
     "unified": "10.1.2",
     "unist-util-visit": "4.1.2",
-    "use-local-storage-state": "18.3.0",
+    "use-local-storage-state": "18.3.2",
     "vitest": "0.29.8",
     "vitest-fail-on-console": "0.3.1",
     "webpack": "5.78.0"

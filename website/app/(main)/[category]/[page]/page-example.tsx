@@ -43,7 +43,7 @@ export async function PageExample({
   const path = resolve(dirname(pageFilename), href);
   const previewLink = getPreviewLink(path);
   const id = getExampleId(path);
-  const { dependencies, ...files } = getExampleDeps(path);
+  const { dependencies, devDependencies, ...files } = getExampleDeps(path);
   const cssFiles = getCSSFilesFromDeps(files);
   const contents: Record<string, string> = {};
 
@@ -74,6 +74,7 @@ export async function PageExample({
         type={type}
         files={contents}
         dependencies={dependencies}
+        devDependencies={devDependencies}
         previewLink={previewLink}
         preview={<Preview id={id} path={path} css={css} />}
       />
