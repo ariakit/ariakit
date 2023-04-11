@@ -31,6 +31,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack(config, context) {
+    if (context.isServer) {
+      config.plugins.push(
+        new context.webpack.DefinePlugin({
+          "process.env.NEXT_BUILD_ID": JSON.stringify(context.buildId),
+        })
+      );
+    }
+
     if (!context.isServer) {
       config.plugins.unshift(pagesPlugin);
       config.plugins.push(

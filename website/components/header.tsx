@@ -8,13 +8,19 @@ import { Link } from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;
 
+function fetchPackage(name: string) {
+  const buildId = process.env.NEXT_BUILD_ID;
+  const cacheString = buildId ? `?${buildId}` : "";
+  return fetch(`https://registry.npmjs.org/${name}${cacheString}`);
+}
+
 async function fetchVersions() {
   if (process.env.NODE_ENV !== "production" && cache) {
     return cache;
   }
   const [react] = await Promise.all([
-    fetch("https://registry.npmjs.org/@ariakit/react"),
-    // fetch("https://registry.npmjs.org/@ariakit/dom"),
+    fetchPackage("@ariakit/react"),
+    // fetchPackage("@ariakit/dom"),
   ]);
 
   if (!react.ok) {

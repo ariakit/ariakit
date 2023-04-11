@@ -34,7 +34,7 @@ Ariakit exports a set of [unstyled](/guide/styling) React components and hooks t
 
 <div class="note">
 
-[Play with Ariakit on JSBin](https://jsbin.com/tolamacagu/edit?html,output)
+[Play with Ariakit on JSBin](https://jsbin.com/funovaqiza/edit?html,output)
 
 </div>
 
@@ -46,26 +46,23 @@ You can also use Ariakit directly in the browser via a CDN. This method is only 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Reakit</title>
+    <title>Ariakit</title>
   </head>
   <body>
     <div id="root"></div>
     <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Ariakit peer dependencies -->
-    <script src="https://unpkg.com/react/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
-    <!-- Ariakit UMD package -->
-    <script src="https://unpkg.com/ariakit"></script>
     <!-- Usage -->
-    <script type="text/babel">
-      const { Button } = Ariakit;
+    <script type="text/babel" data-type="module">
+      import * as React from "https://esm.sh/react";
+      import { createRoot } from "https://esm.sh/react-dom";
+      import { Button } from "https://esm.sh/@ariakit/react";
 
       function App() {
         return <Button>Button</Button>;
       }
 
-      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+      createRoot(document.getElementById("root")).render(<App />);
     </script>
   </body>
 </html>
