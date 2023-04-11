@@ -1,6 +1,6 @@
-// @ts-check
-/** @type {import("@changesets/types").ChangelogFunctions} */
-const changelogFunctions = {
+import {ChangelogFunctions} from "@changesets/types";
+
+const changelogFunctions: ChangelogFunctions = {
   getDependencyReleaseLine: async (_, dependenciesUpdated) => {
     if (dependenciesUpdated.length === 0) return "";
     const updatedDepenenciesList = dependenciesUpdated.map(
@@ -23,4 +23,4 @@ const changelogFunctions = {
   },
 };
 
-module.exports = changelogFunctions;
+export default changelogFunctions;
