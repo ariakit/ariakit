@@ -1,5 +1,11 @@
 # @ariakit/react-core
 
+## 0.1.1
+
+### Patch Changes
+
+- Removed extra `console.log` from `Hovercard`.
+
 ## 0.1.0
 
 ### Minor Changes
