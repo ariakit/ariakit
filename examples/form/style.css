@@ -35,6 +35,7 @@
   ;
 }
 
+/* purgecss ignore */
 .field input {
   @apply
     h-10

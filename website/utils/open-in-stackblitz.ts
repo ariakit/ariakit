@@ -96,10 +96,10 @@ export default defineConfig({
 </html>
 `;
 
-  const indexTsx = `import { StrictMode } from "react";
+  const indexTsx = `import "./index.css";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
-import "./index.css";
 
 const root = document.getElementById("root");
 
@@ -111,6 +111,7 @@ if (root) {
   const indexCss = `@import url("https://unpkg.com/tailwindcss@^3.0.0/lib/css/preflight.css");
 
 body {
+  background-color: #edf0f3;
   min-height: 100vh;
   padding-top: min(10vh, 100px);
   line-height: 1.5;
