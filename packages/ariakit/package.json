@@ -1,6 +1,6 @@
 {
   "name": "ariakit",
-  "version": "2.0.0-next.43",
+  "version": "2.0.0-next.44",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
