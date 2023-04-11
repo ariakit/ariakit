@@ -41,8 +41,8 @@ function isMovingOnHovercard(
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
-  // The mouse is moving on an element inside the hovercard.
   if (!target) return false;
+  // The mouse is moving on an element inside the hovercard.
   if (contains(card, target)) return true;
   // The mouse is moving on an element inside the anchor element.
   if (anchor && contains(anchor, target)) return true;
@@ -82,6 +82,8 @@ function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
   const autoFocusOnShow = store.useState(
     (state) => modal || state.autoFocusOnShow
   );
+
+  console.log(autoFocusOnShow);
 
   return { autoFocusOnShow, ...props };
 }
@@ -335,7 +337,7 @@ export const useHovercard = createHook<HovercardOptions>(
     };
 
     props = useAutoFocusOnHide({ store, ...props });
-    props = useAutoFocusOnShow({ store, ...props });
+    props = useAutoFocusOnShow({ store, modal, ...props });
 
     props = usePopover({
       hideOnEscape,
