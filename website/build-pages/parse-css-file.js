@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { basename, dirname } from "path";
+import { basename, dirname, extname } from "path";
 import _postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";
@@ -7,6 +7,8 @@ import postcssImport from "postcss-import";
 import mergeSelectors from "postcss-merge-selectors";
 // @ts-expect-error
 import prettify from "postcss-prettify";
+import { format } from "prettier";
+import { PurgeCSS } from "purgecss";
 import _tailwindcss from "tailwindcss";
 
 /** @type {import("postcss")["default"]} */
@@ -52,6 +54,7 @@ plugin.postcss = true;
  * @param {string} [options.id]
  * @param {string} [options.tailwindConfig]
  * @param {boolean} [options.format]
+ * @param {Record<string, string>} [options.contents]
  */
 export async function parseCSSFile(filename, options) {
   const processor = postcss();
@@ -67,6 +70,11 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (options.format) {
+    // processor.use(
+    //   purgecss({
+    //     content: [`${dirname(filename)}/**/*.{js,jsx,ts,tsx}`],
+    //   })
+    // );
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true })
     );
@@ -87,7 +95,33 @@ export async function parseCSSFile(filename, options) {
     processor.use(prettify());
   }
 
-  const content = readFileSync(filename, "utf8");
-  const result = await processor.process(content, { from: filename });
-  return result.css;
+  const raw = readFileSync(filename, "utf8");
+  const result = await processor.process(raw, { from: filename });
+
+  let css = result.css;
+
+  if (options.contents) {
+    // TODO: Remove :is when https://github.com/FullHuman/purgecss/issues/978 is
+    // fixed
+    const safelist = [/^aria\-/, /^data-/, /^\:is/];
+
+    const [purged] = await new PurgeCSS().purge({
+      css: [{ raw: css }],
+      safelist: options.id ? [...safelist, options.id] : safelist,
+      content: Object.entries(options.contents).map(([filename, raw]) => ({
+        raw,
+        extension: extname(filename),
+      })),
+    });
+
+    if (purged?.css) {
+      css = purged.css;
+    }
+  }
+
+  if (options.format) {
+    css = format(css, { parser: "css" });
+  }
+
+  return css;
 }

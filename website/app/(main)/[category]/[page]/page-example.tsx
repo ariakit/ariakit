@@ -58,8 +58,12 @@ export async function PageExample({
 
   for (const file of cssFiles) {
     const key = getPathFromExample(file, path);
-    contents[key] = await parseCSSFile(file, { tailwindConfig, format: true });
-    css += await parseCSSFile(file, { id, tailwindConfig });
+    contents[key] = await parseCSSFile(file, {
+      format: true,
+      contents,
+      tailwindConfig,
+    });
+    css += await parseCSSFile(file, { id, tailwindConfig, contents });
   }
 
   return (

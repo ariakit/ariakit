@@ -189,12 +189,15 @@ export default async function Page({ params }: PageProps) {
                 <a href={`#${id}`}>{props.children}</a>
               </h3>
             ),
-            ul: ({ node, ...props }) => (
-              <ul
-                {...props}
-                className={cx(style.list, style.paragraph, props.className)}
-              />
-            ),
+            ul: ({ node, ordered, ...props }) => {
+              const className = cx(
+                style.list,
+                style.paragraph,
+                props.className
+              );
+              if (ordered) return <ol {...props} className={className} />;
+              return <ul {...props} className={className} />;
+            },
             pre: ({ node, ...props }) => {
               const pre = (
                 <pre {...props} className={cx(style.pre, props.className)} />

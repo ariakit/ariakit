@@ -18,7 +18,8 @@ if (!("theme" in localStorage)) {
       classList(event.matches ? "add" : "remove");
     })
   }
-}`;
+}
+`;
 
 const inter = Inter({ subsets: ["latin"] });
 

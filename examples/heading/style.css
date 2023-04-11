@@ -6,6 +6,7 @@
   ;
 }
 
+/* purgecss ignore */
 h1 {
   @apply
     my-0
@@ -14,6 +15,7 @@ h1 {
   ;
 }
 
+/* purgecss ignore */
 h2 {
   @apply
     my-0
@@ -24,6 +26,7 @@ h2 {
   ;
 }
 
+/* purgecss ignore */
 h3 {
   @apply
     my-0
