@@ -317,14 +317,11 @@ To promote our component to the `@ariakit/react` package, we need to create a fi
 `packages/ariakit-react/src/my-component.ts`
 
 ```ts
-export {
-  MyComponent,
-  useMyComponent,
-} from "@ariakit/react-core/my-component/my-component";
+export { MyComponent } from "@ariakit/react-core/my-component/my-component";
 
 export type {
-  MyComponentOptions,
   MyComponentProps,
+  MyComponentOptions,
 } from "@ariakit/react-core/my-component/my-component";
 ```
 

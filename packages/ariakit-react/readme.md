@@ -1,7 +1,7 @@
 <h1 align="center">Ariakit</h1>
 
 <p align="center">
-  Toolkit for building <a href="https://ariakit.org/guide/accessibility">accessible</a> web apps with <a href="https://reactjs.org">React</a>.
+  Toolkit for building accessible web apps with <a href="https://reactjs.org">React</a>.
   <br>
   <a href="https://ariakit.org"><strong>Explore website »</strong></a>
 </p>
@@ -13,7 +13,7 @@
     <img alt="NPM version" src="https://img.shields.io/npm/v/@ariakit/react.svg?logo=npm&color=007acc" />
   </a>
   <a href="https://github.com/ariakit/ariakit/releases">
-    <img alt="GitHub (Pre-)Release Date" src="https://img.shields.io/github/release-date-pre/ariakit/ariakit?logo=github&color=007acc">
+    <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/ariakit/ariakit?logo=github&color=007acc">
   </a>
   <a href="https://github.com/ariakit/ariakit/discussions">
     <img alt="GitHub Discussions" src="https://img.shields.io/github/discussions/ariakit/ariakit?logo=github&color=007acc">
@@ -49,36 +49,38 @@
 npm:
 
 ```
-npm i ariakit
+npm i @ariakit/react
+```
+
+pnpm:
+
+```
+pnpm add @ariakit/react
 ```
 
 Yarn:
 
 ```
-yarn add ariakit
+yarn add @ariakit/react
 ```
 
 ## Usage
 
 ```jsx
 import { createRoot } from "react-dom/client";
-import {
-  Button,
-  Dialog,
-  DialogHeading,
-  DialogDescription,
-  useDialogStore,
-} from "@ariakit/react";
+import * as Ariakit from "@ariakit/react";
 
 function App() {
-  const dialog = useDialogStore();
+  const dialog = Ariakit.useDialogStore();
   return (
     <>
-      <Button onClick={dialog.toggle}>Open dialog</Button>
-      <Dialog store={dialog}>
-        <DialogHeading>Welcome</DialogHeading>
-        <DialogDescription>Welcome to Reakit!</DialogDescription>
-      </Dialog>
+      <Ariakit.Button onClick={dialog.toggle}>Open dialog</Ariakit.Button>
+      <Ariakit.Dialog store={dialog}>
+        <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
+        <Ariakit.DialogDescription>
+          Welcome to Reakit!
+        </Ariakit.DialogDescription>
+      </Ariakit.Dialog>
     </>
   );
 }
@@ -88,4 +90,4 @@ createRoot(document.getElementById("root")).render(<App />);
 
 ## Contributing
 
-See [[v2] Examples](https://github.com/ariakit/ariakit/issues/939) and follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
+Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
