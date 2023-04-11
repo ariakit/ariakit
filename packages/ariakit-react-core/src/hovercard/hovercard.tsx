@@ -83,8 +83,6 @@ function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
     (state) => modal || state.autoFocusOnShow
   );
 
-  console.log(autoFocusOnShow);
-
   return { autoFocusOnShow, ...props };
 }
 
