@@ -38,13 +38,19 @@ function isNativeCheckbox(tagName?: string, type?: string) {
  * ```
  */
 export const useCheckbox = createHook<CheckboxOptions>(
-  ({ store, value, checked: checkedProp, defaultChecked, ...props }) => {
+  ({
+    store,
+    value: valueProp,
+    checked: checkedProp,
+    defaultChecked,
+    ...props
+  }) => {
     const storeChecked = useStoreState(store, (state) => {
       if (checkedProp !== undefined) return checkedProp;
       if (state.value === undefined) return;
-      if (value) {
-        if (Array.isArray(state.value)) return state.value.includes(value);
-        return state.value === value;
+      if (valueProp) {
+        if (Array.isArray(state.value)) return state.value.includes(valueProp);
+        return state.value === valueProp;
       }
       if (Array.isArray(state.value)) return false;
       if (typeof state.value === "boolean") return state.value;
@@ -88,10 +94,12 @@ export const useCheckbox = createHook<CheckboxOptions>(
       setChecked(elementChecked);
 
       store?.setValue((prevValue) => {
-        if (!value) return elementChecked;
-        if (!Array.isArray(prevValue)) return value;
-        if (elementChecked) return [...prevValue, value];
-        return prevValue.filter((v) => v !== value);
+        if (!valueProp) return elementChecked;
+        if (!Array.isArray(prevValue)) {
+          return prevValue === valueProp ? false : valueProp;
+        }
+        if (elementChecked) return [...prevValue, valueProp];
+        return prevValue.filter((v) => v !== valueProp);
       });
     });
 
@@ -129,7 +137,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
     props = useCommand({ clickOnEnter: !nativeCheckbox, ...props });
 
     return {
-      value: nativeCheckbox ? value : undefined,
+      value: nativeCheckbox ? valueProp : undefined,
       checked: isChecked,
       ...props,
     };
