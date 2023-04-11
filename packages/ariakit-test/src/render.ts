@@ -1,5 +1,7 @@
-import { ReactElement, StrictMode } from "react";
-import { RenderOptions, render } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { StrictMode } from "react";
+import type { RenderOptions } from "@testing-library/react";
+import { render } from "@testing-library/react";
 
 function customRender(
   ui: ReactElement,

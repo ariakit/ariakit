@@ -1,16 +1,18 @@
 {
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./website/tsconfig.json"]
+  },
   "extends": [
     "plugin:react/recommended",
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["import", "jest"],
+  "plugins": ["import", "vitest"],
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true,
-    "jest": true
+    "node": true
   },
   "settings": {
     "react": {
@@ -30,7 +32,12 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/consistent-type-exports": "error",
     "sort-imports": ["error", { "ignoreDeclarationSort": true }],
+    "import/no-duplicates": "error",
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
     "import/order": [
       "error",
       {
@@ -45,7 +52,7 @@
         "pathGroupsExcludedImportTypes": ["react"]
       }
     ],
-    "jest/consistent-test-it": [
+    "vitest/consistent-test-it": [
       "error",
       {
         "fn": "test",

@@ -1,0 +1,14 @@
+{
+  "name": "examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": [
+      "./*.js",
+      "./*.jsx",
+      "./*.ts",
+      "./*.tsx"
+    ]
+  }
+}

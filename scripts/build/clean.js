@@ -1,3 +1,3 @@
-const { cleanBuild } = require("./utils");
+import { cleanBuild } from "./utils.js";
 
 cleanBuild(process.cwd());

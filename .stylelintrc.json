@@ -1,10 +1,9 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
-    "at-rule-name-newline-after": "always-multi-line",
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
-    "max-line-length": 100,
+    "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "selector-pseudo-class-no-unknown": [
       true,
       { "ignorePseudoClasses": ["global"] }
@@ -19,7 +18,6 @@
         ]
       }
     ],
-    "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "at-rule-no-unknown": [
       true,
       {

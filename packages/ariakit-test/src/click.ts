@@ -1,13 +1,13 @@
-import "./mock-get-client-rects";
+import "./mock-get-client-rects.js";
 
-import { closest } from "ariakit-utils/dom";
-import { isFocusable } from "ariakit-utils/focus";
-import { fireEvent } from "./fire-event";
-import { focus } from "./focus";
-import { hover } from "./hover";
-import { mouseDown } from "./mouse-down";
-import { mouseUp } from "./mouse-up";
-import { sleep } from "./sleep";
+import { closest } from "@ariakit/core/utils/dom";
+import { isFocusable } from "@ariakit/core/utils/focus";
+import { fireEvent } from "./fire-event.js";
+import { focus } from "./focus.js";
+import { hover } from "./hover.js";
+import { mouseDown } from "./mouse-down.js";
+import { mouseUp } from "./mouse-up.js";
+import { sleep } from "./sleep.js";
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {

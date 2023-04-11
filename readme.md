@@ -1,1 +1,1 @@
-packages/ariakit/readme.md
+packages/ariakit-react/readme.md

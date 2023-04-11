@@ -100,7 +100,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Type check
-        run: npm run type-check
+        run: npm run tsc
 
   build:
     name: Build packages
@@ -163,19 +163,8 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: >
-          npm test --
-          --coverage
-          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
-          --shard ${{ matrix.shard }}
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        run: npm test -- --shard ${{ matrix.shard }}
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -211,15 +200,8 @@ jobs:
       - name: Install React 17
         run: npm run react17
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: >
-          npm test --
-          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
-          --shard ${{ matrix.shard }}
+        run: npm test -- --shard ${{ matrix.shard }}
 
   website:
     name: Build website
@@ -251,7 +233,7 @@ jobs:
       - name: Cache Next.js
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
           restore-keys: nextjs-
 
@@ -300,22 +282,12 @@ jobs:
       - name: Restore website
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
-
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
 
       - name: Test
         id: test
-        run: npm run test-chrome -- --workers ${{ steps.cpu-cores.outputs.count }}
-
-      - name: Upload test results to Argos
-        if: failure() && steps.test.outcome == 'failure'
-        run: npx argos upload test-results
-        env:
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+        run: npm run test-chrome
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -364,26 +336,12 @@ jobs:
       - name: Restore website
         uses: actions/cache@v3
         with:
-          path: packages/website/.next
+          path: website/.next
           key: nextjs-${{ github.run_id }}
-
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
 
       - name: Test
         id: test
-        run: >
-          npx playwright test
-          --project firefox
-          --project safari
-          --workers ${{ steps.cpu-cores.outputs.count }}
-
-      - name: Upload test results to Argos
-        if: failure() && steps.test.outcome == 'failure'
-        run: npx argos upload test-results
-        env:
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+        run: npm run playwright -- --project firefox --project safari
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

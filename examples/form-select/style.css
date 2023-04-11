@@ -1,0 +1,8 @@
+@import url("../select/style.css");
+@import url("../form/style.css");
+
+.select {
+  @apply
+    w-full
+  ;
+}

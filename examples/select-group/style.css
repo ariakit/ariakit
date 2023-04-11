@@ -1,0 +1,12 @@
+@import url("../select/style.css");
+@import url("../separator/style.css");
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default
+  ;
+}

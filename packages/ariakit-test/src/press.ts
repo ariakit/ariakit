@@ -1,17 +1,17 @@
-import "./mock-get-client-rects";
+import "./mock-get-client-rects.js";
 
-import { isTextField } from "ariakit-utils/dom";
+import { isTextField } from "@ariakit/core/utils/dom";
 import {
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
-} from "ariakit-utils/focus";
-import { queuedMicrotasks } from "./__utils";
-import { blur } from "./blur";
-import { fireEvent } from "./fire-event";
-import { focus } from "./focus";
-import { sleep } from "./sleep";
-import { type } from "./type";
+} from "@ariakit/core/utils/focus";
+import { queuedMicrotasks } from "./__utils.js";
+import { blur } from "./blur.js";
+import { fireEvent } from "./fire-event.js";
+import { focus } from "./focus.js";
+import { sleep } from "./sleep.js";
+import { type } from "./type.js";
 
 type KeyActionMap = Record<
   string,
@@ -209,6 +209,9 @@ export async function press(
       focus(element);
     }
   }
+
+  // This allows the DOM to be updated before we fire the event
+  await sleep();
 
   let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 

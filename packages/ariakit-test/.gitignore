@@ -16,8 +16,6 @@
 /select
 /sleep
 /tap
-/ts
 /type
-/umd
 /wait-for
 /within

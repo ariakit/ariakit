@@ -1,4 +1,4 @@
-import { fireEvent } from "./fire-event";
+import { fireEvent } from "./fire-event.js";
 
 export function mouseUp(element: Element, options?: MouseEventInit) {
   const { disabled } = element as HTMLButtonElement;

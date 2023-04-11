@@ -1,86 +1,177 @@
 // @ts-check
-const { join, dirname } = require("path");
-const chalk = require("chalk");
-const {
-  readdirSync,
-  ensureDirSync,
-  writeFileSync,
-  readFileSync,
-  lstatSync,
-  existsSync,
-} = require("fs-extra");
-const rimraf = require("rimraf");
+import { lstatSync, readFileSync, readdirSync, writeFileSync } from "fs";
+import { join } from "path";
+import chalk from "chalk";
+import fse from "fs-extra";
+import { rimrafSync } from "rimraf";
 
 /**
- * Converts ./path/to/file.js to ./path/to
- * @param {string} dir
+ * @param {string} path
  */
-function resolveDir(dir) {
-  if (!/\.(t|j)s$/.test(dir)) {
-    return dir;
-  }
-  return dirname(dir);
-}
-
-/**
- * @param {string} rootPath
- * @returns {object}
- */
-function getPackage(rootPath) {
-  return require(join(rootPath, "package.json"));
-}
-
-/**
- * @param {string} rootPath
- */
-function getModuleDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  try {
-    return resolveDir(pkg.module);
-  } catch (e) {
-    // resolveDir will throw an error if pkg.module doesn't exist
-    // we just return false here.
-    return false;
-  }
-}
-
-/**
- * @param {string} rootPath
- */
-function getUnpkgDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  try {
-    return resolveDir(pkg.unpkg);
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * @param {string} rootPath
- */
-function getTypesDir(rootPath) {
-  const pkg = getPackage(rootPath);
-  try {
-    return resolveDir(pkg.types || pkg.typings);
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * @param {string} rootPath
- */
-function getMainDir(rootPath) {
-  const { main } = getPackage(rootPath);
-  return resolveDir(main);
+function isDirectory(path) {
+  return lstatSync(path).isDirectory();
 }
 
 /**
  * @param {string} path
  */
-function removeExt(path) {
+export function removeExt(path) {
   return path.replace(/\.[^.]+$/, "");
+}
+
+/**
+ * @param {string} rootPath
+ * @returns {Record<string, any>}
+ */
+export function readPackageJson(rootPath) {
+  const pkgPath = join(rootPath, "package.json");
+  return JSON.parse(readFileSync(pkgPath, "utf-8"));
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getPackageJson(rootPath, prod = false) {
+  const { exports: _, ...pkg } = readPackageJson(rootPath);
+  const sourcePath = getSourcePath(rootPath);
+  const publicFiles = getPublicFiles(sourcePath);
+  const sourceDir = getSourceDir();
+  const cjsDir = getCJSDir();
+  const esmDir = getESMDir();
+
+  /** @param {string} path */
+  const getExports = (path) => {
+    if (!prod) {
+      return path.replace(sourcePath, `./${sourceDir}`);
+    }
+    path = removeExt(path).replace(sourcePath, "");
+    return {
+      import: `./${join(esmDir, path)}.js`,
+      require: `./${join(cjsDir, path)}.cjs`,
+    };
+  };
+
+  const moduleExports = Object.entries(publicFiles).reduce(
+    (acc, [name, path]) => {
+      if (name === "index") {
+        return { ".": getExports(path), ...acc };
+      }
+      const pathname = `./${name.replace(/\/index$/, "")}`;
+      return { ...acc, [pathname]: getExports(path) };
+    },
+    {}
+  );
+
+  /** @type {Record<string, any>} */
+  const nextPkg = {
+    ...pkg,
+    main: prod ? join(cjsDir, "index.cjs") : join(sourceDir, "index.ts"),
+    module: prod ? join(esmDir, "index.js") : join(sourceDir, "index.ts"),
+    types: prod ? join(cjsDir, "index.d.ts") : join(sourceDir, "index.ts"),
+    exports: {
+      ...moduleExports,
+      "./package.json": "./package.json",
+    },
+  };
+
+  return nextPkg;
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function writePackageJson(rootPath, prod = false) {
+  const pkgPath = join(rootPath, "package.json");
+  const currentContents = readFileSync(pkgPath, "utf-8");
+  const pkg = getPackageJson(rootPath, prod);
+  const nextContents = `${JSON.stringify(pkg, null, 2)}\n`;
+  if (currentContents === nextContents) return;
+  writeFileSync(pkgPath, nextContents);
+  console.log(`${chalk.blue(pkg.name)} - Updated package.json`);
+}
+
+export function getSourceDir() {
+  return "src";
+}
+
+export function getESMDir() {
+  return "esm";
+}
+
+export function getCJSDir() {
+  return "cjs";
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function getSourcePath(rootPath) {
+  return join(rootPath, getSourceDir());
+}
+
+/**
+ * Ensure that paths are consistent across Windows and non-Windows platforms.
+ * @param {string} filePath
+ */
+function normalizePath(filePath) {
+  return filePath.replace(/\\/g, "/");
+}
+
+/**
+ * Filters out files starting with __
+ * Includes directories and TS/JS files.
+ * @param {string} rootPath
+ * @param {string} filename
+ */
+function isPublicModule(rootPath, filename) {
+  const isPrivate = /^__/.test(filename);
+  if (isPrivate) return false;
+  if (isDirectory(join(rootPath, filename))) return true;
+  return /\.(j|t)sx?$/.test(filename);
+}
+
+/**
+ * Returns { index: "path/to/index", moduleName: "path/to/moduleName" }
+ * @param {string} sourcePath
+ * @param {string} prefix
+ * @returns {Record<string, string>}
+ */
+export function getPublicFiles(sourcePath, prefix = "") {
+  return readdirSync(sourcePath)
+    .filter((filename) => isPublicModule(sourcePath, filename))
+    .sort() // Ensure consistent order across platforms
+    .reduce((acc, filename) => {
+      const path = join(sourcePath, filename);
+      const childFiles =
+        isDirectory(path) && getPublicFiles(path, join(prefix, filename));
+      return {
+        ...(childFiles || {
+          [removeExt(normalizePath(join(prefix, filename)))]:
+            normalizePath(path),
+        }),
+        ...acc,
+      };
+    }, {});
+}
+
+/**
+ * Returns ["module", "path/to/module", ...]
+ * @param {string} rootPath
+ */
+export function getProxyFolders(rootPath) {
+  const publicFiles = getPublicFiles(getSourcePath(rootPath));
+  return Object.keys(publicFiles)
+    .map((name) => name.replace(/\/index$/, ""))
+    .filter((name) => name !== "index");
+}
+
+/**
+ * Returns ["lib", "es", "dist", "ts", "moduleName", ...]
+ * @param {string} rootPath
+ * @returns {string[]}
+ */
+export function getBuildFolders(rootPath) {
+  return [getCJSDir(), getESMDir(), ...getProxyFolders(rootPath)];
 }
 
 /**
@@ -106,129 +197,28 @@ function isRootModule(path, _, array) {
  */
 function reduceToRootPaths(array, path) {
   const rootPath = getRootPath(path);
-  if (array.includes(rootPath)) {
-    return array;
-  }
+  if (array.includes(rootPath)) return array;
   return [...array, rootPath];
 }
 
 /**
- * @param {string} path
- */
-function isDirectory(path) {
-  return lstatSync(path).isDirectory();
-}
-
-/**
  * @param {string} rootPath
  */
-function getSourcePath(rootPath) {
-  return join(rootPath, "src");
-}
-
-/**
- * Ensure that paths are consistent across Windows and non-Windows platforms.
- * @param {string} filePath
- */
-function normalizePath(filePath) {
-  return filePath.replace(/\\/g, "/");
-}
-
-/**
- * Filters out files starting with __
- * Includes directories and TS/JS files.
- * @param {string} rootPath
- * @param {string} filename
- */
-function isPublicModule(rootPath, filename) {
-  const isPrivate = /^__/.test(filename);
-  if (isPrivate) {
-    return false;
-  }
-  if (isDirectory(join(rootPath, filename))) {
-    return true;
-  }
-  return /\.(j|t)sx?$/.test(filename);
-}
-
-/**
- * Returns { index: "path/to/index", moduleName: "path/to/moduleName" }
- * @param {string} rootPath
- * @param {string} prefix
- * @returns {Record<string, string>}
- */
-function getPublicFiles(rootPath, prefix = "") {
-  return readdirSync(rootPath)
-    .filter((filename) => isPublicModule(rootPath, filename))
-    .sort() // Ensure consistent order across platforms
-    .reduce((acc, filename) => {
-      const path = join(rootPath, filename);
-      const childFiles =
-        isDirectory(path) && getPublicFiles(path, join(prefix, filename));
-      return {
-        ...(childFiles || {
-          [removeExt(normalizePath(join(prefix, filename)))]:
-            normalizePath(path),
-        }),
-        ...acc,
-      };
-    }, {});
-}
-
-/**
- * Returns ["module", "path/to/module", ...]
- * @param {string} rootPath
- */
-function getProxyFolders(rootPath) {
-  const publicFiles = getPublicFiles(getSourcePath(rootPath));
-  return Object.keys(publicFiles)
-    .map((name) => name.replace(/\/index$/, ""))
-    .filter((name) => name !== "index");
-}
-
-/**
- * Returns ["lib", "es", "dist", "ts", "moduleName", ...]
- * @param {string} rootPath
- * @returns {string[]}
- */
-function getBuildFolders(rootPath) {
-  // @ts-ignore
-  return [
-    getMainDir(rootPath),
-    getUnpkgDir(rootPath),
-    getModuleDir(rootPath),
-    getTypesDir(rootPath),
-    ...getProxyFolders(rootPath),
-  ].filter(Boolean);
-}
-
-/**
- * @param {string} rootPath
- */
-function cleanBuild(rootPath) {
-  const pkg = getPackage(rootPath);
-  const cleaned = [];
+export function cleanBuild(rootPath) {
+  writePackageJson(rootPath);
   getBuildFolders(rootPath)
     .filter(isRootModule)
     .reduce(reduceToRootPaths, [])
-    .forEach((name) => {
-      rimraf.sync(name);
-      cleaned.push(chalk.bold(chalk.gray(name)));
-    });
-  if (cleaned.length) {
-    console.log(
-      ["", `Cleaned in ${chalk.bold(pkg.name)}:`, `${cleaned.join(", ")}`].join(
-        "\n"
-      )
-    );
-  }
+    .forEach((name) => rimrafSync(name));
 }
 
 /**
  * @param {string} path
  */
-function getIndexPath(path) {
-  const index = readdirSync(path).find((file) => /^index\.(j|t)sx?/.test(file));
+export function getIndexPath(path) {
+  const index = readdirSync(path).find((file) =>
+    /^index\.(c|m)?(j|t)sx?/.test(file)
+  );
   if (!index) {
     throw new Error(`Missing index file in ${path}`);
   }
@@ -238,8 +228,8 @@ function getIndexPath(path) {
 /**
  * @param {string} rootPath
  */
-function makeGitignore(rootPath) {
-  const pkg = getPackage(rootPath);
+export function makeGitignore(rootPath) {
+  const pkg = readPackageJson(rootPath);
   const buildFolders = getBuildFolders(rootPath);
   const contents = buildFolders
     .filter(isRootModule)
@@ -263,21 +253,16 @@ function makeGitignore(rootPath) {
  * @param {string} moduleName
  */
 function getProxyPackageContents(rootPath, moduleName) {
-  const { name } = getPackage(rootPath);
-  const mainDir = getMainDir(rootPath);
-  const moduleDir = getModuleDir(rootPath);
-  const typesDir = getTypesDir(rootPath);
+  const { name } = readPackageJson(rootPath);
+  const mainDir = getCJSDir();
+  const moduleDir = getESMDir();
   const prefix = "../".repeat(moduleName.split("/").length);
-  const tsModuleName = existsSync(join(getSourcePath(rootPath), moduleName))
-    ? `${moduleName}/index.d.ts`
-    : `${moduleName}.d.ts`;
   const json = {
     name: `${name}/${moduleName}`,
     private: true,
     sideEffects: false,
     main: join(prefix, mainDir, moduleName),
-    ...(moduleDir ? { module: join(prefix, moduleDir, moduleName) } : {}),
-    ...(typesDir ? { types: join(prefix, typesDir, tsModuleName) } : {}),
+    module: join(prefix, moduleDir, moduleName),
   };
   return JSON.stringify(json, null, 2);
 }
@@ -285,11 +270,12 @@ function getProxyPackageContents(rootPath, moduleName) {
 /**
  * @param {string} rootPath
  */
-function makeProxies(rootPath) {
-  const pkg = getPackage(rootPath);
+export function makeProxies(rootPath) {
+  const pkg = readPackageJson(rootPath);
+  /** @type {string[]} */
   const created = [];
   getProxyFolders(rootPath).forEach((name) => {
-    ensureDirSync(name);
+    fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name)
@@ -306,55 +292,3 @@ function makeProxies(rootPath) {
     );
   }
 }
-
-/**
- * @param {string} rootPath
- */
-function hasTSConfig(rootPath) {
-  return existsSync(join(rootPath, "tsconfig.json"));
-}
-
-/**
- * @param {string} rootPath
- */
-function makeTSConfigProd(rootPath) {
-  const filepath = join(rootPath, "tsconfig.json");
-  const content = readFileSync(filepath, "utf-8");
-  const json = JSON.parse(content);
-  json.extends = json.extends.replace("tsconfig.json", "tsconfig.prod.json");
-  json.exclude = [...(json.exlcude || []), "src/**/__*"];
-  writeFileSync(filepath, JSON.stringify(json, null, 2));
-  return function restoreTSConfig() {
-    writeFileSync(filepath, content);
-  };
-}
-
-/**
- * @param {NodeJS.ExitListener} callback
- */
-function onExit(callback) {
-  process.on("exit", callback);
-  process.on("SIGINT", callback);
-  process.on("SIGUSR1", callback);
-  process.on("SIGUSR2", callback);
-  process.on("uncaughtException", callback);
-}
-
-module.exports = {
-  getPackage,
-  getModuleDir,
-  getUnpkgDir,
-  getTypesDir,
-  getMainDir,
-  getSourcePath,
-  getPublicFiles,
-  getProxyFolders,
-  getBuildFolders,
-  cleanBuild,
-  getIndexPath,
-  makeGitignore,
-  makeProxies,
-  hasTSConfig,
-  makeTSConfigProd,
-  onExit,
-};

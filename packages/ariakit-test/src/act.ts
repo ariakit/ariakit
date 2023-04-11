@@ -1,1 +1,1 @@
-export { act } from "./__utils";
+export { act } from "./__utils.js";

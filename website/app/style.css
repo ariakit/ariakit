@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  @apply
+    bg-gray-50
+    text-black
+    dark:bg-gray-800
+    dark:text-white;
+}
+
+button:not([type="submit"]),
+[role="button"] {
+  @apply cursor-default;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}

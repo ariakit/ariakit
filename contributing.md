@@ -12,19 +12,21 @@ This guide is intended to help you get started with contributing to the project.
 6. [Creating the default example](#creating-the-default-example)
 7. [Styling the example](#styling-the-example)
 8. [Testing the example](#testing-the-example)
-9. [Writing the component documentation](#writing-the-component-documentation)
-10. [Writing another example](#writing-another-example)
-11. [Importing styles from other examples](#importing-styles-from-other-examples)
-12. [Writing documentation for other examples](#writing-documentation-for-other-examples)
-13. [Submitting a pull request](#submitting-a-pull-request)
+9. [Writing another example](#writing-another-example)
+10. [Importing styles from other examples](#importing-styles-from-other-examples)
+11. [Promoting the component](#promoting-the-component)
+12. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
+13. [Writing the component documentation](#writing-the-component-documentation)
+14. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+15. [Submitting a pull request](#submitting-a-pull-request)
 
 ## Advanced tutorial
 
 This guide covers more advanced topics. Pick the topics based on your needs.
 
-14. [Versioning](#versioning)
-15. [Running with React 17](#running-with-react-17)
-16. [Writing end-to-end tests](#writing-end-to-end-tests)
+16. [Versioning](#versioning)
+17. [Running with React 17](#running-with-react-17)
+18. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 <br>
 
@@ -54,7 +56,7 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
 
 ## Installing Node.js and npm
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) to manage multiple projects. You need to install **npm v7 or higher** and **Node.js v15 or higher**.
+This repository uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) to manage multiple ESM projects. You need to install **npm v7 or higher** and **Node.js v18 or higher**.
 
 You can run the following commands in your terminal to check your local Node.js and npm versions:
 
@@ -97,7 +99,7 @@ After installing the project's dependencies, run the following command to start 
 npm run dev
 ```
 
-> On Windows, you should run this command as administrator or in developer mode. Otherwise, symlinks won't be created.
+> If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).
 
 Now open http://localhost:3000 in your browser to see the project's site.
 
@@ -109,15 +111,11 @@ Now open http://localhost:3000 in your browser to see the project's site.
 
 To make a new component, create a file with the following contents:
 
-`packages/ariakit/src/my-component/my-component.ts`
+`packages/ariakit-react-core/src/my-component/my-component.ts`
 
 ````tsx
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "ariakit-utils/system";
-import { As, Options, Props } from "ariakit-utils/types";
+import { createComponent, createElement, createHook } from "../utils/system.js";
+import { As, Options, Props } from "../utils/types.js";
 
 /**
  * Description for my component hook.
@@ -164,15 +162,7 @@ export type MyComponentProps<T extends As = "div"> = Props<
 >;
 ````
 
-That's the basic structure for all components in the project. This will guarantee that the component will support all the library's [core features](https://ariakit.org/guide/core-features). You can take a look at other components to see more complex examples.
-
-Finally, create an `index.ts` file in the same directory as the component. This file will be used to export the component:
-
-`packages/ariakit/src/my-component/index.ts`
-
-```tsx
-export * from "./my-component";
-```
+That's the basic structure for all components in the project. This will guarantee that the component will support all the library's core features. You can take a look at other components to see more complex examples.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -186,10 +176,10 @@ The development workflow on this project is entirely based on examples. You can 
 
 Let's create a default example for our component:
 
-`packages/ariakit/src/my-component/__examples__/my-component/index.tsx`
+`examples/my-component/index.tsx`
 
 ```tsx
-import { MyComponent } from "ariakit/my-component";
+import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 
 export default function Example() {
   return <MyComponent />;
@@ -204,13 +194,13 @@ Now open http://localhost:3000/examples/my-component to see the example in actio
 
 ## Styling the example
 
-When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.js`](tailwind.config.js) file.
+When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.cjs`](tailwind.config.cjs) file.
 
 > To use Tailwind in a CSS file rather than applying classes directly to the HTML elements, we're using the [`@apply`](https://tailwindcss.com/docs/functions-and-directives#apply) directive.
 >
 > Make sure you also take [dark mode](https://tailwindcss.com/docs/dark-mode) into account.
 
-`packages/ariakit/src/my-component/__examples__/my-component/style.css`
+`examples/my-component/style.css`
 
 <!-- prettier-ignore -->
 ```css
@@ -225,10 +215,10 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 Now we need to import the CSS file on the example's `index.tsx` file and add the class name to the respective elements:
 
-`packages/ariakit/src/my-component/__examples__/my-component/index.tsx`
+`examples/my-component/index.tsx`
 
 ```tsx
-import { MyComponent } from "ariakit/my-component";
+import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 import "./style.css";
 
 export default function Example() {
@@ -248,18 +238,16 @@ You'll notice that the transpiled CSS file has been also added to editor's files
 
 One of the goals of having use cases written like that is so we can write automated tests for them. Instead of testing the Ariakit components directly, we're testing the examples that represent the way people use Ariakit components.
 
-> We use [`ariakit-test`](packages/ariakit-test), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
+> We use [`@ariakit/test`](packages/ariakit-test), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
 
 Let's create a test for our example:
 
-`packages/ariakit/src/my-component/__examples__/my-component/test.tsx`
+`examples/my-component/test.ts`
 
 ```tsx
-import { render, getByText } from "ariakit-test";
-import Example from ".";
+import { getByText } from "@ariakit/test";
 
 test("my component", () => {
-  render(<Example />);
   expect(getByText("My component")).toBeInTheDocument();
 });
 ```
@@ -274,20 +262,129 @@ npm run test-watch
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
+## Writing another example
+
+A component may have multiple examples besides the default one. This is useful when you want to show a component in different contexts and props.
+
+> Conventionally, the example names are prefixed with the component name and a short suffix. For example: `my-component-custom-prop`.
+
+Let's create another example for our component:
+
+`examples/my-component-custom-prop/index.tsx`
+
+```tsx
+import { MyComponent } from "@ariakit/react-core/my-component/my-component";
+import "./style.css";
+
+export default function Example() {
+  return <MyComponent className="my-component" customProp="Hello world" />;
+}
+```
+
+<div align="right">
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
+## Importing styles from other examples
+
+We can `@import` CSS files from other examples. You'll usually import the styles from the default example into the other examples so you don't need to repeat the same base styles.
+
+`examples/my-component-custom-prop/style.css`
+
+<!-- prettier-ignore -->
+```css
+@import url("../my-component/style.css");
+
+.my-component {
+  @apply
+    p-4
+  ;
+}
+```
+
+Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
+
+<div align="right">
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
+## Promoting the component
+
+So far, we've been working with the `@ariakit/react-core` package. This is where all the components — including experimental stuff — are developed. This package doesn't follow [semver](https://semver.org/), so we can introduce breaking changes on patch and minor updates. Once a component is stable enough, it's promoted to the `@ariakit/react` package.
+
+To promote our component to the `@ariakit/react` package, we need to create a file and re-export the component from the `@ariakit/react-core` package:
+
+`packages/ariakit-react/src/my-component.ts`
+
+```ts
+export { MyComponent } from "@ariakit/react-core/my-component/my-component";
+
+export type {
+  MyComponentProps,
+  MyComponentOptions,
+} from "@ariakit/react-core/my-component/my-component";
+```
+
+Finally, we must update the `index.ts` file to export the component:
+
+`packages/ariakit-react/src/index.ts`
+
+```ts
+// ...
+export * from "./my-component.js";
+// ...
+```
+
+<div align="right">
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
+## Updating the examples to import from `@ariakit/react`
+
+Now that we've promoted our component to the `@ariakit/react` package, we need to update the import declarations on the examples:
+
+`examples/my-component/index.tsx`
+
+```tsx
+import * as Ariakit from "@ariakit/react";
+import "./style.css";
+
+export default function Example() {
+  return <Ariakit.MyComponent className="my-component" />;
+}
+```
+
+`examples/my-component-custom-prop/index.tsx`
+
+```tsx
+import * as Ariakit from "@ariakit/react";
+import "./style.css";
+
+export default function Example() {
+  return (
+    <Ariakit.MyComponent className="my-component" customProp="Hello world" />
+  );
+}
+```
+
+<div align="right">
+  <a href="#basic-tutorial">&uarr; back to top</a></b>
+</div>
+
 ## Writing the component documentation
 
-Now we can write the documentation for the component itself using the example we just created.
+Now that the component is part of the main library, we should write documentation for it.
 
-We can create a `readme.md` file in the component's directory and render an anchor element pointing to the example's index file with a `data-playground` attribute. This will turn the link into a playground.
+We can create a markdown file in the components folder and render an anchor element pointing to the example's index file with a `data-playground` attribute. This will turn the link into a playground.
 
-`packages/ariakit/src/my-component/readme.md`
+`components/my-component.md`
 
 ````markdown
 # My component
 
 This is my component.
 
-<a href="./__examples__/my-component/index.tsx" data-playground>Example</a>
+<a href="../examples/my-component/index.tsx" data-playground>Example</a>
 
 ## Features
 
@@ -296,7 +393,7 @@ This is my component.
 ## Installation
 
 ```bash
-npm install ariakit
+npm i @ariakit/react
 ```
 
 Learn more on [Getting Started](/guide/getting-started).
@@ -308,57 +405,11 @@ Now open http://localhost:3000/components/my-component to see the component docu
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Writing another example
-
-A component may have multiple examples besides the default one. This is useful when you want to show a component in different contexts and props.
-
-> Conventionally, the example names are prefixed with the component name and a short suffix. For example: `my-component-custom-prop`.
-
-Let's create another example for our component:
-
-`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/index.tsx`
-
-```tsx
-import { MyComponent } from "ariakit/my-component";
-import "./style.css";
-
-export default function Example() {
-  return <MyComponent className="my-component" customProp="Hello world" />;
-}
-```
-
-Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
-
-<div align="right">
-  <a href="#basic-tutorial">&uarr; back to top</a></b>
-</div>
-
-## Importing styles from other examples
-
-We can `@import` CSS files from other examples. You'll usually import the CSS file from the default example into the other examples so you don't need to repeat the same base styles.
-
-`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/style.css`
-
-<!-- prettier-ignore -->
-```css
-@import "../my-component/style.css";
-
-.my-component {
-  @apply
-    p-4
-  ;
-}
-```
-
-<div align="right">
-  <a href="#basic-tutorial">&uarr; back to top</a></b>
-</div>
-
 ## Writing documentation for other examples
 
-Unlike default examples, other examples will be primarily accessed through their own URLs (`/examples/my-component-custom-prop`). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's `readme.md` file.
+Unlike default examples, other examples will be primarily accessed through their own URLs (for example: http://localhost:3000/examples/my-component-custom-prop). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's markdown file.
 
-`packages/ariakit/src/my-component/__examples__/my-component-custom-prop/readme.md`
+`examples/my-component-custom-prop/readme.md`
 
 ````markdown
 # My component with `customProp`
@@ -373,6 +424,8 @@ Note that we're passing the `customProp` prop to the component:
 <MyComponent className="my-component" customProp="Hello world" />
 ```
 ````
+
+Now open http://localhost:3000/examples/my-component-custom-prop to see the example documentation.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -415,15 +468,16 @@ Let's create a new changeset file for our component:
 
 ```markdown
 ---
-"ariakit": minor
+"@ariakit/react": minor
+"@ariakit/react-core": patch
 ---
 
 Added `MyComponent` component. ([#1271](https://github.com/ariakit/ariakit/pull/1271))
 ```
 
-> The name of the file doesn't really matter as long as it's unique across changesets. Just try to name it in a way that we can easily remember what the change was when reviewing the all the changesets.
+> The name of the file doesn't really matter as long as it's unique across changesets. Just try to name it in a way that we can easily remember what the change was when reviewing all the changesets.
 
-Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit/CHANGELOG.md) will be updated.
+Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit-react/CHANGELOG.md) will be updated.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
@@ -433,19 +487,11 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
 
 Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
 
-Development server:
-
-```bash
-npm run dev-react-17
-```
-
-Tests:
-
 ```bash
 npm run test-react17
 ```
 
-These commands will automatically re-install React 18 at the end of the process (e.g., when you stop the development server). If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
+This command will automatically re-install React 18 at the end of the process. If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
@@ -455,17 +501,20 @@ These commands will automatically re-install React 18 at the end of the process 
 
 Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
 
-Combined with the [`ariakit-test`](packages/ariakit-test) package, this is more than enough for 99% of the cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in JSDOM. For those cases, we use [Playwright](https://playwright.dev).
+Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in JSDOM. For those cases, we use [Playwright](https://playwright.dev).
 
 Let's create an end-to-end test for our example:
 
-`packages/ariakit/src/my-component/__examples__/my-component/test-chrome.ts`
+`examples/my-component/test-chrome.ts`
 
 ```ts
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.goto("/previews/my-component");
+});
+
 test("my component", async ({ page }) => {
-  await page.goto("/examples/my-component");
   const element = await page.getByText("My component");
   await expect(element).toBeVisible();
 });

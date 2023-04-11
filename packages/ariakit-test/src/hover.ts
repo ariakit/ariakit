@@ -1,6 +1,6 @@
-import { queuedMicrotasks } from "./__utils";
-import { fireEvent } from "./fire-event";
-import { sleep } from "./sleep";
+import { queuedMicrotasks } from "./__utils.js";
+import { fireEvent } from "./fire-event.js";
+import { sleep } from "./sleep.js";
 
 type DocumentWithLastHovered = Document & {
   lastHovered?: Element | null;

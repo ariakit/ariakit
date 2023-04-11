@@ -5,15 +5,20 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "css.validate": false,
-  "stylelint.enable": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.stylelint": true
-  },
   "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
   "eslint.enable": true,
-  "editor.formatOnSave": true,
   "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "css.validate": false,
+  "stylelint.enable": true,
+  "editor.snippetSuggestions": "bottom",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
@@ -25,11 +30,5 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
-  "search.exclude": {
-    "/packages/website/pages/blog": true,
-    "/packages/website/pages/components": true,
-    "/packages/website/pages/examples": true,
-    "/packages/website/pages/guide": true
   }
 }

@@ -1,0 +1,119 @@
+@import url("../button/style.css");
+@import url("../separator/style.css");
+
+.menu-wrapper {
+  @apply
+    z-50
+    rounded-lg
+    border
+    border-solid
+    overflow-y-hidden
+    overflow-x-scroll
+    overscroll-contain
+    scroll-smooth
+    shadow-lg
+    dark:shadow-lg-dark
+    [scroll-snap-type:x_mandatory]
+    [scroll-snap-stop:always]
+    [scrollbar-width:none]
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    [&::-webkit-scrollbar]:hidden
+  ;
+}
+
+.menu {
+  @apply
+    w-[320px]
+    h-[min(320px,var(--popover-available-height))]
+    p-2
+    z-50
+    flex
+    flex-col
+    snap-start
+    snap-always
+    overflow-y-auto
+    outline-none
+    leave:z-0
+    bg-inherit
+  ;
+}
+
+.menu-item {
+  @apply
+    flex
+    scroll-m-2
+    items-center
+    text-left
+    w-full
+    gap-2
+    rounded
+    p-2
+    ![outline:none]
+    aria-disabled:opacity-25
+    ariakit-focus-visible:active-item:bg-blue-600
+    ariakit-focus-visible:active-item:text-white
+    [-webkit-tap-highlight-color:theme("colors.blue.600")]
+  ;
+}
+
+@media (any-hover: hover) {
+  .menu-item {
+    @apply
+      cursor-default
+      hover:bg-blue-200/40
+      dark:hover:bg-blue-600/25
+      active:text-white
+      active-item:active:bg-blue-800
+      dark:active:bg-blue-600
+    ;
+  }
+}
+
+.menu-item .label {
+  @apply
+    flex-1
+  ;
+}
+
+.header {
+  @apply
+    [--header-size:theme("spacing.10")]
+    grid
+    items-center
+    grid-cols-[var(--header-size)_auto_var(--header-size)]
+  ;
+}
+
+.header .menu-item {
+  @apply
+    justify-center
+    w-[var(--header-size)]
+    h-[var(--header-size)]
+  ;
+}
+
+.heading {
+  @apply
+    m-0
+    text-base
+    text-center
+    font-medium
+    text-black
+    dark:text-white
+  ;
+}
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    font-medium
+    opacity-60
+    cursor-default
+  ;
+}

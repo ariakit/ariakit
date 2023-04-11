@@ -1,0 +1,19 @@
+@import url("../button/style.css");
+
+.tooltip {
+  @apply
+    rounded-md
+    border
+    py-1
+    px-2
+    text-sm
+    text-black
+    dark:text-white
+    border-gray-300
+    dark:border-gray-600
+    bg-gray-150
+    dark:bg-gray-700
+    shadow-sm
+    dark:shadow-sm-dark
+  ;
+}

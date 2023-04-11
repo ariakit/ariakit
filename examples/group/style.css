@@ -1,0 +1,9 @@
+@import url("../button/style.css");
+
+.group {
+  @apply
+    flex
+    items-center
+    gap-2
+  ;
+}

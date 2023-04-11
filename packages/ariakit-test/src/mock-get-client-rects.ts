@@ -1,4 +1,4 @@
-import { isBrowser } from "./__utils";
+import { isBrowser } from "./__utils.js";
 
 if (!isBrowser && typeof window !== "undefined") {
   // @ts-ignore

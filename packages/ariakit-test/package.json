@@ -1,17 +1,13 @@
 {
-  "name": "ariakit-test",
-  "version": "0.17.0-next.31",
+  "name": "@ariakit/test",
+  "version": "0.0.1",
   "description": "Ariakit test utils",
-  "sideEffects": false,
   "license": "MIT",
   "homepage": "https://ariakit.org",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "unpkg": "umd/ariakit-test.min.js",
-  "types": "ts/index.d.ts",
-  "publishConfig": {
-    "tag": "latest"
-  },
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -23,9 +19,8 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "test": "jest",
     "lint": "eslint . --ext js,ts,tsx",
-    "build": "node ../../scripts/build",
+    "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
   "keywords": [
@@ -33,11 +28,33 @@
     "react"
   ],
   "dependencies": {
-    "ariakit-utils": "0.17.0-next.27"
+    "@ariakit/core": "0.0.1"
   },
   "peerDependencies": {
     "@testing-library/dom": "^8.0.0",
     "@testing-library/react": "^12.0.0 || ^13.0.0 || ^13.0.0-alpha",
     "react": "^17.0.0 || ^18.0.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./within": "./src/within.ts",
+    "./wait-for": "./src/wait-for.ts",
+    "./type": "./src/type.ts",
+    "./tap": "./src/tap.ts",
+    "./sleep": "./src/sleep.ts",
+    "./select": "./src/select.ts",
+    "./screen": "./src/screen.ts",
+    "./render": "./src/render.ts",
+    "./press": "./src/press.ts",
+    "./mouse-up": "./src/mouse-up.ts",
+    "./mouse-down": "./src/mouse-down.ts",
+    "./mock-get-client-rects": "./src/mock-get-client-rects.ts",
+    "./hover": "./src/hover.ts",
+    "./focus": "./src/focus.ts",
+    "./fire-event": "./src/fire-event.ts",
+    "./click": "./src/click.ts",
+    "./blur": "./src/blur.ts",
+    "./act": "./src/act.ts",
+    "./package.json": "./package.json"
   }
 }

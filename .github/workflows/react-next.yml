@@ -80,12 +80,5 @@ jobs:
       - name: Install React@next
         run: npm run reactnext
 
-      - name: CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
-        id: cpu-cores
-
       - name: Test
-        run: >
-          npm test --
-          --maxWorkers ${{ steps.cpu-cores.outputs.count }}
-          --shard ${{ matrix.shard }}
+        run: npm test -- --shard ${{ matrix.shard }}

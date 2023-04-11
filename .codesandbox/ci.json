@@ -1,6 +1,6 @@
 {
-  "packages": ["packages/ariakit*"],
+  "packages": ["packages/*"],
   "buildCommand": "build",
   "sandboxes": ["m4n32vjkoj"],
-  "node": "16"
+  "node": "18"
 }

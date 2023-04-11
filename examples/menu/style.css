@@ -1,0 +1,45 @@
+@import url("../button/style.css");
+@import url("../separator/style.css");
+
+.menu {
+  @apply
+    max-h-[var(--popover-available-height)]
+    min-w-[180px]
+    ![outline:none]
+    relative
+    z-50
+    p-2
+    flex
+    flex-col
+    rounded-lg
+    border
+    border-solid
+    overflow-auto
+    overscroll-contain
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    shadow-lg
+    dark:shadow-lg-dark
+  ;
+}
+
+.menu-item {
+  @apply
+    ![outline:none]
+    flex
+    cursor-default
+    scroll-m-2
+    items-center
+    gap-2
+    rounded
+    p-2
+    aria-disabled:opacity-25
+    active-item:bg-blue-600
+    active-item:text-white
+    active:bg-blue-800
+  ;
+}

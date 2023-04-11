@@ -1,0 +1,36 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    gap-4
+  ;
+}
+
+/* purgecss ignore */
+h1 {
+  @apply
+    my-0
+    text-2xl
+    font-normal
+  ;
+}
+
+/* purgecss ignore */
+h2 {
+  @apply
+    my-0
+    text-xl
+    font-normal
+    text-black/60
+    dark:text-white/60
+  ;
+}
+
+/* purgecss ignore */
+h3 {
+  @apply
+    my-0
+    text-base
+    font-normal
+  ;
+}
