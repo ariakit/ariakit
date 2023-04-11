@@ -89,7 +89,7 @@ function isAlreadyFocusingAnotherElement(
 }
 
 function getElementFromProp(
-  prop?: HTMLElement | RefObject<HTMLElement>,
+  prop?: HTMLElement | RefObject<HTMLElement> | null,
   focusable = false
 ) {
   if (!prop) return null;
@@ -611,7 +611,7 @@ export interface DialogOptions<T extends As = "div">
    *   2. The first tabbable element inside the dialog.
    *   3. The dialog element itself.
    */
-  initialFocus?: HTMLElement | RefObject<HTMLElement>;
+  initialFocus?: HTMLElement | RefObject<HTMLElement> | null;
   /**
    * Determines the element that will receive focus once the dialog is closed,
    * provided that no other element has been focused while the dialog was being
@@ -619,7 +619,7 @@ export interface DialogOptions<T extends As = "div">
    * of the dialog). However, if `autoFocusOnHide` is set to `false`, this prop
    * will have no effect. If left unset, the disclosure element will be used.
    */
-  finalFocus?: HTMLElement | RefObject<HTMLElement>;
+  finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
 }
 
 export type DialogProps<T extends As = "div"> = Props<DialogOptions<T>>;

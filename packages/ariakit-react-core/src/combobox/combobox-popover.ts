@@ -1,7 +1,6 @@
 import { matches } from "@ariakit/core/utils/dom";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { useLiveRef } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { ComboboxListOptions } from "./combobox-list.js";
@@ -40,8 +39,6 @@ function isController(
 export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
   ({ store, tabIndex, hideOnInteractOutside = true, ...props }) => {
     const baseElement = store.useState("baseElement");
-    // TODO: Maybe use baseElement directly
-    const finalFocusRef = useLiveRef(baseElement);
 
     props = useComboboxList({ store, ...props });
 
@@ -49,7 +46,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       store,
       autoFocusOnShow: false,
       autoFocusOnHide: false,
-      finalFocus: finalFocusRef,
+      finalFocus: baseElement,
       ...props,
       // Combobox popovers can't be modal because the focus may be (and is by
       // default) outside of it on the combobox input element.
