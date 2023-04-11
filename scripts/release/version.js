@@ -1,4 +1,3 @@
-// @ts-check
 import spawn from "cross-spawn";
 
 spawn.sync("npx", ["changeset", "version"], { stdio: "inherit" });

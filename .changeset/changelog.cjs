@@ -1,6 +1,5 @@
-import {ChangelogFunctions} from "@changesets/types";
-
-const changelogFunctions: ChangelogFunctions = {
+/** @type {import("@changesets/types").ChangelogFunctions} */
+const changelogFunctions = {
   getDependencyReleaseLine: async (_, dependenciesUpdated) => {
     if (dependenciesUpdated.length === 0) return "";
     const updatedDepenenciesList = dependenciesUpdated.map(
@@ -23,4 +22,4 @@ const changelogFunctions: ChangelogFunctions = {
   },
 };
 
-export default changelogFunctions;
+module.exports = changelogFunctions;
