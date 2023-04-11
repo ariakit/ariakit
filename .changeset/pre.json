@@ -10,6 +10,7 @@
     "website": "0.0.0"
   },
   "changesets": [
+    "checkbox-value-attribute",
     "combobox-auto-select",
     "combobox-inline-caret-at-end",
     "composite-item-move-on-key-press copy",

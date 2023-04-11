@@ -1,5 +1,11 @@
 # ariakit
 
+## 2.0.0-next.44
+
+### Patch Changes
+
+- Fixed `Checkbox` with a string `value` prop used in combination with the `useCheckboxState` hook. ([#2223](https://github.com/ariakit/ariakit/pull/2223))
+
 ## 2.0.0-next.43
 
 ### Patch Changes
