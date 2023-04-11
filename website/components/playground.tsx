@@ -1,6 +1,6 @@
-import type { IVSCodeTheme } from "monaco-vscode-textmate-theme-converter";
-import { convertTheme } from "monaco-vscode-textmate-theme-converter";
-import darkPlus from "shiki/themes/dark-plus.json";
+// import type { IVSCodeTheme } from "monaco-vscode-textmate-theme-converter";
+// import { convertTheme } from "monaco-vscode-textmate-theme-converter";
+// import darkPlus from "shiki/themes/dark-plus.json";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tsToJs } from "utils/ts-to-js.js";
 import { CodeBlock } from "./code-block.js";
@@ -12,7 +12,7 @@ export type PlaygroundProps = Omit<
   "theme" | "codeBlocks" | "javascript"
 >;
 
-const theme = convertTheme({ type: "dark", ...darkPlus } as IVSCodeTheme);
+// const theme = convertTheme({ type: "dark", ...darkPlus } as IVSCodeTheme);
 
 export function Playground(props: PlaygroundProps) {
   const codeBlocks: Record<string, any> = {};
@@ -39,7 +39,7 @@ export function Playground(props: PlaygroundProps) {
   return (
     <PlaygroundClient
       {...props}
-      theme={theme}
+      // theme={theme}
       codeBlocks={codeBlocks}
       javascript={javascript}
     />

@@ -9,8 +9,8 @@ import { useMedia } from "utils/use-media.js";
 
 export interface EditorProps {
   files: Record<string, string>;
-  theme: monaco.editor.IStandaloneThemeData;
   codeBlocks: Record<string, ReactNode>;
+  theme?: monaco.editor.IStandaloneThemeData;
   javascript?: Record<string, { code: string; codeBlock: ReactNode }>;
 }
 
@@ -108,7 +108,9 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
         },
       });
 
-      monaco.editor.defineTheme("dark-plus", theme);
+      if (theme) {
+        monaco.editor.defineTheme("dark-plus", theme);
+      }
 
       const diagnosticsOptions = {
         noSemanticValidation: true,
