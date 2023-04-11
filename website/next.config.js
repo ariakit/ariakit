@@ -15,7 +15,6 @@ const nextConfig = {
       "@babel/core",
       "@babel/types",
       "typescript",
-      "shiki",
       "onigasm",
       "vscode-oniguruma",
       "vscode-textmate",
