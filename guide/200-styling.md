@@ -117,7 +117,7 @@ If you're styling Ariakit components, it's recommended to use the `[data-focus-v
 
 ## CSS variables
 
-Some components, such as [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/comboboxPopover), among others, expose CSS variables that you can use to customize their appearance.
+Some components, such as [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/combobox), among others, expose CSS variables that you can use to customize their appearance.
 
 ### `--popover-anchor-width`
 
