@@ -13,39 +13,6 @@ const host = ts.createCompilerHost({});
  *  Record<string, string>, devDependencies: Record<string, string> }} Deps
  */
 
-/**
- * @param {Deps} deps
- * @param {string} source
- * @param {string} filename
- */
-function assignExternal(deps, source, filename) {
-  const { resolvedModule } = ts.resolveModuleName(source, filename, {}, host);
-  const external =
-    resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
-
-  const resolvedSource =
-    resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
-      ? resolvedModule.resolvedFileName
-      : resolveFrom(dirname(filename), source);
-
-  const result = { resolvedSource, external };
-
-  if (external) {
-    const version = getPackageVersion(resolvedSource);
-    deps.dependencies[source] = version;
-
-    const resolvedFilename = resolvedModule?.resolvedFileName;
-    if (!resolvedFilename) return result;
-    if (!resolvedFilename.includes("node_modules/@types/")) return result;
-    const typePkgName = getPackageName(resolvedFilename);
-    if (!typePkgName) return result;
-
-    deps.devDependencies[typePkgName] = getPackageVersion(resolvedFilename);
-  }
-
-  return result;
-}
-
 /** @param {import("@babel/core").NodePath<t.Node>} nodePath */
 function getSourceValue(nodePath) {
   // import("source")
@@ -76,9 +43,47 @@ function getPackageName(source) {
 /** @param {string} source */
 function getPackageVersion(source) {
   const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
-  if (!result) return "*";
+  if (!result) return "latest";
   packageCache.set(source, result);
-  return result.packageJson.version;
+  const { version } = result.packageJson;
+  if (!version) {
+    console.log("No version found for", source);
+  }
+  return version || "latest";
+}
+
+/**
+ * @param {Deps} deps
+ * @param {string} source
+ * @param {string} filename
+ */
+function assignExternal(deps, source, filename) {
+  const { resolvedModule } = ts.resolveModuleName(source, filename, {}, host);
+  const external =
+    resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
+
+  const resolvedSource =
+    resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
+      ? resolvedModule.resolvedFileName
+      : resolveFrom(dirname(filename), source);
+
+  const result = { resolvedSource, external };
+
+  if (external) {
+    if (deps.dependencies[source]) return result;
+    const version = getPackageVersion(resolvedSource);
+    deps.dependencies[source] = version;
+
+    const resolvedFilename = resolvedModule?.resolvedFileName;
+    if (!resolvedFilename) return result;
+    if (!resolvedFilename.includes("node_modules/@types/")) return result;
+    const typePkgName = getPackageName(resolvedFilename);
+    if (!typePkgName) return result;
+
+    deps.devDependencies[typePkgName] = getPackageVersion(resolvedFilename);
+  }
+
+  return result;
 }
 
 /**

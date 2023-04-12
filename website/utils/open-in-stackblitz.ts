@@ -12,6 +12,21 @@ interface Props {
   devDependencies?: Record<string, string>;
 }
 
+function getPackageName(source: string) {
+  const [maybeScope, maybeName] = source.split("/");
+  if (maybeScope?.startsWith("@")) {
+    return `${maybeScope}/${maybeName}`;
+  }
+  return `${maybeScope}`;
+}
+
+function normalizeDeps(deps: Record<string, string> = {}) {
+  return Object.entries(deps).reduce(
+    (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
+    {}
+  );
+}
+
 export function openInStackblitz({
   id,
   files,
@@ -34,9 +49,9 @@ export function openInStackblitz({
       build: "tsc && vite build",
       preview: "vite preview",
     },
-    dependencies,
+    dependencies: normalizeDeps(dependencies),
     devDependencies: {
-      ...devDependencies,
+      ...normalizeDeps(devDependencies),
       "@vitejs/plugin-react": "3.1.0",
       typescript: "5.0.2",
       vite: "4.2.1",
