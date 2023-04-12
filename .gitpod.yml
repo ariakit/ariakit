@@ -7,7 +7,7 @@ tasks:
 
   - name: Test
     init: gp sync-await install
-    command: npm run test-watch
+    command: npm run test
     openMode: split-right
 
 ports:

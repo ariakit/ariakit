@@ -4,11 +4,6 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": [
-      "./*.js",
-      "./*.jsx",
-      "./*.ts",
-      "./*.tsx"
-    ]
+    "./*": "./*"
   }
 }

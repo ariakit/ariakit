@@ -255,7 +255,7 @@ test("my component", () => {
 Now run the following command in your terminal to watch the test results:
 
 ```bash
-npm run test-watch
+npm test watch my-component
 ```
 
 <div align="right">

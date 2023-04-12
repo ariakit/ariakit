@@ -70,6 +70,6 @@ beforeEach(async ({ meta }) => {
   const match = filename.match(/examples\/(.*)\/test.ts$/);
   if (!match) return;
   const [, example] = match;
-  const { default: Component } = await import(`examples/${example}/index.tsx`);
-  render(createElement(Component));
+  const { default: comp } = await import(`./examples/${example}/index.tsx`);
+  render(createElement(comp));
 });
