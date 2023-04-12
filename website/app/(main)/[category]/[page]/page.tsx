@@ -21,6 +21,10 @@ import { tw } from "utils/tw.js";
 import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
 
+// Workaround for getting fast refresh to work when markdown files are updated.
+// See https://twitter.com/diegohaz/status/1646192312630779905
+import "build-pages/contents.js";
+
 const { pages } = pagesConfig;
 
 const stickyHeading = tw`

@@ -8,9 +8,9 @@ const white = "hsl(204 20% 100%)";
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   content: [
-    "app/**/*.{js,jsx,ts,tsx}",
-    "components/**/*.{js,jsx,ts,tsx}",
-    "icons/**/*.{js,jsx,ts,tsx}",
+    path.join(__dirname, "website/app/**/*.{ts,tsx}"),
+    path.join(__dirname, "website/components/**/*.{ts,tsx}"),
+    path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
   ],
   darkMode: "class",
   theme: {

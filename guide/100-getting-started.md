@@ -20,23 +20,11 @@ npm i @ariakit/react
 
 ## Usage
 
-<div class="note">
-
-[Play with Ariakit on CodeSandbox](https://codesandbox.io/s/m4n32vjkoj)
-
-</div>
-
 Ariakit exports a set of [unstyled](/guide/styling) React components and hooks that you can use to build accessible web apps. For example, you can use the [Button](/components/button) component to create a button:
 
 <a href="../examples/button/index.tsx" data-playground type="compact">Example</a>
 
 ## CDN
-
-<div class="note">
-
-[Play with Ariakit on JSBin](https://jsbin.com/funovaqiza/edit?html,output)
-
-</div>
 
 You can also use Ariakit directly in the browser via a CDN. This method is only for development purposes and is not recommended for production.
 

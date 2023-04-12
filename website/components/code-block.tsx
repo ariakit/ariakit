@@ -90,10 +90,10 @@ export async function CodeBlock({
         )}
         <code
           className={cx(
-            type === "static" && "sm:mx-8",
+            type === "static" && "sm:!mx-8",
             type === "static" && lineNumbers && "!ml-0",
-            type === "editor" && lineNumbers && "sm:ml-0",
-            "mx-4 ml-[26px]"
+            type === "editor" && lineNumbers && "sm:!ml-0",
+            "mx-4 sm:ml-[26px]"
           )}
         >
           {tokens.map((line, i) => (
