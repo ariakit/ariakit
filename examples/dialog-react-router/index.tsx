@@ -15,7 +15,7 @@ function Tweet() {
     open: true,
     setOpen: (open) => {
       if (!open) {
-        navigate("/");
+        navigate(-1);
       }
     },
   });
@@ -33,7 +33,7 @@ function Tweet() {
       <Ariakit.DialogHeading hidden className="heading">
         Tweet
       </Ariakit.DialogHeading>
-      <form className="form">
+      <form className="form" onSubmit={dialog.hide}>
         <label>
           <Ariakit.VisuallyHidden>Tweet text</Ariakit.VisuallyHidden>
           <Ariakit.Focusable
@@ -44,7 +44,7 @@ function Tweet() {
             autoFocus
           />
         </label>
-        <Ariakit.Button onClick={dialog.toggle} className="button">
+        <Ariakit.Button type="submit" className="button">
           Tweet
         </Ariakit.Button>
       </form>

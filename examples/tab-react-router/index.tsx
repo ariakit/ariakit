@@ -1,4 +1,10 @@
-import { HashRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import {
+  MemoryRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from "react-router-dom";
 import {
   TabLink,
   TabLinkList,
@@ -65,9 +71,8 @@ function Meat() {
 export default function Example() {
   return (
     // We're using HashRouter here for demonstration purposes. You can change
-    // it to HashRouter to see the effect (tip: You can select all instances of
-    // HashRouter with Cmd/Ctrl+D).
-    <HashRouter>
+    // it to HashRouter to see the effect.
+    <MemoryRouter>
       <Routes>
         <Route path="/" element={<Tabs />}>
           <Route index element={<Navigate to="/fruits" />} />
@@ -76,6 +81,6 @@ export default function Example() {
           <Route path="/meat" element={<Meat />} />
         </Route>
       </Routes>
-    </HashRouter>
+    </MemoryRouter>
   );
 }

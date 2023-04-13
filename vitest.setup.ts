@@ -71,5 +71,6 @@ beforeEach(async ({ meta }) => {
   if (!match) return;
   const [, example] = match;
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
-  render(createElement(comp));
+  const { unmount } = render(createElement(comp));
+  return unmount;
 });
