@@ -61,7 +61,7 @@ The `data-active-item` attribute is applied to composite widget items when they 
 
 ### `[data-autofill]`
 
-The `data-autofill` attribute is applied to the [Select](/component/select) component when it's used within a form and the value has been autofilled by the browser.
+The `data-autofill` attribute is applied to the [Select](/components/select) component when it's used within a form and the value has been autofilled by the browser.
 
 ```css
 .select[data-autofill] {

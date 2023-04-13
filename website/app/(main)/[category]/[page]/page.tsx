@@ -58,7 +58,7 @@ const style = {
   `,
   h2: tw`
     text-2xl md:text-3xl font-semibold dark:font-medium
-    text-black/70 dark:text-white/60
+    text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
