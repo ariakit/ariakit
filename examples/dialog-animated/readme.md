@@ -32,4 +32,4 @@ Use the `data-enter` and `data-leave` attributes to animate the dialog and the b
 }
 ```
 
-Learn more in [Styling](/guide/styling#animations).
+Learn more on the [Styling](/guide/styling) guide.

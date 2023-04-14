@@ -59,4 +59,4 @@ Ariakit automatically defines a `--scrollbar-width` CSS variable. You can use th
 }
 ```
 
-Learn more in [Styling](/guide/styling#animations).
+Learn more on the [Styling](/guide/styling) guide.
