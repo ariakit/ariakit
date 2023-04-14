@@ -94,7 +94,9 @@ const isOpen = combobox.useState("open");
 
 ### Computed values
 
-Finally, `store.useState()` accepts a selector function as an argument. The function will receive the state as a parameter and should return a value, which can be computed inside the function body. You're free to use other variables within this function. The selector will be called whenever the state is updated, but the component will only re-render when the returned value changes.
+Finally, `store.useState()` accepts a selector function as an argument. The function will receive the state as a parameter and should return a value, which can be computed inside the function body.
+
+You're free to use other variables within this function. The selector will be called whenever the state is updated and on every render, but the component will only re-render when the returned value changes.
 
 ```js
 function MyComboboxItem({ store, id }) {
