@@ -16,6 +16,7 @@ const nextConfig = {
       "@babel/types",
       "typescript",
       "onigasm",
+      "shiki",
       "vscode-oniguruma",
       "vscode-textmate",
       "monaco-vscode-textmate-theme-converter",
