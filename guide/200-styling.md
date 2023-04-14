@@ -36,6 +36,16 @@ The `aria-expanded` attribute is applied to the [Disclosure](/components/disclos
 }
 ```
 
+### `[aria-invalid]`
+
+The `aria-invalid` attribute is applied to [Form](/components/form) field components when there's a visible error message. You can use it to style the field differently when it's invalid.
+
+```css
+.input[aria-invalid="true"] {
+  border-color: red;
+}
+```
+
 ### `[data-active]`
 
 The `data-active` attribute is applied to clickable components, such as [Command](/components/command) and [Button](/components/button), to simulate the `:active` pseudo-class when the components are not rendered as native `button` elements.
