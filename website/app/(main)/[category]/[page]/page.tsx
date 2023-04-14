@@ -3,6 +3,7 @@
 import "build-pages/contents.js";
 
 import { isValidElement } from "react";
+import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
@@ -217,12 +218,19 @@ export default async function Page({ params }: PageProps) {
               );
               const child = props.children[0];
               if (!child) return pre;
-              if (!isValidElement(child)) return pre;
+              type Props = {
+                children: ReactNode;
+                className?: string;
+                meta?: string;
+              };
+              if (!isValidElement<Props>(child)) return pre;
               if (child.type !== "code") return pre;
               if (!child.props) return pre;
               if (!child.props.children) return pre;
+              if (!Array.isArray(child.props.children)) return pre;
+              const [code] = child.props.children;
+              if (typeof code !== "string") return pre;
               const lang = child.props.className?.replace("language-", "");
-              const code = child.props.children[0];
               const meta = child.props.meta?.split(" ") || [];
               const lineNumbers = meta.includes("lineNumbers");
               const rangePattern = /^\{([\d\-,]+)\}$/;
