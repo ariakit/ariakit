@@ -8,10 +8,18 @@ interface Props {
   lang?: string;
   filename?: string;
   lineNumbers?: boolean;
+  highlightLines?: number[];
   type?: "static" | "editor";
   className?: string;
   preClassName?: string;
 }
+
+const style = {
+  highlightBefore: tw`
+    relative before:absolute before:left-0 before:top-0
+    before:h-full before:w-1 before:bg-blue-600
+  `,
+};
 
 function getExtension(filename?: string) {
   const extension = filename?.split(".").pop();
@@ -39,6 +47,7 @@ export async function CodeBlock({
   lang = getExtension(filename),
   type = "static",
   lineNumbers = type === "editor",
+  highlightLines,
   className,
 }: Props) {
   code = type === "static" ? code.trim() : code;
@@ -66,56 +75,74 @@ export async function CodeBlock({
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
           type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-xl",
+          highlightLines?.length ? "leading-[26px]" : "leading-[21px]",
           tw`
-          dark relative z-10 flex max-h-[inherit] w-full overflow-auto
-          pt-4 text-sm leading-[21px] text-white [color-scheme:dark]`
+          relative z-10 flex max-h-[inherit] w-full overflow-auto
+          pt-4 text-sm text-white [color-scheme:dark]`
         )}
       >
         {lineNumbers && (
           <div
             aria-hidden
             className={cx(
-              type === "static" && "flex px-4 sm:pl-8 sm:pr-6",
-              type === "editor" && "hidden pl-0 pr-[26px] sm:flex",
+              type === "static" && "flex",
+              type === "editor" && "hidden sm:flex",
               tw`sticky left-0 h-full select-none flex-col bg-inherit
             text-right text-[#858585]`
             )}
           >
-            {tokens.map((_, i) => (
-              <span key={i} className={cx(type === "editor" && "min-w-[42px]")}>
-                {i + 1}
-              </span>
-            ))}
+            {tokens.map((_, i) => {
+              const highlighted = highlightLines?.includes(i + 1);
+              return (
+                <span
+                  key={i}
+                  className={cx(
+                    type === "static" && "px-4 sm:pl-8 sm:pr-6",
+                    type === "editor" && "min-w-[42px] pl-0 pr-[26px]",
+                    highlighted && "bg-blue-600/[15%] text-[#c6c6c6]",
+                    highlighted && style.highlightBefore
+                  )}
+                >
+                  {i + 1}
+                </span>
+              );
+            })}
           </div>
         )}
-        <code
-          className={cx(
-            type === "static" && "sm:!mx-8",
-            type === "static" && lineNumbers && "!ml-0",
-            type === "editor" && lineNumbers && "sm:!ml-0",
-            "mx-4 sm:ml-[26px]"
-          )}
-        >
-          {tokens.map((line, i) => (
-            <span key={i}>
-              {line.length ? (
-                <>
-                  {line.map((token, j) => (
-                    <span
-                      key={j}
-                      style={{ color: token.color }}
-                      className={parseFontStyle(token.fontStyle)}
-                    >
-                      {token.content}
-                    </span>
-                  ))}
-                  {"\n"}
-                </>
-              ) : (
-                "\n"
-              )}
-            </span>
-          ))}
+        <code className="w-full">
+          {tokens.map((line, i) => {
+            const highlighted = highlightLines?.includes(i + 1);
+            return (
+              <div
+                key={i}
+                className={cx(
+                  type === "static" && "sm:!px-8",
+                  type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
+                  type === "editor" && lineNumbers && "sm:!pl-0",
+                  highlighted && "bg-blue-600/20 dark:bg-blue-600/[15%]",
+                  highlighted && !lineNumbers && style.highlightBefore,
+                  "px-4 sm:pl-[26px]"
+                )}
+              >
+                {line.length ? (
+                  <>
+                    {line.map((token, j) => (
+                      <span
+                        key={j}
+                        style={{ color: token.color }}
+                        className={parseFontStyle(token.fontStyle)}
+                      >
+                        {token.content}
+                      </span>
+                    ))}
+                    {"\n"}
+                  </>
+                ) : (
+                  "\n"
+                )}
+              </div>
+            );
+          })}
           <div
             className={cx(type === "static" && !oneLiner && "sm:h-8", "h-4")}
           />

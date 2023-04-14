@@ -15,9 +15,9 @@ const buildDir = join(process.cwd(), ".pages");
 /** @type {import("./types.js").Page[]} */
 const pages = [
   {
-    slug: "blog",
-    title: "Blog",
-    sourceContext: join(root, "blog"),
+    slug: "guide",
+    title: "Guide",
+    sourceContext: join(root, "guide"),
   },
   {
     slug: "components",
@@ -55,9 +55,9 @@ const pages = [
     },
   },
   {
-    slug: "guide",
-    title: "Guide",
-    sourceContext: join(root, "guide"),
+    slug: "blog",
+    title: "Blog",
+    sourceContext: join(root, "blog"),
   },
 ];
 
