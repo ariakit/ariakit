@@ -1,3 +1,7 @@
+// Workaround for getting fast refresh to work when markdown files are updated.
+// See https://twitter.com/diegohaz/status/1646192312630779905
+import "build-pages/contents.js";
+
 import { isValidElement } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
@@ -9,21 +13,20 @@ import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
 import { Link } from "components/link.js";
+import matter from "gray-matter";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
 import { notFound } from "next/navigation.js";
+import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
 import { tw } from "utils/tw.js";
 import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
-
-// Workaround for getting fast refresh to work when markdown files are updated.
-// See https://twitter.com/diegohaz/status/1646192312630779905
-import "build-pages/contents.js";
 
 const { pages } = pagesConfig;
 
@@ -140,6 +143,7 @@ export default async function Page({ params }: PageProps) {
   if (!file) return notFound();
 
   const content = getPageContent(file);
+  const { content: contentWithoutMatter } = matter(content);
   const tree = getPageTreeFromContent(content);
   const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
   const categoryDetail = pagesConfig.pages.find(
@@ -167,7 +171,12 @@ export default async function Page({ params }: PageProps) {
       <TableOfContents data={tableOfContents} />
       <main className={style.main}>
         <ReactMarkdown
-          rehypePlugins={[rehypeRaw, rehypeSlug, rehypeWrapHeadings]}
+          rehypePlugins={[
+            rehypeCodeMeta,
+            rehypeRaw,
+            rehypeSlug,
+            rehypeWrapHeadings,
+          ]}
           components={{
             div: ({ node, ...props }) => {
               if (node.properties?.dataLevel) {
@@ -214,9 +223,23 @@ export default async function Page({ params }: PageProps) {
               if (!child.props.children) return pre;
               const lang = child.props.className?.replace("language-", "");
               const code = child.props.children[0];
+              const meta = child.props.meta?.split(" ") || [];
+              const lineNumbers = meta.includes("lineNumbers");
+              const rangePattern = /^\{([\d\-,]+)\}$/;
+              const highlightLines = meta
+                .filter((item) => rangePattern.test(item))
+                .flatMap((item) =>
+                  parseNumericRange(item.replace(rangePattern, "$1"))
+                );
               return (
                 // @ts-expect-error RSC
-                <CodeBlock lang={lang} code={code} className="!max-w-[832px]" />
+                <CodeBlock
+                  lang={lang}
+                  code={code}
+                  highlightLines={highlightLines}
+                  lineNumbers={lineNumbers}
+                  className="!max-w-[832px]"
+                />
               );
             },
             p: ({ node, ...props }) => {
@@ -286,7 +309,7 @@ export default async function Page({ params }: PageProps) {
             },
           }}
         >
-          {content}
+          {contentWithoutMatter}
         </ReactMarkdown>
       </main>
     </div>
