@@ -12,7 +12,7 @@
 npm i @ariakit/react
 ```
 
-Learn more in [Getting started](/guide/getting-started).
+Learn more on the [Getting started](/guide/getting-started) guide.
 
 ## API
 
@@ -35,4 +35,4 @@ You can use the `aria-expanded` attribute to style the expanded state:
 }
 ```
 
-Learn more in [Styling](/guide/styling).
+Learn more on the [Styling](/guide/styling) guide.

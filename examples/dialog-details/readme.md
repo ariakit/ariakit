@@ -45,4 +45,4 @@ To fix this, we can use the `--scrollbar-width` CSS variable:
 }
 ```
 
-Learn more in [Styling](/guide/styling).
+Learn more on the [Styling](/guide/styling) guide.

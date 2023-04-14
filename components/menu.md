@@ -12,7 +12,7 @@
 npm i @ariakit/react
 ```
 
-Learn more in [Getting started](/guide/getting-started).
+Learn more on the [Getting started](/guide/getting-started) guide.
 
 ## API
 
@@ -55,7 +55,7 @@ When browsing the list with a keyboard (or hovering over items with the mouse wh
 }
 ```
 
-Learn more in [Styling](/guide/styling).
+Learn more on the [Styling](/guide/styling) guide.
 
 ## Should I use Menu or Select?
 

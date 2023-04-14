@@ -12,7 +12,7 @@
 npm i @ariakit/react
 ```
 
-Learn more in [Getting started](/guide/getting-started).
+Learn more on the [Getting started](/guide/getting-started) guide.
 
 ## API
 

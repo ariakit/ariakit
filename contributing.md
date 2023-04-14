@@ -396,7 +396,7 @@ This is my component.
 npm i @ariakit/react
 ```
 
-Learn more on [Getting Started](/guide/getting-started).
+Learn more on the [Getting started](/guide/getting-started) guide.
 ````
 
 Now open http://localhost:3000/components/my-component to see the component documentation.

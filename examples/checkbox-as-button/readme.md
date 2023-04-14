@@ -17,4 +17,4 @@ When rendering the `Checkbox` component as a non-native `input` element, the `:c
 }
 ```
 
-Learn more in [Styling](/guide/styling).
+Learn more on the [Styling](/guide/styling) guide.

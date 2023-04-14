@@ -12,7 +12,7 @@
 npm i @ariakit/react
 ```
 
-Learn more in [Getting started](/guide/getting-started).
+Learn more on the [Getting started](/guide/getting-started) guide.
 
 ## API
 
@@ -109,4 +109,4 @@ The [`FormField`](/apis/form-field) component — which is used by [`FormInput`]
 }
 ```
 
-Learn more in [Styling](/guide/styling).
+Learn more on the [Styling](/guide/styling) guide.

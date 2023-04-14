@@ -23,4 +23,4 @@ Use the `data-enter` and `data-leave` attributes to animate the popover:
 }
 ```
 
-Learn more in [Animating](/guide/animating).
+Learn more on the [Styling](/guide/styling) guide.
