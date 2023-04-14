@@ -98,7 +98,7 @@ export async function CodeBlock({
                   key={i}
                   className={cx(
                     type === "static" && "px-4 sm:pl-8 sm:pr-6",
-                    type === "editor" && "min-w-[42px] pl-0 pr-[26px]",
+                    type === "editor" && "min-w-[68px] pl-0 pr-[26px]",
                     highlighted && "bg-blue-600/[15%] text-[#c6c6c6]",
                     highlighted && style.highlightBefore
                   )}
@@ -109,7 +109,7 @@ export async function CodeBlock({
             })}
           </div>
         )}
-        <code className="w-full">
+        <code className="grid">
           {tokens.map((line, i) => {
             const highlighted = highlightLines?.includes(i + 1);
             return (
@@ -121,7 +121,7 @@ export async function CodeBlock({
                   type === "editor" && lineNumbers && "sm:!pl-0",
                   highlighted && "bg-blue-600/20 dark:bg-blue-600/[15%]",
                   highlighted && !lineNumbers && style.highlightBefore,
-                  "px-4 sm:pl-[26px]"
+                  "px-4 pr-14 sm:pl-[26px]"
                 )}
               >
                 {line.length ? (

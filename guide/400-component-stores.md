@@ -137,7 +137,7 @@ dialog.setState("open", (open) => !open);
 
 Component stores may also expose specific methods to update the state. These methods are named after the state property they update. For example, `store.setOpen()` updates the `open` state.
 
-```js {4}
+```js {5}
 const dialog = useDialogStore({ defaultOpen: false });
 
 function handleClick() {
