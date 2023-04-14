@@ -36,7 +36,7 @@ Component stores accept an optional object as an argument. This object is used t
 
 ### Default state
 
-Conventionally, when dealing with dynamic state, the initial value passed to the store has its property name prefixed with the word `default`. In this case, only the initial value will be considered. They don't have to be referentially stable between re-renders.
+Conventionally, when dealing with dynamic state, the initial value passed to the store has its property name prefixed with the word `default`. In this case, only the initial value will be considered. It doesn't have to be referentially stable between re-renders.
 
 ```js
 const form = useFormStore({
