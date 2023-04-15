@@ -26,13 +26,14 @@ export const CopyToClipboard = forwardRef<
     <TooltipButton
       ref={ref}
       {...props}
-      title={state === "copied" ? "Copied" : "Copy"}
+      title={state === "copied" ? "Copied" : "Copy to clipboard"}
       onClick={async () => {
         if (state !== "idle") return;
         await navigator.clipboard.writeText(text);
         setState("copied");
       }}
     >
+      <span className="sr-only">Copy to clipboard</span>
       {state === "idle" && <Copy className="h-5 w-5" />}
       {state === "copied" && <Check className="h-5 w-5" />}
     </TooltipButton>

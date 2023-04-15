@@ -35,6 +35,13 @@ function getPathFromExample(path: string, examplePath: string) {
   return relative(dirname(examplePath), path);
 }
 
+function getGithubLink(path: string) {
+  return new URL(
+    relative(resolve(process.cwd(), ".."), path),
+    "https://github.com/ariakit/ariakit/blob/main/"
+  ).href;
+}
+
 export async function PageExample({
   pageFilename,
   href,
@@ -81,6 +88,7 @@ export async function PageExample({
         devDependencies={devDependencies}
         previewLink={previewLink}
         preview={<Preview id={id} path={path} css={css} />}
+        githubLink={getGithubLink(path)}
       />
     </div>
   );

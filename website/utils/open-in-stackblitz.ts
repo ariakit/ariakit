@@ -6,6 +6,7 @@ import { tsToJsFilename } from "./ts-to-js-filename.js";
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 
 interface Props {
+  template?: "vite" | "next";
   id: string;
   files: Record<string, string>;
   dependencies?: Record<string, string>;
@@ -20,49 +21,50 @@ function getPackageName(source: string) {
   return `${maybeScope}`;
 }
 
-function normalizeDeps(deps: Record<string, string> = {}) {
+function normalizeDeps(deps: Props["dependencies"] = {}) {
   return Object.entries(deps).reduce(
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {}
   );
 }
 
-export function openInStackblitz({
-  id,
-  files,
-  dependencies,
-  devDependencies,
-}: Props) {
+function getExampleName(id: Props["id"]) {
   const [_category, ...names] = id.split("-");
   const exampleName = names.join("-");
+  return exampleName;
+}
+
+function getFirstFilename(files: Props["files"]) {
   const firstFile = Object.keys(files)[0];
-
   invariant(firstFile, "No files provided");
+  return firstFile;
+}
 
-  const packageJson = {
-    name: `@ariakit/${id}`,
+function getPackageJson(packageJson: Record<string, unknown>) {
+  return {
+    name: `@ariakit/${packageJson.name}`,
+    description: packageJson.name,
     private: true,
     version: "0.0.0",
     type: "module",
-    scripts: {
-      dev: "vite",
-      build: "tsc && vite build",
-      preview: "vite preview",
-    },
-    dependencies: normalizeDeps(dependencies),
+    license: "MIT",
+    repository: "https://github.com/ariakit/ariakit.git",
+    scripts: packageJson.scripts,
+    dependencies: packageJson.dependencies,
     devDependencies: {
-      ...normalizeDeps(devDependencies),
-      "@vitejs/plugin-react": "3.1.0",
-      typescript: "5.0.2",
-      vite: "4.2.1",
+      ...(packageJson.devDependencies || {}),
+      tailwindcss: "^3.0.0",
+      typescript: "5.0.4",
     },
   };
+}
 
-  const tsconfigJson = {
+function getTSConfig(tsConfig?: Record<string, unknown>) {
+  return {
     compilerOptions: {
-      target: "ESNext",
-      lib: ["DOM", "DOM.Iterable", "ESNext"],
-      module: "ESNext",
+      target: "esnext",
+      lib: ["dom", "dom.iterable", "esnext"],
+      module: "esnext",
       skipLibCheck: true,
       moduleResolution: "node16",
       allowImportingTsExtensions: true,
@@ -71,28 +73,66 @@ export function openInStackblitz({
       noEmit: true,
       jsx: "react-jsx",
       strict: true,
+      allowJs: true,
+      forceConsistentCasingInFileNames: true,
+      incremental: true,
+      esModuleInterop: true,
       noUnusedLocals: true,
       noUnusedParameters: true,
       noFallthroughCasesInSwitch: true,
+      ...(tsConfig?.compilerOptions || {}),
     },
-    references: [{ path: "./tsconfig.node.json" }],
+    include: tsConfig?.include,
+    exclude: tsConfig?.exclude,
   };
+}
 
-  const tsconfigNodeJson = {
-    compilerOptions: {
-      composite: true,
-      skipLibCheck: true,
-      module: "ESNext",
-      moduleResolution: "node16",
-      allowSyntheticDefaultImports: true,
+function getIndexCss() {
+  return `@import url("tailwindcss/lib/css/preflight.css");
+
+body {
+  background-color: #edf0f3;
+  min-height: 100vh;
+  padding-top: min(10vh, 100px);
+  line-height: 1.5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+}
+`;
+}
+
+function getViteProject(props: Props) {
+  const exampleName = getExampleName(props.id);
+  const firstFile = getFirstFilename(props.files);
+
+  const packageJson = getPackageJson({
+    name: props.id,
+    scripts: {
+      dev: "vite",
+      build: "tsc && vite build",
+      preview: "vite preview",
     },
-    include: ["vite.config.ts"],
-  };
+    dependencies: props.dependencies,
+    devDependencies: {
+      ...props.devDependencies,
+      "@vitejs/plugin-react": "^3.0.0",
+      vite: "^4.0.0",
+    },
+  });
 
-  const viteConfigTs = `import { defineConfig } from "vite";
+  const tsConfig = getTSConfig();
+
+  const viteConfig = `import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  // @ts-ignore
   plugins: [react()],
 });
 `;
@@ -123,55 +163,161 @@ if (root) {
 }
 `;
 
-  const indexCss = `@import url("https://unpkg.com/tailwindcss@^3.0.0/lib/css/preflight.css");
+  const indexCss = getIndexCss();
 
-body {
-  background-color: #edf0f3;
-  min-height: 100vh;
-  padding-top: min(10vh, 100px);
-  line-height: 1.5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol";
+  const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
+    (acc, [filename, content]) => {
+      acc[`${exampleName}/${filename}`] = content;
+      return acc;
+    },
+    {}
+  );
+
+  return {
+    sourceFiles,
+    files: {
+      "package.json": JSON.stringify(packageJson, null, 2),
+      "tsconfig.json": JSON.stringify(tsConfig, null, 2),
+      "vite.config.ts": viteConfig,
+      "index.html": indexHtml,
+      "index.tsx": indexTsx,
+      "index.css": indexCss,
+      ...sourceFiles,
+    },
+  };
 }
 
-#root {
-  display: flex;
-  justify-content: center;
+function getNextProject(props: Props) {
+  const exampleName = getExampleName(props.id);
+  const firstFile = getFirstFilename(props.files);
+
+  const packageJson = getPackageJson({
+    name: props.id,
+    scripts: {
+      dev: "next dev",
+      build: "next build",
+      start: "next start",
+    },
+    dependencies: {
+      next: "^13.0.0",
+      ...props.dependencies,
+    },
+    devDependencies: {
+      "@types/node": "latest",
+      ...props.devDependencies,
+    },
+  });
+
+  const tsConfig = getTSConfig({
+    compilerOptions: {
+      plugins: [{ name: "next" }],
+      jsx: "preserve",
+    },
+    include: ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+    exclude: ["node_modules"],
+  });
+
+  const nextConfig = `/** @type {import("next").NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      ".js": [".js", ".ts", ".tsx"],
+      ".jsx": [".jsx", ".tsx"],
+    };
+    return config;
+  },
+};
+
+export default nextConfig;
+`;
+
+  const nextEnv = `/// <reference types="next" />
+/// <reference types="next/types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+`;
+
+  const style = getIndexCss();
+
+  const mainLayout = `import type { PropsWithChildren } from "react";
+
+export default function Layout({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <body>
+        <div id="root">{children}</div>
+      </body>
+    </html>
+  );
 }
 `;
 
-  const viteEnv = `/// <reference types="vite/client" />
+  const page = `"use client";
+import "./style.css";
+import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
+
+export default function Page() {
+  return <Example />;
+}
 `;
+
+  const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
+    (acc, [filename, content]) => {
+      acc[`app/${exampleName}/${filename}`] = content;
+      return acc;
+    },
+    {}
+  );
+
+  return {
+    sourceFiles,
+    files: {
+      "package.json": JSON.stringify(packageJson, null, 2),
+      "tsconfig.json": JSON.stringify(tsConfig, null, 2),
+      "next.config.js": nextConfig,
+      "next-env.d.ts": nextEnv,
+      "app/style.css": style,
+      "app/layout.tsx": mainLayout,
+      "app/page.tsx": page,
+      ...sourceFiles,
+    },
+  };
+}
+
+export function openInStackblitz({ template = "vite", ...props }: Props) {
+  props.dependencies = normalizeDeps(props.dependencies);
+  props.devDependencies = normalizeDeps(props.devDependencies);
+
+  const project =
+    template === "vite"
+      ? getViteProject(props)
+      : template === "next"
+      ? getNextProject(props)
+      : null;
+
+  invariant(project, "Unsupported template");
+
+  const { files, sourceFiles } = project;
 
   sdk.openProject(
     {
-      title: `${id} - Ariakit`,
-      description: id,
+      title: `${props.id} - Ariakit`,
+      description: props.id,
       template: "node",
-      files: {
-        "package.json": JSON.stringify(packageJson, null, 2),
-        "tsconfig.json": JSON.stringify(tsconfigJson, null, 2),
-        "tsconfig.node.json": JSON.stringify(tsconfigNodeJson, null, 2),
-        "vite.config.ts": viteConfigTs,
-        "index.html": indexHtml,
-        "index.tsx": indexTsx,
-        "index.css": indexCss,
-        "vite-env.d.ts": viteEnv,
-        ...Object.entries(files).reduce<ProjectFiles>(
-          (acc, [filename, content]) => {
-            acc[`${exampleName}/${filename}`] = content;
-            return acc;
-          },
-          {}
-        ),
-      },
+      files: files,
     },
     {
-      openFile: Object.keys(files)
-        .reverse()
-        .map((file) => `${exampleName}/${file}`)
-        .join(","),
+      openFile: Object.keys(sourceFiles).reverse().join(","),
     }
   );
 }
