@@ -1,44 +1,23 @@
 "use client";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { cx, invariant } from "@ariakit/core/utils/misc";
-import {
-  Button,
-  PopoverHeading,
-  Select,
-  SelectItem,
-  SelectPopover,
-  Tab,
-  TabList,
-  TabPanel,
-  Toolbar,
-  ToolbarItem,
-  useSelectStore,
-  useTabStore,
-  useToolbarStore,
-} from "@ariakit/react";
+import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
-import { JavaScript } from "icons/javascript.js";
-import { NewWindow } from "icons/new-window.js";
-import { Stackblitz } from "icons/stackblitz.jsx";
-import { TypeScript } from "icons/typescript.js";
-import { openInStackblitz } from "utils/open-in-stackblitz.js";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
 import { useLocalStorageState } from "utils/use-local-storage-state.js";
-import { CopyToClipboard } from "./copy-to-clipboard.js";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
-import { Link } from "./link.js";
-import { Popup } from "./popup.js";
-import { TooltipButton } from "./tooltip-button.js";
+import { PlaygroundToolbar } from "./playground-toolbar.jsx";
 
 export interface PlaygroundClientProps extends EditorProps {
   id: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  githubLink?: string;
   previewLink?: string;
   preview?: ReactNode;
   type?: "compact" | "wide";
@@ -132,6 +111,7 @@ export function PlaygroundClient({
   // theme,
   previewLink,
   preview,
+  githubLink,
   dependencies,
   devDependencies,
   codeBlocks,
@@ -151,18 +131,11 @@ export function PlaygroundClient({
 
   invariant(firstFile, "No files provided");
 
-  const toolbar = useToolbarStore();
-
-  const [selectValue, setSelectValue] = useLocalStorageState("language", {
-    defaultValue: "ts",
-  });
-  const select = useSelectStore({
-    value: selectValue,
-    setValue: setSelectValue,
-    placement: "bottom-start",
-    shift: -6,
-  });
-  const isJS = select.useState((state) => state.value === "js");
+  const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
+    "language",
+    { defaultValue: "ts" }
+  );
+  const isJS = language === "js";
 
   const tab = useTabStore({
     defaultSelectedId: getTabId(firstFile),
@@ -187,6 +160,18 @@ export function PlaygroundClient({
   const [collapsed, setCollapsed] = useState(collapsible);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
+
+  const javascriptFiles = useMemo(
+    () =>
+      Object.entries(files).reduce<typeof files>(
+        (acc, [file, code]) => ({
+          ...acc,
+          [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
+        }),
+        {}
+      ),
+    [files, javascript]
+  );
 
   useUpdateEffect(() => {
     if (collapsed) return;
@@ -216,97 +201,18 @@ export function PlaygroundClient({
               </Tab>
             ))}
           </TabList>
-          <Toolbar store={toolbar} className={style.toolbar}>
-            <ToolbarItem className={style.toolbarItem}>
-              {(props) => (
-                <Select
-                  as={TooltipButton}
-                  title="Select language"
-                  store={select}
-                  {...props}
-                >
-                  {isJS ? (
-                    <JavaScript className="h-5 w-5" />
-                  ) : (
-                    <TypeScript className="h-5 w-5" />
-                  )}
-                </Select>
-              )}
-            </ToolbarItem>
-            <SelectPopover store={select} as={Popup} size="small">
-              <PopoverHeading className={style.selectHeading}>
-                Language
-              </PopoverHeading>
-              <SelectItem value="ts" className={style.selectItem}>
-                <TypeScript className="h-5 w-5" /> TypeScript
-              </SelectItem>
-              <SelectItem value="js" className={style.selectItem}>
-                <JavaScript className="h-5 w-5" /> JavaScript
-              </SelectItem>
-            </SelectPopover>
-            {previewLink && (
-              <ToolbarItem className={style.toolbarItem}>
-                {(props) => (
-                  <TooltipButton
-                    as={Link}
-                    target="__blank"
-                    href={previewLink}
-                    title={
-                      <span className="flex items-center gap-1.5">
-                        Preview in new tab
-                        <NewWindow
-                          strokeWidth={1.5}
-                          className="h-4 w-4 stroke-current"
-                        />
-                      </span>
-                    }
-                    {...props}
-                  >
-                    <NewWindow className="h-5 w-5" strokeWidth={1.5} />
-                  </TooltipButton>
-                )}
-              </ToolbarItem>
-            )}
-            <ToolbarItem
-              as={TooltipButton}
-              onClick={() => {
-                openInStackblitz({
-                  id,
-                  files: isJS
-                    ? Object.entries(files).reduce<typeof files>(
-                        (acc, [filename, code]) => ({
-                          ...acc,
-                          [tsToJsFilename(filename)]:
-                            javascript?.[filename]?.code ?? code,
-                        }),
-                        {}
-                      )
-                    : files,
-                  dependencies,
-                  devDependencies,
-                });
-              }}
-              title={
-                <span className="flex items-center gap-1.5">
-                  Open in StackBlitz
-                  <NewWindow
-                    strokeWidth={1.5}
-                    className="h-4 w-4 stroke-current"
-                  />
-                </span>
-              }
-              className={cx(style.toolbarItem, "!cursor-pointer")}
-            >
-              <Stackblitz className="h-[18px] w-[18px]" />
-            </ToolbarItem>
-            {content != null && (
-              <ToolbarItem
-                as={CopyToClipboard}
-                text={content}
-                className={style.toolbarItem}
-              />
-            )}
-          </Toolbar>
+          <PlaygroundToolbar
+            exampleId={id}
+            files={files}
+            javascriptFiles={javascriptFiles}
+            code={content}
+            dependencies={dependencies}
+            devDependencies={devDependencies}
+            previewLink={previewLink}
+            githubLink={githubLink}
+            language={language}
+            setLanguage={setLanguage}
+          />
         </div>
         {codeBlock && (
           <TabPanel
