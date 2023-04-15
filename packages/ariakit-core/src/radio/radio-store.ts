@@ -24,7 +24,12 @@ export function createRadioStore({
 
   const initialState: RadioStoreState = {
     ...composite.getState(),
-    value: defaultValue(props.value, syncState?.value, null),
+    value: defaultValue(
+      props.value,
+      syncState?.value,
+      props.defaultValue,
+      null
+    ),
   };
 
   const radio = createStore(initialState, composite, props.store);
@@ -60,7 +65,13 @@ export interface RadioStoreFunctions extends CompositeStoreFunctions {
 
 export interface RadioStoreOptions
   extends StoreOptions<RadioStoreState, "focusLoop" | "value">,
-    CompositeStoreOptions {}
+    CompositeStoreOptions {
+  /**
+   * The default value of the radio group.
+   * @default null
+   */
+  defaultValue?: RadioStoreState["value"];
+}
 
 export type RadioStoreProps = RadioStoreOptions & StoreProps<RadioStoreState>;
 

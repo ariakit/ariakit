@@ -60,9 +60,10 @@ export const useRadio = createHook<RadioOptions>(
     // to point to the checked element, otherwise it'll be the first item in the
     // list.
     useEffect(() => {
+      if (!id) return;
       if (!isChecked) return;
-      const isActiveItem = id && store?.getState().activeId === id;
-      if (!isActiveItem) return;
+      const isActiveItem = store?.getState().activeId === id;
+      if (isActiveItem) return;
       store?.setActiveId(id);
     }, [store, isChecked, id]);
 
