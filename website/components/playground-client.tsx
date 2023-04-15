@@ -56,27 +56,6 @@ const style = {
     translate-y-[5px] bg-transparent group-hover:bg-gray-650
     group-aria-selected:bg-blue-600
   `,
-  toolbar: tw`
-    flex flex-none p-1
-  `,
-  toolbarItem: tw`
-    flex h-12 w-12 items-center justify-center rounded-md
-    bg-transparent text-white/75 hover:bg-white/[15%] hover:text-white
-    focus-visible:ariakit-outline-input sm:rounded-lg
-    dark:hover:bg-white/5 sm:h-10 sm:w-10
-    aria-expanded:!bg-gray-850
-  `,
-  selectHeading: tw`
-    p-2 text-sm font-medium text-black/60 dark:text-white/50
-  `,
-  selectItem: tw`
-    flex cursor-default scroll-m-2
-    items-center gap-2
-    rounded p-2 pr-6
-    active-item:bg-blue-200/40 active:bg-blue-200/70
-    focus-visible:!outline-none dark:active-item:bg-blue-600/25
-    dark:active:bg-blue-800/25 [a&]:cursor-pointer
-  `,
   tabPanel: tw`
     relative overflow-hidden
     rounded-b-[inherit] border border-t-0
