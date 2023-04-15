@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.1.2
+
+### Patch Changes
+
+- Added missing `defaultValue` prop back to `useRadioStore`. ([#2265](https://github.com/ariakit/ariakit/pull/2265))
+
+- Updated dependencies: `@ariakit/core@0.1.1`, `@ariakit/react-core@0.1.2`.
+
 ## 0.1.1
 
 ### Patch Changes
