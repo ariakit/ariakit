@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.1.1
+
+### Patch Changes
+
+- Added missing `defaultValue` prop back to `useRadioStore`. ([#2265](https://github.com/ariakit/ariakit/pull/2265))
+
 ## 0.1.0
 
 ### Minor Changes
