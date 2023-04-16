@@ -1,7 +1,7 @@
 export default function Icon() {
   return (
-    <svg viewBox="0 0 128 128">
-      <foreignObject className="h-full w-full">
+    <svg viewBox="0 0 128 128" width={128} height={128}>
+      <foreignObject width={128} height={128}>
         <div className="flex h-full items-center justify-center p-4">
           <div className="flex items-center justify-center rounded bg-blue-600 p-2">
             <svg
