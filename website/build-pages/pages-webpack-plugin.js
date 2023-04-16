@@ -1,11 +1,12 @@
-// @ts-check
-import { writeFileSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import chalk from "chalk";
 import fse from "fs-extra";
-import { groupBy } from "lodash-es";
+import { camelCase, groupBy } from "lodash-es";
+import invariant from "tiny-invariant";
 import { getPageEntryFiles } from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
+import { getPageName } from "./get-page-name.js";
 import { getPageSections } from "./get-page-sections.js";
 import { getPageSourceFiles } from "./get-page-source-files.js";
 
@@ -16,7 +17,7 @@ function getBuildDir(buildDir) {
 
 /** @param {string} path */
 function pathToImport(path) {
-  return path.replace(/\.[tj](sx?)$/, ".js");
+  return path.replace(/\.ts(x?)$/, ".js$1");
 }
 
 /**
@@ -26,6 +27,13 @@ function pathToImport(path) {
 function writeFiles(buildDir, pages) {
   const entryFiles = pages.flatMap((page) =>
     getPageEntryFiles(page.sourceContext)
+  );
+  const sourceFiles = entryFiles.reduce(
+    /** @param {Record<string, string[]>} acc */ (acc, file) => {
+      acc[file] = getPageSourceFiles(file);
+      return acc;
+    },
+    {}
   );
 
   // deps.ts
@@ -46,7 +54,9 @@ function writeFiles(buildDir, pages) {
   writeFileSync(depsFile, depsContents);
 
   // examples.js
-  const examples = [...new Set(entryFiles.flatMap(getPageSourceFiles))];
+  // TODO: We can use this same logic to produce preview pages for all examples,
+  // and not only the ones that are in the examples folder.
+  const examples = [...new Set(Object.values(sourceFiles).flat())];
   const examplesFile = join(buildDir, "examples.js");
 
   const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
@@ -70,20 +80,72 @@ function writeFiles(buildDir, pages) {
   const categories = groupBy(meta, (page) => page.category);
   const contents = meta.flatMap((page) => page.sections);
 
-  const index = Object.entries(categories).reduce((acc, [category, pages]) => {
-    // @ts-expect-error
-    acc[category] = pages.map((page) => ({
-      category: page.category,
-      group: page.group,
-      slug: page.slug,
-      title: page.title,
-      content: page.content,
-    }));
-    return acc;
-  }, {});
+  const index = Object.entries(categories).reduce(
+    /** @param {Record<string, Omit<(typeof meta)[0], "sections">[]>} acc */
+    (acc, [category, pages]) => {
+      acc[category] = pages.map(({ sections, ...page }) => page);
+      return acc;
+    },
+    {}
+  );
 
   writeFileSync(indexFile, JSON.stringify(index, null, 2));
   writeFileSync(contentsFile, JSON.stringify(contents, null, 2));
+
+  // icons.ts
+  const iconsFile = join(buildDir, "icons.ts");
+
+  // First pass: find icons in the same folder
+  const icons = markdownFiles.reduce(
+    /** @param {Record<string, string | null>} acc */
+    (acc, file) => {
+      const iconPath = join(dirname(file), "icon.tsx");
+      acc[file] = existsSync(iconPath) ? iconPath : null;
+      return acc;
+    },
+    {}
+  );
+
+  // Second pass: find icons in the same folder as the source file
+  Object.entries(icons).forEach(([file, iconPath]) => {
+    if (iconPath) return;
+    const sourceFile = sourceFiles[file]?.[0];
+    if (!sourceFile) return;
+    const sourceIconPath = join(dirname(sourceFile), "icon.tsx");
+    if (!existsSync(sourceIconPath)) return;
+    icons[file] = sourceIconPath;
+  });
+
+  // Third pass: find icons in the same folder as the original component page
+  Object.entries(icons).forEach(([file, iconPath]) => {
+    if (iconPath) return;
+    const key = Object.keys(icons)
+      .filter((key) => !!icons[key])
+      .find((key) => {
+        const pageName = getPageName(key);
+        const currentPageName = getPageName(file);
+        return currentPageName.startsWith(pageName);
+      });
+    if (!key) return;
+    icons[file] = icons[key] || null;
+  });
+
+  const iconsContents = Object.entries(icons)
+    .map(([file, iconPath]) => {
+      const category = pages.find((page) =>
+        file.startsWith(page.sourceContext)
+      );
+      invariant(category);
+      const pageName = getPageName(file);
+      return iconPath
+        ? `export { default as ${camelCase(
+            `${category.slug}/${pageName}`
+          )} } from "${pathToImport(iconPath)}";\n`
+        : "";
+    })
+    .join("");
+
+  writeFileSync(iconsFile, iconsContents);
 }
 
 class PagesWebpackPlugin {

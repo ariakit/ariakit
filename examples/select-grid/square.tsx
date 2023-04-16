@@ -2,7 +2,7 @@ type IconProps = {
   value: string;
 };
 
-export default function Icon({ value }: IconProps) {
+export default function Square({ value }: IconProps) {
   return (
     <div className="icon">
       <div className="icon-row">

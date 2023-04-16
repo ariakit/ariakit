@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import Icon from "./icon.jsx";
+import Square from "./square.jsx";
 import "./style.css";
 
 export default function Example() {
@@ -33,7 +33,7 @@ export default function Example() {
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Position</Ariakit.SelectLabel>
       <Ariakit.Select store={select} showOnKeyDown={false} className="select">
-        <Icon value={value} />
+        <Square value={value} />
         {value}
         <Ariakit.SelectArrow />
       </Ariakit.Select>
