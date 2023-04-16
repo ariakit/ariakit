@@ -1,12 +1,9 @@
 import pagesConfig from "build-pages/config.js";
 import index from "build-pages/index.js";
-import { Blog } from "icons/blog.js";
-import { Components } from "icons/components.js";
-import { Examples } from "icons/examples.js";
-import { Guide } from "icons/guide.js";
 import { groupBy } from "lodash";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { getPageIcon } from "utils/get-page-icon.js";
 import { ListPageItem } from "./list-page-item.js";
 import { ListPageSection } from "./list-page-section.js";
 import { ListPage } from "./list-page.js";
@@ -16,22 +13,10 @@ interface Props {
 }
 
 const meta = {
-  guide: {
-    size: "md",
-    icon: <Guide className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />,
-  },
-  blog: {
-    size: "lg",
-    icon: <Blog className="h-7 w-7 fill-blue-700 dark:fill-blue-500" />,
-  },
-  components: {
-    size: "lg",
-    icon: <Components size="lg" />,
-  },
-  examples: {
-    size: "md",
-    icon: <Examples />,
-  },
+  guide: { size: "md" },
+  blog: { size: "lg" },
+  components: { size: "lg" },
+  examples: { size: "md" },
 } as const;
 
 export function generateMetadata({ params }: Props) {
@@ -54,7 +39,7 @@ export default function Page({ params }: Props) {
   const page = pagesConfig.pages.find((page) => page.slug === category);
   if (!page) return notFound();
 
-  const { size, icon } = meta[key];
+  const { size } = meta[key];
 
   const groups = groupBy(pages, "group");
   const grouplessPages = groups.null || [];
@@ -71,7 +56,7 @@ export default function Page({ params }: Props) {
               title={page.title}
               description={page.content}
               size={size}
-              thumbnail={icon}
+              thumbnail={getPageIcon(page.category, page.slug) || <span />}
             />
           ))}
         </div>
@@ -86,7 +71,7 @@ export default function Page({ params }: Props) {
                 title={page.title}
                 description={page.content}
                 size={size}
-                thumbnail={icon}
+                thumbnail={getPageIcon(page.category, page.slug) || <span />}
               />
             ))}
           </div>

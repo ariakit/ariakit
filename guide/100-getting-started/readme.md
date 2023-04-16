@@ -22,7 +22,7 @@ npm i @ariakit/react
 
 Ariakit exports a set of [unstyled](/guide/styling) React components and hooks that you can use to build accessible web apps. For example, you can use the [Button](/components/button) component to create a button:
 
-<a href="../examples/button/index.tsx" data-playground type="compact">Example</a>
+<a href="../../examples/button/index.tsx" data-playground type="compact">Example</a>
 
 ## CDN
 

@@ -21,14 +21,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { PageContent } from "build-pages/contents.js";
 import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
-import { Blog } from "icons/blog.js";
-import { Components } from "icons/components.js";
-import { Examples } from "icons/examples.js";
-import { Guide } from "icons/guide.js";
 import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
-import { tw } from "utils/tw.js";
+import { getPageIcon } from "utils/get-page-icon.jsx";
 import { useDelayedValue } from "utils/use-delayed-value.js";
 import {
   HeaderMenu,
@@ -43,21 +39,7 @@ type Data = Array<
 
 type SearchData = Array<Data[number] & { nested?: boolean }>;
 
-const style = {
-  thumbnail: tw`
-    w-7 h-7
-    fill-blue-700 dark:fill-blue-500
-  `,
-};
-
 const separator = <div className="font-semibold opacity-30">/</div>;
-
-const thumbnails: Record<string, ReactNode> = {
-  guide: <Guide className={style.thumbnail} />,
-  components: <Components />,
-  examples: <Examples />,
-  blog: <Blog className={style.thumbnail} />,
-};
 
 const categoryTitles: Record<string, string> = {
   guide: "Guide",
@@ -256,7 +238,7 @@ const HeaderNavItem = memo(
         href={href}
         path={path}
         nested={nested}
-        thumbnail={thumbnails[category]}
+        thumbnail={getPageIcon(category, item.slug) || <span />}
         onClick={onClick}
         {...props}
       />
