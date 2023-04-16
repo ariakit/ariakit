@@ -109,27 +109,7 @@ export function Footer() {
           </a>
         </div>
         <div className="text-center text-sm dark:text-white/60 sm:col-span-3 sm:text-left">
-          <p>
-            © 2017-{year} Diego Haz. This site is licensed under{" "}
-            <a
-              href="http://creativecommons.org/licenses/by/4.0/"
-              target="_blank"
-              rel="license noreferrer"
-              className={cx(style.link, "font-semibold dark:text-white/70")}
-            >
-              CC BY 4.0
-            </a>
-            . Library and examples are licensed under{" "}
-            <a
-              href="https://opensource.org/licenses/MIT"
-              target="_blank"
-              rel="license noreferrer"
-              className={cx(style.link, "font-semibold dark:text-white/70")}
-            >
-              MIT
-            </a>
-            .
-          </p>
+          <p>© 2017-{year} Diego Haz</p>
         </div>
       </div>
     </footer>
