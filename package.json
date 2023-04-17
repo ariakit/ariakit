@@ -98,7 +98,7 @@
     "fast-fuzzy": "1.12.0",
     "framer-motion": "10.12.2",
     "fs-extra": "11.1.1",
-    "glob": "10.1.0",
+    "glob": "10.2.1",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
