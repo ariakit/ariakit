@@ -25,17 +25,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
 
     const menu = Ariakit.useMenuStore({
       placement: isSubmenu ? "right-start" : "bottom-start",
-      overflowPadding: isSubmenu ? 0 : 8,
       animated: isSubmenu ? 500 : false,
-      gutter: isSubmenu ? 0 : 8,
-      flip: !isSubmenu,
-      getAnchorRect: (anchor) => {
-        return (
-          parent?.getMenu()?.getBoundingClientRect() ||
-          anchor?.getBoundingClientRect() ||
-          null
-        );
-      },
     });
 
     const open = menu.useState("open");
@@ -149,6 +139,16 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
             wrapperProps={wrapperProps}
             autoFocusOnShow={autoFocus}
             autoFocusOnHide={autoFocus}
+            overflowPadding={isSubmenu ? 0 : 8}
+            gutter={isSubmenu ? 0 : 8}
+            flip={!isSubmenu}
+            getAnchorRect={(anchor) => {
+              return (
+                parent?.getMenu()?.getBoundingClientRect() ||
+                anchor?.getBoundingClientRect() ||
+                null
+              );
+            }}
           >
             <MenuContext.Provider value={contextValue}>
               {isSubmenu && (

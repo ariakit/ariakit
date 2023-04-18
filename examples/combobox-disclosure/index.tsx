@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ gutter: 4, sameWidth: true });
+  const combobox = Ariakit.useComboboxStore();
   return (
     <div className="wrapper">
       <label className="label">
@@ -19,7 +19,12 @@ export default function Example() {
           />
         </div>
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
         <Ariakit.ComboboxItem className="combobox-item" value="Pizza">
           🍕 Pizza
         </Ariakit.ComboboxItem>
