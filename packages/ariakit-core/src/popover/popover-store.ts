@@ -35,7 +35,6 @@ export function createPopoverStore({
   );
   const syncState = store?.getState();
 
-  const rendered = createStore({ rendered: [] });
   const dialog = createDialogStore({ ...props, store });
 
   const placement = defaultValue(
@@ -51,6 +50,7 @@ export function createPopoverStore({
     anchorElement: defaultValue(syncState?.anchorElement, null),
     popoverElement: defaultValue(syncState?.popoverElement, null),
     arrowElement: defaultValue(syncState?.arrowElement, null),
+    rendered: Symbol("rendered"),
   };
   const popover = createStore(initialState, dialog, store);
 
@@ -60,7 +60,7 @@ export function createPopoverStore({
     setAnchorElement: (element) => popover.setState("anchorElement", element),
     setPopoverElement: (element) => popover.setState("popoverElement", element),
     setArrowElement: (element) => popover.setState("arrowElement", element),
-    render: () => rendered.setState("rendered", []),
+    render: () => popover.setState("rendered", Symbol("rendered")),
   };
 }
 
@@ -88,6 +88,11 @@ export interface PopoverStoreState extends DialogStoreState {
    * @default "bottom"
    */
   placement: Placement;
+  /**
+   * A symbol that's used to recompute the popover position when the `render`
+   * method is called.
+   */
+  rendered: symbol;
 }
 
 export interface PopoverStoreFunctions extends DialogStoreFunctions {
@@ -104,8 +109,9 @@ export interface PopoverStoreFunctions extends DialogStoreFunctions {
    */
   setArrowElement: SetState<PopoverStoreState["arrowElement"]>;
   /**
-   * A function that can be used to recompute the popover styles. This is useful
-   * when the popover anchor changes in a way that affects the popover position.
+   * A function that can be used to recompute the popover position. This is
+   * useful when the popover anchor changes in a way that affects the popover
+   * position.
    */
   render: () => void;
 }

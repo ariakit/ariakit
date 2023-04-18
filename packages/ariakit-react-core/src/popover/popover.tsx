@@ -224,6 +224,7 @@ export const usePopover = createHook<PopoverOptions>(
     arrowPadding = 4,
     overflowPadding = 8,
     getAnchorRect,
+    updatePosition,
     ...props
   }) => {
     const arrowElement = store.useState("arrowElement");
@@ -232,6 +233,7 @@ export const usePopover = createHook<PopoverOptions>(
     const contentElement = store.useState("contentElement");
     const placement = store.useState("placement");
     const mounted = store.useState("mounted");
+    const rendered = store.useState("rendered");
 
     // We have to wait for the popover to be positioned for the first time
     // before we can move focus, otherwise there may be scroll jumps. See
@@ -241,6 +243,8 @@ export const usePopover = createHook<PopoverOptions>(
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
     const getAnchorRectProp = useEvent(getAnchorRect);
+    const hasCustomUpdatePosition = !!updatePosition;
+    const updatePositionProp = useEvent(updatePosition);
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
@@ -301,17 +305,25 @@ export const usePopover = createHook<PopoverOptions>(
         }
       };
 
-      const defaultRenderCallback = () => {
-        // https://floating-ui.com/docs/autoUpdate
-        return autoUpdate(anchor, popoverElement, update, {
+      // https://floating-ui.com/docs/autoUpdate
+      return autoUpdate(
+        anchor,
+        popoverElement,
+        () => {
+          if (hasCustomUpdatePosition) {
+            updatePositionProp({ updatePosition: update });
+          } else {
+            update();
+          }
+        },
+        {
           // JSDOM doesn't support ResizeObserver
           elementResize: typeof ResizeObserver === "function",
-        });
-      };
-
-      return defaultRenderCallback();
+        }
+      );
     }, [
       store,
+      rendered,
       popoverElement,
       arrowElement,
       anchorElement,
@@ -330,6 +342,8 @@ export const usePopover = createHook<PopoverOptions>(
       arrowPadding,
       overflowPadding,
       getAnchorRectProp,
+      hasCustomUpdatePosition,
+      updatePositionProp,
     ]);
 
     // Makes sure the wrapper element that's passed to floating UI has the same
@@ -403,7 +417,6 @@ export const usePopover = createHook<PopoverOptions>(
       preserveTabOrder,
       portal,
       autoFocusOnShow: positioned && autoFocusOnShow,
-      // autoFocusOnShow,
       ...props,
       portalRef,
     });
@@ -434,6 +447,7 @@ if (process.env.NODE_ENV !== "production") {
 export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   /**
    * Object returned by the `usePopoverStore` hook.
+   * @see https://ariakit.org/guide/component-stores
    */
   store: PopoverStore;
   /**
@@ -447,12 +461,13 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    */
   fixed?: boolean;
   /**
-   * The distance between the popover and the anchor element. By default, it's 0
-   * plus half of the arrow offset, if it exists.
+   * The distance between the popover and the anchor element.
+   * @default 0
    */
   gutter?: number;
   /**
-   * The skidding of the popover along the anchor element.
+   * The skidding of the popover along the anchor element. Can be set to
+   * negative values to make the popover shift to the opposite side.
    * @default 0
    */
   shift?: number;
@@ -477,15 +492,18 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   overlap?: boolean;
   /**
    * Whether the popover should have the same width as the anchor element. This
-   * will be exposed to CSS as `--popover-anchor-width`.
+   * will be exposed to CSS as
+   * [`--popover-anchor-width`](https://ariakit.org/guide/styling#--popover-anchor-width).
    * @default false
    */
   sameWidth?: boolean;
   /**
    * Whether the popover should fit the viewport. If this is set to true, the
    * popover wrapper will have `maxWidth` and `maxHeight` set to the viewport
-   * size. This will be exposed to CSS as `--popover-available-width` and
-   * `--popover-available-height`.
+   * size. This will be exposed to CSS as
+   * [`--popover-available-width`](https://ariakit.org/guide/styling#--popover-available-width)
+   * and
+   * [`--popover-available-height`](https://ariakit.org/guide/styling#--popover-available-height).
    * @default false
    */
   fitViewport?: boolean;
@@ -496,21 +514,33 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   arrowPadding?: number;
   /**
    * The minimum padding between the popover and the viewport edge. This will be
-   * exposed to CSS as `--popover-overflow-padding`.
+   * exposed to CSS as
+   * [`--popover-overflow-padding`](https://ariakit.org/guide/styling#--popover-overflow-padding).
    * @default 8
    */
   overflowPadding?: number;
   /**
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.
+   *
+   * Examples using this prop:
+   *  - [Textarea with inline combobox](https://ariakit.org/examples/combobox-textarea)
+   *  - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
+   *  - [Context menu](https://ariakit.org/examples/menu-context-menu)
+   *  - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @param anchor The anchor element.
    */
   getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
   /**
-   * A function that will be called when the popover needs to calculate its
-   * styles. It will override the internal behavior.
+   * A callback that will be called when the popover needs to calculate its
+   * position. This will override the internal `updatePosition` function. The
+   * original `updatePosition` function will be passed as an argument, so it can
+   * be called inside the callback to apply the default behavior.
+   *
+   * Example susing this prop:
+   *  - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    */
-  renderCallback?: (props: any) => void | (() => void);
+  updatePosition?: (props: { updatePosition: () => Promise<void> }) => void;
 }
 
 export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;

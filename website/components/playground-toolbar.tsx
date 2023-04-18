@@ -132,7 +132,7 @@ export function PlaygroundToolbar({
       <SelectPopover
         as={Popup}
         store={select}
-        // portal
+        portal
         shift={-6}
         size="responsive"
       >
@@ -161,10 +161,10 @@ export function PlaygroundToolbar({
 
       <Menu
         as={Popup}
-        disablePointerEventsOnApproach={false}
+        store={menu}
         portal
         shift={-6}
-        store={menu}
+        disablePointerEventsOnApproach={false}
         size="responsive"
       >
         {previewLink && (
