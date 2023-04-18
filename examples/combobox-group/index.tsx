@@ -6,7 +6,7 @@ import food from "./food.js";
 import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ gutter: 4, sameWidth: true });
+  const combobox = Ariakit.useComboboxStore();
   const value = combobox.useState("value");
   const deferredValue = React.useDeferredValue(value);
 
@@ -27,7 +27,12 @@ export default function Example() {
           autoSelect
         />
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
         {!!matches.length ? (
           matches.map(([type, items], i) => (
             <React.Fragment key={type}>

@@ -35,8 +35,6 @@ export const ComboboxMultiple = React.forwardRef<
     // is on the combobox input, so we set `virtualFocus` to `false` to disable
     // this behavior and put DOM focus on the items.
     virtualFocus: false,
-    sameWidth: true,
-    gutter: 8,
     defaultValue,
     value,
     setValue: onChange,
@@ -76,7 +74,12 @@ export const ComboboxMultiple = React.forwardRef<
       ) : (
         element
       )}
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={8}
+        sameWidth
+        className="popover"
+      >
         {(popoverProps) => (
           <Ariakit.SelectList
             store={select}

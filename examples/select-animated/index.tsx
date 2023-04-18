@@ -5,8 +5,6 @@ export default function Example() {
   const select = Ariakit.useSelectStore({
     defaultValue: "Apple",
     animated: true,
-    sameWidth: true,
-    gutter: 4,
   });
   const mounted = select.useState("mounted");
   return (
@@ -14,7 +12,13 @@ export default function Example() {
       <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
       <Ariakit.Select store={select} className="select" />
       {mounted && (
-        <Ariakit.SelectPopover store={select} portal className="popover">
+        <Ariakit.SelectPopover
+          store={select}
+          portal
+          gutter={4}
+          sameWidth
+          className="popover"
+        >
           <Ariakit.SelectItem className="select-item" value="Apple" />
           <Ariakit.SelectItem className="select-item" value="Banana" />
           <Ariakit.SelectItem className="select-item" value="Grape" />

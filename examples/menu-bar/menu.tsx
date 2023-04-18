@@ -46,12 +46,7 @@ export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
     const inSubmenu = React.useContext(MenuContext);
-    const menu = Ariakit.useMenuStore({
-      gutter: inSubmenu ? 12 : 4,
-      overlap: inSubmenu,
-      fitViewport: true,
-      shift: inSubmenu ? -9 : -2,
-    });
+    const menu = Ariakit.useMenuStore();
     const mounted = menu.useState("mounted");
     return (
       <>
@@ -66,7 +61,15 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           {inSubmenu && <Ariakit.MenuButtonArrow />}
         </Ariakit.MenuButton>
         {mounted && (
-          <Ariakit.Menu store={menu} portal className="menu">
+          <Ariakit.Menu
+            store={menu}
+            portal
+            gutter={inSubmenu ? 12 : 4}
+            overlap={inSubmenu}
+            fitViewport={true}
+            shift={inSubmenu ? -9 : -2}
+            className="menu"
+          >
             <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
           </Ariakit.Menu>
         )}

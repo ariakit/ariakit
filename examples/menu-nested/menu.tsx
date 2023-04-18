@@ -30,10 +30,7 @@ type MenuButtonProps = React.HTMLAttributes<HTMLDivElement> &
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ label, children, ...props }, ref) => {
     const nested = React.useContext(MenuContext);
-    const menu = Ariakit.useMenuStore({
-      gutter: 8,
-      shift: nested ? -9 : 0,
-    });
+    const menu = Ariakit.useMenuStore();
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
       <Ariakit.MenuButton store={menu} className="button" {...menuButtonProps}>
@@ -55,7 +52,12 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })
         )}
-        <Ariakit.Menu store={menu} className="menu">
+        <Ariakit.Menu
+          store={menu}
+          gutter={8}
+          shift={nested ? -9 : 0}
+          className="menu"
+        >
           <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
         </Ariakit.Menu>
       </>

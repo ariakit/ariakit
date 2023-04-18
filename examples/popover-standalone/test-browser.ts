@@ -11,11 +11,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("do not scroll when opening the popover", async ({ page }) => {
+  await page.setViewportSize({ width: 800, height: 600 });
+  await page.evaluate(() => (document.body.style.paddingTop = "250px"));
   await getButton(page, "Accept invite").focus();
-  const prevScrollY = await page.evaluate(() => window.scrollY);
+  await page.evaluate(() => window.scrollTo({ top: 250 }));
   await page.keyboard.press("Enter");
   await expect(getPopover(page)).toBeVisible();
   await expect(getButton(getPopover(page), "Accept")).toBeFocused();
-  const scrollY = await page.evaluate(() => window.scrollY);
-  expect(scrollY).toBe(prevScrollY);
+  await page.waitForFunction(() => window.scrollY === 250);
 });

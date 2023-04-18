@@ -235,10 +235,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = useComboboxStore({
-      fitViewport: true,
-      focusLoop: false,
       includesBaseElement: false,
-      gutter: 4,
+      focusLoop: false,
       open,
       setOpen: (open) => {
         if (onToggle) {
@@ -257,15 +255,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     });
     const menu = useMenuStore({
       combobox,
-      fixed: true,
       placement: parent ? "right-start" : "bottom-start",
-      getAnchorRect: (anchor) => {
-        if (parent?.current) {
-          return parent.current.getBoundingClientRect();
-        }
-        if (!anchor) return null;
-        return anchor.getBoundingClientRect();
-      },
     });
 
     const idle = useIdle();
@@ -418,6 +408,9 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             store={select}
             typeahead={!searchable}
             composite={!searchable}
+            fixed
+            fitViewport
+            gutter={4}
           >
             {(props) => (
               <MenuList
@@ -438,9 +431,19 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           <Menu
             store={menu}
             ref={popoverRef}
+            fixed
+            fitViewport
+            gutter={4}
             portal
             typeahead={!searchable}
             composite={!searchable}
+            getAnchorRect={(anchor) => {
+              if (parent?.current) {
+                return parent.current.getBoundingClientRect();
+              }
+              if (!anchor) return null;
+              return anchor.getBoundingClientRect();
+            }}
           >
             {renderPopover}
           </Menu>

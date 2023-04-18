@@ -12,7 +12,7 @@ const list = [
 ];
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ gutter: 4, sameWidth: true });
+  const combobox = Ariakit.useComboboxStore();
   return (
     <div className="wrapper">
       <label className="label">
@@ -30,7 +30,12 @@ export default function Example() {
           />
         </div>
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
         {list.map((value) => (
           <Ariakit.ComboboxItem
             key={value}

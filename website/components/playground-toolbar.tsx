@@ -91,12 +91,11 @@ export function PlaygroundToolbar({
     value: language,
     setValue: setLanguage,
     placement: "bottom-start",
-    shift: -6,
   });
 
   const isJS = select.useState((state) => state.value === "js");
 
-  const menu = useMenuStore({ shift: -6 });
+  const menu = useMenuStore();
 
   const onStackblitzClick = (template: "vite" | "next") => {
     return () => {
@@ -130,7 +129,13 @@ export function PlaygroundToolbar({
         )}
       </ToolbarItem>
 
-      <SelectPopover as={Popup} store={select} portal size="responsive">
+      <SelectPopover
+        as={Popup}
+        store={select}
+        // portal
+        shift={-6}
+        size="responsive"
+      >
         <PopoverHeading className={style.popupLabel}>Language</PopoverHeading>
         <SelectItem value="ts" className={style.popupItem}>
           <TypeScript className="h-5 w-5" /> TypeScript
@@ -158,6 +163,7 @@ export function PlaygroundToolbar({
         as={Popup}
         disablePointerEventsOnApproach={false}
         portal
+        shift={-6}
         store={menu}
         size="responsive"
       >

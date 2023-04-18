@@ -37,8 +37,6 @@ export const SelectCombobox = React.forwardRef<
     ref
   ) => {
     const combobox = Ariakit.useComboboxStore({
-      gutter: 4,
-      sameWidth: true,
       open,
       setOpen: onToggle,
       value: searchValue,
@@ -76,6 +74,8 @@ export const SelectCombobox = React.forwardRef<
             store={select}
             composite={false}
             portal
+            gutter={4}
+            sameWidth
             className="popover"
             onFocus={() => setPopoverFocused(true)}
             onBlur={() => setPopoverFocused(false)}

@@ -33,24 +33,29 @@ export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
       setOpen: (open) => {
         if (!open && onClose) onClose();
       },
-      getAnchorRect: () => {
-        if (getAnchorRect) {
-          return getAnchorRect();
-        }
-        if (anchorRef) {
-          return anchorRef.current?.getBoundingClientRect() || null;
-        }
-        const parentElement = fallbackRef.current?.parentElement;
-        if (parentElement) {
-          return parentElement.getBoundingClientRect();
-        }
-        return null;
-      },
     });
     return (
       <>
         <span ref={fallbackRef} style={{ position: "fixed" }} />
-        <Ariakit.Popover store={popover} ref={ref} portal {...rest} />
+        <Ariakit.Popover
+          store={popover}
+          ref={ref}
+          portal
+          getAnchorRect={() => {
+            if (getAnchorRect) {
+              return getAnchorRect();
+            }
+            if (anchorRef) {
+              return anchorRef.current?.getBoundingClientRect() || null;
+            }
+            const parentElement = fallbackRef.current?.parentElement;
+            if (parentElement) {
+              return parentElement.getBoundingClientRect();
+            }
+            return null;
+          }}
+          {...rest}
+        />
       </>
     );
   }

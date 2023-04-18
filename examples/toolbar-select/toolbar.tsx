@@ -76,7 +76,6 @@ export const ToolbarSelect = React.forwardRef<
     value,
     setValue: onChange,
     defaultValue,
-    gutter: 4,
   });
 
   const selectValue = select.useState("value");
@@ -105,7 +104,7 @@ export const ToolbarSelect = React.forwardRef<
         {displayValue}
         <Ariakit.SelectArrow />
       </Ariakit.Select>
-      <Ariakit.SelectPopover store={select} className="popover">
+      <Ariakit.SelectPopover store={select} gutter={4} className="popover">
         {options.map((option) => (
           <Ariakit.SelectItem
             key={option.value}

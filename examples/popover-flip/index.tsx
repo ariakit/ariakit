@@ -2,16 +2,13 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const popover = Ariakit.usePopoverStore({
-    placement: "right",
-    flip: "top bottom",
-  });
+  const popover = Ariakit.usePopoverStore({ placement: "right" });
   return (
     <>
       <Ariakit.PopoverDisclosure store={popover} className="button">
         Accept invite
       </Ariakit.PopoverDisclosure>
-      <Ariakit.Popover store={popover} className="popover">
+      <Ariakit.Popover store={popover} flip="top bottom" className="popover">
         <Ariakit.PopoverArrow className="arrow" />
         <Ariakit.PopoverHeading className="heading">
           Team meeting

@@ -17,14 +17,7 @@ export default function Example() {
   const [trigger, setTrigger] = React.useState<string | null>(null);
   const [caretOffset, setCaretOffset] = React.useState<number | null>(null);
 
-  const combobox = Ariakit.useComboboxStore({
-    fitViewport: true,
-    getAnchorRect: () => {
-      const textarea = ref.current;
-      if (!textarea) return null;
-      return getAnchorRect(textarea);
-    },
-  });
+  const combobox = Ariakit.useComboboxStore();
 
   const searchValue = combobox.useState("value");
   const mounted = combobox.useState("mounted");
@@ -127,6 +120,12 @@ export default function Example() {
         <Ariakit.ComboboxPopover
           store={combobox}
           hidden={!hasMatches}
+          fitViewport
+          getAnchorRect={() => {
+            const textarea = ref.current;
+            if (!textarea) return null;
+            return getAnchorRect(textarea);
+          }}
           className="popover"
         >
           {matches.map((value) => (

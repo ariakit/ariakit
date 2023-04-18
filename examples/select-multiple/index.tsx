@@ -9,11 +9,7 @@ function renderValue(value: string[]) {
 }
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({
-    defaultValue: ["Apple", "Cake"],
-    sameWidth: true,
-    gutter: 4,
-  });
+  const select = Ariakit.useSelectStore({ defaultValue: ["Apple", "Cake"] });
   const value = select.useState("value");
   const mounted = select.useState("mounted");
   return (
@@ -24,7 +20,12 @@ export default function Example() {
         <Ariakit.SelectArrow />
       </Ariakit.Select>
       {mounted && (
-        <Ariakit.SelectPopover store={select} className="popover">
+        <Ariakit.SelectPopover
+          store={select}
+          gutter={4}
+          sameWidth
+          className="popover"
+        >
           {list.map((value) => (
             <Ariakit.SelectItem
               key={value}

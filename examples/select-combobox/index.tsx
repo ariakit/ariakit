@@ -6,12 +6,7 @@ import "./style.css";
 
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
-  const select = Ariakit.useSelectStore({
-    combobox,
-    defaultValue: "Apple",
-    gutter: 4,
-    sameWidth: true,
-  });
+  const select = Ariakit.useSelectStore({ combobox, defaultValue: "Apple" });
 
   const value = combobox.useState("value");
   const deferredValue = useDeferredValue(value);
@@ -29,6 +24,8 @@ export default function Example() {
       <Ariakit.SelectPopover
         store={select}
         composite={false}
+        gutter={4}
+        sameWidth
         className="popover"
       >
         <div className="combobox-wrapper">

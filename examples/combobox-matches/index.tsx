@@ -5,7 +5,7 @@ import list from "./list.js";
 import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ gutter: 8, sameWidth: true });
+  const combobox = Ariakit.useComboboxStore();
   const value = combobox.useState("value");
   const deferredValue = useDeferredValue(value);
 
@@ -24,7 +24,12 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={8}
+        sameWidth
+        className="popover"
+      >
         {matches.length ? (
           matches.map((value) => (
             <Ariakit.ComboboxItem
