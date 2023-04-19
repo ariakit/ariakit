@@ -1,0 +1,9 @@
+@import url("../popover/style.css");
+
+.spinner {
+  @apply
+    animate-spin
+    w-4
+    h-4
+  ;
+}

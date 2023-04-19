@@ -41,6 +41,8 @@ function isMovingOnHovercard(
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
+  // The hovercard anchor element has focus so we should keep it visible.
+  if (anchor && hasFocusWithin(anchor)) return true;
   if (!target) return false;
   // The mouse is moving on an element inside the hovercard.
   if (contains(card, target)) return true;
@@ -245,7 +247,9 @@ export const useHovercard = createHook<HovercardOptions>(
           store.hide();
         }, hideTimeout);
       };
-      return addGlobalEventListener("mousemove", onMouseMove, true);
+      return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
+        clearTimeout(hideTimeoutRef.current)
+      );
     }, [
       store,
       domReady,

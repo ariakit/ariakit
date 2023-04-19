@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { basename, dirname, extname } from "path";
-import _postcss from "postcss";
+import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";
 // @ts-expect-error
@@ -10,10 +10,6 @@ import prettify from "postcss-prettify";
 import { format } from "prettier";
 import { PurgeCSS } from "purgecss";
 import _tailwindcss from "tailwindcss";
-
-/** @type {import("postcss")["default"]} */
-// @ts-expect-error
-const postcss = _postcss;
 
 /** @type {import("tailwindcss")["default"]} */
 // @ts-expect-error
@@ -31,6 +27,8 @@ const plugin = (opts = {}) => {
       const rulesSeen = new Set();
       return {
         Rule(rule) {
+          // @ts-expect-error
+          if (rule.parent?.name == "keyframes") return;
           if (rulesSeen.has(rule)) return;
           rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
@@ -70,11 +68,6 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (options.format) {
-    // processor.use(
-    //   purgecss({
-    //     content: [`${dirname(filename)}/**/*.{js,jsx,ts,tsx}`],
-    //   })
-    // );
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true })
     );

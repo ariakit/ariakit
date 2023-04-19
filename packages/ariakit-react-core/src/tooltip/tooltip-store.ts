@@ -1,25 +1,25 @@
 import * as Core from "@ariakit/core/tooltip/tooltip-store";
 import type {
-  PopoverStoreFunctions,
-  PopoverStoreOptions,
-  PopoverStoreState,
-} from "../popover/popover-store.js";
+  HovercardStoreFunctions,
+  HovercardStoreOptions,
+  HovercardStoreState,
+} from "../hovercard/hovercard-store.js";
 import {
-  usePopoverStoreOptions,
-  usePopoverStoreProps,
-} from "../popover/popover-store.js";
+  useHovercardStoreOptions,
+  useHovercardStoreProps,
+} from "../hovercard/hovercard-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
 export function useTooltipStoreOptions(props: TooltipStoreProps) {
-  return usePopoverStoreOptions(props);
+  return useHovercardStoreOptions(props);
 }
 
 export function useTooltipStoreProps<T extends TooltipStore>(
   store: T,
   props: TooltipStoreProps
 ) {
-  return usePopoverStoreProps(store, props);
+  return useHovercardStoreProps(store, props);
 }
 
 /**
@@ -42,15 +42,15 @@ export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
 
 export interface TooltipStoreState
   extends Core.TooltipStoreState,
-    PopoverStoreState {}
+    HovercardStoreState {}
 
 export interface TooltipStoreFunctions
   extends Core.TooltipStoreFunctions,
-    PopoverStoreFunctions {}
+    HovercardStoreFunctions {}
 
 export interface TooltipStoreOptions
   extends Core.TooltipStoreOptions,
-    PopoverStoreOptions {}
+    HovercardStoreOptions {}
 
 export type TooltipStoreProps = TooltipStoreOptions & Core.TooltipStoreProps;
 

@@ -141,7 +141,6 @@ export const useDialog = createHook<DialogOptions>(
       (state) => preserveTabOrderProp && !modal && state.mounted
     );
     const open = store.useState("open");
-    const openRef = useRef(open);
 
     // Usually, we only want to disable the accessibility tree outside if the
     // dialog is a modal. But the Portal component can't preserve the tab order
@@ -318,6 +317,7 @@ export const useDialog = createHook<DialogOptions>(
       autoFocusOnShowProp,
     ]);
 
+    const openRef = useRef(open);
     const mayAutoFocusOnHide = !!autoFocusOnHide;
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
@@ -326,8 +326,6 @@ export const useDialog = createHook<DialogOptions>(
     useSafeLayoutEffect(() => {
       const prevOpen = openRef.current;
       openRef.current = open;
-      // We only want to auto focus on hide if the dialog was open before.
-      if (!prevOpen) return;
       if (!mayAutoFocusOnHide) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
@@ -370,6 +368,11 @@ export const useDialog = createHook<DialogOptions>(
           element.focus();
         }
       };
+      // We only want to auto focus on hide if the dialog was open before. TODO:
+      // Explain more.
+      if (!prevOpen) {
+        return focusOnHide;
+      }
       if (!open) {
         // If this effect is running while state.open is false, this means that
         // the Dialog component doesn't get unmounted when it's not open, so we
