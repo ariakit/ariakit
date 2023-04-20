@@ -1,4 +1,4 @@
-import { createElement, version } from "react";
+import { Suspense, createElement, version } from "react";
 import { render } from "@ariakit/test";
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers.js";
 import _matchers from "@testing-library/jest-dom/matchers.js";
@@ -59,6 +59,7 @@ if (version.startsWith("17")) {
     return {
       ...actual,
       useDeferredValue: <T>(v: T) => v,
+      useTransition: () => [false, (v: () => any) => v()],
       useInsertionEffect: undefined,
     };
   });
@@ -71,6 +72,8 @@ beforeEach(async ({ meta }) => {
   if (!match) return;
   const [, example] = match;
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
-  const { unmount } = render(createElement(comp));
+  const { unmount } = render(
+    createElement(Suspense, { fallback: null, children: createElement(comp) })
+  );
   return unmount;
 });
