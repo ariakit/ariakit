@@ -177,12 +177,6 @@ export const useDialog = createHook<DialogOptions>(
     // When a focused child element is removed, focus will be placed on the
     // document's body. This will focus on the dialog instead.
     useFocusOnChildUnmount(store);
-    useHideOnInteractOutside({
-      store,
-      modal,
-      hideOnInteractOutside,
-      nestedDialogs,
-    });
 
     const mounted = store.useState("mounted");
 
@@ -273,6 +267,16 @@ export const useDialog = createHook<DialogOptions>(
       setHasOpened(true);
       return () => setHasOpened(false);
     }, [open]);
+
+    useHideOnInteractOutside({
+      store,
+      modal,
+      // TODO: Refactor
+      hideOnInteractOutside,
+      nestedDialogs,
+      enabled: true,
+      // enabled: hasOpened,
+    });
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);

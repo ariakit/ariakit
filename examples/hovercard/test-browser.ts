@@ -10,15 +10,16 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/previews/hovercard", { waitUntil: "networkidle" });
 });
 
-test("show/hide hovercard after scrolling", async ({ page }) => {
+test("https://github.com/ariakit/ariakit/issues/1662", async ({ page }) => {
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
   await page.mouse.move(0, 0);
   await expect(getHovercard(page)).not.toBeVisible();
-  await page.mouse.wheel(0, 300);
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
-  await page.mouse.wheel(0, -300);
+  await page.mouse.wheel(0, 300);
+  await page.waitForTimeout(600);
+  await expect(getHovercard(page)).toBeVisible();
   await page.mouse.move(0, 0);
   await expect(getHovercard(page)).not.toBeVisible();
 });

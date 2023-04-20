@@ -10,6 +10,7 @@ export type DialogProps = React.HTMLAttributes<HTMLDivElement> & {
   onUnmount?: () => void;
   initialFocus?: Ariakit.DialogProps["initialFocus"];
   finalFocus?: Ariakit.DialogProps["finalFocus"];
+  autoFocusOnHide?: Ariakit.DialogProps["autoFocusOnHide"];
 };
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
@@ -18,7 +19,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       animated,
       open,
       setOpen: (open) => {
-        if (dialog.getState().open !== open && !open) {
+        if (!open) {
           onClose?.();
         }
       },
