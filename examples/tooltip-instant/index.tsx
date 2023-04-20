@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const tooltip = Ariakit.useTooltipStore({ timeout: 2000 });
+  const tooltip = Ariakit.useTooltipStore({ timeout: 0 });
   return (
     <>
       <Ariakit.TooltipAnchor
@@ -10,7 +10,7 @@ export default function Example() {
         store={tooltip}
         className="button"
       >
-        Hover or focus on me and wait for 2 seconds
+        Hover or focus on me
       </Ariakit.TooltipAnchor>
       <Ariakit.Tooltip store={tooltip} className="tooltip">
         Tooltip

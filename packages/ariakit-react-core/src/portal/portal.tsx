@@ -166,6 +166,7 @@ export const usePortal = createHook<PortalOptions>(
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={beforeInsideRef}
+                data-portal-before-inside
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(getNextTabbable());
@@ -179,6 +180,7 @@ export const usePortal = createHook<PortalOptions>(
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={afterInsideRef}
+                data-portal-after-inside
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(getPreviousTabbable());
@@ -200,6 +202,7 @@ export const usePortal = createHook<PortalOptions>(
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={beforeOutsideRef}
+                data-portal-before-outside
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(beforeInsideRef.current);
@@ -218,11 +221,21 @@ export const usePortal = createHook<PortalOptions>(
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={afterOutsideRef}
+                data-portal-after-outside
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(afterInsideRef.current);
                   } else {
-                    queueFocus(getNextTabbable());
+                    const nextTabbable = getNextTabbable();
+                    // TODO: Revisit this. Check tooltip-instant tests. Infinite
+                    // loop.
+                    if (nextTabbable === beforeInsideRef.current) {
+                      requestAnimationFrame(() => {
+                        queueFocus(getNextTabbable());
+                      });
+                      return;
+                    }
+                    queueFocus(nextTabbable);
                   }
                 }}
               />

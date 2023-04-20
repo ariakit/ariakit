@@ -38,7 +38,14 @@ export const useTooltip = createHook<TooltipOptions>(
       ...props,
     };
 
-    props = useHovercard({ store, portal, gutter, ...props });
+    props = useHovercard({
+      store,
+      portal,
+      gutter,
+      // TODO: Do something about this. See tooltip-instant tests
+      // preserveTabOrder: false,
+      ...props,
+    });
 
     return props;
   }

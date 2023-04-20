@@ -1,32 +1,34 @@
 import { lazy, useState, useTransition } from "react";
 import * as Ariakit from "@ariakit/react";
 import { Spinner } from "./spinner.js";
+import { usePerceptibleValue } from "./use-perceptible-value.js";
 import "./style.css";
 
-function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-const Popover = lazy(() =>
-  // Makes sure the spinner is shown for at least 350ms
-  Promise.all([import("./popover.js"), wait(350)]).then(([mod]) => mod)
-);
+const Popover = lazy(() => import("./popover.js"));
 
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  // Wait for 150ms before showing the spinner. Once the spinner is shown, it
+  // should be visible for enough time to avoid flickering.
+  const loading = usePerceptibleValue(isPending, { delay: 150 });
+
   const popover = Ariakit.usePopoverStore({
     open,
-    setOpen: (open) => startTransition(() => setOpen(open)),
+    setOpen: (open) => {
+      if (open) {
+        return startTransition(() => setOpen(open));
+      }
+      setOpen(open);
+    },
   });
-  // const mounted = popover.useState("mounted");
-  // const [popoverEl, setPopoverEl] = useState<HTMLElement | null>(null);
-  // const loading = mounted && !popoverEl;
+
   return (
     <>
       <Ariakit.PopoverDisclosure store={popover} className="button">
         Accept invite
-        {isPending ? <Spinner /> : <Ariakit.PopoverDisclosureArrow />}
+        {loading ? <Spinner /> : <Ariakit.PopoverDisclosureArrow />}
       </Ariakit.PopoverDisclosure>
       {open && (
         <Popover store={popover} className="popover">

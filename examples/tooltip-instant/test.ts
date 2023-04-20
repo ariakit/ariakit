@@ -1,10 +1,5 @@
 import { getByRole, hover, press, waitFor } from "@ariakit/test";
 
-const getTooltip = () => getByRole("tooltip", { hidden: true });
-
-const waitForTooltipToShow = () =>
-  waitFor(() => expect(getTooltip()).toBeVisible());
-
 const hoverOutside = async () => {
   await hover(document.body);
   await hover(document.body, { clientX: 10, clientY: 10 });
@@ -12,23 +7,25 @@ const hoverOutside = async () => {
 };
 
 test("show tooltip on hover", async () => {
-  expect(getTooltip()).not.toBeVisible();
+  expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await hover(getByRole("button"));
-  await waitForTooltipToShow();
+  await waitFor(() =>
+    expect(getByRole("tooltip", { hidden: true })).toBeVisible()
+  );
   await hoverOutside();
-  expect(getTooltip()).not.toBeVisible();
+  expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
 });
 
 test("show tooltip on focus", async () => {
   const div = document.createElement("div");
   div.tabIndex = 0;
   document.body.append(div);
-
-  expect(getTooltip()).not.toBeVisible();
+  expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   await press.Tab();
-  expect(getByRole("tooltip")).toBeVisible();
+  await waitFor(() =>
+    expect(getByRole("tooltip", { hidden: true })).toBeVisible()
+  );
   await press.Tab();
-  expect(getTooltip()).not.toBeVisible();
-
+  expect(getByRole("tooltip", { hidden: true })).not.toBeVisible();
   div.remove();
 });

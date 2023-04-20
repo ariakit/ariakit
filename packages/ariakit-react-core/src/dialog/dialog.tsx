@@ -265,6 +265,15 @@ export const useDialog = createHook<DialogOptions>(
       return disableAccessibilityTreeOutside(element);
     }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
 
+    const [hasOpened, setHasOpened] = useState(false);
+
+    // TODO: Explain
+    useEffect(() => {
+      if (!open) return;
+      setHasOpened(true);
+      return () => setHasOpened(false);
+    }, [open]);
+
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
@@ -317,15 +326,14 @@ export const useDialog = createHook<DialogOptions>(
       autoFocusOnShowProp,
     ]);
 
-    const openRef = useRef(open);
     const mayAutoFocusOnHide = !!autoFocusOnHide;
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
     // Auto focus on hide. This must be a layout effect because we need to move
     // focus synchronously before another dialog is shown in parallel.
     useSafeLayoutEffect(() => {
-      const prevOpen = openRef.current;
-      openRef.current = open;
+      // We only want to auto focus on hide if the dialog was open before.
+      if (!hasOpened) return;
       if (!mayAutoFocusOnHide) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = () => {
@@ -368,11 +376,6 @@ export const useDialog = createHook<DialogOptions>(
           element.focus();
         }
       };
-      // We only want to auto focus on hide if the dialog was open before. TODO:
-      // Explain more.
-      if (!prevOpen) {
-        return focusOnHide;
-      }
       if (!open) {
         // If this effect is running while state.open is false, this means that
         // the Dialog component doesn't get unmounted when it's not open, so we
@@ -383,7 +386,7 @@ export const useDialog = createHook<DialogOptions>(
       // executed when the Dialog component gets unmounted. This is useful so we
       // can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
+    }, [hasOpened, open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 

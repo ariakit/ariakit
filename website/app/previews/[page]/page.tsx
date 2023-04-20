@@ -7,7 +7,7 @@ import { getPageName } from "build-pages/get-page-name.js";
 import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
 import pagesIndex from "build-pages/index.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
-import { Preview } from "components/preview.js";
+import { Preview } from "components/preview.jsx";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { tw } from "utils/tw.js";
