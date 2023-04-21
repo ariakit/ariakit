@@ -53,7 +53,7 @@ function isMovingOnHovercard(
   return false;
 }
 
-// The autoFocusOnShow store will be set to true when the hovercard disclosure
+// The autoFocusOnShow state will be set to true when the hovercard disclosure
 // element is clicked. We have to reset it to false when the hovercard element
 // gets hidden or is unmounted.
 function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
@@ -207,7 +207,7 @@ export const useHovercard = createHook<HovercardOptions>(
         // through valid hovercard elements.
         if (isMovingOnHovercard(target, element, anchor, nestedHovercards)) {
           // While the mouse is moving over the anchor element while the hover
-          // card is open, keep track of the mouse position so we'll use the
+          // card is open, keep track of the mouse position so we can use the
           // last point before the mouse leaves the anchor element.
           enterPointRef.current =
             target && anchor && contains(anchor, target)
@@ -225,7 +225,7 @@ export const useHovercard = createHook<HovercardOptions>(
         if (enterPoint) {
           const currentPoint = getEventPoint(event);
           const polygon = getElementPolygon(element, enterPoint);
-          // If the current's event mouse position is inside the transit
+          // If the current event's mouse position is inside the transit
           // polygon, this means that the mouse is moving toward the hover card,
           // so we disable this event. This is necessary because the mousemove
           // event may trigger focus on other elements and close the hovercard.
@@ -245,7 +245,9 @@ export const useHovercard = createHook<HovercardOptions>(
           store.hide();
         }, hideTimeout);
       };
-      return addGlobalEventListener("mousemove", onMouseMove, true);
+      return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
+        clearTimeout(hideTimeoutRef.current)
+      );
     }, [
       store,
       domReady,
@@ -288,7 +290,7 @@ export const useHovercard = createHook<HovercardOptions>(
     const registerOnParent = useContext(NestedHovercardContext);
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
-    // if it's not a modal, is portal and is mounted. We don't need to register
+    // it's not a modal, is portal and is mounted. We don't need to register
     // non-portal hovercards because they will be captured by the contains
     // function in the isMovingOnHovercard function above. This must be a layout
     // effect so we don't lose mouse move events right after the nested
