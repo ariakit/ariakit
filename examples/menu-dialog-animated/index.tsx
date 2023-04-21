@@ -107,6 +107,7 @@ export default function Example() {
           createDialogInitialFocusRef.current = null;
         }}
         initialFocus={createDialogInitialFocusRef}
+        autoFocusOnHide={!infoDialog.open && !manageDialog.open}
         onUnmount={() => {
           form.reset();
           createDialog.unmount();
