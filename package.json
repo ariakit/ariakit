@@ -36,6 +36,7 @@
     "build": "lerna exec --scope @ariakit/* -- npm run build",
     "build-website": "npm run build && npm run build --prefix website",
     "clean": "npm run clean -ws --if-present",
+    "changeset": "changeset",
     "prepare": "husky install"
   },
   "workspaces": [

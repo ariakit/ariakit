@@ -235,6 +235,23 @@ export function getKeys<T extends object>(obj: T) {
 }
 
 /**
+ * Checks whether a boolean event prop (e.g., hideOnInteractOutside) was
+ * intentionally set to false, either with a boolean value or a callback that
+ * returns false.
+ */
+export function isFalsyBooleanCallback<T extends unknown[]>(
+  booleanOrCallback?: boolean | ((...args: T) => boolean),
+  ...args: T
+) {
+  const result =
+    typeof booleanOrCallback === "function"
+      ? booleanOrCallback(...args)
+      : booleanOrCallback;
+  if (result == null) return false;
+  return !result;
+}
+
+/**
  * Returns the first value that is not `undefined`.
  */
 export function defaultValue<T extends readonly any[]>(...values: T) {
