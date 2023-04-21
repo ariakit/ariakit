@@ -31,7 +31,7 @@ type CoreLayoutProps = {
 };
 
 export default function CoreLayout(props: CoreLayoutProps) {
-  const scrolled = useScrolled();
+  const scrolled = useScrolled(50);
   const title =
     props.data && props.data.markdownRemark && props.data.markdownRemark.title;
   const isHome = props.location.pathname === "/";
@@ -69,7 +69,7 @@ export default function CoreLayout(props: CoreLayoutProps) {
             background: ${background};
             width: var(--nav-width);
             z-index: 900;
-            top: 80px;
+            top: 120px;
             left: 0;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
@@ -95,6 +95,12 @@ export default function CoreLayout(props: CoreLayoutProps) {
             font-size: 0.875em;
             padding: 0.2em 0.4em;
           }
+          ${isHome &&
+          css`
+            @media (max-width: 768px) {
+              margin-top: 50px;
+            }
+          `}
           ${!title &&
           !isHome &&
           css`
@@ -103,26 +109,18 @@ export default function CoreLayout(props: CoreLayoutProps) {
           `}
           ${title &&
           css`
-            margin-top: 60px;
-            margin-right: calc(var(--aside-width) + var(--horizontal-gutter));
-            margin-bottom: 72px;
-            margin-left: calc(var(--nav-width) + var(--horizontal-gutter));
+            margin: 100px 232px 72px 262px;
             padding: 8px;
             box-sizing: border-box;
-
             @media (max-width: 1024px) {
               margin-right: 0;
             }
             @media (max-width: 768px) {
               margin-left: 0;
-              margin-top: 60px;
+              margin-top: 120px;
             }
             @media (min-width: 1440px) {
-              max-width: calc(
-                1440px - var(--aside-width) - var(--nav-width) -
-                  var(--horizontal-gutter) * 2 -
-                  (var(--nav-width) - var(--aside-width))
-              );
+              max-width: 946px;
               margin-right: auto;
               margin-left: auto;
             }
@@ -135,7 +133,7 @@ export default function CoreLayout(props: CoreLayoutProps) {
         <aside
           css={css`
             position: fixed;
-            top: 30px;
+            top: 80px;
             right: 0;
             width: var(--aside-width);
             background: ${background};

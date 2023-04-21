@@ -46,15 +46,52 @@ export default function Header({ transparent }: HeaderProps) {
   const boxShadowColor = useFade(foreground, 0.85);
   const dialog = useDialogState({ animated: true });
   const location = useLocation();
+  const headerZIndex = 910;
+  const narrowBreakpoint = 450;
 
   React.useEffect(dialog.hide, [location.pathname]);
 
   return (
     <>
+      <div
+        className={css`
+          background-color: black;
+          color: white;
+          position: fixed;
+          top: 0;
+          width: 100%;
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          justify-content: center;
+          padding: 17px 15px;
+          z-index: ${headerZIndex};
+          @media (min-width: 768px) {
+            padding: 15px 56px;
+          }
+        `}
+      >
+        Looking for Reakit&apos;s successor?
+        <a
+          href="https://ariakit.org"
+          className={css`
+            text-decoration: none;
+            color: #61dafb;
+            &:hover {
+              text-decoration: underline;
+            }
+            @media (max-width: ${narrowBreakpoint}px) {
+              display: block;
+            }
+          `}
+        >
+          Visit Ariakit
+        </a>
+      </div>
       <header
         className={css`
           position: fixed;
-          top: 0;
+          top: 48px;
           left: 0;
           width: 100%;
           z-index: 910;
@@ -109,6 +146,10 @@ export default function Header({ transparent }: HeaderProps) {
             a {
               font-size: 1em !important;
             }
+          }
+
+          @media (max-width: ${narrowBreakpoint}px) {
+            top: 66px;
           }
         `}
       >

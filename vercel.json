@@ -1,0 +1,5 @@
+{
+  "installCommand": "yarn",
+  "buildCommand": "yarn build:fast && yarn website:build",
+  "outputDirectory": "packages/website/public"
+}
