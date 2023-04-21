@@ -68,6 +68,9 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         const { showTimeout } = store.getState();
         showTimeoutRef.current = window.setTimeout(() => {
           showTimeoutRef.current = 0;
+          // Let's check again if the mouse is moving. This is to avoid showing
+          // the hovercard on mobile clicks or after clicking on the anchor.
+          if (!isMouseMoving()) return;
           store.show();
         }, showTimeout);
       }
