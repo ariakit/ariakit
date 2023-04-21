@@ -1,5 +1,18 @@
 # @ariakit/react
 
+## 0.1.3
+
+### Patch Changes
+
+- Fixed `Dialog` not returning focus when closed when rendered with `React.lazy`. ([#2290](https://github.com/ariakit/ariakit/pull/2290))
+
+- Fixed `Hovercard` being shown on touch/tap on mobile devices. ([#2291](https://github.com/ariakit/ariakit/pull/2291))
+
+- Fixed `Hovercard` not properly cleaning up the timeout to hide the card when
+  unmounted. ([#2289](https://github.com/ariakit/ariakit/pull/2289))
+
+- Updated dependencies: `@ariakit/react-core@0.1.3`, `@ariakit/core@0.1.2`.
+
 ## 0.1.2
 
 ### Patch Changes

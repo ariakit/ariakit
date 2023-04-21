@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.1.2
+
+### Patch Changes
+
+- Added `isFalsyBooleanCallback` method.
+
 ## 0.1.1
 
 ### Patch Changes
