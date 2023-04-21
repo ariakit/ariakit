@@ -56,11 +56,6 @@ export const useTooltip = createHook<TooltipOptions>(
         const { anchorElement } = store.getState();
         if (!anchorElement) return true;
         if ("focusVisible" in anchorElement.dataset) return false;
-        try {
-          // JSDOM doesn't support `:focus-visible` See
-          // https://github.com/jsdom/jsdom/issues/3426
-          if (anchorElement.matches(":focus-visible")) return false;
-        } catch {}
         return true;
       },
       hideOnInteractOutside: (event) => {
@@ -70,8 +65,6 @@ export const useTooltip = createHook<TooltipOptions>(
         if (contains(anchorElement, event.target as Node)) return false;
         return true;
       },
-      // TODO: Do something about this. See tooltip-instant tests
-      // preserveTabOrder: false,
       ...props,
     });
 

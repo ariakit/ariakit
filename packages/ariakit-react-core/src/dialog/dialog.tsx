@@ -177,6 +177,12 @@ export const useDialog = createHook<DialogOptions>(
     // When a focused child element is removed, focus will be placed on the
     // document's body. This will focus on the dialog instead.
     useFocusOnChildUnmount(store);
+    useHideOnInteractOutside({
+      store,
+      modal,
+      hideOnInteractOutside,
+      nestedDialogs,
+    });
 
     const mounted = store.useState("mounted");
 
@@ -259,25 +265,6 @@ export const useDialog = createHook<DialogOptions>(
       return disableAccessibilityTreeOutside(element);
     }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
 
-    const [hasOpened, setHasOpened] = useState(false);
-
-    // TODO: Explain
-    useEffect(() => {
-      if (!open) return;
-      setHasOpened(true);
-      return () => setHasOpened(false);
-    }, [open]);
-
-    useHideOnInteractOutside({
-      store,
-      modal,
-      // TODO: Refactor
-      hideOnInteractOutside,
-      nestedDialogs,
-      enabled: true,
-      // enabled: hasOpened,
-    });
-
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
@@ -332,6 +319,15 @@ export const useDialog = createHook<DialogOptions>(
 
     const mayAutoFocusOnHide = !!autoFocusOnHide;
     const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
+
+    // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
+    // dialog was open before.
+    const [hasOpened, setHasOpened] = useState(false);
+    useEffect(() => {
+      if (!open) return;
+      setHasOpened(true);
+      return () => setHasOpened(false);
+    }, [open]);
 
     // Auto focus on hide. This must be a layout effect because we need to move
     // focus synchronously before another dialog is shown in parallel.

@@ -28,6 +28,15 @@ test("do not hide tooltip on click", async () => {
   expect(getTooltip()).not.toBeVisible();
 });
 
+test("do not wait to show the tooltip if it was just hidden", async () => {
+  await hover(getByRole("button"));
+  await waitForTooltipToShow();
+  await hoverOutside();
+  expect(getTooltip()).not.toBeVisible();
+  await hover(getByRole("button"));
+  expect(getTooltip()).toBeVisible();
+});
+
 test("if tooltip was shown on hover, then the anchor received keyboard focus, do not hide on mouseleave", async () => {
   await hover(getByRole("button"));
   await waitForTooltipToShow();
@@ -58,6 +67,23 @@ test("show tooltip on focus", async () => {
   expect(getByRole("tooltip")).toBeVisible();
   await press.Tab();
   expect(getTooltip()).not.toBeVisible();
+
+  div.remove();
+});
+
+test("do not show tooltip immediately if focus was lost", async () => {
+  const div = document.createElement("div");
+  div.tabIndex = 0;
+  document.body.append(div);
+
+  await hover(getByRole("button"));
+  await waitForTooltipToShow();
+  await press.Tab();
+  await press.Tab();
+  expect(getTooltip()).not.toBeVisible();
+  await hover(getByRole("button"));
+  expect(getTooltip()).not.toBeVisible();
+  await waitForTooltipToShow();
 
   div.remove();
 });

@@ -240,7 +240,7 @@ export function getKeys<T extends object>(obj: T) {
  * returns false.
  */
 export function isFalsyBooleanCallback<T extends unknown[]>(
-  booleanOrCallback: boolean | ((...args: T) => boolean),
+  booleanOrCallback?: boolean | ((...args: T) => boolean),
   ...args: T
 ) {
   const result =

@@ -6,13 +6,13 @@ export default function Example() {
   return (
     <>
       <Ariakit.TooltipAnchor
-        as={Ariakit.Button}
         store={tooltip}
+        as="button"
         className="button secondary"
       >
         Hover or focus on me
       </Ariakit.TooltipAnchor>
-      <Ariakit.Tooltip portal={false} store={tooltip} className="tooltip">
+      <Ariakit.Tooltip store={tooltip} className="tooltip">
         Tooltip
       </Ariakit.Tooltip>
     </>

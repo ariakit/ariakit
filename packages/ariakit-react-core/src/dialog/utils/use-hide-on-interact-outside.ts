@@ -10,7 +10,6 @@ type Options = Pick<
   "store" | "modal" | "hideOnInteractOutside"
 > & {
   nestedDialogs: HTMLElement[];
-  enabled?: boolean;
 };
 
 type EventOutsideOptions = {
@@ -107,7 +106,6 @@ export function useHideOnInteractOutside({
   modal,
   hideOnInteractOutside,
   nestedDialogs,
-  enabled,
 }: Options) {
   const open = store.useState("open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
@@ -119,7 +117,6 @@ export function useHideOnInteractOutside({
     listener: (event) => {
       const dialog = store.getState().contentElement;
       if (!dialog) return;
-      if (!enabled) return;
       if (modal && !shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         // If the dialog is modal and the user clicked outside the dialog, but
         // shouldHideOnInteractOutside is false, we don't hide the dialog, but
@@ -142,8 +139,6 @@ export function useHideOnInteractOutside({
       // was dispatched outside of the dialog. See form-select example. We just
       // ignore this.
       if (!previousMouseDown) return;
-      // TODO: Refactor and explain
-      if (!enabled) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         event.preventDefault();
@@ -166,7 +161,6 @@ export function useHideOnInteractOutside({
     listener: (event) => {
       const dialog = store.getState().contentElement;
       if (!dialog) return;
-      if (!enabled) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
@@ -187,7 +181,6 @@ export function useHideOnInteractOutside({
     listener: (event) => {
       const dialog = store.getState().contentElement;
       if (!dialog) return;
-      if (!enabled) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         // Same as the mousedown listener.
