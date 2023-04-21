@@ -74,7 +74,7 @@
     "@types/node": "18.15.13",
     "@types/postcss-import": "14.0.0",
     "@types/prettier": "2.7.2",
-    "@types/react": "18.0.37",
+    "@types/react": "18.0.38",
     "@types/react-dom": "18.0.11",
     "@types/stylis": "4.0.2",
     "@types/textarea-caret": "3.0.1",
