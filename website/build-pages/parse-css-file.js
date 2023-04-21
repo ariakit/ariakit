@@ -28,7 +28,7 @@ const plugin = (opts = {}) => {
       return {
         Rule(rule) {
           // @ts-expect-error
-          if (rule.parent?.name == "keyframes") return;
+          if (rule.parent?.name === "keyframes") return;
           if (rulesSeen.has(rule)) return;
           rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
