@@ -1,3 +1,5 @@
+import { contains } from "@ariakit/core/utils/dom";
+import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
@@ -18,7 +20,14 @@ import type { TooltipStore } from "./tooltip-store.js";
  * ```
  */
 export const useTooltip = createHook<TooltipOptions>(
-  ({ store, portal = true, gutter = 8, ...props }) => {
+  ({
+    store,
+    portal = true,
+    gutter = 8,
+    hideOnHoverOutside = true,
+    hideOnInteractOutside = true,
+    ...props
+  }) => {
     props = useWrapElement(
       props,
       (element) => (
@@ -42,6 +51,25 @@ export const useTooltip = createHook<TooltipOptions>(
       store,
       portal,
       gutter,
+      hideOnHoverOutside: (event) => {
+        if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
+        const { anchorElement } = store.getState();
+        if (!anchorElement) return true;
+        if ("focusVisible" in anchorElement.dataset) return false;
+        try {
+          // JSDOM doesn't support `:focus-visible` See
+          // https://github.com/jsdom/jsdom/issues/3426
+          if (anchorElement.matches(":focus-visible")) return false;
+        } catch {}
+        return true;
+      },
+      hideOnInteractOutside: (event) => {
+        if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
+        const { anchorElement } = store.getState();
+        if (!anchorElement) return true;
+        if (contains(anchorElement, event.target as Node)) return false;
+        return true;
+      },
       // TODO: Do something about this. See tooltip-instant tests
       // preserveTabOrder: false,
       ...props,

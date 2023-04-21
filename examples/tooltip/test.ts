@@ -1,4 +1,4 @@
-import { getByRole, hover, press, waitFor } from "@ariakit/test";
+import { click, getByRole, hover, press, waitFor } from "@ariakit/test";
 
 const getTooltip = () => getByRole("tooltip", { hidden: true });
 
@@ -17,6 +17,35 @@ test("show tooltip on hover", async () => {
   await waitForTooltipToShow();
   await hoverOutside();
   expect(getTooltip()).not.toBeVisible();
+});
+
+test("do not hide tooltip on click", async () => {
+  await hover(getByRole("button"));
+  await waitForTooltipToShow();
+  await click(getByRole("button"));
+  expect(getTooltip()).toBeVisible();
+  await hoverOutside();
+  expect(getTooltip()).not.toBeVisible();
+});
+
+test("if tooltip was shown on hover, then the anchor received keyboard focus, do not hide on mouseleave", async () => {
+  await hover(getByRole("button"));
+  await waitForTooltipToShow();
+  await press.Tab();
+  expect(getTooltip()).toBeVisible();
+  await hoverOutside();
+  expect(getTooltip()).toBeVisible();
+});
+
+test("if tooltip was shown on focus visible, do not hide on mouseleave", async () => {
+  await press.Tab();
+  await waitForTooltipToShow();
+  await hoverOutside();
+  expect(getTooltip()).toBeVisible();
+  await hover(getByRole("button"));
+  expect(getTooltip()).toBeVisible();
+  await hoverOutside();
+  expect(getTooltip()).toBeVisible();
 });
 
 test("show tooltip on focus", async () => {

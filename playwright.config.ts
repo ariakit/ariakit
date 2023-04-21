@@ -49,5 +49,15 @@ export default defineConfig({
       testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
       use: devices["Desktop Safari"],
     },
+    {
+      name: "ios",
+      testMatch: [/\/test[^\/]*\-ios/, /\/test[^\/]*\-mobile/],
+      use: devices["iPhone 13 Pro Max"],
+    },
+    {
+      name: "android",
+      testMatch: [/\/test[^\/]*\-android/, /\/test[^\/]*\-mobile/],
+      use: devices["Pixel 5"],
+    },
   ],
 });
