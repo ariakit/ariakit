@@ -18,6 +18,7 @@ import type {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { track } from "@vercel/analytics";
 import type { PageContent } from "build-pages/contents.js";
 import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
@@ -326,6 +327,11 @@ const HeaderNavMenu = memo(
     const pages = category ? pageIndex[category] : null;
     const categoryTitle = category ? categoryTitles[category] : null;
     const hasTitle = !!category && !searchData?.length && !noResults;
+
+    useEffect(() => {
+      if (!noResults) return;
+      track("search-no-results", { searchValue, category: category || null });
+    }, [noResults, searchValue, category]);
 
     const [items, groups] = useMemo(() => {
       if (searchData) {
