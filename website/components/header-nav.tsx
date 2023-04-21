@@ -330,7 +330,13 @@ const HeaderNavMenu = memo(
 
     useEffect(() => {
       if (!noResults) return;
-      track("search-no-results", { searchValue, category: category || null });
+      const timer = setTimeout(() => {
+        track("search-no-results", {
+          searchValue,
+          category: category || "all",
+        });
+      }, 500);
+      return () => clearTimeout(timer);
     }, [noResults, searchValue, category]);
 
     const [items, groups] = useMemo(() => {
