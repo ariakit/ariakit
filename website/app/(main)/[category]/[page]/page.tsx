@@ -99,6 +99,8 @@ function getPageNames(dir: string) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
     const pages = getPageNames(page.sourceContext);
