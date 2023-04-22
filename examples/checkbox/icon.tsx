@@ -8,7 +8,7 @@ export default function Icon() {
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={4}
-              className="h-8 w-8 stroke-white/90"
+              className="h-8 w-8 stroke-white dark:stroke-white/90"
             >
               <path d="M4.5 12.75l6 6 9-13.5" />
             </svg>
