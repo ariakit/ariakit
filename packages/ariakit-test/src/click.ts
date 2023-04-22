@@ -1,7 +1,8 @@
 import "./mock-get-client-rects.js";
 
-import { closest } from "@ariakit/core/utils/dom";
+import { closest, isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
+import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
 import { focus } from "./focus.js";
 import { hover } from "./hover.js";
@@ -129,8 +130,19 @@ export async function click(
   options?: MouseEventInit,
   tap = false
 ) {
+  if (!isVisible(element)) return;
+
   await hover(element, options);
   mouseDown(element, options);
+
+  await queuedMicrotasks();
+
+  // The element may be hidden after hover/mouseDown, so we need to check again
+  // and find the first visible parent.
+  while (!isVisible(element)) {
+    if (!element.parentElement) return;
+    element = element.parentElement;
+  }
 
   if (!tap) {
     await sleep();

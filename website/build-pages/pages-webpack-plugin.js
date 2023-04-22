@@ -156,7 +156,7 @@ function writeFiles(buildDir, pages) {
     "writeFiles:end"
   );
   console.log(
-    `${chalk.green("pages")} - wrote pages in ${duration.toFixed(2)}ms`
+    `${chalk.green("pages")} - wrote pages in ${Math.round(duration)}ms`
   );
 }
 
