@@ -87,10 +87,10 @@ export async function GET(req: NextRequest) {
   const headers = new Headers();
 
   if (process.env.NODE_ENV === "production") {
-    headers.set(
-      "Cache-Control",
-      "public, s-maxage=1800, stale-while-revalidate=86400"
-    );
+    // headers.set(
+    //   "Cache-Control",
+    //   "public, s-maxage=1800, stale-while-revalidate=86400"
+    // );
   }
 
   if (!query) {
