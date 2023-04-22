@@ -25,6 +25,8 @@ function pathToImport(path) {
  * @param {import("./types.js").Page[]} pages
  */
 function writeFiles(buildDir, pages) {
+  performance.mark("writeFiles:start");
+
   const entryFiles = pages.flatMap((page) =>
     getPageEntryFiles(page.sourceContext)
   );
@@ -146,6 +148,16 @@ function writeFiles(buildDir, pages) {
     .join("");
 
   writeFileSync(iconsFile, iconsContents);
+
+  performance.mark("writeFiles:end");
+  const { duration } = performance.measure(
+    "writeFiles",
+    "writeFiles:start",
+    "writeFiles:end"
+  );
+  console.log(
+    `${chalk.green("pages")} - wrote pages in ${duration.toFixed(2)}ms`
+  );
 }
 
 class PagesWebpackPlugin {
@@ -216,8 +228,8 @@ class PagesWebpackPlugin {
       const log = (file, removed = false) => {
         console.log(
           `${
-            removed ? chalk.red("Removed page") : chalk.yellow("Updated page")
-          }: ${file}`
+            removed ? chalk.red("removed page") : chalk.yellow("updated page")
+          } - ${file}`
         );
       };
 
