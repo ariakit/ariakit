@@ -191,7 +191,7 @@ class PagesWebpackPlugin {
 
       compiler.options.module.rules.push({
         include: pages.map((page) => page.sourceContext),
-        test: /\.css$/,
+        test: /style\.css$/,
         loader: "null-loader",
       });
     }
