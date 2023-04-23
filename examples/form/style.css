@@ -35,8 +35,7 @@
   ;
 }
 
-/* purgecss ignore */
-.field input {
+.input {
   @apply
     h-10
     px-4
