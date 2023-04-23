@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import {
   createContext,
   memo,
@@ -205,7 +205,7 @@ function Shortcut() {
 type HeaderNavItemProps = {
   item: PageIndexDetail | SearchData[number];
   category?: string;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   autoFocus?: boolean;
 };
 
@@ -350,6 +350,15 @@ const HeaderNavMenu = memo(
       return [items, groups];
     }, [searchData, pages]);
 
+    const onItemClick = useEvent((event: MouseEvent<HTMLAnchorElement>) => {
+      if (!searchValue) return;
+      if (!event.currentTarget.href) return;
+      track("search-success", {
+        searchValue,
+        href: event.currentTarget.href,
+      });
+    });
+
     const itemElements = useMemo(() => {
       if (noResults) return null;
       if (!items.length && !Object.keys(groups).length) return null;
@@ -361,6 +370,7 @@ const HeaderNavMenu = memo(
               autoFocus={hasSearchValue ? false : undefined}
               category={category}
               item={item}
+              onClick={onItemClick}
             />
           ))}
           {Object.entries(groups).map(([group, pages]) => (
@@ -371,13 +381,22 @@ const HeaderNavMenu = memo(
                   autoFocus={hasSearchValue ? false : undefined}
                   category={category}
                   item={item}
+                  onClick={onItemClick}
                 />
               ))}
             </HeaderMenuGroup>
           ))}
         </>
       );
-    }, [noResults, items, groups, category, hasSearchValue, categoryTitle]);
+    }, [
+      noResults,
+      items,
+      groups,
+      category,
+      hasSearchValue,
+      onItemClick,
+      categoryTitle,
+    ]);
 
     const otherItemElements = useMemo(() => {
       if (!searchAllData?.length) return null;
@@ -388,9 +407,10 @@ const HeaderNavMenu = memo(
             key={getItemKey(item)}
             autoFocus={hasSearchValue ? false : undefined}
             item={item}
+            onClick={onItemClick}
           />
         ));
-    }, [searchAllData, hasSearchValue, category]);
+    }, [searchAllData, hasSearchValue, category, onItemClick]);
 
     return (
       <HeaderNavMenuContext.Provider value={true}>

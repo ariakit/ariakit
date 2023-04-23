@@ -16,6 +16,7 @@ import {
   useSelectStore,
   useToolbarStore,
 } from "@ariakit/react";
+import { track } from "@vercel/analytics";
 import { Github } from "icons/github.jsx";
 import { JavaScript } from "icons/javascript.jsx";
 import { NewWindow } from "icons/new-window.jsx";
@@ -100,6 +101,7 @@ export function PlaygroundToolbar({
 
   const onStackblitzClick = (template: "vite" | "next") => {
     return () => {
+      track("edit-on-stackblitz", { template, exampleId });
       openInStackblitz({
         template,
         id: exampleId,
