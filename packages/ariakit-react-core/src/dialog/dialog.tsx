@@ -55,7 +55,7 @@ import {
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
-import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside.js";
+import { disableTreeOutside } from "./utils/disable-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useChampionDialog } from "./utils/use-champion-dialog.js";
 import { useFocusOnChildUnmount } from "./utils/use-focus-on-child-unmount.js";
@@ -257,13 +257,11 @@ export const useDialog = createHook<DialogOptions>(
       if (modal) {
         return chain(
           disableAccessibilityTreeOutside(element),
-          // When the backdrop is not visible, we also need to disable pointer
-          // events outside of the modal dialog.
-          !backdrop ? disablePointerEventsOutside(element) : null
+          disableTreeOutside(element)
         );
       }
       return disableAccessibilityTreeOutside(element);
-    }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
+    }, [shouldDisableOutside, portal, portalNode, modal]);
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
@@ -441,9 +439,14 @@ export const useDialog = createHook<DialogOptions>(
       [modal]
     );
 
-    const shouldFocusTrap = store.useState(
-      (state) => modal && !openModals.length && state.open
-    );
+    const [shouldFocusTrap, setShouldFocusTrap] = useState(false);
+    const hasOpenModals = !!openModals.length;
+
+    useEffect(() => {
+      const value =
+        open && modal && !hasOpenModals && !("inert" in HTMLElement.prototype);
+      setShouldFocusTrap(value);
+    }, [modal, open, hasOpenModals]);
 
     props = useFocusTrapRegion({ ...props, enabled: shouldFocusTrap });
 

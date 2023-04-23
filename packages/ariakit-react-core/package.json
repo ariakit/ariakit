@@ -162,7 +162,7 @@
     "./dialog/utils/use-focus-on-child-unmount": "./src/dialog/utils/use-focus-on-child-unmount.ts",
     "./dialog/utils/use-champion-dialog": "./src/dialog/utils/use-champion-dialog.ts",
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
-    "./dialog/utils/disable-pointer-events-outside": "./src/dialog/utils/disable-pointer-events-outside.ts",
+    "./dialog/utils/disable-tree-outside": "./src/dialog/utils/disable-tree-outside.ts",
     "./dialog/utils/disable-accessibility-tree-outside": "./src/dialog/utils/disable-accessibility-tree-outside.ts",
     "./dialog/dialog": "./src/dialog/dialog.tsx",
     "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
