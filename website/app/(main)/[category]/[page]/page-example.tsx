@@ -62,10 +62,11 @@ export async function PageExample({
   }
 
   let css = "";
+  const finalContents = { ...contents };
 
   for (const file of cssFiles) {
     const key = getPathFromExample(file, path);
-    contents[key] = await parseCSSFile(file, {
+    finalContents[key] = await parseCSSFile(file, {
       format: true,
       contents,
       tailwindConfig,
@@ -83,7 +84,7 @@ export async function PageExample({
       <Playground
         id={id}
         type={type}
-        files={contents}
+        files={finalContents}
         dependencies={dependencies}
         devDependencies={devDependencies}
         previewLink={previewLink}
