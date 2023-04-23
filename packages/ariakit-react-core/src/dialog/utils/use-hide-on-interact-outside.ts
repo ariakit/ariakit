@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { contains, getDocument } from "@ariakit/core/utils/dom";
+import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEvent, useLiveRef } from "../../utils/hooks.js";
 import type { DialogOptions } from "../dialog.js";
@@ -139,6 +139,7 @@ export function useHideOnInteractOutside({
       // was dispatched outside of the dialog. See form-select example. We just
       // ignore this.
       if (!previousMouseDown) return;
+      if (!isVisible(previousMouseDown)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) {
         if (!modal) return;
         event.preventDefault();
