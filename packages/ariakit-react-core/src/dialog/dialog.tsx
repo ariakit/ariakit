@@ -55,7 +55,7 @@ import {
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
-import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside.js";
+import { disableTreeOutside } from "./utils/disable-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useChampionDialog } from "./utils/use-champion-dialog.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
@@ -275,13 +275,11 @@ export const useDialog = createHook<DialogOptions>(
       if (modal) {
         return chain(
           disableAccessibilityTreeOutside(element),
-          // When the backdrop is not visible, we also need to disable pointer
-          // events outside of the modal dialog.
-          !backdrop ? disablePointerEventsOutside(element) : null
+          disableTreeOutside(element)
         );
       }
       return disableAccessibilityTreeOutside(element);
-    }, [shouldDisableOutside, portal, portalNode, modal, backdrop]);
+    }, [shouldDisableOutside, portal, portalNode, modal]);
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
@@ -341,6 +339,7 @@ export const useDialog = createHook<DialogOptions>(
     // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
     // dialog was open before.
     const [hasOpened, setHasOpened] = useState(false);
+
     useEffect(() => {
       if (!open) return;
       setHasOpened(true);
@@ -459,9 +458,18 @@ export const useDialog = createHook<DialogOptions>(
       [modal]
     );
 
-    const shouldFocusTrap = store.useState(
-      (state) => modal && !openModals.length && state.open
-    );
+    // Only use focus trap elements if the dialog is open and it's a modal
+    // dialog. We also need to check if there are any other nested modal dialogs
+    // open so we let them handle this instead. Finally, if the browser supports
+    // the inert attribute, we don't need to use focus trap elements.
+    const [shouldFocusTrap, setShouldFocusTrap] = useState(false);
+    const hasOpenModals = !!openModals.length;
+
+    useSafeLayoutEffect(() => {
+      const value =
+        open && modal && !hasOpenModals && !("inert" in HTMLElement.prototype);
+      setShouldFocusTrap(value);
+    }, [modal, open, hasOpenModals]);
 
     props = useFocusTrapRegion({ ...props, enabled: shouldFocusTrap });
 
