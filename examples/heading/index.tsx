@@ -5,14 +5,14 @@ export default function Example() {
   return (
     <div className="wrapper">
       <HeadingLevel>
-        <Heading>Heading 1</Heading>
+        <Heading className="heading">Heading 1</Heading>
         <p>Torquent penatibus ipsum nascetur cursus primis lobortis</p>
         <HeadingLevel>
-          <Heading>Heading 2</Heading>
+          <Heading className="heading">Heading 2</Heading>
           <p>Volutpat metus id purus dignissim fusce Tellus egestas.</p>
         </HeadingLevel>
         <HeadingLevel>
-          <Heading>Heading 2</Heading>
+          <Heading className="heading">Heading 2</Heading>
           <p>Platea justo lectus. Praesent. Et sodales pellentesque</p>
         </HeadingLevel>
       </HeadingLevel>

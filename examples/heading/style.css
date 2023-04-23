@@ -6,31 +6,17 @@
   ;
 }
 
-/* purgecss ignore */
-h1 {
+/* purgecss start ignore */
+
+.heading {
   @apply
-    my-0
-    text-2xl
-    font-normal
+    [h1&]:text-4xl
+    [h1&]:font-bold
+    [h2&]:text-2xl
+    [h2&]:font-semibold
+    [h3&]:text-xl
+    [h3&]:font-medium
   ;
 }
 
-/* purgecss ignore */
-h2 {
-  @apply
-    my-0
-    text-xl
-    font-normal
-    text-black/60
-    dark:text-white/60
-  ;
-}
-
-/* purgecss ignore */
-h3 {
-  @apply
-    my-0
-    text-base
-    font-normal
-  ;
-}
+/* purgecss end ignore */
