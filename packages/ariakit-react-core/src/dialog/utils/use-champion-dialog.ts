@@ -1,7 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { flushSync } from "react-dom";
-import { useForceUpdate, useSafeLayoutEffect } from "../../utils/hooks.js";
+import { useForceUpdate } from "../../utils/hooks.js";
 import type { DialogStore } from "../dialog-store.js";
 
 /**
@@ -24,12 +24,16 @@ export function useChampionDialog(
     return !id || id === dialog.id;
   }, [updated, store, enabled, attribute]);
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const dialog = store.getState().contentElement;
     if (!dialog) return;
     if (!enabled) return;
     const { body } = getDocument(dialog);
 
+    // If the dialog is not the champion, there may be another dialog that will
+    // be closed soon, which will remove the champion attribute from the body.
+    // We observe this change and retry to see if this dialog is now the
+    // champion.
     if (!isChampionDialog()) {
       const observer = new MutationObserver(() => flushSync(retry));
       observer.observe(body, { attributeFilter: [attribute] });

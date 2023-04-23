@@ -116,8 +116,7 @@ test("show/hide information dialog", async ({ page }) => {
   await expect(getMenu(page)).toBeVisible();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
-  await page.keyboard.press("Enter");
+  await getButton(page, "More information").click();
   await expect(getDialog(page, "More information")).toBeVisible();
   await expect(
     getButton(getDialog(page, "More information"), "Dismiss popup")
@@ -131,8 +130,9 @@ test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
   await expect(getMenu(page)).toBeVisible();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
-  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
   await expect(getButton(page, "Manage lists")).toBeFocused();
   await repeat(async () => {
     await page.keyboard.press("Enter");
@@ -149,7 +149,10 @@ test("repeatedly showing/hiding information dialog", async ({ page }) => {
   await expect(getMenu(page)).toBeVisible();
   await getMenuItem(page, "Create list").click();
   await expect(getButton(page, "Dismiss popup")).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
   await expect(getButton(page, "More information")).toBeFocused();
   await repeat(async () => {
     await page.keyboard.press("Enter");

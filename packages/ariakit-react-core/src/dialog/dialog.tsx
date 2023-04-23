@@ -321,6 +321,7 @@ export const useDialog = createHook<DialogOptions>(
     // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
     // dialog was open before.
     const [hasOpened, setHasOpened] = useState(false);
+
     useEffect(() => {
       if (!open) return;
       setHasOpened(true);
@@ -439,10 +440,14 @@ export const useDialog = createHook<DialogOptions>(
       [modal]
     );
 
+    // Only use focus trap elements if the dialog is open and it's a modal
+    // dialog. We also need to check if there are any other nested modal dialogs
+    // open so we let them handle this instead. Finally, if the browser supports
+    // the inert attribute, we don't need to use focus trap elements.
     const [shouldFocusTrap, setShouldFocusTrap] = useState(false);
     const hasOpenModals = !!openModals.length;
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       const value =
         open && modal && !hasOpenModals && !("inert" in HTMLElement.prototype);
       setShouldFocusTrap(value);
