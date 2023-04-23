@@ -195,6 +195,7 @@ export const useDialog = createHook<DialogOptions>(
         raf = requestAnimationFrame(restoreLostFocus);
         if (!dialog) return;
         const doc = getDocument(dialog);
+        if (!doc.hasFocus()) return;
         if (doc.activeElement !== doc.body) return;
         dialog.focus();
       };
