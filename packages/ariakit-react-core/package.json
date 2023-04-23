@@ -159,7 +159,6 @@
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
     "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
-    "./dialog/utils/use-focus-on-child-unmount": "./src/dialog/utils/use-focus-on-child-unmount.ts",
     "./dialog/utils/use-champion-dialog": "./src/dialog/utils/use-champion-dialog.ts",
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/disable-pointer-events-outside": "./src/dialog/utils/disable-pointer-events-outside.ts",

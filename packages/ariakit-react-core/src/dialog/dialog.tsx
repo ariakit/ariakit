@@ -58,7 +58,6 @@ import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-t
 import { disablePointerEventsOutside } from "./utils/disable-pointer-events-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useChampionDialog } from "./utils/use-champion-dialog.js";
-import { useFocusOnChildUnmount } from "./utils/use-focus-on-child-unmount.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
@@ -174,15 +173,34 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     usePreventBodyScroll(store, shouldPreventBodyScroll);
-    // When a focused child element is removed, focus will be placed on the
-    // document's body. This will focus on the dialog instead.
-    useFocusOnChildUnmount(store);
     useHideOnInteractOutside({
       store,
       modal,
       hideOnInteractOutside,
       nestedDialogs,
     });
+
+    const shouldRestoreLostFocus = useChampionDialog(
+      "data-dialog-restore-lost-focus",
+      store,
+      open && modal && !openModals.length
+    );
+
+    // If focus was lost to the document, restore it to the dialog.
+    useEffect(() => {
+      if (!shouldRestoreLostFocus()) return;
+      let raf = 0;
+      const restoreLostFocus = () => {
+        const dialog = ref.current;
+        raf = requestAnimationFrame(restoreLostFocus);
+        if (!dialog) return;
+        const doc = getDocument(dialog);
+        if (doc.activeElement !== doc.body) return;
+        dialog.focus();
+      };
+      restoreLostFocus();
+      return () => cancelAnimationFrame(raf);
+    }, [shouldRestoreLostFocus]);
 
     const mounted = store.useState("mounted");
 

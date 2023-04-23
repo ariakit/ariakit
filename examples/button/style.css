@@ -29,3 +29,10 @@
     dark:hover:bg-white/5
   ;
 }
+
+.danger {
+  @apply
+    bg-red-600
+    hover:bg-red-700
+  ;
+}
