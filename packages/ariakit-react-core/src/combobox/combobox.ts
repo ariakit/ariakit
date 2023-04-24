@@ -87,6 +87,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const valueChangedRef = useRef(false);
+    const composingRef = useRef(false);
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
@@ -167,7 +168,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!hasCompletionString(storeValue, activeValue)) return;
       const element = ref.current;
       if (!element) return;
-      element.setSelectionRange(storeValue.length, activeValue.length);
+      // TODO: Comment
+      queueMicrotask(() => {
+        element.setSelectionRange(storeValue.length, activeValue.length);
+      });
     }, [
       valueUpdated,
       inline,
@@ -183,6 +187,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // because the value may change programmatically.
     useSafeLayoutEffect(() => {
       if (!storeValue) return;
+      if (composingRef.current) return;
       valueChangedRef.current = true;
     }, [storeValue]);
 
@@ -242,7 +247,13 @@ export const useCombobox = createHook<ComboboxOptions>(
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
       if (isInputEvent(nativeEvent) && inline) {
-        const textInserted = nativeEvent.inputType === "insertText";
+        if (nativeEvent.isComposing) {
+          valueChangedRef.current = false;
+          composingRef.current = true;
+        }
+        const textInserted =
+          nativeEvent.inputType === "insertText" ||
+          nativeEvent.inputType === "insertCompositionText";
         const caretAtEnd = target.selectionStart === target.value.length;
         setCanInline(textInserted && caretAtEnd);
       }
@@ -273,15 +284,16 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
-    // in accents or chinese characters), we need to set hasInsertedTextRef to
-    // true when the composition ends. This is because the native input event
-    // that's passed to the change event above will not produce a consistent
-    // inputType value across browsers, so we can't rely on that there.
+    // in accents or chinese characters), we need to set valueChangedRef to true
+    // when the composition ends. This is because the native input event that's
+    // passed to the change event above will not produce a consistent inputType
+    // value across browsers, so we can't rely on that there.
     const onCompositionEnd = useEvent(
       (event: CompositionEvent<HTMLInputElement>) => {
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
         valueChangedRef.current = true;
+        composingRef.current = false;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -336,7 +348,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       // TODO: See if it's necessary and refactor this valueChanged logic.
-      valueChangedRef.current = false;
+      // valueChangedRef.current = false;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
