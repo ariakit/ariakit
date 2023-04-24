@@ -166,10 +166,13 @@ export const useCombobox = createHook<ComboboxOptions>(
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeValue, activeValue)) return;
-      const element = ref.current;
-      if (!element) return;
-      // TODO: Comment
+      // For some reason, this setSelectionRange may run before the value is
+      // updated in the DOM. We're using a microtask to make sure it runs after
+      // the value is updated so we don't lose the selection. See combobox-group
+      // test-browser file.
       queueMicrotask(() => {
+        const element = ref.current;
+        if (!element) return;
         element.setSelectionRange(storeValue.length, activeValue.length);
       });
     }, [
@@ -246,16 +249,18 @@ export const useCombobox = createHook<ComboboxOptions>(
       const { target } = event;
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
-      if (isInputEvent(nativeEvent) && inline) {
+      if (isInputEvent(nativeEvent)) {
         if (nativeEvent.isComposing) {
           valueChangedRef.current = false;
           composingRef.current = true;
         }
-        const textInserted =
-          nativeEvent.inputType === "insertText" ||
-          nativeEvent.inputType === "insertCompositionText";
-        const caretAtEnd = target.selectionStart === target.value.length;
-        setCanInline(textInserted && caretAtEnd);
+        if (inline) {
+          const textInserted =
+            nativeEvent.inputType === "insertText" ||
+            nativeEvent.inputType === "insertCompositionText";
+          const caretAtEnd = target.selectionStart === target.value.length;
+          setCanInline(textInserted && caretAtEnd);
+        }
       }
       if (showOnChangeProp(event)) {
         store.show();
@@ -347,8 +352,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      // TODO: See if it's necessary and refactor this valueChanged logic.
-      // This is necessary for cancel button to work properly.
+      // If we don't reset the valueChangedRef here, the combobox will keep the
+      // first item selected when the combobox loses focus and its value gets
+      // cleared. See combobox-cancel tests.
       valueChangedRef.current = false;
     });
 
