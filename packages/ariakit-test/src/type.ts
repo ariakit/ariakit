@@ -49,7 +49,9 @@ export async function type(
   for (const char of text) {
     const key = getKeyFromChar(char);
     let value = "";
-    let inputType = "insertText";
+    let inputType = options.isComposing
+      ? "insertCompositionText"
+      : "insertText";
     let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
 
     await queuedMicrotasks();
@@ -82,7 +84,8 @@ export async function type(
       } else {
         // Any other character. Just get the caret position and add the
         // character there.
-        const firstPart = input.value.slice(0, start);
+        const firstPartEnd = options.isComposing ? start - 1 : start;
+        const firstPart = input.value.slice(0, firstPartEnd);
         const lastPart = input.value.slice(end, input.value.length);
         nextCaretPosition = start + 1;
         value = `${firstPart}${char}${lastPart}`;
@@ -93,6 +96,13 @@ export async function type(
           defaultAllowed = fireEvent.keyPress(input, {
             key,
             charCode: key.charCodeAt(0),
+            ...options,
+          });
+        }
+        if (inputType === "insertCompositionText") {
+          defaultAllowed = fireEvent.compositionUpdate(input, {
+            data: char,
+            target: { value },
             ...options,
           });
         }
