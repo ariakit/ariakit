@@ -348,7 +348,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       // TODO: See if it's necessary and refactor this valueChanged logic.
-      // valueChangedRef.current = false;
+      // This is necessary for cancel button to work properly.
+      valueChangedRef.current = false;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
