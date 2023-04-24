@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed nested `Dialog` components when they are conditionally mounted. ((#2310)[https://github.com/ariakit/ariakit/pull/2310])
+Fixed nested `Dialog` components when they are conditionally mounted. ([#2310](https://github.com/ariakit/ariakit/pull/2310))
