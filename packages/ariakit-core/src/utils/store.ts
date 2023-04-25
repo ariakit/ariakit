@@ -242,35 +242,42 @@ export interface Store<S = State> {
   setState<K extends keyof S>(key: K, value: SetStateAction<S[K]>): void;
   /**
    * Register a callback function that's called when the store is initialized.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   setup: (callback: () => void | (() => void)) => () => void;
   /**
    * Function that should be called when the store is initialized.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   init: () => () => void;
   /**
    * Registers a listener function that's called immediately and synchronously
    * whenever the store state changes.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   sync: Sync<S>;
   /**
    * Registers a listener function that's called after state changes in the
    * store.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   subscribe: Sync<S>;
   /**
    * Registers a listener function that's called immediately and after a batch
    * of state changes in the store.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   syncBatch: Sync<S>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   pick<K extends Array<keyof S>>(...keys: K): Store<Pick<S, K[number]>>;
   /**
    * Creates a new store with a subset of the current store state and keeps them
    * in sync.
+   * @deprecated Experimental. This API may change in minor or patch releases.
    */
   omit<K extends Array<keyof S>>(...keys: K): Store<Omit<S, K[number]>>;
 }
