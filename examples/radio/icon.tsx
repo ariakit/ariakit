@@ -1,7 +1,7 @@
 function getItem(filled = false) {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-4 w-4 rounded-full border-2 border-blue-600 bg-white p-0.5 dark:border-blue-600 dark:bg-black">
+      <div className="h-4 w-4 rounded-full border-2 border-blue-600 bg-white p-0.5 dark:bg-black">
         {filled && (
           <div className="h-full w-full rounded-full bg-blue-600 dark:bg-blue-500" />
         )}

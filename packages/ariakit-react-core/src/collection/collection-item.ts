@@ -26,12 +26,6 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     const context = useContext(CollectionContext);
     store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "CollectionItem must be wrapped in a Collection component"
-    );
-
     const id = useId(props.id);
     const unrenderItem = useRef<() => void>();
 

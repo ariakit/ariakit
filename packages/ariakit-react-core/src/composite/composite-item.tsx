@@ -11,7 +11,6 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
@@ -25,6 +24,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.js";
 import {
   createElement,
   createHook,
@@ -170,16 +170,16 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const context = useContext(CompositeContext);
     store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "CompositeItem must be wrapped in a Composite component"
-    );
+    // invariant(
+    //   store,
+    //   process.env.NODE_ENV !== "production" &&
+    //     "CompositeItem must be wrapped in a Composite component"
+    // );
 
     const id = useId(props.id);
     const ref = useRef<HTMLButtonElement>(null);
     const row = useContext(CompositeRowContext);
-    const rowId = store.useState((state) => {
+    const rowId = useStoreState(store, (state) => {
       if (rowIdProp) return rowIdProp;
       if (!row?.baseElement) return;
       if (row.baseElement !== state.baseElement) return;
@@ -316,7 +316,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       }
     });
 
-    const baseElement = store.useState(
+    const baseElement = useStoreState(
+      store,
       (state) => state.baseElement || undefined
     );
 
@@ -335,9 +336,9 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [providerValue]
     );
 
-    const isActiveItem = store.useState((state) => state.activeId === id);
+    const isActiveItem = useStoreState(store, (state) => state.activeId === id);
     const role = useRole(ref, props);
-    const virtualFocus = store.useState("virtualFocus");
+    const virtualFocus = useStoreState(store, "virtualFocus");
     let ariaSelected: boolean | undefined;
 
     if (isActiveItem) {
@@ -354,7 +355,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       }
     }
 
-    const shouldTabIndex = store.useState(
+    const shouldTabIndex = useStoreState(
+      store,
       (state) => !state.virtualFocus && isActiveItem
     );
 
@@ -364,7 +366,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       "data-active-item": isActiveItem ? "" : undefined,
       ...props,
       ref: useForkRef(ref, props.ref),
-      tabIndex: shouldTabIndex ? props.tabIndex : -1,
+      tabIndex: shouldTabIndex !== false ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,
       onKeyDown,
