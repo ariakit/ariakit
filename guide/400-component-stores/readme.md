@@ -163,3 +163,9 @@ dialog.show(); // dialog.setOpen(true)
 dialog.hide(); // dialog.setOpen(false)
 dialog.toggle(); // dialog.setOpen((open) => !open)
 ```
+
+## Using React Context
+
+When you need to access the store in child components, passing it as a prop is usually the most straightforward approach. However, if the component is deeply nested within the component tree or if you're unable to pass the store as a prop for some reason, you can leverage React Context instead:
+
+<a href="./form-react-context.tsx" data-playground type="code">Example</a>

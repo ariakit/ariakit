@@ -1,7 +1,3 @@
-// Workaround for getting fast refresh to work when markdown files are updated.
-// See https://twitter.com/diegohaz/status/1646192312630779905
-import "build-pages/contents.js";
-
 import { isValidElement } from "react";
 import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";

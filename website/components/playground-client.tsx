@@ -20,7 +20,7 @@ export interface PlaygroundClientProps extends EditorProps {
   githubLink?: string;
   previewLink?: string;
   preview?: ReactNode;
-  type?: "compact" | "wide";
+  type?: "code" | "compact" | "wide";
 }
 
 const style = {
@@ -159,17 +159,19 @@ export function PlaygroundClient({
 
   return (
     <div className={style.wrapper}>
-      <div
-        className={cx(
-          id,
-          style.previewWrapper,
-          type === "wide"
-            ? "min-h-[320px] md:rounded-2xl md:p-8"
-            : "md:rounded-xl md:p-6"
-        )}
-      >
-        {preview}
-      </div>
+      {preview && (
+        <div
+          className={cx(
+            id,
+            style.previewWrapper,
+            type === "wide"
+              ? "min-h-[320px] md:rounded-2xl md:p-8"
+              : "md:rounded-xl md:p-6"
+          )}
+        >
+          {preview}
+        </div>
+      )}
       <div className={style.codeWrapper}>
         <div className={style.codeHeader}>
           <TabList store={tab} className={style.tabList}>
