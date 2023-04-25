@@ -24,8 +24,6 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
   const context = useContext(NestedDialogsContext);
   const [openModals, setOpenModals] = useState<HTMLElement[]>([]);
   const [nestedDialogs, setNestedDialogs] = useState<HTMLElement[]>([]);
-  const open = store.useState("open");
-  const contentElement = store.useState("contentElement");
 
   const addDialog = useCallback(
     (dialog: HTMLElement) => {
@@ -41,7 +39,7 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
         })()
       );
     },
-    [context.addDialog]
+    [context]
   );
 
   const showModal = useCallback(
@@ -58,21 +56,31 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
         })()
       );
     },
-    [context.showModal]
+    [context]
   );
 
   // If this is a nested dialog, add it to the context.
   useSafeLayoutEffect(() => {
-    if (!contentElement) return;
-    return context.addDialog?.(contentElement);
-  }, [contentElement, context.addDialog]);
+    return store.sync(
+      (state) => {
+        if (!state.contentElement) return;
+        return context.addDialog?.(state.contentElement);
+      },
+      ["contentElement"]
+    );
+  }, [store, context]);
 
   useSafeLayoutEffect(() => {
     if (!modal) return;
-    if (!open) return;
-    if (!contentElement) return;
-    return context.showModal?.(contentElement);
-  }, [modal, open, contentElement, context.showModal]);
+    return store.sync(
+      (state) => {
+        if (!state.open) return;
+        if (!state.contentElement) return;
+        return context.showModal?.(state.contentElement);
+      },
+      ["open", "contentElement"]
+    );
+  }, [store, modal, context]);
 
   // Close all nested dialogs when parent dialog closes.
   useEffect(() => {
