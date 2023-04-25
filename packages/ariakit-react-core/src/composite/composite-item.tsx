@@ -170,12 +170,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const context = useContext(CompositeContext);
     store = store || context;
 
-    // invariant(
-    //   store,
-    //   process.env.NODE_ENV !== "production" &&
-    //     "CompositeItem must be wrapped in a Composite component"
-    // );
-
     const id = useId(props.id);
     const ref = useRef<HTMLButtonElement>(null);
     const row = useContext(CompositeRowContext);
