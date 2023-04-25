@@ -26,7 +26,7 @@ import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
 import { flushSync } from "react-dom";
 import { getPageIcon } from "utils/get-page-icon.jsx";
-import { useDelayedValue } from "utils/use-delayed-value.js";
+import { usePerceptibleValue } from "utils/use-perceptible-value.js";
 import {
   HeaderMenu,
   HeaderMenuGroup,
@@ -317,7 +317,9 @@ const HeaderNavMenu = memo(
       options
     );
 
-    const loading = useDelayedValue(isFetching || allIsFetching);
+    const loading = usePerceptibleValue(isFetching || allIsFetching, {
+      delay: 250,
+    });
     const searchData = useMemo(() => data && parseSearchData(data), [data]);
     const searchAllData = useMemo(
       () => (category && allData && parseSearchData(allData)) || undefined,
