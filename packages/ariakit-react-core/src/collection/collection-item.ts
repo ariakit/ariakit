@@ -1,7 +1,7 @@
 import type { RefCallback } from "react";
 import { useCallback, useContext, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
-import { identity, invariant } from "@ariakit/core/utils/misc";
+import { identity } from "@ariakit/core/utils/misc";
 import { useForkRef, useId } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
@@ -25,12 +25,6 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
   ({ store, shouldRegisterItem = true, getItem = identity, ...props }) => {
     const context = useContext(CollectionContext);
     store = store || context;
-
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "CollectionItem must be wrapped in a Collection component"
-    );
 
     const id = useId(props.id);
     const unrenderItem = useRef<() => void>();

@@ -57,14 +57,9 @@
   ;
 }
 
-.error:empty {
+.error {
   @apply
-    absolute
-  ;
-}
-
-.error:not(:empty) {
-  @apply
+    empty:hidden
     w-fit
     rounded-md
     py-2
@@ -94,7 +89,7 @@
   ;
 }
 
-.button.reset {
+.reset {
   @apply
     font-semibold
     text-black/70

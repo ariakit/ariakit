@@ -38,8 +38,34 @@ export function isFocusable(element: Element): element is HTMLElement {
  * isTabbable(document.querySelector("input[hidden]")); // false
  * isTabbable(document.querySelector("input:disabled")); // false
  */
-export function isTabbable(element: Element): element is HTMLElement {
-  return isFocusable(element) && !hasNegativeTabIndex(element);
+export function isTabbable(
+  element: Element | HTMLElement | HTMLInputElement
+): element is HTMLElement {
+  if (!isFocusable(element)) return false;
+  if (hasNegativeTabIndex(element)) return false;
+  // If the element is a radio button in a form, we must take roving tabindex
+  // into account.
+  if (!("form" in element)) return true;
+  if (!element.form) return true;
+  if (element.checked) return true;
+  if (element.type !== "radio") return true;
+  // If the radio button is not part of a radio group, it's tabbable.
+  const radioGroup = element.form.elements.namedItem(element.name);
+  if (!radioGroup) return true;
+  if (!("length" in radioGroup)) return true;
+  // If we are in a radio group, we must check if the active element is part of
+  // the same group, which would make all the other radio buttons in the group
+  // non-tabbable.
+  const activeElement = getActiveElement(element) as
+    | HTMLElement
+    | HTMLInputElement
+    | null;
+  if (!activeElement) return true;
+  if (activeElement === element) return true;
+  if (!("form" in activeElement)) return true;
+  if (activeElement.form !== element.form) return true;
+  if (activeElement.name !== element.name) return true;
+  return false;
 }
 
 /**

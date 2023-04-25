@@ -1,0 +1,39 @@
+@import url("../form/style.css");
+
+.radio-group {
+  @apply
+    flex
+    flex-col
+    items-start
+    gap-2
+  ;
+}
+
+.radio-group-label {
+  @apply
+    text-sm
+    font-semibold
+    text-black/70
+    dark:text-white/70
+  ;
+}
+
+.radio-label {
+  @apply
+    flex
+    items-center
+    gap-2
+  ;
+}
+
+.button {
+  @apply
+    flex-none
+  ;
+}
+
+.error {
+  @apply
+    w-full
+  ;
+}
