@@ -35,7 +35,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItemCheckbox must be wrapped in a MenuList or MenuPopover component"
+        "MenuItemCheckbox must be wrapped in a MenuList or Menu component"
     );
 
     const checkboxStore = useCheckboxStore({

@@ -51,7 +51,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItem must be wrapped in a MenuList, MenuPopover or MenuBar component"
+        "MenuItem must be wrapped in a MenuList, Menu or MenuBar component"
     );
 
     const onClickProp = props.onClick;
