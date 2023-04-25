@@ -56,9 +56,7 @@ if (version.startsWith("17")) {
   vi.mock("react", async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
-    return {
-      ...actual,
-      useInsertionEffect: undefined,
+    const mocks = {
       useDeferredValue: <T>(v: T) => v,
       useTransition: () => [false, (v: () => any) => v()],
       useId: () => {
@@ -70,6 +68,7 @@ if (version.startsWith("17")) {
         return id;
       },
     };
+    return { ...mocks, ...actual };
   });
 }
 
