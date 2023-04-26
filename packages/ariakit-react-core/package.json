@@ -149,6 +149,8 @@
     "./form/form-context": "./src/form/form-context.ts",
     "./form/form-checkbox": "./src/form/form-checkbox.ts",
     "./focusable/focusable": "./src/focusable/focusable.ts",
+    "./focusable/focusable-context": "./src/focusable/focusable-context.ts",
+    "./focusable/focusable-container": "./src/focusable/focusable-container.tsx",
     "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.ts",
     "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
     "./disclosure/disclosure": "./src/disclosure/disclosure.ts",

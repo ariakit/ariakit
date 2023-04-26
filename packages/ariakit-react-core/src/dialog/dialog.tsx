@@ -31,6 +31,7 @@ import type {
 } from "../disclosure/disclosure-content.js";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useFocusTrapRegion } from "../focus-trap/focus-trap-region.js";
+import { useFocusableContainer } from "../focusable/focusable-container.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
 import { HeadingLevel } from "../heading/heading-level.js";
@@ -284,6 +285,7 @@ export const useDialog = createHook<DialogOptions>(
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
+    const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
 
     // Auto focus on show.
     useEffect(() => {
@@ -322,6 +324,7 @@ export const useDialog = createHook<DialogOptions>(
         getFirstTabbableIn(dialog, true, portal && preserveTabOrder) ||
         dialog;
       if (!autoFocusOnShowProp(element)) return;
+      setAutoFocusEnabled(true);
       element.focus();
     }, [
       contentElement,
@@ -534,6 +537,10 @@ export const useDialog = createHook<DialogOptions>(
       ref: useForkRef(ref, props.ref),
     };
 
+    props = useFocusableContainer({
+      ...props,
+      autoFocusOnShow: autoFocusEnabled,
+    });
     props = useDisclosureContent({ store, ...props });
     props = useFocusable({ ...props, focusable });
     props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
