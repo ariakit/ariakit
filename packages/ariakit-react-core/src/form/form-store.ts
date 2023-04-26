@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import * as Core from "@ariakit/core/form/form-store";
 import type { StringLike } from "@ariakit/core/form/types";
 import type { PickRequired } from "@ariakit/core/utils/types";
@@ -11,7 +11,7 @@ import {
   useCollectionStoreOptions,
   useCollectionStoreProps,
 } from "../collection/collection-store.js";
-import { useSafeLayoutEffect } from "../utils/hooks.js";
+import { useEvent } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -30,17 +30,32 @@ export function useFormStoreProps<
   useStoreProps(store, props, "errors", "setErrors");
   useStoreProps(store, props, "touched", "setTouched");
 
-  const useValue = useCallback<FormStore["useValue"]>((name) => {
-    return store.useState(() => store.getValue(name));
-  }, []);
+  const useValue = useCallback<FormStore["useValue"]>(
+    (name) => store.useState(() => store.getValue(name)),
+    [store]
+  );
 
-  const useValidate = useCallback<FormStore["useValidate"]>((callback) => {
-    useSafeLayoutEffect(() => store.onValidate(callback), [callback]);
-  }, []);
+  const useValidate = useCallback<FormStore["useValidate"]>(
+    (callback) => {
+      // Whenever the rendered items change (for example, when form fields are
+      // lazily rendered), we need to reset the callbacks so they always run in
+      // a consistent order.
+      const renderedItems = store.useState("renderedItems");
+      callback = useEvent(callback);
+      useEffect(() => store.onValidate(callback), [renderedItems, callback]);
+    },
+    [store]
+  );
 
-  const useSubmit = useCallback<FormStore["useSubmit"]>((callback) => {
-    useSafeLayoutEffect(() => store.onSubmit(callback), [callback]);
-  }, []);
+  const useSubmit = useCallback<FormStore["useSubmit"]>(
+    (callback) => {
+      // Same logic as useValidate.
+      const renderedItems = store.useState("renderedItems");
+      callback = useEvent(callback);
+      useEffect(() => store.onSubmit(callback), [renderedItems, callback]);
+    },
+    [store]
+  );
 
   return useMemo(
     () => ({
