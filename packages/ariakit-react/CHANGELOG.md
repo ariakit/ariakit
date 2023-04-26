@@ -1,5 +1,19 @@
 # @ariakit/react
 
+## 0.1.5
+
+### Patch Changes
+
+- Fixed `FormRadio` error when not explicitly providing the composite store. ([#2313](https://github.com/ariakit/ariakit/pull/2313))
+
+- Fixed invariant error messages on `Menu` components. ([#2318](https://github.com/ariakit/ariakit/pull/2318))
+
+- Updated validate and submit callbacks on `Form` so they always run in a consistent order. ([#2319](https://github.com/ariakit/ariakit/pull/2319))
+
+- Fixed nested `Dialog` components when they are conditionally mounted. ([#2310](https://github.com/ariakit/ariakit/pull/2310))
+
+- Updated dependencies: `@ariakit/react-core@0.1.5`, `@ariakit/core@0.1.3`.
+
 ## 0.1.4
 
 ### Patch Changes
