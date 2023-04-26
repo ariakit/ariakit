@@ -71,7 +71,7 @@
     "@types/lodash": "4.14.194",
     "@types/lodash-es": "4.17.7",
     "@types/marked": "4.0.8",
-    "@types/node": "18.16.0",
+    "@types/node": "18.16.1",
     "@types/postcss-import": "14.0.0",
     "@types/prettier": "2.7.2",
     "@types/react": "18.0.38",
