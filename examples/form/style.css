@@ -85,7 +85,7 @@
 .button {
   @apply
     rounded-md
-    flex-1
+    w-full
   ;
 }
 

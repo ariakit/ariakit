@@ -26,15 +26,12 @@ type ItemType = "label" | "error" | "description";
 function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
   const element = ref.current;
   if (!element) return null;
-  if (element.name !== name) {
-    if (element.form) {
-      return element.form.elements.namedItem(name) as HTMLInputElement | null;
-    } else {
-      const document = getDocument(element);
-      return document.getElementsByName(name)[0] as HTMLInputElement | null;
-    }
+  if (element.name === name) return element;
+  if (element.form) {
+    return element.form.elements.namedItem(name) as HTMLInputElement | null;
   }
-  return element;
+  const document = getDocument(element);
+  return document.getElementsByName(name)[0] as HTMLInputElement | null;
 }
 
 function useItem(store: FormStore, name: string, type: ItemType) {
