@@ -1,5 +1,15 @@
 # @ariakit/core
 
+## 0.1.3
+
+### Patch Changes
+
+- Added support for native radio buttons within forms, that work with roving tabindex, to all `focus` utilities. ([#2313](https://github.com/ariakit/ariakit/pull/2313))
+
+- Updated validate and submit callbacks on `Form` so they always run in a consistent order. ([#2319](https://github.com/ariakit/ariakit/pull/2319))
+
+- Marked internal store functions as deprecated/experimental. ([#2316](https://github.com/ariakit/ariakit/pull/2316))
+
 ## 0.1.2
 
 ### Patch Changes
