@@ -37,22 +37,22 @@ export function useFormStoreProps<
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
-      // Whenever the rendered items change (for example, when form fields are
-      // lazily rendered), we need to reset the callbacks so they always run in
-      // a consistent order.
-      const renderedItems = store.useState("renderedItems");
       callback = useEvent(callback);
-      useEffect(() => store.onValidate(callback), [renderedItems, callback]);
+      // Whenever the items change (for example, when form fields are lazily
+      // rendered), we need to reset the callbacks so they always run in a
+      // consistent order.
+      const items = store.useState("items");
+      useEffect(() => store.onValidate(callback), [items, callback]);
     },
     [store]
   );
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
-      // Same logic as useValidate.
-      const renderedItems = store.useState("renderedItems");
       callback = useEvent(callback);
-      useEffect(() => store.onSubmit(callback), [renderedItems, callback]);
+      // Same logic as useValidate.
+      const items = store.useState("items");
+      useEffect(() => store.onSubmit(callback), [items, callback]);
     },
     [store]
   );

@@ -86,8 +86,7 @@ export function createCollectionStore<T extends Item = Item>(
     return privateStore.syncBatch(
       (state) => {
         let firstRun = true;
-        let raf = 0;
-        raf = requestAnimationFrame(sortItems);
+        let raf = requestAnimationFrame(sortItems);
         if (typeof IntersectionObserver !== "function") return;
         const callback = () => {
           if (firstRun) {
