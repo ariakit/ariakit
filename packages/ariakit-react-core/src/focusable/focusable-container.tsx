@@ -4,8 +4,8 @@ import type { As, Options, Props } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
 
 /**
- * Description for my component hook.
- * @see https://ariakit.org/components/my-component
+ * Returns props to create a `FocusableContainer` component.
+ * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
  * const props = useFocusableContainer();
@@ -29,11 +29,14 @@ export const useFocusableContainer = createHook<FocusableContainerOptions>(
 );
 
 /**
- * Description for my component.
- * @see https://ariakit.org/components/my-component
+ * Renders a div that wraps `Focusable` components and controls whether they
+ * can be auto focused.
+ * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
- * <FocusableContainer />
+ * <FocusableContainer autoFocusOnShow={false}>
+ *   <Focusable autoFocus />
+ * </FocusableContainer>
  * ```
  */
 export const FocusableContainer = createComponent<FocusableContainerOptions>(

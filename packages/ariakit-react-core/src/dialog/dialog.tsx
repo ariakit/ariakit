@@ -285,6 +285,9 @@ export const useDialog = createHook<DialogOptions>(
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
+    // We have to wait for the dialog to be mounted before allowing focusable
+    // elements to be auto focused. Otherwise, there could be unintended scroll
+    // jumps. See select-animated browser tests.
     const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
 
     // Auto focus on show.
