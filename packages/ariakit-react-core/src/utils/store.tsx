@@ -133,13 +133,13 @@ export function useStoreProps<
     return store.sync(
       (state, prev) => {
         const { value, setValue } = propsRef.current;
+        if (setValue && state[key] !== prev[key] && state[key] !== value) {
+          setValue(state[key]);
+        }
         // If the value prop is provided, we reset the state value to keep it
         // controlled.
         if (value !== undefined) {
           store.setState(key, value);
-        }
-        if (setValue && state[key] !== prev[key] && state[key] !== value) {
-          setValue(state[key]);
         }
       },
       [key]

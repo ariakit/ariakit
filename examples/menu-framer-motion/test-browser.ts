@@ -14,7 +14,6 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("open/hide with click", async ({ page }) => {
-  await page.setViewportSize({ width: 480, height: 480 });
   await expect(getMenu(page)).not.toBeVisible();
   await getMenuButton(page).click();
   await expect(getMenu(page)).toBeVisible();
