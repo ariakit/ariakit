@@ -42,7 +42,3 @@ const mounted = menu.useState("mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.
-
-## Reduced motion
-
-To keep our menu accessible, we use the [`useReducedMotion`](https://www.framer.com/motion/use-reduced-motion/) hook from Framer Motion to disable animations when the user has enabled the "reduce motion" setting in their operating system.

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import type { HTMLMotionProps, MotionProps } from "framer-motion";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
 export interface MenuProps extends React.HTMLAttributes<HTMLDivElement> {
   open?: boolean;
@@ -34,9 +34,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
     const menu = Ariakit.useMenuStore({ open, setOpen });
     const currentPlacement = menu.useState("currentPlacement");
     const mounted = menu.useState("mounted");
-    const prefersReducedMotion = useReducedMotion();
     return (
-      <>
+      <MotionConfig reducedMotion="user">
         <Ariakit.MenuButton
           store={menu}
           ref={ref}
@@ -59,8 +58,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
               as={motion.div}
               initial={initial}
               exit={exit}
-              animate={prefersReducedMotion ? false : animate}
-              variants={prefersReducedMotion ? {} : variants}
+              animate={animate}
+              variants={variants}
               transition={transition}
             >
               <Ariakit.MenuArrow className="menu-arrow" />
@@ -68,7 +67,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
             </Ariakit.Menu>
           )}
         </AnimatePresence>
-      </>
+      </MotionConfig>
     );
   }
 );
@@ -81,15 +80,14 @@ export interface MenuItemProps extends HTMLMotionProps<"div"> {
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   ({ label, variants, animate, ...props }, ref) => {
-    const prefersReducedMotion = useReducedMotion();
     return (
       <Ariakit.MenuItem
         as={motion.div}
         ref={ref}
         className="menu-item"
         children={label}
-        animate={prefersReducedMotion ? false : animate}
-        variants={prefersReducedMotion ? {} : variants}
+        animate={animate}
+        variants={variants}
         {...props}
       />
     );

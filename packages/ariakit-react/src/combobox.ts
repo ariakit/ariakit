@@ -76,7 +76,7 @@ export type {
   ComboboxStoreState,
 } from "@ariakit/react-core/combobox/combobox-store";
 
-export { Combobox, useCombobox } from "@ariakit/react-core/combobox/combobox";
+export { Combobox } from "@ariakit/react-core/combobox/combobox";
 
 export type {
   ComboboxOptions,
