@@ -204,6 +204,10 @@ export interface SelectStoreState<T extends Value = Value>
   placement: PopoverStoreState["placement"];
   /**
    * The select value.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   value: MutableValue<T>;
   /**
@@ -227,6 +231,10 @@ export interface SelectStoreFunctions<T extends Value = Value>
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @example
    * store.setValue("Apple");
    * store.setValue(["Apple", "Banana"]);
@@ -260,10 +268,18 @@ export interface SelectStoreOptions<T extends Value = Value>
    * A reference to a combobox store. This is used when combining the combobox
    * with a select (e.g., select with a search input). The stores will share the
    * same state.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   combobox?: ComboboxStore;
   /**
    * The default value. If not set, the first non-disabled item will be used.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }

@@ -481,6 +481,9 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
   /**
    * Custom event handler that is called when the element is focused via the
    * keyboard or when a key is pressed while the element is focused.
+   *
+   * Live examples:
+   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   onFocusVisible?: BivariantCallback<(event: SyntheticEvent) => void>;
 }

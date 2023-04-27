@@ -188,6 +188,15 @@ export interface ComboboxStoreState
   includesBaseElement: boolean;
   /**
    * The input value.
+   *
+   * Live examples:
+   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Filterable Combobox](https://ariakit.org/examples/combobox-matches)
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    */
   value: string;
   /**
@@ -196,6 +205,11 @@ export interface ComboboxStoreState
   activeValue: string | undefined;
   /**
    * Whether to reset the value when the combobox popover is hidden.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * @default false
    */
   resetValueOnHide: boolean;
 }
@@ -205,6 +219,12 @@ export interface ComboboxStoreFunctions
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @example
    * store.setValue("Hello world");
    * store.setValue((value) => value + "!");
@@ -237,6 +257,10 @@ export interface ComboboxStoreOptions
   select?: SelectStore;
   /**
    * The combobox initial value.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default ""
    */
   defaultValue?: ComboboxStoreState["value"];

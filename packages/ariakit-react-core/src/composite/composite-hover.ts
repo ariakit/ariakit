@@ -139,6 +139,10 @@ export interface CompositeHoverOptions<T extends As = "div">
   store?: CompositeStore;
   /**
    * Whether to focus the composite item on hover.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;

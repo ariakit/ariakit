@@ -168,12 +168,19 @@ export interface CheckboxOptions<T extends As = "input">
   /**
    * Object returned by the `useCheckboxStore` hook. If not provided, the
    * internal store will be used.
+   *
+   * Live examples:
+   * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
+   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   store?: CheckboxStore;
   /**
    * The value of the checkbox. This is useful when the same checkbox store is
    * used for multiple `Checkbox` elements, in which case the value will be an
    * array of checked values.
+   *
+   * Live examples:
+   * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
    * @example
    * ```jsx
    * const checkbox = useCheckboxStore({
@@ -186,18 +193,24 @@ export interface CheckboxOptions<T extends As = "input">
    */
   value?: string | number;
   /**
-   * The `checked` state of the checkbox. This will override the value inferred
-   * from `store` prop, if provided. This can be `"mixed"` to indicate that the
-   * checkbox is partially checked.
-   */
-  checked?: "mixed" | boolean;
-  /**
    * The default `checked` state of the checkbox. This prop is ignored if the
    * `checked` or the `store` props are provided.
    */
   defaultChecked?: "mixed" | boolean;
   /**
+   * The `checked` state of the checkbox. This will override the value inferred
+   * from `store` prop, if provided. This can be `"mixed"` to indicate that the
+   * checkbox is partially checked.
+   *
+   * Live examples:
+   * - [Controlled Checkbox](https://ariakit.org/examples/checkbox-controlled)
+   */
+  checked?: "mixed" | boolean;
+  /**
    * A function that is called when the checkbox's `checked` store changes.
+   *
+   * Live examples:
+   * - [Controlled Checkbox](https://ariakit.org/examples/checkbox-controlled)
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }

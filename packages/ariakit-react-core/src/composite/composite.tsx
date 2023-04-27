@@ -464,6 +464,10 @@ export interface CompositeOptions<T extends As = "div">
    * Whether the component should behave as a composite widget. This prop should
    * be set to `false` when combining different composite widgets where only one
    * should behave as such.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default true
    * @example
    * ```jsx
