@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated JSDocs.
+
 ## 0.1.3
 
 ### Patch Changes
