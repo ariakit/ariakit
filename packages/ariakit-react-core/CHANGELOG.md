@@ -1,5 +1,21 @@
 # @ariakit/react-core
 
+## 0.1.6
+
+### Patch Changes
+
+- Added `FocusableContainer` component to control whether `Focusable` components inside it can be auto focused when they have the `autoFocus` prop. ([#2322](https://github.com/ariakit/ariakit/pull/2322))
+
+- Fixed `Select` component causing a scroll jump when it's dynamically rendered in a portal. ([#2322](https://github.com/ariakit/ariakit/pull/2322))
+
+- Fixed a bug where passing controlled props to a component store wouldn't always call the state setter with an updated value. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Fixed `Menu` not respecting `hidden={false}`. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Updated JSDocs.
+
+- Updated dependencies: `@ariakit/core@0.1.4`.
+
 ## 0.1.5
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @ariakit/react
 
+## 0.1.6
+
+### Patch Changes
+
+- Fixed `Select` component causing a scroll jump when it's dynamically rendered in a portal. ([#2322](https://github.com/ariakit/ariakit/pull/2322))
+
+- Fixed a bug where passing controlled props to a component store wouldn't always call the state setter with an updated value. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Fixed `Menu` not respecting `hidden={false}`. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Updated JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.1.6`, `@ariakit/core@0.1.4`.
+
 ## 0.1.5
 
 ### Patch Changes
