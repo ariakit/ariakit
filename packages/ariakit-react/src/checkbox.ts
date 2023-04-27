@@ -12,7 +12,7 @@ export type {
   CheckboxStoreProps,
 } from "@ariakit/react-core/checkbox/checkbox-store";
 
-export { Checkbox, useCheckbox } from "@ariakit/react-core/checkbox/checkbox";
+export { Checkbox } from "@ariakit/react-core/checkbox/checkbox";
 
 export type {
   CheckboxOptions,

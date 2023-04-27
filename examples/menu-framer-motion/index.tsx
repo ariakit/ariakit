@@ -1,49 +1,50 @@
 import { useState } from "react";
-import type { MotionProps } from "framer-motion";
-import { useReducedMotion } from "framer-motion";
-import { Menu, MenuItem, MenuSeparator } from "./menu.js";
+import type { MotionProps, Variants } from "framer-motion";
+import { Menu, MenuItem } from "./menu.js";
 import "./style.css";
+
+const menu = {
+  closed: {
+    scale: 0,
+    transition: {
+      delay: 0.15,
+    },
+  },
+  open: {
+    scale: 1,
+    transition: {
+      type: "spring",
+      duration: 0.4,
+      delayChildren: 0.2,
+      staggerChildren: 0.05,
+    },
+  },
+} satisfies Variants;
+
+const item = {
+  variants: {
+    closed: { x: -16, opacity: 0 },
+    open: { x: 0, opacity: 1 },
+  },
+  transition: { opacity: { duration: 0.2 } },
+} satisfies MotionProps;
 
 export default function Example() {
   const [open, setOpen] = useState(false);
-  const reducedMotion = useReducedMotion();
-
-  const itemProps: MotionProps = reducedMotion
-    ? {}
-    : {
-        transition: { opacity: { duration: 0.2 } },
-        variants: {
-          closed: { opacity: 0, x: -16 },
-          open: { opacity: 1, x: 0 },
-        },
-      };
-
   return (
     <Menu
       label="Options"
       open={open}
       setOpen={setOpen}
       animate={open ? "open" : "closed"}
-      variants={{
-        closed: reducedMotion ? { opacity: 0 } : { scale: 0 },
-        open: reducedMotion
-          ? { opacity: 1 }
-          : {
-              scale: 1,
-              transition: {
-                type: "spring",
-                duration: 0.4,
-                delayChildren: 0.2,
-                staggerChildren: 0.05,
-              },
-            },
-      }}
+      initial="closed"
+      exit="closed"
+      variants={menu}
     >
-      <MenuItem {...itemProps}>Edit</MenuItem>
-      <MenuItem {...itemProps}>Share</MenuItem>
-      <MenuItem {...itemProps}>Delete</MenuItem>
-      <MenuSeparator />
-      <MenuItem {...itemProps}>Report</MenuItem>
+      <MenuItem {...item}>Edit</MenuItem>
+      <MenuItem {...item}>Share</MenuItem>
+      <MenuItem {...item}>Delete</MenuItem>
+      <MenuItem {...item}>Report</MenuItem>
     </Menu>
   );
 }
