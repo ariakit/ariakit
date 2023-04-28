@@ -109,6 +109,9 @@ export interface TabPanelOptions<T extends As = "div">
   /**
    * The id of the tab that controls this panel. By default, this value will
    * be inferred based on the order of the tabs and the panels.
+   *
+   * Live examples:
+   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    */
   tabId?: string | null;
 }
