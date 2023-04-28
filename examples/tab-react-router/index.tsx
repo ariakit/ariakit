@@ -1,40 +1,23 @@
-import {
-  MemoryRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom";
-import {
-  TabLink,
-  TabLinkList,
-  TabLinkPanel,
-  useTabLinkStore,
-} from "./tab-link.jsx";
+import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import { Tab, TabList, TabPanel, Tabs } from "./tabs.js";
 import "./style.css";
 
-function Tabs() {
-  const tab = useTabLinkStore();
-  const selectedId = tab.useState("selectedId");
+function GroceriesTabs() {
   return (
-    <div className="wrapper">
-      <TabLinkList store={tab} className="tab-list" aria-label="Groceries">
-        <TabLink className="tab" id="/fruits" to="/fruits">
-          Fruits
-        </TabLink>
-        <TabLink className="tab" id="/vegetables" to="/vegetables">
-          Vegetables
-        </TabLink>
-        <TabLink className="tab" id="/meat" to="/meat">
-          Meat
-        </TabLink>
-      </TabLinkList>
-      <div className="panels">
-        <TabLinkPanel store={tab} tabId={selectedId}>
-          <Outlet />
-        </TabLinkPanel>
+    <Tabs selectOnMove={false}>
+      <div className="wrapper">
+        <TabList aria-label="Groceries">
+          <Tab to="/">Fruits</Tab>
+          <Tab to="/vegetables">Vegetables</Tab>
+          <Tab to="/meat">Meat</Tab>
+        </TabList>
+        <div className="panels">
+          <TabPanel>
+            <Outlet />
+          </TabPanel>
+        </div>
       </div>
-    </div>
+    </Tabs>
   );
 }
 
@@ -70,15 +53,14 @@ function Meat() {
 
 export default function Example() {
   return (
-    // We're using HashRouter here for demonstration purposes. You can change
-    // it to HashRouter to see the effect.
+    // We're using MemoryRouter for demonstration purposes. But you can use
+    // BrowserRouter, HashRouter, etc. depending on your needs.
     <MemoryRouter>
       <Routes>
-        <Route path="/" element={<Tabs />}>
-          <Route index element={<Navigate to="/fruits" />} />
-          <Route path="/fruits" element={<Fruits />} />
-          <Route path="/vegetables" element={<Vegetables />} />
-          <Route path="/meat" element={<Meat />} />
+        <Route path="/" Component={GroceriesTabs}>
+          <Route index Component={Fruits} />
+          <Route path="/vegetables" Component={Vegetables} />
+          <Route path="/meat" Component={Meat} />
         </Route>
       </Routes>
     </MemoryRouter>

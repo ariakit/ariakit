@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import Square from "./square.jsx";
+import Square from "./square.js";
 import "./style.css";
 
 export default function Example() {

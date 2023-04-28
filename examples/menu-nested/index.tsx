@@ -1,4 +1,4 @@
-import { Menu, MenuItem } from "./menu.jsx";
+import { Menu, MenuItem } from "./menu.js";
 import "./style.css";
 
 export default function Example() {
