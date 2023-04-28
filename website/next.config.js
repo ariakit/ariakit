@@ -10,7 +10,6 @@ const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
 const nextConfig = {
   experimental: {
     appDir: true,
-    scrollRestoration: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
