@@ -12,7 +12,6 @@ import {
   getActiveElement,
   getDocument,
   isButton,
-  isVisible,
 } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
