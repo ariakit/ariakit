@@ -454,6 +454,10 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * Automatically focus the element when it is mounted. It works similarly to
    * the native `autoFocus` prop, but solves an issue where the element is given
    * focus before React effects can run.
+   *
+   * Live examples:
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @default false
    */
   autoFocus?: boolean;

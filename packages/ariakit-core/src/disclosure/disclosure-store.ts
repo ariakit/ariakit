@@ -79,6 +79,10 @@ export function createDisclosureStore(
 export interface DisclosureStoreState {
   /**
    * The visibility state of the content.
+   *
+   * Live examples:
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @default false
    */
   open: boolean;
@@ -131,6 +135,8 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @example
    * store.setOpen(true);
    * store.setOpen((open) => !open);
@@ -150,6 +156,8 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    */
   hide: () => void;
   /**
