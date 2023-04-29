@@ -4,15 +4,10 @@ if (!isBrowser && typeof window !== "undefined") {
   // @ts-ignore
   window.Element.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
-      if (element.parentElement && isHidden(element.parentElement)) {
-        return true;
-      }
-      if (!(element instanceof HTMLElement)) {
-        return false;
-      }
-      if (element.hidden) {
-        return true;
-      }
+      if (!element.isConnected) return true;
+      if (element.parentElement && isHidden(element.parentElement)) return true;
+      if (!(element instanceof HTMLElement)) return false;
+      if (element.hidden) return true;
       const style = getComputedStyle(element);
       return style.display === "none" || style.visibility === "hidden";
     };

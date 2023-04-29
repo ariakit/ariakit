@@ -33,7 +33,10 @@ export function ConfirmDialog({
     },
   });
   return (
-    <Ariakit.Dialog store={dialog} className="dialog">
+    <Ariakit.Dialog
+      store={dialog}
+      className="dialog fixed left-0 top-0 z-[100]"
+    >
       {title && (
         <Ariakit.DialogHeading className="heading">
           {title}
