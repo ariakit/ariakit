@@ -38,6 +38,7 @@ import type { PortalOptions } from "../portal/portal.js";
 import { usePortal } from "../portal/portal.js";
 import {
   useBooleanEvent,
+  useEvent,
   useForkRef,
   useId,
   usePortalRef,
@@ -68,12 +69,15 @@ function isBackdrop(dialog: HTMLElement, element: Element) {
   return element.getAttribute("data-backdrop") === id;
 }
 
-function isAlreadyFocusingAnotherElement(dialog: HTMLElement, modal = false) {
+function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (contains(dialog, activeElement)) return false;
   if (isBackdrop(dialog, activeElement)) return false;
-  if (modal) return false;
+  // When there's a nested dialog, clicking outside both dialogs will close them
+  // at the same time, but the active element will still point to the nested
+  // dialog element that is still focusable at this point. So we ignore it.
+  if (activeElement.hasAttribute("data-dialog")) return false;
   if (isFocusable(activeElement)) return true;
   return false;
 }
@@ -109,6 +113,7 @@ export const useDialog = createHook<DialogOptions>(
     backdropProps,
     hideOnEscape = true,
     hideOnInteractOutside = true,
+    getPersistingElements,
     preventBodyScroll = !!modal,
     autoFocusOnShow = true,
     autoFocusOnHide = true,
@@ -130,12 +135,16 @@ export const useDialog = createHook<DialogOptions>(
     const preserveTabOrder = store.useState(
       (state) => preserveTabOrderProp && !modal && state.mounted
     );
-    const open = store.useState("open");
-
     const id = useId(props.id);
+    const open = store.useState("open");
+    const mounted = store.useState("mounted");
     const contentElement = store.useState("contentElement");
 
-    // Sets disclosure element.
+    usePreventBodyScroll(store, mounted && preventBodyScroll);
+    useHideOnInteractOutside(store, hideOnInteractOutside);
+
+    // Sets disclosure element using the current active element right after the
+    // dialog is opened.
     useEffect(() => {
       if (!open) return;
       const dialog = ref.current;
@@ -147,20 +156,9 @@ export const useDialog = createHook<DialogOptions>(
       store.setDisclosureElement(activeElement);
     }, [open]);
 
-    const shouldPreventBodyScroll = store.useState(
-      (state) => preventBodyScroll && state.mounted
-    );
-
-    usePreventBodyScroll(store, shouldPreventBodyScroll);
-
-    useHideOnInteractOutside({
-      store,
-      modal,
-      hideOnInteractOutside,
-    });
-
     const parentDialog = useContext(DialogContext);
 
+    // When the parent dialog is closed, close this dialog too.
     useSafeLayoutEffect(() => {
       return parentDialog?.sync(
         (state) => {
@@ -188,8 +186,6 @@ export const useDialog = createHook<DialogOptions>(
       restoreLostFocus();
       return () => cancelAnimationFrame(raf);
     }, [open, modal]);
-
-    const mounted = store.useState("mounted");
 
     // Safari does not focus on native buttons on mousedown. The
     // DialogDisclosure component normalizes this behavior using the
@@ -250,6 +246,8 @@ export const useDialog = createHook<DialogOptions>(
       return prependHiddenDismiss(dialog, store.hide);
     }, [mounted, domReady, shouldDisableAccessibilityTree]);
 
+    const getPersistingElementsProp = useEvent(getPersistingElements);
+
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       // When the dialog is animating, we immediately restore the element tree
@@ -263,17 +261,26 @@ export const useDialog = createHook<DialogOptions>(
       // delay before the dialog element is appended to the portal node, and the
       // portal node is added to the DOM.
       const element = portal ? portalNode : ref.current;
+      const otherElements = getPersistingElementsProp();
+      const allElements = [element, ...otherElements];
       if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(element);
+        return markTreeOutside(...allElements);
       }
       if (modal) {
-        return disableTreeOutside(element);
+        return disableTreeOutside(...allElements);
       }
       return chain(
-        markTreeOutside(element),
-        disableAccessibilityTreeOutside(element)
+        markTreeOutside(...allElements),
+        disableAccessibilityTreeOutside(...allElements)
       );
-    }, [open, shouldDisableAccessibilityTree, portal, portalNode, modal]);
+    }, [
+      open,
+      portal,
+      portalNode,
+      getPersistingElementsProp,
+      shouldDisableAccessibilityTree,
+      modal,
+    ]);
 
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
@@ -348,11 +355,11 @@ export const useDialog = createHook<DialogOptions>(
       if (!mayAutoFocusOnHide) return;
       // A function so we can use it on the effect setup and cleanup phases.
       const dialog = ref.current;
-      const focusOnHide = (retrying = false) => {
+      const focusOnHide = (retry = true) => {
         if (!dialog) return;
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
-        if (isAlreadyFocusingAnotherElement(dialog, modal)) return;
+        if (isAlreadyFocusingAnotherElement(dialog)) return;
         const { disclosureElement } = store.getState();
         let element = getElementFromProp(finalFocus) || disclosureElement;
         if (!element) return;
@@ -383,10 +390,12 @@ export const useDialog = createHook<DialogOptions>(
           }
         }
         if (!isFocusable(element)) {
-          if (retrying) return;
-          requestAnimationFrame(() => {
-            focusOnHide(true);
-          });
+          if (!retry) return;
+          // If the element is still not focusable by this time, we retry once
+          // again on the next frame. This is sometimes necessary because there
+          // may be nested dialogs that still need a tick to remove the inert
+          // attribute from elements outside.
+          requestAnimationFrame(() => focusOnHide(false));
           return;
         }
         if (!autoFocusOnHideProp(element)) return;
@@ -402,14 +411,7 @@ export const useDialog = createHook<DialogOptions>(
       // executed when the Dialog component gets unmounted. This is useful so we
       // can support both mounting and unmounting Dialog components.
       return focusOnHide;
-    }, [
-      hasOpened,
-      open,
-      mayAutoFocusOnHide,
-      modal,
-      finalFocus,
-      autoFocusOnHideProp,
-    ]);
+    }, [hasOpened, open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
@@ -595,6 +597,14 @@ export interface DialogOptions<T extends As = "div">
    * @default true
    */
   hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
+  /**
+   * When a dialog is open, the elements outside of it will be disabled so they
+   * can't be interacted with if the dialog is modal. For non-modal dialogs,
+   * interacting with elements outside of the dialog will close it. With this
+   * function, you can return a collection of elements that will be considered
+   * part of the dialog and therefore will be excluded from this behavior.
+   */
+  getPersistingElements?: () => Iterable<Element>;
   /**
    * Determines whether the body scrolling will be prevented when the dialog is
    * shown.

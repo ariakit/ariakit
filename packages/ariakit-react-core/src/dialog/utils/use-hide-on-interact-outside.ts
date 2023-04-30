@@ -92,10 +92,10 @@ function shouldHideOnInteractOutside(
   return !!hideOnInteractOutside;
 }
 
-export function useHideOnInteractOutside({
-  store,
-  hideOnInteractOutside,
-}: Options) {
+export function useHideOnInteractOutside(
+  store: DialogOptions["store"],
+  hideOnInteractOutside: DialogOptions["hideOnInteractOutside"]
+) {
   const open = store.useState("open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
   const props = { store, capture: false };
