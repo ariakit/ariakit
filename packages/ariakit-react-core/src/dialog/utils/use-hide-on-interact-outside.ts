@@ -71,9 +71,10 @@ function useEventOutside({
       if (isDisclosure(disclosureElement, target)) return;
       // Event on focus trap
       if (target.hasAttribute("data-focus-trap")) return;
-      // TODO: Explain
+      // Clicked on dialog's bounding box
       if (clickedOnDialog(contentElement, event)) return;
-      // TODO: Explain
+      // Finally, if the target has been marked as "outside" or is an ancestor
+      // of the content element, we call the listener.
       if (isElementMarked(target) || contains(target, contentElement)) {
         callListener(event);
       }
@@ -98,7 +99,7 @@ export function useHideOnInteractOutside(
 ) {
   const open = store.useState("open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
-  const props = { store, capture: false };
+  const props = { store, capture: true };
 
   useEventOutside({
     ...props,
