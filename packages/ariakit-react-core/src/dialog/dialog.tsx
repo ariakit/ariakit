@@ -261,7 +261,7 @@ export const useDialog = createHook<DialogOptions>(
       // delay before the dialog element is appended to the portal node, and the
       // portal node is added to the DOM.
       const element = portal ? portalNode : ref.current;
-      const otherElements = getPersistingElementsProp();
+      const otherElements = getPersistingElementsProp() || [];
       const allElements = [element, ...otherElements];
       if (!shouldDisableAccessibilityTree) {
         return markTreeOutside(...allElements);
