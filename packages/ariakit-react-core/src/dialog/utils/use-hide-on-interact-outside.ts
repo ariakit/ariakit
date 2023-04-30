@@ -112,6 +112,7 @@ export function useHideOnInteractOutside({
       if (!previousMouseDown) return;
       if (!isVisible(previousMouseDown)) return;
       const dialog = store.getState().contentElement;
+      // TODO: Should check if previousMouseDown was marked.
       const draggingFromDialog = dialog && contains(dialog, previousMouseDown);
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
