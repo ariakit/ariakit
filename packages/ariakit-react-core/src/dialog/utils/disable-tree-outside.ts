@@ -1,12 +1,8 @@
 import { contains } from "@ariakit/core/utils/dom";
 import { getAllTabbable } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
-import { assignStyle } from "./assign-style.js";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.js";
-import {
-  setObservableAttribute,
-  setObservableProperty,
-} from "./set-observable.js";
+import { assignStyle, setAttribute, setProperty } from "./orchestrate.js";
 import { supportsInert } from "./supports-inert.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
@@ -16,7 +12,7 @@ function disableElement(element: Element | HTMLElement) {
   if (!("style" in element)) return noop;
 
   if (supportsInert()) {
-    return setObservableProperty(element, "inert", true);
+    return setProperty(element, "inert", true);
   }
 
   return chain(
@@ -38,7 +34,7 @@ export function disableTreeOutside(...elements: Elements) {
     getAllTabbable().forEach((element) => {
       // Ignore tabbable elements inside the dialog
       if (elements.some((el) => el && contains(el, element))) return;
-      cleanups.unshift(setObservableAttribute(element, "tabindex", "-1"));
+      cleanups.unshift(setAttribute(element, "tabindex", "-1"));
     });
   }
 

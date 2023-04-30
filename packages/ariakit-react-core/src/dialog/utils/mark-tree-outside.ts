@@ -1,11 +1,11 @@
 import { closest } from "@ariakit/core/utils/dom";
-import { setObservableAttribute } from "./set-observable.js";
+import { setAttribute } from "./orchestrate.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
 type Elements = Array<Element | null>;
 
 export function markElement(element: Element) {
-  return setObservableAttribute(element, "data-dialog-outside", "");
+  return setAttribute(element, "data-dialog-outside", "");
 }
 
 export function isElementMarked(element: Element) {

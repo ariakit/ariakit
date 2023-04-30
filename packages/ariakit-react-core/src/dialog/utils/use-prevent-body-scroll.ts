@@ -4,8 +4,7 @@ import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
 import { useSafeLayoutEffect } from "../../utils/hooks.js";
 import type { DialogStore } from "../dialog-store.js";
-import { assignStyle } from "./assign-style.js";
-import { setCSSProperty } from "./set-css-property.js";
+import { assignStyle, setCSSProperty } from "./orchestrate.js";
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar

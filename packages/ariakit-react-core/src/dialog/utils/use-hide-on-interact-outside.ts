@@ -104,6 +104,8 @@ export function useHideOnInteractOutside(
     ...props,
     type: "click",
     listener: (event) => {
+      const { contentElement } = store.getState();
+      if (!contentElement) return;
       const previousMouseDown = previousMouseDownRef.current as Element | null;
       // If there's no previously mousedown'd element, this probably means that
       // the dialog opened with a mousedown event, and a subsequent click event
@@ -111,12 +113,14 @@ export function useHideOnInteractOutside(
       // ignore this.
       if (!previousMouseDown) return;
       if (!isVisible(previousMouseDown)) return;
-      const dialog = store.getState().contentElement;
-      // TODO: Should check if previousMouseDown was marked.
-      const draggingFromDialog = dialog && contains(dialog, previousMouseDown);
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
-      // outside of it). See https://github.com/ariakit/ariakit/issues/1336
+      // outside of it). See:
+      // - https://github.com/ariakit/ariakit/issues/1336
+      // - https://github.com/ariakit/ariakit/issues/2330
+      const draggingFromDialog =
+        !isElementMarked(previousMouseDown) &&
+        !contains(previousMouseDown, contentElement);
       if (draggingFromDialog) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       store.hide();

@@ -1,10 +1,10 @@
-import { setObservableAttribute } from "./set-observable.js";
+import { setAttribute } from "./orchestrate.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
 type Elements = Array<Element | null>;
 
 export function hideElementFromAccessibilityTree(element: Element) {
-  return setObservableAttribute(element, "aria-hidden", "true");
+  return setAttribute(element, "aria-hidden", "true");
 }
 
 export function disableAccessibilityTreeOutside(...elements: Elements) {
