@@ -2,10 +2,6 @@
 
 [data-backdrop] {
   @apply
-    flex
-    justify-center
-    items-center
-    md:items-start
     [backdrop-filter:blur(4px)]
     bg-black/10
     dark:bg-black/50
@@ -14,14 +10,15 @@
 
 .dialog {
   @apply
-    w-full
-    max-w-[calc(100%-theme("spacing.4")*2)]
-    max-h-[calc(100%-theme("spacing.4")*2)]
-    md:max-h-[calc(100%-theme("spacing.24")*2)]
+    fixed
+    inset-3
+    sm:inset-y-[10vh]
+    m-auto
+    sm:mt-0
     h-fit
+    max-h-[calc(100vh-2*theme(spacing.3))]
+    sm:max-h-[80vh]
     sm:w-[420px]
-    my-4
-    md:my-24
     overflow-auto
     z-50
     flex
@@ -29,7 +26,8 @@
     gap-4
     p-4
     sm:p-6
-    rounded-2xl
+    rounded-xl
+    sm:rounded-2xl
     dark:border
     dark:border-solid
     bg-white

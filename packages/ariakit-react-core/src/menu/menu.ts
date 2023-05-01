@@ -67,10 +67,7 @@ export const useMenu = createHook<MenuOptions>(
     // and it should take precedence. That's why we need to destructure this
     // prop here and check if aria-labelledby is set later.
     const { "aria-labelledby": ariaLabelledBy, ...menuListProps } = useMenuList(
-      {
-        store,
-        ...props,
-      }
+      { store, ...props }
     );
 
     props = menuListProps;
@@ -108,7 +105,7 @@ export const useMenu = createHook<MenuOptions>(
               null;
             break;
           default:
-            return ref;
+            ref.current = baseElement;
         }
         if (!ref.current) return;
         return ref;

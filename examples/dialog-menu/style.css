@@ -3,14 +3,6 @@
 
 .dialog {
   @apply
-    fixed
-    mx-auto
-    inset-4
-  ;
-}
-
-.button {
-  @apply
-    w-max
+    items-start
   ;
 }
