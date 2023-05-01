@@ -49,15 +49,21 @@ export function setProperty<T extends Element$, K extends keyof T & string>(
   property: K,
   value: T[K]
 ) {
+  let exists = property in element;
   let previousValue = element[property];
 
   const setup = () => {
+    exists = property in element;
     previousValue = element[property];
     element[property] = value;
   };
 
   const cleanup = () => {
-    element[property] = previousValue;
+    if (!exists) {
+      delete element[property];
+    } else {
+      element[property] = previousValue;
+    }
   };
 
   return orchestrate(element, property, setup, cleanup);

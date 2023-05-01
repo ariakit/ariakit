@@ -1,23 +1,48 @@
-import { closest } from "@ariakit/core/utils/dom";
-import { setAttribute } from "./orchestrate.js";
+import { chain } from "@ariakit/core/utils/misc";
+import { setProperty } from "./orchestrate.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
 type Elements = Array<Element | null>;
 
-export function markElement(element: Element) {
-  return setAttribute(element, "data-dialog-outside", "");
+function getPropertyName(id = "", ancestor = false) {
+  return `__ariakit-dialog-${ancestor ? "ancestor" : "outside"}${
+    id ? `-${id}` : ""
+  }` as keyof Element;
 }
 
-export function isElementMarked(element: Element) {
-  return !!closest(element, "[data-dialog-outside]");
+export function markElement(element: Element, id = "") {
+  return chain(
+    setProperty(element, getPropertyName(), true),
+    setProperty(element, getPropertyName(id), true)
+  );
 }
 
-export function markTreeOutside(...elements: Elements) {
+export function markAncestor(element: Element, id = "") {
+  return chain(
+    setProperty(element, getPropertyName("", true), true),
+    setProperty(element, getPropertyName(id, true), true)
+  );
+}
+
+export function isElementMarked(element: Element, id?: string) {
+  const ancestorProperty = getPropertyName(id, true);
+  if (element[ancestorProperty]) return true;
+  const elementProperty = getPropertyName(id);
+  do {
+    if (element[elementProperty]) return true;
+    if (!element.parentElement) return false;
+    element = element.parentElement;
+  } while (true);
+}
+
+export function markTreeOutside(dialogId: string, ...elements: Elements) {
   const cleanups: Array<() => void> = [];
 
-  walkTreeOutside(elements, (element) => {
-    cleanups.unshift(markElement(element));
-  });
+  walkTreeOutside(
+    elements,
+    (element) => cleanups.unshift(markElement(element, dialogId)),
+    (ancestor) => cleanups.unshift(markAncestor(ancestor, dialogId))
+  );
 
   const restoreAccessibilityTree = () => {
     cleanups.forEach((fn) => fn());

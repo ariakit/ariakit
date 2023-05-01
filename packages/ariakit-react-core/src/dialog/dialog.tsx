@@ -5,7 +5,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from "react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   closest,
   contains,
@@ -59,6 +59,7 @@ import { disableTreeOutside } from "./utils/disable-tree-outside.js";
 import { markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
+import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 
 const isSafariBrowser = isSafari();
@@ -113,7 +114,7 @@ export const useDialog = createHook<DialogOptions>(
     backdropProps,
     hideOnEscape = true,
     hideOnInteractOutside = true,
-    getPersistingElements,
+    getPersistentElements,
     preventBodyScroll = !!modal,
     autoFocusOnShow = true,
     autoFocusOnHide = true,
@@ -143,6 +144,9 @@ export const useDialog = createHook<DialogOptions>(
     usePreventBodyScroll(store, mounted && preventBodyScroll);
     useHideOnInteractOutside(store, hideOnInteractOutside);
 
+    const { wrapElement, nestedDialogs } = useNestedDialogs(store);
+    props = useWrapElement(props, wrapElement, [wrapElement]);
+
     // Sets disclosure element using the current active element right after the
     // dialog is opened.
     useEffect(() => {
@@ -155,37 +159,6 @@ export const useDialog = createHook<DialogOptions>(
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
     }, [open]);
-
-    const parentDialog = useContext(DialogContext);
-
-    // When the parent dialog is closed, close this dialog too.
-    useSafeLayoutEffect(() => {
-      return parentDialog?.sync(
-        (state) => {
-          if (state.open) return;
-          store.hide();
-        },
-        ["open"]
-      );
-    }, [parentDialog, store]);
-
-    // If focus was lost to the document, restore it to the dialog.
-    useEffect(() => {
-      if (!open) return;
-      if (!modal) return;
-      let raf = 0;
-      const restoreLostFocus = () => {
-        const dialog = ref.current;
-        raf = requestAnimationFrame(restoreLostFocus);
-        if (!dialog) return;
-        const doc = getDocument(dialog);
-        if (!doc.hasFocus()) return;
-        if (doc.activeElement !== doc.body) return;
-        dialog.focus();
-      };
-      restoreLostFocus();
-      return () => cancelAnimationFrame(raf);
-    }, [open, modal]);
 
     // Safari does not focus on native buttons on mousedown. The
     // DialogDisclosure component normalizes this behavior using the
@@ -246,38 +219,46 @@ export const useDialog = createHook<DialogOptions>(
       return prependHiddenDismiss(dialog, store.hide);
     }, [mounted, domReady, shouldDisableAccessibilityTree]);
 
-    const getPersistingElementsProp = useEvent(getPersistingElements);
+    const getPersistentElementsProp = useEvent(getPersistentElements);
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
+      if (!id) return;
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element. That's why we use open instead of
       // mounted here.
       if (!open) return;
+      const { disclosureElement } = store.getState();
       // If portal is enabled, we get the portalNode instead of the dialog
       // element. This will consider nested dialogs as they will be children of
       // the portal node, but not the dialog. This also accounts for the tiny
       // delay before the dialog element is appended to the portal node, and the
       // portal node is added to the DOM.
       const element = portal ? portalNode : ref.current;
-      const otherElements = getPersistingElementsProp() || [];
-      const allElements = [element, ...otherElements];
+      const persistentElements = getPersistentElementsProp() || [];
+      const allElements = [element, ...nestedDialogs, ...persistentElements];
       if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(...allElements);
+        return markTreeOutside(id, disclosureElement, ...allElements);
       }
       if (modal) {
-        return disableTreeOutside(...allElements);
+        return chain(
+          markTreeOutside(id, ...allElements),
+          disableTreeOutside(...allElements)
+        );
       }
       return chain(
-        markTreeOutside(...allElements),
+        markTreeOutside(id, disclosureElement, ...allElements),
         disableAccessibilityTreeOutside(...allElements)
       );
     }, [
+      id,
       open,
+      store,
       portal,
       portalNode,
-      getPersistingElementsProp,
+      nestedDialogs,
+      getPersistentElementsProp,
       shouldDisableAccessibilityTree,
       modal,
     ]);
@@ -424,12 +405,13 @@ export const useDialog = createHook<DialogOptions>(
         if (event.defaultPrevented) return;
         const dialog = ref.current;
         if (!dialog) return;
-        const target = event.target as Node | null;
+        const target = event.target as Element | null;
         if (!target) return;
         const { disclosureElement } = store.getState();
         // This considers valid targets only the disclosure element or
         // descendants of the dialog element.
         const isValidTarget = () => {
+          if (target.tagName === "BODY") return true;
           if (contains(dialog, target)) return true;
           if (!disclosureElement) return false;
           if (contains(disclosureElement, target)) return true;
@@ -447,7 +429,7 @@ export const useDialog = createHook<DialogOptions>(
       // We can't do this on a onKeyDown prop on the disclosure element because
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
-    }, [mounted, domReady, hideOnEscapeProp, portal]);
+    }, [mounted, domReady, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(
@@ -604,7 +586,7 @@ export interface DialogOptions<T extends As = "div">
    * function, you can return a collection of elements that will be considered
    * part of the dialog and therefore will be excluded from this behavior.
    */
-  getPersistingElements?: () => Iterable<Element>;
+  getPersistentElements?: () => Iterable<Element>;
   /**
    * Determines whether the body scrolling will be prevented when the dialog is
    * shown.

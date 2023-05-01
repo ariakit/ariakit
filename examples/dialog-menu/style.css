@@ -1,0 +1,16 @@
+@import url("../dialog/style.css");
+@import url("../menu/style.css");
+
+.dialog {
+  @apply
+    fixed
+    mx-auto
+    inset-4
+  ;
+}
+
+.button {
+  @apply
+    w-max
+  ;
+}

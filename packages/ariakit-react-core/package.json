@@ -159,6 +159,7 @@
     "./dialog/utils/walk-tree-outside": "./src/dialog/utils/walk-tree-outside.ts",
     "./dialog/utils/use-previous-mouse-down-ref": "./src/dialog/utils/use-previous-mouse-down-ref.ts",
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
+    "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
     "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",

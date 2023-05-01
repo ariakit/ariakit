@@ -9,6 +9,7 @@
     border-none
     px-4
     text-base
+    select-none
     no-underline
     whitespace-nowrap
     focus-visible:ariakit-outline
