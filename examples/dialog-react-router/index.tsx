@@ -63,8 +63,8 @@ export default function Example() {
     // BrowserRouter, HashRouter, etc. depending on your needs.
     <MemoryRouter>
       <Routes>
-        <Route path="/" Component={Home}>
-          <Route path="/tweet" Component={Tweet} />
+        <Route path="/" element={<Home />}>
+          <Route path="/tweet" element={<Tweet />} />
         </Route>
       </Routes>
     </MemoryRouter>

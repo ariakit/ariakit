@@ -57,10 +57,10 @@ export default function Example() {
     // BrowserRouter, HashRouter, etc. depending on your needs.
     <MemoryRouter>
       <Routes>
-        <Route path="/" Component={GroceriesTabs}>
-          <Route index Component={Fruits} />
-          <Route path="/vegetables" Component={Vegetables} />
-          <Route path="/meat" Component={Meat} />
+        <Route path="/" element={<GroceriesTabs />}>
+          <Route index element={<Fruits />} />
+          <Route path="/vegetables" element={<Vegetables />} />
+          <Route path="/meat" element={<Meat />} />
         </Route>
       </Routes>
     </MemoryRouter>
