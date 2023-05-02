@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "components"
   ],
   "dependencies": {
-    "@ariakit/core": "0.1.4",
-    "@ariakit/react-core": "0.1.6",
+    "@ariakit/core": "0.1.5",
+    "@ariakit/react-core": "0.1.7",
     "@floating-ui/dom": "^1.0.0"
   },
   "peerDependencies": {

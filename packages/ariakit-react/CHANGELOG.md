@@ -1,5 +1,23 @@
 # @ariakit/react
 
+## 0.1.7
+
+### Patch Changes
+
+- Fixed `Menu` focusing on the first menu item rather than the menu container when opened with a mouse click. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Added `getPersistentElements` prop to `Dialog` to better support third-party elements that are already in the DOM by the time the dialog is opened. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Added support on `Dialog` for nested/parallel dialogs, such as portalled dialogs created by third-party libraries and extensions. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Fixed nested `Dialog` closing when dragging from the nested dialog to the parent dialog. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Fixed build target. ([#2355](https://github.com/ariakit/ariakit/pull/2355))
+
+- Updated JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.1.7`, `@ariakit/core@0.1.5`.
+
 ## 0.1.6
 
 ### Patch Changes

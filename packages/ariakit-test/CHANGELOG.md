@@ -1,5 +1,15 @@
 # @ariakit/test
 
+## 0.1.6
+
+### Patch Changes
+
+- Fixed build target. ([#2355](https://github.com/ariakit/ariakit/pull/2355))
+
+- Fixed `mock-get-client-rects` module marking elements not connected to the DOM as visible. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Updated dependencies: `@ariakit/core@0.1.5`.
+
 ## 0.1.5
 
 ### Patch Changes
