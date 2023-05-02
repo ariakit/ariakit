@@ -133,6 +133,7 @@
     "react-dom": "18.2.0",
     "react-markdown": "8.0.7",
     "react-router-dom": "6.10.0",
+    "react-toastify": "9.1.2",
     "read-pkg-up": "9.1.0",
     "recast": "0.22.0",
     "rehype": "12.0.1",

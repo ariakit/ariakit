@@ -49,9 +49,9 @@ Alternatively, you can pass a custom component to the [`backdrop`](/apis/dialog#
 
 ### Scrollbar width
 
-When the [`preventBodyScroll`](/apis/dialog#preventbodyscroll) prop is set to `true` (default on [`modal`](/apis/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. If you have `position:fixed` elements on your page, you may need to adjust their padding to account for the missing scrollbar width.
+When the [`preventBodyScroll`](/apis/dialog#preventbodyscroll) prop is set to `true` (default for [`modal`](/apis/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. If your page contains `position:fixed` elements, you might need to modify their padding to compensate for the missing scrollbar width.
 
-Ariakit automatically defines a `--scrollbar-width` CSS variable. You can use this variable to adjust the `padding-right` of your fixed elements:
+Ariakit automatically defines a `--scrollbar-width` CSS variable. You can apply this variable to adjust the `padding-right` of your fixed elements:
 
 ```css
 .header {
@@ -59,4 +59,4 @@ Ariakit automatically defines a `--scrollbar-width` CSS variable. You can use th
 }
 ```
 
-Learn more on the [Styling](/guide/styling) guide.
+For more information on styling with Ariakit, refer to the [Styling](/guide/styling) guide.

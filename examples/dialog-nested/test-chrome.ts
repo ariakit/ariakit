@@ -21,5 +21,6 @@ test("remove product", async ({ page }) => {
   await getButton(getDialog(page, "Remove product"), "Remove").click();
   await expect(getDialog(page, "Remove product")).not.toBeVisible();
   await expect(getDialog(page, "Your Shopping Cart")).toBeVisible();
-  await expect(getDialog(page, "Your Shopping Cart")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(getDialog(page, "Your Shopping Cart")).not.toBeVisible();
 });

@@ -4,36 +4,7 @@ import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
 import { useSafeLayoutEffect } from "../../utils/hooks.js";
 import type { DialogStore } from "../dialog-store.js";
-import { useChampionDialog } from "./use-champion-dialog.js";
-
-function assignStyle(
-  element: HTMLElement | null | undefined,
-  style: Partial<CSSStyleDeclaration>
-) {
-  if (!element) return () => {};
-  const previousStyle = element.style.cssText;
-  Object.assign(element.style, style);
-  return () => {
-    element.style.cssText = previousStyle;
-  };
-}
-
-function setCSSProperty(
-  element: HTMLElement | null | undefined,
-  property: string,
-  value: string
-) {
-  if (!element) return () => {};
-  const previousValue = element.style.getPropertyValue(property);
-  element.style.setProperty(property, value);
-  return () => {
-    if (previousValue) {
-      element.style.setProperty(property, previousValue);
-    } else {
-      element.style.removeProperty(property);
-    }
-  };
-}
+import { assignStyle, setCSSProperty } from "./orchestrate.js";
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar
@@ -43,21 +14,19 @@ function getPaddingProperty(documentElement: HTMLElement) {
 }
 
 export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
-  const isChampionDialog = useChampionDialog(
-    "data-dialog-body-scroll",
-    store,
-    enabled
-  );
-
   useSafeLayoutEffect(() => {
-    const dialog = store.getState().contentElement;
-    if (!dialog) return;
-    if (!isChampionDialog()) return;
+    if (!enabled) return;
+    const { contentElement } = store.getState();
+    if (!contentElement) return;
 
-    const doc = getDocument(dialog);
-    const win = getWindow(dialog);
+    const doc = getDocument(contentElement);
+    const win = getWindow(contentElement);
     const { documentElement, body } = doc;
-    const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
+    const cssScrollbarWidth =
+      documentElement.style.getPropertyValue("--scrollbar-width");
+    const scrollbarWidth = cssScrollbarWidth
+      ? parseInt(cssScrollbarWidth)
+      : win.innerWidth - documentElement.clientWidth;
 
     const setScrollbarWidthProperty = () =>
       setCSSProperty(
@@ -106,5 +75,5 @@ export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
       setScrollbarWidthProperty(),
       isIOS ? setIOSStyle() : setStyle()
     );
-  }, [isChampionDialog]);
+  }, [enabled]);
 }

@@ -27,7 +27,10 @@ function hasNegativeTabIndex(element: Element) {
  * isFocusable(document.querySelector("input:disabled")); // false
  */
 export function isFocusable(element: Element): element is HTMLElement {
-  return matches(element, selector) && isVisible(element);
+  if (!matches(element, selector)) return false;
+  if (!isVisible(element)) return false;
+  if (closest(element, "[inert]")) return false;
+  return true;
 }
 
 /**

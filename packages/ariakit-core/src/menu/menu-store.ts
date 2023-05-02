@@ -39,7 +39,6 @@ export function createMenuStore({
   const store = mergeStore(
     props.store,
     combobox?.omit(
-      "baseElement",
       "arrowElement",
       "anchorElement",
       "contentElement",

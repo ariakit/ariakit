@@ -18,6 +18,7 @@ export default function Example() {
           name={form.names.name}
           required
           placeholder="John Doe"
+          className="input"
         />
         <Ariakit.FormError name={form.names.name} className="error" />
       </div>
