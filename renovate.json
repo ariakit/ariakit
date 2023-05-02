@@ -15,7 +15,6 @@
         "lodash-es",
         "match-sorter",
         "null-loader",
-        "prettier",
         "react",
         "react-dom",
         "react-router-dom",
@@ -34,6 +33,7 @@
         "^@typescript-eslint/",
         "^@vitest/",
         "^eslint",
+        "^prettier",
         "^vitest",
         "^stylelint"
       ],
