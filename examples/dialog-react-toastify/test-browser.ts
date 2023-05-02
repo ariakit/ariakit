@@ -33,6 +33,7 @@ test("show notification with modal", async ({ page }) => {
   await expect(dialog).toBeVisible();
   await expect(getNotifications(page)).toHaveCount(1);
   await expect(getButton(dialog, "Say Hello")).toBeFocused();
+  await getButton(page, "close").hover();
   await page.keyboard.press("Shift+Tab");
   await expect(getButton(page, "close")).toBeFocused();
   await page.keyboard.press("Enter");

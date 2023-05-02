@@ -6,7 +6,6 @@ import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
-
   return (
     <>
       <Button onClick={() => setOpen(true)} className="button">

@@ -585,6 +585,10 @@ export interface DialogOptions<T extends As = "div">
    * interacting with elements outside of the dialog will close it. With this
    * function, you can return a collection of elements that will be considered
    * part of the dialog and therefore will be excluded from this behavior.
+   *
+   * Live examples:
+   * - [Dialog with
+   *   React-Toastify](https://ariakit.org/examples/dialog-react-toastify)
    */
   getPersistentElements?: () => Iterable<Element>;
   /**

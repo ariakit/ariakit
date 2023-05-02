@@ -65,7 +65,7 @@ function useEventOutside({
       if (!isInDocument(target)) return;
       // Event inside dialog
       if (contains(contentElement, target)) return;
-      // // Event on disclosure
+      // Event on disclosure
       if (isDisclosure(disclosureElement, target)) return;
       // Event on focus trap
       if (target.hasAttribute("data-focus-trap")) return;
