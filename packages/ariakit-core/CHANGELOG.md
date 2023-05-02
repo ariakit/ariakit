@@ -1,5 +1,15 @@
 # @ariakit/core
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated `isFocusable` function to return `false` when the element is `inert` or is a descendant of an `inert` element. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Fixed build target. ([#2355](https://github.com/ariakit/ariakit/pull/2355))
+
+- Updated JSDocs.
+
 ## 0.1.4
 
 ### Patch Changes
