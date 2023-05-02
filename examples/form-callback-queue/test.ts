@@ -37,5 +37,5 @@ test("submit", async () => {
   await type("a");
   await press.Tab();
   await press.Enter();
-  await expect(getSubmitErrors()).toHaveLength(2);
+  expect(getSubmitErrors()).toHaveLength(2);
 });
