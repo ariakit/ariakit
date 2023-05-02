@@ -47,3 +47,18 @@
     font-semibold
   ;
 }
+
+.dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+  ;
+}
+
+.buttons {
+  @apply
+    flex
+    gap-2
+  ;
+}
