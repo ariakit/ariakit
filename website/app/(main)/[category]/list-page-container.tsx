@@ -17,9 +17,9 @@ export function ListPageContainer({
     <HeadingLevel>
       <Heading
         className={tw`
-        scroll-mt-[120px] text-4xl font-extrabold
+        scroll-mt-[120px] text-3xl font-extrabold
         tracking-[-0.035em] dark:font-bold dark:tracking-[-0.015em]
-        sm:text-5xl`}
+        sm:text-4xl md:text-5xl`}
       >
         {title}
       </Heading>

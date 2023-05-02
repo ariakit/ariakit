@@ -52,7 +52,7 @@ const style = {
     text-blue-700 dark:text-blue-400
   `,
   h1: tw`
-    text-4xl md:text-5xl font-extrabold dark:font-bold
+    text-3xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
