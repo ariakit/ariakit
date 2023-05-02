@@ -1,5 +1,67 @@
 # @ariakit/react
 
+## 0.1.7
+
+### Patch Changes
+
+- Fixed `Menu` focusing on the first menu item rather than the menu container when opened with a mouse click. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Added `getPersistentElements` prop to `Dialog` to better support third-party elements that are already in the DOM by the time the dialog is opened. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Added support on `Dialog` for nested/parallel dialogs, such as portalled dialogs created by third-party libraries and extensions. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Fixed nested `Dialog` closing when dragging from the nested dialog to the parent dialog. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Fixed build target. ([#2355](https://github.com/ariakit/ariakit/pull/2355))
+
+- Updated JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.1.7`, `@ariakit/core@0.1.5`.
+
+## 0.1.6
+
+### Patch Changes
+
+- Fixed `Select` component causing a scroll jump when it's dynamically rendered in a portal. ([#2322](https://github.com/ariakit/ariakit/pull/2322))
+
+- Fixed a bug where passing controlled props to a component store wouldn't always call the state setter with an updated value. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Fixed `Menu` not respecting `hidden={false}`. ([#2328](https://github.com/ariakit/ariakit/pull/2328))
+
+- Updated JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.1.6`, `@ariakit/core@0.1.4`.
+
+## 0.1.5
+
+### Patch Changes
+
+- Fixed `FormRadio` error when not explicitly providing the composite store. ([#2313](https://github.com/ariakit/ariakit/pull/2313))
+
+- Fixed invariant error messages on `Menu` components. ([#2318](https://github.com/ariakit/ariakit/pull/2318))
+
+- Updated validate and submit callbacks on `Form` so they always run in a consistent order. ([#2319](https://github.com/ariakit/ariakit/pull/2319))
+
+- Fixed nested `Dialog` components when they are conditionally mounted. ([#2310](https://github.com/ariakit/ariakit/pull/2310))
+
+- Updated dependencies: `@ariakit/react-core@0.1.5`, `@ariakit/core@0.1.3`.
+
+## 0.1.4
+
+### Patch Changes
+
+- Added support for the `inert` attribute on the `Dialog` component. If the browser supports `inert`, modal dialogs will now use it rather than focus trap regions. ([#2301](https://github.com/ariakit/ariakit/pull/2301))
+
+- Fixed nested modal `Dialog` also closing the parent dialog when clicking outside. ([#2300](https://github.com/ariakit/ariakit/pull/2300))
+
+- Fixed modal `Dialog` eventually losing focus to `document.body`. ([#2300](https://github.com/ariakit/ariakit/pull/2300))
+
+- Fixed `Combobox` with `autoSelect` and `autoComplete` set to `both` or `inline` where the completion string would lose its selected state. ([#2308](https://github.com/ariakit/ariakit/pull/2308))
+
+- Fixed `Combobox` not processing composition text (like chinese characters or accents). ([#2308](https://github.com/ariakit/ariakit/pull/2308))
+
+- Updated dependencies: `@ariakit/react-core@0.1.4`.
+
 ## 0.1.3
 
 ### Patch Changes

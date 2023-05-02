@@ -46,7 +46,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItemRadio must be wrapped in a MenuList or MenuPopover component"
+        "MenuItemRadio must be wrapped in a MenuList or Menu component"
     );
 
     const isChecked = store.useState(

@@ -79,6 +79,10 @@ export function createDisclosureStore(
 export interface DisclosureStoreState {
   /**
    * The visibility state of the content.
+   *
+   * Live examples:
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @default false
    */
   open: boolean;
@@ -87,16 +91,26 @@ export interface DisclosureStoreState {
    * this will be the same as `open`. Otherwise, it will wait for the animation
    * to complete before becoming `false` so the content is not unmounted while
    * animating.
+   *
+   * Live examples:
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    */
   mounted: boolean;
   /**
    * Determines whether the content should animate when it is shown or hidden.
-   *   - If `true`, the `animating` state will be `true` when the content is
-   *     shown or hidden and it will wait for `stopAnimation` to be called or a
-   *     CSS animation/transition to end before becoming `false`.
-   *   - If it's set to a number, the `animating` state will be `true` when the
-   *     content is shown or hidden and it will wait for the number of
-   *     milliseconds to pass before becoming `false`.
+   * - If `true`, the `animating` state will be `true` when the content is shown
+   *   or hidden and it will wait for `stopAnimation` to be called or a CSS
+   *   animation/transition to end before becoming `false`.
+   * - If it's set to a number, the `animating` state will be `true` when the
+   *   content is shown or hidden and it will wait for the number of
+   *   milliseconds to pass before becoming `false`.
+   *
+   * Live examples:
+   * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
+   * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
    * @default false
    */
   animated: boolean | number;
@@ -117,6 +131,12 @@ export interface DisclosureStoreState {
 export interface DisclosureStoreFunctions {
   /**
    * Sets the `open` state.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @example
    * store.setOpen(true);
    * store.setOpen((open) => !open);
@@ -124,10 +144,20 @@ export interface DisclosureStoreFunctions {
   setOpen: SetState<DisclosureStoreState["open"]>;
   /**
    * Sets the `open` state to `true`.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    */
   show: () => void;
   /**
    * Sets the `open` state to `false`.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    */
   hide: () => void;
   /**

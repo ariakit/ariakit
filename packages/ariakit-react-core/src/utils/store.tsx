@@ -133,17 +133,22 @@ export function useStoreProps<
     return store.sync(
       (state, prev) => {
         const { value, setValue } = propsRef.current;
-        // If the value prop is provided, we reset the state value to keep it
-        // controlled.
-        if (value !== undefined) {
-          store.setState(key, value);
-        }
-        if (setValue && state[key] !== prev[key] && state[key] !== value) {
-          setValue(state[key]);
-        }
+        if (!setValue) return;
+        if (state[key] === prev[key]) return;
+        if (state[key] === value) return;
+        setValue(state[key]);
       },
       [key]
     );
+  }, [store, key]);
+
+  // If the value prop is provided, we'll always reset the store state to it.
+  useSafeLayoutEffect(() => {
+    return store.sync(() => {
+      const { value } = propsRef.current;
+      if (value === undefined) return;
+      store.setState(key, value);
+    }, [key]);
   }, [store, key]);
 
   // When the value prop changes, we set the state value to keep it controlled.
@@ -159,14 +164,14 @@ export function useStoreProps<
 export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
   const store = useLazyValue(createStore);
 
-  useSafeLayoutEffect(() => store.init(), []);
+  useSafeLayoutEffect(() => store.init(), [store]);
 
   const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),
-    []
+    [store]
   );
 
-  return useMemo(() => ({ ...store, useState }), []);
+  return useMemo(() => ({ ...store, useState }), [store, useState]);
 }
 
 export type Store<T extends CoreStore> = T & {

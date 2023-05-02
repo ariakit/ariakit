@@ -157,7 +157,12 @@ export const usePortal = createHook<PortalOptions>(
           // doesn't add margin to the element when setting gap on a parent
           // element.
           return (
-            <span ref={refProp} id={props.id} style={{ position: "fixed" }} />
+            <span
+              ref={refProp}
+              id={props.id}
+              style={{ position: "fixed" }}
+              hidden
+            />
           );
         }
 

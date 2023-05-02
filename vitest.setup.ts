@@ -56,12 +56,19 @@ if (version.startsWith("17")) {
   vi.mock("react", async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
-    return {
-      ...actual,
+    const mocks = {
       useDeferredValue: <T>(v: T) => v,
       useTransition: () => [false, (v: () => any) => v()],
-      useInsertionEffect: undefined,
+      useId: () => {
+        const [id, setId] = actual.useState<string | undefined>();
+        actual.useLayoutEffect(() => {
+          const random = Math.random().toString(36).substr(2, 6);
+          setId(`id-${random}`);
+        }, []);
+        return id;
+      },
     };
+    return { ...mocks, ...actual };
   });
 }
 

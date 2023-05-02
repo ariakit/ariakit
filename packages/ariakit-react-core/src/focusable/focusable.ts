@@ -5,7 +5,7 @@ import type {
   MouseEvent as ReactMouseEvent,
   SyntheticEvent,
 } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
@@ -24,6 +24,7 @@ import type { BivariantCallback } from "@ariakit/core/utils/types";
 import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
+import { FocusableContext } from "./focusable-context.js";
 
 const isSafariBrowser = isSafari();
 
@@ -362,6 +363,8 @@ export const useFocusable = createHook<FocusableOptions>(
       }
     });
 
+    const autoFocusOnShow = useContext(FocusableContext);
+
     // The native autoFocus prop is problematic in many ways. For example, when
     // an element has the native autofocus attribute, the focus event will be
     // triggered before React effects (even layout effects) and before refs are
@@ -375,6 +378,7 @@ export const useFocusable = createHook<FocusableOptions>(
       if (!focusable) return;
       if (!autoFocus) return;
       if (!element) return;
+      if (!autoFocusOnShow) return;
       // We have to queue focus so other effects and refs can be applied first.
       // See select-animated example.
       queueMicrotask(() => {
@@ -450,6 +454,10 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * Automatically focus the element when it is mounted. It works similarly to
    * the native `autoFocus` prop, but solves an issue where the element is given
    * focus before React effects can run.
+   *
+   * Live examples:
+   * - [Dialog with React
+   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @default false
    */
   autoFocus?: boolean;
@@ -477,6 +485,9 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
   /**
    * Custom event handler that is called when the element is focused via the
    * keyboard or when a key is pressed while the element is focused.
+   *
+   * Live examples:
+   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   onFocusVisible?: BivariantCallback<(event: SyntheticEvent) => void>;
 }

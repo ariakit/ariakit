@@ -15,7 +15,7 @@ import { getExampleId } from "utils/get-example-id.js";
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
   href: string;
-  type?: "compact" | "wide";
+  type?: "code" | "compact" | "wide";
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
@@ -62,10 +62,11 @@ export async function PageExample({
   }
 
   let css = "";
+  const finalContents = { ...contents };
 
   for (const file of cssFiles) {
     const key = getPathFromExample(file, path);
-    contents[key] = await parseCSSFile(file, {
+    finalContents[key] = await parseCSSFile(file, {
       format: true,
       contents,
       tailwindConfig,
@@ -76,6 +77,7 @@ export async function PageExample({
   return (
     <div
       className={cx(
+        type === "code" && "!max-w-[832px]",
         type === "wide" && "!max-w-5xl",
         type === "compact" && "!max-w-[832px]"
       )}
@@ -83,11 +85,13 @@ export async function PageExample({
       <Playground
         id={id}
         type={type}
-        files={contents}
+        files={finalContents}
         dependencies={dependencies}
         devDependencies={devDependencies}
         previewLink={previewLink}
-        preview={<Preview id={id} path={path} css={css} />}
+        preview={
+          type === "code" ? null : <Preview id={id} path={path} css={css} />
+        }
         githubLink={getGithubLink(path)}
       />
     </div>

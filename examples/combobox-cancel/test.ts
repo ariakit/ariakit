@@ -1,4 +1,4 @@
-import { click, getByRole, press, type } from "@ariakit/test";
+import { click, fireEvent, getByRole, press, sleep, type } from "@ariakit/test";
 
 const getCombobox = () => getByRole("combobox");
 const getPopover = () => getByRole("listbox", { hidden: true });
@@ -70,4 +70,15 @@ test("https://github.com/ariakit/ariakit/issues/1652", async () => {
   await type("a");
   await click(getCancelButton());
   expect(getOption("Apple")).not.toHaveFocus();
+});
+
+test("composition text", async () => {
+  fireEvent.compositionStart(getCombobox());
+  await type("'", getCombobox(), { isComposing: true });
+  expect(getOption("Apple")).not.toHaveFocus();
+  await type("á", getCombobox(), { isComposing: true });
+  fireEvent.compositionEnd(getCombobox());
+  await sleep();
+  expect(getCombobox()).toHaveValue("á");
+  expect(getOption("Apple")).toHaveFocus();
 });

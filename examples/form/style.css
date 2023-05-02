@@ -35,8 +35,7 @@
   ;
 }
 
-/* purgecss ignore */
-.field input {
+.input {
   @apply
     h-10
     px-4
@@ -58,14 +57,9 @@
   ;
 }
 
-.error:empty {
+.error {
   @apply
-    absolute
-  ;
-}
-
-.error:not(:empty) {
-  @apply
+    empty:hidden
     w-fit
     rounded-md
     py-2
@@ -91,11 +85,11 @@
 .button {
   @apply
     rounded-md
-    flex-1
+    w-full
   ;
 }
 
-.button.reset {
+.reset {
   @apply
     font-semibold
     text-black/70

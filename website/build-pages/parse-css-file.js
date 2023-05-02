@@ -94,22 +94,27 @@ export async function parseCSSFile(filename, options) {
   let css = result.css;
 
   if (options.contents) {
-    // TODO: Remove :is when https://github.com/FullHuman/purgecss/issues/978 is
-    // fixed
-    const safelist = [/^aria\-/, /^data-/, /^\:is/];
+    // TODO: https://github.com/FullHuman/purgecss/issues/1104
+    const originalWarn = console.warn;
+    console.warn = () => {};
+    const safelist = [/^aria\-/, /^data-/, ":is", "dark"];
+
+    const content = Object.entries(options.contents).map(([filename, raw]) => ({
+      raw,
+      extension: extname(filename),
+    }));
 
     const [purged] = await new PurgeCSS().purge({
       css: [{ raw: css }],
       safelist: options.id ? [...safelist, options.id] : safelist,
-      content: Object.entries(options.contents).map(([filename, raw]) => ({
-        raw,
-        extension: extname(filename),
-      })),
+      content,
     });
 
     if (purged?.css) {
       css = purged.css;
     }
+
+    console.warn = originalWarn;
   }
 
   if (options.format) {

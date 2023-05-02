@@ -9,6 +9,7 @@
     border-none
     px-4
     text-base
+    select-none
     no-underline
     whitespace-nowrap
     focus-visible:ariakit-outline
@@ -27,5 +28,12 @@
     dark:bg-transparent
     hover:bg-black/5
     dark:hover:bg-white/5
+  ;
+}
+
+.danger {
+  @apply
+    bg-red-600
+    hover:bg-red-700
   ;
 }

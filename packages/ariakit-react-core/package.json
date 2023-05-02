@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.1.3",
+  "version": "0.1.7",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.1.2",
+    "@ariakit/core": "0.1.5",
     "use-sync-external-store": "^1.2.0"
   },
   "peerDependencies": {
@@ -149,6 +149,8 @@
     "./form/form-context": "./src/form/form-context.ts",
     "./form/form-checkbox": "./src/form/form-checkbox.ts",
     "./focusable/focusable": "./src/focusable/focusable.ts",
+    "./focusable/focusable-context": "./src/focusable/focusable-context.ts",
+    "./focusable/focusable-container": "./src/focusable/focusable-container.tsx",
     "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.ts",
     "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
     "./disclosure/disclosure": "./src/disclosure/disclosure.ts",
@@ -159,10 +161,11 @@
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
     "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
-    "./dialog/utils/use-focus-on-child-unmount": "./src/dialog/utils/use-focus-on-child-unmount.ts",
-    "./dialog/utils/use-champion-dialog": "./src/dialog/utils/use-champion-dialog.ts",
+    "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
-    "./dialog/utils/disable-pointer-events-outside": "./src/dialog/utils/disable-pointer-events-outside.ts",
+    "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
+    "./dialog/utils/mark-tree-outside": "./src/dialog/utils/mark-tree-outside.ts",
+    "./dialog/utils/disable-tree-outside": "./src/dialog/utils/disable-tree-outside.ts",
     "./dialog/utils/disable-accessibility-tree-outside": "./src/dialog/utils/disable-accessibility-tree-outside.ts",
     "./dialog/dialog": "./src/dialog/dialog.tsx",
     "./dialog/dialog-store": "./src/dialog/dialog-store.ts",

@@ -383,6 +383,10 @@ export interface CompositeStoreState<T extends Item = Item>
    * tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
    * DOM focus will remain on the composite element while its items receive
    * virtual focus.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default false
    */
   virtualFocus: boolean;
@@ -390,9 +394,9 @@ export interface CompositeStoreState<T extends Item = Item>
    * Defines the orientation of the composite widget. If the composite has a
    * single row or column (one-dimensional), the `orientation` value determines
    * which arrow keys can be used to move focus:
-   *   - `both`: all arrow keys work.
-   *   - `horizontal`: only left and right arrow keys work.
-   *   - `vertical`: only up and down arrow keys work.
+   * - `both`: all arrow keys work.
+   * - `horizontal`: only left and right arrow keys work.
+   * - `vertical`: only up and down arrow keys work.
    *
    * It doesn't have any effect on two-dimensional composites.
    * @default "both"
@@ -410,27 +414,27 @@ export interface CompositeStoreState<T extends Item = Item>
    * composite widget.
    *
    * On one-dimensional composites:
-   *   - `true` loops from the last item to the first item and vice-versa.
-   *   - `horizontal` loops only if `orientation` is `horizontal` or not set.
-   *   - `vertical` loops only if `orientation` is `vertical` or not set.
-   *   - If `includesBaseElement` is set to `true` (or `activeId` is initially
-   *     set to `null`), the composite element will be focused in between the
-   *     last and first items.
+   * - `true` loops from the last item to the first item and vice-versa.
+   * - `horizontal` loops only if `orientation` is `horizontal` or not set.
+   * - `vertical` loops only if `orientation` is `vertical` or not set.
+   * - If `includesBaseElement` is set to `true` (or `activeId` is initially set
+   *   to `null`), the composite element will be focused in between the last and
+   *   first items.
    *
    * On two-dimensional composites (when using `CompositeRow`):
-   *   - `true` loops from the last row/column item to the first item in the
-   *     same row/column and vice-versa. If it's the last item in the last row,
-   *     it moves to the first item in the first row and vice-versa.
-   *   - `horizontal` loops only from the last row item to the first item in the
-   *     same row.
-   *   - `vertical` loops only from the last column item to the first item in
-   *     the column row.
-   *   - If `includesBaseElement` is set to `true` (or `activeId` is initially
-   *     set to `null`), vertical loop will have no effect as moving down from
-   *     the last row or up from the first row will focus the composite element.
-   *   - If `focusWrap` matches the value of `focusLoop`, it'll wrap between the
-   *     last item in the last row or column and the first item in the first row
-   *     or column and vice-versa.
+   * - `true` loops from the last row/column item to the first item in the same
+   *   row/column and vice-versa. If it's the last item in the last row, it
+   *   moves to the first item in the first row and vice-versa.
+   * - `horizontal` loops only from the last row item to the first item in the
+   *   same row.
+   * - `vertical` loops only from the last column item to the first item in the
+   *   column row.
+   * - If `includesBaseElement` is set to `true` (or `activeId` is initially set
+   *   to `null`), vertical loop will have no effect as moving down from the
+   *   last row or up from the first row will focus the composite element.
+   * - If `focusWrap` matches the value of `focusLoop`, it'll wrap between the
+   *   last item in the last row or column and the first item in the first row
+   *   or column and vice-versa.
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -438,12 +442,12 @@ export interface CompositeStoreState<T extends Item = Item>
    * **Works only on two-dimensional composites**. If enabled, moving to the
    * next item from the last one in a row or column will focus the first item in
    * the next row or column and vice-versa.
-   *   - `true` wraps between rows and columns.
-   *   - `horizontal` wraps only between rows.
-   *   - `vertical` wraps only between columns.
-   *   - If `focusLoop` matches the value of `focusWrap`, it'll wrap between the
-   *     last item in the last row or column and the first item in the first row
-   *     or column and vice-versa.
+   * - `true` wraps between rows and columns.
+   * - `horizontal` wraps only between rows.
+   * - `vertical` wraps only between columns.
+   * - If `focusLoop` matches the value of `focusWrap`, it'll wrap between the
+   *   last item in the last row or column and the first item in the first row
+   *   or column and vice-versa.
    * @default false
    */
   focusWrap: boolean | Orientation;
@@ -466,12 +470,12 @@ export interface CompositeStoreState<T extends Item = Item>
   includesBaseElement: boolean;
   /**
    * The current focused item `id`.
-   *   - `null` focuses the base composite element and users will be able to
-   *     navigate out of it using arrow keys.
-   *   - If `activeId` is initially set to `null`, the `includesBaseElement`
-   *     prop will also default to `true`, which means the base composite
-   *     element itself will have focus and users will be able to navigate to it
-   *     using arrow keys.
+   * - `null` focuses the base composite element and users will be able to
+   *   navigate out of it using arrow keys.
+   * - If `activeId` is initially set to `null`, the `includesBaseElement` prop
+   *   will also default to `true`, which means the base composite element
+   *   itself will have focus and users will be able to navigate to it using
+   *   arrow keys.
    */
   activeId: string | null | undefined;
 }

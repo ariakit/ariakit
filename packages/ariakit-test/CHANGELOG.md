@@ -1,5 +1,35 @@
 # @ariakit/test
 
+## 0.1.6
+
+### Patch Changes
+
+- Fixed build target. ([#2355](https://github.com/ariakit/ariakit/pull/2355))
+
+- Fixed `mock-get-client-rects` module marking elements not connected to the DOM as visible. ([#2339](https://github.com/ariakit/ariakit/pull/2339))
+
+- Updated dependencies: `@ariakit/core@0.1.5`.
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies: `@ariakit/core@0.1.4`.
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies: `@ariakit/core@0.1.3`.
+
+## 0.1.3
+
+### Patch Changes
+
+- Added support for elements becoming inaccessible between `mousedown` and `mouseup` events on the `click` function. ([#2300](https://github.com/ariakit/ariakit/pull/2300))
+
+- Added support for composition text on `type`. ([#2308](https://github.com/ariakit/ariakit/pull/2308))
+
 ## 0.1.2
 
 ### Patch Changes

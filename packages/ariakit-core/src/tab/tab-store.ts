@@ -156,11 +156,17 @@ export interface TabStoreState extends CompositeStoreState<Item> {
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
+   *
+   * Live examples:
+   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    */
   selectedId: TabStoreState["activeId"];
   /**
    * Whether the tab should be selected when it receives focus. If it's set to
    * `false`, the tab will be selected only when it's clicked.
+   *
+   * Live examples:
+   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    * @default true
    */
   selectOnMove?: boolean;
@@ -170,6 +176,9 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<Item> {
   /**
    * Sets the `selectedId` state without moving focus. If you want to move focus,
    * use the `select` function instead.
+   *
+   * Live examples:
+   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    * @example
    * // Selects the tab with id "tab-1"
    * store.setSelectedId("tab-1");

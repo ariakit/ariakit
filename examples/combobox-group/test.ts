@@ -1,4 +1,12 @@
-import { click, getByRole, hover, press, type } from "@ariakit/test";
+import {
+  click,
+  fireEvent,
+  getByRole,
+  hover,
+  press,
+  sleep,
+  type,
+} from "@ariakit/test";
 
 const getCombobox = () => getByRole("combobox");
 const getOption = (name: string) => getByRole("option", { name });
@@ -99,4 +107,17 @@ test("autocomplete on focus on hover", async () => {
   expect(getCombobox()).toHaveValue("gelato");
   await hover(getOption("Pudding"));
   expect(getCombobox()).toHaveValue("g");
+});
+
+test("composition text", async () => {
+  // TODO: Add composition util to @ariakit/test
+  fireEvent.compositionStart(getCombobox());
+  await type("'", getCombobox(), { isComposing: true });
+  expect(() => getOption("Apple")).toThrow();
+  await type("á", getCombobox(), { isComposing: true });
+  fireEvent.compositionEnd(getCombobox());
+  await sleep();
+  expect(getCombobox()).toHaveValue("ápple");
+  expect(getSelectionValue(getCombobox())).toBe("pple");
+  expect(getOption("Apple")).toHaveFocus();
 });

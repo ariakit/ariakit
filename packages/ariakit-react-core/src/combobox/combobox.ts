@@ -87,6 +87,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const valueChangedRef = useRef(false);
+    const composingRef = useRef(false);
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
@@ -165,9 +166,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeValue, activeValue)) return;
-      const element = ref.current;
-      if (!element) return;
-      element.setSelectionRange(storeValue.length, activeValue.length);
+      // For some reason, this setSelectionRange may run before the value is
+      // updated in the DOM. We're using a microtask to make sure it runs after
+      // the value is updated so we don't lose the selection. See combobox-group
+      // test-browser file.
+      queueMicrotask(() => {
+        const element = ref.current;
+        if (!element) return;
+        element.setSelectionRange(storeValue.length, activeValue.length);
+      });
     }, [
       valueUpdated,
       inline,
@@ -183,6 +190,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // because the value may change programmatically.
     useSafeLayoutEffect(() => {
       if (!storeValue) return;
+      if (composingRef.current) return;
       valueChangedRef.current = true;
     }, [storeValue]);
 
@@ -241,10 +249,18 @@ export const useCombobox = createHook<ComboboxOptions>(
       const { target } = event;
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
-      if (isInputEvent(nativeEvent) && inline) {
-        const textInserted = nativeEvent.inputType === "insertText";
-        const caretAtEnd = target.selectionStart === target.value.length;
-        setCanInline(textInserted && caretAtEnd);
+      if (isInputEvent(nativeEvent)) {
+        if (nativeEvent.isComposing) {
+          valueChangedRef.current = false;
+          composingRef.current = true;
+        }
+        if (inline) {
+          const textInserted =
+            nativeEvent.inputType === "insertText" ||
+            nativeEvent.inputType === "insertCompositionText";
+          const caretAtEnd = target.selectionStart === target.value.length;
+          setCanInline(textInserted && caretAtEnd);
+        }
       }
       if (showOnChangeProp(event)) {
         store.show();
@@ -273,15 +289,16 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
-    // in accents or chinese characters), we need to set hasInsertedTextRef to
-    // true when the composition ends. This is because the native input event
-    // that's passed to the change event above will not produce a consistent
-    // inputType value across browsers, so we can't rely on that there.
+    // in accents or chinese characters), we need to set valueChangedRef to true
+    // when the composition ends. This is because the native input event that's
+    // passed to the change event above will not produce a consistent inputType
+    // value across browsers, so we can't rely on that there.
     const onCompositionEnd = useEvent(
       (event: CompositionEvent<HTMLInputElement>) => {
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
         valueChangedRef.current = true;
+        composingRef.current = false;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -335,7 +352,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      // TODO: See if it's necessary and refactor this valueChanged logic.
+      // If we don't reset the valueChangedRef here, the combobox will keep the
+      // first item selected when the combobox loses focus and its value gets
+      // cleared. See combobox-cancel tests.
       valueChangedRef.current = false;
     });
 
@@ -415,35 +434,48 @@ export interface ComboboxOptions<T extends As = "input">
    * Whether the first item will be automatically selected when the combobox
    * input value changes. When it's set to `true`, the exact behavior will
    * depend on the value of `autoComplete` prop:
-   *   - If `autoComplete` is `both` or `inline`, the first item is
-   *     automatically focused when the popup opens, and the input value
-   *     changes to reflect this. The inline completion string will be
-   *     highlighted and will have a selected state.
-   *   - If `autoComplete` is `list` or `none`, the first item is
-   *     automatically focused when the popup opens, but the input value
-   *     doesn't change.
+   * - If `autoComplete` is `both` or `inline`, the first item is automatically
+   *   focused when the popup opens, and the input value changes to reflect
+   *   this. The inline completion string will be highlighted and will have a
+   *   selected state.
+   * - If `autoComplete` is `list` or `none`, the first item is automatically
+   *   focused when the popup opens, but the input value doesn't change.
+   *
+   * Live examples:
+   * - [ComboboxCancel](https://ariakit.org/examples/combobox-cancel)
+   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default false
    */
   autoSelect?: boolean;
   /**
    * Whether the items will be filtered based on `value` and whether the input
-   * value will temporarily change based on the active item. If `defaultList`
-   * or `list` are provided, this will be set to `list` by default, otherwise
-   * it'll default to `none`.
-   *   - `both`: the items will be filtered based on `value` and the input
-   *     value will temporarily change based on the active item.
-   *   - `list`: the items will be filtered based on `value` and the input
-   *     value will NOT change based on the active item.
-   *   - `inline`: the items are static, that is, they won't be filtered based
-   *     on `value`, but the input value will temporarily change based on the
-   *     active item.
-   *   - `none`: the items are static and the input value will NOT change
-   *     based on the active item.
+   * value will temporarily change based on the active item. If `defaultList` or
+   * `list` are provided, this will be set to `list` by default, otherwise it'll
+   * default to `none`.
+   * - `both`: the items will be filtered based on `value` and the input value
+   *   will temporarily change based on the active item.
+   * - `list`: the items will be filtered based on `value` and the input value
+   *   will NOT change based on the active item.
+   * - `inline`: the items are static, that is, they won't be filtered based on
+   *   `value`, but the input value will temporarily change based on the active
+   *   item.
+   * - `none`: the items are static and the input value will NOT change based on
+   *   the active item.
+   *
+   * Live examples:
+   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    */
   autoComplete?: "both" | "inline" | "list" | "none";
   /**
    * Whether the combobox list/popover should be shown when the input value is
    * changed.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
    * @example
    * ```jsx
@@ -455,12 +487,20 @@ export interface ComboboxOptions<T extends As = "input">
    * Whether the combobox store value will be updated when the input value
    * changes. This is useful if you want to customize how the store value is
    * updated based on the input value.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
    */
   setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
   /**
    * Whether the combobox list/popover should be shown when the input is
    * clicked.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
    * @example
    * ```jsx
@@ -473,6 +513,10 @@ export interface ComboboxOptions<T extends As = "input">
   /**
    * Whether the combobox list/popover should be shown when the user presses
    * the arrow up or down keys while focusing on the combobox input element.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
    * @example
    * ```jsx

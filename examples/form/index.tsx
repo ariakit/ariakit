@@ -4,8 +4,8 @@ import "./style.css";
 export default function Example() {
   const form = Ariakit.useFormStore({ defaultValues: { name: "", email: "" } });
 
-  form.useSubmit(async () => {
-    alert(JSON.stringify(form.getState().values));
+  form.useSubmit(async (state) => {
+    alert(JSON.stringify(state.values));
   });
 
   return (
@@ -21,8 +21,9 @@ export default function Example() {
         <Ariakit.FormLabel name={form.names.name}>Name</Ariakit.FormLabel>
         <Ariakit.FormInput
           name={form.names.name}
-          required
           placeholder="John Doe"
+          className="input"
+          required
         />
         <Ariakit.FormError name={form.names.name} className="error" />
       </div>
@@ -31,8 +32,9 @@ export default function Example() {
         <Ariakit.FormInput
           type="email"
           name={form.names.email}
-          required
           placeholder="johndoe@example.com"
+          className="input"
+          required
         />
         <Ariakit.FormError name={form.names.email} className="error" />
       </div>

@@ -115,7 +115,7 @@ To make a new component, create a file with the following contents:
 
 ````tsx
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import { As, Options, Props } from "../utils/types.js";
+import type { As, Options, Props } from "../utils/types.js";
 
 /**
  * Description for my component hook.

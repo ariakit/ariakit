@@ -15,24 +15,18 @@ function Tweet() {
     open: true,
     setOpen: (open) => {
       if (!open) {
-        navigate(-1);
+        navigate("/");
       }
     },
   });
   return (
-    <Ariakit.Dialog
-      store={dialog}
-      portal={typeof window !== "undefined"}
-      className="dialog"
-    >
+    <Ariakit.Dialog store={dialog} className="dialog">
       <Ariakit.DialogDismiss
         as={Link}
         to="/"
         className="button secondary dismiss"
       />
-      <Ariakit.DialogHeading hidden className="heading">
-        Tweet
-      </Ariakit.DialogHeading>
+      <Ariakit.DialogHeading hidden>Tweet</Ariakit.DialogHeading>
       <form className="form" onSubmit={dialog.hide}>
         <label>
           <Ariakit.VisuallyHidden>Tweet text</Ariakit.VisuallyHidden>
@@ -40,8 +34,8 @@ function Tweet() {
             as="textarea"
             className="input"
             placeholder="What's happening?"
-            rows={5}
             autoFocus
+            rows={5}
           />
         </label>
         <Ariakit.Button type="submit" className="button">
@@ -65,6 +59,8 @@ function Home() {
 
 export default function Example() {
   return (
+    // We're using MemoryRouter for demonstration purposes. But you can use
+    // BrowserRouter, HashRouter, etc. depending on your needs.
     <MemoryRouter>
       <Routes>
         <Route path="/" element={<Home />}>

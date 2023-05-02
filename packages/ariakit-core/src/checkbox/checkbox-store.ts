@@ -38,6 +38,9 @@ export type CheckboxStoreValue = Value;
 export interface CheckboxStoreState<T extends Value = Value> {
   /**
    * The checked state of the checkbox.
+   *
+   * Live examples:
+   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   value: ToPrimitive<T>;
 }
@@ -56,6 +59,10 @@ export interface CheckboxStoreOptions<T extends Value = Value>
   extends StoreOptions<CheckboxStoreState<T>, "value"> {
   /**
    * The default value of the checkbox.
+   *
+   * Live examples:
+   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
+   * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
    * @default false
    */
   defaultValue?: CheckboxStoreState<T>["value"];

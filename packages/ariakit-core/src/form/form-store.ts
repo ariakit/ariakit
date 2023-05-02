@@ -195,10 +195,13 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
     form.setState("validating", true);
     form.setState("errors", {});
     try {
-      const callbacks = [...validateCallbacks];
-      const results = callbacks.map((callback) => callback(form.getState()));
+      // Run all the validation callbacks sequentially so they run in a
+      // predictable order. See https://github.com/ariakit/ariakit/issues/2282
+      for (const callback of validateCallbacks) {
+        await callback(form.getState());
+      }
       // Wait for the next frame to allow the errors to be set on the state.
-      await Promise.all(results).then(nextFrame);
+      await nextFrame();
       return !hasMessages(form.getState().errors);
     } finally {
       form.setState("validating", false);
@@ -269,12 +272,14 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       form.setState("touched", setAll(form.getState().values, true));
       try {
         if (await validate()) {
-          const callbacks = [...submitCallbacks];
-          const results = callbacks.map((callback) =>
-            callback(form.getState())
-          );
+          // Run all the submit callbacks sequentially so they run in a
+          // predictable order. See
+          // https://github.com/ariakit/ariakit/issues/2282
+          for (const callback of submitCallbacks) {
+            await callback(form.getState());
+          }
           // Wait for the next frame to allow the errors to be set on the state.
-          await Promise.all(results).then(nextFrame);
+          await nextFrame();
           if (!hasMessages(form.getState().errors)) {
             form.setState("submitSucceed", (count) => count + 1);
             return true;

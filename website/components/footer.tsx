@@ -34,7 +34,7 @@ const links = [
       { title: "Newsletter", href: "https://newsletter.ariakit.org" },
       {
         title: "Changelog",
-        href: "https://github.com/ariakit/ariakit/blob/main/packages/ariakit/CHANGELOG.md",
+        href: "https://github.com/ariakit/ariakit/blob/main/CHANGELOG.md",
       },
     ],
   },

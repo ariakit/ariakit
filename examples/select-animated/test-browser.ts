@@ -58,6 +58,14 @@ test("show/hide", async ({ page }) => {
   await expectActiveOption(page, "Banana");
 });
 
+test("do not scroll when opening the select popover", async ({ page }) => {
+  await getButton(page).focus();
+  await page.evaluate(() => window.scrollTo({ top: 100 }));
+  await page.keyboard.press("Enter");
+  await expect(getPopover(page)).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(100);
+});
+
 test("https://github.com/ariakit/ariakit/issues/1684", async ({ page }) => {
   await getButton(page).focus();
   await page.keyboard.press("Enter");

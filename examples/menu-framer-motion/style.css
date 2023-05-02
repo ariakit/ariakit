@@ -5,8 +5,8 @@
     max-h-max
     overflow-visible
     [--menu-origin-inline:calc(var(--popover-anchor-width)/2)]
-    [&[data-placement^="bottom"]]:origin-[var(--menu-origin-inline)_-11px]
-    [&[data-placement^="top"]]:origin-[var(--menu-origin-inline)_calc(100%+11px)]
+    data-[placement^="bottom"]:origin-[var(--menu-origin-inline)_-11px]
+    data-[placement^="top"]:origin-[var(--menu-origin-inline)_calc(100%+11px)]
   ;
 }
 

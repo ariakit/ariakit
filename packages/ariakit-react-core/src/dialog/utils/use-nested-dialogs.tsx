@@ -2,7 +2,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -13,84 +12,47 @@ import type { DialogStore } from "../dialog-store.js";
 
 const NestedDialogsContext = createContext<{
   store?: DialogStore;
-  addDialog?: (dialog: HTMLElement) => () => void;
-  showModal?: (dialog: HTMLElement) => () => void;
+  add?: (store: HTMLElement) => () => void;
 }>({});
 
-/**
- * Handles nested dialogs.
- */
-export function useNestedDialogs(store: DialogStore, modal?: boolean) {
+export function useNestedDialogs(store: DialogStore) {
   const context = useContext(NestedDialogsContext);
-  const [openModals, setOpenModals] = useState<HTMLElement[]>([]);
-  const [nestedDialogs, setNestedDialogs] = useState<HTMLElement[]>([]);
-  const open = store.useState("open");
-  const contentElement = store.useState("contentElement");
+  const [dialogs, setDialogs] = useState<HTMLElement[]>([]);
 
-  const addDialog = useCallback(
+  const add = useCallback(
     (dialog: HTMLElement) => {
-      return chain(
-        context.addDialog?.(dialog),
-        (() => {
-          setNestedDialogs((dialogs) => [...dialogs, dialog]);
-          return () => {
-            setNestedDialogs((dialogs) =>
-              dialogs.filter((element) => element !== dialog)
-            );
-          };
-        })()
-      );
+      setDialogs((dialogs) => [...dialogs, dialog]);
+      return chain(context.add?.(dialog), () => {
+        setDialogs((dialogs) => dialogs.filter((d) => d !== dialog));
+      });
     },
-    [context.addDialog]
+    [context]
   );
 
-  const showModal = useCallback(
-    (dialog: HTMLElement) => {
-      return chain(
-        context.showModal?.(dialog),
-        (() => {
-          setOpenModals((modals) => [...modals, dialog]);
-          return () => {
-            setOpenModals((modals) =>
-              modals.filter((modal) => modal !== dialog)
-            );
-          };
-        })()
-      );
-    },
-    [context.showModal]
-  );
-
-  // If this is a nested dialog, add it to the context.
+  // If it's a nested dialog, add it to the context
   useSafeLayoutEffect(() => {
-    if (!contentElement) return;
-    return context.addDialog?.(contentElement);
-  }, [contentElement, context.addDialog]);
-
-  useSafeLayoutEffect(() => {
-    if (!modal) return;
-    if (!open) return;
-    if (!contentElement) return;
-    return context.showModal?.(contentElement);
-  }, [modal, open, contentElement, context.showModal]);
-
-  // Close all nested dialogs when parent dialog closes.
-  useEffect(() => {
-    return context.store?.syncBatch(
+    return store.sync(
       (state) => {
-        if (!state.open) {
-          store.setOpen(false);
-        }
+        if (!state.contentElement) return;
+        return context.add?.(state.contentElement);
+      },
+      ["contentElement"]
+    );
+  }, [store, context]);
+
+  // Close all nested dialogs when the parent dialog closes
+  useSafeLayoutEffect(() => {
+    return context.store?.sync(
+      (state) => {
+        if (state.open) return;
+        store.hide();
       },
       ["open"]
     );
-  }, [context.store, store]);
+  }, [context, store]);
 
   // Provider
-  const providerValue = useMemo(
-    () => ({ store, addDialog, showModal }),
-    [store, addDialog, showModal]
-  );
+  const providerValue = useMemo(() => ({ store, add }), [store, add]);
 
   const wrapElement: WrapElement = useCallback(
     (element) => (
@@ -101,5 +63,5 @@ export function useNestedDialogs(store: DialogStore, modal?: boolean) {
     [providerValue]
   );
 
-  return { nestedDialogs, openModals, wrapElement };
+  return { wrapElement, nestedDialogs: dialogs };
 }

@@ -8,7 +8,10 @@ const white = "hsl(204 20% 100%)";
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   content: [
-    path.join(__dirname, "{guide,components,examples,blog}/**/icon.tsx"),
+    path.join(__dirname, "guide/**/icon.tsx"),
+    path.join(__dirname, "components/**/icon.tsx"),
+    path.join(__dirname, "examples/**/icon.tsx"),
+    path.join(__dirname, "blog/**/icon.tsx"),
     path.join(__dirname, "website/app/**/*.{ts,tsx}"),
     path.join(__dirname, "website/components/**/*.{ts,tsx}"),
     path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
