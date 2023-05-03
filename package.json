@@ -157,6 +157,6 @@
     "use-local-storage-state": "18.3.2",
     "vitest": "0.30.1",
     "vitest-fail-on-console": "0.3.1",
-    "webpack": "5.81.0"
+    "webpack": "5.82.0"
   }
 }
