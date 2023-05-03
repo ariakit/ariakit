@@ -59,11 +59,20 @@ const form = useFormStore({
 
 ### Controlled state
 
-You can take full control of the state by passing the exact property to the store. In this case, the state will be considered controlled and the component will not update the state internally. It will only call the state updater function. You can use this to implement a controlled component:
+You can take full control of the state by passing the exact property to the store. In this case, the state will be considered controlled and the component will not update the state internally. It will only call the state updater function. You can use this to implement a controlled component using `React.useState`:
 
 ```js
 const [values, setValues] = React.useState({ name: "", email: "" });
 const form = useFormStore({ values, setValues });
+```
+
+You can also receive controlled props, such as `value` and `onChange`, from a parent component and pass them directly to the store:
+
+```js
+const select = useSelectStore({
+  value: props.value,
+  setValue: props.onChange,
+});
 ```
 
 ## Reading the state
