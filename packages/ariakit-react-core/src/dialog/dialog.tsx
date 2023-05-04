@@ -149,7 +149,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Sets disclosure element using the current active element right after the
     // dialog is opened.
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!open) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);

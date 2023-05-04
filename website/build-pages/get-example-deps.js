@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { parseSync, traverse } from "@babel/core";
 import * as t from "@babel/types";
+import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
@@ -111,6 +112,23 @@ export function getExampleDeps(
 
   if (!deps[filename]) {
     deps[filename] = {};
+  }
+
+  const isAppDir = /app\/page\.[mc]?[tj]sx?$/.test(filename);
+
+  if (isAppDir) {
+    const dir = dirname(filename);
+    const files = globSync("**/{page,default,layout,loading}.{js,jsx,ts,tsx}", {
+      cwd: dir,
+      dotRelative: true,
+      ignore: Object.keys(deps),
+    });
+
+    files.forEach((file) => {
+      const absPath = join(dir, file);
+      deps[absPath] = {};
+      getExampleDeps(absPath, deps);
+    });
   }
 
   traverse(parsed, {
