@@ -1,7 +1,7 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { Link } from "components/link.js";
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
 
 const style = {

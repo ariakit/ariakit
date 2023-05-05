@@ -233,6 +233,7 @@ function getNextProject(props: StackblitzProps) {
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverActions: true,
   },
   eslint: {
     ignoreDuringBuilds: true,

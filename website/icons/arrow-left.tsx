@@ -7,6 +7,7 @@ export function ArrowLeft(props: SVGAttributes<SVGSVGElement>) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      className="h-6 w-6"
       {...props}
     >
       <path

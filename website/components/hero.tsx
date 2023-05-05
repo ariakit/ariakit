@@ -1,6 +1,6 @@
 import { ArrowRight } from "icons/arrow-right.js";
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
-import { Link } from "./link.js";
 
 export function Hero() {
   return (

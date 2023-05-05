@@ -1,16 +1,14 @@
 import "./style.css";
 import type { ReactNode } from "react";
 
-interface Props {
+export default function Layout(props: {
   children: ReactNode;
-  login?: ReactNode;
-}
-
-export default function Layout({ children, login }: Props) {
+  login: ReactNode;
+}) {
   return (
-    <>
-      {children}
-      {login}
-    </>
+    <div>
+      {props.children}
+      {props.login}
+    </div>
   );
 }

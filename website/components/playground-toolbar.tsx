@@ -23,10 +23,10 @@ import { NewWindow } from "icons/new-window.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
 import { TypeScript } from "icons/typescript.jsx";
 import { Vite } from "icons/vite.jsx";
+import Link from "next/link.js";
 import { openInStackblitz } from "utils/stackblitz.js";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.jsx";
-import { Link } from "./link.js";
 import { Popup } from "./popup.jsx";
 import { TooltipButton } from "./tooltip-button.jsx";
 

@@ -8,6 +8,7 @@ export function NewWindow(props: SVGAttributes<SVGSVGElement>) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
+      className="h-6 w-6"
       {...props}
     >
       <path
