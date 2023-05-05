@@ -64,17 +64,10 @@ import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 
 const isSafariBrowser = isSafari();
 
-function isBackdrop(dialog: HTMLElement, element: Element) {
-  const id = dialog.id;
-  if (!id) return;
-  return element.getAttribute("data-backdrop") === id;
-}
-
 function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (contains(dialog, activeElement)) return false;
-  if (isBackdrop(dialog, activeElement)) return false;
   // When there's a nested dialog, clicking outside both dialogs will close them
   // at the same time, but the active element will still point to the nested
   // dialog element that is still focusable at this point. So we ignore it.

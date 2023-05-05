@@ -4,6 +4,7 @@ import { noop } from "@ariakit/core/utils/misc";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useForkRef, useSafeLayoutEffect } from "../utils/hooks.js";
 import type { DialogProps } from "./dialog.js";
+import { markAncestor } from "./utils/mark-tree-outside.js";
 
 type DialogBackdropProps = Pick<
   DialogProps,
@@ -39,6 +40,17 @@ export function DialogBackdrop({
     if (!backdrop) return;
     if (!dialog) return;
     backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
+  }, [contentElement]);
+
+  // Mark the backdrop element as an ancestor of the dialog, otherwise clicking
+  // on it won't close the dialog when the dialog uses portal, in which case
+  // elements are only marked outside the portal element.
+  useSafeLayoutEffect(() => {
+    const id = contentElement?.id;
+    if (!id) return;
+    const backdrop = ref.current;
+    if (!backdrop) return;
+    return markAncestor(backdrop, id);
   }, [contentElement]);
 
   const props = useDisclosureContent({
