@@ -301,7 +301,8 @@ export const useDialog = createHook<DialogOptions>(
         getFirstTabbableIn(contentElement, true, portal && preserveTabOrder) ||
         // Finally, we fallback to the dialog element itself.
         contentElement;
-      if (!autoFocusOnShowProp(element)) return;
+      const isElementFocusable = isFocusable(element);
+      if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
       setAutoFocusEnabled(true);
       element.focus();
     }, [
@@ -343,8 +344,7 @@ export const useDialog = createHook<DialogOptions>(
         if (isAlreadyFocusingAnotherElement(dialog)) return;
         const { disclosureElement } = store.getState();
         let element = getElementFromProp(finalFocus) || disclosureElement;
-        if (!element) return;
-        if (element.id) {
+        if (element?.id) {
           const doc = getDocument(element);
           const selector = `[aria-activedescendant="${element.id}"]`;
           const composite = doc.querySelector<HTMLElement>(selector);
@@ -359,7 +359,7 @@ export const useDialog = createHook<DialogOptions>(
         // it's probably because it's an element inside another popover or menu
         // that also got hidden when this dialog was shown. We'll try to focus
         // on their disclosure element instead.
-        if (!isFocusable(element)) {
+        if (element && !isFocusable(element)) {
           const maybeParentDialog = closest(element, "[data-dialog]");
           if (maybeParentDialog && maybeParentDialog.id) {
             const doc = getDocument(maybeParentDialog);
@@ -370,8 +370,8 @@ export const useDialog = createHook<DialogOptions>(
             }
           }
         }
-        if (!isFocusable(element)) {
-          if (!retry) return;
+        const isElementFocusable = element && isFocusable(element);
+        if (!isElementFocusable && retry) {
           // If the element is still not focusable by this time, we retry once
           // again on the next frame. This is sometimes necessary because there
           // may be nested dialogs that still need a tick to remove the inert
@@ -379,8 +379,9 @@ export const useDialog = createHook<DialogOptions>(
           requestAnimationFrame(() => focusOnHide(false));
           return;
         }
-        if (!autoFocusOnHideProp(element)) return;
-        element.focus();
+        if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
+        if (!isElementFocusable) return;
+        element?.focus();
       };
       if (!open) {
         // If this effect is running while the open state is false, this means
@@ -452,8 +453,6 @@ export const useDialog = createHook<DialogOptions>(
               store={store}
               backdrop={backdrop}
               backdropProps={backdropProps}
-              hideOnInteractOutside={hideOnInteractOutside}
-              hideOnEscape={hideOnEscape}
               hidden={hiddenProp}
             >
               {element}
@@ -462,14 +461,7 @@ export const useDialog = createHook<DialogOptions>(
         }
         return element;
       },
-      [
-        store,
-        backdrop,
-        backdropProps,
-        hideOnInteractOutside,
-        hideOnEscape,
-        hiddenProp,
-      ]
+      [store, backdrop, backdropProps, hiddenProp]
     );
 
     const [headingId, setHeadingId] = useState<string>();
@@ -603,7 +595,7 @@ export interface DialogOptions<T extends As = "div">
    * a different element to receive focus.
    * @default true
    */
-  autoFocusOnShow?: BooleanOrCallback<HTMLElement>;
+  autoFocusOnShow?: BooleanOrCallback<HTMLElement | null>;
   /**
    * Determines whether an element outside of the dialog will be focused when
    * the dialog is hidden if another element hasn't been focused in the action
@@ -613,7 +605,7 @@ export interface DialogOptions<T extends As = "div">
    * element to be focused.
    * @default true
    */
-  autoFocusOnHide?: BooleanOrCallback<HTMLElement>;
+  autoFocusOnHide?: BooleanOrCallback<HTMLElement | null>;
   /**
    * Specifies the element that will receive focus when the dialog is first
    * opened. It can be an `HTMLElement` or a `React.RefObject` with an

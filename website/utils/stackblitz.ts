@@ -33,7 +33,7 @@ function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
 function getExampleName(id: StackblitzProps["id"]) {
   const [_category, ...names] = id.split("-");
   const exampleName = names.join("-");
-  return exampleName;
+  return exampleName.replace(/^.+-previews\-(.+)$/, "$1");
 }
 
 function getFirstFilename(files: StackblitzProps["files"]) {
@@ -94,6 +94,10 @@ function getIndexCss(theme: StackblitzProps["theme"] = "light") {
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
   return `@import url("tailwindcss/lib/css/preflight.css");
 
+html {
+  color-scheme: ${theme};
+}
+
 body {
   color-scheme: ${theme};
   background-color: ${background};
@@ -144,10 +148,9 @@ export default defineConfig({
 `;
 
   const theme = props.theme === "dark" ? "dark" : "light";
-  const style = `color-scheme: ${theme}`;
 
   const indexHtml = `<!DOCTYPE html>
-<html lang="en" class="${theme}" style="${style}">
+<html lang="en" class="${theme}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -259,14 +262,13 @@ export default nextConfig;
   const layoutCss = getIndexCss(props.theme);
 
   const theme = props.theme === "dark" ? "dark" : "light";
-  const style = `{ colorScheme: "${theme}" }`;
 
   const mainLayout = `import type { PropsWithChildren } from "react";
 import "./layout.css";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className="${theme}" style={${style}}>
+    <html lang="en" className="${theme}">
       <body>
         <div id="root">{children}</div>
       </body>
@@ -275,7 +277,17 @@ export default function Layout({ children }: PropsWithChildren) {
 }
 `;
 
-  const page = `"use client";
+  const isAppDir = /page\.[mc]?[jt]sx?$/.test(firstFile);
+  const pagePath = isAppDir ? `previews/${exampleName}` : exampleName;
+
+  const page = isAppDir
+    ? `import { redirect } from "next/navigation.js";
+
+export default function Page() {
+  redirect("/${pagePath}");
+}
+`
+    : `"use client";
 import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
 
 export default function Page() {
@@ -283,13 +295,9 @@ export default function Page() {
 }
 `;
 
-  const isAppDir = /page\.[mc]?[jt]sx?$/.test(firstFile);
-
   const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
-      const key = isAppDir
-        ? `app/${filename}`
-        : `app/${exampleName}/${filename}`;
+      const key = `app/${pagePath}/${filename}`;
       acc[key] = content;
       return acc;
     },

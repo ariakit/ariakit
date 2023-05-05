@@ -19,6 +19,11 @@ if (!("theme" in localStorage)) {
     })
   }
 }
+window.addEventListener("storage", (event) => {
+  if (event.key === "theme") {
+    classList(event.newValue === "dark" ? "add" : "remove");
+  }
+});
 `;
 
 const inter = Inter({ subsets: ["latin"] });

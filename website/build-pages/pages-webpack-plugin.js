@@ -56,9 +56,10 @@ function writeFiles(buildDir, pages) {
   writeFileSync(depsFile, depsContents);
 
   // examples.js
-  // TODO: We can use this same logic to produce preview pages for all examples,
-  // and not only the ones that are in the examples folder.
-  const examples = [...new Set(Object.values(sourceFiles).flat())];
+  const sourceFilesWithoutAppDir = Object.values(sourceFiles)
+    .flat()
+    .filter((file) => !file.startsWith(process.cwd()));
+  const examples = [...new Set(sourceFilesWithoutAppDir)];
   const examplesFile = join(buildDir, "examples.js");
 
   const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
@@ -74,7 +75,12 @@ function writeFiles(buildDir, pages) {
   const contentsFile = join(buildDir, "contents.json");
 
   const meta = markdownFiles.map((file) => {
-    const page = pages.find((page) => file.startsWith(page.sourceContext));
+    const page = pages.find((page) => {
+      const context = Array.isArray(page.sourceContext)
+        ? page.sourceContext
+        : [page.sourceContext];
+      return context.some((context) => file.startsWith(context));
+    });
     if (!page) throw new Error(`Could not find page for file: ${file}`);
     return getPageSections(file, page.slug, page.getGroup);
   });
@@ -134,9 +140,12 @@ function writeFiles(buildDir, pages) {
 
   const iconsContents = Object.entries(icons)
     .map(([file, iconPath]) => {
-      const category = pages.find((page) =>
-        file.startsWith(page.sourceContext)
-      );
+      const category = pages.find((page) => {
+        const context = Array.isArray(page.sourceContext)
+          ? page.sourceContext
+          : [page.sourceContext];
+        return context.some((context) => file.startsWith(context));
+      });
       invariant(category);
       const pageName = getPageName(file);
       return iconPath
@@ -180,39 +189,25 @@ class PagesWebpackPlugin {
    */
   apply(compiler) {
     const pages = this.pages;
+    const contexts = pages.flatMap((page) => page.sourceContext);
 
-    // Find the CSS rule and exclude the pages from it so we can handle the CSS
-    // ourselves.
-    const rule = compiler.options.module.rules.find(
-      (rule) => typeof rule === "object" && typeof rule.oneOf === "object"
+    const externalContexts = contexts.filter(
+      (context) => !context.startsWith(process.cwd())
     );
 
-    const cssRules =
-      typeof rule === "object" &&
-      rule.oneOf?.filter(
-        (rule) => rule.test && /\.css/.test(rule.test.toString())
-      );
-
-    if (cssRules) {
-      const excludes = pages.map((page) => page.sourceContext);
-      cssRules.forEach((cssRule) => {
-        cssRule.exclude = Array.isArray(cssRule.exclude)
-          ? [...cssRule.exclude, ...excludes]
-          : excludes;
-      });
-
-      compiler.options.module.rules.push({
-        include: pages.map((page) => page.sourceContext),
-        test: /style\.css$/,
-        loader: "null-loader",
-      });
-    }
+    compiler.options.module.rules.push({
+      issuer: (value) =>
+        externalContexts.some((exclude) => value.startsWith(exclude)),
+      include: externalContexts,
+      test: /style\.css$/,
+      loader: "null-loader",
+    });
 
     compiler.hooks.make.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;
-      for (const page of pages) {
-        compilation.contextDependencies.add(page.sourceContext);
-        getPageEntryFiles(page.sourceContext).forEach((file) => {
+      for (const context of contexts) {
+        compilation.contextDependencies.add(context);
+        getPageEntryFiles(context).forEach((file) => {
           compilation.fileDependencies.add(file);
           compilation.contextDependencies.add(dirname(file));
         });
@@ -234,24 +229,22 @@ class PagesWebpackPlugin {
       };
 
       for (const file of removedFiles) {
-        if (!pages.some((page) => file.includes(page.sourceContext))) continue;
+        if (!contexts.some((context) => file.includes(context))) continue;
         log(file, true);
         return writeFiles(this.buildDir, pages);
       }
 
       if (modifiedFiles.size === 1) {
-        const page = pages.find((page) =>
-          modifiedFiles.has(page.sourceContext)
-        );
-        if (page) {
-          log(page.sourceContext);
+        const context = contexts.find((context) => modifiedFiles.has(context));
+        if (context) {
+          log(context);
           return writeFiles(this.buildDir, pages);
         }
       }
 
       for (const file of modifiedFiles) {
-        if (pages.some((page) => file === page.sourceContext)) continue;
-        if (!pages.some((page) => file.includes(page.sourceContext))) continue;
+        if (contexts.some((context) => file === context)) continue;
+        if (!contexts.some((context) => file.includes(context))) continue;
         log(file);
         return writeFiles(this.buildDir, pages);
       }

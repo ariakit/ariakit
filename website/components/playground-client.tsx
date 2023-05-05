@@ -1,24 +1,17 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { cx, invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
-import type { VM } from "@stackblitz/sdk";
 import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
-import {
-  embedStackblitz,
-  getSourceFiles,
-  getThemedFiles,
-} from "utils/stackblitz.js";
-import type { StackblitzProps } from "utils/stackblitz.js";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
 import { useLocalStorageState } from "utils/use-local-storage-state.js";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
-import { onThemeSwitch } from "./header-theme-switch.jsx";
+import { PlaygroundBrowser } from "./playground-browser.jsx";
 import { PlaygroundToolbar } from "./playground-toolbar.jsx";
 
 export interface PlaygroundClientProps extends EditorProps {
@@ -29,7 +22,6 @@ export interface PlaygroundClientProps extends EditorProps {
   previewLink?: string;
   preview?: ReactNode;
   type?: "code" | "compact" | "wide";
-  embed?: "vite" | "next";
 }
 
 const style = {
@@ -41,8 +33,8 @@ const style = {
     bg-gray-150 p-4 dark:bg-gray-850
   `,
   embed: tw`
-    relative
-    w-full rounded-lg overflow-hidden dark:border border-gray-650
+    w-full rounded-lg overflow-hidden
+    border border-gray-300 dark:border-gray-650
     bg-gray-150 dark:bg-gray-850
   `,
   codeWrapper: tw`
@@ -110,7 +102,6 @@ export function PlaygroundClient({
   devDependencies,
   codeBlocks,
   javascript,
-  embed,
   type = "wide",
 }: PlaygroundClientProps) {
   const getTabId = (file: string) =>
@@ -125,6 +116,8 @@ export function PlaygroundClient({
   const firstFile = Object.keys(files)[0];
 
   invariant(firstFile, "No files provided");
+
+  const isAppDir = /^page\.[tj]sx?/.test(firstFile);
 
   const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
     "language",
@@ -155,10 +148,6 @@ export function PlaygroundClient({
   const [collapsed, setCollapsed] = useState(collapsible);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
-  const sdkRef = useRef<VM | null>(null);
-  const embedRef = useRef<HTMLDivElement>(null);
-  const embedWrapperRef = useRef<HTMLDivElement>(null);
-  const [containerLink, setContainerLink] = useState<string | undefined>();
 
   const javascriptFiles = useMemo(
     () =>
@@ -177,59 +166,6 @@ export function PlaygroundClient({
     collapseRef.current?.scrollIntoView({ block: "nearest" });
   }, [collapsed, selectedId]);
 
-  useEffect(() => {
-    if (!embed) return;
-    const wrapper = embedWrapperRef.current;
-    if (!wrapper) return;
-
-    const getProps = () => {
-      return {
-        id,
-        template: embed,
-        theme: wrapper.closest(".dark") ? "dark" : "light",
-        files: (isJS && javascriptFiles) || files,
-        dependencies,
-        devDependencies,
-      } satisfies StackblitzProps;
-    };
-
-    (async () => {
-      const element = embedRef.current;
-      if (!element?.isConnected) return;
-      sdkRef.current = await embedStackblitz(element, getProps());
-      const iframe = wrapper.querySelector("iframe");
-      if (!iframe) return;
-      iframe.classList.remove("invisible");
-      const sdk = sdkRef.current;
-      const timer = setInterval(async () => {
-        let url: string | null = null;
-        try {
-          url = await sdk.preview.getUrl();
-        } catch {}
-        if (!url) return;
-        clearInterval(timer);
-        setContainerLink(url);
-      }, 1000);
-    })();
-
-    const sdk = sdkRef.current;
-
-    sdk?.applyFsDiff({
-      create: getSourceFiles(getProps()),
-      destroy: [],
-    });
-
-    return onThemeSwitch((theme) => {
-      const sdk = sdkRef.current;
-      if (!sdk) return;
-      sdk.editor.setTheme(theme);
-      sdk.applyFsDiff({
-        create: getThemedFiles(getProps()),
-        destroy: [],
-      });
-    });
-  }, [embed, id, isJS, javascriptFiles, files, dependencies, devDependencies]);
-
   return (
     <div className={style.wrapper}>
       {preview && (
@@ -245,17 +181,16 @@ export function PlaygroundClient({
           {preview}
         </div>
       )}
-      {embed && (
+      {isAppDir && previewLink && (
         <div
-          ref={embedWrapperRef}
           className={cx(
             style.embed,
             type === "wide"
-              ? "min-h-[480px] md:rounded-2xl"
-              : "min-h-[320px] md:rounded-xl"
+              ? "h-[480px] md:rounded-2xl"
+              : "h-[320px] md:rounded-xl"
           )}
         >
-          <div ref={embedRef} className="invisible" />
+          <PlaygroundBrowser previewLink={previewLink} />
         </div>
       )}
       <div className={style.codeWrapper}>
@@ -275,7 +210,7 @@ export function PlaygroundClient({
             code={content}
             dependencies={dependencies}
             devDependencies={devDependencies}
-            previewLink={previewLink || containerLink}
+            previewLink={previewLink}
             githubLink={githubLink}
             language={language}
             setLanguage={setLanguage}

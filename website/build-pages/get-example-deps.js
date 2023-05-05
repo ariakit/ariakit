@@ -8,6 +8,7 @@ import resolveFrom from "resolve-from";
 import ts from "typescript";
 
 const host = ts.createCompilerHost({});
+let warnedAboutVersion = false;
 
 /**
  * @typedef {{ [file: string]: Record<string, string>, dependencies:
@@ -47,7 +48,8 @@ function getPackageVersion(source) {
   if (!result) return "latest";
   packageCache.set(source, result);
   const { version } = result.packageJson;
-  if (!version) {
+  if (!version && !warnedAboutVersion) {
+    warnedAboutVersion = true;
     console.log("No version found for", source);
   }
   return version || "latest";
@@ -97,6 +99,10 @@ export function getExampleDeps(
   deps = { dependencies: {}, devDependencies: {} }
 ) {
   if (!/\.[tj]sx?$/.test(filename)) return deps;
+
+  if (deps[filename]) return deps;
+  deps[filename] = {};
+
   const content = readFileSync(filename, "utf8");
   const parsed = parseSync(content, {
     filename,
@@ -110,11 +116,7 @@ export function getExampleDeps(
   assignExternal(deps, "react", filename);
   assignExternal(deps, "react-dom", filename);
 
-  if (!deps[filename]) {
-    deps[filename] = {};
-  }
-
-  const isAppDir = /app\/page\.[mc]?[tj]sx?$/.test(filename);
+  const isAppDir = /\/app\/.*\/page\.[mc]?[tj]sx?$/.test(filename);
 
   if (isAppDir) {
     const dir = dirname(filename);
@@ -125,9 +127,7 @@ export function getExampleDeps(
     });
 
     files.forEach((file) => {
-      const absPath = join(dir, file);
-      deps[absPath] = {};
-      getExampleDeps(absPath, deps);
+      getExampleDeps(join(dir, file), deps);
     });
   }
 

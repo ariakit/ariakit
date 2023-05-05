@@ -25,7 +25,7 @@ export function generateStaticParams() {
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
-function getPageNames(dir: string) {
+function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 

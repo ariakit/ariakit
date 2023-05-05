@@ -16,7 +16,6 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
   href: string;
   type?: "code" | "compact" | "wide";
-  embed?: "vite" | "next";
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
@@ -46,7 +45,6 @@ function getGithubLink(path: string) {
 export async function PageExample({
   pageFilename,
   href,
-  embed,
   type = "wide",
 }: Props) {
   const path = resolve(dirname(pageFilename), href);
@@ -76,6 +74,9 @@ export async function PageExample({
     css += await parseCSSFile(file, { id, tailwindConfig, contents });
   }
 
+  const isAppDir = pageFilename.startsWith(process.cwd());
+  const showPreview = type !== "code" && !isAppDir;
+
   return (
     <div
       className={cx(
@@ -87,17 +88,12 @@ export async function PageExample({
       <Playground
         id={id}
         type={type}
-        embed={embed}
         files={finalContents}
         dependencies={dependencies}
         devDependencies={devDependencies}
-        previewLink={previewLink}
-        preview={
-          type === "code" || embed ? null : (
-            <Preview id={id} path={path} css={css} />
-          )
-        }
         githubLink={getGithubLink(path)}
+        previewLink={previewLink}
+        preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
       />
     </div>
   );

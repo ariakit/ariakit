@@ -91,7 +91,7 @@ const style = {
   `,
 };
 
-function getPageNames(dir: string) {
+function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 
