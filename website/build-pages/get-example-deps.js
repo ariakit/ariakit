@@ -1,5 +1,4 @@
 import { readFileSync } from "fs";
-import { createRequire } from "module";
 import { dirname, join } from "path";
 import { parseSync, traverse } from "@babel/core";
 // @ts-expect-error
@@ -75,9 +74,7 @@ function assignExternal(deps, source, filename) {
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : source.endsWith(".css")
-      ? resolveFrom(dirname(filename), source)
-      : createRequire(dirname(filename)).resolve(source);
+      : resolveFrom(dirname(filename), source);
 
   const result = { resolvedSource, external };
 
