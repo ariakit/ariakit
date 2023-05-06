@@ -31,6 +31,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(
           size === "responsive" && "sm:text-sm",
           tw`
           z-50 flex max-h-[min(var(--popover-available-height,800px),800px)]
+          max-w-[--popover-available-width]
           flex-col overflow-hidden rounded-lg border border-gray-250
           bg-white text-black outline-none shadow-lg
           dark:border-gray-600 dark:bg-gray-700

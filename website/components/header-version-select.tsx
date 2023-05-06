@@ -24,7 +24,7 @@ import { Popup } from "./popup.js";
 
 const style = {
   select: tw`
-    hidden sm:flex items-center justify-center gap-1.5
+    hidden md:flex items-center justify-center gap-1.5
     cursor-default
     px-3 h-8 mr-2
     rounded-lg border-none

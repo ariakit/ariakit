@@ -66,7 +66,7 @@ import { Popup } from "./popup.js";
 const style = {
   button: tw`
     flex items-center justify-center
-    h-8 gap-2 px-3
+    h-8 gap-2 px-3 overflow-hidden
     whitespace-nowrap cursor-default
     border-none rounded-lg
     hover:bg-black/5 dark:hover:bg-white/5
@@ -324,13 +324,13 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           {...props}
           href={href}
           value={itemValue}
-          className="justify-between"
+          className={cx("justify-between", props.className)}
         >
           {props.children}
           <MenuButtonArrow />
         </HeaderMenuItem>
       ) : (
-        <button {...props} className={style.button} />
+        <button {...props} className={cx(style.button, props.className)} />
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
