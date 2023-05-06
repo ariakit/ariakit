@@ -50,7 +50,22 @@ export async function PageExample({
   const path = resolve(dirname(pageFilename), href);
   const previewLink = getPreviewLink(path);
   const id = getExampleId(path);
-  const { dependencies, devDependencies, ...files } = getExampleDeps(path);
+  let dependencies: Record<string, string> = {};
+  let devDependencies: Record<string, string> = {};
+  let files: Record<string, Record<string, string>> = {};
+  try {
+    const {
+      dependencies: _dependencies,
+      devDependencies: _devDependencies,
+      ..._files
+    } = getExampleDeps(path);
+    dependencies = _dependencies;
+    devDependencies = _devDependencies;
+    files = _files;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
   const cssFiles = getCSSFilesFromDeps(files);
   const contents: Record<string, string> = {};
 
