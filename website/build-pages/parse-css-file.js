@@ -64,11 +64,7 @@ export async function parseCSSFile(filename, options) {
   processor.use(postcssImport());
 
   if (options.tailwindConfig) {
-    try {
-      processor.use(tailwindcss({ config: options.tailwindConfig }));
-    } catch (error) {
-      console.error(error);
-    }
+    processor.use(tailwindcss({ config: options.tailwindConfig }));
   }
 
   if (options.format) {

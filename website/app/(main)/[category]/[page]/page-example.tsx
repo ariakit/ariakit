@@ -66,12 +66,16 @@ export async function PageExample({
 
   for (const file of cssFiles) {
     const key = getPathFromExample(file, path);
-    finalContents[key] = await parseCSSFile(file, {
-      format: true,
-      contents,
-      tailwindConfig,
-    });
-    css += await parseCSSFile(file, { id, tailwindConfig, contents });
+    try {
+      finalContents[key] = await parseCSSFile(file, {
+        format: true,
+        contents,
+        tailwindConfig,
+      });
+      css += await parseCSSFile(file, { id, tailwindConfig, contents });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const isAppDir = pageFilename.startsWith(process.cwd());
