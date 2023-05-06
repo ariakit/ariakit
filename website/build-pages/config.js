@@ -44,7 +44,10 @@ const pages = [
   {
     slug: "examples",
     title: "Examples",
-    sourceContext: join(root, "examples"),
+    sourceContext: [
+      join(root, "examples"),
+      join(process.cwd(), "app/(examples)/previews"),
+    ],
     getGroup: (filename) => {
       const page = getPageName(filename);
       const component = [...components]

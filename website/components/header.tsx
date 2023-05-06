@@ -1,10 +1,10 @@
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
 import { HeaderGlobalNotification } from "./header-global-notification.js";
 import { HeaderLogo } from "./header-logo.js";
 import { HeaderNav } from "./header-nav.js";
 import { HeaderThemeSwitch } from "./header-theme-switch.js";
 import { HeaderVersionSelect } from "./header-version-select.js";
-import { Link } from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;
 

@@ -9,10 +9,10 @@ import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
-import { Link } from "components/link.js";
 import matter from "gray-matter";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
+import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
 import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
@@ -47,7 +47,7 @@ const style = {
   link: tw`
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
     underline [text-decoration-skip-ink:none] hover:decoration-[3px]
-    underline-offset-[0.125em]
+    underline-offset-[0.25em]
     font-medium dark:font-normal
     text-blue-700 dark:text-blue-400
   `,
@@ -69,11 +69,10 @@ const style = {
     ${stickyHeading}
   `,
   paragraph: tw`
-    dark:text-white/80 leading-7 tracking-[-0.02em] dark:tracking-[-0.01em]
+    dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    data-[description]:-translate-y-4 data-[description]:text-lg
+    data-[description]:-translate-y-4 data-[description]:text-xl
     data-[description]:text-black/70 dark:data-[description]:text-white/60
-    data-[description]:!tracking-tight
 
     [&_code]:rounded [&_code]:p-1 [&_code]:text-[0.9375em]
     [&_code]:bg-black/[6.5%] dark:[&_code]:bg-white/[6.5%]
@@ -91,7 +90,7 @@ const style = {
   `,
 };
 
-function getPageNames(dir: string) {
+function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 

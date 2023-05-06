@@ -56,11 +56,11 @@ import { ChevronRight } from "icons/chevron-right.js";
 import { NewWindow } from "icons/new-window.js";
 import { Search } from "icons/search.js";
 import { Spinner } from "icons/spinner.js";
+import Link from "next/link.js";
 import { afterTimeout } from "utils/after-timeout.js";
 import { tw } from "utils/tw.js";
 import { useIdle } from "utils/use-idle.js";
 import { whenIdle } from "utils/when-idle.js";
-import { Link } from "./link.js";
 import { Popup } from "./popup.js";
 
 const style = {

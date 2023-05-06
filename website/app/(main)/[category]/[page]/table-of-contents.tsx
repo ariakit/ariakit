@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import * as Ariakit from "@ariakit/react";
 import type { TableOfContents as Data } from "build-pages/types.js";
-import { Link } from "components/link.js";
 import { Popup } from "components/popup.js";
 import { List } from "icons/list.js";
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
 import { useMedia } from "utils/use-media.js";
 

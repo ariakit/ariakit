@@ -74,12 +74,15 @@ export async function PageExample({
     css += await parseCSSFile(file, { id, tailwindConfig, contents });
   }
 
+  const isAppDir = pageFilename.startsWith(process.cwd());
+  const showPreview = type !== "code" && !isAppDir;
+
   return (
     <div
       className={cx(
         type === "code" && "!max-w-[832px]",
-        type === "wide" && "!max-w-5xl",
-        type === "compact" && "!max-w-[832px]"
+        type === "compact" && "!max-w-[832px]",
+        type === "wide" && "!max-w-5xl"
       )}
     >
       <Playground
@@ -88,11 +91,9 @@ export async function PageExample({
         files={finalContents}
         dependencies={dependencies}
         devDependencies={devDependencies}
-        previewLink={previewLink}
-        preview={
-          type === "code" ? null : <Preview id={id} path={path} css={css} />
-        }
         githubLink={getGithubLink(path)}
+        previewLink={previewLink}
+        preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
       />
     </div>
   );

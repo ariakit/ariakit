@@ -7,12 +7,13 @@ export function ArrowRight(props: SVGAttributes<SVGSVGElement>) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      className="h-6 w-6"
       {...props}
     >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M13 7l5 5m0 0l-5 5m5-5H6"
+        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
       />
     </svg>
   );

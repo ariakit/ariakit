@@ -10,6 +10,7 @@ const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverActions: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
