@@ -71,7 +71,7 @@ const style = {
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    data-[description]:-translate-y-4
+    data-[description]:-translate-y-2
     data-[description]:text-lg sm:data-[description]:text-xl
     data-[description]:text-black/70 dark:data-[description]:text-white/60
 

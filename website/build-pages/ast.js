@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * Determines if a node is a playground node.
  * @param {import("hast").Element | import("hast").ElementContent} node

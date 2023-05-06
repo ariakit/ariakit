@@ -1,4 +1,3 @@
-// @ts-check
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { isPlaygroundParagraphNode } from "./ast.js";

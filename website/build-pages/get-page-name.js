@@ -1,4 +1,3 @@
-// @ts-check
 import { basename, dirname, extname } from "path";
 import { PAGE_INDEX_FILE_REGEX } from "./const.js";
 

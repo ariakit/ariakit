@@ -1,4 +1,3 @@
-// @ts-check
 import { readdirSync } from "fs";
 import { join } from "path";
 import { PAGE_FILE_REGEX } from "./const.js";

@@ -1,4 +1,3 @@
-// @ts-check
 export const PAGE_INDEX_FILE_REGEX =
   /\/[^\/]+\/((index|page)\.[tj]sx?|readme\.md)/i;
 export const PAGE_FILE_REGEX = new RegExp(

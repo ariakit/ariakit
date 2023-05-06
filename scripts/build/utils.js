@@ -1,4 +1,3 @@
-// @ts-check
 import { lstatSync, readFileSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import chalk from "chalk";

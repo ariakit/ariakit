@@ -1,4 +1,4 @@
-// @ts-check
+import { lstatSync } from "fs";
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { getPageName } from "./get-page-name.js";
@@ -8,7 +8,7 @@ import { getPageTreeFromFile } from "./get-page-tree.js";
  * @param {string} filename
  * @param {import("./types.js").Page["getGroup"]} [getGroup]
  * @param {import("hast").Root} [tree]
- * TODO: Fix return type (PageIndexDetail) or update the function name
+ * @return {Omit<import("./types.js").PageIndexDetail, "category">}
  */
 export function getPageIndexDetail(filename, getGroup, tree) {
   tree = tree || getPageTreeFromFile(filename);
@@ -24,5 +24,9 @@ export function getPageIndexDetail(filename, getGroup, tree) {
     }
   });
   const group = getGroup?.(filename) || null;
-  return { group, slug, title, content };
+
+  const { mtime } = lstatSync(filename);
+  const lastModified = mtime.toISOString();
+
+  return { group, slug, title, content, lastModified };
 }
