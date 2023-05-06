@@ -1,4 +1,3 @@
-import { lstatSync } from "fs";
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { getPageName } from "./get-page-name.js";
@@ -24,9 +23,5 @@ export function getPageIndexDetail(filename, getGroup, tree) {
     }
   });
   const group = getGroup?.(filename) || null;
-
-  const { mtime } = lstatSync(filename);
-  const lastModified = mtime.toISOString();
-
-  return { group, slug, title, content, lastModified };
+  return { group, slug, title, content };
 }

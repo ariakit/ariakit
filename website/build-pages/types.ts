@@ -40,10 +40,6 @@ export type PageIndexDetail = {
    * The content of the page or section.
    */
   content: string;
-  /**
-   * The last modified date of the page.
-   */
-  lastModified: string;
 };
 
 export type PageContent = PageIndexDetail & {
