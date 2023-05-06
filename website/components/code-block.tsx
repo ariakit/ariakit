@@ -1,8 +1,16 @@
 import { cx } from "@ariakit/core/utils/misc";
-import { FontStyle, getHighlighter } from "shiki";
-import type { IShikiTheme, IThemedToken } from "shiki";
-import darkPlus from "utils/dark-plus.json";
+import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
+import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
+import css from "shiki/languages/css.tmLanguage.json";
+import html from "shiki/languages/html.tmLanguage.json";
+import javascript from "shiki/languages/javascript.tmLanguage.json";
+import jsx from "shiki/languages/jsx.tmLanguage.json";
+import sh from "shiki/languages/shellscript.tmLanguage.json";
+import tsx from "shiki/languages/tsx.tmLanguage.json";
+import typescript from "shiki/languages/typescript.tmLanguage.json";
+import darkPlus from "shiki/themes/dark-plus.json";
 import { tw } from "utils/tw.js";
+import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 
 interface Props {
@@ -38,9 +46,27 @@ function parseFontStyle(fontStyle?: FontStyle) {
   );
 }
 
+function getLanguage(lang: string, grammar: any) {
+  const language = BUNDLED_LANGUAGES.find((l) => l.id === lang);
+  if (!language) throw new Error(`Language not found: ${lang}`);
+  return { ...language, grammar: grammar as IGrammar };
+}
+
+function loadLanguages(highlighter: Highlighter) {
+  return Promise.all([
+    highlighter.loadLanguage(getLanguage("javascript", javascript)),
+    highlighter.loadLanguage(getLanguage("typescript", typescript)),
+    highlighter.loadLanguage(getLanguage("tsx", tsx)),
+    highlighter.loadLanguage(getLanguage("jsx", jsx)),
+    highlighter.loadLanguage(getLanguage("shellscript", sh)),
+    highlighter.loadLanguage(getLanguage("css", css)),
+    highlighter.loadLanguage(getLanguage("html", html)),
+  ]);
+}
+
 const highlighterPromise = getHighlighter({
   theme: darkPlus as unknown as IShikiTheme,
-  langs: ["javascript", "typescript", "tsx", "jsx", "sh", "css", "html"],
+  langs: [],
 });
 
 export async function CodeBlock({
@@ -58,6 +84,7 @@ export async function CodeBlock({
 
   try {
     const highlighter = await highlighterPromise;
+    await loadLanguages(highlighter);
     tokens = highlighter.codeToThemedTokens(code, lang, undefined, {
       includeExplanation: false,
     });
