@@ -64,10 +64,7 @@ function loadLanguages(highlighter: Highlighter) {
   ]);
 }
 
-const highlighterPromise = getHighlighter({
-  theme: darkPlus as unknown as IShikiTheme,
-  langs: [],
-});
+let highlighter: Highlighter | undefined;
 
 export async function CodeBlock({
   code,
@@ -82,8 +79,19 @@ export async function CodeBlock({
 
   let tokens: IThemedToken[][] = [];
 
+  if (!highlighter) {
+    try {
+      highlighter = await getHighlighter({
+        theme: darkPlus as unknown as IShikiTheme,
+        langs: [],
+      });
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   try {
-    const highlighter = await highlighterPromise;
     await loadLanguages(highlighter);
     tokens = highlighter.codeToThemedTokens(code, lang, undefined, {
       includeExplanation: false,
