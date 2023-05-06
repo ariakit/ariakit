@@ -1,6 +1,12 @@
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { parseSync, traverse } from "@babel/core";
+// @ts-expect-error
+import * as presetEnv from "@babel/preset-env";
+// @ts-expect-error
+import * as presetReact from "@babel/preset-react";
+// @ts-expect-error
+import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
 import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";
@@ -107,9 +113,9 @@ export function getExampleDeps(
   const parsed = parseSync(content, {
     filename,
     presets: [
-      "@babel/preset-env",
-      "@babel/preset-typescript",
-      ["@babel/preset-react", { runtime: "automatic" }],
+      presetEnv.default,
+      presetTypescript.default,
+      [presetReact.default, { runtime: "automatic" }],
     ],
   });
 
