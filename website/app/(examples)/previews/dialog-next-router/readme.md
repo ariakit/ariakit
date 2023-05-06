@@ -17,7 +17,7 @@ const router = useRouter();
 
 const dialog = Ariakit.useDialogStore({
   open: true,
-  setOpen: (open) => {
+  setOpen(open) {
     if (!open) {
       router.push("/previews/dialog-next-router");
     }

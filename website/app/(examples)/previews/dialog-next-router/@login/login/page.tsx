@@ -29,7 +29,12 @@ export default function Page() {
       }}
     >
       <Ariakit.DialogHeading className="heading">Login</Ariakit.DialogHeading>
-      <form className="form" action={close}>
+      <form
+        // This is using client actions, which is still an experimental feature
+        // on React. You can change it to an onSubmit handler.
+        action={close}
+        className="form"
+      >
         <label>
           Email <input type="email" className="input" />
         </label>
