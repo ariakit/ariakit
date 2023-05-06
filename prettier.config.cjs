@@ -1,3 +1,3 @@
 module.exports = {
-  tailwindConfig: "./tailwind.config.cjs",
+  tailwindConfig: "./tailwind.config.js",
 };

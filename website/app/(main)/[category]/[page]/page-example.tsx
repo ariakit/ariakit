@@ -18,7 +18,7 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   type?: "code" | "compact" | "wide";
 }
 
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
+const tailwindConfig = resolve(process.cwd(), "../tailwind.config.js");
 
 const examples = pagesConfig.pages.find((page) => page.slug === "examples");
 const exampleFiles = examples?.sourceContext

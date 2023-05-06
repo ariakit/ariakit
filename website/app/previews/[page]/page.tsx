@@ -23,7 +23,7 @@ export function generateStaticParams() {
   return params;
 }
 
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
+const tailwindConfig = resolve(process.cwd(), "../tailwind.config.js");
 
 function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir)
