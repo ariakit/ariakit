@@ -1,6 +1,7 @@
 import { cx } from "@ariakit/core/utils/misc";
 import { FontStyle, getHighlighter } from "shiki";
-import type { Highlighter } from "shiki";
+import type { IShikiTheme, IThemedToken } from "shiki";
+import darkPlus from "utils/dark-plus.json";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 
@@ -37,7 +38,10 @@ function parseFontStyle(fontStyle?: FontStyle) {
   );
 }
 
-let highlighter: Highlighter | undefined;
+const highlighterPromise = getHighlighter({
+  theme: darkPlus as unknown as IShikiTheme,
+  langs: ["javascript", "typescript", "tsx", "jsx", "sh", "css", "html"],
+});
 
 export async function CodeBlock({
   code,
@@ -50,21 +54,16 @@ export async function CodeBlock({
 }: Props) {
   code = type === "static" ? code.trim() : code;
 
-  if (!highlighter) {
-    try {
-      highlighter = await getHighlighter({
-        theme: "dark-plus",
-        langs: ["javascript", "typescript", "tsx", "jsx", "sh", "css", "html"],
-      });
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
+  let tokens: IThemedToken[][] = [];
 
-  const tokens = highlighter.codeToThemedTokens(code, lang, "dark-plus", {
-    includeExplanation: false,
-  });
+  try {
+    const highlighter = await highlighterPromise;
+    tokens = highlighter.codeToThemedTokens(code, lang, undefined, {
+      includeExplanation: false,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 
   const oneLiner = tokens.length === 1;
 
