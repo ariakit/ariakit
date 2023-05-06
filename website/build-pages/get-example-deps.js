@@ -75,8 +75,9 @@ function assignExternal(deps, source, filename) {
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : resolveFrom.silent(dirname(filename), source) ||
-        createRequire(dirname(filename)).resolve(source);
+      : source.endsWith(".css")
+      ? resolveFrom(dirname(filename), source)
+      : createRequire(dirname(filename)).resolve(source);
 
   const result = { resolvedSource, external };
 

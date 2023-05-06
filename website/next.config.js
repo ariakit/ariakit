@@ -19,6 +19,7 @@ const nextConfig = {
       "@babel/preset-typescript",
       "typescript",
       "resolve-from",
+      "@ariakit/react",
       "onigasm",
       "shiki",
       "vscode-oniguruma",
