@@ -71,10 +71,9 @@ function assignExternal(deps, source, filename) {
   const external =
     resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
 
-  const resolvedSource =
-    resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
-      ? resolvedModule.resolvedFileName
-      : resolveFrom(dirname(filename), source);
+  const resolvedSource = resolvedModule?.resolvedFileName
+    ? resolvedModule.resolvedFileName
+    : resolveFrom(dirname(filename), source);
 
   const result = { resolvedSource, external };
 
