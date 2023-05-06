@@ -23,7 +23,7 @@ export function generateStaticParams() {
   return params;
 }
 
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.js");
+const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
 function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir)
@@ -38,16 +38,16 @@ async function parseStyles(cssFiles: string[]) {
   return styles.join("\n");
 }
 
-// export async function generateMetadata({ params }: Props) {
-//   const { page } = params;
-//   const data = pagesIndex.examples?.find((item) => item.slug === page);
+export async function generateMetadata({ params }: Props) {
+  const { page } = params;
+  const data = pagesIndex.examples?.find((item) => item.slug === page);
 
-//   return getNextPageMetadata({
-//     title: `Preview ${data?.title ?? page} - Ariakit`,
-//     description: data?.content,
-//     index: false,
-//   });
-// }
+  return getNextPageMetadata({
+    title: `Preview ${data?.title ?? page} - Ariakit`,
+    description: data?.content,
+    index: false,
+  });
+}
 
 export default async function Page({ params }: Props) {
   const { page } = params;

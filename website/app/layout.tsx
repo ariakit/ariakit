@@ -28,9 +28,9 @@ window.addEventListener("storage", (event) => {
 
 const inter = Inter({ subsets: ["latin"] });
 
-// export function generateMetadata() {
-//   return getNextPageMetadata();
-// }
+export function generateMetadata() {
+  return getNextPageMetadata();
+}
 
 export default function Layout({ children }: PropsWithChildren) {
   return (

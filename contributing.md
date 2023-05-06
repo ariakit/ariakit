@@ -194,7 +194,7 @@ Now open http://localhost:3000/examples/my-component to see the example in actio
 
 ## Styling the example
 
-When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.js`](tailwind.config.js) file.
+When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.cjs`](tailwind.config.cjs) file.
 
 > To use Tailwind in a CSS file rather than applying classes directly to the HTML elements, we're using the [`@apply`](https://tailwindcss.com/docs/functions-and-directives#apply) directive.
 >

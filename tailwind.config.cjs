@@ -1,10 +1,11 @@
-import path from "path";
-import plugin from "tailwindcss/plugin.js";
+// @ts-nocheck
+const path = require("path");
+const plugin = require("tailwindcss/plugin");
 
 const black = "hsl(204 10% 10%)";
 const white = "hsl(204 20% 100%)";
 
-/** @type {import("tailwindcss").Config} */
+/** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   content: [
     path.join(__dirname, "guide/**/icon.tsx"),
@@ -144,16 +145,13 @@ module.exports = {
     boxShadow: false,
   },
   plugins: [
-    plugin(({ addUtilities, addVariant, theme }) => {
+    plugin(({ addUtilities, matchUtilities, addVariant, theme }) => {
       const dropShadow = theme("dropShadow");
-
-      if (!dropShadow) return;
-
       const dropShadowUtils = Object.entries(dropShadow).reduce(
         (acc, [key, shadow]) => {
-          const prop = `.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`;
-          // @ts-ignore
-          acc[prop] = { filter: shadow };
+          acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+            filter: shadow,
+          };
           return acc;
         },
         {}
@@ -162,14 +160,11 @@ module.exports = {
       addUtilities(dropShadowUtils);
 
       const boxShadow = theme("boxShadow");
-
-      if (!boxShadow) return;
-
       const boxShadowUtils = Object.entries(boxShadow).reduce(
         (acc, [key, shadow]) => {
-          const prop = `.shadow${key === "DEFAULT" ? "" : `-${key}`}`;
-          // @ts-ignore
-          acc[prop] = { "box-shadow": `${shadow}` };
+          acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+            "box-shadow": `${shadow}`,
+          };
           return acc;
         },
         {}
