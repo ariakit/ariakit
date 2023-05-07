@@ -15,7 +15,7 @@ export function getPageEntryFiles(
   context,
   pattern = PAGE_FILE_REGEX,
   files = [],
-  cont = true
+  level = 0
 ) {
   const contexts = Array.isArray(context) ? context : [context];
   for (const context of contexts) {
@@ -24,8 +24,8 @@ export function getPageEntryFiles(
       const itemPath = join(context, item.name);
       const posixPath = pathToPosix(itemPath);
       if (/node_modules/.test(itemPath)) continue;
-      if (cont && item.isDirectory()) {
-        getPageEntryFiles(itemPath, pattern, files, false);
+      if (level < 1 && item.isDirectory()) {
+        getPageEntryFiles(itemPath, pattern, files, level + 1);
       } else if (pattern.test(posixPath)) {
         const pageName = getPageName(posixPath);
         const index = files.findIndex((file) => getPageName(file) === pageName);
