@@ -107,7 +107,7 @@ function writeFiles(buildDir, pages) {
   const icons = markdownFiles.reduce(
     /** @param {Record<string, string | null>} acc */
     (acc, file) => {
-      const iconPath = join(dirname(file), "icon.tsx");
+      const iconPath = join(dirname(file), "site-icon.tsx");
       acc[file] = existsSync(iconPath) ? iconPath : null;
       return acc;
     },
@@ -119,7 +119,7 @@ function writeFiles(buildDir, pages) {
     if (iconPath) return;
     const sourceFile = sourceFiles[file]?.[0];
     if (!sourceFile) return;
-    const sourceIconPath = join(dirname(sourceFile), "icon.tsx");
+    const sourceIconPath = join(dirname(sourceFile), "site-icon.tsx");
     if (!existsSync(sourceIconPath)) return;
     icons[file] = sourceIconPath;
   });

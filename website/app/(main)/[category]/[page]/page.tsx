@@ -73,6 +73,7 @@ const style = {
 
     data-[description]:-translate-y-2
     data-[description]:text-lg sm:data-[description]:text-xl
+    sm:data-[description]:leading-8
     data-[description]:text-black/70 dark:data-[description]:text-white/60
 
     [&_code]:rounded [&_code]:p-1 [&_code]:text-[0.9375em]

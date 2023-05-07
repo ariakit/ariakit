@@ -126,6 +126,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
         ref={ref}
         src={previewLink}
         title="Preview"
+        style={{ visibility: url ? "visible" : "hidden" }}
         className="h-full w-full"
       />
     </div>
