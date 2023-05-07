@@ -16,6 +16,8 @@ interface Props {
   params: ReturnType<typeof generateStaticParams>[number];
 }
 
+export const dynamic = "force-static";
+
 export function generateStaticParams() {
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();

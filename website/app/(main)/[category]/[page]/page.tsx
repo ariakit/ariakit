@@ -26,6 +26,8 @@ import { TableOfContents } from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
 
+export const dynamic = "force-static";
+
 const stickyHeading = tw`
   sticky md:static top-16 z-20 py-4 -my-4 md:my-0 md:py-0 scroll-mt-16
   flex items-center md:block pr-12 md:pr-0
