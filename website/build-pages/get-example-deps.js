@@ -1,6 +1,12 @@
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { parseSync, traverse } from "@babel/core";
+// @ts-expect-error
+import * as presetEnv from "@babel/preset-env";
+// @ts-expect-error
+import * as presetReact from "@babel/preset-react";
+// @ts-expect-error
+import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
 import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";
@@ -68,11 +74,11 @@ function assignExternal(deps, source, filename) {
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : resolveFrom(dirname(filename), source);
+      : resolveFrom.silent(dirname(filename), source);
 
   const result = { resolvedSource, external };
 
-  if (external) {
+  if (resolvedSource && external) {
     if (deps.dependencies[source]) return result;
     const version = getPackageVersion(resolvedSource);
     deps.dependencies[source] = version;
@@ -107,9 +113,9 @@ export function getExampleDeps(
   const parsed = parseSync(content, {
     filename,
     presets: [
-      "@babel/preset-env",
-      "@babel/preset-typescript",
-      ["@babel/preset-react", { runtime: "automatic" }],
+      presetEnv.default,
+      presetTypescript.default,
+      [presetReact.default, { runtime: "automatic" }],
     ],
   });
 
@@ -140,7 +146,7 @@ export function getExampleDeps(
       const resolved = assignExternal(deps, source, filename);
       const { resolvedSource, external } = resolved;
 
-      if (external) return;
+      if (external || !resolvedSource) return;
 
       if (!deps[filename]?.[source]) {
         deps[filename] = { ...deps[filename], [source]: resolvedSource };
