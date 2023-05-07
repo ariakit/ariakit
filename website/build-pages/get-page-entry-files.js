@@ -21,7 +21,7 @@ export function getPageEntryFiles(
   for (const context of contexts) {
     const items = readdirSync(context, { withFileTypes: true });
     if (context.includes("(examples)")) {
-      console.log(items);
+      console.log(readdirSync(context));
     }
     for (const item of items) {
       const itemPath = join(context, item.name);
