@@ -1,4 +1,3 @@
-// @ts-check
 import { join } from "path";
 import { watch } from "chokidar";
 import { globSync } from "glob";

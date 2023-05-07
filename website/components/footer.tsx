@@ -1,8 +1,8 @@
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { NewWindow } from "icons/new-window.js";
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
-import { Link } from "./link.js";
 import { Logo } from "./logo.js";
 
 const style = {

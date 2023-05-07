@@ -9,10 +9,10 @@ import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
-import { Link } from "components/link.js";
 import matter from "gray-matter";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
+import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
 import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
@@ -47,33 +47,34 @@ const style = {
   link: tw`
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
     underline [text-decoration-skip-ink:none] hover:decoration-[3px]
-    underline-offset-[0.125em]
+    underline-offset-[0.25em]
     font-medium dark:font-normal
     text-blue-700 dark:text-blue-400
   `,
   h1: tw`
-    text-3xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
+    text-2xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   h2: tw`
-    text-2xl md:text-3xl font-semibold dark:font-medium
+    text-xl sm:text-2xl md:text-3xl font-semibold dark:font-medium
     text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   h3: tw`
-    text-xl font-semibold dark:font-medium
+    text-lg sm:text-xl font-semibold dark:font-medium
     text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
   paragraph: tw`
-    dark:text-white/80 leading-7 tracking-[-0.02em] dark:tracking-[-0.01em]
+    dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    data-[description]:-translate-y-4 data-[description]:text-lg
+    data-[description]:-translate-y-2
+    data-[description]:text-lg sm:data-[description]:text-xl
+    sm:data-[description]:leading-8
     data-[description]:text-black/70 dark:data-[description]:text-white/60
-    data-[description]:!tracking-tight
 
     [&_code]:rounded [&_code]:p-1 [&_code]:text-[0.9375em]
     [&_code]:bg-black/[6.5%] dark:[&_code]:bg-white/[6.5%]
@@ -91,7 +92,7 @@ const style = {
   `,
 };
 
-function getPageNames(dir: string) {
+function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
 }
 
@@ -137,7 +138,10 @@ export default async function Page({ params }: PageProps) {
   const entryFiles = getPageEntryFiles(sourceContext);
   const file = entryFiles.find((file) => getPageName(file) === page);
 
-  if (!file) return notFound();
+  if (!file) {
+    throw new Error(`Page not found: ${category}/${page}`);
+    // return notFound();
+  }
 
   const content = getPageContent(file);
   const { content: contentWithoutMatter } = matter(content);

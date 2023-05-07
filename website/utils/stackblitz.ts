@@ -1,14 +1,16 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import _sdk from "@stackblitz/sdk";
 import type { ProjectFiles } from "@stackblitz/sdk";
+import { pick } from "lodash";
 import { tsToJsFilename } from "./ts-to-js-filename.js";
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 
-interface Props {
-  template?: "vite" | "next";
+export interface StackblitzProps {
   id: string;
   files: Record<string, string>;
+  theme?: "light" | "dark";
+  template?: "vite" | "next";
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
@@ -21,20 +23,20 @@ function getPackageName(source: string) {
   return `${maybeScope}`;
 }
 
-function normalizeDeps(deps: Props["dependencies"] = {}) {
+function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {}
   );
 }
 
-function getExampleName(id: Props["id"]) {
+function getExampleName(id: StackblitzProps["id"]) {
   const [_category, ...names] = id.split("-");
   const exampleName = names.join("-");
-  return exampleName;
+  return exampleName.replace(/^.+-previews\-(.+)$/, "$1");
 }
 
-function getFirstFilename(files: Props["files"]) {
+function getFirstFilename(files: StackblitzProps["files"]) {
   const firstFile = Object.keys(files)[0];
   invariant(firstFile, "No files provided");
   return firstFile;
@@ -87,11 +89,19 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
   };
 }
 
-function getIndexCss() {
+function getIndexCss(theme: StackblitzProps["theme"] = "light") {
+  const background = theme === "light" ? "hsl(204 20% 94%)" : "hsl(204 3% 12%)";
+  const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
   return `@import url("tailwindcss/lib/css/preflight.css");
 
+html {
+  color-scheme: ${theme};
+}
+
 body {
-  background-color: #edf0f3;
+  color-scheme: ${theme};
+  background-color: ${background};
+  color: ${color};
   min-height: 100vh;
   padding-top: min(10vh, 100px);
   line-height: 1.5;
@@ -107,7 +117,7 @@ body {
 `;
 }
 
-function getViteProject(props: Props) {
+function getViteProject(props: StackblitzProps) {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
 
@@ -137,8 +147,10 @@ export default defineConfig({
 });
 `;
 
+  const theme = props.theme === "dark" ? "dark" : "light";
+
   const indexHtml = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="${theme}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -163,7 +175,7 @@ if (root) {
 }
 `;
 
-  const indexCss = getIndexCss();
+  const indexCss = getIndexCss(props.theme);
 
   const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
@@ -187,7 +199,7 @@ if (root) {
   };
 }
 
-function getNextProject(props: Props) {
+function getNextProject(props: StackblitzProps) {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
 
@@ -199,8 +211,8 @@ function getNextProject(props: Props) {
       start: "next start",
     },
     dependencies: {
-      next: "^13.0.0",
       ...props.dependencies,
+      next: "13.3.1",
     },
     devDependencies: {
       "@types/node": "latest",
@@ -221,6 +233,7 @@ function getNextProject(props: Props) {
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverActions: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -247,13 +260,16 @@ export default nextConfig;
 // see https://nextjs.org/docs/basic-features/typescript for more information.
 `;
 
-  const style = getIndexCss();
+  const layoutCss = getIndexCss(props.theme);
+
+  const theme = props.theme === "dark" ? "dark" : "light";
 
   const mainLayout = `import type { PropsWithChildren } from "react";
+import "./layout.css";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="en" className="${theme}">
       <body>
         <div id="root">{children}</div>
       </body>
@@ -262,8 +278,17 @@ export default function Layout({ children }: PropsWithChildren) {
 }
 `;
 
-  const page = `"use client";
-import "./style.css";
+  const isAppDir = /page\.[mc]?[jt]sx?$/.test(firstFile);
+  const pagePath = isAppDir ? `previews/${exampleName}` : exampleName;
+
+  const page = isAppDir
+    ? `import { redirect } from "next/navigation.js";
+
+export default function Page() {
+  redirect("/${pagePath}");
+}
+`
+    : `"use client";
 import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
 
 export default function Page() {
@@ -273,7 +298,8 @@ export default function Page() {
 
   const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
-      acc[`app/${exampleName}/${filename}`] = content;
+      const key = `app/${pagePath}/${filename}`;
+      acc[key] = content;
       return acc;
     },
     {}
@@ -286,7 +312,7 @@ export default function Page() {
       "tsconfig.json": JSON.stringify(tsConfig, null, 2),
       "next.config.js": nextConfig,
       "next-env.d.ts": nextEnv,
-      "app/style.css": style,
+      "app/layout.css": layoutCss,
       "app/layout.tsx": mainLayout,
       "app/page.tsx": page,
       ...sourceFiles,
@@ -294,30 +320,66 @@ export default function Page() {
   };
 }
 
-export function openInStackblitz({ template = "vite", ...props }: Props) {
+function getProject({ template = "vite", ...props }: StackblitzProps) {
   props.dependencies = normalizeDeps(props.dependencies);
   props.devDependencies = normalizeDeps(props.devDependencies);
 
-  const project =
+  const templateProject =
     template === "vite"
       ? getViteProject(props)
       : template === "next"
       ? getNextProject(props)
       : null;
 
-  invariant(project, "Unsupported template");
+  invariant(templateProject, "Unsupported template");
 
-  const { files, sourceFiles } = project;
+  const { files, sourceFiles } = templateProject;
 
-  sdk.openProject(
-    {
-      title: `${props.id} - Ariakit`,
-      description: props.id,
-      template: "node",
-      files: files,
-    },
-    {
-      openFile: Object.keys(sourceFiles).reverse().join(","),
-    }
-  );
+  const project = {
+    title: `${props.id} - Ariakit`,
+    description: props.id,
+    template: "node",
+    files,
+  } satisfies _sdk.Project;
+
+  return { project, sourceFiles };
+}
+
+export function openInStackblitz(props: StackblitzProps) {
+  const { project, sourceFiles } = getProject(props);
+
+  const options = {
+    openFile: Object.keys(sourceFiles).reverse().join(","),
+    theme: props.theme,
+  } satisfies _sdk.OpenOptions;
+
+  sdk.openProject(project, options);
+}
+
+export function embedStackblitz(element: HTMLElement, props: StackblitzProps) {
+  const { project } = getProject(props);
+
+  const options = {
+    view: "preview",
+    theme: props.theme,
+    hideExplorer: true,
+    height: element.parentElement?.clientHeight,
+  } satisfies _sdk.EmbedOptions;
+
+  return sdk.embedProject(element, project, options);
+}
+
+export function getSourceFiles(props: StackblitzProps) {
+  const { sourceFiles } = getProject(props);
+  return sourceFiles;
+}
+
+export function getThemedFiles(props: StackblitzProps) {
+  const { project } = getProject(props);
+
+  if ("index.css" in project.files) {
+    return pick(project.files, ["index.css", "index.html"]);
+  }
+
+  return pick(project.files, ["app/style.css", "app/layout.tsx"]);
 }

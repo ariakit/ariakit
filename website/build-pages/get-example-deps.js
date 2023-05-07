@@ -1,12 +1,20 @@
 import { readFileSync } from "fs";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { parseSync, traverse } from "@babel/core";
+// @ts-expect-error
+import * as presetEnv from "@babel/preset-env";
+// @ts-expect-error
+import * as presetReact from "@babel/preset-react";
+// @ts-expect-error
+import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
+import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
 
 const host = ts.createCompilerHost({});
+let warnedAboutVersion = false;
 
 /**
  * @typedef {{ [file: string]: Record<string, string>, dependencies:
@@ -46,7 +54,8 @@ function getPackageVersion(source) {
   if (!result) return "latest";
   packageCache.set(source, result);
   const { version } = result.packageJson;
-  if (!version) {
+  if (!version && !warnedAboutVersion) {
+    warnedAboutVersion = true;
     console.log("No version found for", source);
   }
   return version || "latest";
@@ -96,21 +105,36 @@ export function getExampleDeps(
   deps = { dependencies: {}, devDependencies: {} }
 ) {
   if (!/\.[tj]sx?$/.test(filename)) return deps;
+
+  if (deps[filename]) return deps;
+  deps[filename] = {};
+
   const content = readFileSync(filename, "utf8");
   const parsed = parseSync(content, {
     filename,
     presets: [
-      "@babel/preset-env",
-      "@babel/preset-typescript",
-      ["@babel/preset-react", { runtime: "automatic" }],
+      presetEnv.default,
+      presetTypescript.default,
+      [presetReact.default, { runtime: "automatic" }],
     ],
   });
 
   assignExternal(deps, "react", filename);
   assignExternal(deps, "react-dom", filename);
 
-  if (!deps[filename]) {
-    deps[filename] = {};
+  const isAppDir = /\/app\/.*\/page\.[mc]?[tj]sx?$/.test(filename);
+
+  if (isAppDir) {
+    const dir = dirname(filename);
+    const files = globSync("**/{page,default,layout,loading}.{js,jsx,ts,tsx}", {
+      cwd: dir,
+      dotRelative: true,
+      ignore: Object.keys(deps),
+    });
+
+    files.forEach((file) => {
+      getExampleDeps(join(dir, file), deps);
+    });
   }
 
   traverse(parsed, {

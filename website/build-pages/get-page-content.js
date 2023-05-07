@@ -1,4 +1,3 @@
-// @ts-check
 import { readFileSync } from "fs";
 import { basename, extname } from "path";
 import { getPageName } from "./get-page-name.js";

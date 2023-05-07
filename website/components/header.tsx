@@ -1,10 +1,10 @@
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
 import { HeaderGlobalNotification } from "./header-global-notification.js";
 import { HeaderLogo } from "./header-logo.js";
 import { HeaderNav } from "./header-nav.js";
 import { HeaderThemeSwitch } from "./header-theme-switch.js";
 import { HeaderVersionSelect } from "./header-version-select.js";
-import { Link } from "./link.js";
 
 let cache: Record<string, Record<string, string>> | null = null;
 
@@ -59,7 +59,7 @@ export async function Header() {
           <span className="sr-only">Ariakit</span>
           <HeaderLogo />
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-clip pr-0.5">
           <HeaderVersionSelect versions={versions} />
           <HeaderNav />
         </div>

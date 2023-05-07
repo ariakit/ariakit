@@ -10,9 +10,13 @@ const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverActions: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
+      "@babel/preset-env",
+      "@babel/preset-react",
+      "@babel/preset-typescript",
       "typescript",
       "onigasm",
       "shiki",

@@ -23,10 +23,10 @@ import { NewWindow } from "icons/new-window.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
 import { TypeScript } from "icons/typescript.jsx";
 import { Vite } from "icons/vite.jsx";
-import { openInStackblitz } from "utils/open-in-stackblitz.js";
+import Link from "next/link.js";
+import { openInStackblitz } from "utils/stackblitz.js";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.jsx";
-import { Link } from "./link.js";
 import { Popup } from "./popup.jsx";
 import { TooltipButton } from "./tooltip-button.jsx";
 
@@ -98,15 +98,20 @@ export function PlaygroundToolbar({
 
   const menu = useMenuStore();
 
+  const [firstFile] = Object.keys(files);
+  const isAppDir = !!firstFile && /^page\.[mc]?[tj]sx?/.test(firstFile);
+
   const onStackblitzClick = (template: "vite" | "next") => {
     return () => {
       track("edit-on-stackblitz", { template, exampleId });
+      const isDark = document.documentElement.classList.contains("dark");
       openInStackblitz({
         template,
         id: exampleId,
         files: (isJS && javascriptFiles) || files,
         dependencies,
         devDependencies,
+        theme: isDark ? "dark" : "light",
       });
     };
   };
@@ -197,25 +202,20 @@ export function PlaygroundToolbar({
           <MenuGroupLabel className={style.popupLabel}>
             Edit on StackBlitz
           </MenuGroupLabel>
-          <MenuItem
-            className={cx(style.popupItem, "!cursor-pointer")}
-            onClick={onStackblitzClick("vite")}
-          >
-            <Vite className="h-5 w-5" /> Vite
-          </MenuItem>
+          {!isAppDir && (
+            <MenuItem
+              className={cx(style.popupItem, "!cursor-pointer")}
+              onClick={onStackblitzClick("vite")}
+            >
+              <Vite className="h-5 w-5" /> Vite
+            </MenuItem>
+          )}
           <MenuItem
             className={cx(style.popupItem, "!cursor-pointer")}
             onClick={onStackblitzClick("next")}
           >
             <Nextjs className="h-5 w-5" /> Next.js
           </MenuItem>
-          {/* TODO: Remix doesn't support ESM */}
-          {/* <MenuItem
-            className={cx(style.popupItem, "!cursor-pointer")}
-            onClick={onStackblitzClick("remix")}
-          >
-            <Remix className="h-5 w-5" /> Remix
-          </MenuItem> */}
         </MenuGroup>
       </Menu>
 

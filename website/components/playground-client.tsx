@@ -11,6 +11,7 @@ import { tw } from "utils/tw.js";
 import { useLocalStorageState } from "utils/use-local-storage-state.js";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
+import { PlaygroundBrowser } from "./playground-browser.jsx";
 import { PlaygroundToolbar } from "./playground-toolbar.jsx";
 
 export interface PlaygroundClientProps extends EditorProps {
@@ -31,6 +32,11 @@ const style = {
     relative flex w-full items-center justify-center rounded-lg
     bg-gray-150 p-4 dark:bg-gray-850
   `,
+  embed: tw`
+    w-full rounded-lg overflow-hidden
+    border border-gray-300 dark:border-gray-650
+    bg-gray-150 dark:bg-gray-850
+  `,
   codeWrapper: tw`
     w-full max-w-[832px] rounded-lg border-none border-gray-650
     md:rounded-xl
@@ -41,6 +47,7 @@ const style = {
   `,
   tabList: tw`
     flex w-full flex-row overflow-x-auto p-2 sm:gap-2
+    dark [color-scheme:dark]
   `,
   tab: tw`
     flex-start group relative flex h-10
@@ -110,6 +117,8 @@ export function PlaygroundClient({
 
   invariant(firstFile, "No files provided");
 
+  const isAppDir = /^page\.[tj]sx?/.test(firstFile);
+
   const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
     "language",
     { defaultValue: "ts" }
@@ -170,6 +179,18 @@ export function PlaygroundClient({
           )}
         >
           {preview}
+        </div>
+      )}
+      {isAppDir && previewLink && (
+        <div
+          className={cx(
+            style.embed,
+            type === "wide"
+              ? "h-[480px] md:rounded-2xl"
+              : "h-[320px] md:rounded-xl"
+          )}
+        >
+          <PlaygroundBrowser previewLink={previewLink} />
         </div>
       )}
       <div className={style.codeWrapper}>

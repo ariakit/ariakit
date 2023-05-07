@@ -18,13 +18,13 @@ import {
 import { NewWindow } from "icons/new-window.js";
 import { React } from "icons/react.js";
 import { Vue } from "icons/vue.js";
+import Link from "next/link.js";
 import { tw } from "utils/tw.js";
-import { Link } from "./link.js";
 import { Popup } from "./popup.js";
 
 const style = {
   select: tw`
-    hidden sm:flex items-center justify-center gap-1.5
+    hidden md:flex items-center justify-center gap-1.5
     cursor-default
     px-3 h-8 mr-2
     rounded-lg border-none

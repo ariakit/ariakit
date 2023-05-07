@@ -1,4 +1,3 @@
-// @ts-check
 import spawn from "cross-spawn";
 import fse from "fs-extra";
 import { build } from "tsup";

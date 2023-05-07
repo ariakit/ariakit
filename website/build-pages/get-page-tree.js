@@ -1,4 +1,3 @@
-// @ts-check
 import matter from "gray-matter";
 import { toString } from "hast-util-to-string";
 import { marked } from "marked";

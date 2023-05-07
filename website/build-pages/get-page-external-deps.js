@@ -1,4 +1,3 @@
-// @ts-check
 import { dirname, resolve } from "path";
 import { visit } from "unist-util-visit";
 import { isPlaygroundNode } from "./ast.js";

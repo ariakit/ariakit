@@ -10,7 +10,7 @@ export type Page = {
   /**
    * Where the source files for the page are located.
    */
-  sourceContext: string;
+  sourceContext: string | string[];
   /**
    * A function that returns the group name for the page or null if the page
    * should not be grouped.

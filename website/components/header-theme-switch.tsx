@@ -8,6 +8,7 @@ import { tw } from "utils/tw.js";
 import { TooltipButton } from "./tooltip-button.js";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
+type Theme = "light" | "dark";
 
 const style = tw`
   flex items-center justify-center
@@ -18,6 +19,22 @@ const style = tw`
   aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
   [&:focus-visible]:ariakit-outline-input
 `;
+
+const EVENT_NAME = "themechange";
+
+function dispatchChange(theme: Theme) {
+  window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: theme }));
+}
+
+export function onThemeSwitch(callback: (theme: Theme) => void) {
+  const onSwitch = (event: Event) => {
+    callback((event as CustomEvent<Theme>).detail);
+  };
+  window.addEventListener(EVENT_NAME, onSwitch);
+  return () => {
+    window.removeEventListener(EVENT_NAME, onSwitch);
+  };
+}
 
 export function HeaderThemeSwitch(props: Props) {
   return (
@@ -35,10 +52,12 @@ export function HeaderThemeSwitch(props: Props) {
           document.documentElement.classList.remove("dark");
           document.documentElement.classList.add("light");
           localStorage.setItem("theme", "light");
+          dispatchChange("light");
         } else {
           document.documentElement.classList.remove("light");
           document.documentElement.classList.add("dark");
           localStorage.setItem("theme", "dark");
+          dispatchChange("dark");
         }
       }}
     >

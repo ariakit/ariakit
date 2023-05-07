@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * @param {string} path
  */

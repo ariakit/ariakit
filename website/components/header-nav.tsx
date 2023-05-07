@@ -40,8 +40,6 @@ type Data = Array<
 
 type SearchData = Array<Data[number] & { nested?: boolean }>;
 
-const separator = <div className="font-semibold opacity-30">/</div>;
-
 const categoryTitles: Record<string, string> = {
   guide: "Guide",
   components: "Components",
@@ -261,6 +259,7 @@ type HeaderNavMenuProps = {
   onBrowseAllPages?: (value: string) => void;
   size?: "sm" | "md" | "lg" | "xl";
   href?: string;
+  hiddenOnMobile?: boolean;
 };
 
 const HeaderNavMenuContext = createContext(false);
@@ -280,6 +279,7 @@ const HeaderNavMenu = memo(
     onBrowseAllPages,
     size = "lg",
     href,
+    hiddenOnMobile,
   }: HeaderNavMenuProps) => {
     const isSubNav = useContext(HeaderNavMenuContext);
     const [_open, _setOpen] = useState(false);
@@ -418,11 +418,12 @@ const HeaderNavMenu = memo(
       <HeaderNavMenuContext.Provider value={true}>
         <HeaderMenu
           href={href}
+          className={hiddenOnMobile ? "hidden flex-none sm:block" : undefined}
           open={open}
           onToggle={setOpen}
           label={
             <>
-              {label}
+              <span className="truncate">{label}</span>
               {shortcut && <Shortcut />}
             </>
           }
@@ -619,7 +620,16 @@ export function HeaderNav() {
 
   return (
     <>
-      {separator}
+      {
+        <div
+          className={cx(
+            "font-semibold opacity-30",
+            !!element && "hidden sm:block"
+          )}
+        >
+          /
+        </div>
+      }
       <HeaderNavMenu
         key={element ? "category" : "page"}
         open={categoryOpen}
@@ -630,10 +640,11 @@ export function HeaderNav() {
         searchValue={categorySearchValue}
         value={category || undefined}
         size="sm"
+        hiddenOnMobile={!!element}
       >
         {children}
       </HeaderNavMenu>
-      {element && separator}
+      {element && <div className="font-semibold opacity-30">/</div>}
       {element && (
         <HeaderNavMenu
           key="page"
