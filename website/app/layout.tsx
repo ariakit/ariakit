@@ -28,6 +28,8 @@ window.addEventListener("storage", (event) => {
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const dynamic = "error";
+
 export function generateMetadata() {
   return getNextPageMetadata();
 }

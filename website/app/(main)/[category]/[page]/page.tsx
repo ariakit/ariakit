@@ -140,9 +140,7 @@ export default async function Page({ params }: PageProps) {
   const file = entryFiles.find((file) => getPageName(file) === page);
 
   if (!file) {
-    throw new Error(
-      `No file found for page: ${sourceContext}, ${entryFiles.map(getPageName)}`
-    );
+    throw new Error(`No file found for page`);
     // return notFound();
   }
 
