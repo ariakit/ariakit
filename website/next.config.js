@@ -8,7 +8,9 @@ const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+  swcMinify: false,
   experimental: {
+    isrFlushToDisk: true,
     appDir: true,
     serverActions: true,
     serverComponentsExternalPackages: [

@@ -20,9 +20,6 @@ export function getPageEntryFiles(
   const contexts = Array.isArray(context) ? context : [context];
   for (const context of contexts) {
     const items = readdirSync(context, { withFileTypes: true });
-    if (context.includes("(examples)")) {
-      console.log(readdirSync(context));
-    }
     for (const item of items) {
       const itemPath = join(context, item.name);
       const posixPath = pathToPosix(itemPath);

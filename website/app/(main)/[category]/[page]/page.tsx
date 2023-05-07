@@ -96,6 +96,7 @@ function getPageNames(dir: string | string[]) {
 }
 
 export const dynamic = "error";
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
@@ -139,10 +140,7 @@ export default async function Page({ params }: PageProps) {
   const entryFiles = getPageEntryFiles(sourceContext);
   const file = entryFiles.find((file) => getPageName(file) === page);
 
-  if (!file) {
-    throw new Error(`No file found for page`);
-    // return notFound();
-  }
+  if (!file) return notFound();
 
   const content = getPageContent(file);
   const { content: contentWithoutMatter } = matter(content);
