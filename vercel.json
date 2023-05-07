@@ -1,5 +1,6 @@
 {
   "installCommand": "npm install",
   "buildCommand": "npm run build-website",
+  "devCommand": "npm run dev -- --port $PORT",
   "outputDirectory": "website/.next"
 }

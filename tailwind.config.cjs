@@ -1,6 +1,5 @@
 // @ts-nocheck
 const path = require("path");
-const plugin = require("tailwindcss/plugin");
 
 const black = "hsl(204 10% 10%)";
 const white = "hsl(204 20% 100%)";
@@ -145,57 +144,62 @@ module.exports = {
     boxShadow: false,
   },
   plugins: [
-    plugin(({ addUtilities, matchUtilities, addVariant, theme }) => {
-      const dropShadow = theme("dropShadow");
-      const dropShadowUtils = Object.entries(dropShadow).reduce(
-        (acc, [key, shadow]) => {
-          acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-            filter: shadow,
-          };
-          return acc;
-        },
-        {}
-      );
+    {
+      handler: ({ addUtilities, matchUtilities, addVariant, theme }) => {
+        const dropShadow = theme("dropShadow");
+        const dropShadowUtils = Object.entries(dropShadow).reduce(
+          (acc, [key, shadow]) => {
+            acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+              filter: shadow,
+            };
+            return acc;
+          },
+          {}
+        );
 
-      addUtilities(dropShadowUtils);
+        addUtilities(dropShadowUtils);
 
-      const boxShadow = theme("boxShadow");
-      const boxShadowUtils = Object.entries(boxShadow).reduce(
-        (acc, [key, shadow]) => {
-          acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-            "box-shadow": `${shadow}`,
-          };
-          return acc;
-        },
-        {}
-      );
+        const boxShadow = theme("boxShadow");
+        const boxShadowUtils = Object.entries(boxShadow).reduce(
+          (acc, [key, shadow]) => {
+            acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
+              "box-shadow": `${shadow}`,
+            };
+            return acc;
+          },
+          {}
+        );
 
-      addUtilities(boxShadowUtils);
+        addUtilities(boxShadowUtils);
 
-      addUtilities({
-        ".ariakit-outline": {
-          outline: `2px solid ${theme("colors.blue.600")}`,
-          outlineOffset: "2px",
-        },
-        ".ariakit-outline-input": {
-          outline: `2px solid ${theme("colors.blue.600")}`,
-        },
-      });
+        addUtilities({
+          ".ariakit-outline": {
+            outline: `2px solid ${theme("colors.blue.600")}`,
+            outlineOffset: "2px",
+          },
+          ".ariakit-outline-input": {
+            outline: `2px solid ${theme("colors.blue.600")}`,
+          },
+        });
 
-      addVariant(
-        "supports-backdrop-blur",
-        "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
-      );
+        addVariant(
+          "supports-backdrop-blur",
+          "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
+        );
 
-      addVariant("enter", "&[data-enter]");
-      addVariant("leave", "&[data-leave]");
-      addVariant("active-item", "&[data-active-item]");
-      addVariant("group-active-item", ":merge(.group)[data-active-item] &");
+        addVariant("enter", "&[data-enter]");
+        addVariant("leave", "&[data-leave]");
+        addVariant("active-item", "&[data-active-item]");
+        addVariant("group-active-item", ":merge(.group)[data-active-item] &");
 
-      addVariant("active", ["&:active", "&[data-active]"]);
-      addVariant("ariakit-focus-visible", "&[data-focus-visible]");
-      addVariant("focus-visible", ["&:focus-visible", "&[data-focus-visible]"]);
-      addVariant("aria-invalid", '&[aria-invalid="true"]');
-    }),
+        addVariant("active", ["&:active", "&[data-active]"]);
+        addVariant("ariakit-focus-visible", "&[data-focus-visible]");
+        addVariant("focus-visible", [
+          "&:focus-visible",
+          "&[data-focus-visible]",
+        ]);
+        addVariant("aria-invalid", '&[aria-invalid="true"]');
+      },
+    },
   ],
 };
