@@ -66,14 +66,7 @@ export default async function Page({ params }: Props) {
 
   const deps = getExampleDeps(source);
   const styles = getCSSFilesFromDeps(deps);
-
-  let css = "";
-
-  try {
-    css = await parseStyles(styles);
-  } catch (error) {
-    console.error(error);
-  }
+  const css = await parseStyles(styles);
 
   return (
     <div

@@ -11,5 +11,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "dependencies": {
+    "@ariakit/react": "0.1.8"
   }
 }

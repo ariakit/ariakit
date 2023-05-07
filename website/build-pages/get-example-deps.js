@@ -74,11 +74,11 @@ function assignExternal(deps, source, filename) {
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : resolveFrom.silent(dirname(filename), source);
+      : resolveFrom(dirname(filename), source);
 
   const result = { resolvedSource, external };
 
-  if (resolvedSource && external) {
+  if (external) {
     if (deps.dependencies[source]) return result;
     const version = getPackageVersion(resolvedSource);
     deps.dependencies[source] = version;
@@ -146,7 +146,7 @@ export function getExampleDeps(
       const resolved = assignExternal(deps, source, filename);
       const { resolvedSource, external } = resolved;
 
-      if (external || !resolvedSource) return;
+      if (external) return;
 
       if (!deps[filename]?.[source]) {
         deps[filename] = { ...deps[filename], [source]: resolvedSource };
