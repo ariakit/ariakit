@@ -4,8 +4,6 @@ import { Header } from "components/header.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import QueryProvider from "./query-provider.js";
 
-export const dynamic = "error";
-
 export function generateMetadata() {
   return getNextPageMetadata();
 }

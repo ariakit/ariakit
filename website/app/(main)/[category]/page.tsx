@@ -19,8 +19,6 @@ const meta = {
   examples: { size: "md" },
 } as const;
 
-export const dynamic = "error";
-
 export function generateMetadata({ params }: Props) {
   const { category } = params;
   const page = pagesConfig.pages.find((page) => page.slug === category);

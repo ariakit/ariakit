@@ -1,6 +1,6 @@
 // @ts-nocheck
 const path = require("path");
-const plugin = require("tailwindcss/plugin");
+const plugin = require("tailwindcss/lib/public/create-plugin");
 
 const black = "hsl(204 10% 10%)";
 const white = "hsl(204 20% 100%)";
