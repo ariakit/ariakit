@@ -130,14 +130,20 @@ export default async function Page({ params }: PageProps) {
   const { category, page } = params;
 
   const config = pages.find((page) => page.slug === category);
-  if (!config) return notFound();
+  if (!config) {
+    console.error("No config found for page");
+    return notFound();
+  }
 
   const { sourceContext } = config;
 
   const entryFiles = getPageEntryFiles(sourceContext);
   const file = entryFiles.find((file) => getPageName(file) === page);
 
-  if (!file) return notFound();
+  if (!file) {
+    console.error("No file found for page");
+    return notFound();
+  }
 
   const content = getPageContent(file);
   const { content: contentWithoutMatter } = matter(content);
@@ -147,7 +153,10 @@ export default async function Page({ params }: PageProps) {
     (item) => item.slug === category
   );
 
-  if (!categoryDetail) return notFound();
+  if (!categoryDetail) {
+    console.error("No category found for page");
+    return notFound();
+  }
 
   const tableOfContents: TableOfContentsData = [
     {
