@@ -13,6 +13,7 @@ import matter from "gray-matter";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
 import Link from "next/link.js";
+import { notFound } from "next/navigation.js";
 import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -131,10 +132,7 @@ export default async function Page({ params }: PageProps) {
   const { category, page } = params;
 
   const config = pages.find((page) => page.slug === category);
-  if (!config) {
-    throw new Error("No config found for page");
-    // return notFound();
-  }
+  if (!config) return notFound();
 
   const { sourceContext } = config;
 
@@ -142,7 +140,7 @@ export default async function Page({ params }: PageProps) {
   const file = entryFiles.find((file) => getPageName(file) === page);
 
   if (!file) {
-    throw new Error("No file found for page");
+    throw new Error(`No file found for page: ${entryFiles}`);
     // return notFound();
   }
 
