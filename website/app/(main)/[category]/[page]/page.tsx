@@ -140,7 +140,7 @@ export default async function Page({ params }: PageProps) {
   const file = entryFiles.find((file) => getPageName(file) === page);
 
   if (!file) {
-    throw new Error(`No file found for page: ${entryFiles}`);
+    throw new Error(`No file found for page: ${entryFiles.map(getPageName)}`);
     // return notFound();
   }
 
@@ -152,10 +152,7 @@ export default async function Page({ params }: PageProps) {
     (item) => item.slug === category
   );
 
-  if (!categoryDetail) {
-    throw new Error("No category found for page");
-    // return notFound();
-  }
+  if (!categoryDetail) return notFound();
 
   const tableOfContents: TableOfContentsData = [
     {
