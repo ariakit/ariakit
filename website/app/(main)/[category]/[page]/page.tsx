@@ -27,8 +27,6 @@ import { TableOfContents } from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
 
-export const dynamic = "force-static";
-
 const stickyHeading = tw`
   sticky md:static top-16 z-20 py-4 -my-4 md:my-0 md:py-0 scroll-mt-16
   flex items-center md:block pr-12 md:pr-0
@@ -96,6 +94,8 @@ const style = {
 function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
 }
+
+export const dynamic = "error";
 
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
