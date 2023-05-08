@@ -56,9 +56,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
     const onMessage = (event: Event) => {
       if (event.data.type !== "pathname") return;
       flushSync(() => {
-        const url = iframe.contentWindow?.location.href;
-        if (url === "about:blank") return;
-        setUrl(url ?? "");
+        setUrl(iframe.contentWindow?.location.href ?? "");
       });
     };
     window.addEventListener("message", onMessage);
@@ -128,7 +126,9 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
         ref={ref}
         src={previewLink}
         title="Preview"
-        style={{ visibility: url ? "visible" : "hidden" }}
+        style={{
+          visibility: url && url !== "about:blank" ? "visible" : "hidden",
+        }}
         className="h-full w-full"
       />
     </div>
