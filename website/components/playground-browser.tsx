@@ -56,7 +56,9 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
     const onMessage = (event: Event) => {
       if (event.data.type !== "pathname") return;
       flushSync(() => {
-        setUrl(iframe.contentWindow?.location.href ?? "");
+        const url = iframe.contentWindow?.location.href;
+        if (url === "about:blank") return;
+        setUrl(url ?? "");
       });
     };
     window.addEventListener("message", onMessage);
