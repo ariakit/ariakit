@@ -8,7 +8,7 @@
 
 ## Controlling the Dialog state
 
-To control the open state, you can pass the [`open`](/apis/dialog-store#open) and [`setOpen`](/apis/dialog-store#setopen) props to [`useDialogStore`](/apis/dialog-store). Theese props allow you to synchronize the dialog state with other state sources, such as the browser history.
+To control the open state, you can pass the [`open`](/apis/dialog-store#open) and [`setOpen`](/apis/dialog-store#setopen) props to [`useDialogStore`](/apis/dialog-store). These props allow you to synchronize the dialog state with other state sources, such as the browser history.
 
 In this example, since the dialog is only rendered when the route matches, we can pass `open: true` to the store so that the dialog is always open. Then, we can use `setOpen` to navigate back when the dialog is closed:
 
