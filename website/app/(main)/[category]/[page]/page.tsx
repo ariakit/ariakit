@@ -138,10 +138,7 @@ export default async function Page({ params }: PageProps) {
   const entryFiles = getPageEntryFiles(sourceContext);
   const file = entryFiles.find((file) => getPageName(file) === page);
 
-  if (!file) {
-    throw new Error(`Page not found: ${category}/${page}`);
-    // return notFound();
-  }
+  if (!file) return notFound();
 
   const content = getPageContent(file);
   const { content: contentWithoutMatter } = matter(content);

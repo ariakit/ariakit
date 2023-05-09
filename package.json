@@ -116,7 +116,7 @@
     "monaco-editor-webpack-plugin": "7.0.1",
     "monaco-textmate": "3.0.1",
     "monaco-vscode-textmate-theme-converter": "0.1.7",
-    "next": "13.4.1",
+    "next": "13.4.2-canary.3",
     "null-loader": "4.0.1",
     "onigasm": "2.2.5",
     "open-cli": "7.2.0",
