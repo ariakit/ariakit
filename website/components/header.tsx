@@ -11,7 +11,9 @@ let cache: Record<string, Record<string, string>> | null = null;
 function fetchPackage(name: string) {
   const buildId = process.env.NEXT_BUILD_ID;
   const cacheString = buildId ? `?${buildId}` : "";
-  return fetch(`https://registry.npmjs.org/${name}${cacheString}`);
+  return fetch(
+    `https://registry.npmjs.org/-/package/${name}/dist-tags${cacheString}`
+  );
 }
 
 async function fetchVersions() {
@@ -27,12 +29,12 @@ async function fetchVersions() {
     throw new Error("Failed to fetch versions");
   }
 
-  const reactData = await react.json();
-  // const domData = await dom.json();
+  const reactTags = await react.json();
+  // const domTags = await dom.json();
 
   const versions = {
-    "@ariakit/react": reactData["dist-tags"] as Record<string, string>,
-    // "@ariakit/dom": domData["dist-tags"],
+    "@ariakit/react": reactTags as Record<string, string>,
+    // "@ariakit/dom": domTags,
   };
 
   cache = versions;

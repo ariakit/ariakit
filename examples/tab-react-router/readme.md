@@ -8,7 +8,7 @@
 
 ## Controlling the Tab state
 
-To control the selected tab state, you can pass the [`selectedId`](/apis/tab-store#selectedid) and [`setSelectedId`](/apis/tab-store#setselectedid) props to [`useTabStore`](/apis/tab-store). Theese props allow you to synchronize the tab state with other state sources, such as the browser history.
+To control the selected tab state, you can pass the [`selectedId`](/apis/tab-store#selectedid) and [`setSelectedId`](/apis/tab-store#setselectedid) props to [`useTabStore`](/apis/tab-store). These props allow you to synchronize the tab state with other state sources, such as the browser history.
 
 ```jsx {5,6}
 const navigate = useNavigate();

@@ -278,7 +278,7 @@ export default function Layout({ children }: PropsWithChildren) {
 }
 `;
 
-  const isAppDir = /page\.[mc]?[jt]sx?$/.test(firstFile);
+  const isAppDir = /(page|layout)\.[mc]?[jt]sx?$/.test(firstFile);
   const pagePath = isAppDir ? `previews/${exampleName}` : exampleName;
 
   const page = isAppDir

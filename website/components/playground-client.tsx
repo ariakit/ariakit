@@ -117,7 +117,7 @@ export function PlaygroundClient({
 
   invariant(firstFile, "No files provided");
 
-  const isAppDir = /^page\.[tj]sx?/.test(firstFile);
+  const isAppDir = /^(page|layout)\.[tj]sx?/.test(firstFile);
 
   const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
     "language",
