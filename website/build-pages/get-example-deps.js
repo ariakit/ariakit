@@ -122,7 +122,7 @@ export function getExampleDeps(
   assignExternal(deps, "react", filename);
   assignExternal(deps, "react-dom", filename);
 
-  const isAppDir = /\/app\/.*\/page\.[mc]?[tj]sx?$/.test(filename);
+  const isAppDir = /\/app\/.*\/(page|layout)\.[mc]?[tj]sx?$/.test(filename);
 
   if (isAppDir) {
     const dir = dirname(filename);
