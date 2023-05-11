@@ -1,9 +1,7 @@
-import { getByRole, hover, waitFor } from "@ariakit/test";
+import { getByRole, getByText, hover, waitFor } from "@ariakit/test";
 
-const getTooltip = () => getByRole("tooltip", { hidden: true });
-
-const waitForTooltipToShow = () =>
-  waitFor(() => expect(getTooltip()).toBeVisible());
+const getButton = () => getByRole("button", { name: "Bold" });
+const getTooltip = () => getByText("Bold");
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -13,8 +11,8 @@ const hoverOutside = async () => {
 
 test("show tooltip on hover", async () => {
   expect(getTooltip()).not.toBeVisible();
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
+  await hover(getButton());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await hoverOutside();
   expect(getTooltip()).not.toBeVisible();
 });

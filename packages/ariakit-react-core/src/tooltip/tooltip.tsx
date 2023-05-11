@@ -24,6 +24,7 @@ export const useTooltip = createHook<TooltipOptions>(
     store,
     portal = true,
     gutter = 8,
+    preserveTabOrder = false,
     hideOnHoverOutside = true,
     hideOnInteractOutside = true,
     ...props
@@ -45,9 +46,11 @@ export const useTooltip = createHook<TooltipOptions>(
     props = { role, ...props };
 
     props = useHovercard({
+      ...props,
       store,
       portal,
       gutter,
+      preserveTabOrder,
       hideOnHoverOutside: (event) => {
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
         const { anchorElement } = store.getState();
@@ -64,7 +67,6 @@ export const useTooltip = createHook<TooltipOptions>(
         if (contains(anchorElement, event.target as Node)) return false;
         return true;
       },
-      ...props,
     });
 
     return props;

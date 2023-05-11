@@ -12,7 +12,7 @@ export default function Example() {
       >
         Hover or focus on me
       </Ariakit.TooltipAnchor>
-      <Ariakit.Tooltip store={tooltip} className="tooltip">
+      <Ariakit.Tooltip store={tooltip} preserveTabOrder className="tooltip">
         Tooltip
       </Ariakit.Tooltip>
     </>

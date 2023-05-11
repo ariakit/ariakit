@@ -92,7 +92,7 @@ export const usePortal = createHook<PortalOptions>(
       if (!portalEl.id) {
         // Use the element's id so rendering <Portal id="some-id" /> will
         // produce predictable results.
-        portalEl.id = element.id ? `${element.id}-portal` : getRandomId();
+        portalEl.id = element.id ? `portal/${element.id}` : getRandomId();
       }
       // Set the internal portal node state and the portalRef prop.
       setPortalNode(portalEl);
