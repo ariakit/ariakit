@@ -167,14 +167,7 @@ export function PlaygroundToolbar({
         )}
       </ToolbarItem>
 
-      <Menu
-        as={Popup}
-        store={menu}
-        portal
-        shift={-6}
-        disablePointerEventsOnApproach={false}
-        size="responsive"
-      >
+      <Menu as={Popup} store={menu} portal shift={-6} size="responsive">
         {previewLink && (
           <MenuItem
             as={Link}

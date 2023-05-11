@@ -42,10 +42,7 @@ export const useTooltip = createHook<TooltipOptions>(
       state.type === "description" ? "tooltip" : "none"
     );
 
-    props = {
-      role,
-      ...props,
-    };
+    props = { role, ...props };
 
     props = useHovercard({
       store,
@@ -55,6 +52,7 @@ export const useTooltip = createHook<TooltipOptions>(
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
         const { anchorElement } = store.getState();
         if (!anchorElement) return true;
+        // TODO: Comment
         if ("focusVisible" in anchorElement.dataset) return false;
         return true;
       },
@@ -62,6 +60,7 @@ export const useTooltip = createHook<TooltipOptions>(
         if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
         const { anchorElement } = store.getState();
         if (!anchorElement) return true;
+        // TODO: Comment
         if (contains(anchorElement, event.target as Node)) return false;
         return true;
       },

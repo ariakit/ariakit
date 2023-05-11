@@ -177,11 +177,11 @@ export function TableOfContents({ data }: Props) {
             store={popover}
             as={Popup}
             portal
-            className={style.popover}
+            fixed
             tabIndex={0}
-            fixed={true}
             gutter={8}
             overflowPadding={12}
+            className={style.popover}
           >
             <Ariakit.PopoverHeading className={style.popoverHeading}>
               Table of Contents
