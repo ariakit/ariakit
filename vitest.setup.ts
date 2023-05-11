@@ -7,12 +7,10 @@ import failOnConsole from "vitest-fail-on-console";
 
 const matchers = _matchers as unknown as typeof _matchers.default;
 
-declare global {
-  namespace Vi {
-    interface JestAssertion<T = any>
-      extends jest.Matchers<void, T>,
-        TestingLibraryMatchers<T, void> {}
-  }
+declare module "vitest" {
+  interface JestAssertion<T = any>
+    extends jest.Matchers<void, T>,
+      TestingLibraryMatchers<T, void> {}
 }
 
 failOnConsole();
