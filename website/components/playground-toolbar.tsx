@@ -99,7 +99,8 @@ export function PlaygroundToolbar({
   const menu = useMenuStore();
 
   const [firstFile] = Object.keys(files);
-  const isAppDir = !!firstFile && /^page\.[mc]?[tj]sx?/.test(firstFile);
+  const isAppDir =
+    !!firstFile && /^(page|layout)\.[mc]?[tj]sx?/.test(firstFile);
 
   const onStackblitzClick = (template: "vite" | "next") => {
     return () => {

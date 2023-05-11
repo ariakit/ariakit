@@ -1,0 +1,37 @@
+@import url("examples/tab/style.css");
+
+.main {
+  @apply
+    flex
+    flex-col
+    gap-4
+    max-w-[420px]
+  ;
+}
+
+.heading {
+  @apply
+    text-3xl
+    font-medium
+  ;
+}
+
+.link {
+  @apply
+    underline
+    hover:decoration-[3px]
+    underline-offset-[0.25em]
+    [text-decoration-skip-ink:none]
+    text-blue-700
+    dark:text-blue-400
+  ;
+}
+
+.list {
+  @apply
+    flex
+    flex-col
+    gap-2
+    p-2
+  ;
+}
