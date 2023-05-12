@@ -48,10 +48,10 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
             const { activeStore } = globalStore.getState();
             if (activeStore !== store) return;
             globalStore.setState("activeStore", null);
-          }, 500);
+          }, state.skipTimeout);
           return () => clearTimeout(id);
         },
-        ["mounted"]
+        ["mounted", "skipTimeout"]
       );
     }, [store]);
 

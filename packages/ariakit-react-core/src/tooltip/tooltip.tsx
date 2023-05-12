@@ -55,7 +55,11 @@ export const useTooltip = createHook<TooltipOptions>(
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
         const { anchorElement } = store.getState();
         if (!anchorElement) return true;
-        // TODO: Comment
+        // If the anchor element has the `data-focus-visible` attribute (added
+        // by the `Focusable` component that is used by several components), we
+        // don't hide the tooltip when the mouse leaves the anchor element. In
+        // this case, the tooltip will be hidden only if the user presses the
+        // Escape key or if the anchor element loses focus.
         if ("focusVisible" in anchorElement.dataset) return false;
         return true;
       },
@@ -63,7 +67,9 @@ export const useTooltip = createHook<TooltipOptions>(
         if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
         const { anchorElement } = store.getState();
         if (!anchorElement) return true;
-        // TODO: Comment
+        // Prevent hiding the tooltip when the user interacts with the anchor
+        // element. It's up to the developer to hide the tooltip when the user
+        // clicks on the anchor element if that's the intended behavior.
         if (contains(anchorElement, event.target as Node)) return false;
         return true;
       },

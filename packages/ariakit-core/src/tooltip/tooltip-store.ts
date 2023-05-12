@@ -40,6 +40,7 @@ export function createTooltipStore(
   const initialState: TooltipStoreState = {
     ...hovercard.getState(),
     type: defaultValue(props.type, syncState?.type, "description" as const),
+    skipTimeout: defaultValue(props.skipTimeout, syncState?.skipTimeout, 300),
   };
 
   const tooltip = createStore(initialState, hovercard, props.store);
@@ -57,6 +58,12 @@ export interface TooltipStoreState extends HovercardStoreState {
    * @default "description"
    */
   type: "label" | "description";
+  /**
+   * The amount of time after a tooltip is hidden while all tooltips on the
+   * page can be shown immediately, without waiting for the show timeout.
+   * @default 300
+   */
+  skipTimeout: number;
   /** @default "top" */
   placement: HovercardStoreState["placement"];
   /** @default 0 */
@@ -72,7 +79,12 @@ export type TooltipStoreFunctions = HovercardStoreFunctions;
 export interface TooltipStoreOptions
   extends StoreOptions<
       TooltipStoreState,
-      "type" | "placement" | "timeout" | "showTimeout" | "hideTimeout"
+      | "type"
+      | "placement"
+      | "timeout"
+      | "showTimeout"
+      | "hideTimeout"
+      | "skipTimeout"
     >,
     HovercardStoreOptions {}
 
