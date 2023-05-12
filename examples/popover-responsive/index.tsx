@@ -23,9 +23,7 @@ function applyMobileStyles(
 
 export default function Example() {
   const isLarge = useMedia("(min-width: 640px)", true);
-
   const popover = Ariakit.usePopoverStore();
-
   return (
     <>
       <Ariakit.PopoverDisclosure store={popover} className="button">
@@ -35,9 +33,9 @@ export default function Example() {
         store={popover}
         modal={!isLarge}
         className="popover"
-        updatePosition={({ updatePosition }) => {
+        updatePosition={(props) => {
           const { popoverElement, arrowElement } = popover.getState();
-          if (isLarge) return updatePosition();
+          if (isLarge) return props.updatePosition();
           return applyMobileStyles(popoverElement, arrowElement);
         }}
       >
