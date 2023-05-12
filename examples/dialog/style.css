@@ -1,6 +1,6 @@
 @import url("../button/style.css");
 
-[data-backdrop] {
+.backdrop {
   @apply
     [backdrop-filter:blur(4px)]
     bg-black/10

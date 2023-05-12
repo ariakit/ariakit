@@ -28,9 +28,9 @@ import { TableOfContents } from "./table-of-contents.js";
 const { pages } = pagesConfig;
 
 const stickyHeading = tw`
-  sticky md:static top-16 z-20 py-4 -my-4 md:my-0 md:py-0 scroll-mt-16
+  sticky md:static top-16 z-20 py-2 -my-2 md:my-0 md:py-0 scroll-mt-16
   flex items-center md:block pr-12 md:pr-0
-  min-h-[72px] md:min-h-0 bg-gray-50 dark:bg-gray-800
+  min-h-[56px] md:min-h-0 bg-gray-50 dark:bg-gray-800
 `;
 
 const style = {
@@ -67,6 +67,25 @@ const style = {
     text-black dark:text-white
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
+  `,
+  aside: tw`
+    flex flex-col gap-4 !max-w-[832px] p-4 pl-5 sm:p-8
+    rounded-lg sm:rounded-xl !rounded-l relative overflow-hidden
+
+    before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1
+
+    data-[type="danger"]:bg-red-100
+    data-[type="danger"]:dark:bg-red-700/20
+    data-[type="danger"]:before:bg-red-600
+
+    data-[type="warn"]:bg-amber-100
+    data-[type="warn"]:dark:bg-amber-800/20
+    data-[type="warn"]:before:bg-amber-500
+    data-[type="warn"]:before:dark:bg-yellow-600
+
+    data-[type="note"]:bg-blue-50
+    data-[type="note"]:dark:bg-blue-900/20
+    data-[type="note"]:before:bg-blue-600
   `,
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
@@ -208,6 +227,10 @@ export default async function Page({ params }: PageProps) {
               );
               if (ordered) return <ol {...props} className={className} />;
               return <ul {...props} className={className} />;
+            },
+            aside: ({ node, ...props }) => {
+              const className = cx(style.aside, props.className);
+              return <aside {...props} className={className} />;
             },
             pre: ({ node, ...props }) => {
               const pre = (

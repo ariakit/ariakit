@@ -1,6 +1,7 @@
 import type {
-  ComponentProps,
+  ComponentPropsWithRef,
   ElementType,
+  ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
   SyntheticEvent,
@@ -25,10 +26,7 @@ import {
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type {
-  DisclosureContentOptions,
-  DisclosureContentProps,
-} from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useFocusableContainer } from "../focusable/focusable-container.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
@@ -442,14 +440,17 @@ export const useDialog = createHook<DialogOptions>(
       (element) => {
         if (backdrop) {
           return (
-            <DialogBackdrop
-              store={store}
-              backdrop={backdrop}
-              backdropProps={backdropProps}
-              hidden={hiddenProp}
-            >
+            <>
+              {backdrop && (
+                <DialogBackdrop
+                  store={store}
+                  backdrop={backdrop}
+                  backdropProps={backdropProps}
+                  hidden={hiddenProp}
+                />
+              )}
               {element}
-            </DialogBackdrop>
+            </>
           );
         }
         return element;
@@ -547,11 +548,14 @@ export interface DialogOptions<T extends As = "div">
    * <Dialog backdrop={StyledBackdrop} />
    * ```
    */
-  backdrop?: boolean | ElementType<ComponentProps<"div">>;
+  backdrop?:
+    | boolean
+    | ReactElement<ComponentPropsWithRef<"div">>
+    | ElementType<ComponentPropsWithRef<"div">>;
   /**
    * Props that will be passed to the backdrop element if `backdrop` is `true`.
    */
-  backdropProps?: Omit<DisclosureContentProps, "store">;
+  backdropProps?: ComponentPropsWithRef<"div">;
   /**
    * Determines whether the dialog will be hidden when the user presses the
    * Escape key.

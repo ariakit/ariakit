@@ -39,13 +39,11 @@ You can style all the backdrop elements using the `[data-backdrop]` selector:
 }
 ```
 
-To style the backdrop of a specific dialog, use the [`backdropProps`](/apis/dialog#backdropprops) prop:
+To style the backdrop of a specific dialog, use the [`backdrop`](/apis/dialog#backdrop) prop:
 
 ```jsx
-<Dialog backdropProps={{ className: "my-backdrop" }} />
+<Dialog backdrop={<div className="backdrop" />} />
 ```
-
-Alternatively, you can pass a custom component to the [`backdrop`](/apis/dialog#backdrop) prop.
 
 ### Scrollbar width
 
@@ -56,6 +54,18 @@ Ariakit automatically defines a `--scrollbar-width` CSS variable. You can apply 
 ```css
 .header {
   padding-right: calc(16px + var(--scrollbar-width, 0));
+}
+```
+
+### Z-index
+
+Modal dialogs are rendered at the end of the document using [React Portal](https://react.dev/reference/react-dom/createPortal), which means they will be rendered on top of all other elements by default.
+
+However, if you set the [`portal`](/apis/dialog#portal) prop to `false` or use the `z-index` property on other elements, you might need to adjust the `z-index` of the dialog:
+
+```css
+.dialog {
+  z-index: 100;
 }
 ```
 

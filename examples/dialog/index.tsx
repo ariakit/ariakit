@@ -5,7 +5,7 @@ export default function Example() {
   const dialog = Ariakit.useDialogStore();
   return (
     <>
-      <Ariakit.Button onClick={dialog.toggle} className="button">
+      <Ariakit.Button onClick={dialog.show} className="button">
         Show modal
       </Ariakit.Button>
       <Ariakit.Dialog store={dialog} className="dialog">

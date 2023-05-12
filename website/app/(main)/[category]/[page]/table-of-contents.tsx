@@ -26,7 +26,7 @@ const padding: Record<number, string> = {
 
 const style = {
   stickyWrapper: tw`
-    sticky top-20 z-30 mt-8 flex h-0 w-full justify-end px-3
+    sticky top-[72px] z-30 mt-8 flex h-0 w-full justify-end px-3
     md:hidden
   `,
   disclosure: tw`

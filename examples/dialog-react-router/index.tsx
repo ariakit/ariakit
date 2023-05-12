@@ -20,7 +20,11 @@ function Tweet() {
     },
   });
   return (
-    <Ariakit.Dialog store={dialog} className="dialog">
+    <Ariakit.Dialog
+      store={dialog}
+      backdrop={<div className="backdrop" />}
+      className="dialog"
+    >
       <Ariakit.DialogDismiss
         as={Link}
         to="/"

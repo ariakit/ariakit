@@ -19,7 +19,11 @@ export default function Example() {
         View Cart
       </Ariakit.Button>
 
-      <Ariakit.Dialog store={dialog} className="dialog">
+      <Ariakit.Dialog
+        store={dialog}
+        backdrop={<div className="backdrop" />}
+        className="dialog"
+      >
         <div className="header">
           <Ariakit.DialogHeading className="heading">
             Your Shopping Cart

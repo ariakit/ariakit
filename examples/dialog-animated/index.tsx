@@ -5,10 +5,14 @@ export default function Example() {
   const dialog = Ariakit.useDialogStore({ animated: true });
   return (
     <>
-      <Ariakit.Button onClick={dialog.toggle} className="button">
+      <Ariakit.Button onClick={dialog.show} className="button">
         Show modal
       </Ariakit.Button>
-      <Ariakit.Dialog store={dialog} className="dialog">
+      <Ariakit.Dialog
+        store={dialog}
+        backdrop={<div className="backdrop" />}
+        className="dialog"
+      >
         <Ariakit.DialogHeading className="heading">
           Success
         </Ariakit.DialogHeading>

@@ -1,9 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
+function useLoaded() {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => setLoaded(true), []);
+  return loaded;
+}
+
 export default function Example() {
   const ref = useRef<HTMLDetailsElement>(null);
+  const loaded = useLoaded();
   const dialog = Ariakit.useDialogStore();
   const mounted = dialog.useState("mounted");
 
@@ -22,15 +29,14 @@ export default function Example() {
       </Ariakit.Button>
       <Ariakit.Dialog
         store={dialog}
-        // We're setting the modal prop to true only when the dialog is open and
-        // JavaScript is enabled. This means that the dialog will initially have
-        // a non-modal state with no backdrop element, allowing users to
-        // interact with the content behind. This is necessary because, before
-        // JavaScript finishes loading, we can't automatically move focus to the
-        // dialog.
-        modal={mounted}
-        portal={false}
-        hidden={false}
+        // We're setting the modal prop to true only when JavaScript is enabled.
+        // This means that the dialog will initially have a non-modal state with
+        // no backdrop element, allowing users to interact with the content
+        // behind. This is necessary because, before JavaScript finishes
+        // loading, we can't automatically move focus to the dialog.
+        modal={loaded}
+        backdrop={loaded && <div className="backdrop" />}
+        hidden={loaded ? undefined : false}
         className="dialog"
       >
         <Ariakit.DialogHeading className="heading">

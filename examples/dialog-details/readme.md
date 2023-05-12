@@ -4,15 +4,13 @@
   Combining <a href="/components/dialog">Dialog</a> with the native <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details element</a> in React so users can interact with it before JavaScript finishes loading.
 </p>
 
-<div class="warning">
+<aside data-type="warn">
 
 **Before you use this example**
 
-This is not the best way to make modal dialogs accessible without JavaScript. Consider using [Dialog with React Router](/examples/dialog-react-router) instead.
+This is not the best way to make modal dialogs accessible without JavaScript. Consider using a Router instead. Check out the [Dialog with React Router](/examples/dialog-react-router) and the [Dialog with Next.js App Router](/examples/dialog-next-router) examples.
 
-</div>
-
-Try it by hard-refreshing this page. Then click on the `Show modal` button below before JavaScript finishes loading.
+</aside>
 
 <a href="./index.tsx" data-playground>Example</a>
 
@@ -33,16 +31,4 @@ By default, browsers apply some default styles to the `details` element. We can 
 }
 ```
 
-### Fixing the layout shift
-
-Since we're changing between non-modal and [`modal`](/apis/dialog#modal) states and, therefore, between non-portal and [`portal`](/apis/dialog#portal) dialogs right after it's shown, there may be a layout shift if the browser has visible scrollbars.
-
-To fix this, we can use the `--scrollbar-width` CSS variable:
-
-```css
-.dialog {
-  margin-left: calc(var(--scrollbar-width, 0) * -0.5);
-}
-```
-
-Learn more on the [Styling](/guide/styling) guide.
+You can learn more about styling Ariakit components on the [Styling](/guide/styling) guide.

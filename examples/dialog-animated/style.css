@@ -1,14 +1,12 @@
 @import url("../dialog/style.css");
 
-[data-backdrop] {
+.backdrop {
   @apply
     transition-[opacity,backdrop-filter]
-    enter:duration-200
-    leave:duration-500
     [backdrop-filter:blur(0)]
-    enter:[backdrop-filter:blur(4px)]
+    data-[enter]:[backdrop-filter:blur(4px)]
     opacity-0
-    enter:opacity-100
+    data-[enter]:opacity-100
   ;
 }
 
@@ -16,12 +14,9 @@
   @apply
     origin-center
     transition-[opacity,transform]
-    enter:duration-200
-    leave:duration-500
-    enter:delay-200
     opacity-0
-    enter:opacity-100
+    data-[enter]:opacity-100
     [transform:scale(0.95)]
-    enter:[transform:scale(1)]
+    data-[enter]:[transform:scale(1)]
   ;
 }

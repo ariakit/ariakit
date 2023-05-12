@@ -18,6 +18,7 @@ export default function Page() {
       store={dialog}
       // React portal is not rendered on the server, so we disable it.
       portal={false}
+      backdrop={<div className="backdrop" />}
       className="dialog"
       autoFocusOnHide={(element) => {
         if (!element) {
