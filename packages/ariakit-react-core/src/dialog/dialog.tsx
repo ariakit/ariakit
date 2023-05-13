@@ -131,8 +131,12 @@ export const useDialog = createHook<DialogOptions>(
     const open = store.useState("open");
     const mounted = store.useState("mounted");
     const contentElement = store.useState("contentElement");
+    const hiddenProp = props.hidden;
 
-    usePreventBodyScroll(store, mounted && preventBodyScroll);
+    usePreventBodyScroll(
+      store,
+      (mounted || hiddenProp === false) && preventBodyScroll
+    );
     useHideOnInteractOutside(store, hideOnInteractOutside);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
@@ -432,8 +436,6 @@ export const useDialog = createHook<DialogOptions>(
       [modal]
     );
 
-    const hiddenProp = props.hidden;
-
     // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
     props = useWrapElement(
       props,
@@ -542,10 +544,22 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Determines whether there will be a backdrop behind the dialog. On modal
    * dialogs, this is `true` by default. Besides a `boolean`, this prop can also
-   * be a React component that will be rendered as the backdrop.
+   * be a React component or JSX element that will be rendered as the backdrop.
+   *
+   * **If a custom component is used, it must accept ref and spread all props to
+   * its underlying DOM element**, the same way a native element would.
+   *
+   * Live examples:
+   * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
+   * - [Dialog with Framer
+   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
+   * - [Dialog with Next.js App
+   *   Router](https://ariakit.org/examples/dialog-next-router)
    * @example
    * ```jsx
-   * <Dialog backdrop={StyledBackdrop} />
+   * <Dialog backdrop={<div className="backdrop" />} />
    * ```
    */
   backdrop?:
@@ -554,6 +568,7 @@ export interface DialogOptions<T extends As = "div">
     | ElementType<ComponentPropsWithRef<"div">>;
   /**
    * Props that will be passed to the backdrop element if `backdrop` is `true`.
+   * @deprecated Use the `backdrop` prop instead.
    */
   backdropProps?: ComponentPropsWithRef<"div">;
   /**
