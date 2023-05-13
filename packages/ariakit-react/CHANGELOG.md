@@ -1,5 +1,101 @@
 # @ariakit/react
 
+## 0.2.0
+
+### Minor Changes
+
+- **BREAKING**: Moved props from the `usePopoverStore` hook to the `Popover` component: `fixed`, `gutter`, `shift`, `flip`, `slide`, `overlap`, `sameWidth`, `fitViewport`, `arrowPadding`, `overflowPadding`, `getAnchorRect`, `renderCallback` (renamed to `updatePosition`). ([#2279](https://github.com/ariakit/ariakit/pull/2279))
+
+  The exception is the `placement` prop that should still be passed to the store.
+
+  **Before**:
+
+  ```jsx
+  const popover = usePopoverStore({
+    placement: "bottom",
+    fixed: true,
+    gutter: 8,
+    shift: 8,
+    flip: true,
+    slide: true,
+    overlap: true,
+    sameWidth: true,
+    fitViewport: true,
+    arrowPadding: 8,
+    overflowPadding: 8,
+    getAnchorRect: (anchor) => anchor?.getBoundingClientRect(),
+    renderCallback: (props) => props.defaultRenderCallback(),
+  });
+
+  <Popover store={popover} />;
+  ```
+
+  **After**:
+
+  ```jsx
+  const popover = usePopoverStore({ placement: "bottom" });
+
+  <Popover
+    store={popover}
+    fixed
+    gutter={8}
+    shift={8}
+    flip
+    slide
+    overlap
+    sameWidth
+    fitViewport
+    arrowPadding={8}
+    overflowPadding={8}
+    getAnchorRect={(anchor) => anchor?.getBoundingClientRect()}
+    updatePosition={(props) => props.updatePosition()}
+  />;
+  ```
+
+  This change affects all the hooks and components that use `usePopoverStore` and `Popover` underneath: `useComboboxStore`, `ComboboxPopover`, `useHovercardStore`, `Hovercard`, `useMenuStore`, `Menu`, `useSelectStore`, `SelectPopover`, `useTooltipStore`, `Tooltip`.
+
+  With this change, the underlying `@floating-ui/dom` dependency has been also moved to the `Popover` component, which means it can be lazy loaded. See the [Lazy Popover](https://ariakit.org/examples/popover-lazy) example.
+
+- **BREAKING**: The backdrop element on the `Dialog` component is now rendered as a sibling rather than as a parent of the dialog. This should make it easier to animate them separately. ([#2407](https://github.com/ariakit/ariakit/pull/2407))
+
+  This might be a breaking change if you're relying on their parent/child relationship for styling purposes (for example, to position the dialog in the center of the backdrop). If that's the case, you can apply the following styles to the dialog to achieve the same effect:
+
+  ```css
+  .dialog {
+    position: fixed;
+    inset: 1rem;
+    margin: auto;
+    height: fit-content;
+    max-height: calc(100vh - 2 * 1rem);
+  }
+  ```
+
+  These styles work even if the dialog is a child of the backdrop, so you can use them regardless of whether you're upgrading to this version or not.
+
+### Patch Changes
+
+- Deprecated the `backdropProps` prop on the `Dialog` component. Use the `backdrop` prop instead. ([#2407](https://github.com/ariakit/ariakit/pull/2407))
+
+- The `backdrop` prop on the `Dialog` component now accepts a JSX element as its value. ([#2407](https://github.com/ariakit/ariakit/pull/2407))
+
+- The `Dialog` component will now wait for being unmounted before restoring the body scroll when the `hidden` prop is set to `false`. This should prevent the body scroll from being restored too early when the dialog is being animated out using third-party libraries like Framer Motion. ([#2407](https://github.com/ariakit/ariakit/pull/2407))
+
+- The `Tooltip` component now defaults to use `aria-describedby` instead of `aria-labelledby`. ([#2279](https://github.com/ariakit/ariakit/pull/2279))
+
+  If you want to use the tooltip as a label for an anchor element, you can use the `type` prop on `useTooltipStore`:
+
+  ```jsx
+  useTooltipStore({ type: "label" });
+  ```
+
+- The `Tooltip` component now supports mouse events. ([#2279](https://github.com/ariakit/ariakit/pull/2279))
+
+  It's now possible to hover over the tooltip without it disappearing, which makes it compliant with [WCAG 1.4.13](https://www.w3.org/WAI/WCAG21/Understanding/content-on-hover-or-focus.html).
+
+- Fixed infinite loop on `Portal` with the `preserveTabOrder` prop set to `true` when the portalled element is placed right after its original position in the React tree. ([#2279](https://github.com/ariakit/ariakit/pull/2279))
+
+- Updated dependencies: `@ariakit/react-core@0.2.0`.
+
 ## 0.1.8
 
 ### Patch Changes
