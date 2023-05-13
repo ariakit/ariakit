@@ -6,15 +6,27 @@
 
 ## Applying styles
 
-Ariakit components accept all native props, including `className`, `style`, and `ref`. You can use them to apply your styles just like you would with any other React element.
+Ariakit components accept all native props, including `className`, `style`, and `ref`. You can use them to apply your styles just like you would with any other React element using plain CSS, inline CSS, CSS modules, CSS-in-JS, Styled Components, Emotion, Tailwind, etc.
+
+```jsx
+<Dialog
+  ref={dialogRef}
+  style={{ backgroundColor: "white" }}
+  className="dialog bg-white"
+/>
+```
 
 ## CSS selectors
 
-**Important: Do not use any selectors that are not listed below.**
+<aside data-type="danger">
+
+**Do not use any selectors that are not listed below.**
 
 Ariakit renders elements with HTML attributes, such as `role`, that should not be used as CSS selectors as they're not part of the public API and may change in future minor and patch releases.
 
 To safely use CSS selectors, utilize the `className` prop or provide your own `data-*` attributes to the component. Refer to the list below for all the selectors that are safe to use.
+
+</aside>
 
 ### `[aria-disabled]`
 
@@ -76,6 +88,16 @@ The `data-autofill` attribute is applied to the [Select](/components/select) com
 ```css
 .select[data-autofill] {
   background-color: rgb(219 237 255);
+}
+```
+
+### `[data-backdrop]`
+
+The `data-backdrop` attribute can be used to style all [Dialog](/components/dialog) backdrop elements at once.
+
+```css
+[data-backdrop] {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 ```
 

@@ -3,7 +3,12 @@ import { click, getByRole, press, queryByRole } from "@ariakit/test";
 const getCartDisclosure = () => getByRole("button", { name: "View Cart" });
 
 const getCartDialog = () =>
-  queryByRole("dialog", { hidden: true, name: "Your Shopping Cart" });
+  queryByRole("dialog", {
+    hidden: true,
+    name: (name, element) =>
+      name === "Your Shopping Cart" ||
+      element.getAttribute("aria-hidden") === "true",
+  });
 
 const getDismissButton = () => getByRole("button", { name: "Dismiss popup" });
 

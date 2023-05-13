@@ -7,7 +7,10 @@ const getButton = (page: Page, name: string) =>
 const getDialog = (page: Page) =>
   page.getByRole("dialog", { includeHidden: true, name: "Homemade Cake" });
 
-const getBackdrop = async (page: Page) => getDialog(page).locator("xpath=..");
+const getBackdrop = async (page: Page) => {
+  const id = await getDialog(page).getAttribute("id");
+  return page.locator(`[data-backdrop="${id}"]`);
+};
 
 const getMenu = (page: Page) => page.getByRole("menu", { name: "Share" });
 

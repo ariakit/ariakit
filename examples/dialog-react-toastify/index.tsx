@@ -15,6 +15,7 @@ function Example() {
       </Ariakit.Button>
       <Ariakit.Dialog
         store={dialog}
+        backdrop={<div className="backdrop" />}
         getPersistentElements={() => document.querySelectorAll(".Toastify")}
         className="dialog"
       >

@@ -7,7 +7,8 @@ const getDialog = () =>
 
 const getDialogBackdrop = () => {
   const dialog = getDialog();
-  const backdrop = dialog?.parentElement;
+  const id = dialog?.id;
+  const backdrop = document.querySelector(`[data-backdrop="${id}"]`);
   expect(backdrop).toBeInTheDocument();
   return backdrop!;
 };

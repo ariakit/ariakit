@@ -12,7 +12,14 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       open,
       setOpen: (open) => !open && onClose?.(),
     });
-    return <Ariakit.Dialog {...props} store={dialog} ref={ref} />;
+    return (
+      <Ariakit.Dialog
+        {...props}
+        ref={ref}
+        store={dialog}
+        backdrop={<div className="backdrop" />}
+      />
+    );
   }
 );
 

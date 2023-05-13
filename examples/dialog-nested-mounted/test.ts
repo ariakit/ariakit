@@ -2,7 +2,12 @@ import { click, getByRole, press, queryByRole } from "@ariakit/test";
 
 const getButton = (name: string) => getByRole("button", { name });
 
-const getDialog = () => queryByRole("dialog", { hidden: true, name: "Dialog" });
+const getDialog = () =>
+  queryByRole("dialog", {
+    hidden: true,
+    name: (name, element) =>
+      name === "Dialog" || element.getAttribute("aria-hidden") === "true",
+  });
 
 const getNestedDialog = () =>
   queryByRole("dialog", { hidden: true, name: "Confirm" });

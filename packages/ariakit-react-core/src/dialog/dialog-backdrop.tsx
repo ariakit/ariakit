@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
-import { useMemo, useRef } from "react";
+import type { Ref } from "react";
+import { cloneElement, isValidElement, useMemo, useRef } from "react";
 import { noop } from "@ariakit/core/utils/misc";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
+import { Role } from "../role/role.js";
 import { useForkRef, useSafeLayoutEffect } from "../utils/hooks.js";
 import type { DialogProps } from "./dialog.js";
 import { markAncestor } from "./utils/mark-tree-outside.js";
@@ -9,16 +10,13 @@ import { markAncestor } from "./utils/mark-tree-outside.js";
 type DialogBackdropProps = Pick<
   DialogProps,
   "store" | "backdrop" | "backdropProps" | "hidden"
-> & {
-  children?: ReactNode;
-};
+>;
 
 export function DialogBackdrop({
   store,
   backdrop,
   backdropProps,
   hidden,
-  children,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -53,11 +51,20 @@ export function DialogBackdrop({
     return markAncestor(backdrop, id);
   }, [contentElement]);
 
+  backdropProps = isValidElement(backdrop)
+    ? {
+        ref: "ref" in backdrop ? (backdrop.ref as Ref<any>) : undefined,
+        ...backdrop.props,
+        ...backdropProps,
+      }
+    : backdropProps;
+
   const props = useDisclosureContent({
     store,
     id: undefined,
     role: "presentation",
     hidden,
+    "data-backdrop": contentElement?.id || "",
     ...backdropProps,
     ref: useForkRef(backdropProps?.ref, ref),
     style: {
@@ -70,11 +77,13 @@ export function DialogBackdrop({
     },
   });
 
+  if (!backdrop) return null;
+
+  if (isValidElement(backdrop)) {
+    return <Role {...props}>{(props) => cloneElement(backdrop, props)}</Role>;
+  }
+
   const Component = typeof backdrop !== "boolean" ? backdrop || "div" : "div";
 
-  return (
-    <Component {...props} data-backdrop={contentElement?.id || ""}>
-      {children}
-    </Component>
-  );
+  return <Role {...props} as={Component} />;
 }

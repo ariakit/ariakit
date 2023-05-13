@@ -12,7 +12,7 @@ export default function Icon() {
             <div className="m-2 flex flex-col gap-2 rounded border border-black/20 bg-white p-2 shadow-md dark:border-white/10 dark:bg-white/10 dark:shadow-md-dark">
               <div className="h-1 w-8 bg-black/70 dark:bg-white/70" />
               <div className="h-3 w-12 rounded-sm border border-black/30 bg-white dark:border-white/20 dark:bg-black" />
-              <div className="h-2 w-6 rounded-sm bg-blue-600 dark:bg-blue-500" />
+              <div className="h-2 w-6 rounded-sm bg-green-600 dark:bg-green-500" />
             </div>
           </div>
         </div>
