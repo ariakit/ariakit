@@ -1,10 +1,19 @@
-import type { FocusEvent, MouseEvent } from "react";
-import type { PopoverAnchorOptions } from "../popover/popover-anchor.js";
-import { usePopoverAnchor } from "../popover/popover-anchor.js";
+import { useEffect } from "react";
+import type { FocusEvent } from "react";
+import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { createStore } from "@ariakit/core/utils/store";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+// Create a global store to keep track of the active tooltip store so we can
+// show other tooltips without a delay when there's already an active tooltip.
+const globalStore = createStore<{ activeStore: TooltipStore | null }>({
+  activeStore: null,
+});
 
 /**
  * Returns props to create a `TooltipAnchor` component.
@@ -18,11 +27,38 @@ import type { TooltipStore } from "./tooltip-store.js";
  * ```
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
-  ({ store, described, ...props }) => {
-    const onFocusProp = props.onFocus;
+  ({ store, showOnHover = true, ...props }) => {
+    useEffect(() => {
+      return store.sync(
+        (state) => {
+          // If the current tooltip is open, we should immediately hide the
+          // active one and set the current one as the active tooltip.
+          if (state.mounted) {
+            const { activeStore } = globalStore.getState();
+            if (activeStore !== store) {
+              activeStore?.hide();
+            }
+            return globalStore.setState("activeStore", store);
+          }
+          // Otherwise, if the current tooltip is closed, we should set a
+          // timeout to hide the active tooltip in the global store. This is so
+          // we can show other tooltips without a delay when there's already an
+          // active tooltip (see the showOnHover method below).
+          const id = setTimeout(() => {
+            const { activeStore } = globalStore.getState();
+            if (activeStore !== store) return;
+            globalStore.setState("activeStore", null);
+          }, state.skipTimeout);
+          return () => clearTimeout(id);
+        },
+        ["mounted", "skipTimeout"]
+      );
+    }, [store]);
 
-    const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
-      onFocusProp?.(event);
+    const onFocusVisibleProp = props.onFocusVisible;
+
+    const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
       store.setAnchorElement(event.currentTarget);
       store.show();
@@ -33,40 +69,42 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      store.hide();
+      const { activeStore } = globalStore.getState();
+      // If the current tooltip is the active tooltip and the anchor loses focus
+      // (for example, if the anchor is a menu button, clicking on the menu
+      // button will automatically focus on the menu), we don't want to show
+      // subsequent tooltips without a delay. So we set the active tooltip to
+      // null.
+      if (activeStore === store) {
+        globalStore.setState("activeStore", null);
+      }
     });
 
-    const onMouseEnterProp = props.onMouseEnter;
-
-    const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
-      onMouseEnterProp?.(event);
-      if (event.defaultPrevented) return;
-      store.setAnchorElement(event.currentTarget);
-      store.show();
-    });
-
-    const onMouseLeaveProp = props.onMouseLeave;
-
-    const onMouseLeave = useEvent((event: MouseEvent<HTMLDivElement>) => {
-      onMouseLeaveProp?.(event);
-      if (event.defaultPrevented) return;
-      store.hide();
-    });
-
-    const contentElement = store.useState("contentElement");
+    const type = store.useState("type");
+    const contentId = store.useState((state) => state.contentElement?.id);
 
     props = {
       tabIndex: 0,
-      "aria-labelledby": !described ? contentElement?.id : undefined,
-      "aria-describedby": described ? contentElement?.id : undefined,
+      "aria-labelledby": type === "label" ? contentId : undefined,
+      "aria-describedby": type === "description" ? contentId : undefined,
       ...props,
-      onFocus,
+      onFocusVisible,
       onBlur,
-      onMouseEnter,
-      onMouseLeave,
     };
 
-    props = usePopoverAnchor({ store, ...props });
+    props = useHovercardAnchor({
+      store,
+      showOnHover: (event) => {
+        if (isFalsyBooleanCallback(showOnHover, event)) return false;
+        const { activeStore } = globalStore.getState();
+        if (!activeStore) return true;
+        // Show the tooltip immediately if the current tooltip is the active
+        // tooltip instead of waiting for the showTimeout delay.
+        store.show();
+        return false;
+      },
+      ...props,
+    });
 
     return props;
   }
@@ -94,27 +132,11 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface TooltipAnchorOptions<T extends As = "div">
-  extends PopoverAnchorOptions<T> {
+  extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the `useTooltipStore` hook.
    */
   store: TooltipStore;
-  /**
-   * Determines wether the tooltip anchor is described or labelled by the
-   * tooltip. If `true`, the tooltip id will be set as the `aria-describedby`
-   * attribute on the anchor element, and not as the `aria-labelledby`
-   * attribute.
-   * @default false
-   * @example
-   * ```jsx
-   * const tooltip = useTooltipStore();
-   * <TooltipAnchor store={tooltip} described>
-   *   This is an element with a visible label.
-   * </TooltipAnchor>
-   * <Tooltip store={tooltip}>Description</Tooltip>
-   * ```
-   */
-  described?: boolean;
 }
 
 export type TooltipAnchorProps<T extends As = "div"> = Props<

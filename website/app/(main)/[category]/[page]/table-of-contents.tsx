@@ -93,11 +93,7 @@ function getDataIds(data: Data): string[] {
 
 export function TableOfContents({ data }: Props) {
   const isLarge = useMedia("(min-width: 768px)", true);
-  const popover = Ariakit.usePopoverStore({
-    fixed: true,
-    gutter: 8,
-    overflowPadding: 12,
-  });
+  const popover = Ariakit.usePopoverStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const ref = useRef<HTMLElement>(null);
 
@@ -181,8 +177,11 @@ export function TableOfContents({ data }: Props) {
             store={popover}
             as={Popup}
             portal
-            className={style.popover}
+            fixed
             tabIndex={0}
+            gutter={8}
+            overflowPadding={12}
+            className={style.popover}
           >
             <Ariakit.PopoverHeading className={style.popoverHeading}>
               Table of Contents

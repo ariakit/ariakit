@@ -106,11 +106,7 @@ interface Props {
 }
 
 export function HeaderVersionSelect({ versions }: Props) {
-  const select = useSelectStore({
-    defaultValue: getValueFromPkg(pkg),
-    gutter: 4,
-    shift: -1,
-  });
+  const select = useSelectStore({ defaultValue: getValueFromPkg(pkg) });
 
   const renderItem = (value: string, tag: string) => {
     const { version } = getPkgFromValue(value);
@@ -143,7 +139,13 @@ export function HeaderVersionSelect({ versions }: Props) {
         <SelectArrow />
       </Select>
       {selectMounted && (
-        <SelectPopover store={select} as={Popup} size="small">
+        <SelectPopover
+          store={select}
+          as={Popup}
+          gutter={4}
+          shift={-1}
+          size="small"
+        >
           {Object.entries(versions).map(([name, tags]) => (
             <Fragment key={name}>
               <SelectGroup className={style.group}>

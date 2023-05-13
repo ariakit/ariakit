@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const tooltip = Ariakit.useTooltipStore({ placement: "bottom-end" });
+  const tooltip = Ariakit.useTooltipStore({ timeout: 0 });
   return (
     <>
       <Ariakit.TooltipAnchor
@@ -12,7 +12,7 @@ export default function Example() {
       >
         Hover or focus on me
       </Ariakit.TooltipAnchor>
-      <Ariakit.Tooltip store={tooltip} className="tooltip">
+      <Ariakit.Tooltip store={tooltip} preserveTabOrder className="tooltip">
         Tooltip
       </Ariakit.Tooltip>
     </>

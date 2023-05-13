@@ -4,12 +4,7 @@ import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
-  const combobox = Ariakit.useComboboxStore({
-    open,
-    setOpen,
-    gutter: 8,
-    sameWidth: true,
-  });
+  const combobox = Ariakit.useComboboxStore({ open, setOpen });
 
   const value = combobox.useState("value");
 
@@ -27,7 +22,12 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={8}
+        sameWidth
+        className="popover"
+      >
         <Ariakit.ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
         </Ariakit.ComboboxItem>

@@ -69,8 +69,9 @@ export interface HovercardStoreState extends PopoverStoreState {
    */
   placement: PopoverStoreState["placement"];
   /**
-   * The amount of time in milliseconds to wait before showing or hiding the
-   * popover.
+   * The amount of time in milliseconds to wait before showing and hiding the
+   * popover. To control the delay for showing and hiding separately, use
+   * `showTimeout` and `hideTimeout`.
    * @default 500
    */
   timeout: number;

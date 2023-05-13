@@ -1,16 +1,8 @@
-import type { HTMLAttributes } from "react";
-import { useEffect } from "react";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
-import { useDisclosureContent } from "../disclosure/disclosure-content.js";
-import type { PortalOptions } from "../portal/portal.js";
-import { usePortal } from "../portal/portal.js";
-import {
-  useBooleanEvent,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.js";
+import { contains } from "@ariakit/core/utils/dom";
+import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { useHovercard } from "../hovercard/hovercard.js";
+import type { HovercardOptions } from "../hovercard/hovercard.js";
+import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { TooltipContext } from "./tooltip-context.js";
@@ -31,73 +23,12 @@ export const useTooltip = createHook<TooltipOptions>(
   ({
     store,
     portal = true,
-    hideOnEscape = true,
-    hideOnControl = false,
-    wrapperProps,
+    gutter = 8,
+    preserveTabOrder = false,
+    hideOnHoverOutside = true,
+    hideOnInteractOutside = true,
     ...props
   }) => {
-    const popoverElement = store.useState("popoverElement");
-    const contentElement = store.useState("contentElement");
-
-    // Makes sure the wrapper element that's passed to popper has the same
-    // z-index as the popover element so users only need to set the z-index
-    // once.
-    useSafeLayoutEffect(() => {
-      const wrapper = popoverElement;
-      const popover = contentElement;
-      if (!wrapper) return;
-      if (!popover) return;
-      wrapper.style.zIndex = getComputedStyle(popover).zIndex;
-    }, [popoverElement, contentElement]);
-
-    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-    const hideOnControlProp = useBooleanEvent(hideOnControl);
-
-    const open = store.useState("open");
-
-    // Hide on Escape/Control. Popover already handles this, but only when the
-    // dialog, the backdrop or the disclosure elements are focused. Since the
-    // tooltip, by default, does not receive focus when it's shown, we need to
-    // handle this globally here.
-    useEffect(() => {
-      if (!open) return;
-      return addGlobalEventListener("keydown", (event) => {
-        if (event.defaultPrevented) return;
-        const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
-        const isControl = event.key === "Control" && hideOnControlProp(event);
-        if (isEscape || isControl) {
-          store.hide();
-        }
-      });
-    }, [store, open, hideOnEscapeProp, hideOnControlProp]);
-
-    const position = store.useState((state) =>
-      state.fixed ? "fixed" : "absolute"
-    );
-
-    // Wrap our element in a div that will be used to position the popover.
-    // This way the user doesn't need to override the popper's position to
-    // create animations.
-    props = useWrapElement(
-      props,
-      (element) => (
-        <div
-          role="presentation"
-          {...wrapperProps}
-          style={{
-            position,
-            top: 0,
-            left: 0,
-            ...wrapperProps?.style,
-          }}
-          ref={store.setPopoverElement}
-        >
-          {element}
-        </div>
-      ),
-      [store, position, wrapperProps]
-    );
-
     props = useWrapElement(
       props,
       (element) => (
@@ -108,13 +39,41 @@ export const useTooltip = createHook<TooltipOptions>(
       [store]
     );
 
-    props = {
-      role: "tooltip",
-      ...props,
-    };
+    const role = store.useState((state) =>
+      state.type === "description" ? "tooltip" : "none"
+    );
 
-    props = useDisclosureContent({ store, ...props });
-    props = usePortal({ portal, ...props, preserveTabOrder: false });
+    props = { role, ...props };
+
+    props = useHovercard({
+      ...props,
+      store,
+      portal,
+      gutter,
+      preserveTabOrder,
+      hideOnHoverOutside: (event) => {
+        if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
+        const { anchorElement } = store.getState();
+        if (!anchorElement) return true;
+        // If the anchor element has the `data-focus-visible` attribute (added
+        // by the `Focusable` component that is used by several components), we
+        // don't hide the tooltip when the mouse leaves the anchor element. In
+        // this case, the tooltip will be hidden only if the user presses the
+        // Escape key or if the anchor element loses focus.
+        if ("focusVisible" in anchorElement.dataset) return false;
+        return true;
+      },
+      hideOnInteractOutside: (event) => {
+        if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
+        const { anchorElement } = store.getState();
+        if (!anchorElement) return true;
+        // Prevent hiding the tooltip when the user interacts with the anchor
+        // element. It's up to the developer to hide the tooltip when the user
+        // clicks on the anchor element if that's the intended behavior.
+        if (contains(anchorElement, event.target as Node)) return false;
+        return true;
+      },
+    });
 
     return props;
   }
@@ -140,32 +99,15 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface TooltipOptions<T extends As = "div">
-  extends DisclosureContentOptions<T>,
-    Omit<PortalOptions<T>, "preserveTabOrder"> {
+  extends HovercardOptions<T> {
   /**
    * Object returned by the `useTooltipStore` hook.
    */
   store: TooltipStore;
-  /**
-   * Determines whether the tooltip will be hidden when the user presses the
-   * Escape key.
-   * @default true
-   */
-  hideOnEscape?: BooleanOrCallback<KeyboardEvent>;
-  /**
-   * Determines whether the tooltip will be hidden when the user presses the
-   * Control key. This has been proposed as an alternative to the Escape key,
-   * which may introduce some issues, especially when tooltips are used within
-   * dialogs that also hide on Escape. See
-   * https://github.com/w3c/aria-practices/issues/1506
-   * @default false
-   */
-  hideOnControl?: BooleanOrCallback<KeyboardEvent>;
-  /**
-   * Props that will be passed to the popover wrapper element. This element
-   * will be used to position the popover.
-   */
-  wrapperProps?: HTMLAttributes<HTMLDivElement>;
+  /** @default true */
+  portal?: HovercardOptions<T>["portal"];
+  /** @default 8 */
+  gutter?: HovercardOptions<T>["gutter"];
 }
 
 export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;

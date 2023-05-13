@@ -8,18 +8,11 @@ import {
   useDialogStoreOptions,
   useDialogStoreProps,
 } from "../dialog/dialog-store.js";
-import { useEvent } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 export function usePopoverStoreOptions(props: PopoverStoreProps) {
-  const getAnchorRect = useEvent(props.getAnchorRect);
-  const renderCallback = useEvent(props.renderCallback);
-  return {
-    ...useDialogStoreOptions(props),
-    getAnchorRect: props.getAnchorRect ? getAnchorRect : undefined,
-    renderCallback: props.renderCallback ? renderCallback : undefined,
-  };
+  return useDialogStoreOptions(props);
 }
 
 export function usePopoverStoreProps<T extends PopoverStore>(
@@ -28,16 +21,6 @@ export function usePopoverStoreProps<T extends PopoverStore>(
 ) {
   store = useDialogStoreProps(store, props);
   useStoreProps(store, props, "placement");
-  useStoreProps(store, props, "fixed");
-  useStoreProps(store, props, "gutter");
-  useStoreProps(store, props, "flip");
-  useStoreProps(store, props, "shift");
-  useStoreProps(store, props, "slide");
-  useStoreProps(store, props, "overlap");
-  useStoreProps(store, props, "sameWidth");
-  useStoreProps(store, props, "fitViewport");
-  useStoreProps(store, props, "arrowPadding");
-  useStoreProps(store, props, "overflowPadding");
   return store;
 }
 

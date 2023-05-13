@@ -24,11 +24,7 @@ const links = [
 ];
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({
-    gutter: 4,
-    sameWidth: true,
-  });
-
+  const combobox = Ariakit.useComboboxStore();
   const mounted = combobox.useState("mounted");
   const value = combobox.useState("value");
   const deferredValue = useDeferredValue(value);
@@ -72,7 +68,12 @@ export default function Example() {
         />
       </label>
       {mounted && (
-        <Ariakit.ComboboxPopover store={combobox} className="popover">
+        <Ariakit.ComboboxPopover
+          store={combobox}
+          gutter={4}
+          sameWidth
+          className="popover"
+        >
           {matches.length ? (
             matches.map(renderItem)
           ) : (

@@ -4,7 +4,7 @@ import "./style.css";
 
 export default function Example() {
   const [anchorRect, setAnchorRect] = useState({ x: 0, y: 0 });
-  const menu = Ariakit.useMenuStore({ getAnchorRect: () => anchorRect });
+  const menu = Ariakit.useMenuStore();
   return (
     <div
       className="wrapper"
@@ -15,7 +15,12 @@ export default function Example() {
       }}
     >
       Right click here
-      <Ariakit.Menu store={menu} modal className="menu">
+      <Ariakit.Menu
+        store={menu}
+        modal
+        getAnchorRect={() => anchorRect}
+        className="menu"
+      >
         <Ariakit.MenuItem className="menu-item">Back</Ariakit.MenuItem>
         <Ariakit.MenuItem className="menu-item" disabled>
           Forward

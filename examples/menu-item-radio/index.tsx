@@ -3,7 +3,6 @@ import "./style.css";
 
 export default function Example() {
   const menu = Ariakit.useMenuStore({
-    gutter: 8,
     defaultValues: { sort: "popular" },
   });
   return (
@@ -12,7 +11,7 @@ export default function Example() {
         Sort
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
-      <Ariakit.Menu store={menu} className="menu">
+      <Ariakit.Menu store={menu} gutter={8} className="menu">
         <Ariakit.MenuItemRadio
           name="sort"
           value="popular"

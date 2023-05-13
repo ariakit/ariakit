@@ -14,15 +14,7 @@ export default function Example() {
   const popoverRef = useRef<HTMLDivElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
 
-  const popover = Ariakit.usePopoverStore({
-    placement: "top",
-    getAnchorRect: () => {
-      const selection = paragraphRef.current?.ownerDocument.getSelection();
-      if (!selection?.rangeCount) return null;
-      const range = selection.getRangeAt(0);
-      return range.getBoundingClientRect();
-    },
-  });
+  const popover = Ariakit.usePopoverStore({ placement: "top" });
 
   useEffect(() => {
     const popoverContainer = popoverRef.current;
@@ -58,6 +50,12 @@ export default function Example() {
         hideOnInteractOutside={() => !hasSelectionWithin(paragraphRef.current)}
         ref={popoverRef}
         className="popover"
+        getAnchorRect={() => {
+          const selection = paragraphRef.current?.ownerDocument.getSelection();
+          if (!selection?.rangeCount) return null;
+          const range = selection.getRangeAt(0);
+          return range.getBoundingClientRect();
+        }}
       >
         <Ariakit.PopoverArrow size={24} className="arrow" />
         <Ariakit.Button className="button secondary">Bookmark</Ariakit.Button>

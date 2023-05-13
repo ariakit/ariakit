@@ -2,11 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({
-    gutter: 4,
-    sameWidth: true,
-    animated: true,
-  });
+  const combobox = Ariakit.useComboboxStore({ animated: true });
   return (
     <div className="wrapper">
       <label className="label">
@@ -17,7 +13,12 @@ export default function Example() {
           className="combobox"
         />
       </label>
-      <Ariakit.ComboboxPopover store={combobox} className="popover">
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
         <Ariakit.ComboboxItem className="combobox-item" value="Apple">
           🍎 Apple
         </Ariakit.ComboboxItem>

@@ -12,7 +12,7 @@ const chevronDown = (
 );
 
 export default function Example() {
-  const hovercard = Ariakit.useHovercardStore({ gutter: 16 });
+  const hovercard = Ariakit.useHovercardStore();
   const element = (
     <span className="hovercard-wrapper">
       <Ariakit.HovercardAnchor
@@ -28,7 +28,12 @@ export default function Example() {
         </Ariakit.VisuallyHidden>
         {chevronDown}
       </Ariakit.HovercardDisclosure>
-      <Ariakit.Hovercard portal store={hovercard} className="hovercard">
+      <Ariakit.Hovercard
+        portal
+        store={hovercard}
+        gutter={16}
+        className="hovercard"
+      >
         <img
           src="https://pbs.twimg.com/profile_images/1547936373243490306/dSn6Am0o_400x400.jpg"
           alt="Ariakit"

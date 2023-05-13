@@ -28,8 +28,6 @@ export default function Example() {
   const select = Ariakit.useSelectStore({
     defaultValue: "john.doe@example.com",
     setValueOnMove: true,
-    sameWidth: true,
-    gutter: 4,
   });
   const value = select.useState("value");
   return (
@@ -39,7 +37,12 @@ export default function Example() {
         {renderValue(value)}
         <Ariakit.SelectArrow />
       </Ariakit.Select>
-      <Ariakit.SelectPopover store={select} className="popover">
+      <Ariakit.SelectPopover
+        store={select}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
         {accounts.map((email) => (
           <Ariakit.SelectItem key={email} value={email} className="select-item">
             {renderValue(email)}

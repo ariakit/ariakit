@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "@ariakit/core": "0.1.5",
+    "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
   "peerDependencies": {

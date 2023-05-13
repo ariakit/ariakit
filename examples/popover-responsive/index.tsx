@@ -23,21 +23,22 @@ function applyMobileStyles(
 
 export default function Example() {
   const isLarge = useMedia("(min-width: 640px)", true);
-
-  const popover = Ariakit.usePopoverStore({
-    renderCallback: (props) => {
-      const { popoverElement, arrowElement, defaultRenderCallback } = props;
-      if (isLarge) return defaultRenderCallback();
-      return applyMobileStyles(popoverElement, arrowElement);
-    },
-  });
-
+  const popover = Ariakit.usePopoverStore();
   return (
     <>
       <Ariakit.PopoverDisclosure store={popover} className="button">
         Accept invite
       </Ariakit.PopoverDisclosure>
-      <Ariakit.Popover store={popover} modal={!isLarge} className="popover">
+      <Ariakit.Popover
+        store={popover}
+        modal={!isLarge}
+        className="popover"
+        updatePosition={(props) => {
+          const { popoverElement, arrowElement } = popover.getState();
+          if (isLarge) return props.updatePosition();
+          return applyMobileStyles(popoverElement, arrowElement);
+        }}
+      >
         <Ariakit.PopoverArrow className="arrow" />
         <Ariakit.PopoverHeading className="heading">
           Team meeting

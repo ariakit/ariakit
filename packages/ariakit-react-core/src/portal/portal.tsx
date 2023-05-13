@@ -65,10 +65,10 @@ export const usePortal = createHook<PortalOptions>(
     const context = useContext(PortalContext);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
 
-    const beforeOutsideRef = useRef<HTMLButtonElement>(null);
-    const beforeInsideRef = useRef<HTMLSpanElement>(null);
-    const afterInsideRef = useRef<HTMLButtonElement>(null);
-    const afterOutsideRef = useRef<HTMLButtonElement>(null);
+    const outerBeforeRef = useRef<HTMLButtonElement>(null);
+    const innerBeforeRef = useRef<HTMLSpanElement>(null);
+    const innerAfterRef = useRef<HTMLButtonElement>(null);
+    const outerAfterRef = useRef<HTMLButtonElement>(null);
 
     // Create the portal node and attach it to the DOM.
     useSafeLayoutEffect(() => {
@@ -92,7 +92,7 @@ export const usePortal = createHook<PortalOptions>(
       if (!portalEl.id) {
         // Use the element's id so rendering <Portal id="some-id" /> will
         // produce predictable results.
-        portalEl.id = element.id ? `${element.id}-portal` : getRandomId();
+        portalEl.id = element.id ? `portal/${element.id}` : getRandomId();
       }
       // Set the internal portal node state and the portalRef prop.
       setPortalNode(portalEl);
@@ -170,12 +170,13 @@ export const usePortal = createHook<PortalOptions>(
           <>
             {preserveTabOrder && portalNode && (
               <FocusTrap
-                ref={beforeInsideRef}
+                ref={innerBeforeRef}
+                className="__focus-trap-inner-before"
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(getNextTabbable());
                   } else {
-                    queueFocus(beforeOutsideRef.current);
+                    queueFocus(outerBeforeRef.current);
                   }
                 }}
               />
@@ -183,12 +184,13 @@ export const usePortal = createHook<PortalOptions>(
             {element}
             {preserveTabOrder && portalNode && (
               <FocusTrap
-                ref={afterInsideRef}
+                ref={innerAfterRef}
+                className="__focus-trap-inner-after"
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
                     queueFocus(getPreviousTabbable());
                   } else {
-                    queueFocus(afterOutsideRef.current);
+                    queueFocus(outerAfterRef.current);
                   }
                 }}
               />
@@ -204,10 +206,17 @@ export const usePortal = createHook<PortalOptions>(
           <>
             {preserveTabOrder && portalNode && (
               <FocusTrap
-                ref={beforeOutsideRef}
+                ref={outerBeforeRef}
+                className="__focus-trap-outer-before"
                 onFocus={(event) => {
-                  if (isFocusEventOutside(event, portalNode)) {
-                    queueFocus(beforeInsideRef.current);
+                  // If the event is coming from the outer after focus trap, it
+                  // means there's no tabbable element inside the portal. In
+                  // this case, we don't focus the inner before focus trap, but
+                  // the previous tabbable element outside the portal.
+                  const fromOuter =
+                    event.relatedTarget === outerAfterRef.current;
+                  if (!fromOuter && isFocusEventOutside(event, portalNode)) {
+                    queueFocus(innerBeforeRef.current);
                   } else {
                     queueFocus(getPreviousTabbable());
                   }
@@ -222,12 +231,25 @@ export const usePortal = createHook<PortalOptions>(
             {element}
             {preserveTabOrder && portalNode && (
               <FocusTrap
-                ref={afterOutsideRef}
+                ref={outerAfterRef}
+                className="__focus-trap-outer-after"
                 onFocus={(event) => {
                   if (isFocusEventOutside(event, portalNode)) {
-                    queueFocus(afterInsideRef.current);
+                    queueFocus(innerAfterRef.current);
                   } else {
-                    queueFocus(getNextTabbable());
+                    const nextTabbable = getNextTabbable();
+                    // If the next tabbable element is the inner before focus
+                    // trap, this means we're at the end of the document or the
+                    // portal was placed right after the original spot in the
+                    // React tree. We need to wait for the next frame so the
+                    // preserveTabOrder effect can run and disable the inner
+                    // before focus trap. If there's no tabbable element after
+                    // that, the focus will stay on this element.
+                    if (nextTabbable === innerBeforeRef.current) {
+                      requestAnimationFrame(() => getNextTabbable()?.focus());
+                      return;
+                    }
+                    queueFocus(nextTabbable);
                   }
                 }}
               />

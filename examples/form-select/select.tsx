@@ -14,11 +14,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   ({ children, value, setValue, defaultValue, onTouch, ...props }, ref) => {
     const portalRef = React.useRef<HTMLDivElement>(null);
     const select = Ariakit.useSelectStore({
-      gutter: 4,
       value,
       setValue,
       defaultValue,
-      sameWidth: true,
     });
     const selectValue = select.useState(
       (state) => state.value || "Select an item"
@@ -44,6 +42,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         <Ariakit.SelectPopover
           store={select}
           modal
+          gutter={4}
+          sameWidth
           portalRef={portalRef}
           className="popover"
           onBlur={(event) => {

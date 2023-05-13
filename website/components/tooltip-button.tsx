@@ -23,7 +23,7 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
 
 export const TooltipButton = createComponent<TooltipButtonOptions>(
   ({ title, tooltipProps, fixed, ...props }) => {
-    const tooltip = useTooltipStore({ timeout: 500, fixed });
+    const tooltip = useTooltipStore();
     const mounted = tooltip.useState("mounted");
     return (
       <>
@@ -31,9 +31,10 @@ export const TooltipButton = createComponent<TooltipButtonOptions>(
         {mounted && (
           <Tooltip
             {...tooltipProps}
+            fixed
             store={tooltip}
             className={cx(
-              "z-40 rounded-md px-2 py-1 text-sm",
+              "z-40 cursor-default rounded-md px-2 py-1 text-sm",
               "drop-shadow-sm dark:drop-shadow-sm-dark",
               "bg-gray-150 dark:bg-gray-700",
               "text-black dark:text-white",
