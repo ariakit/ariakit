@@ -57,7 +57,7 @@
     "version": "independent"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --ext js,ts,tsx --fix",
+    "*.{js,ts,tsx}": "eslint --fix",
     "*.css": "stylelint --fix",
     "package.json": "npm run clean -ws --if-present"
   },
