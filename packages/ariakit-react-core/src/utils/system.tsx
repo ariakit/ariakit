@@ -86,6 +86,7 @@ export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
   } else if (render) {
+    // @ts-expect-error
     element = render(rest) as ReactElement;
   } else if (isRenderProp(props.children)) {
     const { children, ...otherProps } = rest;

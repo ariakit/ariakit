@@ -42,9 +42,7 @@ export default function Example() {
               key={value}
               focusOnHover
               className="select-item"
-              render={(props) => (
-                <Ariakit.SelectItem {...props} value={value} />
-              )}
+              render={(p) => <Ariakit.SelectItem {...p} value={value} />}
             />
           ))}
         </Ariakit.ComboboxList>
