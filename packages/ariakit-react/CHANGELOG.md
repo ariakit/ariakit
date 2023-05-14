@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.1
+
+### Patch Changes
+
+- Added a `render` prop to all components as a more flexible alternative to `children` as a function. ([#2411](https://github.com/ariakit/ariakit/pull/2411))
+
+- Updated dependencies: `@ariakit/react-core@0.2.1`.
+
 ## 0.2.0
 
 ### Minor Changes
