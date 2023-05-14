@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
   createContext,
   memo,
@@ -124,7 +124,7 @@ function highlightValue(
 ) {
   if (!itemValue) return itemValue;
   userValues = userValues.filter(Boolean);
-  const parts: JSX.Element[] = [];
+  const parts: ReactElement[] = [];
 
   const wrap = (value: string, autocomplete = false) => (
     <span

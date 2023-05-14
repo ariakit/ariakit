@@ -213,11 +213,14 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
       </div>
       {!editorReady &&
         Object.entries(files).map(([file]) => (
-          <TabPanel key={file} store={tab} tabId={getId(file)}>
-            {(props) => (
+          <TabPanel
+            key={file}
+            store={tab}
+            tabId={getId(file)}
+            render={(props) => (
               <div {...props}>{!props.hidden && codeBlocks[file]}</div>
             )}
-          </TabPanel>
+          />
         ))}
       <div ref={domRef} className={editorReady ? "h-72" : "hidden"} />
     </div>

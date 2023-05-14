@@ -80,7 +80,9 @@ export function DialogBackdrop({
   if (!backdrop) return null;
 
   if (isValidElement(backdrop)) {
-    return <Role {...props}>{(props) => cloneElement(backdrop, props)}</Role>;
+    return (
+      <Role {...props} render={(props) => cloneElement(backdrop, props)} />
+    );
   }
 
   const Component = typeof backdrop !== "boolean" ? backdrop || "div" : "div";

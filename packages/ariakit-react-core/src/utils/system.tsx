@@ -81,10 +81,12 @@ export function createMemoComponent<O extends Options>(
  * }
  */
 export function createElement(Type: ElementType, props: HTMLProps<Options>) {
-  const { as: As, wrapElement, ...rest } = props;
+  const { as: As, wrapElement, render, ...rest } = props;
   let element: ReactElement;
   if (As && typeof As !== "string") {
-    element = <As {...rest} />;
+    element = <As {...rest} render={render} />;
+  } else if (render) {
+    element = render(rest) as ReactElement;
   } else if (isRenderProp(props.children)) {
     const { children, ...otherProps } = rest;
     element = props.children(otherProps) as ReactElement;

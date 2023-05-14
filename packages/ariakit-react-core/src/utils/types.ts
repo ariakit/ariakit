@@ -52,6 +52,7 @@ export type Options<T extends As = any> = { as?: T };
 export type HTMLProps<O extends Options> = {
   wrapElement?: WrapElement;
   children?: Children;
+  render?: RenderProp;
   [index: `data-${string}`]: unknown;
 } & Omit<ComponentPropsWithRef<NonNullable<O["as"]>>, keyof O | "children">;
 
@@ -70,15 +71,11 @@ export type Props<O extends Options> = O & HTMLProps<O>;
  * @example
  * type ButtonComponent = Component<Options<"button">>;
  */
-export type Component<O extends Options> = {
-  <T extends As>(
-    props: Omit<O, "as"> &
-      Omit<HTMLProps<Options<T>>, keyof O> &
-      Required<Options<T>>
-  ): JSX.Element | null;
-  (props: Props<O>): JSX.Element | null;
+export interface Component<O extends Options> {
+  <T extends As>(props: Props<{ as: T } & Omit<O, "as">>): ReactElement | null;
+  (props: Props<O>): ReactElement | null;
   displayName?: string;
-};
+}
 
 /**
  * A component hook that supports the `as` prop and the `children` prop as a
@@ -87,9 +84,9 @@ export type Component<O extends Options> = {
  * @example
  * type ButtonHook = Hook<Options<"button">>;
  */
-export type Hook<O extends Options> = {
+export interface Hook<O extends Options> {
   <T extends As = NonNullable<O["as"]>>(
-    props?: Omit<O, "as"> & Omit<HTMLProps<Options<T>>, keyof O> & Options<T>
+    props?: Props<Options<T> & Omit<O, "as">>
   ): HTMLProps<Options<T>>;
   displayName?: string;
-};
+}

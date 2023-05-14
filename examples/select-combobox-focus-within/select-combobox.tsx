@@ -110,19 +110,14 @@ type SelectComboboxItemProps = React.HTMLAttributes<HTMLDivElement> & {
 export const SelectComboboxItem = React.forwardRef<
   HTMLDivElement,
   SelectComboboxItemProps
->(({ value, children, ...props }, ref) => {
+>(({ value, ...props }, ref) => {
   return (
     <Ariakit.ComboboxItem
       ref={ref}
       focusOnHover
       className="select-item"
+      render={(props) => <Ariakit.SelectItem {...props} value={value} />}
       {...props}
-    >
-      {(props) => (
-        <Ariakit.SelectItem {...props} value={value}>
-          {children}
-        </Ariakit.SelectItem>
-      )}
-    </Ariakit.ComboboxItem>
+    />
   );
 });
