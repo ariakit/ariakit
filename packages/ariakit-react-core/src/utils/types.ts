@@ -1,12 +1,4 @@
-import type {
-  ComponentPropsWithRef,
-  ElementType,
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-  RefAttributes,
-} from "react";
-import type { AnyObject } from "@ariakit/core/utils/types";
+import type * as React from "react";
 
 /**
  * Render prop type.
@@ -14,26 +6,28 @@ import type { AnyObject } from "@ariakit/core/utils/types";
  * @example
  * const children: RenderProp = (props) => <div {...props} />;
  */
-export type RenderProp<P = AnyObject> = (props: P) => ReactNode;
+export type RenderProp<
+  P = React.HTMLAttributes<any> & React.RefAttributes<any>
+> = (props: P) => React.ReactNode;
 
 /**
  * The `as` prop.
  * @template P Props
  */
-export type As<P = any> = ElementType<P>;
+export type As<P = any> = React.ElementType<P>;
 
 /**
  * The `wrapElement` prop.
  */
-export type WrapElement = (element: ReactElement) => ReactElement;
+export type WrapElement = (element: React.ReactElement) => React.ReactElement;
 
 /**
  * The `children` prop that supports a function.
  * @template T Element type.
  */
 export type Children<T = any> =
-  | ReactNode
-  | RenderProp<HTMLAttributes<T> & RefAttributes<T>>;
+  | React.ReactNode
+  | RenderProp<React.HTMLAttributes<T> & React.RefAttributes<T>>;
 
 /**
  * Props with the `as` prop.
@@ -52,8 +46,12 @@ export type Options<T extends As = any> = { as?: T };
 export type HTMLProps<O extends Options> = {
   wrapElement?: WrapElement;
   children?: Children;
+  render?: RenderProp;
   [index: `data-${string}`]: unknown;
-} & Omit<ComponentPropsWithRef<NonNullable<O["as"]>>, keyof O | "children">;
+} & Omit<
+  React.ComponentPropsWithRef<NonNullable<O["as"]>>,
+  keyof O | "children"
+>;
 
 /**
  * Options & HTMLProps
@@ -70,15 +68,13 @@ export type Props<O extends Options> = O & HTMLProps<O>;
  * @example
  * type ButtonComponent = Component<Options<"button">>;
  */
-export type Component<O extends Options> = {
+export interface Component<O extends Options> {
   <T extends As>(
-    props: Omit<O, "as"> &
-      Omit<HTMLProps<Options<T>>, keyof O> &
-      Required<Options<T>>
-  ): JSX.Element | null;
-  (props: Props<O>): JSX.Element | null;
+    props: Props<{ as: T } & Omit<O, "as">>
+  ): React.ReactElement | null;
+  (props: Props<O>): React.ReactElement | null;
   displayName?: string;
-};
+}
 
 /**
  * A component hook that supports the `as` prop and the `children` prop as a
@@ -87,9 +83,9 @@ export type Component<O extends Options> = {
  * @example
  * type ButtonHook = Hook<Options<"button">>;
  */
-export type Hook<O extends Options> = {
+export interface Hook<O extends Options> {
   <T extends As = NonNullable<O["as"]>>(
-    props?: Omit<O, "as"> & Omit<HTMLProps<Options<T>>, keyof O> & Options<T>
+    props?: Props<Options<T> & Omit<O, "as">>
   ): HTMLProps<Options<T>>;
   displayName?: string;
-};
+}

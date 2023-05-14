@@ -19,6 +19,7 @@ import { NewWindow } from "icons/new-window.js";
 import { React } from "icons/react.js";
 import { Vue } from "icons/vue.js";
 import Link from "next/link.js";
+import { usePathname } from "next/navigation.js";
 import { tw } from "utils/tw.js";
 import { Popup } from "./popup.js";
 
@@ -107,19 +108,21 @@ interface Props {
 
 export function HeaderVersionSelect({ versions }: Props) {
   const select = useSelectStore({ defaultValue: getValueFromPkg(pkg) });
+  const pathname = usePathname();
 
   const renderItem = (value: string, tag: string) => {
     const { version } = getPkgFromValue(value);
 
     return (
-      <SelectItem key={value} value={value} className={style.item}>
-        {(props) => (
-          <Link href="" {...props}>
-            <SelectItemCheck />
-            <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
-            <span className={style.itemBadge}>{tag}</span>
-          </Link>
-        )}
+      <SelectItem
+        key={value}
+        value={value}
+        className={style.item}
+        render={(props) => <Link href={pathname} {...props} />}
+      >
+        <SelectItemCheck />
+        <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
+        <span className={style.itemBadge}>{tag}</span>
       </SelectItem>
     );
   };

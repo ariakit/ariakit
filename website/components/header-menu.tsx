@@ -388,12 +388,12 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const selectChildren = select.useState((state) => label ?? state.value);
 
     const button = selectable ? (
-      <Select store={select} {...props} ref={ref}>
-        {(props) => renderButton({ ...props, children: selectChildren })}
+      <Select store={select} {...props} ref={ref} render={renderButton}>
+        {selectChildren}
       </Select>
     ) : (
-      <MenuButton store={menu} {...props} ref={ref}>
-        {(props) => renderButton({ ...props, children: label })}
+      <MenuButton store={menu} {...props} ref={ref} render={renderButton}>
+        {label}
       </MenuButton>
     );
 
@@ -411,18 +411,16 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             fixed
             fitViewport
             gutter={4}
-          >
-            {(props) => (
+            render={(props) => (
               <MenuList
                 {...props}
                 store={menu}
                 typeahead={false}
                 composite={false}
-              >
-                {renderPopover}
-              </MenuList>
+                render={renderPopover}
+              />
             )}
-          </SelectPopover>
+          />
         )}
       </SelectContext.Provider>
     ) : (
@@ -444,9 +442,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
               if (!anchor) return null;
               return anchor.getBoundingClientRect();
             }}
-          >
-            {renderPopover}
-          </Menu>
+            render={renderPopover}
+          />
         )}
       </SelectContext.Provider>
     );

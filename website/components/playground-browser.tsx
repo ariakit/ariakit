@@ -113,13 +113,15 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             className={style.input}
           />
         </form>
-        <TooltipButton title="Open in new tab" className={style.button}>
-          {(props) => (
-            <Link {...props} href={url || previewLink} target="_blank">
-              <span className="sr-only">Open in new tab</span>
-              <NewWindow />
-            </Link>
+        <TooltipButton
+          title="Open in new tab"
+          className={style.button}
+          render={(props) => (
+            <Link {...props} href={url || previewLink} target="_blank" />
           )}
+        >
+          <span className="sr-only">Open in new tab</span>
+          <NewWindow />
         </TooltipButton>
       </div>
       <iframe

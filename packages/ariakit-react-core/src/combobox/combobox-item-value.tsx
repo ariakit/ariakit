@@ -1,4 +1,5 @@
 import { useContext, useMemo } from "react";
+import type { ReactElement } from "react";
 import { invariant, normalizeString } from "@ariakit/core/utils/misc";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
@@ -15,7 +16,7 @@ function normalizeValue(value: string) {
 function splitValue(itemValue: string, userValue: string) {
   userValue = normalizeValue(userValue);
   let index = normalizeValue(itemValue).indexOf(userValue);
-  const parts: JSX.Element[] = [];
+  const parts: ReactElement[] = [];
   while (index !== -1) {
     if (index !== 0) {
       parts.push(

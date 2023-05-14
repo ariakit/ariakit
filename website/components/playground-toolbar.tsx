@@ -119,21 +119,22 @@ export function PlaygroundToolbar({
 
   return (
     <Toolbar store={toolbar} className={style.toolbar}>
-      <ToolbarItem className={style.toolbarItem}>
-        {(props) => (
+      <ToolbarItem
+        className={style.toolbarItem}
+        render={(props) => (
           <Select
             as={TooltipButton}
             store={select}
             title="Select language"
             {...props}
-          >
-            <span className="sr-only">Select language</span>
-            {isJS ? (
-              <JavaScript className="h-5 w-5" />
-            ) : (
-              <TypeScript className="h-5 w-5" />
-            )}
-          </Select>
+          />
+        )}
+      >
+        <span className="sr-only">Select language</span>
+        {isJS ? (
+          <JavaScript className="h-5 w-5" />
+        ) : (
+          <TypeScript className="h-5 w-5" />
         )}
       </ToolbarItem>
 
@@ -153,18 +154,19 @@ export function PlaygroundToolbar({
         </SelectItem>
       </SelectPopover>
 
-      <ToolbarItem className={style.toolbarItem}>
-        {(props) => (
+      <ToolbarItem
+        className={style.toolbarItem}
+        render={(props) => (
           <MenuButton
             as={TooltipButton}
             store={menu}
             title="Open example in a new tab"
             {...props}
-          >
-            <span className="sr-only">Open example in a new tab</span>
-            <NewWindow strokeWidth={1.5} className="h-5 w-5" />
-          </MenuButton>
+          />
         )}
+      >
+        <span className="sr-only">Open example in a new tab</span>
+        <NewWindow strokeWidth={1.5} className="h-5 w-5" />
       </ToolbarItem>
 
       <Menu as={Popup} store={menu} portal shift={-6} size="responsive">
