@@ -86,7 +86,13 @@ function writeFiles(buildDir, pages) {
   });
 
   const categories = groupBy(meta, (page) => page.category);
-  const contents = meta.flatMap((page) => page.sections);
+  const contents = meta
+    .flatMap((page) => page.sections)
+    .filter(
+      (section) =>
+        section.title === "Getting started" ||
+        section.section !== "Installation"
+    );
 
   const index = Object.entries(categories).reduce(
     /** @param {Record<string, Omit<(typeof meta)[0], "sections">[]>} acc */

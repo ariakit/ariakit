@@ -1,4 +1,4 @@
-import { isValidElement } from "react";
+import { Children, isValidElement, useId } from "react";
 import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
@@ -10,6 +10,7 @@ import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
 import matter from "gray-matter";
+import { ArrowRight } from "icons/arrow-right.jsx";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
 import Link from "next/link.js";
@@ -46,7 +47,8 @@ const style = {
   `,
   link: tw`
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
-    underline [text-decoration-skip-ink:none] hover:decoration-[3px]
+    underline [text-decoration-skip-ink:none]
+    decoration-1 hover:decoration-[3px]
     underline-offset-[0.25em]
     font-medium dark:font-normal
     text-blue-700 dark:text-blue-400
@@ -68,13 +70,19 @@ const style = {
     tracking-[-0.035em] dark:tracking-[-0.015em]
     ${stickyHeading}
   `,
+  description: tw`
+    -translate-y-2
+    text-lg sm:text-xl sm:leading-8
+    !text-black/70 dark:!text-white/60
+  `,
   aside: tw`
-    flex flex-col gap-4 !max-w-[832px] p-4 pl-5 sm:p-8
+    flex flex-col items-center justify-center w-full gap-4 p-4 pl-5 sm:p-8
     rounded-lg sm:rounded-xl !rounded-l relative overflow-hidden
+    !max-w-[832px] [&>*]:max-w-3xl [&>*]:w-full
 
     before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1
 
-    data-[type="danger"]:bg-red-100
+    data-[type="danger"]:bg-red-100/70
     data-[type="danger"]:dark:bg-red-700/20
     data-[type="danger"]:before:bg-red-600
 
@@ -87,23 +95,47 @@ const style = {
     data-[type="note"]:dark:bg-blue-900/20
     data-[type="note"]:before:bg-blue-600
   `,
+  figure: tw`
+    group flex flex-col gap-2 !max-w-[736px]
+    data-[type=bigquote]:!w-auto
+    data-[type=bigquote]:p-4
+  `,
+  blockquote: tw`
+    flex flex-col gap-4 p-4 !max-w-[736px]
+    border-l-4 border-black/25 dark:border-white/25
+    group-data-[type=bigquote]:border-0
+    group-data-[type=bigquote]:italic
+    group-data-[type=bigquote]:p-0
+    group-data-[type=bigquote]:text-lg
+    group-data-[type=bigquote]:sm:text-xl
+    group-data-[type=bigquote]:md:text-2xl
+    group-data-[type=bigquote]:opacity-75
+  `,
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    data-[description]:-translate-y-2
-    data-[description]:text-lg sm:data-[description]:text-xl
-    sm:data-[description]:leading-8
-    data-[description]:text-black/70 dark:data-[description]:text-white/60
-
-    [&_code]:rounded [&_code]:p-1 [&_code]:text-[0.9375em]
-    [&_code]:bg-black/[6.5%] dark:[&_code]:bg-white/[6.5%]
-    [&_code]:font-monospace
+    [p&_code]:rounded [p&_code]:p-1 [p&_code]:text-[0.9375em]
+    [p&_code]:bg-black/[6.5%] dark:[p&_code]:bg-white/[6.5%]
+    [p&_code]:font-monospace
   `,
   strong: tw`
     font-semibold dark:text-white
   `,
   list: tw`
-    flex flex-col gap-4 pl-8 list-disc
+    flex flex-col gap-4 pl-10 list-none
+  `,
+  listItem: tw`
+    relative flex flex-col gap-2
+  `,
+  listItemNumber: tw`
+    flex items-center justify-center
+    h-6 w-6 text-sm rounded-full
+    absolute -translate-x-8 translate-y-0.5
+    bg-blue-600 text-white
+  `,
+  listItemBullet: tw`
+    absolute -translate-x-8
+    w-7 p-1 text-black/50 dark:text-white/50
   `,
   pre: tw`
     data-[api]:leading-8 data-[api]:tracking-wide
@@ -225,12 +257,54 @@ export default async function Page({ params }: PageProps) {
                 style.paragraph,
                 props.className
               );
-              if (ordered) return <ol {...props} className={className} />;
               return <ul {...props} className={className} />;
             },
-            aside: ({ node, ...props }) => {
+            ol: ({ node, ordered, ...props }) => {
+              const className = cx(
+                style.list,
+                style.paragraph,
+                props.className
+              );
+              return <ol {...props} className={className} />;
+            },
+            li: ({ node, ordered, index, ...props }) => {
+              const className = cx(style.listItem, props.className);
+              const isMultiline = Children.toArray(props.children)[0] === "\n";
+              return (
+                <li {...props} className={className}>
+                  {ordered ? (
+                    <span className={style.listItemNumber}>{index + 1}</span>
+                  ) : (
+                    <ArrowRight className={style.listItemBullet} />
+                  )}
+                  {isMultiline ? props.children : <span>{props.children}</span>}
+                </li>
+              );
+            },
+            aside: ({ node, title, ...props }) => {
+              const id = useId();
               const className = cx(style.aside, props.className);
-              return <aside {...props} className={className} />;
+              if (!title) {
+                return <div {...props} className={className} />;
+              }
+              return (
+                <aside {...props} className={className} aria-labelledby={id}>
+                  <p className={style.paragraph}>
+                    <strong id={id} className={style.strong}>
+                      {title}
+                    </strong>
+                  </p>
+                  {props.children}
+                </aside>
+              );
+            },
+            figure: ({ node, ...props }) => {
+              const className = cx(style.figure, props.className);
+              return <figure {...props} className={className} />;
+            },
+            blockquote: ({ node, ...props }) => {
+              const className = cx(style.blockquote, props.className);
+              return <blockquote {...props} className={className} />;
             },
             pre: ({ node, ...props }) => {
               const pre = (
@@ -274,7 +348,11 @@ export default async function Page({ params }: PageProps) {
               const paragraph = (
                 <p
                   {...props}
-                  className={cx(style.paragraph, props.className)}
+                  className={cx(
+                    style.paragraph,
+                    "data-description" in props && style.description,
+                    props.className
+                  )}
                 />
               );
               const child = props.children[0];
