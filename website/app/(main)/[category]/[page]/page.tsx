@@ -252,19 +252,11 @@ export default async function Page({ params }: PageProps) {
               </h3>
             ),
             ul: ({ node, ordered, ...props }) => {
-              const className = cx(
-                style.list,
-                style.paragraph,
-                props.className
-              );
+              const className = cx(style.list, props.className);
               return <ul {...props} className={className} />;
             },
             ol: ({ node, ordered, ...props }) => {
-              const className = cx(
-                style.list,
-                style.paragraph,
-                props.className
-              );
+              const className = cx(style.list, props.className);
               return <ol {...props} className={className} />;
             },
             li: ({ node, ordered, index, ...props }) => {
@@ -277,7 +269,11 @@ export default async function Page({ params }: PageProps) {
                   ) : (
                     <ArrowRight className={style.listItemBullet} />
                   )}
-                  {isMultiline ? props.children : <span>{props.children}</span>}
+                  {isMultiline ? (
+                    props.children
+                  ) : (
+                    <p className={style.paragraph}>{props.children}</p>
+                  )}
                 </li>
               );
             },
