@@ -18,9 +18,7 @@ Ariakit components accept all native props, including `className`, `style`, and 
 
 ## CSS selectors
 
-<aside data-type="danger">
-
-**Do not use any selectors that are not listed below.**
+<aside data-type="danger" title="Do not use any selectors that are not listed below">
 
 Ariakit renders elements with HTML attributes, such as `role`, that should not be used as CSS selectors as they're not part of the public API and may change in future minor and patch releases.
 

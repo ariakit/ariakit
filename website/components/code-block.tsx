@@ -152,7 +152,7 @@ export async function CodeBlock({
             })}
           </div>
         )}
-        <code className="grid w-full">
+        <code className="grid h-max w-full">
           {tokens.map((line, i) => {
             const highlighted = highlightLines?.includes(i + 1);
             return (

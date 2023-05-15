@@ -1,43 +1,50 @@
 import contents from "build-pages/contents.js";
+import type { PageContent } from "build-pages/contents.js";
+import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
 import type { NextRequest } from "next/server.js";
 import { NextResponse } from "next/server.js";
 
 export const runtime = "edge";
 
-const contentsWithoutInstallation = contents.filter(
-  (page) => page.title === "Getting started" || page.section !== "Installation"
-);
-
 const searcherOptions = {
-  keySelector: (obj: (typeof contents)[number]) => [
-    obj.title || "",
-    obj.parentSection || "",
-    obj.section || "",
-    obj.content || "",
-    obj.category || "",
-    obj.slug || "",
-    [obj.title, obj.category].join(" "),
-    [obj.title, obj.parentSection, obj.section, obj.category].join(" "),
-  ],
+  keySelector: (obj) => {
+    if (obj.section) {
+      return [
+        obj.content,
+        obj.section,
+        obj.parentSection || "",
+        [obj.parentSection, obj.section].join(" "),
+      ];
+    }
+    return [
+      obj.title,
+      obj.content,
+      obj.category,
+      obj.slug,
+      [obj.title, obj.category].join(" "),
+      [obj.title, obj.section, obj.category].join(" "),
+    ];
+  },
   useSellers: true,
   useDamerau: true,
   returnMatchData: true,
-} as const;
+} satisfies FullOptions<PageContent>;
 
-const searcher = new Searcher(contentsWithoutInstallation, searcherOptions);
+const searcher = new Searcher(contents, searcherOptions);
 const searchers: Record<string, typeof searcher> = {};
 
-const categories = contentsWithoutInstallation.reduce<
-  Record<string, typeof contents>
->((acc, curr) => {
-  const category = curr.category;
-  if (!acc[category]) {
-    acc[category] = [];
-  }
-  acc[category]?.push(curr);
-  return acc;
-}, {});
+const categories = contents.reduce<Record<string, typeof contents>>(
+  (acc, curr) => {
+    const category = curr.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category]?.push(curr);
+    return acc;
+  },
+  {}
+);
 
 const entries = Object.entries(categories);
 

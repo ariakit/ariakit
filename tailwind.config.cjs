@@ -11,6 +11,8 @@ module.exports = {
     path.join(__dirname, "components/**/site-icon.tsx"),
     path.join(__dirname, "examples/**/site-icon.tsx"),
     path.join(__dirname, "blog/**/site-icon.tsx"),
+    path.join(__dirname, "guide/**/*.md"),
+    path.join(__dirname, "blog/**/*.md"),
     path.join(__dirname, "website/app/**/*.{ts,tsx}"),
     path.join(__dirname, "website/components/**/*.{ts,tsx}"),
     path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
