@@ -39,7 +39,7 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   size?: "sm" | "md" | "lg";
 }
 
-export function ListPageItem({
+export function PageItem({
   title,
   thumbnail,
   description,

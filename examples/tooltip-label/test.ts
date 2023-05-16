@@ -1,4 +1,4 @@
-import { getByRole, getByText, hover, waitFor } from "@ariakit/test";
+import { click, getByRole, getByText, hover, waitFor } from "@ariakit/test";
 
 const getButton = () => getByRole("button", { name: "Bold" });
 const getTooltip = () => getByText("Bold");
@@ -13,6 +13,15 @@ test("show tooltip on hover", async () => {
   expect(getTooltip()).not.toBeVisible();
   await hover(getButton());
   await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hoverOutside();
+  expect(getTooltip()).not.toBeVisible();
+});
+
+test("do not hide tooltip on click", async () => {
+  await hover(getButton());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await click(getButton());
+  expect(getTooltip()).toBeVisible();
   await hoverOutside();
   expect(getTooltip()).not.toBeVisible();
 });

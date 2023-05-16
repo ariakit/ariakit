@@ -9,7 +9,7 @@ import {
   useHovercardStoreProps,
 } from "../hovercard/hovercard-store.js";
 import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useTooltipStoreOptions(props: TooltipStoreProps) {
   return useHovercardStoreOptions(props);
@@ -19,7 +19,10 @@ export function useTooltipStoreProps<T extends TooltipStore>(
   store: T,
   props: TooltipStoreProps
 ) {
-  return useHovercardStoreProps(store, props);
+  store = useHovercardStoreProps(store, props);
+  useStoreProps(store, props, "type");
+  useStoreProps(store, props, "skipTimeout");
+  return store;
 }
 
 /**

@@ -176,7 +176,11 @@ export const useHovercard = createHook<HovercardOptions>(
         const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
         const isControl = event.key === "Control" && hideOnControlProp(event);
         if (isEscape || isControl) {
-          store.hide();
+          // Wait for the next frame to hide the hovercard. This is to prevent
+          // the hovercard from being immediately shown again when the user
+          // presses the Escape key and triggers a keyboard focus on a tooltip
+          // anchor, for example.
+          requestAnimationFrame(store.hide);
         }
       });
     }, [store, open, hideOnEscapeProp, hideOnControlProp]);
@@ -199,7 +203,7 @@ export const useHovercard = createHook<HovercardOptions>(
       const element = ref.current;
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
-        const { anchorElement, hideTimeout } = store.getState();
+        const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
         const target = event.target as Node | null;
         const anchor = anchorElement;
@@ -243,7 +247,7 @@ export const useHovercard = createHook<HovercardOptions>(
         hideTimeoutRef.current = window.setTimeout(() => {
           hideTimeoutRef.current = 0;
           store.hide();
-        }, hideTimeout);
+        }, hideTimeout ?? timeout);
       };
       return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
         clearTimeout(hideTimeoutRef.current)

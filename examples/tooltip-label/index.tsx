@@ -19,9 +19,9 @@ export default function Example() {
   return (
     <>
       <Ariakit.TooltipAnchor
-        as={Ariakit.Button}
         store={tooltip}
         className="button"
+        as={Ariakit.Button}
       >
         {icon}
       </Ariakit.TooltipAnchor>

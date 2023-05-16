@@ -126,18 +126,6 @@ export interface MenuStoreState<T extends Values = Values>
   extends CompositeStoreState,
     HovercardStoreState {
   /**
-   * @default "vertical"
-   */
-  orientation: CompositeStoreState["orientation"];
-  /**
-   * @default "bottom-start"
-   */
-  placement: HovercardStoreState["placement"];
-  /**
-   * @default 0
-   */
-  hideTimeout: HovercardStoreState["hideTimeout"];
-  /**
    * Determines the element that should be focused when the menu is opened.
    */
   initialFocus: "container" | "first" | "last";
@@ -146,6 +134,12 @@ export interface MenuStoreState<T extends Values = Values>
    * `MenuItemRadio` components.
    */
   values: T;
+  /** @default "vertical" */
+  orientation: CompositeStoreState["orientation"];
+  /** @default "bottom-start" */
+  placement: HovercardStoreState["placement"];
+  /** @default 0 */
+  hideTimeout?: HovercardStoreState["hideTimeout"];
 }
 
 export interface MenuStoreFunctions<T extends Values = Values>

@@ -7,13 +7,14 @@ export default function Example() {
     <>
       <Ariakit.TooltipAnchor
         store={tooltip}
-        as="button"
-        className="button secondary"
+        as="a"
+        href="https://ariakit.org/components/tooltip"
+        className="link"
       >
-        Hover or focus on me
+        Tooltip
       </Ariakit.TooltipAnchor>
       <Ariakit.Tooltip store={tooltip} className="tooltip">
-        Tooltip
+        https://ariakit.org/components/tooltip
       </Ariakit.Tooltip>
     </>
   );

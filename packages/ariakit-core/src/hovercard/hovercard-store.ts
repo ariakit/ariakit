@@ -17,8 +17,6 @@ export function createHovercardStore(
 ): HovercardStore {
   const syncState = props.store?.getState();
 
-  const timeout = defaultValue(props.timeout, syncState?.timeout, 500);
-
   const popover = createPopoverStore({
     ...props,
     placement: defaultValue(
@@ -28,33 +26,17 @@ export function createHovercardStore(
     ),
   });
 
+  const timeout = defaultValue(props.timeout, syncState?.timeout, 500);
+
   const initialState: HovercardStoreState = {
     ...popover.getState(),
     timeout,
-    showTimeout: defaultValue(
-      props.showTimeout,
-      syncState?.showTimeout,
-      timeout
-    ),
-    hideTimeout: defaultValue(
-      props.hideTimeout,
-      syncState?.hideTimeout,
-      timeout
-    ),
+    showTimeout: defaultValue(props.showTimeout, syncState?.showTimeout),
+    hideTimeout: defaultValue(props.hideTimeout, syncState?.hideTimeout),
     autoFocusOnShow: defaultValue(syncState?.autoFocusOnShow, false),
   };
 
   const hovercard = createStore(initialState, popover, props.store);
-
-  hovercard.setup(() =>
-    hovercard.sync(
-      (state) => {
-        hovercard.setState("showTimeout", (value) => value ?? state.timeout);
-        hovercard.setState("hideTimeout", (value) => value ?? state.timeout);
-      },
-      ["timeout"]
-    )
-  );
 
   return {
     ...popover,
@@ -79,12 +61,12 @@ export interface HovercardStoreState extends PopoverStoreState {
    * The amount of time in milliseconds to wait before **showing** the popover.
    * It defaults to the value passed to `timeout`.
    */
-  showTimeout: number;
+  showTimeout?: number;
   /**
    * The amount of time in milliseconds to wait before **hiding** the popover.
    * It defaults to the value passed to `timeout`.
    */
-  hideTimeout: number;
+  hideTimeout?: number;
   /**
    * Whether the popover or an element inside it should be focused when it is
    * shown.

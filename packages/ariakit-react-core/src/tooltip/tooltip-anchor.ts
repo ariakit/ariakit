@@ -84,7 +84,6 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     const contentId = store.useState((state) => state.contentElement?.id);
 
     props = {
-      tabIndex: 0,
       "aria-labelledby": type === "label" ? contentId : undefined,
       "aria-describedby": type === "description" ? contentId : undefined,
       ...props,

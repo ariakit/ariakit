@@ -299,7 +299,7 @@ export const useDialog = createHook<DialogOptions>(
       const isElementFocusable = isFocusable(element);
       if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
       setAutoFocusEnabled(true);
-      element.focus();
+      queueMicrotask(() => element.focus());
     }, [
       open,
       mayAutoFocusOnShow,
@@ -376,7 +376,7 @@ export const useDialog = createHook<DialogOptions>(
         }
         if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
         if (!isElementFocusable) return;
-        element?.focus();
+        queueMicrotask(() => element?.focus());
       };
       if (!open) {
         // If this effect is running while the open state is false, this means

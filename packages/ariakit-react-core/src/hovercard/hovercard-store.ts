@@ -9,7 +9,7 @@ import {
   usePopoverStoreProps,
 } from "../popover/popover-store.js";
 import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useHovercardStoreOptions(props: HovercardStoreProps) {
   return usePopoverStoreOptions(props);
@@ -19,7 +19,11 @@ export function useHovercardStoreProps<T extends HovercardStore>(
   store: T,
   props: HovercardStoreProps
 ) {
-  return usePopoverStoreProps(store, props);
+  store = usePopoverStoreProps(store, props);
+  useStoreProps(store, props, "timeout");
+  useStoreProps(store, props, "showTimeout");
+  useStoreProps(store, props, "hideTimeout");
+  return store;
 }
 
 /**

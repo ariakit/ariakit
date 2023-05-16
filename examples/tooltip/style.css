@@ -1,5 +1,3 @@
-@import url("../button/style.css");
-
 .tooltip {
   @apply
     rounded-md
@@ -16,5 +14,17 @@
     dark:bg-gray-700
     shadow-sm
     dark:shadow-sm-dark
+  ;
+}
+
+.link {
+  @apply
+    font-medium
+    underline
+    decoration-1
+    hover:decoration-[3px]
+    underline-offset-[0.25em]
+    text-blue-700
+    dark:text-blue-400
   ;
 }
