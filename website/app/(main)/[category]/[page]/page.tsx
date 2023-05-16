@@ -150,10 +150,12 @@ const style = {
 
 function findCardLinks(children: ReactNode & ReactNode[]): string[] {
   return Children.toArray(children).flatMap((child) =>
-    isValidElement(child) && child.props?.href
-      ? child.props.href
-      : child.props?.children
-      ? findCardLinks(child.props.children)
+    isValidElement(child)
+      ? child.props?.href
+        ? child.props.href
+        : child.props?.children
+        ? findCardLinks(child.props.children)
+        : []
       : []
   );
 }
