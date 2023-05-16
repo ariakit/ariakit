@@ -9,6 +9,7 @@ import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
+import { PageItem } from "components/page-item.jsx";
 import matter from "gray-matter";
 import { ArrowRight } from "icons/arrow-right.jsx";
 import { Hashtag } from "icons/hashtag.js";
@@ -20,6 +21,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { getPageIcon } from "utils/get-page-icon.jsx";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
 import { tw } from "utils/tw.js";
@@ -141,7 +143,22 @@ const style = {
     data-[api]:leading-8 data-[api]:tracking-wide
     data-[api]:text-black/60 dark:data-[api]:text-white/60
   `,
+  cards: tw`
+    grid grid-cols-1 gap-4 md:grid-cols-2
+  `,
 };
+
+function findCardLinks(children: ReactNode & ReactNode[]): string[] {
+  return Children.toArray(children).flatMap((child) =>
+    isValidElement(child)
+      ? child.props?.href
+        ? child.props.href
+        : child.props?.children
+        ? findCardLinks(child.props.children)
+        : []
+      : []
+  );
+}
 
 function getPageNames(dir: string | string[]) {
   return getPageEntryFiles(dir).map(getPageName);
@@ -234,6 +251,55 @@ export default async function Page({ params }: PageProps) {
                     {...props}
                     className={cx(style.wrapper, props.className)}
                   />
+                );
+              }
+              if (node.properties?.dataCards != null) {
+                const links = findCardLinks(props.children);
+                const pages = links.flatMap((link) => {
+                  const [, category, slug] = link.split("/");
+                  if (!category || !slug) return [];
+                  const page = pagesIndex[category]?.find(
+                    (item) => item.slug === slug
+                  );
+                  return page || [];
+                });
+                const type = node.properties.dataCards;
+                const isComponents = type === "components";
+                const isExamples = type === "examples";
+                const showViewAll =
+                  isExamples && pages.length === 6 && category === "components";
+                return (
+                  <>
+                    <div
+                      {...props}
+                      className={cx(
+                        style.cards,
+                        props.className,
+                        isExamples && "!max-w-[832px]"
+                      )}
+                    >
+                      {pages.map((page) => (
+                        <PageItem
+                          key={page.slug}
+                          href={`/${page.category}/${page.slug}`}
+                          title={page.title}
+                          description={page.content}
+                          size={isComponents ? "sm" : "md"}
+                          thumbnail={
+                            getPageIcon(page.category, page.slug) || <span />
+                          }
+                        />
+                      ))}
+                    </div>
+                    {showViewAll && (
+                      <Link
+                        href={`/examples#${page}`}
+                        className={cx(style.link, "text-center")}
+                      >
+                        View all {pageDetail?.title} examples
+                      </Link>
+                    )}
+                  </>
                 );
               }
               return <div {...props} />;

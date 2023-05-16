@@ -14,7 +14,7 @@ export default defineConfig({
   forbidOnly: CI,
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
-  retries: CI ? 1 : 0,
+  retries: 1,
   webServer: {
     command: "npm start",
     reuseExistingServer: !CI,
@@ -41,7 +41,7 @@ export default defineConfig({
     {
       name: "firefox",
       testMatch: [/\/test[^\/]*\-firefox/, /\/test[^\/]*\-browser/],
-      retries: CI ? 2 : 0,
+      retries: CI ? 2 : 1,
       use: devices["Desktop Firefox"],
     },
     {

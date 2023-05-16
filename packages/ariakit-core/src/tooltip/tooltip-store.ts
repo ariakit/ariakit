@@ -23,18 +23,7 @@ export function createTooltipStore(
       syncState?.placement,
       "top" as const
     ),
-    showTimeout: defaultValue(
-      props.showTimeout,
-      syncState?.showTimeout,
-      props.timeout,
-      500
-    ),
-    hideTimeout: defaultValue(
-      props.hideTimeout,
-      syncState?.hideTimeout,
-      props.timeout,
-      0
-    ),
+    hideTimeout: defaultValue(props.hideTimeout, syncState?.hideTimeout, 0),
   });
 
   const initialState: TooltipStoreState = {
@@ -67,11 +56,7 @@ export interface TooltipStoreState extends HovercardStoreState {
   /** @default "top" */
   placement: HovercardStoreState["placement"];
   /** @default 0 */
-  timeout: HovercardStoreState["timeout"];
-  /** @default 500 */
-  showTimeout: HovercardStoreState["showTimeout"];
-  /** @default 0 */
-  hideTimeout: HovercardStoreState["hideTimeout"];
+  hideTimeout?: HovercardStoreState["hideTimeout"];
 }
 
 export type TooltipStoreFunctions = HovercardStoreFunctions;

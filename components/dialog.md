@@ -6,13 +6,18 @@
 
 <a href="../examples/dialog/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/dialog-animated)
+- [](/examples/dialog-framer-motion)
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+- [](/examples/dialog-react-router)
+- [](/examples/dialog-next-router)
+
+</div>
 
 ## API
 

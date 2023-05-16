@@ -2,6 +2,7 @@
 
 import type { PropsWithChildren } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react/heading";
+import { kebabCase } from "lodash";
 import { tw } from "utils/tw.js";
 
 interface Props {
@@ -9,9 +10,11 @@ interface Props {
 }
 
 export function ListPageSection({ title, children }: PropsWithChildren<Props>) {
+  const slug = kebabCase(title);
   return (
     <HeadingLevel>
       <Heading
+        id={slug}
         className={tw`
         mt-6 scroll-mt-24 text-2xl font-semibold tracking-[-0.035em]
         text-black/70 dark:font-medium dark:tracking-[-0.015em]

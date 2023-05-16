@@ -1,9 +1,7 @@
 import { click, getByRole, hover, press, waitFor } from "@ariakit/test";
 
+const getAnchor = () => getByRole("link");
 const getTooltip = () => getByRole("tooltip", { hidden: true });
-
-const waitForTooltipToShow = () =>
-  waitFor(() => expect(getTooltip()).toBeVisible());
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -13,33 +11,24 @@ const hoverOutside = async () => {
 
 test("show tooltip on hover", async () => {
   expect(getTooltip()).not.toBeVisible();
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
-  await hoverOutside();
-  expect(getTooltip()).not.toBeVisible();
-});
-
-test("do not hide tooltip on click", async () => {
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
-  await click(getByRole("button"));
-  expect(getTooltip()).toBeVisible();
+  await hover(getAnchor());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await hoverOutside();
   expect(getTooltip()).not.toBeVisible();
 });
 
 test("do not wait to show the tooltip if it was just hidden", async () => {
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
+  await hover(getAnchor());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await hoverOutside();
   expect(getTooltip()).not.toBeVisible();
-  await hover(getByRole("button"));
+  await hover(getAnchor());
   expect(getTooltip()).toBeVisible();
 });
 
 test("if tooltip was shown on hover, then the anchor received keyboard focus, do not hide on mouseleave", async () => {
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
+  await hover(getAnchor());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await press.Tab();
   expect(getTooltip()).toBeVisible();
   await hoverOutside();
@@ -48,13 +37,24 @@ test("if tooltip was shown on hover, then the anchor received keyboard focus, do
 
 test("if tooltip was shown on focus visible, do not hide on mouseleave", async () => {
   await press.Tab();
-  await waitForTooltipToShow();
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await hoverOutside();
   expect(getTooltip()).toBeVisible();
-  await hover(getByRole("button"));
+  await hover(getAnchor());
   expect(getTooltip()).toBeVisible();
   await hoverOutside();
   expect(getTooltip()).toBeVisible();
+});
+
+test("click on tooltip and press esc", async () => {
+  expect(getTooltip()).not.toBeVisible();
+  await hover(getAnchor());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await click(getTooltip()!);
+  expect(getTooltip()).toBeVisible();
+  await press.Escape();
+  expect(getAnchor()).toHaveFocus();
+  await waitFor(() => expect(getTooltip()).not.toBeVisible());
 });
 
 test("show tooltip on focus", async () => {
@@ -76,14 +76,14 @@ test("do not show tooltip immediately if focus was lost", async () => {
   div.tabIndex = 0;
   document.body.append(div);
 
-  await hover(getByRole("button"));
-  await waitForTooltipToShow();
+  await hover(getAnchor());
+  await waitFor(() => expect(getTooltip()).toBeVisible());
   await press.Tab();
   await press.Tab();
   expect(getTooltip()).not.toBeVisible();
-  await hover(getByRole("button"));
+  await hover(getAnchor());
   expect(getTooltip()).not.toBeVisible();
-  await waitForTooltipToShow();
+  await waitFor(() => expect(getTooltip()).toBeVisible());
 
   div.remove();
 });
