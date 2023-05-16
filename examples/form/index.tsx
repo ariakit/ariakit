@@ -30,7 +30,7 @@ export default function Example() {
       <div className="field">
         <Ariakit.FormLabel name={form.names.email}>Email</Ariakit.FormLabel>
         <Ariakit.FormInput
-          type="email"
+          type="text"
           name={form.names.email}
           placeholder="johndoe@example.com"
           className="input"
