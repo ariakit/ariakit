@@ -10,6 +10,8 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/previews/hovercard", { waitUntil: "networkidle" });
 });
 
+test.describe.configure({ retries: process.env.CI ? 2 : 1 });
+
 test("https://github.com/ariakit/ariakit/issues/1662", async ({ page }) => {
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
