@@ -24,7 +24,6 @@ import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
 import groupBy from "lodash/groupBy.js";
 import { usePathname } from "next/navigation.js";
-import { flushSync } from "react-dom";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import { usePerceptibleValue } from "utils/use-perceptible-value.js";
 import {
@@ -545,10 +544,6 @@ export function HeaderNav() {
               `[role=combobox][placeholder='${searchTitles[category]}']`
             )?.value
           : "";
-        flushSync(() => {
-          setCategoryOpen(false);
-          setPageOpen(false);
-        });
         if (categoryOpen) {
           setPageOpen(true);
         } else if (pageOpen) {
