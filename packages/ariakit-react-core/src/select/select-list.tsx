@@ -7,6 +7,7 @@ import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useForkRef,
@@ -37,7 +38,7 @@ export const useSelectList = createHook<SelectListOptions>(
     resetOnEscape = true,
     hideOnEnter = true,
     focusOnMove = true,
-    composite = true,
+    composite,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -84,19 +85,27 @@ export const useSelectList = createHook<SelectListOptions>(
 
     const labelId = store.useState((state) => state.labelElement?.id);
     const style = mounted ? props.style : { ...props.style, display: "none" };
+    const hasCombobox = store.useState("combobox");
+    composite = composite ?? !hasCombobox;
 
     if (composite) {
-      props = {
-        role: "listbox",
-        "aria-multiselectable": multiSelectable ? true : undefined,
-        ...props,
-      };
+      props = { role: "listbox", ...props };
     }
+
+    const role = useAttribute(ref, "role", props.role);
+    const isCompositeRole =
+      role === "listbox" ||
+      role === "menu" ||
+      role === "tree" ||
+      role === "grid";
+    const ariaMultiSelectable =
+      composite || isCompositeRole ? multiSelectable || undefined : undefined;
 
     props = {
       id,
       hidden: !mounted,
       "aria-labelledby": labelId,
+      "aria-multiselectable": ariaMultiSelectable,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
       style,
@@ -113,6 +122,7 @@ export const useSelectList = createHook<SelectListOptions>(
       composite,
       focusOnMove: canFocusOnMove,
     });
+
     props = useCompositeTypeahead({ store, ...props });
 
     return props;

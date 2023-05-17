@@ -45,7 +45,7 @@ export const SelectCombobox = React.forwardRef<
     });
 
     const select = Ariakit.useSelectStore({
-      ...combobox,
+      combobox,
       defaultValue,
       value,
       setValue: onChange,
@@ -72,7 +72,6 @@ export const SelectCombobox = React.forwardRef<
         {mounted && (
           <Ariakit.SelectPopover
             store={select}
-            composite={false}
             portal
             gutter={4}
             sameWidth

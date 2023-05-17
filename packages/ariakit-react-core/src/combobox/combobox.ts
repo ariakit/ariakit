@@ -1,18 +1,25 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
+  AriaAttributes,
   ChangeEvent,
   CompositionEvent,
   MouseEvent,
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import {
   isFocusEventOutside,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
-import { normalizeString } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import {
+  isFalsyBooleanCallback,
+  normalizeString,
+} from "@ariakit/core/utils/misc";
+import type {
+  BooleanOrCallback,
+  StringWithValue,
+} from "@ariakit/core/utils/types";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.js";
@@ -53,6 +60,17 @@ function hasCompletionString(value?: string, activeValue?: string) {
 
 function isInputEvent(event: Event): event is InputEvent {
   return event.type === "input";
+}
+
+function isAriaAutoCompleteValue(
+  value: string
+): value is Required<AriaAttributes>["aria-autocomplete"] {
+  return (
+    value === "inline" ||
+    value === "list" ||
+    value === "both" ||
+    value === "none"
+  );
 }
 
 /**
@@ -362,10 +380,14 @@ export const useCombobox = createHook<ComboboxOptions>(
     // the combobox input in their aria-controls attribute.
     const id = useId(props.id);
 
+    const ariaAutoComplete = isAriaAutoCompleteValue(autoComplete)
+      ? autoComplete
+      : undefined;
+
     props = {
       id,
       role: "combobox",
-      "aria-autocomplete": autoComplete,
+      "aria-autocomplete": ariaAutoComplete,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "aria-expanded": open,
       "aria-controls": contentElement?.id,
@@ -379,8 +401,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       onBlur,
     };
 
-    const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
-
     props = useComposite({
       store,
       focusable,
@@ -388,7 +408,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       // Enable inline autocomplete when the user moves from the combobox input
       // to an item.
       moveOnKeyPress: (event) => {
-        if (!moveOnKeyPressProp(event)) return false;
+        if (isFalsyBooleanCallback(moveOnKeyPress, event)) return false;
         if (inline) setCanInline(true);
         return true;
       },
@@ -468,7 +488,7 @@ export interface ComboboxOptions<T extends As = "input">
    * Live examples:
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    */
-  autoComplete?: "both" | "inline" | "list" | "none";
+  autoComplete?: StringWithValue<Required<AriaAttributes>["aria-autocomplete"]>;
   /**
    * Whether the combobox list/popover should be shown when the input value is
    * changed.

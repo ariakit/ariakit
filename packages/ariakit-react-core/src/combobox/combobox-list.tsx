@@ -1,8 +1,10 @@
-import type { KeyboardEvent } from "react";
+import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
+import { useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { As, Props } from "../utils/types.js";
 import { ComboboxContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -21,7 +23,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  * ```
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
-  ({ store, ...props }) => {
+  ({ store, focusable = true, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -33,6 +35,39 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       if (event.key === "Escape") {
         store.move(null);
       }
+    });
+
+    // TODO: Comment and try to test
+    const restoreVirtualFocus = useRef(false);
+    const onFocusVisibleProp = props.onFocusVisible;
+    // TODO: Raf is necessary on VoiceOver: move VO cursor to listbox, then
+    // VO+ArrowDown, then VO+ArrowUp, then VO+ArrowDown, etc.
+    const rafRef = useRef(0);
+
+    const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onFocusVisibleProp?.(event);
+      if (event.defaultPrevented) return;
+      const { virtualFocus } = store.getState();
+      if (!virtualFocus) return;
+      const { relatedTarget, currentTarget } = event;
+      if (relatedTarget && currentTarget.contains(relatedTarget)) return;
+      restoreVirtualFocus.current = true;
+      store.setState("virtualFocus", false);
+    });
+
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      cancelAnimationFrame(rafRef.current);
+      if (!restoreVirtualFocus.current) return;
+      const { relatedTarget, currentTarget } = event;
+      if (currentTarget.contains(relatedTarget)) return;
+      restoreVirtualFocus.current = false;
+      rafRef.current = requestAnimationFrame(() => {
+        store.setState("virtualFocus", true);
+      });
     });
 
     props = useWrapElement(
@@ -53,11 +88,16 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       id,
       role: "listbox",
       hidden: !mounted,
+      tabIndex: focusable ? -1 : undefined,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
+      onFocusVisible,
+      onBlur,
     };
+
+    props = useFocusable({ focusable, ...props });
 
     return props;
   }
@@ -89,7 +129,8 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxList.displayName = "ComboboxList";
 }
 
-export interface ComboboxListOptions<T extends As = "div"> extends Options<T> {
+export interface ComboboxListOptions<T extends As = "div">
+  extends FocusableOptions<T> {
   /**
    * Object returned by the `useComboboxStore` hook.
    */

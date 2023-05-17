@@ -54,12 +54,11 @@ test("check/uncheck item after filtering", async () => {
   expect(getInput()).toHaveValue("");
   await type("ap");
   await press.ArrowUp();
-  await press.Space();
-  await press.Home();
   await press.Enter();
-  expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
   expect(getOption("Pineapple")).toHaveAttribute("aria-selected", "true");
   expect(getInput()).toHaveValue("");
+  await press.Enter();
+  expect(getOption("Pineapple")).toHaveAttribute("aria-selected", "false");
 });
 
 test("open with keyboard, then try to open again", async () => {

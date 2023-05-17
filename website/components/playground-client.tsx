@@ -83,7 +83,7 @@ const style = {
   collapseButton: tw`
     flex items-center justify-center gap-1 h-8 pr-2 pl-4 rounded
     m-auto mt-2 text-sm border focus-visible:ariakit-outline
-    drop-shadow-sm dark:drop-shadow-sm-dark
+    shadow-sm dark:shadow-sm-dark
     bg-gray-150 border-gray-300 text-black/80
     hover:bg-gray-250 hover:text-black/90
     dark:bg-gray-750 dark:border-gray-650 dark:text-white/90

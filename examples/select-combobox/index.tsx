@@ -23,7 +23,6 @@ export default function Example() {
       <Ariakit.Select store={select} className="select" />
       <Ariakit.SelectPopover
         store={select}
-        composite={false}
         gutter={4}
         sameWidth
         className="popover"

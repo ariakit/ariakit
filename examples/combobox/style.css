@@ -62,8 +62,8 @@
     text-black
     dark:bg-gray-700
     dark:text-white
-    drop-shadow-lg
-    dark:drop-shadow-lg-dark
+    shadow-lg
+    dark:shadow-lg-dark
   ;
 }
 
