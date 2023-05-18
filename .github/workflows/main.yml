@@ -350,3 +350,60 @@ jobs:
           name: test-results
           path: test-results
           retention-days: 30
+
+  test-vo:
+    name: Test VoiceOver
+    needs: website
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Cache playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-macos-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-macos-
+
+      - name: Install playwright
+        run: npx playwright install --with-deps webkit
+
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: website/.next
+          key: nextjs-${{ github.run_id }}
+
+      - name: Guidepup Setup
+        uses: guidepup/setup-action
+
+      - name: Test
+        id: test
+        run: npm run test-vo
+
+      - name: Upload test results to GitHub
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 30
