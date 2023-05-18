@@ -224,7 +224,7 @@ export const useComposite = createHook<CompositeOptions>(
     }, [activeId, virtualFocus, composite]);
 
     // TODO: Comment and test combobox-multiple
-    const renderedItems = store.useState("renderedItems");
+    const items = store.useState("items");
 
     useEffect(() => {
       const activeItem = getEnabledItem(store, store.getState().activeId);
@@ -233,7 +233,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (!activeElement) return;
       if (!("scrollIntoView" in activeElement)) return;
       activeElement.scrollIntoView({ block: "nearest", inline: "nearest" });
-    }, [store, renderedItems]);
+    }, [store, items]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
       store,
