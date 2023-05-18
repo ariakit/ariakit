@@ -64,7 +64,11 @@ export default defineConfig({
       testMatch: [/\/test[^\/]*\-vo/],
       retries: CI ? 1 : 0,
       timeout: 3 * 60 * 1000, // 3 minutes
-      use: { ...devices["Desktop Safari"], headless: false },
+      use: {
+        ...devices["Desktop Safari"],
+        headless: false,
+        launchOptions: { slowMo: 150 },
+      },
     },
   ],
 });
