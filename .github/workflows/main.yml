@@ -300,7 +300,7 @@ jobs:
   test-macos:
     name: Test macOS
     needs: website
-    runs-on: macos-latest
+    runs-on: macos-latest-xl
 
     steps:
       - name: Checkout repository
@@ -354,7 +354,7 @@ jobs:
   test-vo:
     name: Test VoiceOver
     needs: website
-    runs-on: macos-latest
+    runs-on: macos-latest-xl
 
     steps:
       - name: Checkout repository
@@ -395,6 +395,8 @@ jobs:
 
       - name: Guidepup Setup
         uses: guidepup/setup-action@0.11.2
+        with:
+          record: true
 
       - name: Test
         id: test
@@ -405,5 +407,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: test-results
+          path: |
+            test-results
+            recordings
           retention-days: 30
