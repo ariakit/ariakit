@@ -31,6 +31,15 @@ function parseCSSTime(...times: string[]) {
     }, 0);
 }
 
+export function isHidden(props: {
+  hidden?: boolean;
+  alwaysVisible?: boolean;
+  mounted?: boolean;
+}) {
+  const { hidden, alwaysVisible, mounted } = props;
+  return !alwaysVisible && (!mounted || hidden) && hidden !== false;
+}
+
 /**
  * Returns props to create a `DislosureContent` component.
  * @see https://ariakit.org/components/disclosure
@@ -43,7 +52,7 @@ function parseCSSTime(...times: string[]) {
  * ```
  */
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
-  ({ store, ...props }) => {
+  ({ store, alwaysVisible, ...props }) => {
     const id = useId(props.id);
     const [transition, setTransition] = useState<TransitionState>(null);
     const open = store.useState("open");
@@ -105,19 +114,16 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return afterTimeout(timeoutMs, store.stopAnimation);
     }, [animated, contentElement, open, transition]);
 
-    const style =
-      // TODO: props.hidden !== true see combobox-textarea example
-      (mounted && props.hidden !== true) || props.hidden === false
-        ? props.style
-        : { ...props.style, display: "none" };
+    const hidden = isHidden({ hidden: props.hidden, alwaysVisible, mounted });
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "data-enter": transition === "enter" ? "" : undefined,
       "data-leave": transition === "leave" ? "" : undefined,
-      hidden: !mounted,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, props.ref),
+      hidden,
       style,
     };
 
@@ -152,6 +158,17 @@ export interface DisclosureContentOptions<T extends As = "div">
    * Object returned by the `useDisclosureStore` hook.
    */
   store: DisclosureStore;
+  /**
+   * Whether the content element should remain visible even when the `open`
+   * state is `false`. If this prop is set to `true`, the `hidden` prop and the
+   * `display: none` style won't be applied, unless explicitly set.
+   *
+   * This is useful when using third-party animation libraries like Framer
+   * Motion or React Spring where the element needs to be visible so they can
+   * apply an exit animation.
+   * @default false
+   */
+  alwaysVisible?: boolean;
 }
 
 export type DisclosureContentProps<T extends As = "div"> = Props<

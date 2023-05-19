@@ -27,7 +27,10 @@ import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
-import { useDisclosureContent } from "../disclosure/disclosure-content.js";
+import {
+  isHidden,
+  useDisclosureContent,
+} from "../disclosure/disclosure-content.js";
 import { useFocusableContainer } from "../focusable/focusable-container.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -131,12 +134,9 @@ export const useDialog = createHook<DialogOptions>(
     const open = store.useState("open");
     const mounted = store.useState("mounted");
     const contentElement = store.useState("contentElement");
-    const hiddenProp = props.hidden;
+    const hidden = isHidden({ ...props, mounted });
 
-    usePreventBodyScroll(
-      store,
-      (mounted || hiddenProp === false) && preventBodyScroll
-    );
+    usePreventBodyScroll(store, preventBodyScroll && !hidden);
     useHideOnInteractOutside(store, hideOnInteractOutside);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
@@ -436,6 +436,9 @@ export const useDialog = createHook<DialogOptions>(
       [modal]
     );
 
+    const hiddenProp = props.hidden;
+    const alwaysVisible = props.alwaysVisible;
+
     // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
     props = useWrapElement(
       props,
@@ -449,6 +452,7 @@ export const useDialog = createHook<DialogOptions>(
                   backdrop={backdrop}
                   backdropProps={backdropProps}
                   hidden={hiddenProp}
+                  alwaysVisible={alwaysVisible}
                 />
               )}
               {element}
@@ -457,7 +461,7 @@ export const useDialog = createHook<DialogOptions>(
         }
         return element;
       },
-      [store, backdrop, backdropProps, hiddenProp]
+      [store, backdrop, backdropProps, hiddenProp, alwaysVisible]
     );
 
     const [headingId, setHeadingId] = useState<string>();
