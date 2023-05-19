@@ -128,7 +128,7 @@ export const useMenuList = createHook<MenuListOptions>(
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
     const mounted = store.useState("mounted");
-    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {

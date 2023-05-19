@@ -86,7 +86,7 @@ export const useSelectList = createHook<SelectListOptions>(
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
-    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     if (composite) {

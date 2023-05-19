@@ -134,7 +134,7 @@ export const useDialog = createHook<DialogOptions>(
     const open = store.useState("open");
     const mounted = store.useState("mounted");
     const contentElement = store.useState("contentElement");
-    const hidden = isHidden(props.hidden, mounted, props.alwaysVisible);
+    const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
     usePreventBodyScroll(store, preventBodyScroll && !hidden);
     useHideOnInteractOutside(store, hideOnInteractOutside);

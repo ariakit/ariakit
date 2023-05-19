@@ -32,11 +32,11 @@ function parseCSSTime(...times: string[]) {
 }
 
 export function isHidden(
-  hidden: boolean | undefined,
   mounted: boolean,
-  alwaysVisible?: boolean
+  hidden?: boolean | null,
+  alwaysVisible?: boolean | null
 ) {
-  return !alwaysVisible && (!mounted || hidden) && hidden !== false;
+  return !alwaysVisible && hidden !== false && (!mounted || !!hidden);
 }
 
 /**
@@ -113,7 +113,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return afterTimeout(timeoutMs, store.stopAnimation);
     }, [animated, contentElement, open, transition]);
 
-    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
