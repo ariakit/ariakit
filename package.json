@@ -99,7 +99,7 @@
     "concurrently": "8.0.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
-    "eslint": "8.40.0",
+    "eslint": "8.41.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
