@@ -159,13 +159,14 @@ export interface DisclosureContentOptions<T extends As = "div">
    */
   store: DisclosureStore;
   /**
-   * Whether the content element should remain visible even when the `open`
-   * state is `false`. If this prop is set to `true`, the `hidden` prop and the
-   * `display: none` style won't be applied, unless explicitly set.
+   * Determines whether the content element should remain visible even when the
+   * `open` state is `false`. If this prop is set to `true`, the `hidden` prop
+   * and the `display: none` style will not be applied, unless explicitly set
+   * otherwise.
    *
-   * This is useful when using third-party animation libraries like Framer
-   * Motion or React Spring where the element needs to be visible so they can
-   * apply an exit animation.
+   * This prop is particularly useful when using third-party animation libraries
+   * such as Framer Motion or React Spring, where the element needs to be
+   * visible for exit animations to work.
    * @default false
    */
   alwaysVisible?: boolean;

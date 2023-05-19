@@ -25,8 +25,8 @@ export const TooltipAnchor = React.forwardRef<HTMLDivElement, Props>(
           {mounted && (
             <Ariakit.Tooltip
               store={tooltip}
-              hidden={false}
               gutter={4}
+              alwaysVisible
               className="tooltip"
               as={motion.div}
               initial={{ opacity: 0, y }}
