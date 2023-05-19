@@ -128,15 +128,15 @@ export const useMenuList = createHook<MenuListOptions>(
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
     const mounted = store.useState("mounted");
-    const hidden = isHidden({ hidden: props.hidden, mounted, alwaysVisible });
+    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "aria-labelledby": ariaLabelledBy,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, props.ref),
-      hidden,
       style,
       onKeyDown,
     };

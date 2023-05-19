@@ -31,12 +31,11 @@ function parseCSSTime(...times: string[]) {
     }, 0);
 }
 
-export function isHidden(props: {
-  hidden?: boolean;
-  alwaysVisible?: boolean;
-  mounted?: boolean;
-}) {
-  const { hidden, alwaysVisible, mounted } = props;
+export function isHidden(
+  hidden: boolean | undefined,
+  mounted: boolean,
+  alwaysVisible?: boolean
+) {
   return !alwaysVisible && (!mounted || hidden) && hidden !== false;
 }
 
@@ -114,16 +113,16 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return afterTimeout(timeoutMs, store.stopAnimation);
     }, [animated, contentElement, open, transition]);
 
-    const hidden = isHidden({ hidden: props.hidden, alwaysVisible, mounted });
+    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "data-enter": transition === "enter" ? "" : undefined,
       "data-leave": transition === "leave" ? "" : undefined,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, props.ref),
-      hidden,
       style,
     };
 

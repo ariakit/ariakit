@@ -1,5 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { useRef } from "react";
+import { isHidden } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
@@ -21,7 +23,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  * ```
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
-  ({ store, ...props }) => {
+  ({ store, alwaysVisible, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -46,13 +48,13 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     );
 
     const mounted = store.useState("mounted");
-
-    const style = mounted ? props.style : { ...props.style, display: "none" };
+    const hidden = isHidden(props.hidden, mounted, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       role: "listbox",
-      hidden: !mounted,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
       style,
@@ -89,7 +91,9 @@ if (process.env.NODE_ENV !== "production") {
   ComboboxList.displayName = "ComboboxList";
 }
 
-export interface ComboboxListOptions<T extends As = "div"> extends Options<T> {
+export interface ComboboxListOptions<T extends As = "div">
+  extends Options<T>,
+    Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the `useComboboxStore` hook.
    */
