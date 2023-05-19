@@ -166,6 +166,16 @@ export interface DisclosureContentOptions<T extends As = "div">
    * This prop is particularly useful when using third-party animation libraries
    * such as Framer Motion or React Spring, where the element needs to be
    * visible for exit animations to work.
+   *
+   * Live examples:
+   * - [Dialog with Framer
+   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
+   * - [Menu with Framer
+   *   Motion](https://ariakit.org/examples/menu-framer-motion)
+   * - [Tooltip with Framer
+   *   Motion](https://ariakit.org/examples/tooltip-framer-motion)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
    * @default false
    */
   alwaysVisible?: boolean;
