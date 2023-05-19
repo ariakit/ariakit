@@ -266,8 +266,7 @@ export default async function Page({ params }: PageProps) {
                 const type = node.properties.dataCards;
                 const isComponents = type === "components";
                 const isExamples = type === "examples";
-                const showViewAll =
-                  isExamples && pages.length === 6 && category === "components";
+                const isComponentPage = category === "components";
                 return (
                   <>
                     <div
@@ -291,12 +290,13 @@ export default async function Page({ params }: PageProps) {
                         />
                       ))}
                     </div>
-                    {showViewAll && (
+                    {isExamples && (
                       <Link
-                        href={`/examples#${page}`}
+                        href={`/examples${isComponentPage ? `#${page}` : ""}`}
                         className={cx(style.link, "text-center")}
                       >
-                        View all {pageDetail?.title} examples
+                        View all{isComponentPage ? ` ${pageDetail?.title}` : ""}{" "}
+                        examples
                       </Link>
                     )}
                   </>
