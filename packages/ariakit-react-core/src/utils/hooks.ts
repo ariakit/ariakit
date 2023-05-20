@@ -210,6 +210,35 @@ export function useTagName(
 }
 
 /**
+ * Returns the attribute value of an element.
+ * @example
+ * function Component(props) {
+ *   const ref = React.useRef();
+ *   const role = useAttribute(ref, "role", props.role);
+ *   return <div ref={ref} {...props} />;
+ * }
+ */
+export function useAttribute(
+  refOrElement: RefObject<HTMLElement> | HTMLElement | null,
+  attributeName: string,
+  defaultValue?: string
+) {
+  const [attribute, setAttribute] = useState(defaultValue);
+
+  useSafeLayoutEffect(() => {
+    const element =
+      refOrElement && "current" in refOrElement
+        ? refOrElement.current
+        : refOrElement;
+    const value = element?.getAttribute(attributeName);
+    if (value == null) return;
+    setAttribute(value);
+  }, [refOrElement, attributeName]);
+
+  return attribute;
+}
+
+/**
  * A `React.useEffect` that will not run on the first render.
  */
 export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
