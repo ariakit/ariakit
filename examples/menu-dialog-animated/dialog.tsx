@@ -18,7 +18,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
     const dialog = Ariakit.useDialogStore({
       animated,
       open,
-      setOpen: (open) => {
+      setOpen(open) {
         if (!open) {
           onClose?.();
         }

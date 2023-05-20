@@ -239,18 +239,14 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       includesBaseElement: false,
       focusLoop: false,
       open,
-      setOpen: (open) => {
-        if (onToggle) {
-          onToggle(open);
-        }
-      },
+      setOpen: onToggle,
     });
     const select = useSelectStore({
       combobox,
       value,
-      setValue: (value) => {
-        if (onChange && typeof value === "string") {
-          onChange(value);
+      setValue(value) {
+        if (typeof value === "string") {
+          onChange?.(value);
         }
       },
     });

@@ -6,6 +6,23 @@
 
 <a href="./layout.tsx" data-playground>Example</a>
 
+## Related components
+
+<div data-cards="components">
+
+- [](/components/tab)
+
+</div>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-next-router/)
+- [](/examples/tab-react-router/)
+
+</div>
+
 ## Abstracting the Tab components
 
 In this example, we're abstracting the Ariakit [Tab](/components/tab) components into higher-level components with a simpler API integrated with the [Next.js App Router](https://nextjs.org/docs/api-reference/next/router). Check out the `tabs.tsx` file above to see the source code.
@@ -16,13 +33,15 @@ We're using React Context to provide the tab store to the [`TabList`](/apis/tab-
 
 To control the selected tab state, you can pass the [`selectedId`](/apis/tab-store#selectedid) and [`setSelectedId`](/apis/tab-store#setselectedid) props to [`useTabStore`](/apis/tab-store). These props allow you to synchronize the tab state with other state sources, such as the browser history.
 
-```jsx {5,6}
+```jsx {5-8}
 const router = useRouter();
 const pathname = usePathname();
 
 const tab = Ariakit.useTabStore({
   selectedId: pathname,
-  setSelectedId: (id) => router.push(id || "/"),
+  setSelectedId(id) {
+    router.push(id || pathname);
+  },
 });
 ```
 
@@ -33,7 +52,7 @@ You can learn more about controlled state on the [Component stores](/guide/compo
 It's possible to render a single [`TabPanel`](/apis/tab-panel) component and use the [`tabId`](/apis/tab-panel#tabid) prop to point to the selected tab.
 
 ```jsx
-const selectedId = tab.useState("selectedId");
+const tabId = tab.useState("selectedId");
 
-<TabPanel tabId={selectedId}>{props.children}</TabPanel>;
+<TabPanel tabId={tabId}>{props.children}</TabPanel>;
 ```

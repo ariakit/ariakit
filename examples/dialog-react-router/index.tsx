@@ -13,7 +13,7 @@ function Tweet() {
   const navigate = useNavigate();
   const dialog = Ariakit.useDialogStore({
     open: true,
-    setOpen: (open) => {
+    setOpen(open) {
       if (!open) {
         navigate("/");
       }
