@@ -26,7 +26,7 @@ export function ConfirmDialog({
 }: Props) {
   const dialog = Ariakit.useDialogStore({
     open,
-    setOpen: (open) => {
+    setOpen(open) {
       if (!open) {
         onClose?.();
       }

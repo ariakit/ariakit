@@ -51,7 +51,7 @@ In addition to state, component stores may also accept state updater functions. 
 ```js {3-5}
 const form = useFormStore({
   defaultValues: { name: "", email: "" },
-  setValues: (values) => {
+  setValues(values) {
     console.log(values);
   },
 });

@@ -16,7 +16,7 @@ export default function Example() {
 
   const popover = Ariakit.usePopoverStore({
     open,
-    setOpen: (open) => {
+    setOpen(open) {
       if (open) {
         return startTransition(() => setOpen(open));
       }

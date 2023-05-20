@@ -73,7 +73,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
 
   // Keep activeId in sync with selectedId.
   tab.setup(() =>
-    tab.sync(
+    tab.syncBatch(
       (state) => tab.setState("activeId", state.selectedId),
       ["selectedId"]
     )

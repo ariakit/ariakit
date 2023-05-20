@@ -11,12 +11,7 @@ import type {
   SetState,
 } from "@ariakit/core/utils/types";
 import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
-import {
-  useLazyValue,
-  useLiveRef,
-  useSafeLayoutEffect,
-  useUpdateLayoutEffect,
-} from "./hooks.js";
+import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
 
 type UseState<S> = {
   /**
@@ -145,16 +140,9 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     return store.sync(() => {
-      const { value } = propsRef.current;
       if (value === undefined) return;
       store.setState(key, value);
     }, [key]);
-  }, [store, key]);
-
-  // When the value prop changes, we set the state value to keep it controlled.
-  useUpdateLayoutEffect(() => {
-    if (value === undefined) return;
-    store.setState(key, value);
   }, [store, key, value]);
 }
 /**
