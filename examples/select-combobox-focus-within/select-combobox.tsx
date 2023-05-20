@@ -45,7 +45,7 @@ export const SelectCombobox = React.forwardRef<
     });
 
     const select = Ariakit.useSelectStore({
-      ...combobox,
+      combobox,
       defaultValue,
       value,
       setValue: onChange,
