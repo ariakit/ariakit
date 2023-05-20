@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.1
+
+### Patch Changes
+
+- Fixed `useHovercardStore` and `useTooltipStore` not updating the state when the `timeout`, `showTimeout` or `hideTimeout` props changed. ([#2421](https://github.com/ariakit/ariakit/pull/2421))
+
 ## 0.2.0
 
 ### Minor Changes
