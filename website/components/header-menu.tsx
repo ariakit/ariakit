@@ -147,6 +147,7 @@ const style = {
     rounded-sm
     bg-gray-150 dark:bg-gray-800
     group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
+    group-active:bg-black/[7.5%] dark:group-active:bg-black/70
   `,
   itemNestedThumbnail: tw`
     relative

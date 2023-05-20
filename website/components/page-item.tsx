@@ -9,8 +9,9 @@ const style = {
     group
     flex items-center
     rounded-lg
-    hover:bg-blue-200/40 dark:hover:bg-blue-600/25
-    active:bg-blue-200/70 dark:active:bg-blue-800/25
+    [@media(any-hover:hover)]:hover:bg-blue-200/40
+    [@media(any-hover:hover)]:dark:hover:bg-blue-600/25
+    active:!bg-blue-200/70 dark:active:!bg-blue-800/25
     focus-visible:ariakit-outline-input
   `,
   thumbnail: tw`
@@ -18,6 +19,7 @@ const style = {
     rounded
     bg-gray-150 dark:bg-gray-850
     group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80
+    group-active:bg-black/[7.5%] dark:group-active:bg-black/80
   `,
   textWrapper: tw`
     flex flex-col items-start h-full min-w-0

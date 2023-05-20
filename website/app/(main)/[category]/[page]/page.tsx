@@ -12,6 +12,8 @@ import { CodeBlock } from "components/code-block.js";
 import { PageItem } from "components/page-item.jsx";
 import matter from "gray-matter";
 import { ArrowRight } from "icons/arrow-right.jsx";
+import { Document } from "icons/document.jsx";
+import { FolderOpen } from "icons/folder-open.jsx";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
 import Link from "next/link.js";
@@ -40,6 +42,41 @@ const style = {
   main: tw`
     relative flex w-full min-w-[1px] max-w-5xl
     flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8
+  `,
+  sidebar: tw`
+    hidden md:flex sticky top-32 m-4 flex-col gap-8 flex-none
+    w-60 max-h-[calc(100vh-theme(spacing.36))]
+    border-l border-black/10 dark:border-white/10
+  `,
+  nav: tw`
+    flex-col gap-4 overflow-auto p-3 pr-0 w-full
+  `,
+  navList: tw`
+    flex flex-col md:text-sm text-black/90 dark:text-white/80
+    md:text-black/80 md:dark:text-white/70 p-2 md:p-0
+  `,
+  navSublist: tw`
+    flex flex-col
+  `,
+  navItem: tw`
+    flex flex-col
+  `,
+  navLink: tw`
+    group flex items-start gap-2 md:gap-1 py-1.5 pr-4 rounded
+    aria-[current]:bg-blue-200/40 dark:aria-[current]:bg-blue-600/25
+    underline-offset-[0.2em] hover:text-black dark:hover:text-white
+    focus-visible:ariakit-outline-input
+
+    data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24
+    md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12
+  `,
+  navLinkText: tw`
+    [@media(any-hover:hover)]:group-hover:underline
+    group-aria-[current]:text-black dark:group-aria-[current]:text-white
+  `,
+  navIcon: tw`
+    w-5 h-5 md:w-4 md:h-4 flex-none opacity-60 translate-y-px
+    group-aria-[current]:opacity-100
   `,
   wrapper: tw`
     flex flex-col items-center justify-center gap-8 w-full
@@ -226,15 +263,111 @@ export default async function Page({ params }: PageProps) {
     },
     {
       id: "",
-      href: `/${category}/${page}`,
+      href: "#",
       text: pageDetail?.title ?? page,
       children: tree.data?.tableOfContents as TableOfContentsData,
     },
   ];
 
+  const getTableOfContentsIds = (data: TableOfContentsData): string[] => {
+    return [...data].reverse().flatMap((item) => {
+      if (item.children) {
+        return [...getTableOfContentsIds(item.children), item.id];
+      }
+      if (item.id) {
+        return item.id;
+      }
+      return [];
+    });
+  };
+
+  const renderTableOfContents = (data: TableOfContentsData, depth = 0) =>
+    data.map((item) => {
+      const isFolder = !item.id && item.href.split("/").length === 2;
+      const Component = item.id || !isFolder ? "a" : Link;
+      const isPage = !isFolder && !item.id;
+      const icon = isFolder ? (
+        <FolderOpen className={style.navIcon} />
+      ) : isPage ? (
+        <Document className={style.navIcon} />
+      ) : null;
+      return (
+        <li key={item.href} className={style.navItem}>
+          <Component
+            href={item.href}
+            data-depth={depth}
+            className={style.navLink}
+          >
+            {icon}
+            <span className={style.navLinkText}>{item.text}</span>
+          </Component>
+          {item.children && (
+            <ul className={style.navSublist}>
+              {renderTableOfContents(item.children, depth + 1)}
+            </ul>
+          )}
+        </li>
+      );
+    });
+
+  const sortedIndex = Object.values(pagesIndex).flatMap((item) =>
+    [...item].sort((a, b) => {
+      if (a.group === b.group) return 0;
+      if (!a.group && b.group) return -1;
+      if (a.group && !b.group) return 1;
+      if (!a.group || !b.group) return 0;
+      return a.group > b.group ? 1 : -1;
+    })
+  );
+
+  const pageIndex =
+    pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
+  const nextPage = pageIndex !== -1 ? sortedIndex?.[pageIndex + 1] : undefined;
+
+  const nextPageLink = nextPage && (
+    <Link
+      href={`/${nextPage.category}/${nextPage.slug}`}
+      className={tw`group flex w-auto items-center
+      gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70
+      focus-visible:ariakit-outline-input
+      dark:active:!bg-blue-800/25 md:ml-3
+      [@media(any-hover:hover)]:hover:bg-blue-200/40
+      [@media(any-hover:hover)]:dark:hover:bg-blue-600/25`}
+    >
+      <div
+        className={tw`flex h-14 w-14 items-center justify-center overflow-hidden
+        rounded bg-gray-150 group-hover:bg-black/[7.5%]
+        dark:bg-gray-850 dark:group-hover:bg-black/80`}
+      >
+        {getPageIcon(nextPage.category, nextPage.slug) || <span />}
+      </div>
+      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-sm">
+        <div className="font-semibold">Up Next</div>
+        <div className="truncate opacity-60">{nextPage.title}</div>
+      </div>
+    </Link>
+  );
+
+  const navList = (
+    <ul className={style.navList}>{renderTableOfContents(tableOfContents)}</ul>
+  );
+
   return (
     <div className="flex flex-col items-start justify-center md:flex-row-reverse">
-      <TableOfContents data={tableOfContents} />
+      <TableOfContents
+        ids={getTableOfContentsIds(tableOfContents)}
+        popoverContents={
+          <div className="flex flex-col gap-4">
+            {navList}
+            {nextPageLink}
+          </div>
+        }
+      >
+        <div className={style.sidebar}>
+          <nav className={style.nav}>{navList}</nav>
+          {nextPageLink}
+        </div>
+      </TableOfContents>
       <main className={style.main}>
         <ReactMarkdown
           rehypePlugins={[
