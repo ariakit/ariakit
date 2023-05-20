@@ -4,13 +4,15 @@
   Using <a href="https://reactrouter.com/">React Router</a> to create <a href="/components/tab">Tab</a> links and tab panels controlled by the browser history, while maintaining keyboard navigation.
 </p>
 
+<a href="./index.tsx" data-playground>Example</a>
+
+## Related components
+
 <div data-cards="components">
 
 - [](/components/tab)
 
 </div>
-
-<a href="./index.tsx" data-playground>Example</a>
 
 ## Related examples
 

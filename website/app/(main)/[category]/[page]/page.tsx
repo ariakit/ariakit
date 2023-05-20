@@ -407,7 +407,7 @@ export default async function Page({ params }: PageProps) {
                       className={cx(
                         style.cards,
                         props.className,
-                        isExamples && "!max-w-[832px]"
+                        (isExamples || isComponents) && "!max-w-[832px]"
                       )}
                     >
                       {pages.map((page) => (
@@ -416,7 +416,6 @@ export default async function Page({ params }: PageProps) {
                           href={`/${page.category}/${page.slug}`}
                           title={page.title}
                           description={page.content}
-                          size={isComponents ? "sm" : "md"}
                           thumbnail={
                             getPageIcon(page.category, page.slug) || <span />
                           }
@@ -430,6 +429,14 @@ export default async function Page({ params }: PageProps) {
                       >
                         View all{isComponentPage ? ` ${pageDetail?.title}` : ""}{" "}
                         examples
+                      </Link>
+                    )}
+                    {isComponents && (
+                      <Link
+                        href="/components"
+                        className={cx(style.link, "text-center")}
+                      >
+                        View all components
                       </Link>
                     )}
                   </>
