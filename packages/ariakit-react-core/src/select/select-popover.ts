@@ -19,14 +19,9 @@ import { useSelectList } from "./select-list.js";
  * ```
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
-  ({ store, ...props }) => {
-    // TODO: Maybe pass the autoFocusOnShow value here to the children with a
-    // Provider so they can set autoFocus based on that? Or maybe we should add
-    // this directly to the dialog component since the autoFocusOnShow prop
-    // comes from there. But then we would have to access that state from the
-    // child components, that are not part of the dialog module.
-    props = useSelectList({ store, ...props });
-    props = usePopover({ store, ...props });
+  ({ store, alwaysVisible, ...props }) => {
+    props = useSelectList({ store, alwaysVisible, ...props });
+    props = usePopover({ store, alwaysVisible, ...props });
 
     return props;
   }

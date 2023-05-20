@@ -12,6 +12,24 @@ This is not the best way to make modal dialogs accessible without JavaScript. Co
 
 <a href="./index.tsx" data-playground>Example</a>
 
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/dialog)
+
+</div>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-react-router)
+- [](/examples/dialog-next-router)
+
+</div>
+
 ## Styling
 
 ### Resetting the default styles

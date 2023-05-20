@@ -36,7 +36,7 @@ export default function Example() {
         // loading, we can't automatically move focus to the dialog.
         modal={loaded}
         backdrop={loaded && <div className="backdrop" />}
-        hidden={loaded ? undefined : false}
+        alwaysVisible={!loaded}
         className="dialog"
       >
         <Ariakit.DialogHeading className="heading">
