@@ -6,20 +6,11 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/menu)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/dialog-framer-motion)
-- [](/examples/tooltip-framer-motion)
 
 </div>
 
@@ -59,3 +50,12 @@ const mounted = menu.useState("mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-framer-motion)
+- [](/examples/tooltip-framer-motion)
+
+</div>

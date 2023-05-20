@@ -6,20 +6,11 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/tooltip)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/menu-framer-motion)
-- [](/examples/dialog-framer-motion)
 
 </div>
 
@@ -32,3 +23,12 @@ In the custom `TooltipAnchor` component we've created in this example, we're exp
 ```
 
 You can learn more about this pattern on the [Composition](/guide/composition#render) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menu-framer-motion)
+- [](/examples/dialog-framer-motion)
+
+</div>

@@ -14,17 +14,6 @@
 
 </div>
 
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/tab-next-router/)
-- [](/examples/dialog-react-router/)
-- [](/examples/dialog-menu/)
-- [](/examples/dialog-nested/)
-
-</div>
-
 ## Controlling the Dialog state
 
 To control the open state, you can pass the [`open`](/apis/dialog-store#open) and [`setOpen`](/apis/dialog-store#setopen) props to [`useDialogStore`](/apis/dialog-store). These props allow you to synchronize the dialog state with other state sources, such as the browser history.
@@ -64,3 +53,14 @@ const pathname = usePathname();
   }}
 >
 ```
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/tab-next-router/)
+- [](/examples/dialog-react-router/)
+- [](/examples/dialog-menu/)
+- [](/examples/dialog-nested/)
+
+</div>

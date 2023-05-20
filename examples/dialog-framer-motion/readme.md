@@ -6,21 +6,12 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/button)
 - [](/components/dialog)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/menu-framer-motion)
-- [](/examples/tooltip-framer-motion)
 
 </div>
 
@@ -58,3 +49,15 @@ const mounted = dialog.useState("mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menu-framer-motion)
+- [](/examples/tooltip-framer-motion)
+- [](/examples/dialog-animated)
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+
+</div>

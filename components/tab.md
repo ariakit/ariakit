@@ -25,3 +25,14 @@
 &lt;/TabList&gt;
 &lt;<a href="/apis/tab-panel">TabPanel</a> /&gt;
 </pre>
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/disclosure)
+- [](/components/composite)
+- [](/components/focusable)
+
+</div>

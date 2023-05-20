@@ -6,20 +6,11 @@
 
 <a href="./layout.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/tab)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/dialog-next-router/)
-- [](/examples/tab-react-router/)
 
 </div>
 
@@ -56,3 +47,12 @@ const tabId = tab.useState("selectedId");
 
 <TabPanel tabId={tabId}>{props.children}</TabPanel>;
 ```
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-next-router/)
+- [](/examples/tab-react-router/)
+
+</div>

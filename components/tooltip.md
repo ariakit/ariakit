@@ -41,3 +41,11 @@ const tooltip = useTooltipStore({ type: "label" });
 ```
 
 This will make the tooltip behave like a label and will use the `aria-labelledby` attribute on the anchor element. Additionally, the tooltip's `role` attribute will be set to `none`.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/hovercard)
+
+</div>

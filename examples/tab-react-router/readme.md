@@ -6,21 +6,11 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/tab)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/dialog-react-router)
-- [](/examples/tab-next-router)
-- [](/examples/dialog-next-router)
 
 </div>
 
@@ -49,3 +39,13 @@ const selectedId = tab.useState("selectedId");
   <Outlet />
 </TabPanel>;
 ```
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-react-router)
+- [](/examples/tab-next-router)
+- [](/examples/dialog-next-router)
+
+</div>

@@ -6,22 +6,11 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
-## Related components
+## Components
 
 <div data-cards="components">
 
 - [](/components/dialog)
-
-</div>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/tab-react-router)
-- [](/examples/dialog-next-router)
-- [](/examples/dialog-menu)
-- [](/examples/dialog-nested)
 
 </div>
 
@@ -45,3 +34,14 @@ const dialog = Ariakit.useDialogStore({
 ```
 
 You can learn more about controlled state on the [Component stores](/guide/component-stores#controlled-state) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/tab-react-router)
+- [](/examples/dialog-next-router)
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+
+</div>
