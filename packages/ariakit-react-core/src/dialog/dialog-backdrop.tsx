@@ -9,13 +9,14 @@ import { markAncestor } from "./utils/mark-tree-outside.js";
 
 type DialogBackdropProps = Pick<
   DialogProps,
-  "store" | "backdrop" | "backdropProps" | "hidden"
+  "store" | "backdrop" | "backdropProps" | "alwaysVisible" | "hidden"
 >;
 
 export function DialogBackdrop({
   store,
   backdrop,
   backdropProps,
+  alwaysVisible,
   hidden,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,8 +64,9 @@ export function DialogBackdrop({
     store,
     id: undefined,
     role: "presentation",
-    hidden,
     "data-backdrop": contentElement?.id || "",
+    alwaysVisible,
+    hidden,
     ...backdropProps,
     ref: useForkRef(backdropProps?.ref, ref),
     style: {

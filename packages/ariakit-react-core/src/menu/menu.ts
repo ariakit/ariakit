@@ -30,6 +30,7 @@ export const useMenu = createHook<MenuOptions>(
     hideOnEscape = true,
     autoFocusOnShow = true,
     hideOnHoverOutside,
+    alwaysVisible,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -67,7 +68,7 @@ export const useMenu = createHook<MenuOptions>(
     // and it should take precedence. That's why we need to destructure this
     // prop here and check if aria-labelledby is set later.
     const { "aria-labelledby": ariaLabelledBy, ...menuListProps } = useMenuList(
-      { store, ...props }
+      { store, alwaysVisible, ...props }
     );
 
     props = menuListProps;
@@ -127,6 +128,7 @@ export const useMenu = createHook<MenuOptions>(
 
     props = useHovercard({
       store,
+      alwaysVisible,
       initialFocus: initialFocusRef,
       autoFocusOnShow: mayAutoFocusOnShow
         ? canAutoFocusOnShow && autoFocusOnShow

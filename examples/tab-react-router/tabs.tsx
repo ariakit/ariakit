@@ -1,97 +1,50 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import {
-  useHref,
-  useLinkClickHandler,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-import type { To } from "react-router-dom";
-import invariant from "tiny-invariant";
+import { Link, useHref, useLocation } from "react-router-dom";
+import type { LinkProps } from "react-router-dom";
 
-const PrefixContext = React.createContext("tab");
-const TabContext = React.createContext<Ariakit.TabStore | null>(null);
+const TabsContext = React.createContext<Ariakit.TabStore | null>(null);
 
 interface TabsProps extends Ariakit.TabStoreProps {
   children: React.ReactNode;
 }
 
 export function Tabs({ children, ...props }: TabsProps) {
-  const prefix = React.useId();
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname: selectedId } = useLocation();
 
-  const tab = Ariakit.useTabStore({
+  const store = Ariakit.useTabStore({
+    selectOnMove: false,
+    selectedId,
     ...props,
-    selectedId: getIdFromHref(pathname, prefix),
-    setSelectedId: (id) => navigate(getHrefFromId(id, prefix)),
   });
 
-  return (
-    <PrefixContext.Provider value={prefix}>
-      <TabContext.Provider value={tab}>{children}</TabContext.Provider>
-    </PrefixContext.Provider>
-  );
+  return <TabsContext.Provider value={store}>{children}</TabsContext.Provider>;
 }
 
-type TabListProps = Partial<Ariakit.TabListProps>;
+type TabListProps = Omit<Ariakit.TabListProps, "store">;
 
-export const TabList = React.forwardRef<HTMLDivElement, TabListProps>(
-  (props, ref) => {
-    const tab = React.useContext(TabContext);
-    invariant(tab, "TabList must be wrapped in a Tabs component");
-    return (
-      <Ariakit.TabList className="tab-list" {...props} ref={ref} store={tab} />
-    );
-  }
-);
+export function TabList(props: TabListProps) {
+  const tab = React.useContext(TabsContext);
+  if (!tab) throw new Error("TabList must be wrapped in a Tabs component");
 
-interface TabProps extends Ariakit.TabProps<"a"> {
-  to: To;
+  return <Ariakit.TabList className="tab-list" {...props} store={tab} />;
 }
 
-export const Tab = React.forwardRef<HTMLAnchorElement, TabProps>(
-  ({ to, ...props }, ref) => {
-    const prefix = React.useContext(PrefixContext);
-    const href = useHref(to);
-    const onClick = useLinkClickHandler(to);
-    const id = getIdFromHref(href, prefix);
-    return (
-      <Ariakit.Tab
-        className="tab"
-        {...props}
-        as="a"
-        id={id}
-        ref={ref}
-        href={href}
-        onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-          props.onClick?.(event);
-          if (event.defaultPrevented) return;
-          onClick(event);
-        }}
-      />
-    );
-  }
-);
+type TabProps = LinkProps;
 
-type TabPanelProps = Partial<Ariakit.TabPanelProps>;
+export function Tab(props: TabProps) {
+  const id = useHref(props.to);
 
-export const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(
-  (props, ref) => {
-    const tab = React.useContext(TabContext);
-    invariant(tab, "TabPanel must be wrapped in a Tabs component");
-    const selectedId = tab.useState("selectedId");
-    return (
-      <Ariakit.TabPanel {...props} ref={ref} store={tab} tabId={selectedId} />
-    );
-  }
-);
-
-function getIdFromHref(href: string, prefix = "tab") {
-  return `${prefix}${href}`;
+  return <Ariakit.Tab as={Link} id={id} className="tab" {...props} />;
 }
 
-function getHrefFromId(id?: string | null, prefix = "tab") {
-  if (!id) return "/";
-  return id.replace(prefix, "");
+type TabPanelProps = Omit<Ariakit.TabPanelProps, "store">;
+
+export function TabPanel(props: TabPanelProps) {
+  const tab = React.useContext(TabsContext);
+  if (!tab) throw new Error("TabPanel must be wrapped in a Tabs component");
+
+  const tabId = tab.useState("selectedId");
+
+  return <Ariakit.TabPanel tabId={tabId} {...props} store={tab} />;
 }

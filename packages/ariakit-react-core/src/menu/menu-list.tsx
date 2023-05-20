@@ -4,6 +4,8 @@ import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
+import { isHidden } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -51,7 +53,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * ```
  */
 export const useMenuList = createHook<MenuListOptions>(
-  ({ store, composite = true, ...props }) => {
+  ({ store, alwaysVisible, composite = true, ...props }) => {
     const parentMenu = useContext(MenuContext);
     const parentMenuBar = useContext(MenuBarContext);
     const hasParentMenu = !!parentMenu;
@@ -126,15 +128,13 @@ export const useMenuList = createHook<MenuListOptions>(
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
     const mounted = store.useState("mounted");
-    const style =
-      (mounted && props.hidden !== true) || props.hidden === false
-        ? props.style
-        : { ...props.style, display: "none" };
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "aria-labelledby": ariaLabelledBy,
-      hidden: !mounted,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, props.ref),
       style,
@@ -180,7 +180,8 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface MenuListOptions<T extends As = "div">
   extends CompositeOptions<T>,
-    CompositeTypeaheadOptions<T> {
+    CompositeTypeaheadOptions<T>,
+    Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the `useMenuStore` hook.
    */

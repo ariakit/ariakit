@@ -1,5 +1,7 @@
 import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
+import { isHidden } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useFocusable } from "../focusable/focusable.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
@@ -23,7 +25,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  * ```
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
-  ({ store, focusable = true, ...props }) => {
+  ({ store, focusable = true, alwaysVisible, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -81,13 +83,13 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     );
 
     const mounted = store.useState("mounted");
-
-    const style = mounted ? props.style : { ...props.style, display: "none" };
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
+      hidden,
       role: "listbox",
-      hidden: !mounted,
       tabIndex: focusable ? -1 : undefined,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
@@ -130,7 +132,8 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface ComboboxListOptions<T extends As = "div">
-  extends FocusableOptions<T> {
+  extends FocusableOptions<T>,
+    Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the `useComboboxStore` hook.
    */

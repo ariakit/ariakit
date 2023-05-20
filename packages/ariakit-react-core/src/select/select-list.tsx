@@ -6,6 +6,8 @@ import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
+import { isHidden } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import {
   useAttribute,
   useBooleanEvent,
@@ -39,6 +41,7 @@ export const useSelectList = createHook<SelectListOptions>(
     hideOnEnter = true,
     focusOnMove = true,
     composite,
+    alwaysVisible,
     ...props
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -84,7 +87,6 @@ export const useSelectList = createHook<SelectListOptions>(
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
-    const style = mounted ? props.style : { ...props.style, display: "none" };
     const hasCombobox = store.useState("combobox");
     composite = composite ?? !hasCombobox;
 
@@ -101,11 +103,14 @@ export const useSelectList = createHook<SelectListOptions>(
     const ariaMultiSelectable =
       composite || isCompositeRole ? multiSelectable || undefined : undefined;
 
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
+
     props = {
       id,
-      hidden: !mounted,
       "aria-labelledby": labelId,
       "aria-multiselectable": ariaMultiSelectable,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
       style,
@@ -123,7 +128,7 @@ export const useSelectList = createHook<SelectListOptions>(
       focusOnMove: canFocusOnMove,
     });
 
-    props = useCompositeTypeahead({ store, ...props });
+    props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;
   }
@@ -156,7 +161,8 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface SelectListOptions<T extends As = "div">
   extends CompositeOptions<T>,
-    CompositeTypeaheadOptions<T> {
+    CompositeTypeaheadOptions<T>,
+    Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the `useSelectStore` hook.
    */

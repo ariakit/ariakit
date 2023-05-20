@@ -147,6 +147,7 @@ const style = {
     rounded-sm
     bg-gray-150 dark:bg-gray-800
     group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
+    group-active:bg-black/[7.5%] dark:group-active:bg-black/70
   `,
   itemNestedThumbnail: tw`
     relative
@@ -238,18 +239,14 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       includesBaseElement: false,
       focusLoop: false,
       open,
-      setOpen: (open) => {
-        if (onToggle) {
-          onToggle(open);
-        }
-      },
+      setOpen: onToggle,
     });
     const select = useSelectStore({
       combobox,
       value,
-      setValue: (value) => {
-        if (onChange && typeof value === "string") {
-          onChange(value);
+      setValue(value) {
+        if (typeof value === "string") {
+          onChange?.(value);
         }
       },
     });

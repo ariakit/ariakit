@@ -37,13 +37,20 @@ function isController(
  * ```
  */
 export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
-  ({ store, tabIndex, hideOnInteractOutside = true, ...props }) => {
+  ({
+    store,
+    tabIndex,
+    alwaysVisible,
+    hideOnInteractOutside = true,
+    ...props
+  }) => {
     const baseElement = store.useState("baseElement");
 
-    props = useComboboxList({ store, ...props });
+    props = useComboboxList({ store, alwaysVisible, ...props });
 
     props = usePopover({
       store,
+      alwaysVisible,
       autoFocusOnShow: false,
       autoFocusOnHide: false,
       finalFocus: baseElement,

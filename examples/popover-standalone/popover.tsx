@@ -30,8 +30,10 @@ export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
     const popover = Ariakit.usePopoverStore({
       placement,
       open: isOpen,
-      setOpen: (open) => {
-        if (!open && onClose) onClose();
+      setOpen(open) {
+        if (!open) {
+          onClose?.();
+        }
       },
     });
     return (

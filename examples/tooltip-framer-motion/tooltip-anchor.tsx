@@ -1,14 +1,15 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import * as Ariakit from "@ariakit/react";
 import { AnimatePresence, motion } from "framer-motion";
 
-interface Props extends React.HTMLAttributes<HTMLElement> {
+interface TooltipAnchorProps extends ComponentPropsWithoutRef<"div"> {
   description: string;
   render?: Ariakit.TooltipAnchorProps["render"];
 }
 
-export const TooltipAnchor = React.forwardRef<HTMLDivElement, Props>(
-  ({ description, ...props }, ref) => {
+export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
+  function TooltipAnchor({ description, ...props }, ref) {
     const tooltip = Ariakit.useTooltipStore({ hideTimeout: 250 });
     const mounted = tooltip.useState("mounted");
 
@@ -25,8 +26,8 @@ export const TooltipAnchor = React.forwardRef<HTMLDivElement, Props>(
           {mounted && (
             <Ariakit.Tooltip
               store={tooltip}
-              hidden={false}
               gutter={4}
+              alwaysVisible
               className="tooltip"
               as={motion.div}
               initial={{ opacity: 0, y }}

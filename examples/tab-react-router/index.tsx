@@ -4,7 +4,7 @@ import "./style.css";
 
 function GroceriesTabs() {
   return (
-    <Tabs selectOnMove={false}>
+    <Tabs>
       <div className="wrapper">
         <TabList aria-label="Groceries">
           <Tab to="/">Fruits</Tab>

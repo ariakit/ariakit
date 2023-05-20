@@ -6,13 +6,14 @@
 
 <a href="../examples/tab/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/tab-react-router)
+- [](/examples/tab-next-router)
+
+</div>
 
 ## API
 
@@ -24,3 +25,14 @@ Learn more on the [Getting started](/guide/getting-started) guide.
 &lt;/TabList&gt;
 &lt;<a href="/apis/tab-panel">TabPanel</a> /&gt;
 </pre>
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/disclosure)
+- [](/components/composite)
+- [](/components/focusable)
+
+</div>

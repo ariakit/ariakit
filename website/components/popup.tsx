@@ -18,7 +18,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(
         size === "medium" && "p-2",
         size === "responsive" && "p-2 sm:p-1.5",
         tw`
-        flex flex-col overflow-auto overscroll-contain bg-[color:inherit]`
+        flex flex-col overflow-auto overscroll-contain bg-inherit`
       ),
     };
     return (

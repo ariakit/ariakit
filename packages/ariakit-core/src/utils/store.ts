@@ -21,7 +21,6 @@ export function createStore<S extends State>(
   let state = initialState;
   let prevStateBatch = state;
   let lastUpdate = Symbol();
-  let updating = false;
   let initialized = false;
   const updatedKeys = new Set<keyof S>();
 
@@ -83,9 +82,7 @@ export function createStore<S extends State>(
   };
 
   const syncBatch: Store<S>["syncBatch"] = (listener, keys) => {
-    if (!updating) {
-      disposables.set(listener, listener(state, prevStateBatch));
-    }
+    disposables.set(listener, listener(state, prevStateBatch));
     return sub(listener, keys, true);
   };
 
@@ -107,7 +104,6 @@ export function createStore<S extends State>(
 
     const thisUpdate = Symbol();
     lastUpdate = thisUpdate;
-    updating = true;
     updatedKeys.add(key);
 
     const run = (listener: Listener<S>, prev: S, uKeys?: Set<keyof S>) => {
@@ -126,7 +122,6 @@ export function createStore<S extends State>(
       // update. This is to prevent unnecessary updates when multiple keys are
       // updated in a single microtask.
       if (lastUpdate !== thisUpdate) return;
-      updating = false;
       // Take a snapshot of the state before running batch listeners. This is
       // necessary because batch listeners can setState.
       const snapshot = state;
@@ -134,12 +129,7 @@ export function createStore<S extends State>(
         run(listener, prevStateBatch, updatedKeys);
       });
       prevStateBatch = snapshot;
-      queueMicrotask(() => {
-        // Listeners may call setState again. If we don't clear the updated keys
-        // in a microtask, we may end up clearing keys right before the nested
-        // setState listeners.
-        updatedKeys.clear();
-      });
+      updatedKeys.clear();
     });
   };
 

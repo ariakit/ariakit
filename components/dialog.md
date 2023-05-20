@@ -75,3 +75,16 @@ However, if you set the [`portal`](/apis/dialog#portal) prop to `false` or use t
 ```
 
 For more information on styling with Ariakit, refer to the [Styling](/guide/styling) guide.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/disclosure)
+- [](/components/heading)
+- [](/components/popover)
+- [](/components/focusable)
+- [](/components/portal)
+
+</div>

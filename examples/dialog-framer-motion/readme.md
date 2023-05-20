@@ -4,21 +4,14 @@
   Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/apis/dialog#backdrop"><code>backdrop</code></a> element.
 </p>
 
+<a href="./index.tsx" data-playground>Example</a>
+
+## Components
+
 <div data-cards="components">
 
 - [](/components/button)
 - [](/components/dialog)
-
-</div>
-
-<a href="./index.tsx" data-playground>Example</a>
-
-## Related examples
-
-<div data-cards="examples">
-
-- [](/examples/menu-framer-motion)
-- [](/examples/tooltip-framer-motion)
 
 </div>
 
@@ -30,9 +23,9 @@ We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) co
 <AnimatePresence>
   {mounted && (
     <Ariakit.Dialog
-      store={dialog}
-      hidden={false}
       as={motion.div}
+      store={dialog}
+      alwaysVisible
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -56,3 +49,15 @@ const mounted = dialog.useState("mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menu-framer-motion)
+- [](/examples/tooltip-framer-motion)
+- [](/examples/dialog-animated)
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+
+</div>

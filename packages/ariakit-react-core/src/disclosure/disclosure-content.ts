@@ -31,6 +31,14 @@ function parseCSSTime(...times: string[]) {
     }, 0);
 }
 
+export function isHidden(
+  mounted: boolean,
+  hidden?: boolean | null,
+  alwaysVisible?: boolean | null
+) {
+  return !alwaysVisible && hidden !== false && (!mounted || !!hidden);
+}
+
 /**
  * Returns props to create a `DislosureContent` component.
  * @see https://ariakit.org/components/disclosure
@@ -43,7 +51,7 @@ function parseCSSTime(...times: string[]) {
  * ```
  */
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
-  ({ store, ...props }) => {
+  ({ store, alwaysVisible, ...props }) => {
     const id = useId(props.id);
     const [transition, setTransition] = useState<TransitionState>(null);
     const open = store.useState("open");
@@ -105,17 +113,14 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return afterTimeout(timeoutMs, store.stopAnimation);
     }, [animated, contentElement, open, transition]);
 
-    const style =
-      // TODO: props.hidden !== true see combobox-textarea example
-      (mounted && props.hidden !== true) || props.hidden === false
-        ? props.style
-        : { ...props.style, display: "none" };
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "data-enter": transition === "enter" ? "" : undefined,
       "data-leave": transition === "leave" ? "" : undefined,
-      hidden: !mounted,
+      hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, props.ref),
       style,
@@ -152,6 +157,28 @@ export interface DisclosureContentOptions<T extends As = "div">
    * Object returned by the `useDisclosureStore` hook.
    */
   store: DisclosureStore;
+  /**
+   * Determines whether the content element should remain visible even when the
+   * `open` state is `false`. If this prop is set to `true`, the `hidden` prop
+   * and the `display: none` style will not be applied, unless explicitly set
+   * otherwise.
+   *
+   * This prop is particularly useful when using third-party animation libraries
+   * such as Framer Motion or React Spring, where the element needs to be
+   * visible for exit animations to work.
+   *
+   * Live examples:
+   * - [Dialog with Framer
+   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
+   * - [Menu with Framer
+   *   Motion](https://ariakit.org/examples/menu-framer-motion)
+   * - [Tooltip with Framer
+   *   Motion](https://ariakit.org/examples/tooltip-framer-motion)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * @default false
+   */
+  alwaysVisible?: boolean;
 }
 
 export type DisclosureContentProps<T extends As = "div"> = Props<

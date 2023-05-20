@@ -41,17 +41,19 @@ test("click on tabs", async ({ page }) => {
 test("select tabs with keyboard", async ({ page }) => {
   await getTab(page, "Hot").press("ArrowRight");
   await expect(getTab(page, "New")).toBeFocused();
-  await expect(getTabPanel(page, "Hot")).toBeVisible();
-  await expect(getTabPanel(page, "New")).not.toBeVisible();
-  await page.keyboard.press("Enter");
+  // Manual tabs
+  // await expect(getTabPanel(page, "Hot")).toBeVisible();
+  // await expect(getTabPanel(page, "New")).not.toBeVisible();
+  // await page.keyboard.press("Enter");
   await expect(getTabPanel(page, "Hot")).not.toBeVisible();
   await expect(getTabPanel(page, "New")).toBeVisible();
   await expect(getTab(page, "New")).toBeFocused();
   await page.keyboard.press("ArrowLeft");
   await expect(getTab(page, "Hot")).toBeFocused();
-  await expect(getTabPanel(page, "Hot")).not.toBeVisible();
-  await expect(getTabPanel(page, "New")).toBeVisible();
-  await page.keyboard.press("Enter");
+  // Manual tabs
+  // await expect(getTabPanel(page, "Hot")).not.toBeVisible();
+  // await expect(getTabPanel(page, "New")).toBeVisible();
+  // await page.keyboard.press("Enter");
   await expect(getTabPanel(page, "Hot")).toBeVisible();
   await expect(getTabPanel(page, "New")).not.toBeVisible();
   await expect(getTab(page, "Hot")).toBeFocused();

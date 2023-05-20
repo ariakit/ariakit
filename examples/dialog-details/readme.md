@@ -12,6 +12,15 @@ This is not the best way to make modal dialogs accessible without JavaScript. Co
 
 <a href="./index.tsx" data-playground>Example</a>
 
+## Components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/dialog)
+
+</div>
+
 ## Styling
 
 ### Resetting the default styles
@@ -30,3 +39,12 @@ By default, browsers apply some default styles to the `details` element. We can 
 ```
 
 You can learn more about styling Ariakit components on the [Styling](/guide/styling) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-react-router)
+- [](/examples/dialog-next-router)
+
+</div>
