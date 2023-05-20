@@ -4,13 +4,15 @@
   Abstracting <a href="/components/menu">Menu</a> into a reusable dropdown menu component that uses <a href="https://www.framer.com/motion/">Framer Motion</a> to create smooth initial and exit animations.
 </p>
 
+<a href="./index.tsx" data-playground>Example</a>
+
+## Related components
+
 <div data-cards="components">
 
 - [](/components/menu)
 
 </div>
-
-<a href="./index.tsx" data-playground>Example</a>
 
 ## Related examples
 

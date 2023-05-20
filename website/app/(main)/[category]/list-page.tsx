@@ -21,14 +21,16 @@ export function ListPage({
   return (
     <div className="flex items-start justify-center md:flex-row-reverse">
       {hasSidebar && (
-        <div className="flex w-64 flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
+        <div className="flex w-60 flex-col gap-4 p-4 md:sticky md:top-24 md:mt-[100px]">
           {sidebar}
         </div>
       )}
-      <div
+      <main
         className={cx(
           "relative mt-8 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full",
-          hasSidebar ? "max-w-5xl [&>*]:max-w-3xl" : "max-w-7xl [&>*]:max-w-5xl"
+          hasSidebar
+            ? "max-w-5xl [&>*]:max-w-3xl"
+            : "max-w-7xl [&>*]:max-w-[1040px]"
         )}
       >
         {title ? (
@@ -44,7 +46,7 @@ export function ListPage({
         ) : (
           children
         )}
-      </div>
+      </main>
     </div>
   );
 }

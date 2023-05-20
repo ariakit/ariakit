@@ -4,14 +4,16 @@
   Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/apis/dialog#backdrop"><code>backdrop</code></a> element.
 </p>
 
+<a href="./index.tsx" data-playground>Example</a>
+
+## Related components
+
 <div data-cards="components">
 
 - [](/components/button)
 - [](/components/dialog)
 
 </div>
-
-<a href="./index.tsx" data-playground>Example</a>
 
 ## Related examples
 

@@ -6,17 +6,33 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
+## Related components
+
+<div data-cards="components">
+
+- [](/components/tab)
+
+</div>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-react-router)
+- [](/examples/tab-next-router)
+- [](/examples/dialog-next-router)
+
+</div>
+
 ## Controlling the Tab state
 
-To control the selected tab state, you can pass the [`selectedId`](/apis/tab-store#selectedid) and [`setSelectedId`](/apis/tab-store#setselectedid) props to [`useTabStore`](/apis/tab-store). These props allow you to synchronize the tab state with other state sources, such as the browser history.
+To control the selected tab state, you can pass the [`selectedId`](/apis/tab-store#selectedid) prop to [`useTabStore`](/apis/tab-store). This prop allows you to synchronize the tab state with other state sources, such as the browser history.
 
-```jsx {5,6}
-const navigate = useNavigate();
-const { pathname } = useLocation();
+```jsx {4}
+const location = useLocation();
 
 const tab = Ariakit.useTabStore({
-  selectedId: pathname,
-  setSelectedId: (id) => navigate(id || "/"),
+  selectedId: location.pathname,
 });
 ```
 
