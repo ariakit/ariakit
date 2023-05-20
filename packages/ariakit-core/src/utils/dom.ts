@@ -277,6 +277,10 @@ export function getScrollingElement(
     const { overflowY } = getComputedStyle(element);
     const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
     if (isScrollable) return element;
+  } else if (element.clientWidth && element.scrollWidth > element.clientWidth) {
+    const { overflowX } = getComputedStyle(element);
+    const isScrollable = overflowX !== "visible" && overflowX !== "hidden";
+    if (isScrollable) return element;
   }
   return (
     getScrollingElement(element.parentElement) ||
