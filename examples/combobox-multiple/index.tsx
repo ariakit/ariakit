@@ -24,8 +24,8 @@ export default function Example() {
         values={values}
         onValuesChange={setValues}
       >
-        {matches.map((value) => (
-          <ComboboxItem key={value} value={value} />
+        {matches.map((value, i) => (
+          <ComboboxItem key={value + i} value={value} />
         ))}
         {!matches.length && <div className="no-results">No results found</div>}
       </Combobox>

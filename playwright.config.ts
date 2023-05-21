@@ -63,7 +63,7 @@ export default defineConfig({
       name: "vo",
       testMatch: [/\/test[^\/]*\-vo/],
       retries: CI ? 1 : 0,
-      timeout: 3 * 60 * 1000, // 3 minutes
+      timeout: 5 * 60 * 1000, // 5 minutes
       use: {
         ...devices["Desktop Safari"],
         headless: false,

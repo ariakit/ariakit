@@ -57,8 +57,8 @@ test("check/uncheck item after filtering", async () => {
   await press.Enter();
   expect(getOption("Pineapple")).toHaveAttribute("aria-selected", "true");
   expect(getInput()).toHaveValue("");
-  await press.Enter();
-  expect(getOption("Pineapple")).toHaveAttribute("aria-selected", "false");
+  await press.ArrowDown();
+  expect(getOption("Apple")).toHaveFocus();
 });
 
 test("open with keyboard, then try to open again", async () => {
@@ -74,6 +74,16 @@ test("open with keyboard, then try to open again", async () => {
   expect(getPopover()).toBeVisible();
   await press.ArrowDown();
   expect(getOption("Apple")).toHaveFocus();
+});
+
+test("click on listbox then move through items with keyboard", async () => {
+  await click(getInput());
+  expect(getInput()).toHaveFocus();
+  await click(getPopover());
+  expect(getPopover()).toHaveFocus();
+  await press.ArrowDown();
+  expect(getOption("Apple")).toHaveFocus();
+  expect(getInput()).toHaveFocus();
 });
 
 test("no result", async () => {

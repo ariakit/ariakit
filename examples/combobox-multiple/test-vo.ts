@@ -21,16 +21,28 @@ test("navigate to listbox and select an item", async ({
   );
   await vo.interact();
   expect(await vo.itemText()).toBe("Bacon selected");
+  await vo.stopInteracting();
+  expect(await vo.itemText()).toBe("list box");
+  await vo.interact();
+  expect(await vo.itemText()).toBe("Bacon selected");
   await vo.press("ArrowDown");
   expect(await vo.itemText()).toBe("Banana");
-  await vo.type("green");
-  expect(await vo.itemText()).toBe("Green apple");
   await vo.act();
   expect(await vo.lastSpokenPhrase()).toBe(
-    "Green apple added to selection 2 items selected"
+    "Banana added to selection 2 items selected"
   );
+  await vo.type("gr");
+  expect(await vo.itemText()).toBe(
+    "gr Your favorite food list box pop-up Menu pop-up combo box"
+  );
+  await vo.next();
+  await vo.interact();
+  await vo.next();
+  expect(await vo.itemText()).toBe("Green apple");
+  await vo.act();
+  expect(await vo.lastSpokenPhrase()).toContain("3 items selected");
   await vo.stopInteracting();
   expect(await vo.lastSpokenPhrase()).toContain(
-    "2 items selected. Bacon selected (2 of 34) Green apple selected (17 of 34)"
+    "3 items selected. Bacon selected (2 of 34) Banana selected (3 of 34) Green apple selected (17 of 34)"
   );
 });
