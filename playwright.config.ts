@@ -59,5 +59,16 @@ export default defineConfig({
       testMatch: [/\/test[^\/]*\-android/, /\/test[^\/]*\-mobile/],
       use: devices["Pixel 5"],
     },
+    {
+      name: "vo",
+      testMatch: [/\/test[^\/]*\-vo/],
+      retries: CI ? 2 : 0,
+      timeout: 5 * 60 * 1000, // 5 minutes
+      use: {
+        ...devices["Desktop Safari"],
+        headless: false,
+        launchOptions: { slowMo: 300 },
+      },
+    },
   ],
 });

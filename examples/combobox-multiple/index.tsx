@@ -1,9 +1,6 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import {
-  ComboboxMultiple,
-  ComboboxMultipleItem,
-} from "./combobox-multiple.jsx";
+import { Combobox, ComboboxItem } from "./combobox-multiple.jsx";
 import list from "./list.js";
 import "./style.css";
 
@@ -19,7 +16,7 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <ComboboxMultiple
+      <Combobox
         label="Your favorite food"
         placeholder="e.g., Apple, Burger"
         value={value}
@@ -27,14 +24,11 @@ export default function Example() {
         values={values}
         onValuesChange={setValues}
       >
-        {matches.length ? (
-          matches.map((value) => (
-            <ComboboxMultipleItem key={value} value={value} />
-          ))
-        ) : (
-          <div className="no-results">No results found</div>
-        )}
-      </ComboboxMultiple>
+        {matches.map((value, i) => (
+          <ComboboxItem key={value + i} value={value} />
+        ))}
+        {!matches.length && <div className="no-results">No results found</div>}
+      </Combobox>
     </div>
   );
 }

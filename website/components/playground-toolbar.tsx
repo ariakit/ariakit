@@ -126,11 +126,12 @@ export function PlaygroundToolbar({
             as={TooltipButton}
             store={select}
             title="Select language"
+            isLabel
             {...props}
           />
         )}
       >
-        <span className="sr-only">Select language</span>
+        <span className="sr-only">{isJS ? "JavaScript" : "TypeScript"}</span>
         {isJS ? (
           <JavaScript className="h-5 w-5" />
         ) : (

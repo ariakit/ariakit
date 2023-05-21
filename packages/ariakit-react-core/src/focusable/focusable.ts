@@ -158,6 +158,7 @@ function onGlobalMouseDown(event: MouseEvent) {
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
   if (event.ctrlKey) return;
+  if (event.altKey) return;
   isKeyboardModality = true;
 }
 
@@ -358,9 +359,8 @@ export const useFocusable = createHook<FocusableOptions>(
     const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onBlurProp?.(event);
       if (!focusable) return;
-      if (isFocusEventOutside(event)) {
-        setFocusVisible(false);
-      }
+      if (!isFocusEventOutside(event)) return;
+      setFocusVisible(false);
     });
 
     const autoFocusOnShow = useContext(FocusableContext);

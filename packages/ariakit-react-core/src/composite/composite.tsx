@@ -408,7 +408,9 @@ export const useComposite = createHook<CompositeOptions>(
     );
 
     const activeDescendant = store.useState((state) =>
-      state.virtualFocus ? getEnabledItem(store, state.activeId)?.id : undefined
+      composite && state.virtualFocus
+        ? getEnabledItem(store, state.activeId)?.id
+        : undefined
     );
 
     props = {

@@ -38,7 +38,6 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     value,
     hideOnClick = value != null,
     setValueOnClick = true,
-    shouldRegisterItem = true,
     focusOnHover = false,
     moveOnKeyPress = true,
     getItem: getItemProp,
@@ -133,17 +132,10 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
-    // We only register the item on the store when the popover is open so we
-    // don't try to move focus to hidden items when pressing arrow keys.
-    const shouldRegister = store.useState(
-      (state) => state.mounted && shouldRegisterItem
-    );
-
     props = useCompositeItem({
       store,
       ...props,
       getItem,
-      shouldRegisterItem: shouldRegister,
       // Dispatch a custom event on the combobox input when moving to an item
       // with the keyboard so the Combobox component can enable inline
       // autocompletion.

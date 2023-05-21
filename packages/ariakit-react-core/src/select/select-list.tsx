@@ -9,6 +9,7 @@ import { useComposite } from "../composite/composite.js";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useForkRef,
@@ -39,7 +40,7 @@ export const useSelectList = createHook<SelectListOptions>(
     resetOnEscape = true,
     hideOnEnter = true,
     focusOnMove = true,
-    composite = true,
+    composite,
     alwaysVisible,
     ...props
   }) => {
@@ -86,20 +87,29 @@ export const useSelectList = createHook<SelectListOptions>(
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
-    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
-    const style = hidden ? { ...props.style, display: "none" } : props.style;
+    const hasCombobox = store.useState("combobox");
+    composite = composite ?? !hasCombobox;
 
     if (composite) {
-      props = {
-        role: "listbox",
-        "aria-multiselectable": multiSelectable ? true : undefined,
-        ...props,
-      };
+      props = { role: "listbox", ...props };
     }
+
+    const role = useAttribute(ref, "role", props.role);
+    const isCompositeRole =
+      role === "listbox" ||
+      role === "menu" ||
+      role === "tree" ||
+      role === "grid";
+    const ariaMultiSelectable =
+      composite || isCompositeRole ? multiSelectable || undefined : undefined;
+
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
       id,
       "aria-labelledby": labelId,
+      "aria-multiselectable": ariaMultiSelectable,
       hidden,
       ...props,
       ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
@@ -117,7 +127,8 @@ export const useSelectList = createHook<SelectListOptions>(
       composite,
       focusOnMove: canFocusOnMove,
     });
-    props = useCompositeTypeahead({ store, ...props });
+
+    props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;
   }

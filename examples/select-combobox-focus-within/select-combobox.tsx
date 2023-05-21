@@ -72,7 +72,6 @@ export const SelectCombobox = React.forwardRef<
         {mounted && (
           <Ariakit.SelectPopover
             store={select}
-            composite={false}
             portal
             gutter={4}
             sameWidth

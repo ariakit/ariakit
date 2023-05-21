@@ -1,10 +1,9 @@
-import * as React from "react";
+import { forwardRef, useEffect, useId } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import * as Ariakit from "@ariakit/react";
 
-export type ComboboxMultipleProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "autoComplete" | "onChange"
-> & {
+export interface ComboboxProps
+  extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
   label?: string;
   defaultValue?: string;
   value?: string;
@@ -12,122 +11,87 @@ export type ComboboxMultipleProps = Omit<
   defaultValues?: string[];
   values?: string[];
   onValuesChange?: (values: string[]) => void;
-};
+}
 
-export const ComboboxMultiple = React.forwardRef<
-  HTMLInputElement,
-  ComboboxMultipleProps
->((props, ref) => {
-  const {
-    label,
-    defaultValue,
-    value,
-    onChange,
-    defaultValues,
-    values,
-    onValuesChange,
-    children,
-    ...comboboxProps
-  } = props;
+export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
+  function Combobox(props, ref) {
+    const {
+      label,
+      defaultValue,
+      value,
+      onChange,
+      defaultValues,
+      values,
+      onValuesChange,
+      children,
+      ...comboboxProps
+    } = props;
 
-  const combobox = Ariakit.useComboboxStore({
-    // VoiceOver has issues with multi-selectable comboboxes where the DOM focus
-    // is on the combobox input, so we set `virtualFocus` to `false` to disable
-    // this behavior and put DOM focus on the items.
-    virtualFocus: false,
-    defaultValue,
-    value,
-    setValue: onChange,
-    resetValueOnHide: true,
-  });
+    const combobox = Ariakit.useComboboxStore({
+      defaultValue,
+      value,
+      setValue: onChange,
+      resetValueOnHide: true,
+    });
 
-  const select = Ariakit.useSelectStore({
-    combobox,
-    defaultValue: defaultValues,
-    value: values,
-    setValue: onValuesChange,
-  });
+    const select = Ariakit.useSelectStore({
+      combobox,
+      defaultValue: defaultValues,
+      value: values,
+      setValue: onValuesChange,
+    });
 
-  const selectValue = select.useState("value");
+    const selectValue = select.useState("value");
 
-  // Reset the combobox value whenever an item is checked or unchecked.
-  React.useEffect(() => {
-    combobox.setValue("");
-  }, [selectValue, combobox]);
+    // Reset the combobox value whenever an item is checked or unchecked.
+    useEffect(() => combobox.setValue(""), [selectValue, combobox]);
 
-  const element = (
-    <Ariakit.Combobox
-      ref={ref}
-      store={combobox}
-      className="combobox"
-      {...comboboxProps}
-    />
-  );
+    const defaultInputId = useId();
+    const inputId = comboboxProps.id || defaultInputId;
 
-  return (
-    <>
-      {label ? (
-        <label className="label">
-          {label}
-          {element}
-        </label>
-      ) : (
-        element
-      )}
-      <Ariakit.ComboboxPopover
-        store={combobox}
-        gutter={8}
-        sameWidth
-        className="popover"
-      >
-        {(popoverProps) => (
-          <Ariakit.SelectList
-            store={select}
-            // Disable the composite behavior on the select list since combobox
-            // will handle it.
-            composite={false}
-            // Disable typeahead so it doesn't conflict with typing on the
-            // combobox input.
-            typeahead={false}
-            aria-multiselectable
-            {...popoverProps}
-          >
-            {children}
-          </Ariakit.SelectList>
-        )}
-      </Ariakit.ComboboxPopover>
-    </>
-  );
-});
+    return (
+      <>
+        {label && <label htmlFor={inputId}>{label}</label>}
+        <Ariakit.Combobox
+          ref={ref}
+          id={inputId}
+          store={combobox}
+          className="combobox"
+          {...comboboxProps}
+        />
+        <Ariakit.ComboboxPopover
+          store={combobox}
+          sameWidth
+          gutter={8}
+          className="popover"
+          render={(props) => <Ariakit.SelectList store={select} {...props} />}
+        >
+          {children}
+        </Ariakit.ComboboxPopover>
+      </>
+    );
+  }
+);
 
-export type ComboboxMultipleItemProps = React.HTMLAttributes<HTMLDivElement> & {
+export interface ComboboxItemProps extends ComponentPropsWithoutRef<"div"> {
   value?: string;
-};
+}
 
-export const ComboboxMultipleItem = React.forwardRef<
-  HTMLDivElement,
-  ComboboxMultipleItemProps
->(({ value, ...props }, ref) => {
-  return (
-    // Here we're combining both SelectItem and ComboboxItem into the same
-    // element. SelectItem adds the multi-selectable attributes to the element
-    // (for example, aria-selected).
-    <Ariakit.SelectItem
-      ref={ref}
-      value={value}
-      // We're not registering the select item because the combobox item (the
-      // same element) already handles it.
-      // shouldRegisterItem={false}
-      className="combobox-item"
-      autoFocus={false}
-      {...props}
-    >
-      {(itemProps) => (
-        <Ariakit.ComboboxItem {...itemProps}>
-          <Ariakit.SelectItemCheck />
-          {value}
-        </Ariakit.ComboboxItem>
-      )}
-    </Ariakit.SelectItem>
-  );
-});
+export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
+  function ComboboxItem(props, ref) {
+    return (
+      // Here we're combining both SelectItem and ComboboxItem into the same
+      // element. SelectItem adds the multi-selectable attributes to the element
+      // (for example, aria-selected).
+      <Ariakit.SelectItem
+        ref={ref}
+        className="combobox-item"
+        render={(props) => <Ariakit.ComboboxItem {...props} />}
+        {...props}
+      >
+        <Ariakit.SelectItemCheck />
+        {props.children || props.value}
+      </Ariakit.SelectItem>
+    );
+  }
+);

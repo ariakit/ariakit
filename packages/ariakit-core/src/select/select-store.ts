@@ -92,6 +92,7 @@ export function createSelectStore({
   const initialState: SelectStoreState = {
     ...composite.getState(),
     ...popover.getState(),
+    combobox: defaultValue(syncState.combobox, !!combobox),
     value: defaultValue(
       props.value,
       syncState.value,
@@ -182,26 +183,20 @@ export type SelectStoreValue = Value;
 export interface SelectStoreState<T extends Value = Value>
   extends CompositeStoreState<Item>,
     PopoverStoreState {
-  /**
-   * @default true
-   */
+  /** @default true */
   virtualFocus: CompositeStoreState<Item>["virtualFocus"];
-  /**
-   * @default false
-   */
+  /** @default false */
   includesBaseElement: CompositeStoreState<Item>["includesBaseElement"];
-  /**
-   * @default null
-   */
+  /** @default null */
   activeId: CompositeStoreState<Item>["activeId"];
-  /**
-   * @default "vertical"
-   */
+  /** @default "vertical" */
   orientation: CompositeStoreState<Item>["orientation"];
-  /**
-   * @default "bottom-start"
-   */
+  /** @default "bottom-start" */
   placement: PopoverStoreState["placement"];
+  /**
+   * Whether the select store has received a combobox prop.
+   */
+  combobox: boolean;
   /**
    * The select value.
    *

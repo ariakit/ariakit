@@ -19,11 +19,14 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
   title: ReactNode;
   tooltipProps?: Omit<TooltipProps, "store">;
   fixed?: boolean;
+  isLabel?: boolean;
 }
 
 export const TooltipButton = createComponent<TooltipButtonOptions>(
-  ({ title, tooltipProps, fixed, ...props }) => {
-    const tooltip = useTooltipStore();
+  ({ title, tooltipProps, fixed, isLabel, ...props }) => {
+    const tooltip = useTooltipStore({
+      type: isLabel ? "label" : "description",
+    });
     const mounted = tooltip.useState("mounted");
     return (
       <>
