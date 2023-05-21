@@ -1,5 +1,11 @@
 # @ariakit/test
 
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies: `@ariakit/core@0.2.2`.
+
 ## 0.1.8
 
 ### Patch Changes
