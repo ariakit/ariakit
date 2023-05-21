@@ -158,6 +158,7 @@ function onGlobalMouseDown(event: MouseEvent) {
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
   if (event.ctrlKey) return;
+  if (event.altKey) return;
   isKeyboardModality = true;
 }
 

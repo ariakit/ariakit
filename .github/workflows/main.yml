@@ -302,7 +302,7 @@ jobs:
     needs: website
     runs-on: macos-latest
     concurrency:
-      group: ${{ github.head_ref || github.run_id }}
+      group: test-macos-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true
 
     steps:
@@ -359,7 +359,7 @@ jobs:
     needs: website
     runs-on: macos-latest
     concurrency:
-      group: ${{ github.head_ref || github.run_id }}
+      group: test-vo-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true
 
     steps:

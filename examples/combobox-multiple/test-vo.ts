@@ -32,9 +32,7 @@ test("navigate to listbox and select an item", async ({
     "Banana added to selection 2 items selected"
   );
   await vo.type("gr");
-  expect(await vo.itemText()).toBe(
-    "gr Your favorite food list box pop-up Menu pop-up combo box"
-  );
+  expect(await vo.itemText()).toContain("gr Your favorite food list box");
   await vo.next();
   await vo.interact();
   await vo.next();

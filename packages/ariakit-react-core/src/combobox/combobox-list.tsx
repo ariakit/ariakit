@@ -1,5 +1,6 @@
 import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
+import { isFocusEventOutside } from "@ariakit/core/utils/events";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -39,16 +40,18 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       }
     });
 
-    // TODO: Comment and try to test
+    // VoiceOver on Safari doesn't work well with combobox widgets using the
+    // aria-activedescedant attribute. So, when the list receives keyboard
+    // focus, which usually happens when using VO keys to navigate to the
+    // listbox, we temporarily disable virtual focus until the listbox loses
+    // focus.
     const restoreVirtualFocus = useRef(false);
     const onFocusVisibleProp = props.onFocusVisible;
-    // TODO: Raf is necessary on VoiceOver: move VO cursor to listbox, then
-    // VO+ArrowDown, then VO+ArrowUp, then VO+ArrowDown, etc.
-    const rafRef = useRef(0);
 
     const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
+      if (event.type !== "focus") return;
       const { virtualFocus } = store.getState();
       if (!virtualFocus) return;
       const { relatedTarget, currentTarget } = event;
@@ -62,14 +65,10 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      cancelAnimationFrame(rafRef.current);
       if (!restoreVirtualFocus.current) return;
-      const { relatedTarget, currentTarget } = event;
-      if (currentTarget.contains(relatedTarget)) return;
+      if (!isFocusEventOutside(event)) return;
       restoreVirtualFocus.current = false;
-      rafRef.current = requestAnimationFrame(() => {
-        store.setState("virtualFocus", true);
-      });
+      store.setState("virtualFocus", true);
     });
 
     props = useWrapElement(
