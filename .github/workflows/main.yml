@@ -316,14 +316,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
+      - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
       - name: Cache playwright
@@ -373,14 +376,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
+      - name: Cache node_modules
         uses: actions/cache@v3
+        id: cache-node-modules
         with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
       - name: Cache playwright
