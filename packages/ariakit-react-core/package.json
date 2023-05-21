@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.2.1",
+    "@ariakit/core": "0.2.2",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
