@@ -44,16 +44,17 @@ const form = useFormStore({
 });
 ```
 
-### State setters
+### State change callbacks
 
-In addition to state, component stores may also accept state updater functions. These functions are called with the new state whenever the state is updated. You can use them for various purposes, such as updating another state or performing side effects.
+In addition to state, component stores may also accept state change callback functions. These functions are called with the new state whenever the state is updated. You can use them for various purposes, such as updating another state or performing side effects. Here is an example of a state change callback function that is called when the menu opens or closes.
 
-```js {3-5}
-const form = useFormStore({
-  defaultValues: { name: "", email: "" },
-  setValues(values) {
-    console.log(values);
-  },
+```js
+useMenuStore({
+  setOpen(open) {
+    if (!open) {
+      // on close...
+    }
+  }
 });
 ```
 
