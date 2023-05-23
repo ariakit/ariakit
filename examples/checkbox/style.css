@@ -9,6 +9,6 @@
 
 .checkbox {
   @apply
-    focus-visible:ariakit-outline
+    data-[focus-visible]:outline-blue-600
   ;
 }

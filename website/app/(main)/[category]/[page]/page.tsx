@@ -91,6 +91,7 @@ const style = {
     underline-offset-[0.25em]
     font-medium dark:font-normal
     text-blue-700 dark:text-blue-400
+    [&>code]:text-blue-900 [&>code]:dark:text-blue-300
   `,
   h1: tw`
     text-2xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
@@ -130,7 +131,7 @@ const style = {
     data-[type="warn"]:before:bg-amber-500
     data-[type="warn"]:before:dark:bg-yellow-600
 
-    data-[type="note"]:bg-blue-50
+    data-[type="note"]:bg-blue-50/70
     data-[type="note"]:dark:bg-blue-900/20
     data-[type="note"]:before:bg-blue-600
   `,
@@ -153,8 +154,8 @@ const style = {
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    [p&_code]:rounded [p&_code]:p-1 [p&_code]:text-[0.9375em]
-    [p&_code]:bg-black/[6.5%] dark:[p&_code]:bg-white/[6.5%]
+    [p&_code]:rounded [p&_code]:p-[0.25em] [p&_code]:text-[0.9375em]
+    [p&_code]:bg-black/[7.5%] dark:[p&_code]:bg-white/[7.5%]
     [p&_code]:font-monospace
   `,
   strong: tw`
@@ -327,18 +328,9 @@ export default async function Page({ params }: PageProps) {
   const nextPageLink = nextPage && (
     <Link
       href={`/${nextPage.category}/${nextPage.slug}`}
-      className={tw`group flex w-auto items-center
-      gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70
-      focus-visible:ariakit-outline-input
-      dark:active:!bg-blue-800/25 md:ml-3
-      [@media(any-hover:hover)]:hover:bg-blue-200/40
-      [@media(any-hover:hover)]:dark:hover:bg-blue-600/25`}
+      className="group flex w-auto items-center gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70 focus-visible:ariakit-outline-input dark:active:!bg-blue-800/25 md:ml-3 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25"
     >
-      <div
-        className={tw`flex h-14 w-14 items-center justify-center overflow-hidden
-        rounded bg-gray-150 group-hover:bg-black/[7.5%]
-        dark:bg-gray-850 dark:group-hover:bg-black/80`}
-      >
+      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-150 group-hover:bg-black/[7.5%] dark:bg-gray-850 dark:group-hover:bg-black/80">
         {getPageIcon(nextPage.category, nextPage.slug) || <span />}
       </div>
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-sm">
@@ -423,21 +415,23 @@ export default async function Page({ params }: PageProps) {
                       ))}
                     </div>
                     {isExamples && (
-                      <Link
-                        href={`/examples${isComponentPage ? `#${page}` : ""}`}
-                        className={cx(style.link, "text-center")}
-                      >
-                        View all{isComponentPage ? ` ${pageDetail?.title}` : ""}{" "}
-                        examples
-                      </Link>
+                      <div className="flex justify-center">
+                        <Link
+                          href={`/examples${isComponentPage ? `#${page}` : ""}`}
+                          className={style.link}
+                        >
+                          View all
+                          {isComponentPage ? ` ${pageDetail?.title}` : ""}{" "}
+                          examples
+                        </Link>
+                      </div>
                     )}
                     {isComponents && (
-                      <Link
-                        href="/components"
-                        className={cx(style.link, "text-center")}
-                      >
-                        View all components
-                      </Link>
+                      <div className="flex justify-center">
+                        <Link href="/components" className={style.link}>
+                          View all components
+                        </Link>
+                      </div>
                     )}
                   </>
                 );
@@ -565,6 +559,15 @@ export default async function Page({ params }: PageProps) {
               if (!child.props.href) return paragraph;
               return <>{props.children}</>;
             },
+            kbd: ({ node, ...props }) => (
+              <kbd
+                {...props}
+                className={cx(
+                  "font-monospace rounded-[0.25em] border border-black/[15%] bg-black/[6.5%] p-[0.15em] px-[0.3em] text-[0.9375em] [box-shadow:0_0.15em_0_rgba(0,0,0,0.15)] dark:border-white/[15%] dark:bg-white/10 dark:[box-shadow:0_0.15em_0_rgba(255,255,255,0.15)]",
+                  props.className
+                )}
+              />
+            ),
             strong: ({ node, ...props }) => (
               <strong
                 {...props}

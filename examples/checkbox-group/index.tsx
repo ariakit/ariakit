@@ -1,27 +1,20 @@
-import * as Ariakit from "@ariakit/react";
+import { Checkbox, Group, GroupLabel, useCheckboxStore } from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const checkbox = Ariakit.useCheckboxStore({ defaultValue: [] });
+  const checkbox = useCheckboxStore({ defaultValue: [] });
   return (
-    <Ariakit.Group className="wrapper">
-      <Ariakit.GroupLabel>Your favorite fruits</Ariakit.GroupLabel>
+    <Group className="wrapper">
+      <GroupLabel>Your favorite fruits</GroupLabel>
       <label className="label">
-        <Ariakit.Checkbox store={checkbox} value="apple" className="checkbox" />{" "}
-        Apple
+        <Checkbox store={checkbox} value="apple" className="checkbox" /> Apple
       </label>
       <label className="label">
-        <Ariakit.Checkbox
-          store={checkbox}
-          value="orange"
-          className="checkbox"
-        />{" "}
-        Orange
+        <Checkbox store={checkbox} value="orange" className="checkbox" /> Orange
       </label>
       <label className="label">
-        <Ariakit.Checkbox store={checkbox} value="mango" className="checkbox" />{" "}
-        Mango
+        <Checkbox store={checkbox} value="mango" className="checkbox" /> Mango
       </label>
-    </Ariakit.Group>
+    </Group>
   );
 }

@@ -31,6 +31,7 @@ const pages = [
         "composite",
         "focus-trap",
         "focusable",
+        "group",
         "portal",
         "role",
         "separator",

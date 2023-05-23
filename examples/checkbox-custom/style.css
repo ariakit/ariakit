@@ -1,19 +1,42 @@
-@import url("../checkbox/style.css");
-
 .checkbox {
   @apply
-    w-5
-    h-5
-    rounded
     flex
-    justify-center
     items-center
-    border
-    text-blue-900
-    bg-blue-200/40
-    border-blue-600
-    dark:text-blue-100
-    dark:bg-blue-600/25
-    dark:border-blue-200/40
+    gap-2
+    p-4
+    pr-6
+    rounded-lg
+    select-none
+    border-2
+    border-black/30
+    dark:border-white/30
+    data-[checked=true]:border-blue-600
+    data-[checked=true]:dark:border-blue-600
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+    data-[focus-visible]:outline
+    data-[focus-visible]:outline-4
+    data-[focus-visible]:outline-blue-600/25
+  ;
+}
+
+.check {
+  @apply
+    block
+    rounded-full
+    p-0.5
+    text-lg
+    bg-gray-150
+    dark:bg-gray-850
+    [border:inherit]
+    [stroke-dasharray:15]
+    [stroke-dashoffset:15]
+    data-[checked=true]:bg-blue-600
+    data-[checked=true]:dark:bg-blue-600
+    data-[checked=true]:text-white
+    data-[checked=true]:[stroke-dashoffset:0]
+    transition-[stroke-dashoffset]
   ;
 }
