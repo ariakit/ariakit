@@ -6,13 +6,15 @@
 
 <a href="../examples/checkbox/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/checkbox-as-button)
+- [](/examples/checkbox-custom)
+- [](/examples/checkbox-group)
+
+</div>
 
 ## API
 
@@ -23,3 +25,16 @@ Learn more on the [Getting started](/guide/getting-started) guide.
   &lt;<a href="/apis/checkbox-check">CheckboxCheck</a> /&gt;
 &lt;/Checkbox&gt;
 </pre>
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/form)
+- [](/components/menu)
+- [](/components/radio)
+- [](/components/select)
+- [](/components/command)
+
+</div>

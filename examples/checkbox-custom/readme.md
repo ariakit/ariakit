@@ -5,3 +5,22 @@
 </p>
 
 <a href="./index.tsx" data-playground>Example</a>
+
+## Components
+
+<div data-cards="components">
+
+- [](/components/checkbox)
+- [](/components/visually-hidden)
+
+</div>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/checkbox-as-button)
+- [](/examples/checkbox-group)
+- [](/examples/menu-item-checkbox)
+
+</div>

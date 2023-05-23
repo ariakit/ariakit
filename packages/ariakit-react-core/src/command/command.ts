@@ -17,14 +17,22 @@ function isNativeClick(event: KeyboardEvent) {
   if (!event.isTrusted) return false;
   // istanbul ignore next: can't test trusted events yet
   const element = event.currentTarget;
-  return (
-    isButton(element) ||
-    element.tagName === "SUMMARY" ||
-    element.tagName === "INPUT" ||
-    element.tagName === "TEXTAREA" ||
-    element.tagName === "A" ||
-    element.tagName === "SELECT"
-  );
+  if (event.key === "Enter") {
+    return (
+      isButton(element) ||
+      element.tagName === "SUMMARY" ||
+      element.tagName === "A"
+    );
+  }
+  if (event.key === " ") {
+    return (
+      isButton(element) ||
+      element.tagName === "SUMMARY" ||
+      element.tagName === "INPUT" ||
+      element.tagName === "SELECT"
+    );
+  }
+  return false;
 }
 
 /**

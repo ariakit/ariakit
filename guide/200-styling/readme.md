@@ -26,6 +26,17 @@ To safely use CSS selectors, utilize the `className` prop or provide your own `d
 
 </aside>
 
+### `[aria-checked]`
+
+The `aria-checked` attribute is applied to the [Checkbox](/components/checkbox) component when the input is checked. It can be either `true` or `false`.
+
+```css
+.checkbox[aria-checked="true"] {
+  background-color: hsl(204 100% 40%);
+  color: hsl(204 20% 100%);
+}
+```
+
 ### `[aria-disabled]`
 
 Not all HTML elements accept the `disabled` attribute. That's why the [Focusable](/components/focusable) component and all components that use it underneath will apply the `aria-disabled` attribute to the rendered element when the `disabled` prop is set to `true`.

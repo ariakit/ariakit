@@ -1,4 +1,4 @@
-import type { ChangeEvent, MouseEvent } from "react";
+import type { ChangeEvent, InputHTMLAttributes, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
@@ -26,6 +26,13 @@ function isNativeCheckbox(tagName?: string, type?: string) {
   return tagName === "input" && (!type || type === "checkbox");
 }
 
+function getNonArrayValue<T>(value: T) {
+  if (Array.isArray(value)) {
+    return value.toString();
+  }
+  return value as Exclude<T, readonly any[]>;
+}
+
 /**
  * Returns props to create a `Checkbox` component. If the element is not a
  * native checkbox, the hook will return additional props to make sure it's
@@ -48,8 +55,11 @@ export const useCheckbox = createHook<CheckboxOptions>(
     const storeChecked = useStoreState(store, (state) => {
       if (checkedProp !== undefined) return checkedProp;
       if (state.value === undefined) return;
-      if (valueProp) {
-        if (Array.isArray(state.value)) return state.value.includes(valueProp);
+      if (valueProp != null) {
+        if (Array.isArray(state.value)) {
+          const nonArrayValue = getNonArrayValue(valueProp);
+          return state.value.includes(nonArrayValue);
+        }
         return state.value === valueProp;
       }
       if (Array.isArray(state.value)) return false;
@@ -94,12 +104,13 @@ export const useCheckbox = createHook<CheckboxOptions>(
       setChecked(elementChecked);
 
       store?.setValue((prevValue) => {
-        if (!valueProp) return elementChecked;
+        if (valueProp == null) return elementChecked;
+        const nonArrayValue = getNonArrayValue(valueProp);
         if (!Array.isArray(prevValue)) {
-          return prevValue === valueProp ? false : valueProp;
+          return prevValue === nonArrayValue ? false : nonArrayValue;
         }
-        if (elementChecked) return [...prevValue, valueProp];
-        return prevValue.filter((v) => v !== valueProp);
+        if (elementChecked) return [...prevValue, nonArrayValue];
+        return prevValue.filter((v) => v !== nonArrayValue);
       });
     });
 
@@ -191,7 +202,7 @@ export interface CheckboxOptions<T extends As = "input">
    * <Checkbox store={checkbox} value="Watermelon" />
    * ```
    */
-  value?: string | number;
+  value?: InputHTMLAttributes<HTMLInputElement>["value"];
   /**
    * The default `checked` state of the checkbox. This prop is ignored if the
    * `checked` or the `store` props are provided.
