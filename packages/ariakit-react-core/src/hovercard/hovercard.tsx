@@ -10,7 +10,7 @@ import {
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { chain } from "@ariakit/core/utils/misc";
+import { chain, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
@@ -150,7 +150,6 @@ export const useHovercard = createHook<HovercardOptions>(
     modal = false,
     portal = !!modal,
     hideOnEscape = true,
-    hideOnControl = false,
     hideOnHoverOutside = true,
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
@@ -160,30 +159,6 @@ export const useHovercard = createHook<HovercardOptions>(
     const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
-
-    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-    const hideOnControlProp = useBooleanEvent(hideOnControl);
-    const open = store.useState("open");
-
-    // Hide on Escape/Control. Popover already handles this, but only when the
-    // dialog, the backdrop or the disclosure elements are focused. Since the
-    // hovercard, by default, does not receive focus when it's shown, we need to
-    // handle this globally here.
-    useEffect(() => {
-      if (!open) return;
-      return addGlobalEventListener("keydown", (event) => {
-        if (event.defaultPrevented) return;
-        const isEscape = event.key === "Escape" && hideOnEscapeProp(event);
-        const isControl = event.key === "Control" && hideOnControlProp(event);
-        if (isEscape || isControl) {
-          // Wait for the next frame to hide the hovercard. This is to prevent
-          // the hovercard from being immediately shown again when the user
-          // presses the Escape key and triggers a keyboard focus on a tooltip
-          // anchor, for example.
-          requestAnimationFrame(store.hide);
-        }
-      });
-    }, [store, open, hideOnEscapeProp, hideOnControlProp]);
 
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
@@ -344,12 +319,19 @@ export const useHovercard = createHook<HovercardOptions>(
     props = useAutoFocusOnShow({ store, modal, ...props });
 
     props = usePopover({
-      hideOnEscape,
       store,
       modal,
       portal,
       ...props,
       portalRef,
+      hideOnEscape(event) {
+        if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
+        // Hide again on the next frame to avoid the popover being shown again
+        // when the user presses the escape key and trigger focusVisible on the
+        // anchor element (which is the case of tooltip anchor).
+        requestAnimationFrame(() => requestAnimationFrame(store.hide));
+        return true;
+      },
     });
 
     return props;
@@ -382,15 +364,6 @@ export interface HovercardOptions<T extends As = "div">
    * Object returned by the `useHovercardStore` hook.
    */
   store: HovercardStore;
-  /**
-   * Determines whether the popover will be hidden when the user presses the
-   * Control key. This has been proposed as an alternative to the Escape key,
-   * which may introduce some issues, especially when popovers are used within
-   * dialogs that also hide on Escape. See
-   * https://github.com/w3c/aria-practices/issues/1506
-   * @default false
-   */
-  hideOnControl?: BooleanOrCallback<KeyboardEvent>;
   /**
    * Whether to hide the popover when the mouse cursor leaves any hovercard
    * element, including the hovercard popover itself, but also the anchor

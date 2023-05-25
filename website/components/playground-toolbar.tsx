@@ -126,6 +126,7 @@ export function PlaygroundToolbar({
             as={TooltipButton}
             store={select}
             title="Select language"
+            aria-label="Select language"
             isLabel
             {...props}
           />

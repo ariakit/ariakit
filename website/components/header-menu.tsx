@@ -16,6 +16,7 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import {
@@ -59,7 +60,6 @@ import { Spinner } from "icons/spinner.js";
 import Link from "next/link.js";
 import { afterTimeout } from "utils/after-timeout.js";
 import { tw } from "utils/tw.js";
-import { useIdle } from "utils/use-idle.js";
 import { whenIdle } from "utils/when-idle.js";
 import { Popup } from "./popup.js";
 
@@ -252,10 +252,9 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     });
     const menu = useMenuStore({
       combobox,
+      showTimeout: 0,
       placement: parent ? "right-start" : "bottom-start",
     });
-
-    const idle = useIdle();
 
     useSafeLayoutEffect(() => {
       return menu.syncBatch(
@@ -394,8 +393,14 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       </MenuButton>
     );
 
-    const selectMounted = select.useState((state) => idle || state.mounted);
-    const menuMounted = menu.useState((state) => idle || state.mounted);
+    const [canMount, setCanMount] = useState(false);
+    const selectMounted = select.useState((state) => canMount || state.mounted);
+    const menuMounted = menu.useState((state) => canMount || state.mounted);
+
+    useEffect(() => {
+      if (canMount) return;
+      setCanMount(selectMounted || menuMounted);
+    }, [canMount, selectMounted, menuMounted]);
 
     const popover = selectable ? (
       <SelectContext.Provider value={true}>
@@ -643,18 +648,20 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
     const renderSelectItem = (props: Props) => (
       <SelectItem
         {...props}
-        hideOnClick={hideOnClick}
-        autoFocus={autoFocus}
         value={value}
-      >
-        {renderItem}
-      </SelectItem>
+        autoFocus={autoFocus}
+        hideOnClick={hideOnClick}
+        render={renderItem}
+      />
     );
 
     const renderComboboxItem = (props: Props) => (
-      <ComboboxItem {...props} hideOnClick={hideOnClick} focusOnHover>
-        {select ? renderSelectItem : renderItem}
-      </ComboboxItem>
+      <ComboboxItem
+        {...props}
+        focusOnHover
+        hideOnClick={hideOnClick}
+        render={select ? renderSelectItem : renderItem}
+      />
     );
 
     if (combobox) {
@@ -665,11 +672,7 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       return renderSelectItem({ ...props, ref });
     }
 
-    return (
-      <MenuItem {...props} ref={ref}>
-        {renderItem}
-      </MenuItem>
-    );
+    return <MenuItem {...props} ref={ref} render={renderItem} />;
   }
 );
 
