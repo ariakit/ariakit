@@ -69,10 +69,11 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
   if (dialog && contains(dialog, activeElement)) return false;
+  // TODO: Test this
   // When there's a nested dialog, clicking outside both dialogs will close them
   // at the same time, but the active element will still point to the nested
-  // dialog element that is still focusable at this point. So we ignore it.
-  if (activeElement.hasAttribute("data-dialog")) return false;
+  // dialog element that is still focusable at this point. So we ignore it. if
+  // (activeElement.hasAttribute("data-dialog")) return false;
   if (isFocusable(activeElement)) return true;
   return false;
 }
@@ -143,7 +144,7 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(props, wrapElement, [wrapElement]);
 
     // Sets disclosure element using the current active element right after the
-    // dialog is opened.
+    // dialog is opened. TODO: Comment about useEffect on the disclosure comp.
     useSafeLayoutEffect(() => {
       if (!open) return;
       const dialog = ref.current;
@@ -379,6 +380,7 @@ export const useDialog = createHook<DialogOptions>(
           element?.focus();
           return;
         }
+        // TODO: Comment and test this.
         requestAnimationFrame(() => {
           if (isAlreadyFocusingAnotherElement(dialog)) return;
           element?.focus();

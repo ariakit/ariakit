@@ -1,14 +1,9 @@
 import type { MouseEvent } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import {
-  useBooleanEvent,
-  useEvent,
-  useForkRef,
-  useSafeLayoutEffect,
-} from "../utils/hooks.js";
+import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { DisclosureStore } from "./disclosure-store.js";
@@ -35,7 +30,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     // from the DOM. If the current element is the disclosure element, it will
     // get the `aria-expanded` attribute set to `true` when the disclosure
     // content is open.
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       let isCurrentDisclosure = disclosureElement === ref.current;
       if (!disclosureElement || !disclosureElement.isConnected) {
         store.setDisclosureElement(ref.current);
