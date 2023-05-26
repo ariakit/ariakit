@@ -58,7 +58,7 @@ test("hide menu by clicking on dialog", async () => {
   await click(getDialog()!);
   expect(getDialog()).toBeVisible();
   expect(getMenu()).not.toBeInTheDocument();
-  expect(getMenuButton()).toHaveFocus();
+  expect(getDialog()).toHaveFocus();
 });
 
 test("hide both menu and dialog by clicking outside dialog", async () => {
