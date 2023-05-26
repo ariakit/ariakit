@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@babel/core": "7.22.1",
-    "@babel/preset-env": "7.22.1",
+    "@babel/preset-env": "7.22.2",
     "@babel/preset-react": "7.22.0",
     "@babel/preset-typescript": "7.21.5",
     "@babel/types": "7.22.0",
