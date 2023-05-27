@@ -6,13 +6,14 @@
 
 <a href="../examples/menu/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/menu-framer-motion/)
+- [](/examples/menu-item-checkbox/)
+
+</div>
 
 ## API
 
@@ -64,6 +65,19 @@ Because they behave similarly, it may not be obvious when to use `Menu` and when
 - Use `Select` when the purpose is to select a value from a list of options. For example, a dropdown to select a country from a list of countries.
 - Use `Menu` when the purpose is to access a set of commands, actions, or links. For example, a dropdown to access a set of commands to edit a document.
 
-There are also some differences in how both components behave. Similarly to the native `<select>` element, the [`Select`](/apis/select) button's text will reflect the selected item. The button may also have a label in addition to the value. When the [`SelectPopover`](/apis/select-popover) opens, the selected item will be focused and brought into view.
+There are also some differences in how both components behave. Similarly to the native `<select>` element, the [`Select`](/apis/select) button's text will reflect the selected item. The button should also have a label in addition to the value. When the [`SelectPopover`](/apis/select-popover) opens, the selected item will be focused and brought into view.
 
 On the other hand, [`MenuButton`](/apis/menu-button) can't hold a value, only a label, which won't reflect the active item. It's usually a static call to action.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button/)
+- [](/components/checkbox/)
+- [](/components/popover/)
+- [](/components/radio/)
+- [](/components/select/)
+- [](/components/composite/)
+
+</div>

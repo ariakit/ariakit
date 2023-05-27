@@ -16,7 +16,7 @@ const style = {
   `,
   thumbnail: tw`
     flex items-center justify-center flex-none
-    rounded
+    rounded overflow-hidden
     bg-gray-150 dark:bg-gray-850
     group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80
     group-active:bg-black/[7.5%] dark:group-active:bg-black/80

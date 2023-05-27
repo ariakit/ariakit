@@ -1,4 +1,4 @@
-import { click, getByRole, press } from "@ariakit/test";
+import { click, getByRole, press, type } from "@ariakit/test";
 
 const getMenuButton = (name: string) => getByRole("button", { name });
 const getMenuItem = (name: string) => getByRole("menuitemcheckbox", { name });
@@ -53,4 +53,10 @@ test("check/uncheck menu item on space", async () => {
     "aria-checked",
     "false"
   );
+});
+
+test("typeahead", async () => {
+  await click(getMenuButton("Unwatch"));
+  await type("d");
+  expect(getMenuItem("Discussions")).toHaveFocus();
 });
