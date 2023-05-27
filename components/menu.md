@@ -10,8 +10,8 @@
 
 <div data-cards="examples">
 
-- [](/examples/menu-framer-motion/)
-- [](/examples/menu-item-checkbox/)
+- [](/examples/menu-framer-motion)
+- [](/examples/menu-item-checkbox)
 
 </div>
 
@@ -73,11 +73,11 @@ On the other hand, [`MenuButton`](/apis/menu-button) can't hold a value, only a 
 
 <div data-cards="components">
 
-- [](/components/button/)
-- [](/components/checkbox/)
-- [](/components/popover/)
-- [](/components/radio/)
-- [](/components/select/)
-- [](/components/composite/)
+- [](/components/button)
+- [](/components/checkbox)
+- [](/components/popover)
+- [](/components/radio)
+- [](/components/select)
+- [](/components/composite)
 
 </div>
