@@ -116,7 +116,7 @@
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
     "husky": "8.0.3",
-    "jsdom": "22.0.0",
+    "jsdom": "22.1.0",
     "lerna": "6.6.2",
     "lint-staged": "13.2.2",
     "lodash": "4.17.21",
