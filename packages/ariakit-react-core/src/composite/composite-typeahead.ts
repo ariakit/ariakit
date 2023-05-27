@@ -46,7 +46,10 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
   const itemText = item.element?.textContent || item.children;
   if (!itemText) return false;
-  return normalizeString(itemText).toLowerCase().startsWith(text.toLowerCase());
+  return normalizeString(itemText)
+    .trim()
+    .toLowerCase()
+    .startsWith(text.toLowerCase());
 }
 
 function getSameInitialItems(
