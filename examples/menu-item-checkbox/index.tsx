@@ -1,62 +1,30 @@
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import { useState } from "react";
+import { Menu, MenuItemCheckbox } from "./menu.jsx";
 
 export default function Example() {
-  const menu = Ariakit.useMenuStore({
-    defaultValues: { watching: ["issues"] },
-  });
-  const buttonLabel = menu.useState((state) =>
-    !!state.values.watching.length ? "Unwatch" : "Watch"
-  );
+  const [values, setValues] = useState({ watching: ["issues"] });
   return (
-    <>
-      <Ariakit.MenuButton store={menu} className="button">
-        {buttonLabel}
-        <Ariakit.MenuButtonArrow />
-      </Ariakit.MenuButton>
-      <Ariakit.Menu store={menu} className="menu">
-        <Ariakit.MenuArrow className="menu-arrow" />
-        <Ariakit.MenuItemCheckbox
-          name="watching"
-          value="issues"
-          className="menu-item"
-        >
-          <Ariakit.MenuItemCheck />
-          Issues
-        </Ariakit.MenuItemCheckbox>
-        <Ariakit.MenuItemCheckbox
-          name="watching"
-          value="pull-requests"
-          className="menu-item"
-        >
-          <Ariakit.MenuItemCheck />
-          Pull requests
-        </Ariakit.MenuItemCheckbox>
-        <Ariakit.MenuItemCheckbox
-          name="watching"
-          value="releases"
-          className="menu-item"
-        >
-          <Ariakit.MenuItemCheck />
-          Releases
-        </Ariakit.MenuItemCheckbox>
-        <Ariakit.MenuItemCheckbox
-          name="watching"
-          value="discussions"
-          className="menu-item"
-        >
-          <Ariakit.MenuItemCheck />
-          Discussions
-        </Ariakit.MenuItemCheckbox>
-        <Ariakit.MenuItemCheckbox
-          name="watching"
-          value="security-alerts"
-          className="menu-item"
-        >
-          <Ariakit.MenuItemCheck />
-          Security alerts
-        </Ariakit.MenuItemCheckbox>
-      </Ariakit.Menu>
-    </>
+    <Menu
+      label={values.watching.length ? "Unwatch" : "Watch"}
+      values={values}
+      onValuesChange={(v: typeof values) => setValues(v)}
+    >
+      <MenuItemCheckbox name="watching" value="issues">
+        Issues
+      </MenuItemCheckbox>
+      <MenuItemCheckbox name="watching" value="pull-requests">
+        Pull requests
+      </MenuItemCheckbox>
+      <MenuItemCheckbox name="watching" value="releases">
+        Releases
+      </MenuItemCheckbox>
+      <MenuItemCheckbox name="watching" value="discussions">
+        Discussions
+      </MenuItemCheckbox>
+      <MenuItemCheckbox name="watching" value="security-alerts">
+        Security alerts
+      </MenuItemCheckbox>
+    </Menu>
   );
 }
