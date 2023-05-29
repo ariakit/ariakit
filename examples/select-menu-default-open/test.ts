@@ -21,6 +21,7 @@ test("add filter with mouse then click outside", async () => {
   expect(getMenu()).not.toBeInTheDocument();
   expect(getButton("Filters (1)")).toBeVisible();
   expect(getSelect("Language:")).toBeVisible();
+  expect(getSelect("Language:")).toHaveAttribute("aria-expanded", "true");
   expect(getListbox("Language:")).toBeInTheDocument();
   expect(getListbox("Language:")).toHaveFocus();
   expect(getSelect("Language:")).toHaveTextContent("Language: Choose one");
@@ -39,6 +40,7 @@ test("add filter with keyboard then press tab", async () => {
   expect(getMenu()).not.toBeInTheDocument();
   expect(getButton("Filters (1)")).toBeVisible();
   expect(getSelect("Status:")).toBeVisible();
+  expect(getSelect("Status:")).toHaveAttribute("aria-expanded", "true");
   expect(getListbox("Status:")).toBeInTheDocument();
   expect(getListbox("Status:")).toHaveFocus();
   expect(getSelect("Status:")).toHaveTextContent("Status: Choose one");
@@ -57,6 +59,7 @@ test("add filter with mouse and select an option", async () => {
   expect(getListbox("Language:")).not.toBeInTheDocument();
   expect(getSelect("Language:")).toBeVisible();
   expect(getSelect("Language:")).toHaveFocus();
+  expect(getSelect("Language:")).toHaveAttribute("aria-expanded", "false");
   expect(getSelect("Language:")).toHaveTextContent("Language: French");
 });
 
