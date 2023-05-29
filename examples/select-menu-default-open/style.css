@@ -18,7 +18,7 @@
 
 .input {
   @apply
-    flex-1
+    w-full
     h-10
     px-4
     text-base
@@ -40,6 +40,9 @@
 
 .button {
   @apply
+    rounded-md
+    aria-expanded:bg-black/10
+    aria-expanded:dark:bg-white/10
     [font-variant-numeric:tabular-nums]
   ;
 }
@@ -67,6 +70,9 @@
     w-auto
     first-of-type:rounded-r-none
     last-of-type:rounded-l-none
+    last-of-type:border-l
+    last-of-type:border-l-gray-250
+    last-of-type:dark:border-l-gray-550
   ;
 }
 
@@ -79,6 +85,14 @@
 .select-item {
   @apply
     text-sm
+    pr-7
     [&>*]:flex-none
+  ;
+}
+
+.menu-item {
+  @apply
+    pr-7
+    [&:not([aria-checked])]:pl-7
   ;
 }

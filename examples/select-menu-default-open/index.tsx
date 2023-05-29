@@ -1,7 +1,12 @@
 import "./style.css";
 import { useMemo, useState } from "react";
 import { allFilters } from "./all-filters.js";
-import { FilterMenu, FilterMenuItem } from "./filter-menu.jsx";
+import {
+  FilterMenu,
+  FilterMenuItem,
+  FilterMenuItemCheckbox,
+  FilterMenuSeparator,
+} from "./filter-menu.jsx";
 import { FilterSelect, FilterSelectItem } from "./filter-select.jsx";
 
 type Filters = Record<string, string | undefined>;
@@ -27,15 +32,18 @@ export default function Example() {
           }}
         >
           {allFilters.map((filter) => (
-            <FilterMenuItem
+            <FilterMenuItemCheckbox
               name="visibleFilters"
               key={filter.label}
               value={filter.label}
             />
           ))}
+          <FilterMenuSeparator />
+          <FilterMenuItem onClick={() => setFilters({})}>
+            Clear all
+          </FilterMenuItem>
         </FilterMenu>
       </div>
-
       <div className="filters">
         {visibleFilters.map((label) => (
           <FilterSelect

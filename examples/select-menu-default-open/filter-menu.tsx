@@ -24,14 +24,14 @@ export const FilterMenu = forwardRef<HTMLButtonElement, FilterMenuProps>(
       <>
         <Ariakit.MenuButton
           ref={ref}
-          className="button"
+          className="button secondary"
           {...props}
           store={menu}
         >
           {label}
           <Ariakit.MenuButtonArrow />
         </Ariakit.MenuButton>
-        <Ariakit.Menu store={menu} portal className="menu">
+        <Ariakit.Menu store={menu} gutter={4} className="menu">
           {props.children}
         </Ariakit.Menu>
       </>
@@ -39,16 +39,30 @@ export const FilterMenu = forwardRef<HTMLButtonElement, FilterMenuProps>(
   }
 );
 
-interface FilterMenuItemProps extends Ariakit.MenuItemCheckboxProps {
+interface FilterMenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {
   children?: ReactNode;
 }
 
-export const FilterMenuItem = forwardRef<HTMLDivElement, FilterMenuItemProps>(
+export const FilterMenuItemCheckbox = forwardRef<
+  HTMLDivElement,
+  FilterMenuItemCheckboxProps
+>(function FilterMenuItemCheckbox(props, ref) {
+  return (
+    <Ariakit.MenuItemCheckbox ref={ref} className="menu-item" {...props}>
+      <Ariakit.MenuItemCheck /> {props.children ?? props.value}
+    </Ariakit.MenuItemCheckbox>
+  );
+});
+
+export const FilterMenuItem = forwardRef<HTMLDivElement, Ariakit.MenuItemProps>(
   function FilterMenuItem(props, ref) {
-    return (
-      <Ariakit.MenuItemCheckbox ref={ref} className="menu-item" {...props}>
-        <Ariakit.MenuItemCheck /> {props.children ?? props.value}
-      </Ariakit.MenuItemCheckbox>
-    );
+    return <Ariakit.MenuItem ref={ref} className="menu-item" {...props} />;
   }
 );
+
+export const FilterMenuSeparator = forwardRef<
+  HTMLHRElement,
+  Ariakit.MenuSeparatorProps
+>(function FilterMenuSeparator(props, ref) {
+  return <Ariakit.MenuSeparator ref={ref} className="separator" {...props} />;
+});
