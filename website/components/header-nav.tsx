@@ -531,6 +531,11 @@ export function HeaderNav() {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [pageOpen, setPageOpen] = useState(false);
   const [categorySearchValue, setCategorySearchValue] = useState<string>();
+  const categoryMeta = pageIndex[category as keyof typeof pageIndex];
+  const pageMeta =
+    page && categoryMeta
+      ? categoryMeta.find(({ slug }) => slug === page)
+      : null;
 
   useEffect(() => {
     if (categorySearchValue) {
@@ -554,7 +559,7 @@ export function HeaderNav() {
           setCategorySearchValue(value);
           setCategoryOpen(true);
           setPageOpen(false);
-        } else if (page) {
+        } else if (pageMeta) {
           setPageOpen(true);
         } else {
           setCategoryOpen(true);
@@ -565,15 +570,9 @@ export function HeaderNav() {
     return () => {
       document.removeEventListener("keydown", onKeyDown, true);
     };
-  }, [categoryOpen, pageOpen, category, page]);
-
-  const categoryMeta = pageIndex[category as keyof typeof pageIndex];
+  }, [categoryOpen, pageOpen, category, pageMeta]);
 
   const categoryTitle = category ? categoryTitles[category] : "Browse";
-  const pageMeta =
-    page && categoryMeta
-      ? categoryMeta.find(({ slug }) => slug === page)
-      : null;
 
   const categoryElements = useMemo(
     () =>

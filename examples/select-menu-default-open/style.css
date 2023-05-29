@@ -1,0 +1,84 @@
+@import url("../menu/style.css");
+@import url("../select/style.css");
+
+.wrapper {
+  @apply
+    w-full
+    max-w-2xl
+  ;
+}
+
+.search-wrapper {
+  @apply
+    flex
+    gap-2
+    items-center
+  ;
+}
+
+.input {
+  @apply
+    flex-1
+    h-10
+    px-4
+    text-base
+    rounded-md
+    border-none
+    placeholder-black/60
+    dark:placeholder-white/[46%]
+    text-black
+    dark:text-white
+    bg-gray-150/40
+    dark:bg-gray-850
+    hover:bg-gray-150
+    dark:hover:bg-gray-900
+    shadow-input
+    dark:shadow-input-dark
+    focus-visible:outline-blue-600
+  ;
+}
+
+.button {
+  @apply
+    [font-variant-numeric:tabular-nums]
+  ;
+}
+
+.filters {
+  @apply
+    flex
+    flex-wrap
+    gap-2
+    min-h-[theme(spacing.8)]
+  ;
+}
+
+.filter {
+  @apply
+    flex
+  ;
+}
+
+.select {
+  @apply
+    text-sm
+    h-8
+    px-3
+    w-auto
+    first-of-type:rounded-r-none
+    last-of-type:rounded-l-none
+  ;
+}
+
+.popover {
+  @apply
+    min-w-[var(--popover-anchor-width)]
+  ;
+}
+
+.select-item {
+  @apply
+    text-sm
+    [&>*]:flex-none
+  ;
+}
