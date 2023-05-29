@@ -16,7 +16,7 @@ export default function Example() {
 
   // Hydrate the dialog state. This is necessary because the user may have
   // opened the dialog before JavaScript has loaded.
-  useEffect(() => dialog.setOpen(!!ref.current?.open), [dialog.setOpen]);
+  useEffect(() => dialog.setOpen(!!ref.current?.open), [dialog]);
 
   return (
     <details
