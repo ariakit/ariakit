@@ -155,7 +155,8 @@ const style = {
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
 
-    [p&_code]:rounded [p&_code]:p-[0.25em] [p&_code]:text-[0.9375em]
+    [p&_code]:rounded [p&_code]:text-[0.9375em]
+    [p&_code]:px-[0.25em] [p&_code]:py-[0.2em]
     [p&_code]:bg-black/[7.5%] dark:[p&_code]:bg-white/[7.5%]
     [p&_code]:font-monospace
   `,
