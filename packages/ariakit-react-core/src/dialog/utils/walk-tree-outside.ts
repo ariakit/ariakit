@@ -25,15 +25,16 @@ export function walkTreeOutside(
       if (maybeAncestor === element) return false;
       return maybeAncestor.contains(element);
     });
-    if (hasAncestorAlready) continue;
     const doc = getDocument(element);
     // Loops through the parent elements and then through each of their
     // children.
     while (element.parentElement && element !== doc.body) {
       ancestorCallback?.(element.parentElement);
-      for (const child of element.parentElement.children) {
-        if (isValidElement(child, elements)) {
-          callback(child);
+      if (!hasAncestorAlready) {
+        for (const child of element.parentElement.children) {
+          if (isValidElement(child, elements)) {
+            callback(child);
+          }
         }
       }
       element = element.parentElement;

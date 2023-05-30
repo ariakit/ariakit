@@ -1,29 +1,23 @@
-import * as Ariakit from "@ariakit/react";
-import assignStyle from "./assign-style.js";
-import useMedia from "./use-media.js";
 import "./style.css";
-
-function applyMobileStyles(
-  popover?: HTMLElement | null,
-  arrow?: HTMLElement | null
-) {
-  const restorePopoverStyle = assignStyle(popover, {
-    position: "fixed",
-    bottom: "0",
-    width: "100%",
-    padding: "12px",
-  });
-  const restoreArrowStyle = assignStyle(arrow, { display: "none" });
-  const restoreDesktopStyles = () => {
-    restorePopoverStyle();
-    restoreArrowStyle();
-  };
-  return restoreDesktopStyles;
-}
+import * as Ariakit from "@ariakit/react";
+import useMedia from "./use-media.js";
 
 export default function Example() {
   const isLarge = useMedia("(min-width: 640px)", true);
   const popover = Ariakit.usePopoverStore();
+
+  const updatePosition = () => {
+    const { popoverElement, mounted } = popover.getState();
+    if (!popoverElement) return;
+    Object.assign(popoverElement.style, {
+      display: mounted ? "block" : "none",
+      position: "fixed",
+      width: "100%",
+      bottom: "0px",
+      padding: "12px",
+    });
+  };
+
   return (
     <>
       <Ariakit.PopoverDisclosure store={popover} className="button">
@@ -32,14 +26,11 @@ export default function Example() {
       <Ariakit.Popover
         store={popover}
         modal={!isLarge}
+        backdrop={isLarge ? false : <div className="backdrop" />}
+        updatePosition={isLarge ? undefined : updatePosition}
         className="popover"
-        updatePosition={(props) => {
-          const { popoverElement, arrowElement } = popover.getState();
-          if (isLarge) return props.updatePosition();
-          return applyMobileStyles(popoverElement, arrowElement);
-        }}
       >
-        <Ariakit.PopoverArrow className="arrow" />
+        {isLarge && <Ariakit.PopoverArrow className="arrow" />}
         <Ariakit.PopoverHeading className="heading">
           Team meeting
         </Ariakit.PopoverHeading>

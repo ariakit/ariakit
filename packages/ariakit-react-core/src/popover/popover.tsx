@@ -243,8 +243,8 @@ export const usePopover = createHook<PopoverOptions>(
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
     const getAnchorRectProp = useEvent(getAnchorRect);
-    const hasCustomUpdatePosition = !!updatePosition;
     const updatePositionProp = useEvent(updatePosition);
+    const hasCustomUpdatePosition = !!updatePosition;
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
@@ -309,11 +309,12 @@ export const usePopover = createHook<PopoverOptions>(
       return autoUpdate(
         anchor,
         popoverElement,
-        () => {
+        async () => {
           if (hasCustomUpdatePosition) {
-            updatePositionProp({ updatePosition: update });
+            await updatePositionProp({ updatePosition: update });
+            setPositioned(true);
           } else {
-            update();
+            await update();
           }
         },
         {
@@ -540,7 +541,9 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * Example susing this prop:
    *  - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    */
-  updatePosition?: (props: { updatePosition: () => Promise<void> }) => void;
+  updatePosition?: (props: {
+    updatePosition: () => Promise<void>;
+  }) => void | Promise<void>;
 }
 
 export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;
