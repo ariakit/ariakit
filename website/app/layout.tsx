@@ -26,6 +26,19 @@ window.addEventListener("storage", (event) => {
 });
 `;
 
+// See https://github.com/facebook/react/issues/19841#issuecomment-694978234
+const dblClickWorkaround = `
+if (typeof window !== "undefined") {
+  const addEventListener = Node.prototype.addEventListener;
+  Node.prototype.addEventListener = function (type, callback, options) {
+    if (type === "dblclick" && (options === true || options === false)) {
+      return;
+    }
+    return addEventListener.call(this, type, callback, options);
+  };
+}
+`;
+
 const inter = Inter({ subsets: ["latin"] });
 
 export function generateMetadata() {
@@ -37,6 +50,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <html lang="en" suppressHydrationWarning className={inter.className}>
       <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: dblClickWorkaround }} />
         {children}
         <Analytics />
       </body>
