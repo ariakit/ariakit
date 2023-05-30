@@ -1,0 +1,54 @@
+name: test-vo
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs at 00:00 UTC every day
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-vo:
+    name: Test VoiceOver
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Install playwright
+        run: npx playwright install --with-deps webkit
+
+      - name: Build website
+        run: npm run build-website
+
+      - name: Guidepup Setup
+        uses: guidepup/setup-action@0.11.2
+        with:
+          record: true
+
+      - name: Test
+        id: test
+        run: npm run test-vo
+
+      - name: Upload test results to GitHub
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            test-results
+            recordings
+          retention-days: 30
