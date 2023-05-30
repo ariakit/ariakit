@@ -133,8 +133,8 @@ test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  await expect(getButton(page, "Manage lists")).toBeFocused();
   await repeat(async () => {
+    await expect(getButton(page, "Manage lists")).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(getDialog(page, "Manage lists")).toBeVisible();
     await expect(
@@ -153,8 +153,8 @@ test("repeatedly showing/hiding information dialog", async ({ page }) => {
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  await expect(getButton(page, "More information")).toBeFocused();
   await repeat(async () => {
+    await expect(getButton(page, "More information")).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(getDialog(page, "More information")).toBeVisible();
     await expect(

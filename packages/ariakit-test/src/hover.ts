@@ -1,3 +1,4 @@
+import { isVisible } from "@ariakit/core/utils/dom";
 import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
 import { sleep } from "./sleep.js";
@@ -11,12 +12,14 @@ function isPointerEventsEnabled(element: Element) {
 }
 
 export async function hover(element: Element, options?: MouseEventInit) {
+  if (!isVisible(element)) return;
+
   const document = element.ownerDocument as DocumentWithLastHovered;
   const { lastHovered } = document;
   const { disabled } = element as HTMLButtonElement;
   const pointerEventsEnabled = isPointerEventsEnabled(element);
 
-  if (lastHovered && lastHovered !== element) {
+  if (lastHovered && lastHovered !== element && isVisible(lastHovered)) {
     fireEvent.pointerMove(lastHovered, options);
     fireEvent.mouseMove(lastHovered, options);
 
