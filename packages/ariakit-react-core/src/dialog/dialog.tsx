@@ -65,14 +65,10 @@ import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 
 const isSafariBrowser = isSafari();
 
-function isAlreadyFocusingAnotherElement(dialog: HTMLElement) {
+function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement();
   if (!activeElement) return false;
-  if (contains(dialog, activeElement)) return false;
-  // When there's a nested dialog, clicking outside both dialogs will close them
-  // at the same time, but the active element will still point to the nested
-  // dialog element that is still focusable at this point. So we ignore it.
-  if (activeElement.hasAttribute("data-dialog")) return false;
+  if (dialog && contains(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
 }
@@ -333,7 +329,6 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = ref.current;
       // A function so we can use it on the effect setup and cleanup phases.
       const focusOnHide = (retry = true) => {
-        if (!dialog) return;
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog)) return;
@@ -376,7 +371,7 @@ export const useDialog = createHook<DialogOptions>(
         }
         if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
         if (!isElementFocusable) return;
-        queueMicrotask(() => element?.focus());
+        element?.focus();
       };
       if (!open) {
         // If this effect is running while the open state is false, this means

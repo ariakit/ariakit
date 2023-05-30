@@ -40,7 +40,7 @@ export default function Example() {
       doc.removeEventListener("mouseup", onMouseUp);
       doc.removeEventListener("selectionchange", onSelect);
     };
-  }, [popover.render, popover.setOpen]);
+  }, [popover]);
 
   return (
     <div>

@@ -85,6 +85,7 @@ const style = {
     data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
   `,
   link: tw`
+    pb-1.5 pt-1 -mb-1.5 -mt-1 relative
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
     underline [text-decoration-skip-ink:none]
     decoration-1 hover:decoration-[3px]

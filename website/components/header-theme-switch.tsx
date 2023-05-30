@@ -61,6 +61,7 @@ export function HeaderThemeSwitch(props: Props) {
         }
       }}
     >
+      <span className="sr-only">Switch theme</span>
       <Moon className="h-5 w-5 dark:hidden" />
       <Sun className="hidden h-5 w-5 dark:block" />
     </TooltipButton>

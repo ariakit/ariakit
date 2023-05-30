@@ -1,7 +1,7 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useContext } from "react";
 import { closest, contains } from "@ariakit/core/utils/dom";
-import { hasFocusWithin } from "@ariakit/core/utils/focus";
+import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { useBooleanEvent, useEvent, useIsMouseMoving } from "../utils/hooks.js";
@@ -75,7 +75,10 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       // the active id because the composite element will automatically set the
       // active id to null when it receives focus.
       if (!hasFocusWithin(event.currentTarget)) {
-        store?.getState().baseElement?.focus();
+        const baseElement = store?.getState().baseElement;
+        if (baseElement && !hasFocus(baseElement)) {
+          baseElement.focus();
+        }
       }
       store?.setActiveId(event.currentTarget.id);
     });

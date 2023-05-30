@@ -259,6 +259,7 @@ type HeaderNavMenuProps = {
   size?: "sm" | "md" | "lg" | "xl";
   href?: string;
   hiddenOnMobile?: boolean;
+  "aria-label"?: string;
 };
 
 const HeaderNavMenuContext = createContext(false);
@@ -279,6 +280,7 @@ const HeaderNavMenu = memo(
     size = "lg",
     href,
     hiddenOnMobile,
+    "aria-label": ariaLabel,
   }: HeaderNavMenuProps) => {
     const isSubNav = useContext(HeaderNavMenuContext);
     const [_open, _setOpen] = useState(false);
@@ -416,6 +418,7 @@ const HeaderNavMenu = memo(
     return (
       <HeaderNavMenuContext.Provider value={true}>
         <HeaderMenu
+          aria-label={ariaLabel}
           href={href}
           className={hiddenOnMobile ? "hidden flex-none sm:block" : undefined}
           open={open}
@@ -528,6 +531,11 @@ export function HeaderNav() {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [pageOpen, setPageOpen] = useState(false);
   const [categorySearchValue, setCategorySearchValue] = useState<string>();
+  const categoryMeta = pageIndex[category as keyof typeof pageIndex];
+  const pageMeta =
+    page && categoryMeta
+      ? categoryMeta.find(({ slug }) => slug === page)
+      : null;
 
   useEffect(() => {
     if (categorySearchValue) {
@@ -546,10 +554,12 @@ export function HeaderNav() {
           : "";
         if (categoryOpen) {
           setPageOpen(true);
+          setCategoryOpen(false);
         } else if (pageOpen) {
           setCategorySearchValue(value);
           setCategoryOpen(true);
-        } else if (page) {
+          setPageOpen(false);
+        } else if (pageMeta) {
           setPageOpen(true);
         } else {
           setCategoryOpen(true);
@@ -560,15 +570,9 @@ export function HeaderNav() {
     return () => {
       document.removeEventListener("keydown", onKeyDown, true);
     };
-  }, [categoryOpen, pageOpen, category, page]);
-
-  const categoryMeta = pageIndex[category as keyof typeof pageIndex];
+  }, [categoryOpen, pageOpen, category, pageMeta]);
 
   const categoryTitle = category ? categoryTitles[category] : "Browse";
-  const pageMeta =
-    page && categoryMeta
-      ? categoryMeta.find(({ slug }) => slug === page)
-      : null;
 
   const categoryElements = useMemo(
     () =>
@@ -636,6 +640,7 @@ export function HeaderNav() {
         value={category || undefined}
         size="sm"
         hiddenOnMobile={!!element}
+        aria-label={category && "Current category"}
       >
         {children}
       </HeaderNavMenu>
@@ -652,6 +657,7 @@ export function HeaderNav() {
           label={pageMeta.title}
           contentLabel={categoryTitle}
           value={`/${category}/${page}`}
+          aria-label="Current page"
         />
       )}
     </>
