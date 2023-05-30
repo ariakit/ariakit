@@ -47,41 +47,40 @@ export const FilterSelect = React.forwardRef<
   });
   const selectValue = select.useState("value");
   return (
-    <>
-      <div className="filter">
-        <Ariakit.Select
-          ref={ref}
-          className="select"
-          {...props}
-          store={select}
-          aria-labelledby={labelId}
-        >
-          <div>
-            <span id={labelId} aria-hidden>
-              {label}:{" "}
-            </span>
-            {selectValue || "Choose one"}
-          </div>
-        </Ariakit.Select>
-        {onRemove && (
-          <Ariakit.Button
-            className="select"
-            aria-label={`Remove ${label} filter`}
-            onClick={() => onRemove()}
-          >
-            &times;
-          </Ariakit.Button>
-        )}
-      </div>
+    <div className="filter">
+      <Ariakit.Select
+        ref={ref}
+        className="select"
+        {...props}
+        store={select}
+        aria-labelledby={labelId}
+      >
+        <div>
+          <span id={labelId} aria-hidden>
+            {label}:{" "}
+          </span>
+          {selectValue || "Choose one"}
+        </div>
+      </Ariakit.Select>
       <Ariakit.SelectPopover
         store={select}
         aria-labelledby={labelId}
+        // portal
         gutter={4}
         className="popover"
       >
         {children}
       </Ariakit.SelectPopover>
-    </>
+      {onRemove && (
+        <Ariakit.Button
+          className="select"
+          aria-label={`Remove ${label} filter`}
+          onClick={() => onRemove()}
+        >
+          &times;
+        </Ariakit.Button>
+      )}
+    </div>
   );
 });
 

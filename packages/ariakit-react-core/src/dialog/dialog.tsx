@@ -139,7 +139,7 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(props, wrapElement, [wrapElement]);
 
     // Sets disclosure element using the current active element right after the
-    // dialog is opened. TODO: Comment about useEffect on the disclosure comp.
+    // dialog is opened.
     useSafeLayoutEffect(() => {
       if (!open) return;
       const dialog = ref.current;
@@ -371,15 +371,7 @@ export const useDialog = createHook<DialogOptions>(
         }
         if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
         if (!isElementFocusable) return;
-        if (!retry) {
-          element?.focus();
-          return;
-        }
-        // TODO: Comment and test this.
-        requestAnimationFrame(() => {
-          if (isAlreadyFocusingAnotherElement(dialog)) return;
-          element?.focus();
-        });
+        element?.focus();
       };
       if (!open) {
         // If this effect is running while the open state is false, this means
