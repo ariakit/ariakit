@@ -1,5 +1,11 @@
 # @ariakit/test
 
+## 0.1.10
+
+### Patch Changes
+
+- Fixed several actions not considering hidden elements before dispatching events, which was causing a freeze in JSDOM. ([#2462](https://github.com/ariakit/ariakit/pull/2462))
+
 ## 0.1.9
 
 ### Patch Changes
