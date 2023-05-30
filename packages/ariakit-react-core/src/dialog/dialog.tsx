@@ -221,14 +221,16 @@ export const useDialog = createHook<DialogOptions>(
       // mounted here.
       if (!open) return;
       const { disclosureElement } = store.getState();
-      // If portal is enabled, we get the portalNode instead of the dialog
-      // element. This will consider nested dialogs as they will be children of
-      // the portal node, but not the dialog. This also accounts for the tiny
-      // delay before the dialog element is appended to the portal node, and the
-      // portal node is added to the DOM.
-      const element = portal ? portalNode : ref.current;
+      const dialog = ref.current;
       const persistentElements = getPersistentElementsProp() || [];
-      const allElements = [element, ...nestedDialogs, ...persistentElements];
+      const allElements = [
+        // In addition to the dialog element, we also include the portal node here
+        // so nested dialogs are considered as well.
+        dialog,
+        portalNode,
+        ...nestedDialogs,
+        ...persistentElements,
+      ];
       if (!shouldDisableAccessibilityTree) {
         return markTreeOutside(id, disclosureElement, ...allElements);
       }
