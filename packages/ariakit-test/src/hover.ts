@@ -12,6 +12,8 @@ function isPointerEventsEnabled(element: Element) {
 }
 
 export async function hover(element: Element, options?: MouseEventInit) {
+  if (!isVisible(element)) return;
+
   const document = element.ownerDocument as DocumentWithLastHovered;
   const { lastHovered } = document;
   const { disabled } = element as HTMLButtonElement;

@@ -65,7 +65,6 @@ export const FilterSelect = React.forwardRef<
       <Ariakit.SelectPopover
         store={select}
         aria-labelledby={labelId}
-        // portal
         gutter={4}
         className="popover"
       >

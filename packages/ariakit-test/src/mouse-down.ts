@@ -1,12 +1,14 @@
 import "./mock-get-client-rects.js";
 
-import { getDocument } from "@ariakit/core/utils/dom";
+import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { blur } from "./blur.js";
 import { fireEvent } from "./fire-event.js";
 import { focus } from "./focus.js";
 
 export function mouseDown(element: Element, options?: MouseEventInit) {
+  if (!isVisible(element)) return;
+
   const { disabled } = element as HTMLButtonElement;
 
   let defaultAllowed = fireEvent.pointerDown(element, options);

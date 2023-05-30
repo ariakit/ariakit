@@ -48,12 +48,7 @@ export const FilterMenuItemCheckbox = forwardRef<
   FilterMenuItemCheckboxProps
 >(function FilterMenuItemCheckbox(props, ref) {
   return (
-    <Ariakit.MenuItemCheckbox
-      ref={ref}
-      hideOnClick
-      className="menu-item"
-      {...props}
-    >
+    <Ariakit.MenuItemCheckbox ref={ref} className="menu-item" {...props}>
       <Ariakit.MenuItemCheck /> {props.children ?? props.value}
     </Ariakit.MenuItemCheckbox>
   );

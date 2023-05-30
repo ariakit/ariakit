@@ -1,3 +1,4 @@
+import { isVisible } from "@ariakit/core/utils/dom";
 import { fireEvent } from "./fire-event.js";
 import { hover } from "./hover.js";
 import { mouseDown } from "./mouse-down.js";
@@ -9,6 +10,8 @@ export async function select(
   element: Element = document.body,
   options?: MouseEventInit
 ) {
+  if (!isVisible(element)) return;
+
   const document = element.ownerDocument;
 
   await hover(element, options);

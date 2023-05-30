@@ -1,6 +1,9 @@
+import { isVisible } from "@ariakit/core/utils/dom";
 import { fireEvent } from "./fire-event.js";
 
 export function mouseUp(element: Element, options?: MouseEventInit) {
+  if (!isVisible(element)) return;
+
   const { disabled } = element as HTMLButtonElement;
 
   fireEvent.pointerUp(element, options);
