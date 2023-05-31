@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.4
+
+### Patch Changes
+
+- Added missing `types` field to proxy package.json files. ([#2489](https://github.com/ariakit/ariakit/pull/2489))
+
 ## 0.2.3
 
 ### Patch Changes
