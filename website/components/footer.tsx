@@ -68,9 +68,9 @@ export function Footer() {
             aria-labelledby={`${id}-${i}`}
             className="flex flex-col gap-6 sm:gap-4"
           >
-            <h3 id={`${id}-${i}`} className="font-semibold">
+            <div id={`${id}-${i}`} className="font-semibold">
               {group.title}
-            </h3>
+            </div>
             <ul className="flex flex-col gap-4 sm:gap-2">
               {group.links.map((link) => (
                 <li key={link.title}>
