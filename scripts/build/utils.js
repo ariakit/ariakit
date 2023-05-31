@@ -154,14 +154,17 @@ export function getPublicFiles(sourcePath, prefix = "") {
 }
 
 /**
- * Returns ["module", "path/to/module", ...]
+ * Returns { "module": "module", "path/to/module": "path/to/module/index" }]
  * @param {string} rootPath
+ * @returns {Record<string, string>}
  */
 export function getProxyFolders(rootPath) {
   const publicFiles = getPublicFiles(getSourcePath(rootPath));
-  return Object.keys(publicFiles)
-    .map((name) => name.replace(/\/index$/, ""))
-    .filter((name) => name !== "index");
+  return Object.fromEntries(
+    Object.keys(publicFiles)
+      .map((name) => [name.replace(/\/index$/, ""), name])
+      .filter(([name]) => name !== "index")
+  );
 }
 
 /**
@@ -170,7 +173,7 @@ export function getProxyFolders(rootPath) {
  * @returns {string[]}
  */
 export function getBuildFolders(rootPath) {
-  return [getCJSDir(), getESMDir(), ...getProxyFolders(rootPath)];
+  return [getCJSDir(), getESMDir(), ...Object.keys(getProxyFolders(rootPath))];
 }
 
 /**
@@ -250,8 +253,9 @@ export function makeGitignore(rootPath) {
 /**
  * @param {string} rootPath
  * @param {string} moduleName
+ * @param {string} path
  */
-function getProxyPackageContents(rootPath, moduleName) {
+function getProxyPackageContents(rootPath, moduleName, path) {
   const { name } = readPackageJson(rootPath);
   const mainDir = getCJSDir();
   const moduleDir = getESMDir();
@@ -260,8 +264,9 @@ function getProxyPackageContents(rootPath, moduleName) {
     name: `${name}/${moduleName}`,
     private: true,
     sideEffects: false,
-    main: join(prefix, mainDir, moduleName),
-    module: join(prefix, moduleDir, moduleName),
+    main: join(prefix, mainDir, `${path}.cjs`),
+    module: join(prefix, moduleDir, `${path}.js`),
+    types: join(prefix, mainDir, `${path}.d.ts`),
   };
   return JSON.stringify(json, null, 2);
 }
@@ -273,11 +278,11 @@ export function makeProxies(rootPath) {
   const pkg = readPackageJson(rootPath);
   /** @type {string[]} */
   const created = [];
-  getProxyFolders(rootPath).forEach((name) => {
+  Object.entries(getProxyFolders(rootPath)).forEach(([name, path]) => {
     fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
-      getProxyPackageContents(rootPath, name)
+      getProxyPackageContents(rootPath, name, path)
     );
     created.push(chalk.bold(chalk.green(name)));
   });
