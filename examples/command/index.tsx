@@ -4,10 +4,10 @@ import "./style.css";
 export default function Example() {
   return (
     <Command
-      as="div"
       role="button"
       className="button"
       onClick={() => alert("Accessible button clicked")}
+      render={<div />}
     >
       Button
     </Command>

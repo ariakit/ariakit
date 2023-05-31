@@ -3,7 +3,7 @@ import "./style.css";
 
 export default function Example() {
   return (
-    <Button as="a" className="button" href="#">
+    <Button className="button" render={<a href="#" />}>
       Button
     </Button>
   );

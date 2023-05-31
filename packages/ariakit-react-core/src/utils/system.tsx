@@ -1,6 +1,13 @@
-import type { ElementType, ReactElement } from "react";
-import { forwardRef, memo } from "react";
+import type {
+  ElementType,
+  HTMLAttributes,
+  ReactElement,
+  RefAttributes,
+} from "react";
+import { cloneElement, forwardRef, isValidElement, memo } from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
+import type { AnyObject } from "@ariakit/core/utils/types";
+import { setRef } from "./misc.js";
 import type {
   Component,
   HTMLProps,
@@ -85,6 +92,12 @@ export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   let element: ReactElement;
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
+  } else if (isValidElement<AnyObject>(render)) {
+    const renderProps: AnyObject = {
+      ...render.props,
+      ref: "ref" in render ? render.ref : undefined,
+    };
+    element = cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
     // @ts-expect-error
     element = render(rest) as ReactElement;
@@ -134,4 +147,57 @@ export function createHook<O extends Options>(
     return copy;
   };
   return useRole as Hook<O>;
+}
+
+export function mergeProps<T extends HTMLAttributes<any> & RefAttributes<any>>(
+  base: T,
+  incoming: T
+) {
+  const props = { ...base };
+
+  for (const key in incoming) {
+    if (!hasOwnProperty(incoming, key)) continue;
+    const incomingValue = incoming[key];
+
+    if (key === "className") {
+      const prop = "className";
+      props[prop] = [base[prop], incomingValue]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+    } else if (key === "style") {
+      const prop = "style";
+      props[prop] = { ...base[prop], ...incomingValue };
+    } else if (key === "children") {
+      const prop = "children";
+      if (incoming[prop]) {
+        props[prop] = incoming[prop];
+      }
+    } else if (key === "ref") {
+      const prop = "ref";
+      const baseRef = base[prop];
+      const incomingRef = incoming[prop];
+      if (incomingRef) {
+        props[prop] = (value: unknown) => {
+          setRef(baseRef, value);
+          setRef(incomingRef, value);
+        };
+      }
+    } else if (typeof incomingValue === "function") {
+      const baseValue = base[key];
+      if (typeof baseValue === "function") {
+        // @ts-expect-error
+        props[key] = (...args: unknown[]) => {
+          incomingValue(...args);
+          baseValue(...args);
+        };
+      } else {
+        props[key] = incomingValue;
+      }
+    } else {
+      props[key] = incomingValue;
+    }
+  }
+
+  return props;
 }

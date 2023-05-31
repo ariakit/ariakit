@@ -30,13 +30,25 @@ export default function Example() {
 
   return (
     <Ariakit.Composite store={composite} id="toolbar" role="toolbar" {...props}>
-      <Ariakit.CompositeHover as={Ariakit.CompositeItem} id="item-1" {...props}>
+      <Ariakit.CompositeHover
+        id="item-1"
+        render={<Ariakit.CompositeItem />}
+        {...props}
+      >
         item-1
       </Ariakit.CompositeHover>
-      <Ariakit.CompositeHover as={Ariakit.CompositeItem} id="item-2" {...props}>
+      <Ariakit.CompositeHover
+        id="item-2"
+        render={<Ariakit.CompositeItem />}
+        {...props}
+      >
         item-2
       </Ariakit.CompositeHover>
-      <Ariakit.CompositeHover as={Ariakit.CompositeItem} id="item-3" {...props}>
+      <Ariakit.CompositeHover
+        id="item-3"
+        render={<Ariakit.CompositeItem />}
+        {...props}
+      >
         item-3
       </Ariakit.CompositeHover>
     </Ariakit.Composite>

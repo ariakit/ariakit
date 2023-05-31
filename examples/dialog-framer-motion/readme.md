@@ -23,17 +23,20 @@ We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) co
 <AnimatePresence>
   {mounted && (
     <Ariakit.Dialog
-      as={motion.div}
       store={dialog}
       alwaysVisible
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
       backdrop={
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+        />
+      }
+      render={
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
         />
       }
     />

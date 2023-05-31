@@ -42,11 +42,10 @@ export default function Example() {
     return (
       <Ariakit.ComboboxItem
         key={item.children}
-        as="a"
         focusOnHover
         hideOnClick
         className="combobox-item"
-        {...item}
+        render={<a {...item} />}
       >
         {item.children}
         {item.target === "_blank" && (

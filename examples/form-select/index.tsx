@@ -27,13 +27,16 @@ export default function Example() {
           Favorite fruit
         </Ariakit.FormLabel>
         <Ariakit.FormField
-          as={Select}
           name={form.names.fruit}
           value={fruitValue}
-          setValue={(value: string) => form.setValue(form.names.fruit, value)}
           touchOnBlur={false}
-          onTouch={() => form.setFieldTouched(form.names.fruit, true)}
           required
+          render={
+            <Select
+              setValue={(value) => form.setValue(form.names.fruit, value)}
+              onTouch={() => form.setFieldTouched(form.names.fruit, true)}
+            />
+          }
         >
           <SelectItem value="">Select an item</SelectItem>
           <SelectItem value="Apple" />

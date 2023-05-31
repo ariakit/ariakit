@@ -1,10 +1,11 @@
+import "./style.css";
 import * as Ariakit from "@ariakit/react";
 import { AnimatePresence, motion } from "framer-motion";
-import "./style.css";
 
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
   const mounted = dialog.useState("mounted");
+
   return (
     <>
       <Ariakit.Button onClick={dialog.show} className="button">
@@ -13,19 +14,22 @@ export default function Example() {
       <AnimatePresence>
         {mounted && (
           <Ariakit.Dialog
-            as={motion.div}
             store={dialog}
             alwaysVisible
             className="dialog"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
             backdrop={
               <motion.div
                 className="backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+              />
+            }
+            render={
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
               />
             }
           >
