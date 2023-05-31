@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.6
+
+### Patch Changes
+
+- Added missing `types` field to proxy package.json files. ([#2489](https://github.com/ariakit/ariakit/pull/2489))
+
+- Updated dependencies: `@ariakit/react-core@0.2.6`.
+
 ## 0.2.5
 
 ### Patch Changes
