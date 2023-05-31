@@ -1,5 +1,13 @@
 # @ariakit/test
 
+## 0.1.11
+
+### Patch Changes
+
+- Added `.cjs` and `.js` extensions to paths in proxy package.json files to support bundlers that can't automaically resolve them. ([#2487](https://github.com/ariakit/ariakit/pull/2487))
+
+- Updated dependencies: `@ariakit/core@0.2.3`.
+
 ## 0.1.10
 
 ### Patch Changes

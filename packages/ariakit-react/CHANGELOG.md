@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.5
+
+### Patch Changes
+
+- Added `.cjs` and `.js` extensions to paths in proxy package.json files to support bundlers that can't automaically resolve them. ([#2487](https://github.com/ariakit/ariakit/pull/2487))
+
+- Updated dependencies: `@ariakit/react-core@0.2.5`.
+
 ## 0.2.4
 
 ### Patch Changes
