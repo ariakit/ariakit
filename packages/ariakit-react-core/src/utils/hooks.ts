@@ -120,7 +120,7 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
  * @example
  * const Component = React.forwardRef((props, ref) => {
  *   const internalRef = React.useRef();
- *   return <div {...props} ref={useForkRef(internalRef, ref)} />;
+ *   return <div {...props} ref={useMergeRefs(internalRef, ref)} />;
  * });
  */
 export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
