@@ -1,9 +1,4 @@
-import type {
-  ChangeEvent,
-  KeyboardEvent,
-  MouseEvent,
-  SelectHTMLAttributes,
-} from "react";
+import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
@@ -20,7 +15,6 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { SelectArrow } from "./select-arrow.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
