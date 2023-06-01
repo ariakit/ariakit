@@ -25,7 +25,7 @@ import { useFormField } from "./form-field.js";
  * const props = useFormInput({ store, name: store.names.email });
  * <Form store={store}>
  *   <FormLabel name={store.names.email}>Email</FormLabel>
- *   <Role as="input" {...props} />
+ *   <Role {...props} render={<input />} />
  * </Form>
  * ```
  */

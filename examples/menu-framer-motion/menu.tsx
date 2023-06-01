@@ -45,10 +45,10 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
           <Ariakit.Menu
             store={menu}
             alwaysVisible
+            className="menu"
             // We'll use this data attribute to style the transform-origin
             // property based on the menu's placement. See style.css.
             data-placement={currentPlacement}
-            className="menu"
             render={
               <motion.div
                 initial={initial}

@@ -2,6 +2,7 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import Link from "next/link.js";
+import type { LinkProps } from "next/link.js";
 import { usePathname, useRouter } from "next/navigation.js";
 
 const TabContext = React.createContext<Ariakit.TabStore | null>(null);
@@ -32,12 +33,14 @@ export function TabList(props: TabListProps) {
   return <Ariakit.TabList className="tab-list" {...props} store={tab} />;
 }
 
-type TabProps = Ariakit.TabProps<typeof Link>;
+interface TabProps extends LinkProps {
+  children?: React.ReactNode;
+}
 
 export function Tab(props: TabProps) {
   const id = props.href.toString();
 
-  return <Ariakit.Tab as={Link} id={id} className="tab" {...props} />;
+  return <Ariakit.Tab id={id} className="tab" render={<Link {...props} />} />;
 }
 
 type TabPanelProps = Omit<Ariakit.TabPanelProps, "store">;

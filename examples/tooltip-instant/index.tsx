@@ -6,9 +6,9 @@ export default function Example() {
   return (
     <>
       <Ariakit.TooltipAnchor
-        as={Ariakit.Button}
         store={tooltip}
         className="button"
+        render={<Ariakit.Button />}
       >
         Hover or focus on me
       </Ariakit.TooltipAnchor>

@@ -118,7 +118,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
  * ```jsx
  * const composite = useCompositeStore();
  * <Composite store={composite}>
- *   <CompositeHover as={CompositeItem}>Item</CompositeHover>
+ *   <CompositeHover render={<CompositeItem />}>Item</CompositeHover>
  * </Composite>
  * ```
  */

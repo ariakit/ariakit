@@ -37,7 +37,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  * const store = useRadioStore();
  * const props = useRadio({ store, value: "Apple" });
  * <RadioGroup store={store}>
- *   <Role as="input" {...props} />
+ *   <Role {...props} render={<input />} />
  *   <Radio value="Orange" />
  * </RadioGroup>
  * ```

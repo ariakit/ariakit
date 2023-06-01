@@ -29,10 +29,13 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
               gutter={4}
               alwaysVisible
               className="tooltip"
-              as={motion.div}
-              initial={{ opacity: 0, y }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y }}
+              render={
+                <motion.div
+                  initial={{ opacity: 0, y }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y }}
+                />
+              }
             >
               <Ariakit.TooltipArrow />
               {description}

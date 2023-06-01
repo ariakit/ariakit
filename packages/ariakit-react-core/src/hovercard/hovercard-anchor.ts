@@ -21,7 +21,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```jsx
  * const store = useHovercardStore();
  * const props = useHovercardAnchor({ store });
- * <Role as="a" {...props}>@username</Role>
+ * <Role {...props} render={<a />}>@username</Role>
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */

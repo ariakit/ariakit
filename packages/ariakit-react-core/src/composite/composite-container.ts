@@ -226,7 +226,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
  * ```jsx
  * const composite = useCompositeStore();
  * <Composite store={composite}>
- *   <CompositeItem as={CompositeContainer}>
+ *   <CompositeItem render={<CompositeContainer />}>
  *     <input type="text" />
  *   </CompositeItem>
  * </Composite>

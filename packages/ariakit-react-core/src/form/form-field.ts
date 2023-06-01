@@ -57,9 +57,9 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  *   <FormLabel name={store.names.content}>Content</FormLabel>
  *   <Role
  *     {...props}
- *     as={Editor}
  *     value={value}
  *     onChange={(value) => store.setValue(store.names.content, value)}
+ *     render={<Editor />}
  *   />
  * </Form>
  * ```
@@ -161,9 +161,9 @@ export const useFormField = createHook<FormFieldOptions>(
  *   <FormLabel name={form.names.content}>Content</FormLabel>
  *   <FormField
  *     {...props}
- *     as={Editor}
  *     value={value}
  *     onChange={(value) => form.setValue(form.names.content, value)}
+ *     render={<Editor />}
  *   />
  * </Form>
  * ```

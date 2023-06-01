@@ -161,7 +161,7 @@ export const useCommand = createHook<CommandOptions>(
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
- * <Command as="div">Accessible button</Command>
+ * <Command render={<div />}>Accessible button</Command>
  * ```
  */
 export const Command = createComponent<CommandOptions>((props) => {

@@ -21,7 +21,7 @@ export const useRole = createHook<RoleOptions>((props) => {
  * @see https://ariakit.org/components/role
  * @example
  * ```jsx
- * <Role as="div" />
+ * <Role render={<div />} />
  * ```
  */
 export const Role = createComponent<RoleOptions>((props) => {

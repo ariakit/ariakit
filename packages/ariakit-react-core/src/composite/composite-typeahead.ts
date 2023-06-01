@@ -157,7 +157,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
  * @example
  * ```jsx
  * const composite = useCompositeStore();
- * <Composite store={composite} as={CompositeTypeahead}>
+ * <Composite store={composite} render={<CompositeTypeahead />}>
  *   <CompositeItem>Item 1</CompositeItem>
  *   <CompositeItem>Item 2</CompositeItem>
  * </Composite>

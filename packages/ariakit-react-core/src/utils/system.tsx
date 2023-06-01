@@ -32,7 +32,7 @@ function isRenderProp(children: any): children is RenderProp {
  *   return <div {...props} />;
  * });
  *
- * <Component as="button" customProp />
+ * <Component customProp render={<button />} />
  */
 export function createComponent<O extends Options>(
   render: (props: Props<O>) => ReactElement
@@ -58,7 +58,7 @@ export function createComponent<O extends Options>(
  *   return <div {...props} />;
  * });
  *
- * <Component as="button" customProp />
+ * <Component customProp render={<button />} />
  */
 export function createMemoComponent<O extends Options>(
   render: (props: Props<O>) => ReactElement

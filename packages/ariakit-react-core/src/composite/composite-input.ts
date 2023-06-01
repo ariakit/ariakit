@@ -85,7 +85,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
  * ```jsx
  * const composite = useCompositeStore();
  * <Composite store={composite}>
- *   <CompositeItem as={CompositeInput} />
+ *   <CompositeItem render={<CompositeInput />} />
  * </Composite>
  * ```
  */

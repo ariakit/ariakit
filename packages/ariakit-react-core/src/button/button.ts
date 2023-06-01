@@ -46,7 +46,7 @@ export const useButton = createHook<ButtonOptions>((props) => {
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx
- * <Button as="div">Accessible button</Button>
+ * <Button render={<div />}>Accessible button</Button>
  * ```
  */
 export const Button = createComponent<ButtonOptions>((props) => {

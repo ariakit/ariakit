@@ -3,10 +3,10 @@ import * as Ariakit from "@ariakit/react";
 
 /* Toolbar */
 
-export type ToolbarProps = React.HTMLAttributes<HTMLDivElement>;
+export type ToolbarProps = React.ComponentPropsWithoutRef<"div">;
 
 export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
-  (props, ref) => {
+  function Toolbar(props, ref) {
     const toolbar = Ariakit.useToolbarStore();
     return (
       <Ariakit.Toolbar
@@ -21,23 +21,23 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
 
 /* ToolbarButton */
 
-export type ToolbarButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+export type ToolbarButtonProps = React.ComponentPropsWithoutRef<"button">;
 
 export const ToolbarButton = React.forwardRef<
   HTMLButtonElement,
   ToolbarButtonProps
->((props, ref) => {
+>(function ToolbarButton(props, ref) {
   return <Ariakit.ToolbarItem ref={ref} className="button" {...props} />;
 });
 
 /* ToolbarSeparator */
 
-export type ToolbarSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
+export type ToolbarSeparatorProps = React.ComponentPropsWithoutRef<"hr">;
 
 export const ToolbarSeparator = React.forwardRef<
   HTMLHRElement,
   ToolbarSeparatorProps
->((props, ref) => {
+>(function ToolbarSeparator(props, ref) {
   return (
     <Ariakit.ToolbarSeparator ref={ref} className="separator" {...props} />
   );
@@ -45,22 +45,22 @@ export const ToolbarSeparator = React.forwardRef<
 
 /* ToolbarSelect */
 
-export type ToolbarSelectProps =
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    options: Array<{
-      value: string;
-      icon?: React.ReactNode;
-      label?: React.ReactNode;
-    }>;
-    value?: string;
-    onChange?: (value: string) => void;
-    defaultValue?: string;
-  };
+export interface ToolbarSelectProps
+  extends Omit<React.ComponentPropsWithoutRef<"button">, "onChange"> {
+  options: Array<{
+    value: string;
+    icon?: React.ReactNode;
+    label?: React.ReactNode;
+  }>;
+  value?: string;
+  onChange?: (value: string) => void;
+  defaultValue?: string;
+}
 
 export const ToolbarSelect = React.forwardRef<
   HTMLButtonElement,
   ToolbarSelectProps
->((props, ref) => {
+>(function ToolbarSelect(props, ref) {
   const {
     options,
     // Accept controlled props.
@@ -95,11 +95,11 @@ export const ToolbarSelect = React.forwardRef<
   return (
     <>
       <Ariakit.Select
-        as={Ariakit.ToolbarItem}
         ref={ref}
         store={select}
         className="button"
         {...rest}
+        render={<Ariakit.ToolbarItem />}
       >
         {displayValue}
         <Ariakit.SelectArrow />

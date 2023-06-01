@@ -162,7 +162,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
- * <Checkbox as="div">Accessible checkbox</Checkbox>
+ * <Checkbox render={<div />}>Accessible checkbox</Checkbox>
  * ```
  */
 export const Checkbox = createComponent<CheckboxOptions>((props) => {
