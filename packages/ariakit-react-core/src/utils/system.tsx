@@ -68,16 +68,13 @@ export function createMemoComponent<O extends Options>(
 }
 
 /**
- * Creates a React element that supports the `as` prop, children as a
- * function (render props) and a `wrapElement` function.
- *
+ * Creates a React element that supports the `render` and `wrapElement` props.
  * @example
  * import { createElement } from "@ariakit/react-core/utils/system";
  *
  * function Component() {
  *   const props = {
- *     as: "button" as const,
- *     children: (htmlProps) => <button {...htmlProps} />,
+ *     render: (htmlProps) => <button {...htmlProps} />,
  *     wrapElement: (element) => <div>{element}</div>,
  *   };
  *   return createElement("div", props);

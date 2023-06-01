@@ -131,7 +131,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // with role menuitem (https://bugs.webkit.org/show_bug.cgi?id=228318).
       // So, if the menu button is rendered within a menu, we need to render it
       // as another element.
-      props = { as: "div", ...props };
+      props = { render: <div />, ...props };
     }
 
     // We'll use this id to render the aria-labelledby attribute on the menu.

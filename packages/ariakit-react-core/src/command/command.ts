@@ -42,7 +42,7 @@ function isNativeClick(event: KeyboardEvent) {
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
- * const props = useCommand({ as: "div" });
+ * const props = useCommand({ render: <div /> });
  * <Role {...props}>Accessible button</Role>
  * ```
  */

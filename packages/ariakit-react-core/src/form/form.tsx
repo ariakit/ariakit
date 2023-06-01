@@ -34,7 +34,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
  * @example
  * ```jsx
  * const store = useFormStore();
- * const props = useForm({ store, as: "form" });
+ * const props = useForm({ store, render: <form /> });
  * <Role {...props} />
  * ```
  */

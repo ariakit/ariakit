@@ -40,7 +40,7 @@ function getNonArrayValue<T>(value: T) {
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
- * const props = useCheckbox({ as: "div" });
+ * const props = useCheckbox({ render: <div /> });
  * <Role {...props}>Accessible checkbox</Role>
  * ```
  */

@@ -12,7 +12,7 @@ import type { As, Props } from "../utils/types.js";
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx
- * const props = useButton({ as: "div" });
+ * const props = useButton({ render: <div /> });
  * <Role {...props}>Accessible button</Role>
  * ```
  */

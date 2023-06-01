@@ -177,7 +177,7 @@ export function useDeferredValue<T>(value: T): T {
 }
 
 /**
- * Returns the tag name by parsing an element ref and the `as` prop.
+ * Returns the tag name by parsing an element ref.
  * @example
  * function Component(props) {
  *   const ref = React.useRef();
