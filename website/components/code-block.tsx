@@ -2,6 +2,7 @@ import { cx } from "@ariakit/core/utils/misc";
 import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
 import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
 import css from "shiki/languages/css.tmLanguage.json";
+import diff from "shiki/languages/diff.tmLanguage.json";
 import html from "shiki/languages/html.tmLanguage.json";
 import javascript from "shiki/languages/javascript.tmLanguage.json";
 import jsx from "shiki/languages/jsx.tmLanguage.json";
@@ -19,6 +20,7 @@ interface Props {
   filename?: string;
   lineNumbers?: boolean;
   highlightLines?: number[];
+  highlightTokens?: (string | readonly [string, number[]])[];
   type?: "static" | "editor";
   className?: string;
   preClassName?: string;
@@ -61,6 +63,7 @@ function loadLanguages(highlighter: Highlighter) {
     highlighter.loadLanguage(getLanguage("shellscript", sh)),
     highlighter.loadLanguage(getLanguage("css", css)),
     highlighter.loadLanguage(getLanguage("html", html)),
+    highlighter.loadLanguage(getLanguage("diff", diff)),
   ]);
 }
 
@@ -73,6 +76,7 @@ export async function CodeBlock({
   type = "static",
   lineNumbers = type === "editor",
   highlightLines,
+  highlightTokens,
   className,
 }: Props) {
   code = type === "static" ? code.trim() : code;
@@ -101,6 +105,7 @@ export async function CodeBlock({
   }
 
   const oneLiner = tokens.length === 1;
+  const tokensSeen: Record<string, number> = {};
 
   return (
     <div className={cx(className, "relative max-h-[inherit] w-full")}>
@@ -118,7 +123,9 @@ export async function CodeBlock({
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
           type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-xl",
-          highlightLines?.length ? "leading-[26px]" : "leading-[21px]",
+          highlightLines?.length || highlightTokens?.length
+            ? "leading-[26px]"
+            : "leading-[21px]",
           tw`
           relative z-10 flex max-h-[inherit] w-full overflow-auto
           pt-4 text-sm text-white [color-scheme:dark]`
@@ -169,15 +176,31 @@ export async function CodeBlock({
               >
                 {line.length ? (
                   <>
-                    {line.map((token, j) => (
-                      <span
-                        key={j}
-                        style={{ color: token.color }}
-                        className={parseFontStyle(token.fontStyle)}
-                      >
-                        {token.content}
-                      </span>
-                    ))}
+                    {line.map((token, j) => {
+                      const highlighted = highlightTokens?.some((t) => {
+                        const [word, indexes] = Array.isArray(t) ? t : [t];
+                        if (token.content !== word) return false;
+                        if (!indexes) return token.content === word;
+                        if (tokensSeen[word] === undefined) {
+                          tokensSeen[word] = 0;
+                        }
+                        const index = tokensSeen[word]++;
+                        return indexes.includes(index);
+                      });
+                      return (
+                        <span
+                          key={j}
+                          style={{ color: token.color }}
+                          className={cx(
+                            parseFontStyle(token.fontStyle),
+                            highlighted &&
+                              "-mx-[3px] rounded bg-white/10 px-[3px] py-1"
+                          )}
+                        >
+                          {token.content}
+                        </span>
+                      );
+                    })}
                     {"\n"}
                   </>
                 ) : (

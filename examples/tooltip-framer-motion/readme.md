@@ -22,7 +22,7 @@ In the custom `TooltipAnchor` component we've created in this example, we're exp
 <TooltipAnchor render={(props) => <a {...props} />} />
 ```
 
-You can learn more about this pattern on the [Composition](/guide/composition#render) guide.
+You can learn more about this pattern on the [Composition](/guide/composition) guide.
 
 ## Related examples
 
