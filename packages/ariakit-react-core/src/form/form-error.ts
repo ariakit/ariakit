@@ -3,7 +3,7 @@ import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
-import { useForkRef, useId } from "../utils/hooks.js";
+import { useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -72,7 +72,7 @@ export const useFormError = createHook<FormErrorOptions>(
       role: "alert",
       children,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     props = useCollectionItem({ store, ...props, getItem });

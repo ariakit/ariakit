@@ -21,7 +21,7 @@ import {
 } from "@ariakit/core/utils/focus";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
-import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
+import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
@@ -400,7 +400,7 @@ export const useFocusable = createHook<FocusableOptions>(
       "data-autofocus": autoFocus ? true : undefined,
       "aria-disabled": disabled ? true : undefined,
       ...props,
-      ref: useForkRef(ref, autoFocusRef, props.ref),
+      ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex(
         focusable,

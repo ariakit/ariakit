@@ -7,7 +7,7 @@ import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useForkRef, useId } from "../utils/hooks.js";
+import { useId, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { TabStore } from "./tab-store.js";
@@ -62,7 +62,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
       role: "tabpanel",
       "aria-labelledby": tabId || undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     const disclosure = useDisclosureStore({ open });

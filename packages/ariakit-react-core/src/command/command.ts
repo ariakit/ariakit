@@ -9,7 +9,7 @@ import {
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
+import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 
@@ -143,7 +143,7 @@ export const useCommand = createHook<CommandOptions>(
       "data-active": active ? "" : undefined,
       type: isNativeButton ? "button" : undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onKeyDown,
       onKeyUp,
     };

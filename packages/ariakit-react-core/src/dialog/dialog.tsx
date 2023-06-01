@@ -40,8 +40,8 @@ import { usePortal } from "../portal/portal.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useId,
+  useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -486,7 +486,7 @@ export const useDialog = createHook<DialogOptions>(
       "aria-labelledby": headingId,
       "aria-describedby": descriptionId,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     props = useFocusableContainer({

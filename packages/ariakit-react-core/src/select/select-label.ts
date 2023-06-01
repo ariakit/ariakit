@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useEvent, useForkRef, useId } from "../utils/hooks.js";
+import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -44,7 +44,7 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
     props = {
       id,
       ...props,
-      ref: useForkRef(store.setLabelElement, props.ref),
+      ref: useMergeRefs(store.setLabelElement, props.ref),
       onClick,
       style: {
         cursor: "default",

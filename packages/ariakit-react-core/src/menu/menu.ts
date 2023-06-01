@@ -3,7 +3,7 @@ import { createRef, useContext, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useHovercard } from "../hovercard/hovercard.js";
-import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks.js";
+import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
@@ -59,7 +59,7 @@ export const useMenu = createHook<MenuOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onKeyDown,
     };
 

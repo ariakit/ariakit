@@ -5,7 +5,7 @@ import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
-import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks.js";
+import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -95,7 +95,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
       as: isNativeLabel ? "label" : "span",
       htmlFor: isNativeLabel ? field?.id : undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onClick,
     };
 

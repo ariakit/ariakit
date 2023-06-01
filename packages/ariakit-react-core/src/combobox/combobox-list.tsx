@@ -5,7 +5,12 @@ import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useFocusable } from "../focusable/focusable.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
-import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { ComboboxContext } from "./combobox-context.js";
@@ -91,7 +96,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       role: "listbox",
       tabIndex: focusable ? -1 : undefined,
       ...props,
-      ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
+      ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
       onFocusVisible,

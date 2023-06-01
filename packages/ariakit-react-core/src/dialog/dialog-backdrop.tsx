@@ -3,7 +3,7 @@ import { cloneElement, isValidElement, useMemo, useRef } from "react";
 import { noop } from "@ariakit/core/utils/misc";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { Role } from "../role/role.js";
-import { useForkRef, useSafeLayoutEffect } from "../utils/hooks.js";
+import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import type { DialogProps } from "./dialog.js";
 import { markAncestor } from "./utils/mark-tree-outside.js";
 
@@ -68,7 +68,7 @@ export function DialogBackdrop({
     alwaysVisible,
     hidden,
     ...backdropProps,
-    ref: useForkRef(backdropProps?.ref, ref),
+    ref: useMergeRefs(backdropProps?.ref, ref),
     style: {
       position: "fixed",
       top: 0,

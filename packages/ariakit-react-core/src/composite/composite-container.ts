@@ -8,7 +8,7 @@ import {
   getFirstTabbableIn,
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
-import { useEvent, useForkRef } from "../utils/hooks.js";
+import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
@@ -206,7 +206,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
     props = {
       "data-composite-container": "",
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onFocus,
       onBlur,
       onKeyDown,

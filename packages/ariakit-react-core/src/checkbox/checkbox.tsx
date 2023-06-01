@@ -4,7 +4,7 @@ import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
 import {
   useEvent,
-  useForkRef,
+  useMergeRefs,
   useTagName,
   useWrapElement,
 } from "../utils/hooks.js";
@@ -140,7 +140,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       type: nativeCheckbox ? "checkbox" : undefined,
       "aria-checked": checked,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onChange,
       onClick,
     };

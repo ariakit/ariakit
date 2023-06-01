@@ -9,8 +9,8 @@ import { useCollectionItem } from "../collection/collection-item.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useId,
+  useMergeRefs,
 } from "../utils/hooks.js";
 import {
   createElement,
@@ -135,7 +135,7 @@ export const useFormField = createHook<FormFieldOptions>(
       "aria-invalid": invalid,
       ...props,
       "aria-describedby": describedBy || undefined,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onBlur,
     };
 

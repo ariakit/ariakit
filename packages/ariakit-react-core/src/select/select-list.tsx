@@ -12,8 +12,8 @@ import {
   useAttribute,
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useId,
+  useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -112,7 +112,7 @@ export const useSelectList = createHook<SelectListOptions>(
       "aria-multiselectable": ariaMultiSelectable,
       hidden,
       ...props,
-      ref: useForkRef(id ? store.setContentElement : null, ref, props.ref),
+      ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
     };

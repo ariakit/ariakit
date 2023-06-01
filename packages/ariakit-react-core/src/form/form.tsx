@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import {
   useEvent,
-  useForkRef,
   useInitialValue,
+  useMergeRefs,
   useTagName,
   useUpdateEffect,
   useWrapElement,
@@ -131,7 +131,7 @@ export const useForm = createHook<FormOptions>(
       role: tagName !== "form" ? "form" : undefined,
       noValidate: true,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onSubmit,
       onBlur,
       onReset,

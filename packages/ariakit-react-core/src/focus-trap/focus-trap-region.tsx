@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { useForkRef, useWrapElement } from "../utils/hooks.js";
+import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
@@ -58,7 +58,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     return props;

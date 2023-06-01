@@ -7,8 +7,8 @@ import { useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useIsMouseMoving,
+  useMergeRefs,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
@@ -78,7 +78,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(store.setAnchorElement, props.ref),
+      ref: useMergeRefs(store.setAnchorElement, props.ref),
       onMouseMove,
     };
 

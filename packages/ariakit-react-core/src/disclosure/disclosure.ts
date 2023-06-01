@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { useBooleanEvent, useEvent, useForkRef } from "../utils/hooks.js";
+import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { DisclosureStore } from "./disclosure-store.js";
@@ -66,7 +66,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
       "aria-expanded": expanded,
       "aria-controls": contentElement?.id,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onMouseDown,
       onClick,
     };

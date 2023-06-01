@@ -15,7 +15,7 @@ import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
+  useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -255,7 +255,7 @@ export const useSelect = createHook<SelectOptions>(
       "data-name": name,
       children,
       ...props,
-      ref: useForkRef(store.setSelectElement, props.ref),
+      ref: useMergeRefs(store.setSelectElement, props.ref),
       onKeyDown,
       onMouseDown,
     };
