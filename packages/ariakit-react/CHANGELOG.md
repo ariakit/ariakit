@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.7
+
+### Patch Changes
+
+- Fixed deeply nested `Dialog` not removing the `inert` attribute from elements outside when closed. ([#2507](https://github.com/ariakit/ariakit/pull/2507))
+
+- Updated dependencies: `@ariakit/react-core@0.2.7`.
+
 ## 0.2.6
 
 ### Patch Changes
