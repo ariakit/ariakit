@@ -532,7 +532,6 @@ export default async function Page({ params }: PageProps) {
                   parseNumericRange(item.replace(rangePattern, "$1"))
                 );
               return (
-                // @ts-expect-error RSC
                 <CodeBlock
                   lang={lang}
                   code={code}

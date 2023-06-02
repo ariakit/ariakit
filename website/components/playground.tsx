@@ -25,13 +25,11 @@ export function Playground(props: PlaygroundProps) {
       javascript[filename] = {
         code: jsCode,
         codeBlock: (
-          // @ts-expect-error RSC
           <CodeBlock type="editor" filename={jsFilename} code={jsCode} />
         ),
       };
     }
     codeBlocks[filename] = (
-      // @ts-expect-error RSC
       <CodeBlock type="editor" filename={filename} code={code} />
     );
   });
