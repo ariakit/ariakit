@@ -1,6 +1,6 @@
 import "./style.css";
 import { useId, useState } from "react";
-import { Button, Dialog, DialogDismiss, DialogHeading } from "./dialog.js";
+import { Button, Dialog, DialogDismiss, DialogHeading } from "./dialog.jsx";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
