@@ -60,13 +60,16 @@ export function DialogBackdrop({
       }
     : backdropProps;
 
+  if (hidden != null) {
+    backdropProps = { ...backdropProps, hidden };
+  }
+
   const props = useDisclosureContent({
     store,
     id: undefined,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
     alwaysVisible,
-    hidden,
     ...backdropProps,
     ref: useForkRef(backdropProps?.ref, ref),
     style: {

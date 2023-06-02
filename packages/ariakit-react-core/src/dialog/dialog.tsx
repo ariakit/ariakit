@@ -57,7 +57,7 @@ import {
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disableTreeOutside } from "./utils/disable-tree-outside.js";
-import { markTreeOutside } from "./utils/mark-tree-outside.js";
+import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
@@ -224,12 +224,15 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = ref.current;
       const persistentElements = getPersistentElementsProp() || [];
       const allElements = [
-        // In addition to the dialog element, we also include the portal node here
-        // so nested dialogs are considered as well.
+        // In addition to the dialog element, we also include the portal node
+        // here so nested dialogs are considered as well.
         dialog,
         portalNode,
-        ...nestedDialogs,
         ...persistentElements,
+        // We still need to include nested dialogs here because they may be
+        // outside the portal node or the parent dialog may not be using a
+        // portal.
+        ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
         return markTreeOutside(id, disclosureElement, ...allElements);
@@ -398,6 +401,9 @@ export const useDialog = createHook<DialogOptions>(
         if (event.defaultPrevented) return;
         const dialog = ref.current;
         if (!dialog) return;
+        // Ignore the event if the current dialog is marked by another dialog.
+        // This guarantees that only the topmost dialog will close on Escape.
+        if (isElementMarked(dialog)) return;
         const target = event.target as Element | null;
         if (!target) return;
         const { disclosureElement } = store.getState();
@@ -412,9 +418,6 @@ export const useDialog = createHook<DialogOptions>(
         };
         if (!isValidTarget()) return;
         if (!hideOnEscapeProp(event)) return;
-        // If the dialog is not inside a portal, we stop immediate propagation
-        // so parent dialogs don't close when we press Escape on a child dialog.
-        event.stopImmediatePropagation();
         store.hide();
       };
       // We're attatching the listener to the document instead of the dialog

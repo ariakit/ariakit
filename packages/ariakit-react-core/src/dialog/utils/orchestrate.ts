@@ -1,47 +1,52 @@
-const setups = Symbol();
-type Element$ = Element & { [setups]?: Map<string, () => void> };
+const cleanups = Symbol();
+type Element$ = Element & { [cleanups]?: Map<string, () => void> };
 
-function orchestrate(
-  element: Element$,
-  key: string,
-  setup: () => void,
-  cleanup: () => void
-) {
-  if (!element[setups]) {
-    element[setups] = new Map();
+function orchestrate(element: Element$, key: string, setup: () => () => void) {
+  if (!element[cleanups]) {
+    element[cleanups] = new Map();
   }
 
-  element[setups].set(key, setup);
-  setup();
+  const elementCleanups = element[cleanups];
+  const prevCleanup = elementCleanups.get(key);
+
+  if (!prevCleanup) {
+    elementCleanups.set(key, setup());
+    return () => {
+      elementCleanups.get(key)?.();
+      elementCleanups.delete(key);
+    };
+  }
+
+  const cleanup = setup();
+
+  const nextCleanup = () => {
+    cleanup();
+    prevCleanup();
+    elementCleanups.delete(key);
+  };
+
+  elementCleanups.set(key, nextCleanup);
 
   return () => {
+    if (elementCleanups.get(key) !== nextCleanup) return;
     cleanup();
-    const prevSetup = element[setups]?.get(key);
-    if (prevSetup === setup) {
-      element[setups]?.delete(key);
-    } else if (prevSetup) {
-      prevSetup();
-    }
+    elementCleanups.set(key, prevCleanup);
   };
 }
 
 export function setAttribute(element: Element$, attr: string, value: string) {
-  let previousValue = element.getAttribute(attr);
-
   const setup = () => {
-    previousValue = element.getAttribute(attr);
+    const previousValue = element.getAttribute(attr);
     element.setAttribute(attr, value);
+    return () => {
+      if (previousValue == null) {
+        element.removeAttribute(attr);
+      } else {
+        element.setAttribute(attr, previousValue);
+      }
+    };
   };
-
-  const cleanup = () => {
-    if (previousValue == null) {
-      element.removeAttribute(attr);
-    } else {
-      element.setAttribute(attr, previousValue);
-    }
-  };
-
-  return orchestrate(element, attr, setup, cleanup);
+  return orchestrate(element, attr, setup);
 }
 
 export function setProperty<T extends Element$, K extends keyof T & string>(
@@ -49,24 +54,20 @@ export function setProperty<T extends Element$, K extends keyof T & string>(
   property: K,
   value: T[K]
 ) {
-  let exists = property in element;
-  let previousValue = element[property];
-
   const setup = () => {
-    exists = property in element;
-    previousValue = element[property];
+    const exists = property in element;
+    const previousValue = element[property];
     element[property] = value;
+    return () => {
+      if (!exists) {
+        delete element[property];
+      } else {
+        element[property] = previousValue;
+      }
+    };
   };
 
-  const cleanup = () => {
-    if (!exists) {
-      delete element[property];
-    } else {
-      element[property] = previousValue;
-    }
-  };
-
-  return orchestrate(element, property, setup, cleanup);
+  return orchestrate(element, property, setup);
 }
 
 export function assignStyle(
@@ -74,18 +75,16 @@ export function assignStyle(
   style: Partial<CSSStyleDeclaration>
 ) {
   if (!element) return () => {};
-  let prevStyle = element.style.cssText;
 
   const setup = () => {
-    prevStyle = element.style.cssText;
+    const prevStyle = element.style.cssText;
     Object.assign(element.style, style);
+    return () => {
+      element.style.cssText = prevStyle;
+    };
   };
 
-  const cleanup = () => {
-    element.style.cssText = prevStyle;
-  };
-
-  return orchestrate(element, "style", setup, cleanup);
+  return orchestrate(element, "style", setup);
 }
 
 export function setCSSProperty(
@@ -94,20 +93,18 @@ export function setCSSProperty(
   value: string
 ) {
   if (!element) return () => {};
-  let previousValue = element.style.getPropertyValue(property);
 
   const setup = () => {
-    previousValue = element.style.getPropertyValue(property);
+    const previousValue = element.style.getPropertyValue(property);
     element.style.setProperty(property, value);
+    return () => {
+      if (previousValue) {
+        element.style.setProperty(property, previousValue);
+      } else {
+        element.style.removeProperty(property);
+      }
+    };
   };
 
-  const cleanup = () => {
-    if (previousValue) {
-      element.style.setProperty(property, previousValue);
-    } else {
-      element.style.removeProperty(property);
-    }
-  };
-
-  return orchestrate(element, property, setup, cleanup);
+  return orchestrate(element, property, setup);
 }
