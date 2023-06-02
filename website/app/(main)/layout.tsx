@@ -12,7 +12,6 @@ export default function Layout({ children }: PropsWithChildren) {
   return (
     <QueryProvider>
       <div className="flex min-h-screen flex-col">
-        {/* @ts-expect-error RSC */}
         <Header />
         {children}
         <div className="mt-auto flex">
