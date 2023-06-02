@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
