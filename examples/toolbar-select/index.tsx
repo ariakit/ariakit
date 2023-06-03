@@ -20,6 +20,7 @@ export default function Example() {
       <ToolbarButton>{icons.underline} Underline</ToolbarButton>
       <ToolbarSeparator />
       <Select
+        aria-label="Text alignment"
         value={value}
         onChange={setValue}
         render={
