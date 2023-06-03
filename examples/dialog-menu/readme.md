@@ -6,6 +6,16 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
+## Components
+
+<div data-cards="components">
+
+- [](/components/dialog)
+- [](/components/menu)
+- [](/components/button)
+
+</div>
+
 ## Custom APIs
 
 In this example, both [Dialog](/components/dialog) and [Menu](/components/menu) are abstracted into custom components that provide a simple API using compound components. This is possible due to the lower-level API provided by Ariakit components and stores.

@@ -1,8 +1,8 @@
+import "./style.css";
 import { useState } from "react";
 import { Button } from "@ariakit/react";
 import { Dialog, DialogHeading } from "./dialog.jsx";
 import { Menu, MenuButton, MenuItem, MenuPopover } from "./menu.jsx";
-import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

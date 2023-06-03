@@ -1,0 +1,130 @@
+.DialogOverlay {
+  @apply
+    bg-black/[44%]
+    fixed
+    inset-0
+    z-50
+    transition-opacity
+    data-[state=closed]:opacity-0
+  ;
+}
+
+.DialogContent {
+  @apply
+    fixed
+    inset-3
+    m-auto
+    h-fit
+    max-h-[calc(100vh-2*theme(spacing.3))]
+    max-w-md
+    overflow-auto
+    z-50
+    flex
+    flex-col
+    gap-4
+    p-6
+    rounded-xl
+    bg-white
+    text-black
+    shadow-2xl
+    transition-[opacity,transform]
+    data-[state=closed]:opacity-0
+    data-[state=closed]:[transform:translateY(8px)_scale(0.96)]
+    [color-scheme:light]
+  ;
+}
+
+.DialogTitle {
+  @apply
+    font-medium
+    text-lg
+  ;
+}
+
+.DialogDescription {
+  @apply
+    text-black/60
+  ;
+}
+
+.Button {
+  @apply
+    shadow
+    inline-flex
+    h-9
+    items-center
+    justify-center
+    rounded
+    bg-white
+    px-4
+    font-medium
+  ;
+}
+
+.Button.violet {
+  @apply
+    bg-white
+    text-violet-800
+    hover:bg-violet-100
+  ;
+}
+
+.Button.green {
+  @apply
+    shadow-none
+    bg-emerald-100
+    text-emerald-800
+    hover:bg-emerald-200
+  ;
+}
+
+.IconButton {
+  @apply
+    inline-flex
+    items-center
+    justify-center
+    rounded-full
+    p-2
+    h-9
+    w-9
+    absolute
+    top-2
+    right-2
+    text-violet-800
+    hover:bg-violet-100
+    focus-visible:outline
+    focus-visible:outline-2
+  ;
+}
+
+.Fieldset {
+  @apply
+    flex
+    gap-5
+    items-center
+  ;
+}
+
+.Label {
+  @apply
+    text-violet-800
+    text-right
+    w-24
+  ;
+}
+
+.Input {
+  @apply
+    w-full
+    flex-1
+    flex
+    items-center
+    justify-center
+    rounded
+    px-3
+    h-9
+    text-violet-800
+    border
+    border-violet-300
+  ;
+}

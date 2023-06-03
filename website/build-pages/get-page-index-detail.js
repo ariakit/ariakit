@@ -23,5 +23,5 @@ export function getPageIndexDetail(filename, getGroup, tree) {
     }
   });
   const group = getGroup?.(filename) || null;
-  return { group, slug, title, content };
+  return { group, slug, title, content, unlisted: !!tree.data?.unlisted };
 }

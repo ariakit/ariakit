@@ -1,23 +1,23 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
-export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DialogProps extends Omit<Ariakit.DialogProps, "store"> {
   open?: boolean;
   onClose?: () => void;
 }
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
-  ({ open, onClose, ...props }, ref) => {
+  function Dialog({ open, onClose, ...props }, ref) {
     const dialog = Ariakit.useDialogStore({
       open,
       setOpen: (open) => !open && onClose?.(),
     });
     return (
       <Ariakit.Dialog
-        {...props}
         ref={ref}
-        store={dialog}
         backdrop={<div className="backdrop" />}
+        {...props}
+        store={dialog}
       />
     );
   }

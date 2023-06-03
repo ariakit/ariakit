@@ -334,7 +334,8 @@ export default async function Page({ params }: PageProps) {
 
   const pageIndex =
     pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
-  const nextPage = pageIndex !== -1 ? sortedIndex?.[pageIndex + 1] : undefined;
+  let nextPage = pageIndex !== -1 ? sortedIndex?.[pageIndex + 1] : undefined;
+  nextPage = nextPage?.unlisted ? sortedIndex?.[pageIndex + 2] : nextPage;
 
   const nextPageLink = nextPage && (
     <Link

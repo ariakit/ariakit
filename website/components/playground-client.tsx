@@ -173,6 +173,8 @@ export function PlaygroundClient({
           className={cx(
             id,
             style.previewWrapper,
+            /\-radix/.test(id) &&
+              "bg-gradient-to-br from-blue-600 to-purple-600",
             type === "wide"
               ? "min-h-[320px] md:rounded-2xl md:p-8"
               : "md:rounded-xl md:p-6"

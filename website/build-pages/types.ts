@@ -40,6 +40,10 @@ export type PageIndexDetail = {
    * The content of the page or section.
    */
   content: string;
+  /**
+   * Whether the page is unlisted.
+   */
+  unlisted: boolean;
 };
 
 export type PageContent = PageIndexDetail & {

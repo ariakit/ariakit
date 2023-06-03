@@ -34,7 +34,7 @@ export default function Page({ params }: Props) {
   const { category } = params;
   if (!(category in index)) return notFound();
   const key = category as keyof typeof meta;
-  const pages = index[key];
+  const pages = index[key]?.filter((page) => !page.unlisted);
   if (!pages?.length) return notFound();
   const page = pagesConfig.pages.find((page) => page.slug === category);
   if (!page) return notFound();

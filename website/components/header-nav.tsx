@@ -327,7 +327,9 @@ const HeaderNavMenu = memo(
       [category, allData]
     );
     const noResults = !!searchData && !searchData.length;
-    const pages = category ? pageIndex[category] : null;
+    const pages = category
+      ? pageIndex[category]?.filter((page) => !page.unlisted)
+      : null;
     const categoryTitle = category ? categoryTitles[category] : null;
     const hasTitle = !!category && !searchData?.length && !noResults;
 

@@ -87,6 +87,7 @@ function writeFiles(buildDir, pages) {
 
   const categories = groupBy(meta, (page) => page.category);
   const contents = meta
+    .filter((page) => !page.unlisted)
     .flatMap((page) => page.sections)
     .filter(
       (section) =>

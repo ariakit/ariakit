@@ -89,8 +89,17 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
   };
 }
 
-function getIndexCss(theme: StackblitzProps["theme"] = "light") {
-  const background = theme === "light" ? "hsl(204 20% 94%)" : "hsl(204 3% 12%)";
+function getIndexCss(
+  theme: StackblitzProps["theme"] = "light",
+  id: StackblitzProps["id"]
+) {
+  const isRadix = /\-radix/.test(id);
+  theme = isRadix ? "light" : theme;
+  const background = isRadix
+    ? "linear-gradient(to bottom right, hsl(204 100% 40%), #9333ea)"
+    : theme === "light"
+    ? "hsl(204 20% 94%)"
+    : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
   return `@import url("tailwindcss/lib/css/preflight.css");
 
@@ -100,7 +109,7 @@ html {
 
 body {
   color-scheme: ${theme};
-  background-color: ${background};
+  background: ${background};
   color: ${color};
   min-height: 100vh;
   padding-top: min(10vh, 100px);
@@ -175,7 +184,7 @@ if (root) {
 }
 `;
 
-  const indexCss = getIndexCss(props.theme);
+  const indexCss = getIndexCss(props.theme, props.id);
 
   const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
@@ -260,7 +269,7 @@ export default nextConfig;
 // see https://nextjs.org/docs/basic-features/typescript for more information.
 `;
 
-  const layoutCss = getIndexCss(props.theme);
+  const layoutCss = getIndexCss(props.theme, props.id);
 
   const theme = props.theme === "dark" ? "dark" : "light";
 

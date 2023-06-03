@@ -1,4 +1,5 @@
 import { resolve } from "path";
+import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "build-pages/get-example-deps.js";
@@ -10,7 +11,6 @@ import { parseCSSFile } from "build-pages/parse-css-file.js";
 import { Preview } from "components/preview.jsx";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { tw } from "utils/tw.js";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];
@@ -70,9 +70,12 @@ export default async function Page({ params }: Props) {
 
   return (
     <div
-      className={tw`
-      flex min-h-[200vh] w-full flex-col items-center bg-gray-150
-      pt-[min(30vh,400px)] dark:bg-gray-850`}
+      className={cx(
+        "flex min-h-[200vh] w-full flex-col items-center pt-[min(30vh,400px)]",
+        /\-radix/.test(page)
+          ? "bg-gradient-to-br from-blue-600 to-purple-600"
+          : "bg-gray-150 dark:bg-gray-850"
+      )}
     >
       <Preview path={source} css={css} />
     </div>
