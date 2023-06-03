@@ -183,7 +183,7 @@ When using the `render` prop with a custom component, you must ensure the compon
 
 This is a common pattern in most modern component libraries, so you shouldn't have problems with them. If you're using your own custom components, make sure they're open for extension by following these guidelines:
 
-1. Spread all props into the underlying element.
+1. Spread all props onto the underlying element.
 2. Forward the `ref` prop and merge it with the internal ref, if any.
 3. Merge the `style` and `className` props with the internal styles and classes, if any.
 4. Chain the event props with the internal event handlers, if any.

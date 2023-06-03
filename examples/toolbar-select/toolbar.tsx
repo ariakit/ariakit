@@ -1,42 +1,26 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
-/* Toolbar */
-
-export type ToolbarProps = React.ComponentPropsWithoutRef<"div">;
-
-export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
-  function Toolbar(props, ref) {
-    const toolbar = Ariakit.useToolbarStore();
-    return (
-      <Ariakit.Toolbar
-        ref={ref}
-        store={toolbar}
-        className="toolbar"
-        {...props}
-      />
-    );
-  }
-);
-
-/* ToolbarButton */
-
-export type ToolbarButtonProps = React.ComponentPropsWithoutRef<"button">;
+export const Toolbar = React.forwardRef<
+  HTMLDivElement,
+  Omit<Ariakit.ToolbarProps, "store">
+>(function Toolbar(props, ref) {
+  const toolbar = Ariakit.useToolbarStore();
+  return (
+    <Ariakit.Toolbar ref={ref} className="toolbar" {...props} store={toolbar} />
+  );
+});
 
 export const ToolbarButton = React.forwardRef<
   HTMLButtonElement,
-  ToolbarButtonProps
+  Ariakit.ToolbarItemProps
 >(function ToolbarButton(props, ref) {
   return <Ariakit.ToolbarItem ref={ref} className="button" {...props} />;
 });
 
-/* ToolbarSeparator */
-
-export type ToolbarSeparatorProps = React.ComponentPropsWithoutRef<"hr">;
-
 export const ToolbarSeparator = React.forwardRef<
   HTMLHRElement,
-  ToolbarSeparatorProps
+  Ariakit.ToolbarSeparatorProps
 >(function ToolbarSeparator(props, ref) {
   return (
     <Ariakit.ToolbarSeparator ref={ref} className="separator" {...props} />

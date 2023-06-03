@@ -68,20 +68,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps extends HTMLMotionProps<"div"> {
-  label?: ReactNode;
-  children?: ReactNode;
-  disabled?: boolean;
-}
-
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
-  function MenuItem({ label, variants, animate, ...props }, ref) {
+export const MenuItem = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
+  function MenuItem(props, ref) {
     return (
       <Ariakit.MenuItem
         ref={ref}
         className="menu-item"
-        children={label}
-        render={<motion.div animate={animate} variants={variants} {...props} />}
+        render={<motion.div {...props} />}
       />
     );
   }
