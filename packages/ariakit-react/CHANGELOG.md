@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.8
+
+### Patch Changes
+
+- The `render` prop now supports a `ReactElement` as a value. See the [Composition](https://ariakit.org/guide/composition) guide for more information. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
+- Updated dependencies: `@ariakit/react-core@0.2.8`.
+
 ## 0.2.7
 
 ### Patch Changes
