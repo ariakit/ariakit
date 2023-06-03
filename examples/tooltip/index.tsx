@@ -7,9 +7,8 @@ export default function Example() {
     <>
       <Ariakit.TooltipAnchor
         store={tooltip}
-        as="a"
-        href="https://ariakit.org/components/tooltip"
         className="link"
+        render={<a href="https://ariakit.org/components/tooltip" />}
       >
         Tooltip
       </Ariakit.TooltipAnchor>

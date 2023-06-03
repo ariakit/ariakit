@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
-import { useForkRef, useTagName } from "../utils/hooks.js";
+import { useMergeRefs, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 
@@ -12,7 +12,7 @@ import type { As, Props } from "../utils/types.js";
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx
- * const props = useButton({ as: "div" });
+ * const props = useButton({ render: <div /> });
  * <Role {...props}>Accessible button</Role>
  * ```
  */
@@ -31,7 +31,7 @@ export const useButton = createHook<ButtonOptions>((props) => {
   props = {
     role: !isNativeButton && tagName !== "a" ? "button" : undefined,
     ...props,
-    ref: useForkRef(ref, props.ref),
+    ref: useMergeRefs(ref, props.ref),
   };
 
   props = useCommand(props);
@@ -46,7 +46,7 @@ export const useButton = createHook<ButtonOptions>((props) => {
  * @see https://ariakit.org/components/button
  * @example
  * ```jsx
- * <Button as="div">Accessible button</Button>
+ * <Button render={<div />}>Accessible button</Button>
  * ```
  */
 export const Button = createComponent<ButtonOptions>((props) => {

@@ -7,8 +7,8 @@ import { useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useIsMouseMoving,
+  useMergeRefs,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
@@ -21,7 +21,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```jsx
  * const store = useHovercardStore();
  * const props = useHovercardAnchor({ store });
- * <Role as="a" {...props}>@username</Role>
+ * <Role {...props} render={<a />}>@username</Role>
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
@@ -78,7 +78,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(store.setAnchorElement, props.ref),
+      ref: useMergeRefs(store.setAnchorElement, props.ref),
       onMouseMove,
     };
 

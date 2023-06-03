@@ -7,7 +7,7 @@ import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useForkRef, useId } from "../utils/hooks.js";
+import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
@@ -131,7 +131,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // with role menuitem (https://bugs.webkit.org/show_bug.cgi?id=228318).
       // So, if the menu button is rendered within a menu, we need to render it
       // as another element.
-      props = { as: "div", ...props };
+      props = { render: <div />, ...props };
     }
 
     // We'll use this id to render the aria-labelledby attribute on the menu.
@@ -154,7 +154,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       role,
       "aria-haspopup": getPopupRole(contentElement, "menu"),
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onFocus,
       onKeyDown,
       onClick,

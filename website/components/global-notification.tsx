@@ -12,9 +12,9 @@ export function GlobalNotification({ size = "md" }: Props) {
         href="https://newsletter.ariakit.org"
         target="_blank"
         rel="noopener noreferrer"
-        className="group flex h-8 items-center gap-2 truncate rounded-lg
-        bg-black/5 px-2 text-sm hover:bg-black/10 focus-visible:ariakit-outline-input
-        dark:bg-white/5 dark:hover:bg-white/10"
+        className="group hidden h-8 items-center gap-2 truncate
+        rounded-lg bg-black/5 px-2 text-sm hover:bg-black/10
+        focus-visible:ariakit-outline-input dark:bg-white/5 dark:hover:bg-white/10 sm:flex"
       >
         <div className="h-3 w-3 flex-none rounded-full bg-yellow-500" />
         <div className="min-w-0">

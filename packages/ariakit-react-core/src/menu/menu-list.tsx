@@ -6,7 +6,12 @@ import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
-import { useEvent, useForkRef, useId, useWrapElement } from "../utils/hooks.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
@@ -136,7 +141,7 @@ export const useMenuList = createHook<MenuListOptions>(
       "aria-labelledby": ariaLabelledBy,
       hidden,
       ...props,
-      ref: useForkRef(id ? store.setContentElement : null, props.ref),
+      ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
       style,
       onKeyDown,
     };

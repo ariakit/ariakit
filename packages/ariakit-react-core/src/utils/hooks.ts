@@ -120,16 +120,14 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
  * @example
  * const Component = React.forwardRef((props, ref) => {
  *   const internalRef = React.useRef();
- *   return <div {...props} ref={useForkRef(internalRef, ref)} />;
+ *   return <div {...props} ref={useMergeRefs(internalRef, ref)} />;
  * });
  */
-export function useForkRef(...refs: Array<Ref<any> | undefined>) {
+export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
   return useMemo(() => {
     if (!refs.some(Boolean)) return;
-    return (value: any) => {
-      refs.forEach((ref) => {
-        setRef(ref, value);
-      });
+    return (value: unknown) => {
+      refs.forEach((ref) => setRef(ref, value));
     };
   }, refs);
 }
@@ -179,7 +177,7 @@ export function useDeferredValue<T>(value: T): T {
 }
 
 /**
- * Returns the tag name by parsing an element ref and the `as` prop.
+ * Returns the tag name by parsing an element ref.
  * @example
  * function Component(props) {
  *   const ref = React.useRef();
@@ -386,7 +384,7 @@ export function usePortalRef(
     | MutableRefObject<HTMLElement | null>
 ) {
   const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
-  const portalRef = useForkRef(setPortalNode, portalRefProp);
+  const portalRef = useMergeRefs(setPortalNode, portalRefProp);
   const domReady = !portalProp || portalNode;
   return { portalRef, portalNode, domReady };
 }

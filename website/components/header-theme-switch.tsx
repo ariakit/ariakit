@@ -11,7 +11,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 type Theme = "light" | "dark";
 
 const style = tw`
-  flex items-center justify-center
+  flex items-center justify-center flex-none
   h-10 w-10
   cursor-default
   border-none rounded-lg

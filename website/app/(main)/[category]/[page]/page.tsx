@@ -22,6 +22,7 @@ import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
+import invariant from "tiny-invariant";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
@@ -31,6 +32,15 @@ import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
 
 const { pages } = pagesConfig;
+
+const headingBase = tw`
+  text-black dark:text-white
+  tracking-[-0.035em] dark:tracking-[-0.015em]
+
+  [&_code]:font-monospace [&_code]:rounded
+  [&_code]:px-[0.2em] [&_code]:py-[0.15em]
+  [&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%]
+`;
 
 const stickyHeading = tw`
   sticky md:static top-16 z-20 py-2 -my-2 md:my-0 md:py-0 scroll-mt-16
@@ -96,19 +106,18 @@ const style = {
   `,
   h1: tw`
     text-2xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
-    tracking-[-0.035em] dark:tracking-[-0.015em]
+    ${headingBase}
     ${stickyHeading}
   `,
   h2: tw`
     text-xl sm:text-2xl md:text-3xl font-semibold dark:font-medium
-    text-black dark:text-white
-    tracking-[-0.035em] dark:tracking-[-0.015em]
+    [&_code]:font-medium
+    ${headingBase}
     ${stickyHeading}
   `,
   h3: tw`
     text-lg sm:text-xl font-semibold dark:font-medium
-    text-black dark:text-white
-    tracking-[-0.035em] dark:tracking-[-0.015em]
+    ${headingBase}
     ${stickyHeading}
   `,
   description: tw`
@@ -531,12 +540,22 @@ export default async function Page({ params }: PageProps) {
                 .flatMap((item) =>
                   parseNumericRange(item.replace(rangePattern, "$1"))
                 );
+              const tokenPattern = /^"(.+)"([\d\-,]+)?$/;
+              const highlightTokens = meta
+                .filter((item) => tokenPattern.test(item))
+                .map((item) => {
+                  const [, token, ranges] = item.match(tokenPattern) || [];
+                  invariant(token);
+                  if (!ranges) return token;
+                  return [token, parseNumericRange(ranges)] as const;
+                });
               return (
                 <CodeBlock
                   lang={lang}
                   code={code}
-                  highlightLines={highlightLines}
                   lineNumbers={lineNumbers}
+                  highlightLines={highlightLines}
+                  highlightTokens={highlightTokens}
                   className="!max-w-[832px]"
                 />
               );

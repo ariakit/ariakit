@@ -4,7 +4,7 @@ import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
 import {
   useEvent,
-  useForkRef,
+  useMergeRefs,
   useTagName,
   useWrapElement,
 } from "../utils/hooks.js";
@@ -40,7 +40,7 @@ function getNonArrayValue<T>(value: T) {
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
- * const props = useCheckbox({ as: "div" });
+ * const props = useCheckbox({ render: <div /> });
  * <Role {...props}>Accessible checkbox</Role>
  * ```
  */
@@ -140,7 +140,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       type: nativeCheckbox ? "checkbox" : undefined,
       "aria-checked": checked,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onChange,
       onClick,
     };
@@ -162,7 +162,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
- * <Checkbox as="div">Accessible checkbox</Checkbox>
+ * <Checkbox render={<div />}>Accessible checkbox</Checkbox>
  * ```
  */
 export const Checkbox = createComponent<CheckboxOptions>((props) => {

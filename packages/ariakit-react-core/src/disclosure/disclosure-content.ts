@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForkRef, useId, useSafeLayoutEffect } from "../utils/hooks.js";
+import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import type { DisclosureStore } from "./disclosure-store.js";
@@ -122,7 +122,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       "data-leave": transition === "leave" ? "" : undefined,
       hidden,
       ...props,
-      ref: useForkRef(id ? store.setContentElement : null, props.ref),
+      ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
       style,
     };
 

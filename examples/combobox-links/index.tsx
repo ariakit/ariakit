@@ -38,18 +38,17 @@ export default function Example() {
     [deferredValue]
   );
 
-  const renderItem = (item: (typeof links)[number]) => {
+  const renderItem = ({ children, ...props }: (typeof links)[number]) => {
     return (
       <Ariakit.ComboboxItem
-        key={item.children}
-        as="a"
+        key={children}
         focusOnHover
         hideOnClick
         className="combobox-item"
-        {...item}
+        render={<a {...props} />}
       >
-        {item.children}
-        {item.target === "_blank" && (
+        {children}
+        {props.target === "_blank" && (
           <NewWindow className="combobox-item-icon" />
         )}
       </Ariakit.ComboboxItem>

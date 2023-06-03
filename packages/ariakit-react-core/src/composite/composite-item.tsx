@@ -19,8 +19,8 @@ import { useCommand } from "../command/command.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useId,
+  useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
@@ -359,7 +359,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       "aria-selected": ariaSelected,
       "data-active-item": isActiveItem ? "" : undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       tabIndex: shouldTabIndex !== false ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,

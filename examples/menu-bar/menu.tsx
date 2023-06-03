@@ -52,9 +52,9 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
       <>
         <Ariakit.MenuButton
           store={menu}
-          as={Ariakit.MenuItem}
-          className="menu-item"
           ref={ref}
+          className="menu-item"
+          render={<Ariakit.MenuItem />}
           {...props}
         >
           <span className="label">{label}</span>

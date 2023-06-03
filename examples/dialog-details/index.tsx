@@ -24,7 +24,7 @@ export default function Example() {
       open={mounted}
       onToggle={(event) => dialog.setOpen(event.currentTarget.open)}
     >
-      <Ariakit.Button as="summary" className="button">
+      <Ariakit.Button className="button" render={<summary />}>
         Show modal
       </Ariakit.Button>
       <Ariakit.Dialog

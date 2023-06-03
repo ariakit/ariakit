@@ -11,7 +11,7 @@ import {
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap/focus-trap.js";
 import {
-  useForkRef,
+  useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
@@ -61,7 +61,7 @@ function queueFocus(element?: HTMLElement | null) {
 export const usePortal = createHook<PortalOptions>(
   ({ preserveTabOrder, portalElement, portalRef, portal = true, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const refProp = useForkRef(ref, props.ref);
+    const refProp = useMergeRefs(ref, props.ref);
     const context = useContext(PortalContext);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
 

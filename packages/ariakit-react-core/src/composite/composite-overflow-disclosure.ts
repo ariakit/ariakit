@@ -2,7 +2,7 @@ import type { FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useForkRef } from "../utils/hooks.js";
+import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { CompositeItemOptions } from "./composite-item.js";
@@ -50,7 +50,7 @@ export const useCompositeOverflowDisclosure =
     props = {
       "aria-hidden": !shouldRegisterItem,
       ...props,
-      ref: useForkRef(props.ref, ref),
+      ref: useMergeRefs(props.ref, ref),
       onFocus,
       onBlur,
     };

@@ -6,10 +6,10 @@ export default function Example() {
     <div>
       <p>Notice that you cannot trigger the alert with the space key.</p>
       <Command
-        as="div"
         className="button"
-        onClick={() => alert("Accessible button clicked")}
         clickOnSpace={false}
+        onClick={() => alert("Accessible button clicked")}
+        render={<div />}
       >
         Accessible button
       </Command>

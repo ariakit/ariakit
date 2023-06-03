@@ -46,7 +46,7 @@ export type Options<T extends As = any> = { as?: T };
 export type HTMLProps<O extends Options> = {
   wrapElement?: WrapElement;
   children?: Children;
-  render?: RenderProp;
+  render?: RenderProp | React.ReactElement;
   [index: `data-${string}`]: unknown;
 } & Omit<
   React.ComponentPropsWithRef<NonNullable<O["as"]>>,

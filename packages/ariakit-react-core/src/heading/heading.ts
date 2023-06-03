@@ -1,5 +1,5 @@
 import { useContext, useMemo, useRef } from "react";
-import { useForkRef, useTagName } from "../utils/hooks.js";
+import { useMergeRefs, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { HeadingContext } from "./heading-context.js";
@@ -33,7 +33,7 @@ export const useHeading = createHook<HeadingOptions>((props) => {
     role: !isNativeHeading ? "heading" : undefined,
     "aria-level": !isNativeHeading ? level : undefined,
     ...props,
-    ref: useForkRef(ref, props.ref),
+    ref: useMergeRefs(ref, props.ref),
   };
 
   return props;

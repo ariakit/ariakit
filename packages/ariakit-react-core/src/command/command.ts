@@ -9,7 +9,7 @@ import {
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useEvent, useForkRef, useTagName } from "../utils/hooks.js";
+import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 
@@ -42,7 +42,7 @@ function isNativeClick(event: KeyboardEvent) {
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
- * const props = useCommand({ as: "div" });
+ * const props = useCommand({ render: <div /> });
  * <Role {...props}>Accessible button</Role>
  * ```
  */
@@ -143,7 +143,7 @@ export const useCommand = createHook<CommandOptions>(
       "data-active": active ? "" : undefined,
       type: isNativeButton ? "button" : undefined,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onKeyDown,
       onKeyUp,
     };
@@ -161,7 +161,7 @@ export const useCommand = createHook<CommandOptions>(
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
- * <Command as="div">Accessible button</Command>
+ * <Command render={<div />}>Accessible button</Command>
  * ```
  */
 export const Command = createComponent<CommandOptions>((props) => {

@@ -35,7 +35,7 @@ We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) co
 ```jsx
 <AnimatePresence>
   {mounted && (
-    <Ariakit.Menu store={menu} as={motion.div} {...otherProps}>
+    <Ariakit.Menu store={menu} render={<motion.div />}>
       {children}
     </Ariakit.Menu>
   )}

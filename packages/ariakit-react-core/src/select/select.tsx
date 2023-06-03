@@ -1,9 +1,4 @@
-import type {
-  ChangeEvent,
-  KeyboardEvent,
-  MouseEvent,
-  SelectHTMLAttributes,
-} from "react";
+import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
@@ -15,12 +10,11 @@ import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
+  useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { SelectArrow } from "./select-arrow.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
@@ -187,8 +181,18 @@ export const useSelect = createHook<SelectOptions>(
         if (!name) return element;
         return (
           <>
-            <VisuallyHidden
-              as="select"
+            <select
+              style={{
+                border: 0,
+                clip: "rect(0 0 0 0)",
+                height: "1px",
+                margin: "-1px",
+                overflow: "hidden",
+                padding: 0,
+                position: "absolute",
+                whiteSpace: "nowrap",
+                width: "1px",
+              }}
               tabIndex={-1}
               aria-hidden
               aria-label={label}
@@ -204,7 +208,7 @@ export const useSelect = createHook<SelectOptions>(
               // In this case, we want to move focus to our custom select
               // element.
               onFocus={() => store.getState().selectElement?.focus()}
-              onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              onChange={(event) => {
                 nativeSelectChangedRef.current = true;
                 setAutofill(true);
                 store.setValue(
@@ -219,7 +223,7 @@ export const useSelect = createHook<SelectOptions>(
                   {value}
                 </option>
               ))}
-            </VisuallyHidden>
+            </select>
             {element}
           </>
         );
@@ -255,7 +259,7 @@ export const useSelect = createHook<SelectOptions>(
       "data-name": name,
       children,
       ...props,
-      ref: useForkRef(store.setSelectElement, props.ref),
+      ref: useMergeRefs(store.setSelectElement, props.ref),
       onKeyDown,
       onMouseDown,
     };

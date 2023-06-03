@@ -68,8 +68,8 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
                 {title}
               </Ariakit.MenuHeading>
               <Ariakit.MenuItem
-                as={Ariakit.MenuDismiss}
                 className="menu-item"
+                render={<Ariakit.MenuDismiss />}
               />
             </div>
           )}

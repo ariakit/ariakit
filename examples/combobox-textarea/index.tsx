@@ -91,11 +91,7 @@ export default function Example() {
       <label className="label">
         Comment
         <Ariakit.Combobox
-          ref={ref}
-          as="textarea"
-          placeholder="Type @, # or :"
           store={combobox}
-          rows={5}
           autoSelect
           value={value}
           // We'll overwrite how the combobox popover is shown, so we disable
@@ -106,14 +102,21 @@ export default function Example() {
           // To the combobox state, we'll only set the value after the trigger
           // character (the search value), so we disable the default behavior.
           setValueOnChange={false}
-          // We need to re-calculate the position of the combobox popover when
-          // the textarea contents are scrolled.
-          onScroll={combobox.render}
-          // Hide the combobox popover whenever the selection changes.
-          onPointerDown={combobox.hide}
-          onKeyDown={onKeyDown}
-          onChange={onChange}
           className="combobox"
+          render={
+            <textarea
+              ref={ref}
+              rows={5}
+              placeholder="Type @, # or :"
+              // We need to re-calculate the position of the combobox popover when
+              // the textarea contents are scrolled.
+              onScroll={combobox.render}
+              // Hide the combobox popover whenever the selection changes.
+              onPointerDown={combobox.hide}
+              onChange={onChange}
+              onKeyDown={onKeyDown}
+            />
+          }
         />
       </label>
       {mounted && (

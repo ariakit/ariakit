@@ -20,7 +20,7 @@ import { useFocusable } from "../focusable/focusable.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
+  useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
@@ -416,7 +416,7 @@ export const useComposite = createHook<CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useForkRef(composite ? store.setBaseElement : null, props.ref),
+      ref: useMergeRefs(composite ? store.setBaseElement : null, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,

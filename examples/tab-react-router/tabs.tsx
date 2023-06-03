@@ -35,7 +35,7 @@ type TabProps = LinkProps;
 export function Tab(props: TabProps) {
   const id = useHref(props.to);
 
-  return <Ariakit.Tab as={Link} id={id} className="tab" {...props} />;
+  return <Ariakit.Tab id={id} className="tab" render={<Link {...props} />} />;
 }
 
 type TabPanelProps = Omit<Ariakit.TabPanelProps, "store">;

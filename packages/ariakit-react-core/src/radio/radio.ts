@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef } from "react";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
-import { useEvent, useForkRef, useId, useTagName } from "../utils/hooks.js";
+import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
@@ -37,7 +37,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  * const store = useRadioStore();
  * const props = useRadio({ store, value: "Apple" });
  * <RadioGroup store={store}>
- *   <Role as="input" {...props} />
+ *   <Role {...props} render={<input />} />
  *   <Radio value="Orange" />
  * </RadioGroup>
  * ```
@@ -113,7 +113,7 @@ export const useRadio = createHook<RadioOptions>(
       type: nativeRadio ? "radio" : undefined,
       "aria-checked": isChecked,
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onChange,
       onClick,
       onFocus,

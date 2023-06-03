@@ -88,10 +88,10 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
 
     const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
       <Ariakit.MenuButton
-        as="button"
         store={menu}
         showOnHover={false}
         className="button"
+        render={<button />}
         {...menuButtonProps}
       >
         <span className="label">{label}</span>
@@ -155,12 +155,12 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
                 <>
                   <div className="header">
                     <Ariakit.MenuItem
-                      as="button"
                       hideOnClick={false}
                       focusOnHover={false}
                       onClick={menu.hide}
                       className="menu-item"
                       aria-label="Back to parent menu"
+                      render={<button />}
                     >
                       <Ariakit.MenuButtonArrow placement="left" />
                     </Ariakit.MenuItem>
@@ -189,11 +189,9 @@ export const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
   ({ label, ...props }, ref) => {
     return (
       <Ariakit.MenuItem
-        as="button"
         className="menu-item"
         focusOnHover={false}
-        ref={ref}
-        {...props}
+        render={<button ref={ref} {...props} />}
       >
         {label}
       </Ariakit.MenuItem>

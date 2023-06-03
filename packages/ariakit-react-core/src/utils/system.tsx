@@ -1,6 +1,9 @@
 import type { ElementType, ReactElement } from "react";
-import { forwardRef, memo } from "react";
+import { cloneElement, forwardRef, isValidElement, memo } from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
+import type { AnyObject } from "@ariakit/core/utils/types";
+import { useMergeRefs } from "./hooks.js";
+import { getRefProperty, mergeProps } from "./misc.js";
 import type {
   Component,
   HTMLProps,
@@ -29,7 +32,7 @@ function isRenderProp(children: any): children is RenderProp {
  *   return <div {...props} />;
  * });
  *
- * <Component as="button" customProp />
+ * <Component customProp render={<button />} />
  */
 export function createComponent<O extends Options>(
   render: (props: Props<O>) => ReactElement
@@ -55,7 +58,7 @@ export function createComponent<O extends Options>(
  *   return <div {...props} />;
  * });
  *
- * <Component as="button" customProp />
+ * <Component customProp render={<button />} />
  */
 export function createMemoComponent<O extends Options>(
   render: (props: Props<O>) => ReactElement
@@ -65,16 +68,13 @@ export function createMemoComponent<O extends Options>(
 }
 
 /**
- * Creates a React element that supports the `as` prop, children as a
- * function (render props) and a `wrapElement` function.
- *
+ * Creates a React element that supports the `render` and `wrapElement` props.
  * @example
  * import { createElement } from "@ariakit/react-core/utils/system";
  *
  * function Component() {
  *   const props = {
- *     as: "button" as const,
- *     children: (htmlProps) => <button {...htmlProps} />,
+ *     render: (htmlProps) => <button {...htmlProps} />,
  *     wrapElement: (element) => <div>{element}</div>,
  *   };
  *   return createElement("div", props);
@@ -83,8 +83,13 @@ export function createMemoComponent<O extends Options>(
 export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   const { as: As, wrapElement, render, ...rest } = props;
   let element: ReactElement;
+  const mergedRef = useMergeRefs(props.ref, getRefProperty(render));
+
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
+  } else if (isValidElement<AnyObject>(render)) {
+    const renderProps: AnyObject = { ...render.props, ref: mergedRef };
+    element = cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
     // @ts-expect-error
     element = render(rest) as ReactElement;
@@ -96,9 +101,11 @@ export function createElement(Type: ElementType, props: HTMLProps<Options>) {
   } else {
     element = <Type {...rest} />;
   }
+
   if (wrapElement) {
     return wrapElement(element);
   }
+
   return element;
 }
 

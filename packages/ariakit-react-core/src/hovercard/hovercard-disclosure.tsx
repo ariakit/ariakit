@@ -4,7 +4,7 @@ import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent, useForkRef } from "../utils/hooks.js";
+import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
@@ -122,7 +122,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     props = {
       children,
       ...props,
-      ref: useForkRef(store.setDisclosureElement, props.ref),
+      ref: useMergeRefs(store.setDisclosureElement, props.ref),
       onClick,
       onFocus,
     };

@@ -17,8 +17,8 @@ import { usePopover } from "../popover/popover.js";
 import {
   useBooleanEvent,
   useEvent,
-  useForkRef,
   useLiveRef,
+  useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -312,7 +312,7 @@ export const useHovercard = createHook<HovercardOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     props = useAutoFocusOnHide({ store, ...props });

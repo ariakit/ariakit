@@ -7,7 +7,7 @@ export default function Example() {
     state.value ? "Checked" : "Unchecked"
   );
   return (
-    <Checkbox as="button" store={checkbox} className="button">
+    <Checkbox store={checkbox} className="button" render={<button />}>
       {label}
     </Checkbox>
   );

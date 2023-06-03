@@ -2,7 +2,7 @@ import type { RefCallback } from "react";
 import { useCallback, useContext, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity } from "@ariakit/core/utils/misc";
-import { useForkRef, useId } from "../utils/hooks.js";
+import { useId, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { CollectionContext } from "./collection-context.js";
@@ -42,7 +42,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
 
     props = {
       ...props,
-      ref: useForkRef(ref, props.ref),
+      ref: useMergeRefs(ref, props.ref),
     };
 
     return props;

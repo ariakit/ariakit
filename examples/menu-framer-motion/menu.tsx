@@ -45,16 +45,19 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
           <Ariakit.Menu
             store={menu}
             alwaysVisible
+            className="menu"
             // We'll use this data attribute to style the transform-origin
             // property based on the menu's placement. See style.css.
             data-placement={currentPlacement}
-            className="menu"
-            as={motion.div}
-            initial={initial}
-            exit={exit}
-            animate={animate}
-            variants={variants}
-            transition={transition}
+            render={
+              <motion.div
+                initial={initial}
+                exit={exit}
+                animate={animate}
+                variants={variants}
+                transition={transition}
+              />
+            }
           >
             <Ariakit.MenuArrow className="menu-arrow" />
             {children}
@@ -65,23 +68,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps extends HTMLMotionProps<"div"> {
-  label?: ReactNode;
-  children?: ReactNode;
-  disabled?: boolean;
-}
-
-export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
-  function MenuItem({ label, variants, animate, ...props }, ref) {
+export const MenuItem = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
+  function MenuItem(props, ref) {
     return (
       <Ariakit.MenuItem
-        as={motion.div}
         ref={ref}
         className="menu-item"
-        children={label}
-        animate={animate}
-        variants={variants}
-        {...props}
+        render={<motion.div {...props} />}
       />
     );
   }

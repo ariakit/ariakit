@@ -1,42 +1,40 @@
-import {
-  alignCenter,
-  alignLeft,
-  alignRight,
-  bold,
-  italic,
-  underline,
-} from "./icons.jsx";
-import {
-  Toolbar,
-  ToolbarButton,
-  ToolbarSelect,
-  ToolbarSeparator,
-} from "./toolbar.jsx";
 import "./style.css";
+import { useState } from "react";
+import * as icons from "./icons.jsx";
+import { Select, SelectArrow, SelectItem } from "./select.jsx";
+import { Toolbar, ToolbarButton, ToolbarSeparator } from "./toolbar.jsx";
 
-const alignmentOptions = [
-  { value: "Align Left", icon: alignLeft },
-  { value: "Align Center", icon: alignCenter },
-  { value: "Align Right", icon: alignRight },
+const options = [
+  { value: "Align Left", icon: icons.alignLeft },
+  { value: "Align Center", icon: icons.alignCenter },
+  { value: "Align Right", icon: icons.alignRight },
 ];
 
 export default function Example() {
+  const [value, setValue] = useState("Align Left");
+  const selectedIcon = options.find((option) => option.value === value)?.icon;
   return (
     <Toolbar>
-      <ToolbarButton>
-        {bold}
-        Bold
-      </ToolbarButton>
-      <ToolbarButton>
-        {italic}
-        Italic
-      </ToolbarButton>
-      <ToolbarButton>
-        {underline}
-        Underline
-      </ToolbarButton>
+      <ToolbarButton>{icons.bold} Bold</ToolbarButton>
+      <ToolbarButton>{icons.italic} Italic</ToolbarButton>
+      <ToolbarButton>{icons.underline} Underline</ToolbarButton>
       <ToolbarSeparator />
-      <ToolbarSelect aria-label="Text alignment" options={alignmentOptions} />
+      <Select
+        aria-label="Text alignment"
+        value={value}
+        onChange={setValue}
+        render={
+          <ToolbarButton>
+            {selectedIcon} {value} <SelectArrow />
+          </ToolbarButton>
+        }
+      >
+        {options.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.icon} {option.value}
+          </SelectItem>
+        ))}
+      </Select>
     </Toolbar>
   );
 }

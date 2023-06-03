@@ -26,20 +26,17 @@ function Tweet() {
       className="dialog"
     >
       <Ariakit.DialogDismiss
-        as={Link}
-        to="/"
         className="button secondary dismiss"
+        render={<Link to="/" />}
       />
       <Ariakit.DialogHeading hidden>Tweet</Ariakit.DialogHeading>
       <form className="form" onSubmit={dialog.hide}>
         <label>
           <Ariakit.VisuallyHidden>Tweet text</Ariakit.VisuallyHidden>
           <Ariakit.Focusable
-            as="textarea"
-            className="input"
-            placeholder="What's happening?"
             autoFocus
-            rows={5}
+            className="input"
+            render={<textarea placeholder="What's happening?" rows={5} />}
           />
         </label>
         <Ariakit.Button type="submit" className="button">
