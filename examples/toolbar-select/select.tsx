@@ -14,7 +14,6 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       setValue: onChange,
       defaultValue,
     });
-
     return (
       <>
         <Ariakit.Select ref={ref} {...props} store={select} />
