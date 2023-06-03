@@ -1,5 +1,19 @@
 # @ariakit/react-core
 
+## 0.2.8
+
+### Patch Changes
+
+- Added `isValidElementWithRef` function to `@ariakit/react-core/utils/misc`. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
+- Added `getRefProperty` function to `@ariakit/react-core/utils/misc`. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
+- Added `mergeProps` function to `@ariakit/react-core/utils/misc`. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
+- Renamed `useForkRef` to `useMergeRefs`. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
+- The `render` prop now supports a `ReactElement` as a value. See the [Composition](https://ariakit.org/guide/composition) guide for more information. ([#2486](https://github.com/ariakit/ariakit/pull/2486))
+
 ## 0.2.7
 
 ### Patch Changes
