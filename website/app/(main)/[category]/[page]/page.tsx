@@ -550,7 +550,6 @@ export default async function Page({ params }: PageProps) {
                   return [token, parseNumericRange(ranges)] as const;
                 });
               return (
-                // @ts-expect-error RSC
                 <CodeBlock
                   lang={lang}
                   code={code}

@@ -51,13 +51,16 @@ export function DialogBackdrop({
     return markAncestor(backdrop, id);
   }, [contentElement]);
 
+  if (hidden != null) {
+    backdropProps = { ...backdropProps, hidden };
+  }
+
   const props = useDisclosureContent({
     store,
     id: undefined,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
     alwaysVisible,
-    hidden,
     ...backdropProps,
     ref: useMergeRefs(backdropProps?.ref, ref),
     style: {

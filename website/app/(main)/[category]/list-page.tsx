@@ -34,7 +34,6 @@ export function ListPage({
         )}
       >
         {title ? (
-          // @ts-expect-error
           <ListPageContainer title={title}>
             {description && (
               <p className="-translate-y-4 text-lg tracking-tight text-black/70 dark:text-white/60">

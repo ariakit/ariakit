@@ -12,15 +12,15 @@ import type { DialogStore } from "../dialog-store.js";
 
 const NestedDialogsContext = createContext<{
   store?: DialogStore;
-  add?: (store: HTMLElement) => () => void;
+  add?: (store: DialogStore) => () => void;
 }>({});
 
 export function useNestedDialogs(store: DialogStore) {
   const context = useContext(NestedDialogsContext);
-  const [dialogs, setDialogs] = useState<HTMLElement[]>([]);
+  const [dialogs, setDialogs] = useState<DialogStore[]>([]);
 
   const add = useCallback(
-    (dialog: HTMLElement) => {
+    (dialog: DialogStore) => {
       setDialogs((dialogs) => [...dialogs, dialog]);
       return chain(context.add?.(dialog), () => {
         setDialogs((dialogs) => dialogs.filter((d) => d !== dialog));
@@ -33,10 +33,11 @@ export function useNestedDialogs(store: DialogStore) {
   useSafeLayoutEffect(() => {
     return store.sync(
       (state) => {
+        if (!state.open) return;
         if (!state.contentElement) return;
-        return context.add?.(state.contentElement);
+        return context.add?.(store);
       },
-      ["contentElement"]
+      ["open", "contentElement"]
     );
   }, [store, context]);
 

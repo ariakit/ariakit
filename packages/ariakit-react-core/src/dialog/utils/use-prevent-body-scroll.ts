@@ -17,8 +17,6 @@ export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
   useSafeLayoutEffect(() => {
     if (!enabled) return;
     const { contentElement } = store.getState();
-    if (!contentElement) return;
-
     const doc = getDocument(contentElement);
     const win = getWindow(contentElement);
     const { documentElement, body } = doc;
