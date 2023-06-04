@@ -10,7 +10,7 @@ Component stores are created using custom React hooks exported by the `@ariakit/
 
 You instantiate the store by calling the component store hook within a React component:
 
-```js
+```js "useComboboxStore"
 function MyCombobox() {
   const combobox = useComboboxStore();
 }
@@ -18,7 +18,7 @@ function MyCombobox() {
 
 Then, you should pass the store to the wrapping components of that module:
 
-```jsx {1,3}
+```jsx "store" "combobox"
 <Combobox store={combobox} />
 
 <ComboboxPopover store={combobox}>
@@ -30,6 +30,12 @@ Then, you should pass the store to the wrapping components of that module:
 
 Passing the store to the child components, such as `ComboboxItem`, is optional.
 
+<aside data-type="note" title="The store prop">
+
+The `store` prop on Ariakit components serves as a means to establish connections between different parts of the same widget. It functions in a similar manner to HTML attributes such as `aria-labelledby`, `aria-describedby`, `aria-controls`, and `for`, which are used to reference other elements within the DOM.
+
+</aside>
+
 ## Providing state to the store
 
 Component stores accept an optional object as an argument. This object is used to initialize and control the state of the component.
@@ -38,7 +44,7 @@ Component stores accept an optional object as an argument. This object is used t
 
 Conventionally, when dealing with dynamic state, the initial value passed to the store has its property name prefixed with the word `default`. In this case, only the initial value will be considered. It doesn't have to be referentially stable between re-renders.
 
-```js
+```js "defaultValues:"
 const form = useFormStore({
   defaultValues: { name: "", email: "" },
 });
@@ -46,9 +52,11 @@ const form = useFormStore({
 
 ### State setters
 
-In addition to state, component stores may also accept state updater functions. These functions are called with the new state whenever the state is updated. You can use them for various purposes, such as updating another state or performing side effects.
+Component stores may also accept callbacks for state changes. These functions conventionally bear the name of the state property they modify, prefixed with the word `set`. They are invoked with the new state whenever an update occurs.
 
-```js {3-5}
+These state setters serve various purposes, such as updating another state, executing side effects, or implementing features like `onChange`, `onValuesChange`, `onToggle`, `onOpenChange`, `onClose`, and so on.
+
+```js {3-5} "setValues"
 const form = useFormStore({
   defaultValues: { name: "", email: "" },
   setValues(values) {
@@ -59,16 +67,16 @@ const form = useFormStore({
 
 ### Controlled state
 
-You can take full control of the state by passing the exact property to the store. In this case, the state will be considered controlled and the component will not update the state internally. It will only call the state updater function. You can use this to implement a controlled component using `React.useState`:
+You can take full control of the state by passing the exact property, without prefixes, to the store. In this case, the state will be considered controlled and the component will not update the state internally. It will only call the state setter. You can use this to implement a controlled component using `React.useState`:
 
-```js
+```js "values" "setValues"
 const [values, setValues] = React.useState({ name: "", email: "" });
 const form = useFormStore({ values, setValues });
 ```
 
 You can also receive controlled props, such as `value` and `onChange`, from a parent component and pass them directly to the store:
 
-```js
+```js "value" "onChange"
 const select = useSelectStore({
   value: props.value,
   setValue: props.onChange,
@@ -83,7 +91,7 @@ Component stores in the `@ariakit/react` package expose a `useState` method. It'
 
 Calling `store.useState()` without any arguments returns the entire state object and re-renders the component whenever the state changes.
 
-```js {3}
+```js "useState"
 function MyCombobox() {
   const combobox = useComboboxStore();
   const state = combobox.useState();
@@ -96,7 +104,7 @@ function MyCombobox() {
 
 Alternatively, you can pass a string to `store.useState()` to read the value of a specific state property. The component will only re-render when the requested value changes.
 
-```js
+```js ""open""
 const value = combobox.useState("value");
 const isOpen = combobox.useState("open");
 ```
@@ -130,12 +138,12 @@ function handleKeyDown(event) {
 
 ## Writing the state
 
-Component stores have a generic `setState` method that can be used to mutate any state in the store. This method shouldn't be called during render, but it's safe to call it inside an event handler or effect callbacks.
+Component stores have a generic `setState` method that can be used to mutate any state in the store. This method shouldn't be called during render, but it's safe to call it inside an event handler or React effect callbacks.
 
-```js {4}
+```js "onClick" "setState"
 const dialog = useDialogStore({ defaultOpen: false });
 
-function handleClick() {
+function onClick() {
   dialog.setState("open", true);
 }
 ```
@@ -148,10 +156,10 @@ dialog.setState("open", (open) => !open);
 
 Component stores may also expose specific methods to update the state. These methods are named after the state property they update. For example, `store.setOpen()` updates the `open` state.
 
-```js {5}
+```js "setOpen"
 const dialog = useDialogStore({ defaultOpen: false });
 
-function handleClick() {
+function onClick() {
   // Equivalent to dialog.setState("open", true);
   dialog.setOpen(true);
 }
