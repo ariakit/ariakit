@@ -54,6 +54,6 @@ In addition to the dialog itself, the modal context may include other elements, 
 
 </aside>
 
-This allows keyboard and screen reader users to <kbd>Tab</kbd> to the browser chrome where they can interact with the URL address bar or leave an iframe, which mouse users could do already.
+This allows keyboard and screen reader users to <kbd>Tab</kbd> to the browser chrome, where they can interact with the URL address bar, or leave an iframe, which mouse users could do already.
 
 This approach results in a behavior that is more consistent with the native [`dialog`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element. Unfortunately, the native `dialog` element still doesn't work with browser extensions when opened as a modal.
