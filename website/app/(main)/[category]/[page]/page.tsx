@@ -16,6 +16,7 @@ import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
+import Image from "next/image.js";
 import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
 import parseNumericRange from "parse-numeric-range";
@@ -638,6 +639,9 @@ export default async function Page({ params }: PageProps) {
                 return <Link {...props} href={href} className={className} />;
               }
               return <a {...props} className={className} />;
+            },
+            img: ({ node, ...props }) => {
+              return <Image {...props} />;
             },
           }}
         >

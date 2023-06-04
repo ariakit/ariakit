@@ -6,6 +6,15 @@
 
 <a href="./index.tsx" data-playground>Example</a>
 
+## Components
+
+<div data-cards="components">
+
+- [](/components/dialog)
+- [](/components/button)
+
+</div>
+
 ## Keeping toasts accessible
 
 Using the [`getPersistentElements`](/apis/dialog#getpersistentelements) prop, you can keep the modal dialog and the notification toasts accessible at the same time. Users will be able to navigate between the dialog and the persistent elements using the <kbd>Tab</kbd> key and interact with the toasts without closing the modal dialog.
@@ -15,3 +24,12 @@ Using the [`getPersistentElements`](/apis/dialog#getpersistentelements) prop, yo
 ```
 
 Note that the elements returned by this function **must be present in the DOM** when the dialog is open.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+
+</div>
