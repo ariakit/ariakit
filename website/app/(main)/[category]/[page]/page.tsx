@@ -641,6 +641,7 @@ export default async function Page({ params }: PageProps) {
               return <a {...props} className={className} />;
             },
             img: ({ node, ...props }) => {
+              // @ts-expect-error
               return <Image {...props} />;
             },
           }}
