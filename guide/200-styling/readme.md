@@ -162,12 +162,12 @@ Some components, such as [Popover](/components/popover), [Menu](/components/menu
 
 ### `--popover-anchor-width`
 
-The `--popover-anchor-width` variable exposes the width value of the anchor element. It's useful when you want to make the popover element have the same width as the anchor element.
+The `--popover-anchor-width` variable exposes the width value of the anchor element. It's useful when you want to make the popover element have a minimum or the same width as the anchor element.
 
 ```css
 .combobox-popover {
-  /* The combobox popover will have the same width as the combobox input */
-  width: var(--popover-anchor-width);
+  /* The combobox popover will have the combobox input width as its min width */
+  min-width: var(--popover-anchor-width);
 }
 ```
 
