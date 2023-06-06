@@ -10,6 +10,7 @@ import pagesIndex from "build-pages/index.js";
 import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
 import { PageItem } from "components/page-item.jsx";
+import { PageVideo } from "components/page-video.jsx";
 import matter from "gray-matter";
 import { ArrowRight } from "icons/arrow-right.jsx";
 import { Document } from "icons/document.jsx";
@@ -147,20 +148,31 @@ const style = {
     data-[type="note"]:before:bg-blue-600
   `,
   figure: tw`
-    group flex flex-col gap-2 !max-w-[736px]
-    data-[type=bigquote]:!w-auto
-    data-[type=bigquote]:p-4
+    group gap-2 flex-col grid-cols-1 sm:grid-cols-2 overflow-hidden
+    rounded-lg md:rounded-xl
+
+    [&>img]:!rounded-none
+    data-[wide]:!max-w-5xl data-[wide]:md:rounded-2xl
+    data-[media]:grid
+    data-[quote]:flex data-[quote]:!max-w-[736px]
+    data-[bigquote]:flex data-[bigquote]:!w-auto data-[bigquote]:p-4
+  `,
+  media: tw`
+    overflow-hidden rounded-lg md:rounded-xl
+    data-[large]:!max-w-[832px]
+    data-[wide]:!max-w-5xl
+    data-[wide]:md:rounded-2xl
   `,
   blockquote: tw`
     flex flex-col gap-4 p-4 !max-w-[736px]
     border-l-4 border-black/25 dark:border-white/25
-    group-data-[type=bigquote]:border-0
-    group-data-[type=bigquote]:italic
-    group-data-[type=bigquote]:p-0
-    group-data-[type=bigquote]:text-lg
-    group-data-[type=bigquote]:sm:text-xl
-    group-data-[type=bigquote]:md:text-2xl
-    group-data-[type=bigquote]:opacity-75
+    group-data-[bigquote]:border-0
+    group-data-[bigquote]:italic
+    group-data-[bigquote]:p-0
+    group-data-[bigquote]:text-lg
+    group-data-[bigquote]:sm:text-xl
+    group-data-[bigquote]:md:text-2xl
+    group-data-[bigquote]:opacity-75
   `,
   paragraph: tw`
     dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]
@@ -573,10 +585,14 @@ export default async function Page({ params }: PageProps) {
                   )}
                 />
               );
+              if (Array.isArray(props.children) && props.children.length > 1) {
+                return paragraph;
+              }
               const child = props.children[0];
               if (!child) return paragraph;
               if (!isValidElement(child)) return paragraph;
               if (!child.props) return paragraph;
+              if ("data-large" in child.props) return child;
               if (!("data-playground" in child.props)) return paragraph;
               if (!child.props.href) return paragraph;
               return <>{props.children}</>;
@@ -641,8 +657,13 @@ export default async function Page({ params }: PageProps) {
               return <a {...props} className={className} />;
             },
             img: ({ node, ...props }) => {
+              const className = cx(style.media, props.className);
               // @ts-expect-error
-              return <Image {...props} />;
+              return <Image {...props} className={className} />;
+            },
+            video: ({ node, ...props }) => {
+              const className = cx(style.media, props.className);
+              return <PageVideo {...props} className={className} />;
             },
           }}
         >

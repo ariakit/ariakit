@@ -1,6 +1,6 @@
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { createStore, mergeStore } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 /**
@@ -9,7 +9,12 @@ import type { SetState } from "../utils/types.js";
 export function createDisclosureStore(
   props: DisclosureStoreProps = {}
 ): DisclosureStore {
-  const syncState = props.store?.getState();
+  const store = mergeStore(
+    props.store,
+    props.disclosure?.omit("contentElement", "disclosureElement")
+  );
+
+  const syncState = store?.getState();
 
   const open = defaultValue(
     props.open,
@@ -29,7 +34,7 @@ export function createDisclosureStore(
     disclosureElement: defaultValue(syncState?.disclosureElement, null),
   };
 
-  const disclosure = createStore(initialState, props.store);
+  const disclosure = createStore(initialState, store);
 
   disclosure.setup(() =>
     disclosure.sync(
@@ -187,6 +192,13 @@ export interface DisclosureStoreOptions
    * @default false
    */
   defaultOpen?: DisclosureStoreState["open"];
+  /**
+   * A reference to another disclosure store that controls another disclosure
+   * component to keep them in sync. Element states like `contentElement` and
+   * `disclosureElement` won't be synced. For that, use the `store` prop
+   * instead.
+   */
+  disclosure?: DisclosureStore;
 }
 
 export type DisclosureStoreProps = DisclosureStoreOptions &
