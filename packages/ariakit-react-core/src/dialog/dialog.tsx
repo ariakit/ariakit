@@ -551,6 +551,8 @@ export interface DialogOptions<T extends As = "div">
    *
    * Live examples:
    * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
+   * - [Dialog with scrollable
+   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
    * - [Dialog with Framer
    *   Motion](https://ariakit.org/examples/dialog-framer-motion)
    * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)

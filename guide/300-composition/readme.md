@@ -126,7 +126,7 @@ When rendering custom components using the `render` prop, be aware that [custom 
 
 </aside>
 
-Another use case for the `render` function is to render elements between an internal wrapper and the rendered element:
+Another use case for the `render` function is to render elements between an internal wrapper and the rendered element. This is how the [Dialog with scrollable backdrop](/examples/dialog-backdrop-scrollable) example renders a custom backdrop element that wraps the dialog, but is still inside the dialog portal:
 
 ```jsx "dialogProps"
 <Dialog

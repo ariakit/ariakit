@@ -15,6 +15,23 @@
 
 </div>
 
+## Rendering a custom backdrop
+
+In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/apis/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/apis/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
+
+```jsx {4-6} "dialogProps"
+<Dialog
+  backdrop={false}
+  render={(dialogProps) => (
+    <div className="backdrop">
+      <div {...dialogProps} />
+    </div>
+  )}
+/>
+```
+
+This method allows us to render the backdrop as a parent of the dialog, but still inside the dialog portal. You can learn more about the `render` prop on the [Composition](/guide/composition) guide.
+
 ## Clicking outside
 
 The Ariakit [Dialog](/components/dialog) component automatically closes when users click outside the dialog. This behavior is controlled by the [`hideOnInteractOutside`](/apis/dialog#hideoninteractoutside) prop, which is enabled by default.
