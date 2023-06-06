@@ -37,9 +37,9 @@ test("show/hide", async ({ page }) => {
   await page.mouse.wheel(0, 10);
   await waitForBackdropScrollTop(page, 10);
   // Drag scrollbar
-  await page.mouse.move(width - 2, 15);
+  await page.mouse.move(width - 5, 15);
   await page.mouse.down();
-  await page.mouse.move(width - 2, 200);
+  await page.mouse.move(width - 5, 200);
   await page.mouse.up();
   const scrollTop = await getBackdropScrollTop(page);
   expect(scrollTop).toBeGreaterThan(200);
