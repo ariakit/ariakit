@@ -45,9 +45,9 @@ const headingBase = tw`
 `;
 
 const stickyHeading = tw`
-  sticky md:static top-16 z-20 py-2 -my-2 md:my-0 md:py-0 scroll-mt-16
+  sticky md:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0
   flex items-center md:block pr-12 md:pr-0
-  min-h-[56px] md:min-h-0 bg-gray-50 dark:bg-gray-800
+  min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800
 `;
 
 const style = {
@@ -92,7 +92,7 @@ const style = {
   `,
   wrapper: tw`
     flex flex-col items-center justify-center gap-8 w-full
-    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-20 md:scroll-mt-24
+    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-16 md:scroll-mt-24
 
     data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
   `,

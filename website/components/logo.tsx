@@ -7,7 +7,7 @@ export function Logo({ iconOnly }: LogoProps) {
     <>
       <svg
         aria-hidden
-        height="36"
+        height="32"
         viewBox="0 0 48 48"
         className="fill-blue-700 dark:fill-blue-500"
       >

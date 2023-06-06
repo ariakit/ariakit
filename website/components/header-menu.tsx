@@ -66,7 +66,7 @@ import { Popup } from "./popup.js";
 const style = {
   button: tw`
     flex items-center justify-center
-    h-8 gap-2 px-3 overflow-hidden
+    h-10 gap-2 px-3 overflow-hidden
     whitespace-nowrap cursor-default
     border-none rounded-lg
     hover:bg-black/5 dark:hover:bg-white/5
