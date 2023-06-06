@@ -443,23 +443,19 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
-        if (backdrop) {
-          return (
-            <>
-              {backdrop && (
-                <DialogBackdrop
-                  store={store}
-                  backdrop={backdrop}
-                  backdropProps={backdropProps}
-                  hidden={hiddenProp}
-                  alwaysVisible={alwaysVisible}
-                />
-              )}
-              {element}
-            </>
-          );
-        }
-        return element;
+        if (!backdrop) return element;
+        return (
+          <>
+            <DialogBackdrop
+              store={store}
+              backdrop={backdrop}
+              backdropProps={backdropProps}
+              hidden={hiddenProp}
+              alwaysVisible={alwaysVisible}
+            />
+            {element}
+          </>
+        );
       },
       [store, backdrop, backdropProps, hiddenProp, alwaysVisible]
     );

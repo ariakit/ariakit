@@ -1,6 +1,6 @@
-import { isValidElement, useMemo, useRef } from "react";
-import { noop } from "@ariakit/core/utils/misc";
+import { isValidElement, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
+import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import { Role } from "../role/role.js";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import type { DialogProps } from "./dialog.js";
@@ -19,17 +19,7 @@ export function DialogBackdrop({
   hidden,
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
-
-  store = useMemo(
-    () => ({
-      ...store,
-      // Override the setContentElement method to prevent the backdrop from
-      // overwriting the dialog's content element. TODO: Refactor this.
-      setContentElement: noop,
-    }),
-    [store]
-  );
-
+  const disclosure = useDisclosureStore({ disclosure: store });
   const contentElement = store.useState("contentElement");
 
   useSafeLayoutEffect(() => {
@@ -56,8 +46,7 @@ export function DialogBackdrop({
   }
 
   const props = useDisclosureContent({
-    store,
-    id: undefined,
+    store: disclosure,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
     alwaysVisible,

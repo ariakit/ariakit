@@ -11,7 +11,7 @@
 <div data-cards="examples">
 
 - [](/examples/dialog-animated)
-- [](/examples/dialog-framer-motion)
+- [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-react-router)
