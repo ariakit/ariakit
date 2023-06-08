@@ -1,4 +1,4 @@
-export type Page = {
+export interface Page {
   /**
    * The slug of the category to be used in the URL.
    */
@@ -16,9 +16,9 @@ export type Page = {
    * should not be grouped.
    */
   getGroup?: (filename: string) => string | null;
-};
+}
 
-export type PageIndexDetail = {
+export interface PageIndexDetail {
   /**
    * The category that the page belongs to (e.g., "components", "examples").
    */
@@ -44,9 +44,9 @@ export type PageIndexDetail = {
    * Whether the page is unlisted.
    */
   unlisted: boolean;
-};
+}
 
-export type PageContent = PageIndexDetail & {
+export interface PageContent extends PageIndexDetail {
   /**
    * If the content is a section of another page, this is the id of the section
    * heading that can be used to link to the section.
@@ -60,7 +60,7 @@ export type PageContent = PageIndexDetail & {
    * The section title if any.
    */
   section: string | null;
-};
+}
 
 export type TableOfContents = Array<{
   /**
@@ -86,3 +86,79 @@ export type Pages = Page[];
 export type PageIndex = Record<string, PageIndexDetail[]>;
 
 export type PageContents = PageContent[];
+
+export interface ReferenceExample {
+  /**
+   * The code to be displayed in the example.
+   */
+  code: string;
+  /**
+   * The language of the code.
+   * @default "jsx"
+   */
+  language: string;
+  /**
+   * The description of the example.
+   */
+  description: string;
+}
+
+export interface ReferenceProp {
+  /**
+   * The name of the prop.
+   */
+  name: string;
+  /**
+   * The type of the prop.
+   */
+  type: string;
+  /**
+   * The description of the prop.
+   */
+  description: string;
+  /**
+   * Whether the prop is optional.
+   */
+  optional: boolean;
+  /**
+   * The default value of the prop.
+   */
+  defaultValue: string | null;
+  /**
+   * Whether the prop is deprecated. May be a string with the deprecation
+   * message.
+   */
+  deprecated: boolean | string;
+  /**
+   * The examples of the prop.
+   */
+  examples: ReferenceExample[];
+}
+
+export interface Reference {
+  /**
+   * The name of the component.
+   */
+  name: string;
+  /**
+   * The description of the component.
+   */
+  description: string;
+  /**
+   * Whether the component is deprecated. May be a string with the deprecation
+   * message.
+   */
+  deprecated?: boolean | string;
+  /**
+   * The examples of the component.
+   */
+  examples: ReferenceExample[];
+  /**
+   * The props of the component.
+   */
+  props: ReferenceProp[];
+  /**
+   * The props returned by the component.
+   */
+  returnProps?: ReferenceProp[];
+}

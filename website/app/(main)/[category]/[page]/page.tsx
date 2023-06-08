@@ -1,5 +1,5 @@
-import { Children, isValidElement, useId } from "react";
-import type { ReactNode } from "react";
+import { Children, cloneElement, isValidElement, useId } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
@@ -402,6 +402,16 @@ export default async function Page({ params }: PageProps) {
                     className={cx(style.wrapper, props.className)}
                   />
                 );
+              }
+              if (node.properties?.dataDescription != null) {
+                const paragraph = props.children[1];
+                invariant(
+                  isValidElement<ComponentPropsWithoutRef<"p">>(paragraph),
+                  "Expected paragraph"
+                );
+                return cloneElement(paragraph, {
+                  className: cx(paragraph.props.className, style.description),
+                });
               }
               if (node.properties?.dataCards != null) {
                 const links = findCardLinks(props.children);
