@@ -1,5 +1,17 @@
 # @ariakit/react-core
 
+## 0.2.9
+
+### Patch Changes
+
+- Added new `disclosure` prop to the `Disclosure` store. ([#2518](https://github.com/ariakit/ariakit/pull/2518))
+
+- Fixed `Focusable` not receiving focus when rendered as a native button on Safari. ([#2534](https://github.com/ariakit/ariakit/pull/2534))
+
+- Fixed `Dialog` with `preventBodyScroll` set to `true` (default) not preventing body scroll on nested animated dialogs. ([#2534](https://github.com/ariakit/ariakit/pull/2534))
+
+- Updated dependencies: `@ariakit/core@0.2.5`.
+
 ## 0.2.8
 
 ### Patch Changes
