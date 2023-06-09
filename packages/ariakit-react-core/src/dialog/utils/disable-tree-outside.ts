@@ -2,6 +2,7 @@ import { contains } from "@ariakit/core/utils/dom";
 import { getAllTabbable } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.js";
+import { isBackdrop } from "./is-backdrop.js";
 import { assignStyle, setAttribute, setProperty } from "./orchestrate.js";
 import { supportsInert } from "./supports-inert.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
@@ -27,6 +28,7 @@ function disableElement(element: Element | HTMLElement) {
 
 export function disableTreeOutside(...elements: Elements) {
   const cleanups: Array<() => void> = [];
+  const ids = elements.map((el) => el?.id);
 
   // If the browser doesn't support the inert attribute, we need to manually
   // disable all tabbable elements outside the dialog.
@@ -39,6 +41,7 @@ export function disableTreeOutside(...elements: Elements) {
   }
 
   walkTreeOutside(elements, (element) => {
+    if (isBackdrop(element, ...ids)) return;
     cleanups.unshift(disableElement(element));
   });
 

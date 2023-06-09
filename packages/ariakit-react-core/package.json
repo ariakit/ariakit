@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.2.4",
+    "@ariakit/core": "0.2.5",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -158,6 +158,7 @@
     "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
     "./disclosure/disclosure-content": "./src/disclosure/disclosure-content.ts",
     "./dialog/utils/walk-tree-outside": "./src/dialog/utils/walk-tree-outside.ts",
+    "./dialog/utils/use-root-dialog": "./src/dialog/utils/use-root-dialog.ts",
     "./dialog/utils/use-previous-mouse-down-ref": "./src/dialog/utils/use-previous-mouse-down-ref.ts",
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
     "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",

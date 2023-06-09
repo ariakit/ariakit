@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.5
+
+### Patch Changes
+
+- Added new `disclosure` prop to the `Disclosure` store. ([#2518](https://github.com/ariakit/ariakit/pull/2518))
+
 ## 0.2.4
 
 ### Patch Changes

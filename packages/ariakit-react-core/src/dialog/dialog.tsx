@@ -116,10 +116,7 @@ export const useDialog = createHook<DialogOptions>(
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
     // again.
-    const { portalRef, portalNode, domReady } = usePortalRef(
-      portal,
-      props.portalRef
-    );
+    const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
     // Sets preserveTabOrder to true only if the dialog is not a modal and is
     // open.
     const preserveTabOrderProp = props.preserveTabOrder;
@@ -132,7 +129,7 @@ export const useDialog = createHook<DialogOptions>(
     const contentElement = store.useState("contentElement");
     const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
-    usePreventBodyScroll(store, preventBodyScroll && !hidden);
+    usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
     useHideOnInteractOutside(store, hideOnInteractOutside);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
@@ -214,6 +211,7 @@ export const useDialog = createHook<DialogOptions>(
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
+      if (!domReady) return;
       if (!id) return;
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
@@ -224,14 +222,8 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = ref.current;
       const persistentElements = getPersistentElementsProp() || [];
       const allElements = [
-        // In addition to the dialog element, we also include the portal node
-        // here so nested dialogs are considered as well.
         dialog,
-        portalNode,
         ...persistentElements,
-        // We still need to include nested dialogs here because they may be
-        // outside the portal node or the parent dialog may not be using a
-        // portal.
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
@@ -248,13 +240,12 @@ export const useDialog = createHook<DialogOptions>(
         disableAccessibilityTreeOutside(...allElements)
       );
     }, [
+      domReady,
       id,
       open,
       store,
-      portal,
-      portalNode,
-      nestedDialogs,
       getPersistentElementsProp,
+      nestedDialogs,
       shouldDisableAccessibilityTree,
       modal,
     ]);

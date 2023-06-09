@@ -1,12 +1,11 @@
-const cleanups = Symbol();
-type Element$ = Element & { [cleanups]?: Map<string, () => void> };
+const cleanups = new WeakMap<Element, Map<string, () => void>>();
 
-function orchestrate(element: Element$, key: string, setup: () => () => void) {
-  if (!element[cleanups]) {
-    element[cleanups] = new Map();
+function orchestrate(element: Element, key: string, setup: () => () => void) {
+  if (!cleanups.has(element)) {
+    cleanups.set(element, new Map());
   }
 
-  const elementCleanups = element[cleanups];
+  const elementCleanups = cleanups.get(element)!;
   const prevCleanup = elementCleanups.get(key);
 
   if (!prevCleanup) {
@@ -28,13 +27,14 @@ function orchestrate(element: Element$, key: string, setup: () => () => void) {
   elementCleanups.set(key, nextCleanup);
 
   return () => {
-    if (elementCleanups.get(key) !== nextCleanup) return;
+    const isCurrent = elementCleanups.get(key) === nextCleanup;
+    if (!isCurrent) return;
     cleanup();
     elementCleanups.set(key, prevCleanup);
   };
 }
 
-export function setAttribute(element: Element$, attr: string, value: string) {
+export function setAttribute(element: Element, attr: string, value: string) {
   const setup = () => {
     const previousValue = element.getAttribute(attr);
     element.setAttribute(attr, value);
@@ -49,7 +49,7 @@ export function setAttribute(element: Element$, attr: string, value: string) {
   return orchestrate(element, attr, setup);
 }
 
-export function setProperty<T extends Element$, K extends keyof T & string>(
+export function setProperty<T extends Element, K extends keyof T & string>(
   element: T,
   property: K,
   value: T[K]

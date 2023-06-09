@@ -1,3 +1,4 @@
+import { isBackdrop } from "./is-backdrop.js";
 import { setAttribute } from "./orchestrate.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
@@ -9,8 +10,10 @@ export function hideElementFromAccessibilityTree(element: Element) {
 
 export function disableAccessibilityTreeOutside(...elements: Elements) {
   const cleanups: Array<() => void> = [];
+  const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(elements, (element) => {
+    if (isBackdrop(element, ...ids)) return;
     cleanups.unshift(hideElementFromAccessibilityTree(element));
   });
 
