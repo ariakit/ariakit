@@ -1,10 +1,10 @@
 // Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
+import { useEffect } from "react";
 import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
-import { useSafeLayoutEffect } from "../../utils/hooks.js";
-import type { DialogStore } from "../dialog-store.js";
 import { assignStyle, setCSSProperty } from "./orchestrate.js";
+import { useRootDialog } from "./use-root-dialog.js";
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar
@@ -13,10 +13,21 @@ function getPaddingProperty(documentElement: HTMLElement) {
   return scrollbarX ? "paddingLeft" : "paddingRight";
 }
 
-export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
-  useSafeLayoutEffect(() => {
-    if (!enabled) return;
-    const { contentElement } = store.getState();
+export function usePreventBodyScroll(
+  contentElement: HTMLElement | null,
+  contentId?: string,
+  enabled?: boolean
+) {
+  const isRootDialog = useRootDialog({
+    attribute: "data-dialog-prevent-body-scroll",
+    contentElement,
+    contentId,
+    enabled,
+  });
+
+  useEffect(() => {
+    if (!isRootDialog()) return;
+    if (!contentElement) return;
     const doc = getDocument(contentElement);
     const win = getWindow(contentElement);
     const { documentElement, body } = doc;
@@ -73,5 +84,5 @@ export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
       setScrollbarWidthProperty(),
       isIOS ? setIOSStyle() : setStyle()
     );
-  }, [enabled]);
+  }, [isRootDialog, contentElement]);
 }
