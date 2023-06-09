@@ -38,8 +38,6 @@ export function DialogBackdrop({
     if (!id) return;
     const backdrop = ref.current;
     if (!backdrop) return;
-    // TODO: Test clicking outside a nested dialog and outside the parent dialog
-    // (should close only the nested dialog)
     return markAncestor(backdrop, id);
   }, [contentElement]);
 

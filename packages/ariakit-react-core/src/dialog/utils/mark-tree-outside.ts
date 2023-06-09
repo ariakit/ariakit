@@ -38,11 +38,12 @@ export function isElementMarked(element: Element, id?: string) {
 
 export function markTreeOutside(dialogId: string, ...elements: Elements) {
   const cleanups: Array<() => void> = [];
+  const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(
     elements,
     (element) => {
-      if (isBackdrop(element)) return;
+      if (isBackdrop(element, ...ids)) return;
       cleanups.unshift(markElement(element, dialogId));
     },
     (ancestor) => cleanups.unshift(markAncestor(ancestor, dialogId))

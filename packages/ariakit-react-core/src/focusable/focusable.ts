@@ -277,10 +277,7 @@ export const useFocusable = createHook<FocusableOptions>(
         receivedFocus = true;
       };
       const options = { capture: true, once: true };
-      // In addition to that, there may be another element that has received
-      // focus between this mouse down event and the next mouse up event. So we
-      // attach the event listener to the body element.
-      document.body.addEventListener("focusin", onFocus, options);
+      element.addEventListener("focusin", onFocus, options);
       // We can't focus right away after on mouse down, otherwise it would
       // prevent drag events from happening. So we queue the focus to the next
       // animation frame, but always before the next mouseup event. The mouseup
