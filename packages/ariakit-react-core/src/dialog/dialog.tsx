@@ -129,7 +129,7 @@ export const useDialog = createHook<DialogOptions>(
     const contentElement = store.useState("contentElement");
     const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
-    usePreventBodyScroll(store, preventBodyScroll && !hidden);
+    usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
     useHideOnInteractOutside(store, hideOnInteractOutside);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);

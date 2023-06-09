@@ -2,31 +2,37 @@ import { useCallback, useEffect } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { flushSync } from "react-dom";
 import { useForceUpdate } from "../../utils/hooks.js";
-import type { DialogStore } from "../dialog-store.js";
 
-export function useRootDialog(
-  attribute: string,
-  store: DialogStore,
-  enabled?: boolean
-) {
+interface Props {
+  attribute: string;
+  contentId?: string;
+  contentElement?: HTMLElement | null;
+  enabled?: boolean;
+}
+
+export function useRootDialog({
+  attribute,
+  contentId,
+  contentElement,
+  enabled,
+}: Props) {
   const [updated, retry] = useForceUpdate();
 
   const isRootDialog = useCallback(() => {
     if (!enabled) return false;
-    const dialog = store.getState().contentElement;
-    if (!dialog) return false;
-    const { body } = getDocument(dialog);
+    if (!contentElement) return false;
+    const { body } = getDocument(contentElement);
     const id = body.getAttribute(attribute);
-    return !id || id === dialog.id;
-  }, [updated, store, enabled, attribute]);
+    return !id || id === contentId;
+  }, [updated, enabled, contentElement, attribute, contentId]);
 
   useEffect(() => {
     if (!enabled) return;
-    const dialog = store.getState().contentElement;
-    if (!dialog) return;
-    const { body } = getDocument(dialog);
+    if (!contentId) return;
+    if (!contentElement) return;
+    const { body } = getDocument(contentElement);
     if (isRootDialog()) {
-      body.setAttribute(attribute, dialog.id);
+      body.setAttribute(attribute, contentId);
       return () => body.removeAttribute(attribute);
     }
     // If the dialog is not the root, there may be another dialog that will be
@@ -35,7 +41,7 @@ export function useRootDialog(
     const observer = new MutationObserver(() => flushSync(retry));
     observer.observe(body, { attributeFilter: [attribute] });
     return () => observer.disconnect();
-  }, [updated, enabled, store, isRootDialog, attribute]);
+  }, [updated, enabled, contentId, contentElement, isRootDialog, attribute]);
 
   return isRootDialog;
 }

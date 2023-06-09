@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
-import type { DialogStore } from "../dialog-store.js";
 import { assignStyle, setCSSProperty } from "./orchestrate.js";
 import { useRootDialog } from "./use-root-dialog.js";
 
@@ -14,15 +13,21 @@ function getPaddingProperty(documentElement: HTMLElement) {
   return scrollbarX ? "paddingLeft" : "paddingRight";
 }
 
-export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
-  const isRootDialog = useRootDialog(
-    "data-dialog-prevent-body-scroll",
-    store,
-    enabled
-  );
+export function usePreventBodyScroll(
+  contentElement: HTMLElement | null,
+  contentId?: string,
+  enabled?: boolean
+) {
+  const isRootDialog = useRootDialog({
+    attribute: "data-dialog-prevent-body-scroll",
+    contentElement,
+    contentId,
+    enabled,
+  });
+
   useEffect(() => {
     if (!isRootDialog()) return;
-    const { contentElement } = store.getState();
+    if (!contentElement) return;
     const doc = getDocument(contentElement);
     const win = getWindow(contentElement);
     const { documentElement, body } = doc;
@@ -79,5 +84,5 @@ export function usePreventBodyScroll(store: DialogStore, enabled?: boolean) {
       setScrollbarWidthProperty(),
       isIOS ? setIOSStyle() : setStyle()
     );
-  }, [isRootDialog]);
+  }, [isRootDialog, contentElement]);
 }
