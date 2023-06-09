@@ -235,3 +235,49 @@ test.each(["nested", "sibling"])(
     expectModalStyle(false);
   }
 );
+
+test.each(["nested", "sibling"])(
+  "show %s dismiss dialog and hide with escape",
+  async (name) => {
+    await click(getButton("Open dialog"));
+    await click(getButton(`${name} dismiss`));
+    expect(getButton("Close")).toHaveFocus();
+    expectAccessibleDialog(`${name} dismiss`, true);
+    expectAccessibleDialog("Dialog", false);
+    expectModalStyle(true);
+    await click(getButton(`${name} dismiss ${name}`));
+    expect(getDialog(`${name} dismiss`)).not.toBeVisible();
+    expect(getButton("Close")).toHaveFocus();
+    expectAccessibleDialog(`${name} dismiss`, false);
+    expectAccessibleDialog(`${name} dismiss ${name}`, true);
+    expectModalStyle(true);
+    await press.Escape();
+    expect(getButton("Open dialog")).toHaveFocus();
+    expectAccessibleDialog(`${name} dismiss ${name}`, false);
+    expectModalStyle(false);
+  }
+);
+
+test.each(["sibling"])(
+  "show %s dismiss unmount dialog and hide with escape",
+  async (name) => {
+    await click(getButton("Open dialog"));
+    await click(getButton(`${name} dismiss unmount`));
+    expect(getDialog("Dialog")).not.toBeInTheDocument();
+    expect(getButton("Close")).toHaveFocus();
+    expectAccessibleDialog(`${name} dismiss unmount`, true);
+    expectModalStyle(true);
+    await click(getButton(`${name} dismiss unmount ${name}`));
+    expect(getDialog(`${name} dismiss unmount`)).not.toBeInTheDocument();
+    expect(getButton("Close")).toHaveFocus();
+    expectAccessibleDialog(`${name} dismiss unmount`, false);
+    expectAccessibleDialog(`${name} dismiss unmount ${name}`, true);
+    expectModalStyle(true);
+    await press.Escape();
+    expect(
+      getDialog(`${name} dismiss unmount ${name}`)
+    ).not.toBeInTheDocument();
+    expect(getButton("Open dialog")).toHaveFocus();
+    expectModalStyle(false);
+  }
+);

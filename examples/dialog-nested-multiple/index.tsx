@@ -21,6 +21,13 @@ export default function Example() {
   const [nestedNoBackdrop, setNestedNoBackdrop] = useState(false);
   const [nestedNoBackdropNested, setNestedNoBackdropNested] = useState(false);
 
+  const [nestedDismiss, setNestedDismiss] = useState(false);
+  const [nestedDismissNested, setNestedDismissNested] = useState(false);
+
+  const [nestedDismissAnimated, setNestedDismissAnimated] = useState(false);
+  const [nestedDismissAnimatedNested, setNestedDismissAnimatedNested] =
+    useState(false);
+
   const [sibling, setSibling] = useState(false);
   const [siblingSibling, setSiblingSibling] = useState(false);
 
@@ -38,6 +45,24 @@ export default function Example() {
   const [siblingNoBackdropSibling, setSiblingNoBackdropSibling] =
     useState(false);
 
+  const [siblingDismiss, setSiblingDismiss] = useState(false);
+  const [siblingDismissSibling, setSiblingDismissSibling] = useState(false);
+
+  const [siblingDismissUnmount, setSiblingDismissUnmount] = useState(false);
+  const [siblingDismissUnmountSibling, setSiblingDismissUnmountSibling] =
+    useState(false);
+
+  const [siblingDismissAnimated, setSiblingDismissAnimated] = useState(false);
+  const [siblingDismissAnimatedSibling, setSiblingDismissAnimatedSibling] =
+    useState(false);
+
+  const [siblingDismissAnimatedUnmount, setSiblingDismissAnimatedUnmount] =
+    useState(false);
+  const [
+    siblingDismissAnimatedUnmountSibling,
+    setSiblingDismissAnimatedUnmountSibling,
+  ] = useState(false);
+
   const siblindId = useId();
   const siblingSiblingId = useId();
   const siblingNoPortalId = useId();
@@ -52,9 +77,14 @@ export default function Example() {
       <Button onClick={() => setOpen(true)}>Open dialog</Button>
 
       <Dialog
+        unmount={
+          !nestedDismiss &&
+          !nestedDismissNested &&
+          !nestedDismissAnimated &&
+          !nestedDismissAnimatedNested
+        }
         open={open}
         onClose={() => setOpen(false)}
-        unmount
         getPersistentElements={() => [
           document.getElementById(siblindId)!,
           document.getElementById(siblingSiblingId)!,
@@ -86,6 +116,20 @@ export default function Example() {
           nested no backdrop
         </Button>
 
+        <DialogDismiss
+          onClick={() => requestAnimationFrame(() => setNestedDismiss(true))}
+        >
+          nested dismiss
+        </DialogDismiss>
+
+        <DialogDismiss
+          onClick={() =>
+            requestAnimationFrame(() => setNestedDismissAnimated(true))
+          }
+        >
+          nested dismiss animated
+        </DialogDismiss>
+
         {/* Sibling buttons */}
         <Button onClick={() => setSibling(true)}>sibling</Button>
 
@@ -102,6 +146,22 @@ export default function Example() {
         <Button onClick={() => setSiblingNoBackdrop(true)}>
           sibling no backdrop
         </Button>
+
+        <DialogDismiss onClick={() => setSiblingDismiss(true)}>
+          sibling dismiss
+        </DialogDismiss>
+
+        <DialogDismiss onClick={() => setSiblingDismissUnmount(true)}>
+          sibling dismiss unmount
+        </DialogDismiss>
+
+        <DialogDismiss onClick={() => setSiblingDismissAnimated(true)}>
+          sibling dismiss animated
+        </DialogDismiss>
+
+        <DialogDismiss onClick={() => setSiblingDismissAnimatedUnmount(true)}>
+          sibling dismiss animated unmount
+        </DialogDismiss>
 
         {/* Nested default */}
         <Dialog open={nested} onClose={() => setNested(false)}>
@@ -203,6 +263,55 @@ export default function Example() {
             onClose={() => setNestedNoPortalPortalNested(false)}
           >
             <DialogHeading>nested no portal portal nested</DialogHeading>
+            <DialogDismiss>Close</DialogDismiss>
+          </Dialog>
+        </Dialog>
+
+        {/* Nested dismiss */}
+        <Dialog open={nestedDismiss} onClose={() => setNestedDismiss(false)}>
+          <DialogHeading>nested dismiss</DialogHeading>
+          <DialogDismiss>Close</DialogDismiss>
+
+          <DialogDismiss
+            onClick={() =>
+              requestAnimationFrame(() => setNestedDismissNested(true))
+            }
+          >
+            nested dismiss nested
+          </DialogDismiss>
+
+          <Dialog
+            open={nestedDismissNested}
+            onClose={() => setNestedDismissNested(false)}
+          >
+            <DialogHeading>nested dismiss nested</DialogHeading>
+            <DialogDismiss>Close</DialogDismiss>
+          </Dialog>
+        </Dialog>
+
+        {/* Nested dismiss animated */}
+        <Dialog
+          animated
+          open={nestedDismissAnimated}
+          onClose={() => setNestedDismissAnimated(false)}
+        >
+          <DialogHeading>nested dismiss animated</DialogHeading>
+          <DialogDismiss>Close</DialogDismiss>
+
+          <DialogDismiss
+            onClick={() =>
+              requestAnimationFrame(() => setNestedDismissAnimatedNested(true))
+            }
+          >
+            nested dismiss animated nested
+          </DialogDismiss>
+
+          <Dialog
+            animated
+            open={nestedDismissAnimatedNested}
+            onClose={() => setNestedDismissAnimatedNested(false)}
+          >
+            <DialogHeading>nested dismiss animated nested</DialogHeading>
             <DialogDismiss>Close</DialogDismiss>
           </Dialog>
         </Dialog>
@@ -343,6 +452,97 @@ export default function Example() {
         backdrop={false}
       >
         <DialogHeading>sibling no backdrop sibling</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss */}
+      <Dialog open={siblingDismiss} onClose={() => setSiblingDismiss(false)}>
+        <DialogHeading>sibling dismiss</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+        <DialogDismiss onClick={() => setSiblingDismissSibling(true)}>
+          sibling dismiss sibling
+        </DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss sibling */}
+      <Dialog
+        open={siblingDismissSibling}
+        onClose={() => setSiblingDismissSibling(false)}
+      >
+        <DialogHeading>sibling dismiss sibling</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss unmount */}
+      <Dialog
+        unmount
+        open={siblingDismissUnmount}
+        onClose={() => setSiblingDismissUnmount(false)}
+      >
+        <DialogHeading>sibling dismiss unmount</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+        <DialogDismiss onClick={() => setSiblingDismissUnmountSibling(true)}>
+          sibling dismiss unmount sibling
+        </DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss unmount sibling */}
+      <Dialog
+        unmount
+        open={siblingDismissUnmountSibling}
+        onClose={() => setSiblingDismissUnmountSibling(false)}
+      >
+        <DialogHeading>sibling dismiss unmount sibling</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss animated */}
+      <Dialog
+        animated
+        open={siblingDismissAnimated}
+        onClose={() => setSiblingDismissAnimated(false)}
+      >
+        <DialogHeading>sibling dismiss animated</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+        <DialogDismiss onClick={() => setSiblingDismissAnimatedSibling(true)}>
+          sibling dismiss animated sibling
+        </DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss animated sibling */}
+      <Dialog
+        animated
+        open={siblingDismissAnimatedSibling}
+        onClose={() => setSiblingDismissAnimatedSibling(false)}
+      >
+        <DialogHeading>sibling dismiss animated sibling</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss animated unmount */}
+      <Dialog
+        unmount
+        animated
+        open={siblingDismissAnimatedUnmount}
+        onClose={() => setSiblingDismissAnimatedUnmount(false)}
+      >
+        <DialogHeading>sibling dismiss animated unmount</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+        <DialogDismiss
+          onClick={() => setSiblingDismissAnimatedUnmountSibling(true)}
+        >
+          sibling dismiss animated unmount sibling
+        </DialogDismiss>
+      </Dialog>
+
+      {/* Sibling dismiss animated unmount sibling */}
+      <Dialog
+        unmount
+        animated
+        open={siblingDismissAnimatedUnmountSibling}
+        onClose={() => setSiblingDismissAnimatedUnmountSibling(false)}
+      >
+        <DialogHeading>sibling dismiss animated unmount sibling</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
     </>

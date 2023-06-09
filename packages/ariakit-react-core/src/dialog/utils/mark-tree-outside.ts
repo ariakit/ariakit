@@ -1,4 +1,5 @@
 import { chain } from "@ariakit/core/utils/misc";
+import { isBackdrop } from "./is-backdrop.js";
 import { setProperty } from "./orchestrate.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
@@ -40,7 +41,10 @@ export function markTreeOutside(dialogId: string, ...elements: Elements) {
 
   walkTreeOutside(
     elements,
-    (element) => cleanups.unshift(markElement(element, dialogId)),
+    (element) => {
+      if (isBackdrop(element)) return;
+      cleanups.unshift(markElement(element, dialogId));
+    },
     (ancestor) => cleanups.unshift(markAncestor(ancestor, dialogId))
   );
 

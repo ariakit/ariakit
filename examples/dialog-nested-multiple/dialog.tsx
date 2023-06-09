@@ -5,19 +5,29 @@ export interface DialogProps extends Omit<Ariakit.DialogProps, "store"> {
   open?: boolean;
   onClose?: () => void;
   unmount?: boolean;
+  animated?: boolean;
 }
 
-export function Dialog({ open, onClose, unmount, ...props }: DialogProps) {
+export function Dialog({
+  open,
+  onClose,
+  unmount,
+  animated,
+  ...props
+}: DialogProps) {
   const dialog = Ariakit.useDialogStore({
     open,
     setOpen: (open) => !open && onClose?.(),
+    animated,
   });
   const mounted = dialog.useState((state) => (unmount ? state.mounted : true));
   if (!mounted) return null;
+  const dataAnimated = animated ? "" : undefined;
   return (
     <Ariakit.Dialog
-      backdrop={<div className="backdrop" />}
+      backdrop={<div data-animated={dataAnimated} className="backdrop" />}
       className="dialog"
+      data-animated={dataAnimated}
       {...props}
       store={dialog}
     />

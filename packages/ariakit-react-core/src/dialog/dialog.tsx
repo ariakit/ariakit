@@ -224,14 +224,11 @@ export const useDialog = createHook<DialogOptions>(
       const dialog = ref.current;
       const persistentElements = getPersistentElementsProp() || [];
       const allElements = [
-        // In addition to the dialog element, we also include the portal node
-        // here so nested dialogs are considered as well.
         dialog,
+        // TODO: Comment, necessary for clicking outside a nested dialog and
+        // outside a parent dialog, but closing only the nested dialog.
         portalNode,
         ...persistentElements,
-        // We still need to include nested dialogs here because they may be
-        // outside the portal node or the parent dialog may not be using a
-        // portal.
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
