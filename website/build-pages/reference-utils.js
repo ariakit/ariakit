@@ -1,13 +1,10 @@
-import { basename } from "path";
+import { basename, join } from "path";
 import chalk from "chalk";
 import invariant from "tiny-invariant";
 import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
 
 const project = new Project({
-  compilerOptions: {
-    moduleResolution: ts.ModuleResolutionKind.Node16,
-    jsx: ts.JsxEmit.ReactJSX,
-  },
+  tsConfigFilePath: join(process.cwd(), "../tsconfig.json"),
 });
 
 /**

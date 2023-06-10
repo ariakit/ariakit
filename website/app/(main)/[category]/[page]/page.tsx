@@ -231,11 +231,27 @@ function getPageNames({ sourceContext, pageFileRegex }: Page) {
 }
 
 export function generateStaticParams() {
-  const params = pages.flatMap((page) => {
+  const referencePages = pages.filter((page) => page.reference);
+  const otherPages = pages.filter((page) => !page.reference);
+  const params = otherPages.flatMap((page) => {
     const pages = getPageNames(page);
     const category = page.slug;
     return pages.map((page) => ({ category, page }));
   });
+
+  referencePages.forEach((page) => {
+    const entryFiles = getPageEntryFiles(
+      page.sourceContext,
+      page.pageFileRegex
+    );
+    const category = page.slug;
+    const references = entryFiles.flatMap((file) => getReferences(file));
+    references.forEach((reference) => {
+      const page = getPageName(reference);
+      params.push({ category, page });
+    });
+  });
+
   return params;
 }
 
