@@ -2,7 +2,6 @@
 
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
-  Suspense,
   createContext,
   memo,
   useContext,
@@ -490,7 +489,7 @@ const HeaderNavMenu = memo(
               <HeaderMenuSeparator />
             </div>
           )}
-          <Suspense>{itemElements || (!noResults && children)}</Suspense>
+          {itemElements || (!noResults && children)}
           {noResults && (
             <div
               role="presentation"
