@@ -7,7 +7,11 @@ import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
-import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
+import { getReferences } from "build-pages/reference-utils.js";
+import type {
+  Page,
+  TableOfContents as TableOfContentsData,
+} from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
 import { PageItem } from "components/page-item.jsx";
 import { PageVideo } from "components/page-video.jsx";
@@ -222,13 +226,13 @@ function findCardLinks(children: ReactNode & ReactNode[]): string[] {
   );
 }
 
-function getPageNames(dir: string | string[]) {
-  return getPageEntryFiles(dir).map(getPageName);
+function getPageNames({ sourceContext, pageFileRegex }: Page) {
+  return getPageEntryFiles(sourceContext, pageFileRegex).map(getPageName);
 }
 
 export function generateStaticParams() {
   const params = pages.flatMap((page) => {
-    const pages = getPageNames(page.sourceContext);
+    const pages = getPageNames(page);
     const category = page.slug;
     return pages.map((page) => ({ category, page }));
   });
@@ -263,14 +267,26 @@ export default async function Page({ params }: PageProps) {
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
 
-  const { sourceContext } = config;
+  const entryFiles = getPageEntryFiles(
+    config.sourceContext,
+    config.pageFileRegex
+  );
 
-  const entryFiles = getPageEntryFiles(sourceContext);
-  const file = entryFiles.find((file) => getPageName(file) === page);
+  const file = config.reference
+    ? entryFiles.find((file) =>
+        page.replace(/^use\-/, "").startsWith(getPageName(file))
+      )
+    : entryFiles.find((file) => getPageName(file) === page);
 
   if (!file) return notFound();
 
-  const content = getPageContent(file);
+  const reference = config.reference
+    ? getReferences(file).find((reference) => getPageName(reference) === page)
+    : undefined;
+
+  if (config.reference && !reference) return notFound();
+
+  const content = getPageContent(reference || file);
   const { content: contentWithoutMatter } = matter(content);
   const tree = getPageTreeFromContent(content);
   const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
@@ -630,6 +646,7 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               const className = cx(style.link, props.className);
+              href = href?.replace("https://ariakit.org", "");
               if (href?.startsWith("http")) {
                 return (
                   <a

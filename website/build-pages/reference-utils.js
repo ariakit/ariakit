@@ -16,7 +16,7 @@ export function getReferences(filename) {
 
   if (!sourceFile) {
     sourceFile = project.addSourceFileAtPath(filename);
-    project.resolveSourceFileDependencies();
+    // project.resolveSourceFileDependencies();
   } else {
     sourceFile.refreshFromFileSystemSync();
   }
@@ -31,9 +31,9 @@ export function getReferences(filename) {
     if (!decl) continue;
     if (Node.isVariableDeclaration(decl)) {
       const options = exportedDecls.get(`${name}Options`)?.at(0);
-      references.push(getReference(decl, options));
+      references.push(getReference(filename, decl, options));
     } else if (Node.isFunctionDeclaration(decl)) {
-      references.push(getReference(decl));
+      references.push(getReference(filename, decl));
     }
   }
 
@@ -42,65 +42,6 @@ export function getReferences(filename) {
     if (b.name.startsWith("use")) return 1;
     return a.name.localeCompare(b.name);
   });
-}
-
-/**
- * @param {import("./types.js").Reference} reference
- */
-export function getPageContent(reference) {
-  const { name, description, examples, props } = reference;
-
-  const requiredProps = props.filter((prop) => !prop.optional);
-  const optionalProps = props.filter((prop) => prop.optional);
-
-  /** @param {import("./types.js").ReferenceProp} prop */
-  const renderProp = (prop) => {
-    return `### \`${prop.name}\`
-
-type: \`${prop.type}\`
-${prop.defaultValue ? `<br />default: \`${prop.defaultValue}\`\n` : ""}
-${prop.description}
-`.trim();
-  };
-
-  const content = `# ${name}
-
-<div data-description>
-
-${description}
-
-</div>
-
-${examples
-  .map((example) =>
-    `\`\`\`${example.language}
-${example.code}
-\`\`\``.trim()
-  )
-  .join("\n\n")}
-${
-  requiredProps.length > 0
-    ? `## Required Props
-
-${requiredProps.map(renderProp).join("\n\n")}\n`
-    : ""
-}
-${
-  optionalProps.length > 0
-    ? `## Optional Props
-
-${optionalProps.map(renderProp).join("\n\n")}\n`
-    : ""
-}
-`;
-
-  return content;
-}
-
-const refs = getReferences("packages/ariakit-react/src/hovercard.ts");
-const ref = refs.find((ref) => ref.name === "Hovercard");
-if (ref) {
-  console.log(getPageContent(ref));
 }
 
 /**
@@ -296,12 +237,13 @@ function getNodeName(node) {
 }
 
 /**
+ * @param {string} filename
  * @param {Node} node
  * @param {Node} [props]
  * @param {Node} [returnedProps]
  * @returns {import("./types.js").Reference}
  */
-function getReference(node, props, returnedProps) {
+function getReference(filename, node, props, returnedProps) {
   node = Node.isVariableDeclaration(node)
     ? node.getVariableStatementOrThrow()
     : node;
@@ -310,6 +252,7 @@ function getReference(node, props, returnedProps) {
   returnedProps = returnedProps || getFunction(node)?.getReturnTypeNode();
 
   return {
+    filename,
     name: getNodeName(node),
     description: getDescription(node),
     deprecated: getDeprecated(node),

@@ -4,6 +4,21 @@ import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";
 
 /**
+ * Gets the page tree from a file path.
+ * @param {string | import("./types.js").Reference} filename
+ */
+export function getPageContent(filename) {
+  if (typeof filename !== "string") {
+    return createReferencePageContent(filename);
+  }
+  const isMarkdown = extname(filename) === ".md";
+  const content = isMarkdown
+    ? readFileSync(filename, "utf8")
+    : createPageContent(filename);
+  return content;
+}
+
+/**
  * Creates a page content string from a file path.
  * @param {string} filename
  */
@@ -16,13 +31,74 @@ function createPageContent(filename) {
 }
 
 /**
- * Gets the page tree from a file path.
- * @param {string} filename
+ * @param {import("./types.js").Reference} reference
  */
-export function getPageContent(filename) {
-  const isMarkdown = extname(filename) === ".md";
-  const content = isMarkdown
-    ? readFileSync(filename, "utf8")
-    : createPageContent(filename);
+export function createReferencePageContent(reference) {
+  const { name, description, examples, props, deprecated, returnProps } =
+    reference;
+
+  const requiredProps = props.filter((prop) => !prop.optional);
+  const optionalProps = props.filter((prop) => prop.optional);
+
+  /** @param {import("./types.js").ReferenceProp} prop */
+  const renderProp = (prop) => {
+    return `### \`${prop.name}\`
+${
+  prop.deprecated
+    ? `\n**Deprecated**${
+        typeof prop.deprecated === "string" ? `: ${prop.deprecated}` : ""
+      }\n`
+    : ""
+}${prop.defaultValue ? `\ndefault: \`${prop.defaultValue}\`\n` : ""}
+${prop.description}
+${
+  prop.examples.length > 0
+    ? `\n${prop.examples
+        .map((example) =>
+          `\`\`\`${example.language}
+${example.code}
+\`\`\``.trim()
+        )
+        .join("\n\n")}\n`
+    : ""
+}
+`.trim();
+  };
+
+  const content = `# ${name}
+${deprecated ? "\n**Deprecated**\n" : ""}
+
+${description}
+
+${examples
+  .map((example) =>
+    `\`\`\`${example.language}
+${example.code}
+\`\`\``.trim()
+  )
+  .join("\n\n")}
+${
+  requiredProps.length > 0
+    ? `## Required Props
+
+${requiredProps.map(renderProp).join("\n\n")}\n`
+    : ""
+}
+${
+  optionalProps.length > 0
+    ? `## Optional Props
+
+${optionalProps.map(renderProp).join("\n\n")}\n`
+    : ""
+}
+${
+  returnProps && returnProps.length > 0
+    ? `## Return Props
+
+${returnProps.map(renderProp).join("\n\n")}\n`
+    : ""
+}
+`;
+
   return content;
 }

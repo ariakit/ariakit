@@ -9,6 +9,7 @@ import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageName } from "./get-page-name.js";
 import { getPageSections } from "./get-page-sections.js";
 import { getPageSourceFiles } from "./get-page-source-files.js";
+import { getReferences } from "./reference-utils.js";
 
 /** @param {string} [buildDir] */
 function getBuildDir(buildDir) {
@@ -27,15 +28,26 @@ function pathToImport(path) {
 function writeFiles(buildDir, pages) {
   performance.mark("writeFiles:start");
 
-  const entryFiles = pages.flatMap((page) =>
-    getPageEntryFiles(page.sourceContext)
+  const otherPages = pages.filter((page) => !page.reference);
+
+  const entryFiles = otherPages.flatMap((page) =>
+    getPageEntryFiles(page.sourceContext, page.pageFileRegex)
   );
+
   const sourceFiles = entryFiles.reduce(
     /** @param {Record<string, string[]>} acc */ (acc, file) => {
       acc[file] = getPageSourceFiles(file);
       return acc;
     },
     {}
+  );
+
+  const referencePages = pages.filter((page) => page.reference);
+
+  const references = referencePages.flatMap((page) =>
+    getPageEntryFiles(page.sourceContext, page.pageFileRegex).flatMap(
+      (file) => ({ page, references: getReferences(file) })
+    )
   );
 
   // deps.ts
@@ -75,7 +87,7 @@ function writeFiles(buildDir, pages) {
   const contentsFile = join(buildDir, "contents.json");
 
   const meta = markdownFiles.map((file) => {
-    const page = pages.find((page) => {
+    const page = otherPages.find((page) => {
       const context = Array.isArray(page.sourceContext)
         ? page.sourceContext
         : [page.sourceContext];
@@ -83,6 +95,13 @@ function writeFiles(buildDir, pages) {
     });
     if (!page) throw new Error(`Could not find page for file: ${file}`);
     return getPageSections(file, page.slug, page.getGroup);
+  });
+
+  references.forEach(({ page, references }) => {
+    const sections = references.map((reference) => {
+      return getPageSections(reference, page.slug, page.getGroup);
+    });
+    meta.push(...sections);
   });
 
   const categories = groupBy(meta, (page) => page.category);
@@ -197,6 +216,12 @@ class PagesWebpackPlugin {
   apply(compiler) {
     const pages = this.pages;
     const contexts = pages.flatMap((page) => page.sourceContext);
+    const contextsWithPages = pages.flatMap((page) => {
+      const contexts = Array.isArray(page.sourceContext)
+        ? page.sourceContext
+        : [page.sourceContext];
+      return contexts.map((context) => ({ context, page }));
+    });
 
     const externalContexts = contexts.filter(
       (context) => !context.startsWith(process.cwd())
@@ -212,9 +237,9 @@ class PagesWebpackPlugin {
 
     compiler.hooks.make.tap("PagesWebpackPlugin", (compilation) => {
       if (!compiler.watchMode) return;
-      for (const context of contexts) {
+      for (const { context, page } of contextsWithPages) {
         compilation.contextDependencies.add(context);
-        getPageEntryFiles(context).forEach((file) => {
+        getPageEntryFiles(context, page.pageFileRegex).forEach((file) => {
           compilation.fileDependencies.add(file);
           compilation.contextDependencies.add(dirname(file));
         });

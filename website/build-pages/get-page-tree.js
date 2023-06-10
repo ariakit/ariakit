@@ -43,9 +43,9 @@ export function getPageTreeFromContent(content) {
 
 /**
  * Gets the page tree from a file path.
- * @param {string} filename
+ * @param {string | import("./types.js").Reference} filename
  */
-export function getPageTreeFromFile(filename) {
+export function getPageTree(filename) {
   const content = getPageContent(filename);
   return getPageTreeFromContent(content);
 }

@@ -123,7 +123,7 @@ export async function CodeBlock({
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
           type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-xl",
-          highlightLines?.length || highlightTokens?.length
+          !oneLiner && (highlightLines?.length || highlightTokens?.length)
             ? "leading-[26px]"
             : "leading-[21px]",
           tw`

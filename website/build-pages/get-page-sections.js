@@ -2,15 +2,15 @@ import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { isPlaygroundParagraphNode } from "./ast.js";
 import { getPageIndexDetail } from "./get-page-index-detail.js";
-import { getPageTreeFromFile } from "./get-page-tree.js";
+import { getPageTree } from "./get-page-tree.js";
 
 /**
- * @param {string} filename
+ * @param {string | import("./types.js").Reference} filename
  * @param {string} category
  * @param {import("./types.js").Page["getGroup"]} [getGroup]
  */
 export function getPageSections(filename, category, getGroup) {
-  const tree = getPageTreeFromFile(filename);
+  const tree = getPageTree(filename);
   const meta = getPageIndexDetail(filename, getGroup, tree);
 
   /** @type {string | null} */

@@ -12,10 +12,18 @@ export interface Page {
    */
   sourceContext: string | string[];
   /**
+   * Whether the page is a reference page.
+   */
+  reference?: boolean;
+  /**
+   * The regex to match the source files for the page.
+   */
+  pageFileRegex?: RegExp;
+  /**
    * A function that returns the group name for the page or null if the page
    * should not be grouped.
    */
-  getGroup?: (filename: string) => string | null;
+  getGroup?: (filename: string | Reference) => string | null;
 }
 
 export interface PageIndexDetail {
@@ -136,6 +144,10 @@ export interface ReferenceProp {
 }
 
 export interface Reference {
+  /**
+   * The filename of the component.
+   */
+  filename: string;
   /**
    * The name of the component.
    */

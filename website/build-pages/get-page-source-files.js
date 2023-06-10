@@ -1,7 +1,7 @@
 import { dirname, extname, resolve } from "path";
 import { visit } from "unist-util-visit";
 import { isPlaygroundNode } from "./ast.js";
-import { getPageTreeFromFile } from "./get-page-tree.js";
+import { getPageTree } from "./get-page-tree.js";
 
 /**
  * Returns all source files for a page.
@@ -13,7 +13,7 @@ export function getPageSourceFiles(filename) {
   /** @type {string[]} */
   const sourceFiles = [];
 
-  const tree = getPageTreeFromFile(filename);
+  const tree = getPageTree(filename);
 
   visit(tree, "element", (node) => {
     if (!isPlaygroundNode(node)) return;

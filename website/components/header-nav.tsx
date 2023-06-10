@@ -2,6 +2,7 @@
 
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
+  Suspense,
   createContext,
   memo,
   useContext,
@@ -44,7 +45,7 @@ const categoryTitles: Record<string, string> = {
   components: "Components",
   examples: "Examples",
   blog: "Blog",
-  api: "API Reference",
+  reference: "API Reference",
 };
 
 const searchTitles: Record<string, string> = {
@@ -52,7 +53,7 @@ const searchTitles: Record<string, string> = {
   components: "Search components",
   examples: "Search examples",
   blog: "Search blog",
-  api: "Search API",
+  reference: "Search API",
 };
 
 function getSearchParentPageData(items: Data): SearchData[number] | null {
@@ -489,7 +490,7 @@ const HeaderNavMenu = memo(
               <HeaderMenuSeparator />
             </div>
           )}
-          {itemElements || (!noResults && children)}
+          <Suspense>{itemElements || (!noResults && children)}</Suspense>
           {noResults && (
             <div
               role="presentation"
