@@ -329,15 +329,11 @@ jobs:
       - name: Install playwright
         run: npx playwright install --with-deps firefox webkit
 
-      - name: Cache Next.js
+      - name: Restore website
         uses: actions/cache@v3
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
-          restore-keys: nextjs-
-
-      - name: Build website
-        run: npm run build-website
 
       - name: Test
         id: test
