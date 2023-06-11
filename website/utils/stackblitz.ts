@@ -221,7 +221,7 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "13.3.1",
+      next: "13.4.5",
     },
     devDependencies: {
       "@types/node": "latest",
@@ -241,7 +241,6 @@ function getNextProject(props: StackblitzProps) {
   const nextConfig = `/** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
     serverActions: true,
   },
   eslint: {
