@@ -2,10 +2,6 @@ import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 
-const isBuild = process.env.NODE_ENV === "production";
-
-const pagesPlugin = new PagesWebpackPlugin(pagesConfig);
-
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
@@ -26,7 +22,7 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true,
-  transpilePackages: !isBuild ? ["@ariakit/react"] : [],
+  transpilePackages: ["@ariakit/*"],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -43,7 +39,7 @@ const nextConfig = {
     }
 
     if (!context.isServer) {
-      config.plugins.unshift(pagesPlugin);
+      config.plugins.unshift(new PagesWebpackPlugin(pagesConfig));
       config.plugins.push(
         new MonacoWebpackPlugin({
           filename: context.dev
