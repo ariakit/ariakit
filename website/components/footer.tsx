@@ -30,7 +30,7 @@ const links = [
   {
     title: "Updates",
     links: [
-      { title: "Blog", href: "/blog" },
+      // { title: "Blog", href: "/blog" },
       { title: "Newsletter", href: "https://newsletter.ariakit.org" },
       {
         title: "Changelog",

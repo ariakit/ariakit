@@ -58,11 +58,6 @@ const pages = [
       return upperFirst(camelCase(component));
     },
   },
-  {
-    slug: "blog",
-    title: "Blog",
-    sourceContext: join(root, "blog"),
-  },
 ];
 
 export default { buildDir, pages };
