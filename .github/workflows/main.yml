@@ -316,13 +316,6 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-
       - name: Install dependencies
         run: npm ci --no-audit
 
@@ -336,11 +329,15 @@ jobs:
       - name: Install playwright
         run: npx playwright install --with-deps firefox webkit
 
-      - name: Restore website
+      - name: Cache Next.js
         uses: actions/cache@v3
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
+          restore-keys: nextjs-
+
+      - name: Build website
+        run: npm run build-website
 
       - name: Test
         id: test
