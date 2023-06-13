@@ -22,7 +22,13 @@ import type { CollectionStore } from "./collection-store.js";
  * ```
  */
 export const useCollectionItem = createHook<CollectionItemOptions>(
-  ({ store, shouldRegisterItem = true, getItem = identity, ...props }) => {
+  ({
+    store,
+    element,
+    shouldRegisterItem = true,
+    getItem = identity,
+    ...props
+  }) => {
     const context = useContext(CollectionContext);
     store = store || context;
 
@@ -96,6 +102,11 @@ export interface CollectionItemOptions<T extends As = "div">
    * ```
    */
   getItem?: (props: CollectionStoreItem) => CollectionStoreItem;
+  /**
+   * @private
+   * @deprecated
+   */
+  element?: HTMLElement | null;
 }
 
 export type CollectionItemProps<T extends As = "div"> = Props<

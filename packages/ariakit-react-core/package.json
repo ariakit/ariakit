@@ -187,6 +187,7 @@
     "./composite/composite-overflow": "./src/composite/composite-overflow.ts",
     "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
     "./composite/composite-overflow-disclosure": "./src/composite/composite-overflow-disclosure.ts",
+    "./composite/composite-items": "./src/composite/composite-items.tsx",
     "./composite/composite-item": "./src/composite/composite-item.tsx",
     "./composite/composite-input": "./src/composite/composite-input.ts",
     "./composite/composite-hover": "./src/composite/composite-hover.ts",
