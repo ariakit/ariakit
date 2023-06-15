@@ -71,7 +71,7 @@
     "@babel/types": "7.22.5",
     "@changesets/cli": "2.26.1",
     "@guidepup/playwright": "0.10.0",
-    "@playwright/test": "1.35.0",
+    "@playwright/test": "1.35.1",
     "@stackblitz/sdk": "1.9.0",
     "@tanstack/react-query": "4.29.13",
     "@testing-library/dom": "9.3.1",
