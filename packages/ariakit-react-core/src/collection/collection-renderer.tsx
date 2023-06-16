@@ -15,16 +15,10 @@ import {
   useState,
 } from "react";
 import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { chain, invariant } from "@ariakit/core/utils/misc";
+import { chain, invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
-import {
-  useForceUpdate,
-  useId,
-  useLiveRef,
-  useMergeRefs,
-  useSafeLayoutEffect,
-} from "../utils/hooks.js";
+import { useForceUpdate, useId, useMergeRefs } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement } from "../utils/system.jsx";
 import type { RenderProp } from "../utils/types.js";
@@ -314,19 +308,19 @@ export function CollectionRenderer<T extends Item = any>({
     return parentData?.get(baseId) || new Map();
   });
 
-  const dataRef = useLiveRef(data);
-
   const [visibleIds, setVisibleIds] = useState<string[]>(() => {
     if (!initialItems) return [];
-    const length = getItemsLength(items);
     const initialLength = getItemsLength(initialItems);
     if (!initialLength) return [];
+    const totalLength = getItemsLength(items);
     const ids: string[] = [];
-    // TODO: Refactor
     const fromEnd = typeof initialItems === "number" && initialItems < 0;
     const finalItems = fromEnd ? items : initialItems;
-    let index = fromEnd ? length + initialItems : 0;
-    for (; index < (initialLength < 0 ? length : initialLength); index += 1) {
+    for (
+      let index = fromEnd ? totalLength + initialItems : 0;
+      index < (fromEnd ? totalLength : initialLength);
+      index += 1
+    ) {
       const item = getItem(finalItems, index);
       const id = getItemId(item, index, baseId);
       ids.push(id);
@@ -355,10 +349,10 @@ export function CollectionRenderer<T extends Item = any>({
     if (!baseId) return;
     if (itemSize != null) return;
     if (!items) return;
-    // const data = dataRef.current;
     const length = getItemsLength(items);
     let nextData: Data | undefined;
     let start = 0;
+
     const avgSize = getAverageSize({
       baseId,
       data,
@@ -367,6 +361,7 @@ export function CollectionRenderer<T extends Item = any>({
       elements,
       estimatedItemSize,
     });
+
     for (let index = 0; index < length; index += 1) {
       const item = getItem(items, index);
       const itemId = getItemId(item, index, baseId);
@@ -376,12 +371,8 @@ export function CollectionRenderer<T extends Item = any>({
       const setSize = (size: number, rendered = prevRendered) => {
         start = start ? start + gap : start;
         const end = start + size;
-        const hasChanged =
-          itemData?.index !== index ||
-          itemData.start !== start ||
-          itemData.end !== end ||
-          itemData.rendered !== rendered;
-        if (hasChanged) {
+        const nextItemData = { index, rendered, start, end };
+        if (!shallowEqual(itemData, nextItemData)) {
           if (!nextData) {
             nextData = new Map(data);
           }
@@ -406,10 +397,10 @@ export function CollectionRenderer<T extends Item = any>({
     }
   }, [
     elementsUpdated,
-    data,
     baseId,
     itemSize,
     items,
+    data,
     horizontal,
     elements,
     estimatedItemSize,
@@ -418,13 +409,15 @@ export function CollectionRenderer<T extends Item = any>({
 
   const processVisibleItems = useCallback(
     (scrollingElement: Element) => {
-      if (!baseId) return;
       const container = ref.current;
       if (!container) return;
+      if (!baseId) return;
       if (!data.size && !itemSize) return;
+
       const offset = getOffset(container, scrollingElement, horizontal);
       const length = getItemsLength(items);
       const scrollOffset = getScrollOffset(scrollingElement, horizontal);
+
       const getItemOffset = (index: number) => {
         const item = getItem(items, index);
         const itemId = getItemId(item, index, baseId);
@@ -476,9 +469,6 @@ export function CollectionRenderer<T extends Item = any>({
     ]
   );
 
-  const lastScrollTopRef = useRef(0);
-  const scrollingReverseRef = useRef(false);
-
   useEffect(() => {
     const container = ref.current;
     if (!container) return;
@@ -486,21 +476,18 @@ export function CollectionRenderer<T extends Item = any>({
     if (!scrollingElement) return;
     const viewport = getViewport(scrollingElement);
     if (!viewport) return;
+
     const scroll = () => {
       const onScroll = () => {
-        flushSync(() => {
-          processVisibleItems(scrollingElement);
-        });
-        const lastScrollTop = lastScrollTopRef.current;
-        const scrollOffset = getScrollOffset(scrollingElement, horizontal);
-        lastScrollTopRef.current = scrollOffset;
-        scrollingReverseRef.current = scrollOffset < lastScrollTop;
+        flushSync(() => processVisibleItems(scrollingElement));
       };
       viewport.addEventListener("scroll", onScroll, { passive: true });
       return () => viewport.removeEventListener("scroll", onScroll);
     };
+
     const observeScrollingElement = () => {
       if (scrollingElement.tagName === "HTML") return;
+      if (typeof ResizeObserver !== "function") return;
       let firstRun = true;
       const observer = new ResizeObserver(() => {
         if (firstRun) {
@@ -512,6 +499,7 @@ export function CollectionRenderer<T extends Item = any>({
       observer.observe(scrollingElement);
       return () => observer.disconnect();
     };
+
     const observeWindow = () => {
       if (scrollingElement.tagName !== "HTML") return;
       const onResize = () => {
@@ -520,34 +508,29 @@ export function CollectionRenderer<T extends Item = any>({
       viewport.addEventListener("resize", onResize, { passive: true });
       return () => viewport.removeEventListener("resize", onResize);
     };
+
     processVisibleItems(scrollingElement);
+
     return chain(scroll(), observeScrollingElement(), observeWindow());
   }, [processVisibleItems]);
 
   const elementObserver = useMemo(() => {
+    if (itemSize) return;
     if (typeof ResizeObserver !== "function") return;
-    const observedElements = new WeakSet<Element>();
-    return new ResizeObserver(([entry]) => {
-      // if (!entry) return;
-      // if (!entry.target.isConnected) return;
-      // if (!observedElements.has(entry.target)) {
-      //   observedElements.add(entry.target);
-      //   return;
-      // }
-      flushSync(() => {
-        updateElements();
-      });
+    return new ResizeObserver(() => {
+      flushSync(updateElements);
     });
-  }, [updateElements]);
+  }, [itemSize, updateElements]);
 
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
+      if (itemSize) return;
       elements.set(element.id, element);
-      elementObserver?.observe(element);
       updateElements();
+      elementObserver?.observe(element);
     },
-    [elements, elementObserver, updateElements]
+    [itemSize, elements, updateElements, elementObserver]
   );
 
   const getItemProps = useCallback(
@@ -600,23 +583,6 @@ export function CollectionRenderer<T extends Item = any>({
 
   const styleProp = props.style;
   const sizeProperty = horizontal ? "width" : "height";
-
-  const prevEndRef = useRef(totalSize);
-
-  useSafeLayoutEffect(() => {
-    if (!scrollingReverseRef.current) return;
-    const prevEnd = prevEndRef.current;
-    prevEndRef.current = totalSize;
-    if (!prevEnd) return;
-    const element = ref.current;
-    if (!element) return;
-    const scrollingElement = getScrollingElement(element);
-    if (!scrollingElement) return;
-    const viewport = getViewport(scrollingElement);
-    if (!viewport) return;
-    // console.log({ prevEnd, totalSize });
-    // viewport.scrollBy({ top: totalSize - prevEnd });
-  }, [totalSize]);
 
   const style = useMemo(
     () => ({

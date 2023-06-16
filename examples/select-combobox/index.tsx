@@ -160,7 +160,7 @@ export default function Example() {
           <CollectionRenderer
             items={items}
             gap={40}
-            // overscan={0}
+            overscan={0}
             // estimatedItemSize={1000}
             // initialItems={-1}
             // itemSize={1008 + 24}
@@ -182,8 +182,8 @@ export default function Example() {
                 {children && (
                   <CollectionRenderer
                     items={children}
-                    id={`${item.id}/items`}
-                    gap={8}
+                    // id={`${item.id}/items`}
+                    // gap={8}
                     // estimatedItemSize={24}
                     // initialItems={-20}
                     // itemSize={24}
