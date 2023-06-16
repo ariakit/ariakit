@@ -556,13 +556,12 @@ export function CollectionRenderer<T extends Item = any>({
   const itemsProps = useMemo(() => {
     if (!renderItem) return null;
     const nodes: Array<{ itemProps: ItemProps<T>; index: number }> = [];
-    const allVisibleIds = [...visibleIds, ...(visibleIdsProp || [])];
+    const allVisibleIds = new Set([...visibleIds, ...(visibleIdsProp || [])]);
     const length = getItemsLength(items);
-    console.log({ items, baseId, visibleIds });
     for (let index = 0; index < length; index += 1) {
       const item = getItem(items, index);
       const itemId = getItemId(item, index, baseId);
-      if (!allVisibleIds.includes(itemId)) continue;
+      if (!allVisibleIds.has(itemId)) continue;
       const itemProps = getItemProps(item, index);
       if (!itemProps) continue;
       nodes.push({ itemProps, index });

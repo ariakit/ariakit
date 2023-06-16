@@ -7,7 +7,7 @@ import type {
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { getPopupRole } from "@ariakit/core/utils/dom";
+import { getPopupRole, getScrollingElement } from "@ariakit/core/utils/dom";
 import {
   isFocusEventOutside,
   queueBeforeEvent,
@@ -132,6 +132,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
     const items = store.useState("renderedItems");
     const open = store.useState("open");
+    const contentElement = store.useState("contentElement");
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -209,7 +210,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     useSafeLayoutEffect(() => {
       if (!storeValue) return;
       if (composingRef.current) return;
+      // TODO: Abstract this
       valueChangedRef.current = true;
+      scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
     }, [storeValue]);
 
     // Reset the changed flag when the popover is not open so we don't try to
@@ -220,11 +223,26 @@ export const useCombobox = createHook<ComboboxOptions>(
       valueChangedRef.current = false;
     }, [open]);
 
+    const scrollingElementRef = useRef<Element | null>(null);
+
+    useEffect(() => {
+      if (!open) return;
+      if (!contentElement) return;
+      const scrollingElement = getScrollingElement(contentElement);
+      if (!scrollingElement) return;
+      scrollingElementRef.current = scrollingElement;
+    }, [open, contentElement]);
+
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!valueChangedRef.current) return;
+      const scrollingElement = scrollingElementRef.current;
+      if (scrollingElement) {
+        if (scrollingElement?.scrollTop !== 0) return;
+        if (scrollingElement?.scrollLeft !== 0) return;
+      }
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
@@ -236,8 +254,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (autoSelect) return;
       store.setActiveId(null);
     }, [valueUpdated, autoSelect, store]);
-
-    const contentElement = store.useState("contentElement");
 
     // If it has inline auto completion, set the store value when the combobox
     // input or the combobox list lose focus.
@@ -267,6 +283,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       const { target } = event;
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
+      scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
       if (isInputEvent(nativeEvent)) {
         if (nativeEvent.isComposing) {
           valueChangedRef.current = false;
@@ -316,6 +333,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
         valueChangedRef.current = true;
+        scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
         composingRef.current = false;
         if (!autoSelect) return;
         forceValueUpdate();

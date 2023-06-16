@@ -67,9 +67,10 @@ export default function Example() {
         sameWidth
         className="popover"
       >
-        <div className="combobox-wrapper">
+        <div className="combobox-wrapper z-10">
           <Ariakit.Combobox
             store={combobox}
+            autoSelect
             placeholder="Search..."
             className="combobox"
           />
