@@ -121,7 +121,7 @@ function getItemId(item: Item, index: number, baseId?: string) {
   return getItemObject(item).id ?? defaultId;
 }
 
-function getItem<T extends Item>(
+function getItem<T extends Item = any>(
   items: Items<T>,
   index: number
 ): RawItemProps<T> {
@@ -271,7 +271,7 @@ export function CollectionRenderer<T extends Item = any>({
   estimatedItemSize = 40,
   gap = 0,
   overscan: overscanProp,
-  getVisibleIds,
+  visibleIds: visibleIdsProp,
   children: renderItem,
   ...props
 }: CollectionRendererProps<T>) {
@@ -442,7 +442,7 @@ export function CollectionRenderer<T extends Item = any>({
       const start = Math.max(initialStart - overscan, 0);
       const end = Math.min(initialEnd + overscan, length);
 
-      let ids: string[] = [];
+      const ids: string[] = [];
 
       for (let index = start; index < end; index += 1) {
         const item = getItem(items, index);
@@ -450,23 +450,12 @@ export function CollectionRenderer<T extends Item = any>({
         ids.push(itemId);
       }
 
-      if (getVisibleIds) {
-        ids = getVisibleIds(ids);
-      }
-
-      setVisibleIds(ids);
+      setVisibleIds((prevIds) => {
+        if (shallowEqual(prevIds, ids)) return prevIds;
+        return ids;
+      });
     },
-    [
-      elementsUpdated,
-      baseId,
-      data,
-      itemSize,
-      horizontal,
-      items,
-      gap,
-      overscan,
-      getVisibleIds,
-    ]
+    [elementsUpdated, baseId, data, itemSize, horizontal, items, gap, overscan]
   );
 
   useEffect(() => {
@@ -515,26 +504,24 @@ export function CollectionRenderer<T extends Item = any>({
   }, [processVisibleItems]);
 
   const elementObserver = useMemo(() => {
-    if (itemSize) return;
     if (typeof ResizeObserver !== "function") return;
     return new ResizeObserver(() => {
       flushSync(updateElements);
     });
-  }, [itemSize, updateElements]);
+  }, [updateElements]);
 
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
-      if (itemSize) return;
       elements.set(element.id, element);
       updateElements();
       elementObserver?.observe(element);
     },
-    [itemSize, elements, updateElements, elementObserver]
+    [elements, updateElements, elementObserver]
   );
 
   const getItemProps = useCallback(
-    (item: RawItemProps<T>, index: number) => {
+    <Item extends T = T>(item: RawItemProps<Item>, index: number) => {
       if (!baseId) return;
       const itemId = getItemId(item, index, baseId);
       const itemData = data.get(itemId);
@@ -566,20 +553,26 @@ export function CollectionRenderer<T extends Item = any>({
     [baseId, data, itemSize, gap, horizontal, itemRef]
   );
 
-  const children = useMemo(() => {
+  const itemsProps = useMemo(() => {
     if (!renderItem) return null;
-    const nodes: ReactNode[] = [];
+    const nodes: Array<{ itemProps: ItemProps<T>; index: number }> = [];
+    const allVisibleIds = [...visibleIds, ...(visibleIdsProp || [])];
     const length = getItemsLength(items);
+    console.log({ items, baseId, visibleIds });
     for (let index = 0; index < length; index += 1) {
       const item = getItem(items, index);
       const itemId = getItemId(item, index, baseId);
-      if (!visibleIds.includes(itemId)) continue;
+      if (!allVisibleIds.includes(itemId)) continue;
       const itemProps = getItemProps(item, index);
       if (!itemProps) continue;
-      nodes.push(renderItem(itemProps, index));
+      nodes.push({ itemProps, index });
     }
     return nodes;
-  }, [renderItem, items, baseId, visibleIds, getItemProps]);
+  }, [items, baseId, visibleIds, visibleIdsProp, getItemProps]);
+
+  const children = itemsProps?.map(({ itemProps, index }) => {
+    return renderItem?.(itemProps, index);
+  });
 
   const styleProp = props.style;
   const sizeProperty = horizontal ? "width" : "height";
@@ -709,15 +702,9 @@ export interface CollectionRendererOptions<T extends Item = any> {
    */
   overscan?: number;
   /**
-   * A function prop that should return an array of visible item IDs. This is
-   * useful when you want to customize the way the visible items are calculated.
-   * The function receives an array of all visible IDs that were calculated by
-   * the component internally.
-   * @param ids An array of all visible IDs that were calculated by the
-   * component internally.
-   * @returns An array of visible item IDs.
+   * TODO: Comment
    */
-  getVisibleIds?: (ids: string[]) => string[];
+  visibleIds?: string[];
   /**
    * The `children` should be a function that receives an item and its index and
    * returns a React element.

@@ -62,11 +62,19 @@ function getCommonParent(items: Item[]) {
 export function createCollectionStore<T extends Item = Item>(
   props: CollectionStoreProps<T> = {}
 ): CollectionStore<T> {
-  const itemsMap = new Map<string, T>();
-
   const syncState = props.store?.getState();
+
+  const items = defaultValue(
+    props.items,
+    syncState?.items,
+    props.defaultItems,
+    []
+  );
+
+  const itemsMap = new Map<string, T>(items.map((item) => [item.id, item]));
+
   const initialState: CollectionStoreState<T> = {
-    items: defaultValue(props.items, syncState?.items, props.defaultItems, []),
+    items,
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
@@ -119,10 +127,9 @@ export function createCollectionStore<T extends Item = Item>(
   ) => {
     let prevItem: T | undefined;
     setItems((items) => {
-      const index =
-        itemsMap.get(item.id) && items.findIndex(({ id }) => id === item.id);
+      const index = items.findIndex(({ id }) => id === item.id);
       const nextItems = items.slice();
-      if (index && index >= 0) {
+      if (index !== -1) {
         prevItem = items[index];
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
