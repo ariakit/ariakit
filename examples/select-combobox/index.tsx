@@ -1,5 +1,5 @@
 import "./style.css";
-import { useCallback, useDeferredValue, useEffect, useMemo } from "react";
+import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { CollectionRenderer } from "@ariakit/react-core/collection/collection-renderer";
 import { matchSorter } from "match-sorter";
