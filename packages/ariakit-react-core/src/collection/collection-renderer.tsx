@@ -21,10 +21,11 @@ import { flushSync } from "react-dom";
 import {
   useForceUpdate,
   useId,
+  useLiveRef,
   useMergeRefs,
   useSafeLayoutEffect,
 } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
+import { useStoreState } from "../utils/store.jsx";
 import { createElement } from "../utils/system.jsx";
 import type { RenderProp } from "../utils/types.js";
 import { CollectionContext } from "./collection-context.js";
@@ -35,7 +36,7 @@ import type {
 
 interface ItemObject
   extends AnyObject,
-    Pick<CollectionItemsOptions, "gap" | "orientation"> {
+    Pick<CollectionRendererOptions, "gap" | "orientation"> {
   id?: string;
   element?: HTMLElement | null;
   style?: CSSProperties;
@@ -50,9 +51,9 @@ type Item =
   | null
   | undefined;
 
-type Items<T extends Item = never> = number | readonly T[];
+type Items<T extends Item = any> = number | readonly T[];
 
-type Store<T extends Item = never> = CollectionStore<
+type Store<T extends Item = any> = CollectionStore<
   T extends CollectionStoreItem ? T : CollectionStoreItem
 >;
 
@@ -62,11 +63,11 @@ interface BaseItemProps {
   style: CSSProperties;
 }
 
-type ItemProps<T extends Item = never> = unknown extends T
+type ItemProps<T extends Item = any> = unknown extends T
   ? BaseItemProps
   : BaseItemProps & (T extends AnyObject ? T : { value: T });
 
-type RawItemProps<T extends Item = never> = unknown extends T
+type RawItemProps<T extends Item = any> = unknown extends T
   ? EmptyObject
   : T extends AnyObject
   ? T
@@ -81,15 +82,17 @@ interface DataItem {
 
 type Data = Map<string, DataItem>;
 
-type CollectionItemsContextProps = Pick<
-  CollectionItemsOptions,
-  "store" | "estimatedItemSize" | "gap" | "orientation" | "overscan"
->;
+interface CollectionRendererContextProps {
+  store: CollectionRendererOptions["store"];
+  orientation: CollectionRendererOptions["orientation"];
+  overscan: CollectionRendererOptions["overscan"];
+  childrenData: Map<string, Data>;
+}
 
-const CollectionItemsContext =
-  createContext<CollectionItemsContextProps | null>(null);
+const CollectionRendererContext =
+  createContext<CollectionRendererContextProps | null>(null);
 
-function findNearestIndex<T extends Item = never>(
+function findNearestIndex<T extends Item = any>(
   items: Items<T>,
   target: number,
   getValue: (index: number) => number
@@ -104,7 +107,7 @@ function findNearestIndex<T extends Item = never>(
     else right = index - 1;
   }
   if (left > 0) return left - 1;
-  return null;
+  return 0;
 }
 
 function getItemsLength<T extends Item>(items: Items<T>) {
@@ -119,7 +122,7 @@ function getItemObject(item: Item): ItemObject {
 }
 
 function getItemId(item: Item, index: number, baseId?: string) {
-  invariant(baseId, "CollectionItems must be given an `id` prop.");
+  invariant(baseId, "CollectionRenderer must be given an `id` prop.");
   const defaultId = `${baseId}/${index}`;
   return getItemObject(item).id ?? defaultId;
 }
@@ -221,18 +224,9 @@ function getOffset(
   );
 }
 
-function getScrollOffset(
-  scrollingElement: Element,
-  horizontal: boolean,
-  end: number
-) {
+function getScrollOffset(scrollingElement: Element, horizontal: boolean) {
   const prop = horizontal ? "scrollLeft" : "scrollTop";
-  let scrollOffset = scrollingElement[prop];
-  const { flexDirection } = getComputedStyle(scrollingElement);
-  if (flexDirection.endsWith("-reverse")) {
-    scrollOffset = end + scrollOffset;
-  }
-  return scrollOffset;
+  return scrollingElement[prop];
 }
 
 function getViewport(scrollingElement: Element) {
@@ -251,7 +245,6 @@ function getItemsEnd<T extends Item>(props: {
   horizontal: boolean;
   itemSize?: number;
   estimatedItemSize: number;
-  defaultEnd?: number;
 }) {
   const length = getItemsLength(props.items);
   if (!length) return 0;
@@ -260,8 +253,7 @@ function getItemsEnd<T extends Item>(props: {
   if (props.itemSize != null) {
     return length * props.itemSize + totalGap;
   }
-  const defaultEnd =
-    props.defaultEnd || length * props.estimatedItemSize + totalGap;
+  const defaultEnd = length * props.estimatedItemSize + totalGap;
   if (!props.baseId) return defaultEnd;
   const lastItem = getItem(props.items, lastIndex);
   const lastItemId = getItemId(lastItem, lastIndex, props.baseId);
@@ -276,24 +268,19 @@ function getItemsEnd<T extends Item>(props: {
   return end + totalGap;
 }
 
-function getEndFromStyle(style: CSSProperties) {
-  if (!("--end" in style)) return;
-  return style["--end"] as number;
-}
-
-export function CollectionItems<T extends Item = never>({
+export function CollectionRenderer<T extends Item = any>({
   store: storeProp,
   items: itemsProp,
   initialItems = 0,
   orientation: orientationProp,
   itemSize,
-  estimatedItemSize: estimatedItemSizeProp,
-  gap: gapProp,
+  estimatedItemSize = 40,
+  gap = 0,
   overscan: overscanProp,
   getVisibleIds,
   children: renderItem,
   ...props
-}: CollectionItemsProps<T>) {
+}: CollectionRendererProps<T>) {
   const context = useContext(CollectionContext);
   const store = storeProp || (context as Store<T>);
 
@@ -304,105 +291,50 @@ export function CollectionItems<T extends Item = never>({
   invariant(
     items != null,
     process.env.NODE_ENV !== "production" &&
-      "CollectionItems must be either wrapped in a Collection component or be given an `items` prop."
+      "CollectionRenderer must be either wrapped in a Collection component or be given an `items` prop."
   );
 
-  let parent = useContext(CollectionItemsContext);
+  let parent = useContext(CollectionRendererContext);
   if (store && parent?.store !== store) {
     parent = null;
   }
 
+  const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
-  const estimatedItemSize =
-    estimatedItemSizeProp ?? parent?.estimatedItemSize ?? 40;
-  const gap = gapProp ?? parent?.gap ?? 0;
   const overscan = overscanProp ?? parent?.overscan ?? 1;
 
   const ref = useRef<HTMLDivElement>(null);
   const baseId = useId(props.id);
   const horizontal = orientation === "horizontal";
-  const [data, setData] = useState<Data>(() => new Map());
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
   const [elementsUpdated, updateElements] = useForceUpdate();
 
+  const [data, setData] = useState<Data>(() => {
+    if (!baseId) return new Map();
+    return parentData?.get(baseId) || new Map();
+  });
+
+  const dataRef = useLiveRef(data);
+
   const [visibleIds, setVisibleIds] = useState<string[]>(() => {
     if (!initialItems) return [];
-    const length = getItemsLength(initialItems);
-    if (!length) return [];
+    const length = getItemsLength(items);
+    const initialLength = getItemsLength(initialItems);
+    if (!initialLength) return [];
     const ids: string[] = [];
-    for (let index = 0; index < length; index += 1) {
-      const item = getItem(initialItems, index);
+    // TODO: Refactor
+    const fromEnd = typeof initialItems === "number" && initialItems < 0;
+    const finalItems = fromEnd ? items : initialItems;
+    let index = fromEnd ? length + initialItems : 0;
+    for (; index < (initialLength < 0 ? length : initialLength); index += 1) {
+      const item = getItem(finalItems, index);
       const id = getItemId(item, index, baseId);
       ids.push(id);
     }
     return ids;
   });
 
-  useSafeLayoutEffect(() => {
-    if (!baseId) return;
-    if (itemSize != null) return;
-    setData((data) => {
-      if (!items) return data;
-      const length = getItemsLength(items);
-      let nextData: Data | undefined;
-      let start = 0;
-      const avgSize = getAverageSize({
-        baseId,
-        data,
-        horizontal,
-        items,
-        elements,
-        estimatedItemSize,
-      });
-      for (let index = 0; index < length; index += 1) {
-        const item = getItem(items, index);
-        const itemId = getItemId(item, index, baseId);
-        const itemData = data.get(itemId);
-        const prevRendered = itemData?.rendered ?? false;
-
-        const setSize = (size: number, rendered = prevRendered) => {
-          start = start ? start + gap : start;
-          const end = start + size;
-          const hasChanged =
-            itemData?.start !== start ||
-            itemData.end !== end ||
-            itemData?.rendered !== rendered;
-          if (hasChanged) {
-            if (!nextData) {
-              nextData = new Map(data);
-            }
-            nextData.set(itemId, { index, rendered, start, end });
-          }
-          start = end;
-        };
-
-        const size = getItemSize(item, horizontal, elements.get(itemId));
-
-        if (size) {
-          setSize(size, true);
-        } else if (itemData?.rendered) {
-          setSize(itemData.end - itemData.start, true);
-        } else {
-          setSize(avgSize);
-        }
-      }
-
-      return nextData || data;
-    });
-  }, [
-    elementsUpdated,
-    baseId,
-    itemSize,
-    items,
-    horizontal,
-    elements,
-    estimatedItemSize,
-    gap,
-  ]);
-
-  const defaultEnd = props.style ? getEndFromStyle(props.style) : undefined;
-
-  const getEnd = useCallback(() => {
+  const totalSize = useMemo(() => {
     return getItemsEnd({
       baseId,
       items,
@@ -411,17 +343,77 @@ export function CollectionItems<T extends Item = never>({
       horizontal,
       itemSize,
       estimatedItemSize,
-      defaultEnd,
     });
+  }, [baseId, items, data, gap, horizontal, itemSize, estimatedItemSize]);
+
+  useEffect(() => {
+    if (!baseId) return;
+    parentData?.set(baseId, data);
+  }, [parentData, baseId, data]);
+
+  useEffect(() => {
+    if (!baseId) return;
+    if (itemSize != null) return;
+    if (!items) return;
+    // const data = dataRef.current;
+    const length = getItemsLength(items);
+    let nextData: Data | undefined;
+    let start = 0;
+    const avgSize = getAverageSize({
+      baseId,
+      data,
+      horizontal,
+      items,
+      elements,
+      estimatedItemSize,
+    });
+    for (let index = 0; index < length; index += 1) {
+      const item = getItem(items, index);
+      const itemId = getItemId(item, index, baseId);
+      const itemData = data.get(itemId);
+      const prevRendered = itemData?.rendered ?? false;
+
+      const setSize = (size: number, rendered = prevRendered) => {
+        start = start ? start + gap : start;
+        const end = start + size;
+        const hasChanged =
+          itemData?.index !== index ||
+          itemData.start !== start ||
+          itemData.end !== end ||
+          itemData.rendered !== rendered;
+        if (hasChanged) {
+          if (!nextData) {
+            nextData = new Map(data);
+          }
+          nextData.set(itemId, { index, rendered, start, end });
+        }
+        start = end;
+      };
+
+      const size = getItemSize(item, horizontal, elements.get(itemId));
+
+      if (size) {
+        setSize(size, true);
+      } else if (itemData?.rendered) {
+        setSize(itemData.end - itemData.start, true);
+      } else {
+        setSize(avgSize);
+      }
+    }
+
+    if (nextData) {
+      setData(nextData);
+    }
   }, [
-    baseId,
-    items,
+    elementsUpdated,
     data,
-    gap,
-    horizontal,
+    baseId,
     itemSize,
+    items,
+    horizontal,
+    elements,
     estimatedItemSize,
-    defaultEnd,
+    gap,
   ]);
 
   const processVisibleItems = useCallback(
@@ -432,12 +424,7 @@ export function CollectionItems<T extends Item = never>({
       if (!data.size && !itemSize) return;
       const offset = getOffset(container, scrollingElement, horizontal);
       const length = getItemsLength(items);
-      const scrollOffset = getScrollOffset(
-        scrollingElement,
-        horizontal,
-        getEnd()
-      );
-
+      const scrollOffset = getScrollOffset(scrollingElement, horizontal);
       const getItemOffset = (index: number) => {
         const item = getItem(items, index);
         const itemId = getItemId(item, index, baseId);
@@ -448,8 +435,6 @@ export function CollectionItems<T extends Item = never>({
 
       const startTarget = scrollOffset - offset;
       const initialStart = findNearestIndex(items, startTarget, getItemOffset);
-      if (initialStart == null) return;
-
       let initialEnd = initialStart + 1;
 
       const scrollingSize = horizontal
@@ -466,7 +451,7 @@ export function CollectionItems<T extends Item = never>({
 
       let ids: string[] = [];
 
-      for (let index = start; index < end; index++) {
+      for (let index = start; index < end; index += 1) {
         const item = getItem(items, index);
         const itemId = getItemId(item, index, baseId);
         ids.push(itemId);
@@ -479,17 +464,20 @@ export function CollectionItems<T extends Item = never>({
       setVisibleIds(ids);
     },
     [
+      elementsUpdated,
       baseId,
       data,
       itemSize,
       horizontal,
       items,
-      getEnd,
       gap,
       overscan,
       getVisibleIds,
     ]
   );
+
+  const lastScrollTopRef = useRef(0);
+  const scrollingReverseRef = useRef(false);
 
   useEffect(() => {
     const container = ref.current;
@@ -503,6 +491,10 @@ export function CollectionItems<T extends Item = never>({
         flushSync(() => {
           processVisibleItems(scrollingElement);
         });
+        const lastScrollTop = lastScrollTopRef.current;
+        const scrollOffset = getScrollOffset(scrollingElement, horizontal);
+        lastScrollTopRef.current = scrollOffset;
+        scrollingReverseRef.current = scrollOffset < lastScrollTop;
       };
       viewport.addEventListener("scroll", onScroll, { passive: true });
       return () => viewport.removeEventListener("scroll", onScroll);
@@ -528,6 +520,7 @@ export function CollectionItems<T extends Item = never>({
       viewport.addEventListener("resize", onResize, { passive: true });
       return () => viewport.removeEventListener("resize", onResize);
     };
+    processVisibleItems(scrollingElement);
     return chain(scroll(), observeScrollingElement(), observeWindow());
   }, [processVisibleItems]);
 
@@ -535,12 +528,15 @@ export function CollectionItems<T extends Item = never>({
     if (typeof ResizeObserver !== "function") return;
     const observedElements = new WeakSet<Element>();
     return new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      if (!observedElements.has(entry.target)) {
-        observedElements.add(entry.target);
-        return;
-      }
-      updateElements();
+      // if (!entry) return;
+      // if (!entry.target.isConnected) return;
+      // if (!observedElements.has(entry.target)) {
+      //   observedElements.add(entry.target);
+      //   return;
+      // }
+      flushSync(() => {
+        updateElements();
+      });
     });
   }, [updateElements]);
 
@@ -560,21 +556,19 @@ export function CollectionItems<T extends Item = never>({
       const itemId = getItemId(item, index, baseId);
       const itemData = data.get(itemId);
       const defaultOffset = itemSize ? itemSize * index + gap * index : 0;
-      const offset = itemData?.start ?? defaultOffset;
-      const axis = horizontal ? "X" : "Y";
-      const size = itemData ? itemData.end - itemData.start : itemSize;
+      const offset = itemData?.start || defaultOffset;
       const baseItemProps: BaseItemProps = {
         id: itemId,
         ref: itemRef,
         style: {
-          // @ts-expect-error
-          "--size": size,
-          transform: `translate${axis}(${offset}px)`,
           position: "absolute",
-          left: 0,
-          top: 0,
+          left: horizontal ? offset : 0,
+          top: horizontal ? 0 : offset,
         },
       };
+      if (itemSize) {
+        baseItemProps.style[horizontal ? "width" : "height"] = itemSize;
+      }
       if (item == null) return baseItemProps as ItemProps<T>;
       const itemProps = getItemObject(item);
       return {
@@ -590,7 +584,8 @@ export function CollectionItems<T extends Item = never>({
   );
 
   const children = useMemo(() => {
-    const itemsProps: ItemProps<T>[] = [];
+    if (!renderItem) return null;
+    const nodes: ReactNode[] = [];
     const length = getItemsLength(items);
     for (let index = 0; index < length; index += 1) {
       const item = getItem(items, index);
@@ -598,24 +593,39 @@ export function CollectionItems<T extends Item = never>({
       if (!visibleIds.includes(itemId)) continue;
       const itemProps = getItemProps(item, index);
       if (!itemProps) continue;
-      itemsProps.push(itemProps);
+      nodes.push(renderItem(itemProps, index));
     }
-    if (!renderItem) return null;
-    return itemsProps.map(renderItem);
-  }, [items, baseId, visibleIds, getItemProps, renderItem]);
+    return nodes;
+  }, [renderItem, items, baseId, visibleIds, getItemProps]);
 
-  const sizeProperty = horizontal ? "width" : "height";
-  const end = useMemo(getEnd, [getEnd]);
   const styleProp = props.style;
+  const sizeProperty = horizontal ? "width" : "height";
+
+  const prevEndRef = useRef(totalSize);
+
+  useSafeLayoutEffect(() => {
+    if (!scrollingReverseRef.current) return;
+    const prevEnd = prevEndRef.current;
+    prevEndRef.current = totalSize;
+    if (!prevEnd) return;
+    const element = ref.current;
+    if (!element) return;
+    const scrollingElement = getScrollingElement(element);
+    if (!scrollingElement) return;
+    const viewport = getViewport(scrollingElement);
+    if (!viewport) return;
+    // console.log({ prevEnd, totalSize });
+    // viewport.scrollBy({ top: totalSize - prevEnd });
+  }, [totalSize]);
 
   const style = useMemo(
     () => ({
       flex: "none",
       position: "relative" as const,
-      [sizeProperty]: end,
+      [sizeProperty]: totalSize,
       ...styleProp,
     }),
-    [styleProp, sizeProperty, end]
+    [styleProp, sizeProperty, totalSize]
   );
 
   props = {
@@ -625,10 +635,22 @@ export function CollectionItems<T extends Item = never>({
     ref: useMergeRefs(ref, props.ref),
   };
 
-  return createElement("div", { ...props, children });
+  const element = createElement("div", { ...props, children });
+
+  const childrenData = useMemo(() => new Map<string, Data>(), []);
+  const providerValue: CollectionRendererContextProps = useMemo(
+    () => ({ store, orientation, overscan, childrenData }),
+    [store, orientation, overscan, childrenData]
+  );
+
+  return (
+    <CollectionRendererContext.Provider value={providerValue}>
+      {element}
+    </CollectionRendererContext.Provider>
+  );
 }
 
-export interface CollectionItemsOptions<T extends Item = never> {
+export interface CollectionRendererOptions<T extends Item = any> {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -666,13 +688,13 @@ export interface CollectionItemsOptions<T extends Item = never> {
    *
    * @example
    * ```jsx
-   * <CollectionItems items={1000}>
+   * <CollectionRenderer items={1000}>
    *   {(item, index) => (
    *     <CollectionItem key={item.id} {...item}>
    *       Item {index}
    *     </CollectionItem>
    *   )}
-   * </CollectionItems>
+   * </CollectionRenderer>
    * ```
    */
   items?: Items<T>;
@@ -688,9 +710,9 @@ export interface CollectionItemsOptions<T extends Item = never> {
    *
    * @example
    * ```jsx
-   * <CollectionItems items={items} initialItems={8}>
+   * <CollectionRenderer items={items} initialItems={8}>
    *   {(item) => <CollectionItem key={item.id} {...item} />}
-   * </CollectionItems>
+   * </CollectionRenderer>
    * ```
    */
   initialItems?: Items<T>;
@@ -740,6 +762,6 @@ export interface CollectionItemsOptions<T extends Item = never> {
   render?: RenderProp | ReactElement;
 }
 
-export interface CollectionItemsProps<T extends Item = never>
+export interface CollectionRendererProps<T extends Item = any>
   extends Omit<ComponentPropsWithRef<"div">, "children">,
-    CollectionItemsOptions<T> {}
+    CollectionRendererOptions<T> {}

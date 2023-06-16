@@ -210,7 +210,7 @@
     "./combobox/combobox-cancel": "./src/combobox/combobox-cancel.tsx",
     "./collection/collection": "./src/collection/collection.tsx",
     "./collection/collection-store": "./src/collection/collection-store.ts",
-    "./collection/collection-items": "./src/collection/collection-items.tsx",
+    "./collection/collection-renderer": "./src/collection/collection-renderer.tsx",
     "./collection/collection-item": "./src/collection/collection-item.ts",
     "./collection/collection-context": "./src/collection/collection-context.ts",
     "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",

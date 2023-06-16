@@ -1,7 +1,7 @@
 import "./style.css";
-import { useDeferredValue, useMemo } from "react";
+import { useCallback, useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
-import { CollectionItems } from "@ariakit/react-core/collection/collection-items";
+import { CollectionRenderer } from "@ariakit/react-core/collection/collection-renderer";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
 
@@ -135,23 +135,69 @@ export default function Example() {
   return (
     <>
       <div className="wrapper">
-        <div style={{ height: 320, overflow: "auto" }}>
-          <CollectionItems items={items} gap={40} overscan={1}>
-            {({ label, children, ...item }) => (
+        <div
+          ref={useCallback((element: HTMLElement | null) => {
+            if (!element) return;
+            setTimeout(() => {
+              // element.scrollTop = element.scrollHeight;
+            }, 100);
+          }, [])}
+          style={{
+            height: 320,
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column-reverse",
+            overscrollBehavior: "contain",
+          }}
+        >
+          {/* <CollectionItems items={20}>
+            {(item, index) => (
               <div key={item.id} {...item}>
-                <div className="label">{label}</div>
+                {index} {item.id}
+              </div>
+            )}
+          </CollectionItems> */}
+          <CollectionRenderer
+            items={items}
+            gap={40}
+            // overscan={0}
+            // estimatedItemSize={1000}
+            // initialItems={-1}
+            // itemSize={1008 + 24}
+          >
+            {({ label, children, ...item }) => (
+              <div key={item.id} {...item} className="w-full">
+                <div
+                  // className="label"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    left: 0,
+                    zIndex: 40,
+                    marginBottom: 16,
+                  }}
+                >
+                  {label}
+                </div>
                 {children && (
-                  <CollectionItems items={children}>
+                  <CollectionRenderer
+                    items={children}
+                    id={`${item.id}/items`}
+                    gap={8}
+                    // estimatedItemSize={24}
+                    // initialItems={-20}
+                    // itemSize={24}
+                  >
                     {({ label, ...item }) => (
-                      <div key={item.id} {...item}>
+                      <div key={item.id} {...item} className="w-full">
                         {label}
                       </div>
                     )}
-                  </CollectionItems>
+                  </CollectionRenderer>
                 )}
               </div>
             )}
-          </CollectionItems>
+          </CollectionRenderer>
         </div>
         <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
         <Ariakit.Select store={select} className="select" />
