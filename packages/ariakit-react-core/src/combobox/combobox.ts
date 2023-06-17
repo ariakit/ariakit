@@ -7,7 +7,7 @@ import type {
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { getPopupRole } from "@ariakit/core/utils/dom";
+import { getPopupRole, getScrollingElement } from "@ariakit/core/utils/dom";
 import {
   isFocusEventOutside,
   queueBeforeEvent,
@@ -132,6 +132,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     );
     const items = store.useState("renderedItems");
     const open = store.useState("open");
+    const contentElement = store.useState("contentElement");
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -203,6 +204,24 @@ export const useCombobox = createHook<ComboboxOptions>(
       storeValue,
     ]);
 
+    const scrollingElementRef = useRef<Element | null>(null);
+
+    // Disable the autoSelect behavior when the user scrolls the combobox
+    // content. This prevents the focus from moving to the first item on
+    // virtualized and infinite lists.
+    useEffect(() => {
+      if (!open) return;
+      if (!contentElement) return;
+      const scrollingElement = getScrollingElement(contentElement);
+      if (!scrollingElement) return;
+      scrollingElementRef.current = scrollingElement;
+      const onScroll = () => {
+        valueChangedRef.current = false;
+      };
+      scrollingElement.addEventListener("scroll", onScroll, { passive: true });
+      return () => scrollingElement.removeEventListener("scroll", onScroll);
+    }, [open, contentElement]);
+
     // Set the changed flag to true whenever the combobox value changes and is
     // not empty. We're doing this here in addition to in the onChange handler
     // because the value may change programmatically.
@@ -236,8 +255,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (autoSelect) return;
       store.setActiveId(null);
     }, [valueUpdated, autoSelect, store]);
-
-    const contentElement = store.useState("contentElement");
 
     // If it has inline auto completion, set the store value when the combobox
     // input or the combobox list lose focus.
@@ -279,6 +296,21 @@ export const useCombobox = createHook<ComboboxOptions>(
           const caretAtEnd = target.selectionStart === target.value.length;
           setCanInline(textInserted && caretAtEnd);
         }
+      }
+      if (valueChangedRef.current && scrollingElementRef.current) {
+        // When the combobox content element is scrolled, the valueChanged flag
+        // will be disabled so the first item is not auto selected. However,
+        // when the value is updated, the combobox will immediately auto select
+        // the first item, which could cause the content element to scroll to
+        // the top, disabling the auto select as a result. To prevent this, we
+        // need to re-enable the valueChanged flag on the next scroll event
+        // after the value is updated.
+        const scrollingElement = scrollingElementRef.current;
+        const onScroll = () => {
+          valueChangedRef.current = true;
+        };
+        const options = { passive: true, once: true };
+        scrollingElement.addEventListener("scroll", onScroll, options);
       }
       if (showOnChangeProp(event)) {
         store.show();
@@ -345,9 +377,9 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
+        valueChangedRef.current = false;
         onKeyDownProp?.(event);
         if (event.defaultPrevented) return;
-        valueChangedRef.current = false;
         if (event.ctrlKey) return;
         if (event.altKey) return;
         if (event.shiftKey) return;
