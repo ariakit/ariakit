@@ -204,15 +204,30 @@ export const useCombobox = createHook<ComboboxOptions>(
       storeValue,
     ]);
 
+    const scrollingElementRef = useRef<Element | null>(null);
+
+    // Disable the autoSelect behavior when the user scrolls the combobox
+    // content. This prevents the focus from moving to the first item on
+    // virtualized and infinite lists.
+    useEffect(() => {
+      if (!open) return;
+      if (!autoSelect) return;
+      if (!contentElement) return;
+      const scrollingElement = getScrollingElement(contentElement);
+      if (!scrollingElement) return;
+      scrollingElementRef.current = scrollingElement;
+      const onScroll = () => (valueChangedRef.current = false);
+      scrollingElement.addEventListener("scroll", onScroll, { passive: true });
+      return () => scrollingElement.removeEventListener("scroll", onScroll);
+    }, [open, autoSelect, contentElement]);
+
     // Set the changed flag to true whenever the combobox value changes and is
     // not empty. We're doing this here in addition to in the onChange handler
     // because the value may change programmatically.
     useSafeLayoutEffect(() => {
       if (!storeValue) return;
       if (composingRef.current) return;
-      // TODO: Abstract this
       valueChangedRef.current = true;
-      scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
     }, [storeValue]);
 
     // Reset the changed flag when the popover is not open so we don't try to
@@ -223,26 +238,11 @@ export const useCombobox = createHook<ComboboxOptions>(
       valueChangedRef.current = false;
     }, [open]);
 
-    const scrollingElementRef = useRef<Element | null>(null);
-
-    useEffect(() => {
-      if (!open) return;
-      if (!contentElement) return;
-      const scrollingElement = getScrollingElement(contentElement);
-      if (!scrollingElement) return;
-      scrollingElementRef.current = scrollingElement;
-    }, [open, contentElement]);
-
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!valueChangedRef.current) return;
-      const scrollingElement = scrollingElementRef.current;
-      if (scrollingElement) {
-        if (scrollingElement?.scrollTop !== 0) return;
-        if (scrollingElement?.scrollLeft !== 0) return;
-      }
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
@@ -283,7 +283,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       const { target } = event;
       const nativeEvent = event.nativeEvent;
       valueChangedRef.current = true;
-      scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
       if (isInputEvent(nativeEvent)) {
         if (nativeEvent.isComposing) {
           valueChangedRef.current = false;
@@ -296,6 +295,19 @@ export const useCombobox = createHook<ComboboxOptions>(
           const caretAtEnd = target.selectionStart === target.value.length;
           setCanInline(textInserted && caretAtEnd);
         }
+      }
+      if (valueChangedRef.current && scrollingElementRef.current) {
+        // When the combobox content element is scrolled, the valueChanged flag
+        // will be disabled so the first item is not auto selected. However,
+        // when the value is updated, the combobox will immediately auto select
+        // the first item, which could cause the content element to scroll to
+        // the top, disabling the auto select as a result. To prevent this, we
+        // need to re-enable the valueChanged flag on the next scroll event
+        // after the value is updated.
+        const scrollingElement = scrollingElementRef.current;
+        const onScroll = () => (valueChangedRef.current = false);
+        const options = { passive: true, once: true };
+        scrollingElement.addEventListener("scroll", onScroll, options);
       }
       if (showOnChangeProp(event)) {
         store.show();
@@ -333,7 +345,6 @@ export const useCombobox = createHook<ComboboxOptions>(
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
         valueChangedRef.current = true;
-        scrollingElementRef.current?.scrollTo({ top: 0, left: 0 });
         composingRef.current = false;
         if (!autoSelect) return;
         forceValueUpdate();

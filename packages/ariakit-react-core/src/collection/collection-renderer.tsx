@@ -524,11 +524,12 @@ export function CollectionRenderer<T extends Item = any>({
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
+      if (itemSize) return;
       elements.set(element.id, element);
       updateElements();
       elementObserver?.observe(element);
     },
-    [elements, updateElements, elementObserver]
+    [itemSize, elements, updateElements, elementObserver]
   );
 
   const getItemProps = useCallback(
