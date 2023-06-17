@@ -48,10 +48,10 @@ spawn.sync(
 
 fse.copySync(esmDir, cjsDir);
 
-const builds = [
+const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
-];
+]);
 
 for (const { format, outDir } of builds) {
   await build({
