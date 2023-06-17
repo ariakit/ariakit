@@ -211,15 +211,16 @@ export const useCombobox = createHook<ComboboxOptions>(
     // virtualized and infinite lists.
     useEffect(() => {
       if (!open) return;
-      if (!autoSelect) return;
       if (!contentElement) return;
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
       scrollingElementRef.current = scrollingElement;
-      const onScroll = () => (valueChangedRef.current = false);
+      const onScroll = () => {
+        valueChangedRef.current = false;
+      };
       scrollingElement.addEventListener("scroll", onScroll, { passive: true });
       return () => scrollingElement.removeEventListener("scroll", onScroll);
-    }, [open, autoSelect, contentElement]);
+    }, [open, contentElement]);
 
     // Set the changed flag to true whenever the combobox value changes and is
     // not empty. We're doing this here in addition to in the onChange handler
@@ -305,7 +306,9 @@ export const useCombobox = createHook<ComboboxOptions>(
         // need to re-enable the valueChanged flag on the next scroll event
         // after the value is updated.
         const scrollingElement = scrollingElementRef.current;
-        const onScroll = () => (valueChangedRef.current = false);
+        const onScroll = () => {
+          valueChangedRef.current = true;
+        };
         const options = { passive: true, once: true };
         scrollingElement.addEventListener("scroll", onScroll, options);
       }
