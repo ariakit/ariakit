@@ -2,21 +2,23 @@ import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { CollectionRenderer } from "@ariakit/react-core/collection/collection-renderer";
+import { kebabCase } from "lodash-es";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
 
 const emptyArr = [] as never[];
 
 const defaultItems = list.map((value) => ({
-  id: "id-" + value,
+  id: kebabCase(value),
   value,
   children: value,
+  disabled: false,
 }));
 
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({
-    resetValueOnHide: true,
     defaultItems,
+    resetValueOnHide: true,
   });
   const select = Ariakit.useSelectStore({
     combobox,
@@ -36,26 +38,71 @@ export default function Example() {
     });
   }, [mounted, deferredValue]);
 
-  const selectValue = select.useState("value");
-  const activeId = select.useState("activeId");
-  const valueId = !mounted
-    ? undefined
-    : defaultItems.find((item) => item.value === selectValue)?.id;
-  const activeIndex = !mounted
-    ? undefined
-    : defaultItems.findIndex((item) => item.id === activeId);
+  const valueIndex = select.useState((state) => {
+    if (!mounted) return;
+    return matches.findIndex((item) => item.value === state.value);
+  });
 
-  const visibleIds = useMemo(() => {
+  const activeIndex = select.useState((state) => {
+    if (!mounted) return;
+    return matches.findIndex((item) => item.id === state.activeId);
+  });
+
+  const previousIndex = useMemo(() => {
+    if (activeIndex == null) return;
+    let index = activeIndex - 1;
+    let item = matches.at(index);
+    while (index >= 0 && item?.disabled) {
+      index -= 1;
+      item = matches.at(index);
+    }
+    return index;
+  }, [activeIndex, matches]);
+
+  const nextIndex = useMemo(() => {
+    if (activeIndex == null) return;
+    let index = activeIndex + 1;
+    let item = matches.at(index);
+    while (index < matches.length && item?.disabled) {
+      index += 1;
+      item = matches.at(index);
+    }
+    return index;
+  }, [activeIndex, matches]);
+
+  const firstIndex = useMemo(() => {
+    if (!mounted) return;
+    let index = 0;
+    let item = matches.at(index);
+    while (index < matches.length && item?.disabled) {
+      index += 1;
+      item = matches.at(index);
+    }
+    return index;
+  }, [mounted, matches]);
+
+  const lastIndex = useMemo(() => {
+    if (!mounted) return;
+    let index = matches.length - 1;
+    let item = matches.at(index);
+    while (index >= 0 && item?.disabled) {
+      index -= 1;
+      item = matches.at(index);
+    }
+    return index;
+  }, [mounted, matches]);
+
+  const persistentIndices = useMemo(() => {
     if (!mounted) return emptyArr;
     return [
-      defaultItems.at(0)?.id,
-      activeIndex != null && defaultItems.at(activeIndex - 1)?.id,
-      activeId,
-      activeIndex != null && defaultItems.at(activeIndex + 1)?.id,
-      valueId,
-      defaultItems.at(-1)?.id,
-    ].filter((value): value is string => value != null);
-  }, [mounted, valueId, activeIndex]);
+      firstIndex,
+      previousIndex,
+      activeIndex,
+      nextIndex,
+      valueIndex,
+      lastIndex,
+    ].filter((value): value is number => value != null);
+  }, [mounted, firstIndex, previousIndex, activeIndex, nextIndex, lastIndex]);
 
   return (
     <div className="wrapper">
@@ -79,8 +126,8 @@ export default function Example() {
           <Ariakit.Collection store={combobox}>
             <CollectionRenderer
               items={matches}
-              visibleIds={visibleIds}
               itemSize={40}
+              persistentIndices={persistentIndices}
             >
               {({ value, ...item }) => (
                 <Ariakit.ComboboxItem

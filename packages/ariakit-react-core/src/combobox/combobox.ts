@@ -363,9 +363,9 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
+        valueChangedRef.current = false;
         onKeyDownProp?.(event);
         if (event.defaultPrevented) return;
-        valueChangedRef.current = false;
         if (event.ctrlKey) return;
         if (event.altKey) return;
         if (event.shiftKey) return;

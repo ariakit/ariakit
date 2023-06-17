@@ -1,3 +1,5 @@
+// TODO: Go back to indices instead of ids and improve performance
+// visibleIds should be persistentIndices.
 import type {
   CSSProperties,
   ComponentPropsWithRef,
@@ -124,10 +126,13 @@ function getItemId(item: Item, index: number, baseId?: string) {
 function getItem<T extends Item = any>(
   items: Items<T>,
   index: number
-): RawItemProps<T> {
-  if (typeof items === "number") return {} as RawItemProps<T>;
+): RawItemProps<T> | null {
+  if (typeof items === "number") {
+    if (index >= items) return null;
+    return {} as RawItemProps<T>;
+  }
   const item = items[index];
-  invariant(item, `Couldn't find item at index ${index}`);
+  if (!item) return null;
   if (typeof item === "object") return item as RawItemProps<T>;
   return { value: item } as unknown as RawItemProps<T>;
 }
@@ -145,7 +150,10 @@ function getItemSize(
     const size = style[prop];
     if (typeof size === "number") return size;
   }
-  const element = itemObject.element || fallbackElement;
+  const element =
+    fallbackElement !== false
+      ? itemObject.element || fallbackElement
+      : undefined;
   if (element && element.isConnected) {
     return element.getBoundingClientRect()[prop];
   }
@@ -271,7 +279,7 @@ export function CollectionRenderer<T extends Item = any>({
   estimatedItemSize = 40,
   gap = 0,
   overscan: overscanProp,
-  visibleIds: visibleIdsProp,
+  persistentIndices,
   children: renderItem,
   ...props
 }: CollectionRendererProps<T>) {
@@ -308,25 +316,31 @@ export function CollectionRenderer<T extends Item = any>({
     return parentData?.get(baseId) || new Map();
   });
 
-  const [visibleIds, setVisibleIds] = useState<string[]>(() => {
+  const [visibleIndices, setVisibleIndices] = useState<number[]>(() => {
     if (!initialItems) return [];
-    const initialLength = getItemsLength(initialItems);
-    if (!initialLength) return [];
-    const totalLength = getItemsLength(items);
-    const ids: string[] = [];
-    const fromEnd = typeof initialItems === "number" && initialItems < 0;
-    const finalItems = fromEnd ? items : initialItems;
-    for (
-      let index = fromEnd ? totalLength + initialItems : 0;
-      index < (fromEnd ? totalLength : initialLength);
-      index += 1
-    ) {
-      const item = getItem(finalItems, index);
-      const id = getItemId(item, index, baseId);
-      ids.push(id);
-    }
-    return ids;
+    const length = getItemsLength(items);
+    const initialLength = Math.min(length, Math.abs(initialItems));
+    return Array.from({ length: initialLength }, (_, index) => {
+      if (initialItems < 0) return length - index - 1;
+      return index;
+    });
   });
+
+  const missingPersistentIndices = useMemo(() => {
+    if (!persistentIndices?.length) return false;
+    return persistentIndices.some((index) => !visibleIndices.includes(index));
+  }, [persistentIndices, visibleIndices]);
+
+  if (missingPersistentIndices) {
+    setVisibleIndices((indices) => {
+      const nextIndices = [...indices];
+      persistentIndices?.forEach((index) => {
+        if (nextIndices.includes(index)) return;
+        nextIndices.push(index);
+      });
+      return nextIndices.sort((a, b) => a - b);
+    });
+  }
 
   const totalSize = useMemo(() => {
     return getItemsEnd({
@@ -343,11 +357,11 @@ export function CollectionRenderer<T extends Item = any>({
   useEffect(() => {
     if (!baseId) return;
     parentData?.set(baseId, data);
-  }, [parentData, baseId, data]);
+  }, [baseId, parentData, data]);
 
   useEffect(() => {
-    if (!baseId) return;
     if (itemSize != null) return;
+    if (!baseId) return;
     if (!items) return;
     const length = getItemsLength(items);
     let nextData: Data | undefined;
@@ -397,8 +411,8 @@ export function CollectionRenderer<T extends Item = any>({
     }
   }, [
     elementsUpdated,
-    baseId,
     itemSize,
+    baseId,
     items,
     data,
     horizontal,
@@ -414,16 +428,16 @@ export function CollectionRenderer<T extends Item = any>({
       if (!baseId) return;
       if (!data.size && !itemSize) return;
 
-      const offset = getOffset(container, scrollingElement, horizontal);
       const length = getItemsLength(items);
+      const offset = getOffset(container, scrollingElement, horizontal);
       const scrollOffset = getScrollOffset(scrollingElement, horizontal);
 
       const getItemOffset = (index: number) => {
+        if (itemSize) return itemSize * index + gap * index;
         const item = getItem(items, index);
         const itemId = getItemId(item, index, baseId);
         const itemData = data.get(itemId);
-        const defaultOffset = itemSize ? itemSize * index + gap * index : 0;
-        return itemData?.start ?? defaultOffset;
+        return itemData?.start ?? 0;
       };
 
       const startTarget = scrollOffset - offset;
@@ -442,17 +456,14 @@ export function CollectionRenderer<T extends Item = any>({
       const start = Math.max(initialStart - overscan, 0);
       const end = Math.min(initialEnd + overscan, length);
 
-      const ids: string[] = [];
+      const indices = Array.from(
+        { length: end - start },
+        (_, index) => index + start
+      );
 
-      for (let index = start; index < end; index += 1) {
-        const item = getItem(items, index);
-        const itemId = getItemId(item, index, baseId);
-        ids.push(itemId);
-      }
-
-      setVisibleIds((prevIds) => {
-        if (shallowEqual(prevIds, ids)) return prevIds;
-        return ids;
+      setVisibleIndices((prevIndices) => {
+        if (shallowEqual(prevIndices, indices)) return prevIndices;
+        return indices;
       });
     },
     [elementsUpdated, baseId, data, itemSize, horizontal, items, gap, overscan]
@@ -522,11 +533,10 @@ export function CollectionRenderer<T extends Item = any>({
 
   const getItemProps = useCallback(
     <Item extends T = T>(item: RawItemProps<Item>, index: number) => {
-      if (!baseId) return;
       const itemId = getItemId(item, index, baseId);
-      const itemData = data.get(itemId);
-      const defaultOffset = itemSize ? itemSize * index + gap * index : 0;
-      const offset = itemData?.start || defaultOffset;
+      const offset = itemSize
+        ? itemSize * index + gap * index
+        : data.get(itemId)?.start ?? 0;
       const baseItemProps: BaseItemProps = {
         id: itemId,
         ref: itemRef,
@@ -554,20 +564,15 @@ export function CollectionRenderer<T extends Item = any>({
   );
 
   const itemsProps = useMemo(() => {
-    if (!renderItem) return null;
-    const nodes: Array<{ itemProps: ItemProps<T>; index: number }> = [];
-    const allVisibleIds = new Set([...visibleIds, ...(visibleIdsProp || [])]);
-    const length = getItemsLength(items);
-    for (let index = 0; index < length; index += 1) {
-      const item = getItem(items, index);
-      const itemId = getItemId(item, index, baseId);
-      if (!allVisibleIds.has(itemId)) continue;
-      const itemProps = getItemProps(item, index);
-      if (!itemProps) continue;
-      nodes.push({ itemProps, index });
-    }
-    return nodes;
-  }, [items, baseId, visibleIds, visibleIdsProp, getItemProps]);
+    return visibleIndices
+      .map((index) => {
+        const item = getItem(items, index);
+        if (!item) return;
+        const itemProps = getItemProps(item, index);
+        return { itemProps, index };
+      })
+      .filter((value): value is NonNullable<typeof value> => value != null);
+  }, [items, visibleIndices, getItemProps]);
 
   const children = itemsProps?.map(({ itemProps, index }) => {
     return renderItem?.(itemProps, index);
@@ -657,14 +662,7 @@ export interface CollectionRendererOptions<T extends Item = any> {
    */
   items?: Items<T>;
   /**
-   * The items to be rendered by default before the component is hydrated.
-   * Similarly to the
-   * [`items`](https://ariakit.org/reference/collection-items#items) prop, this
-   * prop can be either a memoized array of items or a number representing the
-   * number of items to be rendered.
-   *
-   * This prop will still accept a `number` value even if the `items` prop is an
-   * array, in  which case the number will be used to slice the array of items.
+   * TODO: Description.
    *
    * @example
    * ```jsx
@@ -673,7 +671,7 @@ export interface CollectionRendererOptions<T extends Item = any> {
    * </CollectionRenderer>
    * ```
    */
-  initialItems?: Items<T>;
+  initialItems?: number;
   /**
    * Whether the items should be rendered vertically or horizontally.
    * @default "vertical"
@@ -703,7 +701,7 @@ export interface CollectionRendererOptions<T extends Item = any> {
   /**
    * TODO: Comment
    */
-  visibleIds?: string[];
+  persistentIndices?: number[];
   /**
    * The `children` should be a function that receives an item and its index and
    * returns a React element.

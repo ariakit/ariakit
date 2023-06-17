@@ -365,7 +365,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (!isSelfTarget(event)) return;
       const { orientation, items, renderedItems, activeId } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
-      if (activeItem) return;
+      if (activeItem?.element?.isConnected) return;
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const grid = isGrid(renderedItems);
