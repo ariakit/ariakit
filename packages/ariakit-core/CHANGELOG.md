@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.6
+
+### Patch Changes
+
+- Fixed `defaultItems` passed to the collection store being overriden when new items are added. ([#2559](https://github.com/ariakit/ariakit/pull/2559))
+
 ## 0.2.5
 
 ### Patch Changes
