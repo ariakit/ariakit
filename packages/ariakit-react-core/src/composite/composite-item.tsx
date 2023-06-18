@@ -351,7 +351,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const shouldTabIndex = useStoreState(
       store,
-      (state) => !state.virtualFocus && isActiveItem
+      (state) => !store?.item(id) || (!state.virtualFocus && isActiveItem)
     );
 
     props = {

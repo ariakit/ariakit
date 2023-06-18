@@ -1,5 +1,19 @@
 # @ariakit/react
 
+## 0.2.10
+
+### Patch Changes
+
+- Fixed `defaultItems` passed to the collection store being overriden when new items are added. ([#2559](https://github.com/ariakit/ariakit/pull/2559))
+
+- Fixed `Combobox` with the `autoSelect` prop not allowing the user to scroll when the list of items is virtualized. ([#2562](https://github.com/ariakit/ariakit/pull/2562))
+
+- Fixed `Composite` not moving focus to items by pressing the arrow keys when the active item isn't rendered. ([#2561](https://github.com/ariakit/ariakit/pull/2561))
+
+- Fixed `CompositeItem` not being tabbable before hydration. ([#2565](https://github.com/ariakit/ariakit/pull/2565))
+
+- Updated dependencies: `@ariakit/react-core@0.2.10`.
+
 ## 0.2.9
 
 ### Patch Changes
