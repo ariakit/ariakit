@@ -1,7 +1,7 @@
 import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
-import { CompositeRenderer } from "@ariakit/react-core/composite/composite-renderer";
+import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import { kebabCase } from "lodash-es";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
@@ -38,16 +38,6 @@ export default function Example() {
     });
   }, [mounted, deferredValue]);
 
-  const valueIndex = select.useState((state) => {
-    if (!mounted) return;
-    return matches.findIndex((item) => item.value === state.value);
-  });
-
-  const persistentIndices = useMemo(() => {
-    if (!mounted) return emptyArr;
-    return [valueIndex].filter((value): value is number => value != null);
-  }, [mounted, valueIndex]);
-
   return (
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
@@ -68,11 +58,7 @@ export default function Example() {
         </div>
         <Ariakit.ComboboxList store={combobox}>
           <Ariakit.Collection store={combobox}>
-            <CompositeRenderer
-              items={matches}
-              itemSize={40}
-              persistentIndices={persistentIndices}
-            >
+            <SelectRenderer items={matches} itemSize={40}>
               {({ value, ...item }) => (
                 <Ariakit.ComboboxItem
                   {...item}
@@ -82,7 +68,7 @@ export default function Example() {
                   render={<Ariakit.SelectItem value={value} />}
                 />
               )}
-            </CompositeRenderer>
+            </SelectRenderer>
           </Ariakit.Collection>
         </Ariakit.ComboboxList>
       </Ariakit.SelectPopover>

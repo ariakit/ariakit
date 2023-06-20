@@ -19,6 +19,20 @@ type Store<T extends Item = any> = CompositeStore<
   T extends CollectionStoreItem ? T : CompositeStoreItem
 >;
 
+function findIndexById<T extends Item = any>(
+  items: readonly T[],
+  id: string
+): number {
+  return items.findIndex((item) => {
+    const object = getCollectionItemObject(item);
+    if (object.id === id) return true;
+    if (object.items?.length) return !!findIndexById(object.items, id);
+    const ids = id.split("/");
+    if (ids.length === 1) return false;
+    return ids.some((id) => object.id === id);
+  });
+}
+
 function CompositeRendererImpl<T extends Item = any>(
   {
     store: storeProp,
@@ -37,11 +51,8 @@ function CompositeRendererImpl<T extends Item = any>(
     ) ?? orientationProp;
 
   const items =
-    useStoreState(
-      store,
-      (state) =>
-        props.items ?? (state.items as CompositeRendererOptions<T>["items"])
-    ) || props.items;
+    useStoreState(store, (state) => props.items ?? (state.items as T[])) ||
+    props.items;
 
   const firstIndex = useMemo(() => {
     if (!items) return -1;
@@ -64,12 +75,11 @@ function CompositeRendererImpl<T extends Item = any>(
   const activeId = useStoreState(store, "activeId");
 
   const activeIndex = useMemo(() => {
+    if (activeId == null) return -1;
     if (!items) return -1;
     if (typeof items === "number") return -1;
     if (!items.length) return -1;
-    return items.findIndex(
-      (item) => getCollectionItemObject(item).id === activeId
-    );
+    return findIndexById(items, activeId);
   }, [items, activeId]);
 
   const previousIndex = useMemo(() => {
@@ -136,19 +146,6 @@ export const CompositeRenderer = forwardRef(
 
 export interface CompositeRendererOptions<T extends Item = any>
   extends Omit<CollectionRendererOptions<T>, "store"> {
-  /**
-   * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the parent
-   * [Composite](https://ariakit.org/components/composite) component's
-   * context will be used.
-   *
-   * The store
-   * [`items`](https://ariakit.org/reference/use-composite-store#items) state
-   * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/composite-items#items) prop is not
-   * provided.
-   */
   store?: Store<T>;
 }
 

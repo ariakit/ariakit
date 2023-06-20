@@ -68,6 +68,7 @@
     "./select/select-store": "./src/select/select-store.ts",
     "./select/select-separator": "./src/select/select-separator.ts",
     "./select/select-row": "./src/select/select-row.ts",
+    "./select/select-renderer": "./src/select/select-renderer.tsx",
     "./select/select-popover": "./src/select/select-popover.ts",
     "./select/select-list": "./src/select/select-list.tsx",
     "./select/select-label": "./src/select/select-label.ts",
