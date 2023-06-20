@@ -248,6 +248,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
       store.move(store.first() ?? null);
+      // TODO: Test: press S then move the mouse to the second item.
+      return store.subscribe(() => {
+        valueChangedRef.current = false;
+      }, ["activeId"]);
     }, [store, valueUpdated, storeValue, autoSelect, items]);
 
     // Focus on the combobox input on type.

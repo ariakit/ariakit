@@ -1,15 +1,33 @@
-import type { ComponentPropsWithRef, ForwardedRef } from "react";
+import type { CSSProperties, ComponentPropsWithRef, ForwardedRef } from "react";
 import { forwardRef, useContext, useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
+import { invariant } from "@ariakit/core/utils/misc";
+import type { AnyObject } from "@ariakit/core/utils/types";
 import { getCollectionItemObject } from "../collection/collection-renderer.js";
-import type { CollectionRendererItem } from "../collection/collection-renderer.js";
 import { CompositeRenderer } from "../composite/composite-renderer.js";
 import type { CompositeRendererOptions } from "../composite/composite-renderer.js";
 import { useStoreState } from "../utils/store.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
 
-type Item = CollectionRendererItem;
+interface ItemObject
+  extends AnyObject,
+    Pick<SelectRendererOptions, "gap" | "orientation"> {
+  id?: string;
+  element?: HTMLElement | null;
+  style?: CSSProperties;
+  items?: Item[];
+  disabled?: boolean;
+  value?: string;
+}
+
+type Item =
+  | ItemObject
+  | Omit<string, string>
+  | Omit<number, string>
+  | Omit<boolean, string>
+  | null
+  | undefined;
 
 function findIndicesByValue<V extends SelectStoreValue>(
   items: readonly Item[],
@@ -38,7 +56,7 @@ function findIndicesByValue<V extends SelectStoreValue>(
 
 function SelectRendererImpl<T extends Item = any>(
   {
-    store: storeProp,
+    store,
     orientation: orientationProp,
     persistentIndices: persistentIndicesProp,
     ...props
@@ -46,11 +64,17 @@ function SelectRendererImpl<T extends Item = any>(
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const context = useContext(SelectContext);
-  const store = storeProp || context;
+  store = store || context;
 
-  const items =
-    useStoreState(store, (state) => props.items ?? (state.items as T[])) ||
-    props.items;
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "SelectRenderer must be wrapped in a SelectPopover or SelectList component"
+  );
+
+  const items = store.useState((state) =>
+    state.open ? props.items ?? (state.items as T[]) : 0
+  );
 
   const value = useStoreState(store, "value");
 
@@ -75,6 +99,7 @@ function SelectRendererImpl<T extends Item = any>(
       store={store as any}
       persistentIndices={persistentIndices}
       {...props}
+      items={items}
     />
   );
 }

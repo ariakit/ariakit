@@ -37,6 +37,7 @@ interface ItemObject
   element?: HTMLElement | null;
   style?: CSSProperties;
   items?: Item[];
+  // TODO: Should be in the composite item.
   disabled?: boolean;
 }
 
@@ -248,11 +249,12 @@ function getItemsEnd<T extends Item>(props: {
   horizontal: boolean;
   itemSize?: number;
   estimatedItemSize: number;
+  padding: number;
 }) {
   const length = getItemsLength(props.items);
-  if (!length) return 0;
+  if (!length) return props.padding;
   const lastIndex = length - 1;
-  const totalGap = lastIndex * props.gap;
+  const totalGap = lastIndex * props.gap + props.padding;
   if (props.itemSize != null) {
     return length * props.itemSize + totalGap;
   }
@@ -261,7 +263,7 @@ function getItemsEnd<T extends Item>(props: {
   const lastItem = getItem(props.items, lastIndex);
   const lastItemId = getItemId(lastItem, lastIndex, props.baseId);
   const lastItemData = props.data.get(lastItemId);
-  if (lastItemData?.end) return lastItemData.end;
+  if (lastItemData?.end) return lastItemData.end + props.padding;
   if (!Array.isArray(props.items)) return defaultEnd;
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
@@ -283,6 +285,9 @@ function CollectionRendererImpl<T extends Item = any>(
     overscan: overscanProp,
     persistentIndices,
     children: renderItem,
+    padding = 0,
+    paddingStart = padding,
+    paddingEnd = padding,
     ...props
   }: CollectionRendererProps<T>,
   forwardedRef: ForwardedRef<HTMLDivElement>
@@ -332,13 +337,16 @@ function CollectionRendererImpl<T extends Item = any>(
 
   const missingPersistentIndices = useMemo(() => {
     if (!persistentIndices?.length) return false;
-    return persistentIndices.some((index) => !visibleIndices.includes(index));
+    return persistentIndices.some(
+      (index) => index >= 0 && !visibleIndices.includes(index)
+    );
   }, [persistentIndices, visibleIndices]);
 
   if (missingPersistentIndices) {
     setVisibleIndices((indices) => {
       const nextIndices = [...indices];
       persistentIndices?.forEach((index) => {
+        if (index < 0) return;
         if (nextIndices.includes(index)) return;
         nextIndices.push(index);
       });
@@ -355,8 +363,19 @@ function CollectionRendererImpl<T extends Item = any>(
       horizontal,
       itemSize,
       estimatedItemSize,
+      padding: paddingStart + paddingEnd,
     });
-  }, [baseId, items, data, gap, horizontal, itemSize, estimatedItemSize]);
+  }, [
+    baseId,
+    items,
+    data,
+    gap,
+    horizontal,
+    itemSize,
+    estimatedItemSize,
+    paddingStart,
+    paddingEnd,
+  ]);
 
   useEffect(() => {
     if (!baseId) return;
@@ -369,7 +388,7 @@ function CollectionRendererImpl<T extends Item = any>(
     if (!items) return;
     const length = getItemsLength(items);
     let nextData: Data | undefined;
-    let start = 0;
+    let start = paddingStart;
 
     const avgSize = getAverageSize({
       baseId,
@@ -418,6 +437,7 @@ function CollectionRendererImpl<T extends Item = any>(
     itemSize,
     baseId,
     items,
+    paddingStart,
     data,
     horizontal,
     elements,
@@ -470,7 +490,18 @@ function CollectionRendererImpl<T extends Item = any>(
         return indices;
       });
     },
-    [elementsUpdated, baseId, data, itemSize, horizontal, items, gap, overscan]
+    [
+      elementsUpdated,
+      baseId,
+      data,
+      itemSize,
+      horizontal,
+      items,
+      gap,
+      overscan,
+      // TODO: Test press "B". Optimize
+      persistentIndices,
+    ]
   );
 
   useEffect(() => {
@@ -528,9 +559,10 @@ function CollectionRendererImpl<T extends Item = any>(
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
+      // TODO:
+      updateElements();
       if (itemSize) return;
       elements.set(element.id, element);
-      updateElements();
       elementObserver?.observe(element);
     },
     [itemSize, elements, updateElements, elementObserver]
@@ -571,6 +603,7 @@ function CollectionRendererImpl<T extends Item = any>(
   const itemsProps = useMemo(() => {
     return visibleIndices
       .map((index) => {
+        if (index < 0) return;
         const item = getItem(items, index);
         if (!item) return;
         const itemProps = getItemProps(item, index);
@@ -724,6 +757,9 @@ export interface CollectionRendererOptions<T extends Item = any> {
    */
   children?: (item: ItemProps<T>, index: number) => ReactNode;
   render?: RenderProp | ReactElement;
+  padding?: number;
+  paddingStart?: number;
+  paddingEnd?: number;
 }
 
 export interface CollectionRendererProps<T extends Item = any>
