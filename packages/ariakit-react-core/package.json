@@ -184,6 +184,7 @@
     "./composite/composite-store": "./src/composite/composite-store.ts",
     "./composite/composite-separator": "./src/composite/composite-separator.ts",
     "./composite/composite-row": "./src/composite/composite-row.tsx",
+    "./composite/composite-renderer": "./src/composite/composite-renderer.tsx",
     "./composite/composite-overflow": "./src/composite/composite-overflow.ts",
     "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
     "./composite/composite-overflow-disclosure": "./src/composite/composite-overflow-disclosure.ts",

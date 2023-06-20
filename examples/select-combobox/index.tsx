@@ -1,7 +1,7 @@
 import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
-import { CollectionRenderer } from "@ariakit/react-core/collection/collection-renderer";
+import { CompositeRenderer } from "@ariakit/react-core/composite/composite-renderer";
 import { kebabCase } from "lodash-es";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
@@ -43,66 +43,10 @@ export default function Example() {
     return matches.findIndex((item) => item.value === state.value);
   });
 
-  const activeIndex = select.useState((state) => {
-    if (!mounted) return;
-    return matches.findIndex((item) => item.id === state.activeId);
-  });
-
-  const previousIndex = useMemo(() => {
-    if (activeIndex == null) return;
-    let index = activeIndex - 1;
-    let item = matches.at(index);
-    while (index >= 0 && item?.disabled) {
-      index -= 1;
-      item = matches.at(index);
-    }
-    return index;
-  }, [activeIndex, matches]);
-
-  const nextIndex = useMemo(() => {
-    if (activeIndex == null) return;
-    let index = activeIndex + 1;
-    let item = matches.at(index);
-    while (index < matches.length && item?.disabled) {
-      index += 1;
-      item = matches.at(index);
-    }
-    return index;
-  }, [activeIndex, matches]);
-
-  const firstIndex = useMemo(() => {
-    if (!mounted) return;
-    let index = 0;
-    let item = matches.at(index);
-    while (index < matches.length && item?.disabled) {
-      index += 1;
-      item = matches.at(index);
-    }
-    return index;
-  }, [mounted, matches]);
-
-  const lastIndex = useMemo(() => {
-    if (!mounted) return;
-    let index = matches.length - 1;
-    let item = matches.at(index);
-    while (index >= 0 && item?.disabled) {
-      index -= 1;
-      item = matches.at(index);
-    }
-    return index;
-  }, [mounted, matches]);
-
   const persistentIndices = useMemo(() => {
     if (!mounted) return emptyArr;
-    return [
-      firstIndex,
-      previousIndex,
-      activeIndex,
-      nextIndex,
-      valueIndex,
-      lastIndex,
-    ].filter((value): value is number => value != null);
-  }, [mounted, firstIndex, previousIndex, activeIndex, nextIndex, lastIndex]);
+    return [valueIndex].filter((value): value is number => value != null);
+  }, [mounted, valueIndex]);
 
   return (
     <div className="wrapper">
@@ -124,7 +68,7 @@ export default function Example() {
         </div>
         <Ariakit.ComboboxList store={combobox}>
           <Ariakit.Collection store={combobox}>
-            <CollectionRenderer
+            <CompositeRenderer
               items={matches}
               itemSize={40}
               persistentIndices={persistentIndices}
@@ -138,7 +82,7 @@ export default function Example() {
                   render={<Ariakit.SelectItem value={value} />}
                 />
               )}
-            </CollectionRenderer>
+            </CompositeRenderer>
           </Ariakit.Collection>
         </Ariakit.ComboboxList>
       </Ariakit.SelectPopover>

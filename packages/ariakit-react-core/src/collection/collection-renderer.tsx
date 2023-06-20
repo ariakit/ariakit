@@ -1,14 +1,14 @@
-// TODO: Go back to indices instead of ids and improve performance
-// visibleIds should be persistentIndices.
 import type {
   CSSProperties,
   ComponentPropsWithRef,
+  ForwardedRef,
   ReactElement,
   ReactNode,
   RefCallback,
 } from "react";
 import {
   createContext,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
@@ -37,6 +37,7 @@ interface ItemObject
   element?: HTMLElement | null;
   style?: CSSProperties;
   items?: Item[];
+  disabled?: boolean;
 }
 
 type Item =
@@ -270,19 +271,22 @@ function getItemsEnd<T extends Item>(props: {
   return end + totalGap;
 }
 
-export function CollectionRenderer<T extends Item = any>({
-  store: storeProp,
-  items: itemsProp,
-  initialItems = 0,
-  orientation: orientationProp,
-  itemSize,
-  estimatedItemSize = 40,
-  gap = 0,
-  overscan: overscanProp,
-  persistentIndices,
-  children: renderItem,
-  ...props
-}: CollectionRendererProps<T>) {
+function CollectionRendererImpl<T extends Item = any>(
+  {
+    store: storeProp,
+    items: itemsProp,
+    initialItems = 0,
+    orientation: orientationProp,
+    itemSize,
+    estimatedItemSize = 40,
+    gap = 0,
+    overscan: overscanProp,
+    persistentIndices,
+    children: renderItem,
+    ...props
+  }: CollectionRendererProps<T>,
+  forwardedRef: ForwardedRef<HTMLDivElement>
+) {
   const context = useContext(CollectionContext);
   const store = storeProp || (context as Store<T>);
 
@@ -596,7 +600,7 @@ export function CollectionRenderer<T extends Item = any>({
     id: baseId,
     ...props,
     style,
-    ref: useMergeRefs(ref, props.ref),
+    ref: useMergeRefs(ref, forwardedRef),
   };
 
   const element = createElement("div", { ...props, children });
@@ -613,6 +617,15 @@ export function CollectionRenderer<T extends Item = any>({
     </CollectionRendererContext.Provider>
   );
 }
+
+export const CollectionRenderer = forwardRef(
+  CollectionRendererImpl
+) as typeof CollectionRendererImpl;
+
+export const getCollectionItemObject = getItemObject;
+export const getCollectionItemId = getItemId;
+
+export type CollectionRendererItem = Item;
 
 export interface CollectionRendererOptions<T extends Item = any> {
   /**
