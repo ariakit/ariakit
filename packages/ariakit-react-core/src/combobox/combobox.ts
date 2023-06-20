@@ -311,6 +311,11 @@ export const useCombobox = createHook<ComboboxOptions>(
         };
         const options = { passive: true, once: true };
         scrollingElement.addEventListener("scroll", onScroll, options);
+        // TODO: Test this. SelectCombobox, type "g", then backspace, then move
+        // down with the arrow keys.
+        requestAnimationFrame(() => {
+          scrollingElement.removeEventListener("scroll", onScroll);
+        });
       }
       if (showOnChangeProp(event)) {
         store.show();
