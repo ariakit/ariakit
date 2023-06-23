@@ -13,6 +13,7 @@ function getItem(country: string) {
   return {
     id: `item-${kebabCase(country)}`,
     value: country,
+    children: country,
   };
 }
 

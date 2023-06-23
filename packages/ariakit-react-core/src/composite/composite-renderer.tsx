@@ -28,7 +28,7 @@ function findIndexById<T extends Item = any>(
   return items.findIndex((item) => {
     const object = getCollectionItemObject(item);
     if (object.id === id) return true;
-    if (object.items?.length) return !!findIndexById(object.items, id);
+    if (object.items?.length) return findIndexById(object.items, id) !== -1;
     const ids = id.split("/");
     if (ids.length === 1) return false;
     return ids.some((id) => object.id === id);
@@ -37,7 +37,7 @@ function findIndexById<T extends Item = any>(
 
 function CompositeRendererImpl<T extends Item = any>(
   {
-    store: storeProp,
+    store,
     orientation: orientationProp,
     persistentIndices: persistentIndicesProp,
     ...props
@@ -45,11 +45,13 @@ function CompositeRendererImpl<T extends Item = any>(
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const context = useContext(CompositeContext);
-  const store = storeProp || (context as Store<T>);
+  store = store || (context as Store<T>);
 
   const orientation =
     useStoreState(store, (state) =>
-      orientationProp ?? state.orientation === "both" ? null : state.orientation
+      orientationProp ?? state.orientation === "both"
+        ? undefined
+        : state.orientation
     ) ?? orientationProp;
 
   const items =
@@ -117,7 +119,7 @@ function CompositeRendererImpl<T extends Item = any>(
       activeIndex,
       previousIndex,
       nextIndex,
-    ];
+    ].filter((index) => index >= 0);
     if (persistentIndicesProp) {
       return [...persistentIndicesProp, ...indices];
     }

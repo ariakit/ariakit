@@ -4,6 +4,7 @@ import type {
   ReactElement,
   ReactNode,
   RefCallback,
+  RefObject,
 } from "react";
 import {
   createContext,
@@ -15,7 +16,7 @@ import {
   useState,
 } from "react";
 import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { chain, invariant, shallowEqual } from "@ariakit/core/utils/misc";
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import type {
   AnyObject,
   BooleanOrCallback,
@@ -164,7 +165,7 @@ export function useCollectionRenderer<T extends Item = any>({
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
   const [elementsUpdated, updateElements] = useForceUpdate();
 
-  const [indices, setVisibleIndices] = useState<number[]>(() => {
+  const [defaultVisibleIndices, setVisibleIndices] = useState<number[]>(() => {
     if (!initialItems) return [];
     const length = getItemsLength(items);
     const initialLength = Math.min(length, Math.abs(initialItems));
@@ -175,36 +176,37 @@ export function useCollectionRenderer<T extends Item = any>({
   });
 
   const visibleIndices = useMemo(() => {
-    if (!persistentIndices) return indices;
-    const nextIndices = indices.slice();
-    persistentIndices?.forEach((index) => {
+    if (!persistentIndices) return defaultVisibleIndices;
+    const nextIndices = defaultVisibleIndices.slice();
+    persistentIndices.forEach((index) => {
       if (index < 0) return;
       if (nextIndices.includes(index)) return;
       nextIndices.push(index);
     });
     nextIndices.sort((a, b) => a - b);
-    if (shallowEqual(indices, nextIndices)) return indices;
+    if (shallowEqual(defaultVisibleIndices, nextIndices)) {
+      return defaultVisibleIndices;
+    }
     return nextIndices;
-  }, [indices, persistentIndices]);
+  }, [defaultVisibleIndices, persistentIndices]);
 
   const [data, setData] = useState<Data>(() => {
     if (!baseId) return new Map();
     const data = parentData?.get(baseId) || new Map();
     if (itemSize != null) return data;
     if (!items) return data;
-    return (
-      getData({
-        data,
-        baseId,
-        elements,
-        estimatedItemSize,
-        gap,
-        horizontal,
-        items,
-        itemSize,
-        paddingStart,
-      }) || data
-    );
+    const nextData = getData({
+      baseId,
+      items,
+      data,
+      gap,
+      elements,
+      horizontal,
+      paddingStart,
+      itemSize,
+      estimatedItemSize,
+    });
+    return nextData || data;
   });
 
   const totalSize = useMemo(() => {
@@ -216,7 +218,8 @@ export function useCollectionRenderer<T extends Item = any>({
       horizontal,
       itemSize,
       estimatedItemSize,
-      padding: paddingStart + paddingEnd,
+      paddingStart,
+      paddingEnd,
     });
   }, [
     baseId,
@@ -230,6 +233,8 @@ export function useCollectionRenderer<T extends Item = any>({
     paddingEnd,
   ]);
 
+  // Back up the data to the parent so that it can be used later when this
+  // renderer is re-mounted.
   useEffect(() => {
     if (!baseId) return;
     parentData?.set(baseId, data);
@@ -241,14 +246,14 @@ export function useCollectionRenderer<T extends Item = any>({
     if (!items) return;
     const nextData = getData({
       baseId,
+      items,
       data,
       gap,
-      items,
-      itemSize,
-      estimatedItemSize,
       elements,
       horizontal,
       paddingStart,
+      itemSize,
+      estimatedItemSize,
     });
     if (nextData) {
       setData(nextData);
@@ -260,133 +265,122 @@ export function useCollectionRenderer<T extends Item = any>({
     items,
     data,
     gap,
-    estimatedItemSize,
     elements,
     horizontal,
     paddingStart,
+    estimatedItemSize,
   ]);
 
-  // TODO: Maybe avoid this process if renderOnScroll is false?
-  const processVisibleIndices = useCallback(
-    (scrollingElement: Element) => {
-      const container = ref.current;
-      if (!container) return;
-      if (!baseId) return;
-      if (!data.size && !itemSize) return;
+  const scroller = useScroller(items ? ref : null);
+  const offsetsRef = useRef({ start: 0, end: 0 });
 
-      const length = getItemsLength(items);
-      // Get offset once. Should be a ref.
-      const offset = getOffset(container, scrollingElement, horizontal);
-      // Get scroll offset once on scroll outside of this function (maybe store
-      // in a ref on scroll).
-      const scrollOffset = getScrollOffset(scrollingElement, horizontal);
+  const processVisibleIndices = useCallback(() => {
+    const offsets = offsetsRef.current;
 
-      const getItemOffset = (index: number) => {
-        if (itemSize) return itemSize * index + gap * index + paddingStart;
-        const item = getItem(items, index);
-        const itemId = getItemId(item, index, baseId);
-        const itemData = data.get(itemId);
-        return itemData?.start ?? 0;
-      };
+    if (!items) return;
+    if (!baseId) return;
+    if (!offsets.end) return;
+    if (!data.size && !itemSize) return;
 
-      const startTarget = scrollOffset - offset;
-      const initialStart = findNearestIndex(items, startTarget, getItemOffset);
-      let initialEnd = initialStart + 1;
+    const length = getItemsLength(items);
 
-      // This should be a ref.
-      const scrollingSize = horizontal
-        ? scrollingElement.clientWidth
-        : scrollingElement.clientHeight;
-      const scrollingEnd = scrollOffset - offset + scrollingSize;
+    const getItemOffset = (index: number) => {
+      if (itemSize) return itemSize * index + gap * index + paddingStart;
+      const item = getItem(items, index);
+      const itemId = getItemId(item, index, baseId);
+      const itemData = data.get(itemId);
+      return itemData?.start ?? 0;
+    };
 
-      while (initialEnd < length && getItemOffset(initialEnd) < scrollingEnd) {
-        initialEnd += 1;
-      }
+    const initialStart = findNearestIndex(items, offsets.start, getItemOffset);
 
-      const start = Math.max(initialStart - overscan, 0);
-      const end = Math.min(initialEnd + overscan, length);
+    let initialEnd = initialStart + 1;
+    while (initialEnd < length && getItemOffset(initialEnd) < offsets.end) {
+      initialEnd += 1;
+    }
 
-      const indices = Array.from(
-        { length: end - start },
-        (_, index) => index + start
-      );
+    const start = Math.max(initialStart - overscan, 0);
+    const end = Math.min(initialEnd + overscan, length);
 
-      setVisibleIndices((prevIndices) => {
-        if (shallowEqual(prevIndices, indices)) return prevIndices;
-        return indices;
-      });
-    },
-    [
-      elementsUpdated,
-      baseId,
-      data,
-      itemSize,
-      horizontal,
-      items,
-      gap,
-      paddingStart,
-      overscan,
-    ]
-  );
+    const indices = Array.from(
+      { length: end - start },
+      (_, index) => index + start
+    );
+
+    setVisibleIndices((prevIndices) => {
+      if (shallowEqual(prevIndices, indices)) return prevIndices;
+      return indices;
+    });
+  }, [
+    elementsUpdated,
+    items,
+    baseId,
+    data,
+    itemSize,
+    gap,
+    paddingStart,
+    overscan,
+  ]);
+
+  useEffect(processVisibleIndices, [processVisibleIndices]);
 
   const processVisibleIndicesEvent = useEvent(processVisibleIndices);
+
+  // Update the offsets when the items change.
+  useEffect(() => {
+    const renderer = ref.current;
+    if (!renderer) return;
+    if (!scroller) return;
+    offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+    processVisibleIndicesEvent();
+  }, [scroller, horizontal, processVisibleIndicesEvent]);
+
   const mayRenderOnScroll = !!renderOnScroll;
   const renderOnScrollProp = useBooleanEvent(renderOnScroll);
-  const scrollingElementRef = useRef<Element | null>(null);
 
+  // Render on scroll
   useEffect(() => {
     if (!mayRenderOnScroll) return;
-    const container = ref.current;
-    if (!container) return;
-    const scrollingElement = getScrollingElement(container);
-    if (!scrollingElement) return;
-    scrollingElementRef.current = scrollingElement;
-  }, [mayRenderOnScroll]);
-
-  useEffect(() => {
-    const scrollingElement = scrollingElementRef.current;
-    if (!scrollingElement) return;
-    processVisibleIndices(scrollingElement);
-  }, [processVisibleIndices]);
-
-  useEffect(() => {
-    const scrollingElement = scrollingElementRef.current;
-    if (!scrollingElement) return;
-    const viewport = getViewport(scrollingElement);
+    const renderer = ref.current;
+    if (!renderer) return;
+    if (!scroller) return;
+    const viewport = getViewport(scroller);
     if (!viewport) return;
-
-    // TODO: Separate scroll and resize observers, maybe add renderOnResize prop
-    const scroll = () => {
-      if (!mayRenderOnScroll) return;
-      let raf = 0;
-      const onScroll = (event: Event) => {
+    const task = createTask();
+    const onScroll = (event: Event) => {
+      task.run(() => {
         if (!renderOnScrollProp(event)) return;
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          processVisibleIndicesEvent(scrollingElement);
-        });
-        // flushSync(() => processVisibleIndicesEvent(scrollingElement));
-      };
-      viewport.addEventListener("scroll", onScroll, { passive: true });
-      return () => {
-        cancelAnimationFrame(raf);
-        viewport.removeEventListener("scroll", onScroll);
-      };
-    };
-
-    const observeElement = () => {
-      if (!ref.current) return;
-      if (typeof IntersectionObserver !== "function") return;
-      const observer = new IntersectionObserver(() => {
-        processVisibleIndicesEvent(scrollingElement);
+        offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+        processVisibleIndicesEvent();
       });
-      observer.observe(ref.current);
-      return () => observer.disconnect();
     };
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      task.cancel();
+      viewport.removeEventListener("scroll", onScroll);
+    };
+  }, [
+    mayRenderOnScroll,
+    scroller,
+    renderOnScrollProp,
+    horizontal,
+    processVisibleIndicesEvent,
+  ]);
 
-    const observeScrollingElement = () => {
-      if (scrollingElement.tagName === "HTML") return;
+  const mayRenderOnResize = !!renderOnResize;
+  const renderOnResizeProp = useBooleanEvent(renderOnResize);
+
+  // Render on resize
+  useEffect(() => {
+    if (!mayRenderOnResize) return;
+    const renderer = ref.current;
+    if (!renderer) return;
+    if (!scroller) return;
+    const viewport = getViewport(scroller);
+    if (!viewport) return;
+    const task = createTask();
+
+    if (viewport === scroller) {
       if (typeof ResizeObserver !== "function") return;
       let firstRun = true;
       const observer = new ResizeObserver(() => {
@@ -394,27 +388,59 @@ export function useCollectionRenderer<T extends Item = any>({
           firstRun = false;
           return;
         }
-        processVisibleIndicesEvent(scrollingElement);
+        task.run(() => {
+          if (!renderOnResizeProp(scroller)) return;
+          offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+          processVisibleIndicesEvent();
+        });
       });
-      observer.observe(scrollingElement);
-      return () => observer.disconnect();
+      observer.observe(scroller);
+      return () => {
+        task.cancel();
+        observer.disconnect();
+      };
+    }
+
+    const onResize = () => {
+      task.run(() => {
+        if (!renderOnResizeProp(scroller)) return;
+        offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+        processVisibleIndicesEvent();
+      });
     };
 
-    const observeWindow = () => {
-      if (scrollingElement.tagName !== "HTML") return;
-      const onResize = () => {
-        processVisibleIndicesEvent(scrollingElement);
-      };
-      viewport.addEventListener("resize", onResize, { passive: true });
-      return () => viewport.removeEventListener("resize", onResize);
+    viewport.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      task.cancel();
+      viewport.removeEventListener("resize", onResize);
     };
-    return chain(
-      scroll(),
-      observeElement(),
-      observeScrollingElement(),
-      observeWindow()
+  }, [
+    mayRenderOnResize,
+    scroller,
+    renderOnResizeProp,
+    horizontal,
+    processVisibleIndicesEvent,
+  ]);
+
+  // Render on intersection
+  useEffect(() => {
+    const renderer = ref.current;
+    if (!renderer) return;
+    if (!scroller) return;
+    const viewport = getViewport(scroller);
+    if (!viewport) return;
+    const observer = new IntersectionObserver(
+      () => {
+        offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+        processVisibleIndicesEvent();
+      },
+      { root: scroller === viewport ? scroller : null }
     );
-  }, [mayRenderOnScroll, renderOnScrollProp, processVisibleIndicesEvent]);
+    observer.observe(renderer);
+    return () => {
+      observer.disconnect();
+    };
+  }, [scroller, processVisibleIndicesEvent]);
 
   const elementObserver = useMemo(() => {
     if (typeof ResizeObserver !== "function") return;
@@ -426,9 +452,8 @@ export function useCollectionRenderer<T extends Item = any>({
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
-      // TODO:
-      updateElements();
       if (itemSize) return;
+      updateElements();
       elements.set(element.id, element);
       elementObserver?.observe(element);
     },
@@ -529,6 +554,22 @@ export const CollectionRenderer = forwardRef(function CollectionRenderer<
   return createElement("div", htmlProps);
 });
 
+function createTask() {
+  let raf = 0;
+  const run = (cb: () => void) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      cb();
+    });
+  };
+  const cancel = () => {
+    cancelAnimationFrame(raf);
+    raf = 0;
+  };
+  return { run, cancel };
+}
+
 function findNearestIndex<T extends Item = any>(
   items: Items<T>,
   target: number,
@@ -604,10 +645,11 @@ function getItemSize(
     if (hasSameOrientation && itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
-    return items.reduce<number>(
+    const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize
     );
+    if (totalSize !== initialSize) return totalSize;
   }
   const element =
     fallbackElement !== false ? itemObject.element || fallbackElement : null;
@@ -651,42 +693,61 @@ function getAverageSize<T extends Item>(props: {
   return averageSize;
 }
 
-// TODO: Should probably improve this so it's only called once.
-function getOffset(
-  element: HTMLElement,
-  scrollingElement: Element,
+function getScrollOffset(scroller: Element | Window, horizontal: boolean) {
+  if ("scrollX" in scroller) {
+    return horizontal ? scroller.scrollX : scroller.scrollY;
+  }
+  return horizontal ? scroller.scrollLeft : scroller.scrollTop;
+}
+
+function getViewport(scroller: Element) {
+  const { defaultView, documentElement } = scroller.ownerDocument;
+  if (scroller === documentElement) return defaultView;
+  return scroller;
+}
+
+function useScroller(rendererRef: RefObject<HTMLElement> | null) {
+  const [scroller, setScroller] = useState<Element | null>(null);
+  useEffect(() => {
+    const renderer = rendererRef?.current;
+    if (!renderer) return;
+    const scroller = getScrollingElement(renderer);
+    if (!scroller) return;
+    setScroller(scroller);
+  }, [rendererRef]);
+  return scroller;
+}
+
+function getRendererOffset(
+  renderer: HTMLElement,
+  scroller: Element,
   horizontal: boolean
 ): number {
-  const win = getWindow(element);
+  const win = getWindow(renderer);
   const htmlElement = win?.document.documentElement;
-  if (scrollingElement === htmlElement) {
-    const { left, top } = element.getBoundingClientRect();
-    const { scrollX, scrollY } = win;
-    if (horizontal) return scrollX + left;
-    return scrollY + top;
+  const rendererRect = renderer.getBoundingClientRect();
+  const rendererOffset = horizontal ? rendererRect.left : rendererRect.top;
+  if (scroller === htmlElement) {
+    const scrollOffset = getScrollOffset(win, horizontal);
+    return scrollOffset + rendererOffset;
   }
-  const elementRect = element.getBoundingClientRect();
-  const scrollingElmentRect = scrollingElement.getBoundingClientRect();
-  const positionProp = horizontal ? "left" : "top";
-  const scrollProp = horizontal ? "scrollLeft" : "scrollTop";
-  return (
-    elementRect[positionProp] -
-    scrollingElmentRect[positionProp] +
-    scrollingElement[scrollProp]
-  );
+  const scrollerRect = scroller.getBoundingClientRect();
+  const scrollerOffset = horizontal ? scrollerRect.left : scrollerRect.top;
+  const scrollOffset = getScrollOffset(scroller, horizontal);
+  return rendererOffset - scrollerOffset + scrollOffset;
 }
 
-function getScrollOffset(scrollingElement: Element, horizontal: boolean) {
-  const prop = horizontal ? "scrollLeft" : "scrollTop";
-  return scrollingElement[prop];
-}
-
-function getViewport(scrollingElement: Element) {
-  const { defaultView, documentElement } = scrollingElement.ownerDocument;
-  if (scrollingElement === documentElement) {
-    return defaultView;
-  }
-  return scrollingElement;
+function getOffsets(
+  renderer: HTMLElement,
+  scroller: Element,
+  horizontal: boolean
+) {
+  const scrollOffset = getScrollOffset(scroller, horizontal);
+  const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
+  const scrolleSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
+  const start = scrollOffset - rendererOffset;
+  const end = start + scrolleSize;
+  return { start, end };
 }
 
 function getItemsEnd<T extends Item>(props: {
@@ -697,28 +758,30 @@ function getItemsEnd<T extends Item>(props: {
   horizontal: boolean;
   itemSize?: number;
   estimatedItemSize: number;
-  padding: number;
+  paddingStart: number;
+  paddingEnd: number;
 }) {
   const length = getItemsLength(props.items);
-  if (!length) return props.padding;
+  const totalPadding = props.paddingStart + props.paddingEnd;
+  if (!length) return totalPadding;
   const lastIndex = length - 1;
-  const totalGap = lastIndex * props.gap + props.padding;
+  const totalGap = lastIndex * props.gap;
   if (props.itemSize != null) {
-    return length * props.itemSize + totalGap;
+    return length * props.itemSize + totalGap + totalPadding;
   }
-  const defaultEnd = length * props.estimatedItemSize + totalGap;
+  const defaultEnd = length * props.estimatedItemSize + totalGap + totalPadding;
   if (!props.baseId) return defaultEnd;
   const lastItem = getItem(props.items, lastIndex);
   const lastItemId = getItemId(lastItem, lastIndex, props.baseId);
   const lastItemData = props.data.get(lastItemId);
-  if (lastItemData?.end) return lastItemData.end + props.padding;
+  if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0
   );
   if (!end) return defaultEnd;
-  return end + totalGap;
+  return end + totalGap + totalPadding;
 }
 
 function getData<T extends Item>(props: {
