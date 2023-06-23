@@ -125,8 +125,9 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     const contentElement = store.useState("contentElement");
-    const autoFocus = store.useState((state) =>
-      shouldAutoFocus(state.value, value)
+    const autoFocus = store.useState(
+      // TODO: Test, select Brazil, then type aze, then backspace.
+      (state) => !state.activeId && shouldAutoFocus(state.value, value)
     );
 
     props = {

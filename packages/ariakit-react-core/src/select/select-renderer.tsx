@@ -59,6 +59,7 @@ function SelectRendererImpl<T extends Item = any>(
     store,
     orientation: orientationProp,
     persistentIndices: persistentIndicesProp,
+    renderOnScroll: renderOnScrollProp = true,
     ...props
   }: SelectRendererProps<T>,
   forwardedRef: ForwardedRef<HTMLDivElement>
@@ -93,11 +94,16 @@ function SelectRendererImpl<T extends Item = any>(
     return valueIndices;
   }, [valueIndices, persistentIndicesProp]);
 
+  const renderOnScroll = store.useState(
+    (state) => state.mounted && renderOnScrollProp
+  );
+
   return (
     <CompositeRenderer
       ref={forwardedRef}
       store={store as any}
       persistentIndices={persistentIndices}
+      renderOnScroll={renderOnScroll}
       {...props}
       items={items}
     />

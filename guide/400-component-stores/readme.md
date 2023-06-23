@@ -104,7 +104,7 @@ function MyCombobox() {
 
 Alternatively, you can pass a string to `store.useState()` to read the value of a specific state property. The component will only re-render when the requested value changes.
 
-```js ""open""
+```js ""value"" ""open""
 const value = combobox.useState("value");
 const isOpen = combobox.useState("open");
 ```

@@ -173,8 +173,11 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
     }, []);
 
+    const canSetSelectionRangeRef = useRef(false);
+
     // Highlights the completion string
     useEffect(() => {
+      canSetSelectionRangeRef.current = false;
       if (!inline) return;
       if (!canInline) return;
       if (!activeValue) return;
@@ -185,11 +188,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeValue, activeValue)) return;
+      canSetSelectionRangeRef.current = true;
       // For some reason, this setSelectionRange may run before the value is
       // updated in the DOM. We're using a microtask to make sure it runs after
       // the value is updated so we don't lose the selection. See combobox-group
       // test-browser file.
       queueMicrotask(() => {
+        // TODO: Test select-combobox-virtualized with autoComplete="both"
+        // Search for "afn".
+        if (!canSetSelectionRangeRef.current) return;
         const element = ref.current;
         if (!element) return;
         element.setSelectionRange(storeValue.length, activeValue.length);
@@ -354,10 +361,10 @@ export const useCombobox = createHook<ComboboxOptions>(
     // value across browsers, so we can't rely on that there.
     const onCompositionEnd = useEvent(
       (event: CompositionEvent<HTMLInputElement>) => {
-        onCompositionEndProp?.(event);
-        if (event.defaultPrevented) return;
         valueChangedRef.current = true;
         composingRef.current = false;
+        onCompositionEndProp?.(event);
+        if (event.defaultPrevented) return;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -386,7 +393,7 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        valueChangedRef.current = false;
+        // valueChangedRef.current = false;
         onKeyDownProp?.(event);
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;

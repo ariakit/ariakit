@@ -83,38 +83,32 @@ export function createCollectionStore<T extends Item = Item>(
   });
   const collection = createStore(initialState, props.store);
 
+  let sortRaf = 0;
+
   const sortItems = () => {
-    const state = privateStore.getState();
-    const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
-    privateStore.setState("renderedItems", renderedItems);
-    collection.setState("renderedItems", renderedItems);
+    if (sortRaf) return sortRaf;
+    sortRaf = requestAnimationFrame(() => {
+      sortRaf = 0;
+      const state = privateStore.getState();
+      const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
+      privateStore.setState("renderedItems", renderedItems);
+      collection.setState("renderedItems", renderedItems);
+    });
+    return sortRaf;
   };
 
   collection.setup(() => {
     return privateStore.syncBatch(
       (state) => {
-        let firstRun = true;
-        let raf = requestAnimationFrame(sortItems);
+        sortItems();
         if (typeof IntersectionObserver !== "function") return;
-        const callback = () => {
-          if (firstRun) {
-            firstRun = false;
-            return;
-          }
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(sortItems);
-        };
         const root = getCommonParent(state.renderedItems);
-        const observer = new IntersectionObserver(callback, { root });
+        const observer = new IntersectionObserver(sortItems, { root });
         state.renderedItems.forEach((item) => {
-          if (item.element) {
-            observer.observe(item.element);
-          }
+          if (!item.element) return;
+          observer.observe(item.element);
         });
-        return () => {
-          cancelAnimationFrame(raf);
-          observer.disconnect();
-        };
+        return () => observer.disconnect();
       },
       ["renderedItems"]
     );

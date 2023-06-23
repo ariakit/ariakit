@@ -13,6 +13,8 @@ import { useStoreState } from "../utils/store.jsx";
 import { CompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 
+// TODO: Should be in the composite item.
+// disabled?: boolean;
 type Item = CollectionRendererItem;
 
 type Store<T extends Item = any> = CompositeStore<
