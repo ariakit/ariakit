@@ -1,33 +1,30 @@
-import type { CSSProperties, ComponentPropsWithRef, ForwardedRef } from "react";
+import type { ComponentPropsWithRef, ForwardedRef } from "react";
 import { forwardRef, useContext, useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { AnyObject } from "@ariakit/core/utils/types";
-import { getCollectionItemObject } from "../collection/collection-renderer.js";
+import type {
+  CollectionRendererItem,
+  CollectionRendererItemObject,
+} from "../collection/collection-renderer.js";
 import { CompositeRenderer } from "../composite/composite-renderer.js";
 import type { CompositeRendererOptions } from "../composite/composite-renderer.js";
 import { useStoreState } from "../utils/store.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
 
-interface ItemObject
-  extends AnyObject,
-    Pick<SelectRendererOptions, "gap" | "orientation"> {
-  id?: string;
-  element?: HTMLElement | null;
-  style?: CSSProperties;
-  items?: Item[];
-  disabled?: boolean;
+// TODO: Extend from CompositeRendererItemObject
+interface ItemObject extends CollectionRendererItemObject {
   value?: string;
 }
 
-type Item =
-  | ItemObject
-  | Omit<string, string>
-  | Omit<number, string>
-  | Omit<boolean, string>
-  | null
-  | undefined;
+type Item = ItemObject | CollectionRendererItem;
+
+function getItemObject(item: Item): ItemObject {
+  if (!item || typeof item !== "object") {
+    return { value: `${item}` };
+  }
+  return item;
+}
 
 function findIndicesByValue<V extends SelectStoreValue>(
   items: readonly Item[],
@@ -39,7 +36,7 @@ function findIndicesByValue<V extends SelectStoreValue>(
   for (const [index, item] of items.entries()) {
     if (indices.length === values.length) break;
 
-    const object = getCollectionItemObject(item);
+    const object = getItemObject(item);
 
     if (object.value != null && values.includes(object.value)) {
       indices.push(index);

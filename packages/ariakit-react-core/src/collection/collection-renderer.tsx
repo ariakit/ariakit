@@ -91,6 +91,7 @@ interface BaseItemProps {
   id: string;
   ref: RefCallback<HTMLElement>;
   style: CSSProperties;
+  index: number;
 }
 
 type RawItemProps<T extends Item> = unknown extends T
@@ -108,7 +109,7 @@ type Data = Map<
   { index: number; rendered: boolean; start: number; end: number }
 >;
 
-interface CollectionRendererContextProps {
+interface CollectionRendererContextValue {
   store: CollectionRendererOptions["store"];
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
@@ -116,7 +117,7 @@ interface CollectionRendererContextProps {
 }
 
 const CollectionRendererContext =
-  createContext<CollectionRendererContextProps | null>(null);
+  createContext<CollectionRendererContextValue | null>(null);
 
 export function useCollectionRenderer<T extends Item = any>({
   store,
@@ -284,23 +285,28 @@ export function useCollectionRenderer<T extends Item = any>({
 
     const length = getItemsLength(items);
 
-    const getItemOffset = (index: number) => {
-      if (itemSize) return itemSize * index + gap * index + paddingStart;
+    const getItemOffset = (index: number, prop: "start" | "end" = "start") => {
+      if (itemSize) {
+        const start = itemSize * index + gap * index + paddingStart;
+        if (prop === "start") return start;
+        return start + itemSize;
+      }
       const item = getItem(items, index);
       const itemId = getItemId(item, index, baseId);
       const itemData = data.get(itemId);
-      return itemData?.start ?? 0;
+      return itemData?.[prop] ?? 0;
     };
 
     const initialStart = findNearestIndex(items, offsets.start, getItemOffset);
 
-    let initialEnd = initialStart + 1;
+    let initialEnd = initialStart;
     while (initialEnd < length && getItemOffset(initialEnd) < offsets.end) {
       initialEnd += 1;
     }
 
-    const start = Math.max(initialStart - overscan, 0);
-    const end = Math.min(initialEnd + overscan, length);
+    const finalOverscan = initialEnd - initialStart ? overscan : 0;
+    const start = Math.max(initialStart - finalOverscan, 0);
+    const end = Math.min(initialEnd + finalOverscan, length);
 
     const indices = Array.from(
       { length: end - start },
@@ -469,6 +475,7 @@ export function useCollectionRenderer<T extends Item = any>({
       const baseItemProps: BaseItemProps = {
         id: itemId,
         ref: itemRef,
+        index,
         style: {
           position: "absolute",
           left: horizontal ? offset : 0,
@@ -498,14 +505,13 @@ export function useCollectionRenderer<T extends Item = any>({
         if (index < 0) return;
         const item = getItem(items, index);
         if (!item) return;
-        const itemProps = getItemProps(item, index);
-        return { itemProps, index };
+        return getItemProps(item, index);
       })
       .filter((value): value is NonNullable<typeof value> => value != null);
   }, [items, visibleIndices, getItemProps]);
 
-  const children = itemsProps?.map(({ itemProps, index }) => {
-    return renderItem?.(itemProps, index);
+  const children = itemsProps?.map((itemProps) => {
+    return renderItem?.(itemProps);
   });
 
   const styleProp = props.style;
@@ -522,7 +528,7 @@ export function useCollectionRenderer<T extends Item = any>({
   );
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
-  const providerValue: CollectionRendererContextProps = useMemo(
+  const providerValue: CollectionRendererContextValue = useMemo(
     () => ({ store, orientation, overscan, childrenData }),
     [store, orientation, overscan, childrenData]
   );
@@ -744,9 +750,9 @@ function getOffsets(
 ) {
   const scrollOffset = getScrollOffset(scroller, horizontal);
   const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
-  const scrolleSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
+  const scrollSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
   const start = scrollOffset - rendererOffset;
-  const end = start + scrolleSize;
+  const end = start + scrollSize;
   return { start, end };
 }
 
@@ -837,8 +843,8 @@ function getData<T extends Item>(props: {
   return nextData;
 }
 
-export const getCollectionItemObject = getItemObject;
 export const getCollectionItemId = getItemId;
+export const getCollectionItem = getItem;
 
 export type CollectionRendererItemObject = ItemObject;
 export type CollectionRendererItem = Item;
@@ -948,11 +954,12 @@ export interface CollectionRendererOptions<T extends Item = any> {
    * @param item The item object to be spread on the item component.
    * @param index The index of the item.
    */
-  children?: (item: ItemProps<T>, index: number) => ReactNode;
+  children?: (item: ItemProps<T>) => ReactNode;
   render?: RenderProp | ReactElement;
   padding?: number;
   paddingStart?: number;
   paddingEnd?: number;
+  index?: number;
 }
 
 export interface CollectionRendererProps<T extends Item = any>

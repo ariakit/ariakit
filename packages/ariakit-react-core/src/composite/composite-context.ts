@@ -1,10 +1,23 @@
 import { createContext } from "react";
 import type { CompositeStore } from "./composite-store.js";
 
-type ItemContext = { baseElement?: HTMLElement; id?: string } | undefined;
+interface ItemContext {
+  baseElement?: HTMLElement;
+  id?: string;
+}
 
-export const CompositeRowContext = createContext<ItemContext>(undefined);
-export const CompositeItemContext = createContext<ItemContext>(undefined);
+export const CompositeItemContext = createContext<ItemContext | undefined>(
+  undefined
+);
+
+interface RowContext extends ItemContext {
+  ariaSetSize?: number;
+  ariaPosInSet?: number;
+}
+
+export const CompositeRowContext = createContext<RowContext | undefined>(
+  undefined
+);
 
 export const CompositeContext = createContext<CompositeStore | undefined>(
   undefined

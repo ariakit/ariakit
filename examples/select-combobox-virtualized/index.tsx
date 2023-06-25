@@ -82,11 +82,12 @@ export default function Example() {
             />
           </div>
           <Ariakit.ComboboxList store={combobox}>
-            <SelectRenderer items={matches} gap={8}>
+            <SelectRenderer items={matches} gap={8} overscan={1}>
               {({ label, ...item }) => (
                 <SelectRenderer
                   key={item.id}
                   className="group"
+                  overscan={1}
                   {...item}
                   render={(props) => (
                     <Ariakit.SelectGroup {...props}>
