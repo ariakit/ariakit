@@ -8,7 +8,12 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.js";
 import { useCompositeHover } from "../composite/composite-hover.js";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
+import {
+  useBooleanEvent,
+  useEvent,
+  useId,
+  useWrapElement,
+} from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -66,6 +71,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
         "SelectItem must be wrapped in a SelectList or SelectPopover component"
     );
 
+    const id = useId(props.id);
     const disabled = props.disabled;
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -125,12 +131,14 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     const contentElement = store.useState("contentElement");
+
     const autoFocus = store.useState(
-      // TODO: Test, select Brazil, then type aze, then backspace.
-      (state) => !state.activeId && shouldAutoFocus(state.value, value)
+      (state) =>
+        !store?.item(state.activeId) && shouldAutoFocus(state.value, value)
     );
 
     props = {
+      id,
       role: getPopupItemRole(contentElement),
       "aria-selected": selected,
       children: value,

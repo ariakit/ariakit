@@ -38,6 +38,7 @@ export default function Example() {
               focusOnHover
               setValueOnClick={false}
               className="menu-item"
+              render={<Ariakit.MenuItem />}
             />
           ))}
         </Ariakit.ComboboxList>
