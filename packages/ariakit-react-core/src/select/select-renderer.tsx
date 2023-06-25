@@ -1,23 +1,35 @@
-import type { ComponentPropsWithRef, ForwardedRef } from "react";
-import { forwardRef, useContext, useMemo } from "react";
+import type { ComponentPropsWithRef } from "react";
+import { useContext, useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import { invariant } from "@ariakit/core/utils/misc";
+import {
+  getCompositeRendererItem,
+  getCompositeRendererItemId,
+  useCompositeRenderer,
+} from "../composite/composite-renderer.js";
 import type {
-  CollectionRendererItem,
-  CollectionRendererItemObject,
-} from "../collection/collection-renderer.js";
-import { CompositeRenderer } from "../composite/composite-renderer.js";
-import type { CompositeRendererOptions } from "../composite/composite-renderer.js";
-import { useStoreState } from "../utils/store.js";
+  CompositeRendererBaseItemProps,
+  CompositeRendererItem,
+  CompositeRendererItemObject,
+  CompositeRendererItemProps,
+  CompositeRendererOptions,
+} from "../composite/composite-renderer.js";
+import { createElement, forwardRef } from "../utils/system.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
 
-// TODO: Extend from CompositeRendererItemObject
-interface ItemObject extends CollectionRendererItemObject {
+interface ItemObject extends CompositeRendererItemObject {
   value?: string;
 }
 
-type Item = ItemObject | CollectionRendererItem;
+type Item = ItemObject | CompositeRendererItem;
+
+type BaseItemProps = CompositeRendererBaseItemProps;
+
+type ItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = CompositeRendererItemProps<T, P>;
 
 function getItemObject(item: Item): ItemObject {
   if (!item || typeof item !== "object") {
@@ -51,15 +63,12 @@ function findIndicesByValue<V extends SelectStoreValue>(
   return indices;
 }
 
-function SelectRendererImpl<T extends Item = any>(
-  {
-    store,
-    orientation: orientationProp,
-    persistentIndices: persistentIndicesProp,
-    ...props
-  }: SelectRendererProps<T>,
-  forwardedRef: ForwardedRef<HTMLDivElement>
-) {
+function useSelectRenderer<T extends Item = any>({
+  store,
+  orientation: orientationProp,
+  persistentIndices: persistentIndicesProp,
+  ...props
+}: SelectRendererProps<T>) {
   const context = useContext(SelectContext);
   store = store || context;
 
@@ -73,7 +82,7 @@ function SelectRendererImpl<T extends Item = any>(
     state.mounted ? props.items ?? (state.items as T[]) : 0
   );
 
-  const value = useStoreState(store, "value");
+  const value = store.useState("value");
 
   const valueIndices = useMemo(() => {
     if (!items) return [];
@@ -90,24 +99,48 @@ function SelectRendererImpl<T extends Item = any>(
     return valueIndices;
   }, [valueIndices, persistentIndicesProp]);
 
-  return (
-    <CompositeRenderer
-      ref={forwardedRef}
-      store={store as any}
-      persistentIndices={persistentIndices}
-      {...props}
-      items={items}
-    />
-  );
+  return useCompositeRenderer({
+    store,
+    persistentIndices,
+    ...props,
+    items,
+  });
 }
 
-export const SelectRenderer = forwardRef(
-  SelectRendererImpl
-) as typeof SelectRendererImpl;
+export const SelectRenderer = forwardRef(function SelectRenderer<
+  T extends Item = any
+>(props: SelectRendererProps<T>) {
+  const htmlProps = useSelectRenderer(props);
+  return createElement("div", htmlProps);
+});
+
+export {
+  getCompositeRendererItem as getSelectRendererItem,
+  getCompositeRendererItemId as getSelectRendererItemId,
+};
+
+export type SelectRendererItemObject = ItemObject;
+export type SelectRendererItem = Item;
+export type SelectRendererBaseItemProps = BaseItemProps;
+export type SelectRendererItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = ItemProps<T, P>;
 
 export interface SelectRendererOptions<T extends Item = any>
   extends Omit<CompositeRendererOptions<T>, "store"> {
-  store?: SelectStore;
+  /**
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent [Select](https://ariakit.org/components/select)
+   * component's context will be used.
+   *
+   * The store [`items`](https://ariakit.org/reference/use-select-store#items)
+   * state will be used to render the items if the
+   * [`items`](https://ariakit.org/reference/select-items#items) prop is not
+   * provided.
+   */
+  store?: SelectStore & CompositeRendererOptions["store"];
 }
 
 export interface SelectRendererProps<T extends Item = any>

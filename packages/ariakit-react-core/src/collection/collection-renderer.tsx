@@ -94,15 +94,16 @@ interface BaseItemProps {
   index: number;
 }
 
+type ItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = unknown extends T ? P : P & (T extends AnyObject ? T : { value: T });
+
 type RawItemProps<T extends Item> = unknown extends T
   ? EmptyObject
   : T extends AnyObject
   ? T
   : { value: T };
-
-type ItemProps<T extends Item> = unknown extends T
-  ? BaseItemProps
-  : BaseItemProps & (T extends AnyObject ? T : { value: T });
 
 type Data = Map<
   string,
@@ -118,6 +119,289 @@ interface CollectionRendererContextValue {
 
 const CollectionRendererContext =
   createContext<CollectionRendererContextValue | null>(null);
+
+function createTask() {
+  let raf = 0;
+  const run = (cb: () => void) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      cb();
+    });
+  };
+  const cancel = () => {
+    cancelAnimationFrame(raf);
+    raf = 0;
+  };
+  return { run, cancel };
+}
+
+function findNearestIndex<T extends Item = any>(
+  items: Items<T>,
+  target: number,
+  getValue: (index: number) => number
+) {
+  let left = 0;
+  let right = getItemsLength(items) - 1;
+  while (left <= right) {
+    const index = ((left + right) / 2) | 0;
+    const value = getValue(index);
+    if (value === target) return index;
+    else if (value < target) left = index + 1;
+    else right = index - 1;
+  }
+  if (left > 0) return left - 1;
+  return 0;
+}
+
+function getItemsLength<T extends Item>(items: Items<T>) {
+  return typeof items === "number" ? items : items.length;
+}
+
+function getItemObject(item: Item): ItemObject {
+  if (!item || typeof item !== "object") {
+    return { value: item };
+  }
+  return item;
+}
+
+function getItemId(item: Item, index: number, baseId?: string) {
+  invariant(baseId, "CollectionRenderer must be given an `id` prop.");
+  const defaultId = `${baseId}/${index}`;
+  return getItemObject(item).id ?? defaultId;
+}
+
+function getItem<T extends Item = any>(
+  items: Items<T>,
+  index: number
+): RawItemProps<T> | null {
+  if (typeof items === "number") {
+    if (index >= items) return null;
+    return {} as RawItemProps<T>;
+  }
+  const item = items[index];
+  if (!item) return null;
+  if (typeof item === "object") return item as RawItemProps<T>;
+  return { value: item } as unknown as RawItemProps<T>;
+}
+
+function getItemSize(
+  item: Item,
+  horizontal: boolean,
+  fallbackElement?: HTMLElement | null | false
+): number {
+  const itemObject = getItemObject(item);
+  horizontal = itemObject.orientation === "horizontal" ?? horizontal;
+  const prop = horizontal ? "width" : "height";
+  const style = itemObject.style;
+  if (style) {
+    const size = style[prop];
+    if (typeof size === "number") return size;
+  }
+  const items = itemObject.items;
+  if (items?.length) {
+    const hasSameOrientation =
+      !itemObject.orientation ||
+      (horizontal && itemObject.orientation === "horizontal") ||
+      (!horizontal && itemObject.orientation === "vertical");
+    const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
+    const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
+    const padding = hasSameOrientation ? paddingStart + paddingEnd : 0;
+    const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
+    if (hasSameOrientation && itemObject.itemSize) {
+      return initialSize + itemObject.itemSize * items.length;
+    }
+    const totalSize = items.reduce<number>(
+      (sum, item) => sum + getItemSize(item, horizontal),
+      initialSize
+    );
+    if (totalSize !== initialSize) return totalSize;
+  }
+  const element =
+    fallbackElement !== false ? itemObject.element || fallbackElement : null;
+  if (element?.isConnected) {
+    return element.getBoundingClientRect()[prop];
+  }
+  return 0;
+}
+
+function getAverageSize<T extends Item>(props: {
+  baseId: string;
+  data: Data;
+  items: Items<T>;
+  elements: Map<string, HTMLElement>;
+  estimatedItemSize: number;
+  horizontal: boolean;
+}) {
+  const length = getItemsLength(props.items);
+  let currentIndex = 0;
+  let averageSize = props.estimatedItemSize;
+
+  const setAverageSize = (size: number) => {
+    const prevIndex = currentIndex;
+    currentIndex = currentIndex + 1;
+    averageSize = (averageSize * prevIndex + size) / currentIndex;
+  };
+
+  for (let index = 0; index < length; index += 1) {
+    const item = getItem(props.items, index);
+    const itemId = getItemId(item, index, props.baseId);
+    const itemData = props.data.get(itemId);
+    const fallbackElement = props.elements.get(itemId);
+    const size = getItemSize(item, props.horizontal, fallbackElement);
+    if (size) {
+      setAverageSize(size);
+    } else if (itemData?.rendered) {
+      setAverageSize(itemData.end - itemData.start);
+    }
+  }
+
+  return averageSize;
+}
+
+function getScrollOffset(scroller: Element | Window, horizontal: boolean) {
+  if ("scrollX" in scroller) {
+    return horizontal ? scroller.scrollX : scroller.scrollY;
+  }
+  return horizontal ? scroller.scrollLeft : scroller.scrollTop;
+}
+
+function getViewport(scroller: Element) {
+  const { defaultView, documentElement } = scroller.ownerDocument;
+  if (scroller === documentElement) return defaultView;
+  return scroller;
+}
+
+function useScroller(rendererRef: RefObject<HTMLElement> | null) {
+  const [scroller, setScroller] = useState<Element | null>(null);
+  useEffect(() => {
+    const renderer = rendererRef?.current;
+    if (!renderer) return;
+    const scroller = getScrollingElement(renderer);
+    if (!scroller) return;
+    setScroller(scroller);
+  }, [rendererRef]);
+  return scroller;
+}
+
+function getRendererOffset(
+  renderer: HTMLElement,
+  scroller: Element,
+  horizontal: boolean
+): number {
+  const win = getWindow(renderer);
+  const htmlElement = win?.document.documentElement;
+  const rendererRect = renderer.getBoundingClientRect();
+  const rendererOffset = horizontal ? rendererRect.left : rendererRect.top;
+  if (scroller === htmlElement) {
+    const scrollOffset = getScrollOffset(win, horizontal);
+    return scrollOffset + rendererOffset;
+  }
+  const scrollerRect = scroller.getBoundingClientRect();
+  const scrollerOffset = horizontal ? scrollerRect.left : scrollerRect.top;
+  const scrollOffset = getScrollOffset(scroller, horizontal);
+  return rendererOffset - scrollerOffset + scrollOffset;
+}
+
+function getOffsets(
+  renderer: HTMLElement,
+  scroller: Element,
+  horizontal: boolean
+) {
+  const scrollOffset = getScrollOffset(scroller, horizontal);
+  const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
+  const scrollSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
+  const start = scrollOffset - rendererOffset;
+  const end = start + scrollSize;
+  return { start, end };
+}
+
+function getItemsEnd<T extends Item>(props: {
+  baseId?: string;
+  items: Items<T>;
+  data: Data;
+  gap: number;
+  horizontal: boolean;
+  itemSize?: number;
+  estimatedItemSize: number;
+  paddingStart: number;
+  paddingEnd: number;
+}) {
+  const length = getItemsLength(props.items);
+  const totalPadding = props.paddingStart + props.paddingEnd;
+  if (!length) return totalPadding;
+  const lastIndex = length - 1;
+  const totalGap = lastIndex * props.gap;
+  if (props.itemSize != null) {
+    return length * props.itemSize + totalGap + totalPadding;
+  }
+  const defaultEnd = length * props.estimatedItemSize + totalGap + totalPadding;
+  if (!props.baseId) return defaultEnd;
+  const lastItem = getItem(props.items, lastIndex);
+  const lastItemId = getItemId(lastItem, lastIndex, props.baseId);
+  const lastItemData = props.data.get(lastItemId);
+  if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
+  if (!Array.isArray(props.items)) return defaultEnd;
+  const end = props.items.reduce<number>(
+    (sum, item) => sum + getItemSize(item, props.horizontal, false),
+    0
+  );
+  if (!end) return defaultEnd;
+  return end + totalGap + totalPadding;
+}
+
+function getData<T extends Item>(props: {
+  baseId: string;
+  items: Items<T>;
+  data: Data;
+  gap: number;
+  horizontal: boolean;
+  elements: Map<string, HTMLElement>;
+  paddingStart: number;
+  itemSize?: number;
+  estimatedItemSize: number;
+}) {
+  const length = getItemsLength(props.items);
+  let nextData: Data | undefined;
+  let start = props.paddingStart;
+  const avgSize = getAverageSize(props);
+
+  for (let index = 0; index < length; index += 1) {
+    const item = getItem(props.items, index);
+    const itemId = getItemId(item, index, props.baseId);
+    const itemData = props.data.get(itemId);
+    const prevRendered = itemData?.rendered ?? false;
+
+    const setSize = (size: number, rendered = prevRendered) => {
+      start = start ? start + props.gap : start;
+      const end = start + size;
+      const nextItemData = { index, rendered, start, end };
+      if (!shallowEqual(itemData, nextItemData)) {
+        if (!nextData) {
+          nextData = new Map(props.data);
+        }
+        nextData.set(itemId, { index, rendered, start, end });
+      }
+      start = end;
+    };
+
+    const size = getItemSize(
+      item,
+      props.horizontal,
+      props.elements.get(itemId)
+    );
+
+    if (size) {
+      setSize(size, true);
+    } else if (itemData?.rendered) {
+      setSize(itemData.end - itemData.start, true);
+    } else {
+      setSize(avgSize);
+    }
+  }
+
+  return nextData;
+}
 
 export function useCollectionRenderer<T extends Item = any>({
   store,
@@ -560,294 +844,16 @@ export const CollectionRenderer = forwardRef(function CollectionRenderer<
   return createElement("div", htmlProps);
 });
 
-function createTask() {
-  let raf = 0;
-  const run = (cb: () => void) => {
-    if (raf) return;
-    raf = requestAnimationFrame(() => {
-      raf = 0;
-      cb();
-    });
-  };
-  const cancel = () => {
-    cancelAnimationFrame(raf);
-    raf = 0;
-  };
-  return { run, cancel };
-}
-
-function findNearestIndex<T extends Item = any>(
-  items: Items<T>,
-  target: number,
-  getValue: (index: number) => number
-) {
-  let left = 0;
-  let right = getItemsLength(items) - 1;
-  while (left <= right) {
-    const index = ((left + right) / 2) | 0;
-    const value = getValue(index);
-    if (value === target) return index;
-    else if (value < target) left = index + 1;
-    else right = index - 1;
-  }
-  if (left > 0) return left - 1;
-  return 0;
-}
-
-function getItemsLength<T extends Item>(items: Items<T>) {
-  return typeof items === "number" ? items : items.length;
-}
-
-function getItemObject(item: Item): ItemObject {
-  if (!item || typeof item !== "object") {
-    return { value: item };
-  }
-  return item;
-}
-
-function getItemId(item: Item, index: number, baseId?: string) {
-  invariant(baseId, "CollectionRenderer must be given an `id` prop.");
-  const defaultId = `${baseId}/${index}`;
-  return getItemObject(item).id ?? defaultId;
-}
-
-function getItem<T extends Item = any>(
-  items: Items<T>,
-  index: number
-): RawItemProps<T> | null {
-  if (typeof items === "number") {
-    if (index >= items) return null;
-    return {} as RawItemProps<T>;
-  }
-  const item = items[index];
-  if (!item) return null;
-  if (typeof item === "object") return item as RawItemProps<T>;
-  return { value: item } as unknown as RawItemProps<T>;
-}
-
-function getItemSize(
-  item: Item,
-  horizontal: boolean,
-  fallbackElement?: HTMLElement | null | false
-): number {
-  const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" ?? horizontal;
-  const prop = horizontal ? "width" : "height";
-  const style = itemObject.style;
-  if (style) {
-    const size = style[prop];
-    if (typeof size === "number") return size;
-  }
-  const items = itemObject.items;
-  if (items?.length) {
-    const hasSameOrientation =
-      !itemObject.orientation ||
-      (horizontal && itemObject.orientation === "horizontal") ||
-      (!horizontal && itemObject.orientation === "vertical");
-    const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
-    const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
-    const padding = hasSameOrientation ? paddingStart + paddingEnd : 0;
-    const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
-    if (hasSameOrientation && itemObject.itemSize) {
-      return initialSize + itemObject.itemSize * items.length;
-    }
-    const totalSize = items.reduce<number>(
-      (sum, item) => sum + getItemSize(item, horizontal),
-      initialSize
-    );
-    if (totalSize !== initialSize) return totalSize;
-  }
-  const element =
-    fallbackElement !== false ? itemObject.element || fallbackElement : null;
-  if (element?.isConnected) {
-    return element.getBoundingClientRect()[prop];
-  }
-  return 0;
-}
-
-function getAverageSize<T extends Item>(props: {
-  baseId: string;
-  data: Data;
-  items: Items<T>;
-  elements: Map<string, HTMLElement>;
-  estimatedItemSize: number;
-  horizontal: boolean;
-}) {
-  const length = getItemsLength(props.items);
-  let currentIndex = 0;
-  let averageSize = props.estimatedItemSize;
-
-  const setAverageSize = (size: number) => {
-    const prevIndex = currentIndex;
-    currentIndex = currentIndex + 1;
-    averageSize = (averageSize * prevIndex + size) / currentIndex;
-  };
-
-  for (let index = 0; index < length; index += 1) {
-    const item = getItem(props.items, index);
-    const itemId = getItemId(item, index, props.baseId);
-    const itemData = props.data.get(itemId);
-    const fallbackElement = props.elements.get(itemId);
-    const size = getItemSize(item, props.horizontal, fallbackElement);
-    if (size) {
-      setAverageSize(size);
-    } else if (itemData?.rendered) {
-      setAverageSize(itemData.end - itemData.start);
-    }
-  }
-
-  return averageSize;
-}
-
-function getScrollOffset(scroller: Element | Window, horizontal: boolean) {
-  if ("scrollX" in scroller) {
-    return horizontal ? scroller.scrollX : scroller.scrollY;
-  }
-  return horizontal ? scroller.scrollLeft : scroller.scrollTop;
-}
-
-function getViewport(scroller: Element) {
-  const { defaultView, documentElement } = scroller.ownerDocument;
-  if (scroller === documentElement) return defaultView;
-  return scroller;
-}
-
-function useScroller(rendererRef: RefObject<HTMLElement> | null) {
-  const [scroller, setScroller] = useState<Element | null>(null);
-  useEffect(() => {
-    const renderer = rendererRef?.current;
-    if (!renderer) return;
-    const scroller = getScrollingElement(renderer);
-    if (!scroller) return;
-    setScroller(scroller);
-  }, [rendererRef]);
-  return scroller;
-}
-
-function getRendererOffset(
-  renderer: HTMLElement,
-  scroller: Element,
-  horizontal: boolean
-): number {
-  const win = getWindow(renderer);
-  const htmlElement = win?.document.documentElement;
-  const rendererRect = renderer.getBoundingClientRect();
-  const rendererOffset = horizontal ? rendererRect.left : rendererRect.top;
-  if (scroller === htmlElement) {
-    const scrollOffset = getScrollOffset(win, horizontal);
-    return scrollOffset + rendererOffset;
-  }
-  const scrollerRect = scroller.getBoundingClientRect();
-  const scrollerOffset = horizontal ? scrollerRect.left : scrollerRect.top;
-  const scrollOffset = getScrollOffset(scroller, horizontal);
-  return rendererOffset - scrollerOffset + scrollOffset;
-}
-
-function getOffsets(
-  renderer: HTMLElement,
-  scroller: Element,
-  horizontal: boolean
-) {
-  const scrollOffset = getScrollOffset(scroller, horizontal);
-  const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
-  const scrollSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
-  const start = scrollOffset - rendererOffset;
-  const end = start + scrollSize;
-  return { start, end };
-}
-
-function getItemsEnd<T extends Item>(props: {
-  baseId?: string;
-  items: Items<T>;
-  data: Data;
-  gap: number;
-  horizontal: boolean;
-  itemSize?: number;
-  estimatedItemSize: number;
-  paddingStart: number;
-  paddingEnd: number;
-}) {
-  const length = getItemsLength(props.items);
-  const totalPadding = props.paddingStart + props.paddingEnd;
-  if (!length) return totalPadding;
-  const lastIndex = length - 1;
-  const totalGap = lastIndex * props.gap;
-  if (props.itemSize != null) {
-    return length * props.itemSize + totalGap + totalPadding;
-  }
-  const defaultEnd = length * props.estimatedItemSize + totalGap + totalPadding;
-  if (!props.baseId) return defaultEnd;
-  const lastItem = getItem(props.items, lastIndex);
-  const lastItemId = getItemId(lastItem, lastIndex, props.baseId);
-  const lastItemData = props.data.get(lastItemId);
-  if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
-  if (!Array.isArray(props.items)) return defaultEnd;
-  const end = props.items.reduce<number>(
-    (sum, item) => sum + getItemSize(item, props.horizontal, false),
-    0
-  );
-  if (!end) return defaultEnd;
-  return end + totalGap + totalPadding;
-}
-
-function getData<T extends Item>(props: {
-  baseId: string;
-  items: Items<T>;
-  data: Data;
-  gap: number;
-  horizontal: boolean;
-  elements: Map<string, HTMLElement>;
-  paddingStart: number;
-  itemSize?: number;
-  estimatedItemSize: number;
-}) {
-  const length = getItemsLength(props.items);
-  let nextData: Data | undefined;
-  let start = props.paddingStart;
-  const avgSize = getAverageSize(props);
-
-  for (let index = 0; index < length; index += 1) {
-    const item = getItem(props.items, index);
-    const itemId = getItemId(item, index, props.baseId);
-    const itemData = props.data.get(itemId);
-    const prevRendered = itemData?.rendered ?? false;
-
-    const setSize = (size: number, rendered = prevRendered) => {
-      start = start ? start + props.gap : start;
-      const end = start + size;
-      const nextItemData = { index, rendered, start, end };
-      if (!shallowEqual(itemData, nextItemData)) {
-        if (!nextData) {
-          nextData = new Map(props.data);
-        }
-        nextData.set(itemId, { index, rendered, start, end });
-      }
-      start = end;
-    };
-
-    const size = getItemSize(
-      item,
-      props.horizontal,
-      props.elements.get(itemId)
-    );
-
-    if (size) {
-      setSize(size, true);
-    } else if (itemData?.rendered) {
-      setSize(itemData.end - itemData.start, true);
-    } else {
-      setSize(avgSize);
-    }
-  }
-
-  return nextData;
-}
-
-export const getCollectionItemId = getItemId;
-export const getCollectionItem = getItem;
+export const getCollectionRendererItem = getItem;
+export const getCollectionRendererItemId = getItemId;
 
 export type CollectionRendererItemObject = ItemObject;
 export type CollectionRendererItem = Item;
+export type CollectionRendererBaseItemProps = BaseItemProps;
+export type CollectionRendererItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = ItemProps<T, P>;
 
 export interface CollectionRendererOptions<T extends Item = any> {
   /**
@@ -876,46 +882,42 @@ export interface CollectionRendererOptions<T extends Item = any> {
    * function that renders the item. If it's an object, the entire object will
    * be passed.
    *
-   * The item object can have any shape, but some **optional** properties are
-   * special:
+   * The item object can have any shape, but some **optional** properties have
+   * particular functions:
    * - `id`: The same as the HTML attribute. If not provided, one will be
    *   generated automatically.
    * - `style`: The same as the HTML attribute. This will be merged with the
    *   styles generated by the component for each item. If the `width` or
    *   `height` properties are explicitly provided here, they will be used to
-   *   calculate the item's size.
+   *   calculate the item's size. This is useful when rendering items with known
+   *   variable sizes.
    * - `items`: An array of items to be rendered as children of this item. This
-   *   is useful when rendering nested items, though it's not required.
+   *   is useful when rendering nested items. This property is recommended when
+   *   rendering nested items because it will help the parent renderer calculate
+   *   the size and position of the nested items.
    *
-   * @example
-   * ```jsx
-   * <CollectionRenderer items={1000}>
-   *   {(item, index) => (
-   *     <CollectionItem key={item.id} {...item}>
-   *       Item {index}
-   *     </CollectionItem>
-   *   )}
-   * </CollectionRenderer>
-   * ```
+   * Also, When rendering nested renderers, you can optionally include props
+   * like `gap`, `orientation`, `itemSize`, `estimatedItemSize`, `padding`,
+   * `paddingStart`, and `paddingEnd`. These props will help the parent renderer
+   * calculate the size and position of the nested renderers.
    */
   items?: Items<T>;
   /**
-   * TODO: Description.
+   * Whether the items should be rendered when the closest scrollable ancestor
+   * is scrolled.
+   * @default true
    */
   renderOnScroll?: BooleanOrCallback<Event>;
   /**
-   * TODO: Description.
+   * Whether the items should be rendered when the closest scrollable ancestor
+   * is resized.
+   * @default true
    */
   renderOnResize?: BooleanOrCallback<Element>;
   /**
-   * TODO: Description.
-   *
-   * @example
-   * ```jsx
-   * <CollectionRenderer items={items} initialItems={8}>
-   *   {(item) => <CollectionItem key={item.id} {...item} />}
-   * </CollectionRenderer>
-   * ```
+   * The number of items to render initially. Can be set to a negative number to
+   * render items from the end of the list.
+   * @default 0
    */
   initialItems?: number;
   /**
@@ -945,21 +947,35 @@ export interface CollectionRendererOptions<T extends Item = any> {
    */
   overscan?: number;
   /**
-   * TODO: Comment
+   * The item indices that should always be rendered.
    */
   persistentIndices?: number[];
   /**
-   * The `children` should be a function that receives an item and its index and
-   * returns a React element.
-   * @param item The item object to be spread on the item component.
-   * @param index The index of the item.
+   * The padding between the items and the container in pixels. This value will
+   * be used for both the `paddingStart` and `paddingEnd` props, if they are not
+   * explicitly provided.
+   * @default 0
+   */
+  padding?: number;
+  /**
+   * The padding between the items and the container's start edge in pixels.
+   * This value will override the `padding` prop if it is explicitly provided.
+   * @default 0
+   */
+  paddingStart?: number;
+  /**
+   * The padding between the items and the container's end edge in pixels. This
+   * value will override the `padding` prop if it is explicitly provided.
+   * @default 0
+   */
+  paddingEnd?: number;
+  /**
+   * The `children` should be a function that receives item props and returns a
+   * React element. The item props should be spread onto the element that
+   * renders the item.
    */
   children?: (item: ItemProps<T>) => ReactNode;
   render?: RenderProp | ReactElement;
-  padding?: number;
-  paddingStart?: number;
-  paddingEnd?: number;
-  index?: number;
 }
 
 export interface CollectionRendererProps<T extends Item = any>

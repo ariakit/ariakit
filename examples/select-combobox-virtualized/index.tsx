@@ -1,8 +1,8 @@
 import "./style.css";
 import { startTransition, useEffect, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import type { CollectionRendererItem } from "@ariakit/react-core/collection/collection-renderer";
 import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
@@ -26,7 +26,7 @@ function groupItems(items: ReturnType<typeof getItem>[]) {
       itemSize: 40,
       paddingStart: 44,
       items,
-    } satisfies CollectionRendererItem;
+    } satisfies SelectRendererItem;
   });
 }
 
@@ -82,7 +82,7 @@ export default function Example() {
             />
           </div>
           <Ariakit.ComboboxList store={combobox}>
-            <SelectRenderer items={matches} gap={8} overscan={1}>
+            <SelectRenderer store={select} items={matches} gap={8} overscan={1}>
               {({ label, ...item }) => (
                 <SelectRenderer
                   key={item.id}

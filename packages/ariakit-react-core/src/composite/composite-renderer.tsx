@@ -1,13 +1,15 @@
-import type { ComponentPropsWithRef } from "react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
 import {
-  getCollectionItem,
-  getCollectionItemId,
+  getCollectionRendererItem,
+  getCollectionRendererItemId,
   useCollectionRenderer,
 } from "../collection/collection-renderer.js";
 import type {
+  CollectionRendererBaseItemProps,
   CollectionRendererItem,
   CollectionRendererItemObject,
+  CollectionRendererItemProps,
   CollectionRendererOptions,
 } from "../collection/collection-renderer.js";
 import type { CollectionStoreItem } from "../collection/collection-store.js";
@@ -23,9 +25,15 @@ interface ItemObject extends CollectionRendererItemObject {
 
 type Item = ItemObject | CollectionRendererItem;
 
-type Store<T extends Item> = CompositeStore<
-  T extends CollectionStoreItem ? T : CompositeStoreItem
->;
+interface BaseItemProps extends CollectionRendererBaseItemProps {
+  "aria-setsize": number;
+  "aria-posinset": number;
+}
+
+type ItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = CollectionRendererItemProps<T, P>;
 
 interface CompositeRendererContextValue {
   store: CompositeRendererOptions["store"];
@@ -88,7 +96,7 @@ function findById<T extends Item>(
   baseId: string
 ): number {
   return items.findIndex((item, index) => {
-    const itemId = getCollectionItemId(item, index, baseId);
+    const itemId = getCollectionRendererItemId(item, index, baseId);
     if (itemId === id) return true;
     const object = getItemObject(item);
     if (object.items?.length) return findById(object.items, id, itemId) !== -1;
@@ -108,7 +116,7 @@ export function useCompositeRenderer<T extends Item = any>({
   ...props
 }: CompositeRendererProps<T>) {
   const context = useContext(CompositeContext);
-  store = store || (context as Store<T>);
+  store = store || (context as typeof store);
 
   const orientation =
     useStoreState(store, (state) =>
@@ -174,16 +182,16 @@ export function useCompositeRenderer<T extends Item = any>({
     if (!id) return null;
     if (!items) return null;
     if (firstIndex === -1) return null;
-    const item = getCollectionItem(items, firstIndex);
-    return getCollectionItemId(item, firstIndex, id);
+    const item = getCollectionRendererItem(items, firstIndex);
+    return getCollectionRendererItemId(item, firstIndex, id);
   }, [id, items, firstIndex]);
 
   const lastId = useMemo(() => {
     if (!id) return null;
     if (!items) return null;
     if (lastIndex === -1) return null;
-    const item = getCollectionItem(items, lastIndex);
-    return getCollectionItemId(item, lastIndex, id);
+    const item = getCollectionRendererItem(items, lastIndex);
+    return getCollectionRendererItemId(item, lastIndex, id);
   }, [id, items, lastIndex]);
 
   const contextValue = useMemo(
@@ -213,10 +221,23 @@ export function useCompositeRenderer<T extends Item = any>({
         "aria-setsize": setSize,
         "aria-posinset": ariaPosInSet + (itemsCount[item.index - 1] ?? 0),
       };
-      return renderItem?.(nextItem);
+      return renderItem?.(nextItem as ItemProps<T>);
     },
   });
 }
+
+export {
+  getCollectionRendererItem as getCompositeRendererItem,
+  getCollectionRendererItemId as getCompositeRendererItemId,
+};
+
+export type CompositeRendererItemObject = ItemObject;
+export type CompositeRendererItem = Item;
+export type CompositeRendererBaseItemProps = BaseItemProps;
+export type CompositeRendererItemProps<
+  T extends Item,
+  P extends BaseItemProps = BaseItemProps
+> = ItemProps<T, P>;
 
 export const CompositeRenderer = forwardRef(function CompositeRenderer<
   T extends Item = any
@@ -226,8 +247,29 @@ export const CompositeRenderer = forwardRef(function CompositeRenderer<
 });
 
 export interface CompositeRendererOptions<T extends Item = any>
-  extends Omit<CollectionRendererOptions<T>, "store"> {
-  store?: Store<T>;
+  extends Omit<CollectionRendererOptions<T>, "store" | "children"> {
+  /**
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the parent
+   * [Composite](https://ariakit.org/components/composite) component's context
+   * will be used.
+   *
+   * The store
+   * [`items`](https://ariakit.org/reference/use-composite-store#items) state
+   * will be used to render the items if the
+   * [`items`](https://ariakit.org/reference/composite-items#items) prop is not
+   * provided.
+   */
+  store?: CompositeStore<
+    T extends CollectionStoreItem ? T : CompositeStoreItem
+  >;
+  /**
+   * The `children` should be a function that receives item props and returns a
+   * React element. The item props should be spread onto the element that
+   * renders the item.
+   */
+  children?: (item: ItemProps<T>) => ReactNode;
 }
 
 export interface CompositeRendererProps<T extends Item = any>
