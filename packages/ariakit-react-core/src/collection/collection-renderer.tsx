@@ -714,6 +714,7 @@ export function useCollectionRenderer<T extends Item = any>({
 
   // Render on intersection
   useEffect(() => {
+    if (typeof IntersectionObserver !== "function") return;
     const renderer = ref.current;
     if (!renderer) return;
     if (!scroller) return;
