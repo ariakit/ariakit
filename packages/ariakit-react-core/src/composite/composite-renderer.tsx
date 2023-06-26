@@ -1,5 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
-import { createContext, useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import {
   getCollectionRendererItem,
   getCollectionRendererItemId,
@@ -13,7 +13,7 @@ import type {
   CollectionRendererOptions,
 } from "../collection/collection-renderer.js";
 import type { CollectionStoreItem } from "../collection/collection-store.js";
-import { useId, useWrapElement } from "../utils/hooks.js";
+import { useId } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.js";
 import { CompositeContext } from "./composite-context.js";
@@ -34,16 +34,6 @@ type ItemProps<
   T extends Item,
   P extends BaseItemProps = BaseItemProps
 > = CollectionRendererItemProps<T, P>;
-
-interface CompositeRendererContextValue {
-  store: CompositeRendererOptions["store"];
-  orientation: CompositeRendererOptions["orientation"];
-  firstId: string | null;
-  lastId: string | null;
-}
-
-const CompositeRendererContext =
-  createContext<CompositeRendererContextValue | null>(null);
 
 function getItemObject(item: Item): ItemObject {
   if (!item || typeof item !== "object") {
@@ -126,15 +116,12 @@ export function useCompositeRenderer<T extends Item = any>({
     ) ?? orientationProp;
 
   const items =
-    useStoreState(store, (state) => props.items ?? (state.items as T[])) ||
-    props.items;
+    useStoreState(store, (state) => {
+      if ("mounted" in state && state.mounted) return 0;
+      return props.items ?? (state.items as T[]);
+    }) || props.items;
 
   const id = useId(props.id);
-
-  let parent = useContext(CompositeRendererContext);
-  if (store && parent?.store !== store) {
-    parent = null;
-  }
 
   const itemsCount = useMemo(() => countItems(items), [items]);
 
@@ -177,37 +164,6 @@ export function useCompositeRenderer<T extends Item = any>({
     }
     return indices;
   }, [firstIndex, activeIndex, lastIndex, persistentIndicesProp]);
-
-  const firstId = useMemo(() => {
-    if (!id) return null;
-    if (!items) return null;
-    if (firstIndex === -1) return null;
-    const item = getCollectionRendererItem(items, firstIndex);
-    return getCollectionRendererItemId(item, firstIndex, id);
-  }, [id, items, firstIndex]);
-
-  const lastId = useMemo(() => {
-    if (!id) return null;
-    if (!items) return null;
-    if (lastIndex === -1) return null;
-    const item = getCollectionRendererItem(items, lastIndex);
-    return getCollectionRendererItemId(item, lastIndex, id);
-  }, [id, items, lastIndex]);
-
-  const contextValue = useMemo(
-    () => ({ store, orientation, firstId, lastId }),
-    [store, orientation, firstId, lastId]
-  );
-
-  props = useWrapElement(
-    props,
-    (element) => (
-      <CompositeRendererContext.Provider value={contextValue}>
-        {element}
-      </CompositeRendererContext.Provider>
-    ),
-    [contextValue]
-  );
 
   return useCollectionRenderer({
     id,
