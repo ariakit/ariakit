@@ -79,7 +79,7 @@ export const useMenu = createHook<MenuOptions>(
     const autoFocusOnShowState = store.useState("autoFocusOnShow");
     const initialFocus = store.useState("initialFocus");
     const baseElement = store.useState("baseElement");
-    const items = store.useState("items");
+    const items = store.useState("renderedItems");
 
     // Sets the initial focus ref.
     useEffect(() => {
