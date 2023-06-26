@@ -112,7 +112,15 @@ export const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
 
     const open = store.useState("open");
     const [state, setState] = React.useState("closed");
-    React.useEffect(() => setState(open ? "open" : "closed"), [open]);
+
+    // Sets the state on the next animation frame so that the transition can be
+    // triggered.
+    React.useEffect(() => {
+      const raf = requestAnimationFrame(() => {
+        setState(open ? "open" : "closed");
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [open]);
 
     const disclosure = Ariakit.useDisclosureStore({
       open,
@@ -167,7 +175,15 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
 
     const open = store.useState("open");
     const [state, setState] = React.useState("closed");
-    React.useEffect(() => setState(open ? "open" : "closed"), [open]);
+
+    // Sets the state on the next animation frame so that the transition can be
+    // triggered.
+    React.useEffect(() => {
+      const raf = requestAnimationFrame(() => {
+        setState(open ? "open" : "closed");
+      });
+      return () => cancelAnimationFrame(raf);
+    }, [open]);
 
     if (!mounted) return null;
 
