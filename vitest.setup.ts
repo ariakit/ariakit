@@ -2,7 +2,6 @@ import { Suspense, createElement, version } from "react";
 import { render } from "@ariakit/test";
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers.js";
 import _matchers from "@testing-library/jest-dom/matchers.js";
-// @ts-expect-error
 import failOnConsole from "vitest-fail-on-console";
 
 const matchers = _matchers as unknown as typeof _matchers.default;
