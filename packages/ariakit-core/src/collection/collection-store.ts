@@ -107,9 +107,8 @@ export function createCollectionStore<T extends Item = Item>(
         const root = getCommonParent(state.renderedItems);
         const observer = new IntersectionObserver(callback, { root });
         state.renderedItems.forEach((item) => {
-          if (item.element) {
-            observer.observe(item.element);
-          }
+          if (!item.element) return;
+          observer.observe(item.element);
         });
         return () => {
           cancelAnimationFrame(raf);

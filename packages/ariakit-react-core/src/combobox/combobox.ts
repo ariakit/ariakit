@@ -104,7 +104,7 @@ export const useCombobox = createHook<ComboboxOptions>(
   }) => {
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
-    const valueChangedRef = useRef(false);
+    const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
 
     // We can only allow auto select when the combobox focus is handled via the
@@ -216,11 +216,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!scrollingElement) return;
       scrollingElementRef.current = scrollingElement;
       const onScroll = () => {
-        valueChangedRef.current = false;
+        // We won't disable the autoSelect behavior if the first item is still
+        // focused.
+        const { activeId } = store.getState();
+        if (activeId === null || activeId === store.first()) return;
+        canAutoSelectRef.current = false;
       };
       scrollingElement.addEventListener("scroll", onScroll, { passive: true });
       return () => scrollingElement.removeEventListener("scroll", onScroll);
-    }, [open, contentElement]);
+    }, [open, contentElement, store]);
 
     // Set the changed flag to true whenever the combobox value changes and is
     // not empty. We're doing this here in addition to in the onChange handler
@@ -228,7 +232,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     useSafeLayoutEffect(() => {
       if (!storeValue) return;
       if (composingRef.current) return;
-      valueChangedRef.current = true;
+      canAutoSelectRef.current = true;
     }, [storeValue]);
 
     // Reset the changed flag when the popover is not open so we don't try to
@@ -236,14 +240,14 @@ export const useCombobox = createHook<ComboboxOptions>(
     // of an animation).
     useSafeLayoutEffect(() => {
       if (open) return;
-      valueChangedRef.current = false;
+      canAutoSelectRef.current = false;
     }, [open]);
 
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
       if (!autoSelect) return;
-      if (!valueChangedRef.current) return;
+      if (!canAutoSelectRef.current) return;
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
@@ -283,10 +287,10 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (event.defaultPrevented) return;
       const { target } = event;
       const nativeEvent = event.nativeEvent;
-      valueChangedRef.current = true;
+      canAutoSelectRef.current = true;
       if (isInputEvent(nativeEvent)) {
         if (nativeEvent.isComposing) {
-          valueChangedRef.current = false;
+          canAutoSelectRef.current = false;
           composingRef.current = true;
         }
         if (inline) {
@@ -296,21 +300,6 @@ export const useCombobox = createHook<ComboboxOptions>(
           const caretAtEnd = target.selectionStart === target.value.length;
           setCanInline(textInserted && caretAtEnd);
         }
-      }
-      if (valueChangedRef.current && scrollingElementRef.current) {
-        // When the combobox content element is scrolled, the valueChanged flag
-        // will be disabled so the first item is not auto selected. However,
-        // when the value is updated, the combobox will immediately auto select
-        // the first item, which could cause the content element to scroll to
-        // the top, disabling the auto select as a result. To prevent this, we
-        // need to re-enable the valueChanged flag on the next scroll event
-        // after the value is updated.
-        const scrollingElement = scrollingElementRef.current;
-        const onScroll = () => {
-          valueChangedRef.current = true;
-        };
-        const options = { passive: true, once: true };
-        scrollingElement.addEventListener("scroll", onScroll, options);
       }
       if (showOnChangeProp(event)) {
         store.show();
@@ -329,7 +318,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // inline completion effect will be fired.
         forceValueUpdate();
       }
-      if (!autoSelect || !valueChangedRef.current) {
+      if (!autoSelect || !canAutoSelectRef.current) {
         // If autoSelect is not set or it's not an insertion of text, focus on
         // the combobox input after changing the value.
         store.setActiveId(null);
@@ -339,16 +328,16 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
-    // in accents or chinese characters), we need to set valueChangedRef to true
-    // when the composition ends. This is because the native input event that's
-    // passed to the change event above will not produce a consistent inputType
-    // value across browsers, so we can't rely on that there.
+    // in accents or chinese characters), we need to set canAutoSelectRef to
+    // true when the composition ends. This is because the native input event
+    // that's passed to the change event above will not produce a consistent
+    // inputType value across browsers, so we can't rely on that there.
     const onCompositionEnd = useEvent(
       (event: CompositionEvent<HTMLInputElement>) => {
+        canAutoSelectRef.current = true;
+        composingRef.current = false;
         onCompositionEndProp?.(event);
         if (event.defaultPrevented) return;
-        valueChangedRef.current = true;
-        composingRef.current = false;
         if (!autoSelect) return;
         forceValueUpdate();
       }
@@ -377,7 +366,6 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        valueChangedRef.current = false;
         onKeyDownProp?.(event);
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;
@@ -402,10 +390,10 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
-      // If we don't reset the valueChangedRef here, the combobox will keep the
+      // If we don't reset the canAutoSelectRef here, the combobox will keep the
       // first item selected when the combobox loses focus and its value gets
       // cleared. See combobox-cancel tests.
-      valueChangedRef.current = false;
+      canAutoSelectRef.current = false;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
