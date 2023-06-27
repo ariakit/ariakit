@@ -134,7 +134,10 @@ export const useSelectItem = createHook<SelectItemOptions>(
 
     const autoFocus = store.useState(
       (state) =>
-        !store?.item(state.activeId) && shouldAutoFocus(state.value, value)
+        // TODO: Test this on select-combobox. Select Chocolate, then search for
+        // "ap". Then backspace.
+        (state.activeId === id || !store?.item(state.activeId)) &&
+        shouldAutoFocus(state.value, value)
     );
 
     props = {
