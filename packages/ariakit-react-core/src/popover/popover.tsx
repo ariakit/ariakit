@@ -256,7 +256,7 @@ export const usePopover = createHook<PopoverOptions>(
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
-      const update = async () => {
+      const updatePosition = async () => {
         if (!mounted) return;
 
         const middleware = [
@@ -305,23 +305,25 @@ export const usePopover = createHook<PopoverOptions>(
         }
       };
 
-      // https://floating-ui.com/docs/autoUpdate
-      return autoUpdate(
-        anchor,
-        popoverElement,
-        async () => {
-          if (hasCustomUpdatePosition) {
-            await updatePositionProp({ updatePosition: update });
-            setPositioned(true);
-          } else {
-            await update();
-          }
-        },
-        {
-          // JSDOM doesn't support ResizeObserver
-          elementResize: typeof ResizeObserver === "function",
+      const update = async () => {
+        if (hasCustomUpdatePosition) {
+          await updatePositionProp({ updatePosition });
+          setPositioned(true);
+        } else {
+          await updatePosition();
         }
-      );
+      };
+
+      // https://floating-ui.com/docs/autoUpdate
+      const cancelAutoUpdate = autoUpdate(anchor, popoverElement, update, {
+        // JSDOM doesn't support ResizeObserver
+        elementResize: typeof ResizeObserver === "function",
+      });
+
+      return () => {
+        setPositioned(false);
+        cancelAutoUpdate();
+      };
     }, [
       store,
       rendered,

@@ -1,5 +1,4 @@
-import "./mock-get-client-rects.js";
-
+import "./polyfills.js";
 import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { blur } from "./blur.js";

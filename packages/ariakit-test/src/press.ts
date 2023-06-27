@@ -1,5 +1,4 @@
-import "./mock-get-client-rects.js";
-
+import "./polyfills.js";
 import { isTextField } from "@ariakit/core/utils/dom";
 import {
   getNextTabbable,

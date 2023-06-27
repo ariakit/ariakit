@@ -1,3 +1,4 @@
+import "./polyfills.js";
 import { click } from "./click.js";
 
 export async function tap(element: Element, options?: MouseEventInit) {
