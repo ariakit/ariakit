@@ -1,3 +1,4 @@
+import "./polyfills.js";
 import { fireEvent } from "@testing-library/dom";
 
 const pointerEvents = [

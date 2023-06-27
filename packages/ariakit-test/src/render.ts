@@ -1,3 +1,4 @@
+import "./polyfills.js";
 import type { ReactElement } from "react";
 import { StrictMode } from "react";
 import type { RenderOptions } from "@testing-library/react";

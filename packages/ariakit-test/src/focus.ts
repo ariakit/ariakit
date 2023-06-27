@@ -1,4 +1,4 @@
-import "./mock-get-client-rects.js";
+import "./polyfills.js";
 
 import { getActiveElement } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";

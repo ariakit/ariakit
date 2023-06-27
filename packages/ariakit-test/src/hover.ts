@@ -1,3 +1,4 @@
+import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
 import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
