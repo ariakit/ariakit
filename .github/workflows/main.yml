@@ -301,9 +301,9 @@ jobs:
     name: Test macOS
     needs: website
     runs-on: macos-latest
-    concurrency:
-      group: test-macos-${{ github.head_ref || github.run_id }}
-      cancel-in-progress: true
+    # concurrency:
+    #   group: test-macos-${{ github.head_ref || github.run_id }}
+    #   cancel-in-progress: true
 
     steps:
       - name: Checkout repository
