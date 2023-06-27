@@ -291,7 +291,13 @@ export const useDialog = createHook<DialogOptions>(
       const isElementFocusable = isFocusable(element);
       if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
       setAutoFocusEnabled(true);
-      queueMicrotask(() => element.focus());
+      queueMicrotask(() => {
+        element.focus();
+        // Safari doesn't scroll to the element on focus, so we have to do it
+        // manually here.
+        if (!isSafariBrowser) return;
+        element.scrollIntoView({ block: "nearest", inline: "nearest" });
+      });
     }, [
       open,
       mayAutoFocusOnShow,
