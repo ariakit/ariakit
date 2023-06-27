@@ -117,17 +117,7 @@ export const useSelectList = createHook<SelectListOptions>(
       onKeyDown,
     };
 
-    const canFocusOnMove = store.useState(
-      (state) => state.open && !state.animating && focusOnMove
-    );
-
-    props = useComposite({
-      store,
-      ...props,
-      composite,
-      focusOnMove: canFocusOnMove,
-    });
-
+    props = useComposite({ store, ...props, composite });
     props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;

@@ -1,3 +1,5 @@
+import "./polyfills.js";
+
 import { getActiveElement } from "@ariakit/core/utils/dom";
 import type { DirtiableElement } from "./__utils.js";
 import { act } from "./act.js";
