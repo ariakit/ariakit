@@ -5,6 +5,8 @@ const getButton = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite food" });
 const getPopover = (page: Page) =>
   page.getByRole("listbox", { name: "Favorite food" });
+const getOption = (page: Page, name: string) =>
+  page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/select-group");
@@ -20,7 +22,23 @@ test("scroll into view", async ({ page }) => {
   expect(await getPopover(page).screenshot()).toMatchSnapshot();
 });
 
-test("do not scroll when opening the popover", async ({ page }) => {
+test("scroll into view on open", async ({ page }) => {
+  test.info().snapshotSuffix = "";
+  await getButton(page).click();
+  await expect(getOption(page, "Chips")).not.toBeInViewport();
+  await page.keyboard.type("cc");
+  await expect(getOption(page, "Chips")).toBeInViewport();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await expect(getOption(page, "Chips")).toBeInViewport();
+  await getPopover(page).evaluate((el) => el.scrollTo({ top: 0 }));
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Enter");
+  await expect(getOption(page, "Chips")).toBeInViewport();
+  expect(await getPopover(page).screenshot()).toMatchSnapshot();
+});
+
+test("do not scroll the page when opening the popover", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 600 });
   await page.evaluate(() => (document.body.style.paddingTop = "250px"));
   await getButton(page).click();
