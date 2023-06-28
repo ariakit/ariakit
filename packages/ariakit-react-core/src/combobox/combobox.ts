@@ -298,7 +298,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const showOnChangeProp = useBooleanEvent(showOnChange);
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
-    const onChange = useEvent(async (event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       const { target } = event;
