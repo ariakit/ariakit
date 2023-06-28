@@ -49,6 +49,14 @@ test("do not scroll when hovering over an item", async ({ page }) => {
   expect(await getPopover(page).evaluate((el) => el.scrollTop)).toBe(100);
 });
 
+test("do not scroll when opening the popover by typing", async ({ page }) => {
+  await page.evaluate(() => window.scrollTo({ top: 100 }));
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("a");
+  await expect(getPopover(page)).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(100);
+});
+
 test("set value on tab", async ({ page }) => {
   await page.evaluate(() => {
     const div = document.createElement("div");

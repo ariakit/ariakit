@@ -69,7 +69,7 @@
     "@babel/preset-react": "7.22.5",
     "@babel/preset-typescript": "7.22.5",
     "@babel/types": "7.22.5",
-    "@changesets/cli": "2.26.1",
+    "@changesets/cli": "2.26.2",
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.35.1",
     "@stackblitz/sdk": "1.9.0",
@@ -117,8 +117,8 @@
     "hastscript": "7.2.0",
     "husky": "8.0.3",
     "jsdom": "22.1.0",
-    "lerna": "7.1.0",
-    "lint-staged": "13.2.2",
+    "lerna": "7.1.1",
+    "lint-staged": "13.2.3",
     "lodash": "4.17.21",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
@@ -128,7 +128,7 @@
     "monaco-editor-webpack-plugin": "7.0.1",
     "monaco-textmate": "3.0.1",
     "monaco-vscode-textmate-theme-converter": "0.1.7",
-    "next": "13.4.3",
+    "next": "13.4.7",
     "null-loader": "4.0.1",
     "onigasm": "2.2.5",
     "open-cli": "7.2.0",
@@ -169,6 +169,6 @@
     "use-local-storage-state": "18.3.3",
     "vitest": "0.32.2",
     "vitest-fail-on-console": "0.4.1",
-    "webpack": "5.88.0"
+    "webpack": "5.88.1"
   }
 }
