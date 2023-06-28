@@ -4,6 +4,11 @@
 export type AnyObject = Record<string, any>;
 
 /**
+ * Empty object.
+ */
+export type EmptyObject = Record<keyof any, never>;
+
+/**
  * Any function.
  */
 export type AnyFunction = (...args: any) => any;

@@ -1,5 +1,21 @@
 # @ariakit/test
 
+## 0.2.0
+
+### Minor Changes
+
+- Replaced `mock-get-client-rects` module by `polyfills`. ([#2587](https://github.com/ariakit/ariakit/pull/2587))
+
+### Patch Changes
+
+- Updated dependencies: `@ariakit/core@0.2.7`.
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies: `@ariakit/core@0.2.6`.
+
 ## 0.1.13
 
 ### Patch Changes

@@ -1,0 +1,67 @@
+@import url("../select-combobox/style.css");
+
+.select {
+  @apply
+    w-[260px]
+  ;
+}
+
+.select-value {
+  @apply
+    truncate
+  ;
+}
+
+.popover {
+  @apply
+    max-h-[min(var(--popover-available-height,480px),480px)]
+    bg-white
+    dark:bg-gray-700
+  ;
+}
+
+.combobox-wrapper {
+  @apply
+    z-20
+    w-full
+  ;
+}
+
+.group {
+  @apply
+    w-full
+  ;
+}
+
+.group-label {
+  @apply
+    sticky
+    top-12
+    z-10
+    text-sm
+    p-2
+    font-medium
+    cursor-default
+    border-b
+    border-gray-250
+    dark:border-gray-550
+    bg-white
+    dark:bg-gray-700
+    text-black/60
+    dark:text-white/50
+  ;
+}
+
+.select-item {
+  @apply
+    scroll-mt-[92px]
+    group-first-of-type:[&:nth-child(2)]:scroll-mt-[999px]
+  ;
+}
+
+.select-item-value {
+  @apply
+    w-full
+    truncate
+  ;
+}

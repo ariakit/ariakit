@@ -34,16 +34,6 @@
 
 <br>
 
----
-
-<p align="center">
-  This is the Ariakit main branch (<a href="https://gist.github.com/diegohaz/bc07491aee61a5f2469574b38c5c1aa0">What is Ariakit?</a>), which is still in beta.
-  <br>
-  If you're looking for Reakit, check out the <a href="https://github.com/ariakit/ariakit/tree/reakit">reakit</a> branch.
-</p>
-
----
-
 ## Installation
 
 npm:

@@ -1,7 +1,14 @@
+import { isFocusable } from "@ariakit/core/utils/focus";
 import { isBrowser } from "./__utils.js";
 
 if (!isBrowser && typeof window !== "undefined") {
-  // @ts-ignore
+  const originalFocus = window.HTMLElement.prototype.focus;
+  window.HTMLElement.prototype.focus = function focus(options) {
+    if (!isFocusable(this)) return;
+    return originalFocus.call(this, options);
+  };
+
+  // @ts-expect-error
   window.Element.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
       if (!element.isConnected) return true;

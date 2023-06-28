@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.2.9",
+  "version": "0.2.11",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.2.5",
+    "@ariakit/core": "0.2.7",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -68,6 +68,7 @@
     "./select/select-store": "./src/select/select-store.ts",
     "./select/select-separator": "./src/select/select-separator.ts",
     "./select/select-row": "./src/select/select-row.ts",
+    "./select/select-renderer": "./src/select/select-renderer.tsx",
     "./select/select-popover": "./src/select/select-popover.ts",
     "./select/select-list": "./src/select/select-list.tsx",
     "./select/select-label": "./src/select/select-label.ts",
@@ -184,6 +185,7 @@
     "./composite/composite-store": "./src/composite/composite-store.ts",
     "./composite/composite-separator": "./src/composite/composite-separator.ts",
     "./composite/composite-row": "./src/composite/composite-row.tsx",
+    "./composite/composite-renderer": "./src/composite/composite-renderer.tsx",
     "./composite/composite-overflow": "./src/composite/composite-overflow.ts",
     "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
     "./composite/composite-overflow-disclosure": "./src/composite/composite-overflow-disclosure.ts",
@@ -210,6 +212,7 @@
     "./combobox/combobox-cancel": "./src/combobox/combobox-cancel.tsx",
     "./collection/collection": "./src/collection/collection.tsx",
     "./collection/collection-store": "./src/collection/collection-store.ts",
+    "./collection/collection-renderer": "./src/collection/collection-renderer.tsx",
     "./collection/collection-item": "./src/collection/collection-item.ts",
     "./collection/collection-context": "./src/collection/collection-context.ts",
     "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",

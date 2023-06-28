@@ -165,6 +165,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     preventScrollOnKeyDown = false,
     moveOnKeyPress = true,
     getItem: getItemProp,
+    "aria-setsize": ariaSetSizeProp,
+    "aria-posinset": ariaPosInSetProp,
     ...props
   }) => {
     const context = useContext(CompositeContext);
@@ -351,8 +353,25 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const shouldTabIndex = useStoreState(
       store,
-      (state) => !state.virtualFocus && isActiveItem
+      (state) => !store?.item(id) || (!state.virtualFocus && isActiveItem)
     );
+
+    const ariaSetSize = useStoreState(store, (state) => {
+      if (ariaSetSizeProp != null) return ariaSetSizeProp;
+      if (!row?.ariaSetSize) return;
+      if (row.baseElement !== state.baseElement) return;
+      return row.ariaSetSize;
+    });
+
+    const ariaPosInSet = useStoreState(store, (state) => {
+      if (ariaPosInSetProp != null) return ariaPosInSetProp;
+      if (!row?.ariaPosInSet) return;
+      if (row.baseElement !== state.baseElement) return;
+      const itemsInRow = state.renderedItems.filter(
+        (item) => item.rowId === rowId
+      );
+      return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
+    });
 
     props = {
       id,
@@ -374,7 +393,11 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       shouldRegisterItem: !!id ? props.shouldRegisterItem : false,
     });
 
-    return props;
+    return {
+      ...props,
+      "aria-setsize": ariaSetSize,
+      "aria-posinset": ariaPosInSet,
+    };
   }
 );
 

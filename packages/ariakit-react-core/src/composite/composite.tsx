@@ -133,7 +133,7 @@ function useScheduleFocus(store: CompositeStore) {
     if (!scheduled) return;
     if (!activeElement) return;
     setScheduled(false);
-    focusIntoView(activeElement);
+    activeElement.focus({ preventScroll: true });
   }, [activeItem, scheduled]);
   return schedule;
 }
@@ -164,15 +164,14 @@ export const useComposite = createHook<CompositeOptions>(
     const moves = store.useState("moves");
 
     // Focus on the active item element.
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
+      if (!moves) return;
       if (!composite) return;
       if (!focusOnMove) return;
-      if (!moves) return;
       const { activeId } = store.getState();
       const itemElement = getEnabledItem(store, activeId)?.element;
       if (!itemElement) return;
-      // TODO: Revisit and explain this.
-      scheduleFocus();
+      focusIntoView(itemElement);
     }, [moves, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
@@ -365,7 +364,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (!isSelfTarget(event)) return;
       const { orientation, items, renderedItems, activeId } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
-      if (activeItem) return;
+      if (activeItem?.element?.isConnected) return;
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const grid = isGrid(renderedItems);

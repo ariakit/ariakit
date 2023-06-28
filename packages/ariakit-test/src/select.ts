@@ -1,3 +1,4 @@
+import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
 import { fireEvent } from "./fire-event.js";
 import { hover } from "./hover.js";

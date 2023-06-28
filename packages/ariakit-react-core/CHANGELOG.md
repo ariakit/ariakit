@@ -1,5 +1,47 @@
 # @ariakit/react-core
 
+## 0.2.11
+
+### Patch Changes
+
+- Added `forwardRef` and `memo` exports to `@ariakit/react-core/utils/system`. ([#2553](https://github.com/ariakit/ariakit/pull/2553))
+
+- Added new experimental `CollectionRenderer` component. ([#2553](https://github.com/ariakit/ariakit/pull/2553))
+
+- Added new experimental `CompositeRenderer` component. ([#2553](https://github.com/ariakit/ariakit/pull/2553))
+
+- Added new experimental `SelectRenderer` component. ([#2553](https://github.com/ariakit/ariakit/pull/2553))
+
+- Fixed `Combobox` with `autoSelect` and `autoComplete="both"` so the value is maintained when the combobox input loses focus. ([#2595](https://github.com/ariakit/ariakit/pull/2595))
+
+- Fixed `Combobox` with `autoSelect` prop causing a scroll jump when the popover was opened by typing on the input. ([#2599](https://github.com/ariakit/ariakit/pull/2599))
+
+- Fixed `Combobox` with the `autoSelect` prop not automatically selecting the first option when used in combination with `Select` after the selected option is re-mounted. ([#2592](https://github.com/ariakit/ariakit/pull/2592))
+
+- Updated composite item components with the `focusOnHover` prop set to `true` so that they don't scroll into view when hovered. ([#2590](https://github.com/ariakit/ariakit/pull/2590))
+
+- Fixed `Menu` initial focus when used in combination with `Combobox`. ([#2582](https://github.com/ariakit/ariakit/pull/2582))
+
+- Fixed `Popover` not updating its position when the placement changes while the popover is closed. ([#2587](https://github.com/ariakit/ariakit/pull/2587))
+
+- Fixed `Select` not scrolling selected option into view in Safari. ([#2591](https://github.com/ariakit/ariakit/pull/2591))
+
+- Updated dependencies: `@ariakit/core@0.2.7`.
+
+## 0.2.10
+
+### Patch Changes
+
+- Fixed `defaultItems` passed to the collection store being overriden when new items are added. ([#2559](https://github.com/ariakit/ariakit/pull/2559))
+
+- Fixed `Combobox` with the `autoSelect` prop not allowing the user to scroll when the list of items is virtualized. ([#2562](https://github.com/ariakit/ariakit/pull/2562))
+
+- Fixed `Composite` not moving focus to items by pressing the arrow keys when the active item isn't rendered. ([#2561](https://github.com/ariakit/ariakit/pull/2561))
+
+- Fixed `CompositeItem` not being tabbable before hydration. ([#2565](https://github.com/ariakit/ariakit/pull/2565))
+
+- Updated dependencies: `@ariakit/core@0.2.6`.
+
 ## 0.2.9
 
 ### Patch Changes

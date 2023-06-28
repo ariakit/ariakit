@@ -1,5 +1,4 @@
-import type { ElementType, ReactElement } from "react";
-import { cloneElement, forwardRef, isValidElement, memo } from "react";
+import * as React from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { useMergeRefs } from "./hooks.js";
@@ -15,6 +14,28 @@ import type {
 
 function isRenderProp(children: any): children is RenderProp {
   return typeof children === "function";
+}
+
+/**
+ * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
+ * component with the same generic type.
+ */
+export function forwardRef<T extends React.FC>(render: T) {
+  const Role = React.forwardRef<any>((props, ref) => render({ ...props, ref }));
+  Role.displayName = render.displayName || render.name;
+  return Role as unknown as T;
+}
+
+/**
+ * The same as `React.memo` but returns a component with the same generic type.
+ */
+export function memo<P, T extends React.FC<P>>(
+  Component: T,
+  propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean
+) {
+  const Role = React.memo(Component, propsAreEqual);
+  Role.displayName = Component.displayName || Component.name;
+  return Role as unknown as T;
 }
 
 /**
@@ -35,11 +56,11 @@ function isRenderProp(children: any): children is RenderProp {
  * <Component customProp render={<button />} />
  */
 export function createComponent<O extends Options>(
-  render: (props: Props<O>) => ReactElement
+  render: (props: Props<O>) => React.ReactElement
 ) {
   const Role = (props: Props<O>, ref: React.Ref<any>) =>
     render({ ref, ...props });
-  return forwardRef(Role) as unknown as Component<O>;
+  return React.forwardRef(Role) as unknown as Component<O>;
 }
 
 /**
@@ -61,10 +82,10 @@ export function createComponent<O extends Options>(
  * <Component customProp render={<button />} />
  */
 export function createMemoComponent<O extends Options>(
-  render: (props: Props<O>) => ReactElement
+  render: (props: Props<O>) => React.ReactElement
 ) {
   const Role = createComponent(render);
-  return memo(Role) as unknown as typeof Role;
+  return React.memo(Role) as unknown as typeof Role;
 }
 
 /**
@@ -80,22 +101,25 @@ export function createMemoComponent<O extends Options>(
  *   return createElement("div", props);
  * }
  */
-export function createElement(Type: ElementType, props: HTMLProps<Options>) {
+export function createElement(
+  Type: React.ElementType,
+  props: HTMLProps<Options>
+) {
   const { as: As, wrapElement, render, ...rest } = props;
-  let element: ReactElement;
+  let element: React.ReactElement;
   const mergedRef = useMergeRefs(props.ref, getRefProperty(render));
 
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
-  } else if (isValidElement<AnyObject>(render)) {
+  } else if (React.isValidElement<AnyObject>(render)) {
     const renderProps: AnyObject = { ...render.props, ref: mergedRef };
-    element = cloneElement(render, mergeProps(rest, renderProps));
+    element = React.cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
     // @ts-expect-error
-    element = render(rest) as ReactElement;
+    element = render(rest) as React.ReactElement;
   } else if (isRenderProp(props.children)) {
     const { children, ...otherProps } = rest;
-    element = props.children(otherProps) as ReactElement;
+    element = props.children(otherProps) as React.ReactElement;
   } else if (As) {
     element = <As {...rest} />;
   } else {

@@ -1,5 +1,4 @@
-import "./mock-get-client-rects.js";
-
+import "./polyfills.js";
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
 import type { DirtiableElement, TextField } from "./__utils.js";
@@ -37,7 +36,8 @@ export async function type(
     element = document.activeElement as HTMLInputElement;
   }
 
-  if (!element || !isFocusable(element)) return;
+  if (!element) return;
+  if (!isFocusable(element)) return;
 
   focus(element);
 

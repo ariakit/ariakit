@@ -111,6 +111,9 @@ test("move through items with keyboard", async () => {
   expect(getOption("Search")).toHaveFocus();
   await press.ArrowDown();
   expect(getOption("Verse")).toHaveFocus();
+  await press.Escape();
+  await press.ArrowDown();
+  expect(getOption("Paragraph")).toHaveFocus();
 });
 
 test("move through items with mouse and keyboard", async () => {
