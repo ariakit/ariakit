@@ -1,8 +1,8 @@
+import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
-import "./style.css";
 
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
@@ -41,7 +41,7 @@ export default function Example() {
               key={value}
               focusOnHover
               className="select-item"
-              render={(p) => <Ariakit.SelectItem {...p} value={value} />}
+              render={<Ariakit.SelectItem value={value} />}
             />
           ))}
         </Ariakit.ComboboxList>

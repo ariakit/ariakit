@@ -22,7 +22,14 @@ import type { CollectionStore } from "./collection-store.js";
  * ```
  */
 export const useCollectionItem = createHook<CollectionItemOptions>(
-  ({ store, shouldRegisterItem = true, getItem = identity, ...props }) => {
+  ({
+    store,
+    shouldRegisterItem = true,
+    getItem = identity,
+    // @ts-expect-error This prop may come from a collection renderer.
+    element,
+    ...props
+  }) => {
     const context = useContext(CollectionContext);
     store = store || context;
 

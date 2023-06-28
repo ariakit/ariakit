@@ -38,5 +38,6 @@
 .select-item {
   @apply
     scroll-mt-14
+    w-full
   ;
 }

@@ -25,7 +25,12 @@ import type { CompositeStore } from "./composite-store.js";
  * ```
  */
 export const useCompositeRow = createHook<CompositeRowOptions>(
-  ({ store, ...props }) => {
+  ({
+    store,
+    "aria-setsize": ariaSetSize,
+    "aria-posinset": ariaPosInSet,
+    ...props
+  }) => {
     const context = useContext(CompositeContext);
     store = store || context;
 
@@ -42,8 +47,8 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
     );
 
     const providerValue = useMemo(
-      () => ({ id, baseElement }),
-      [id, baseElement]
+      () => ({ id, baseElement, ariaSetSize, ariaPosInSet }),
+      [id, baseElement, ariaSetSize, ariaPosInSet]
     );
 
     props = useWrapElement(
