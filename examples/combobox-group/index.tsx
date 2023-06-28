@@ -1,13 +1,17 @@
+import "./style.css";
 import * as React from "react";
-import * as Ariakit from "@ariakit/react";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
+import {
+  Combobox,
+  ComboboxGroup,
+  ComboboxItem,
+  ComboboxSeparator,
+} from "./combobox.jsx";
 import food from "./food.js";
-import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore();
-  const value = combobox.useState("value");
+  const [value, setValue] = React.useState("");
   const deferredValue = React.useDeferredValue(value);
 
   const matches = React.useMemo(() => {
@@ -19,45 +23,29 @@ export default function Example() {
     <div className="wrapper">
       <label className="label">
         Your favorite food
-        <Ariakit.Combobox
-          store={combobox}
-          placeholder="e.g., Apple"
-          className="combobox"
-          autoComplete="both"
+        <Combobox
+          value={value}
+          onChange={setValue}
           autoSelect
-        />
+          autoComplete="both"
+          placeholder="e.g., Apple"
+        >
+          {matches.length ? (
+            matches.map(([type, items], i) => (
+              <React.Fragment key={type}>
+                <ComboboxGroup label={type}>
+                  {items.map((item) => (
+                    <ComboboxItem key={item.name} value={item.name} />
+                  ))}
+                </ComboboxGroup>
+                {i < matches.length - 1 && <ComboboxSeparator />}
+              </React.Fragment>
+            ))
+          ) : (
+            <div className="no-results">No results found</div>
+          )}
+        </Combobox>
       </label>
-      <Ariakit.ComboboxPopover
-        store={combobox}
-        gutter={4}
-        sameWidth
-        className="popover"
-      >
-        {!!matches.length ? (
-          matches.map(([type, items], i) => (
-            <React.Fragment key={type}>
-              <Ariakit.ComboboxGroup className="group">
-                <Ariakit.ComboboxGroupLabel className="group-label">
-                  {type}
-                </Ariakit.ComboboxGroupLabel>
-                {items.map((item) => (
-                  <Ariakit.ComboboxItem
-                    key={item.name}
-                    value={item.name}
-                    focusOnHover
-                    className="combobox-item"
-                  />
-                ))}
-              </Ariakit.ComboboxGroup>
-              {i < matches.length - 1 && (
-                <Ariakit.ComboboxSeparator className="separator" />
-              )}
-            </React.Fragment>
-          ))
-        ) : (
-          <div className="no-results">No results found</div>
-        )}
-      </Ariakit.ComboboxPopover>
     </div>
   );
 }
