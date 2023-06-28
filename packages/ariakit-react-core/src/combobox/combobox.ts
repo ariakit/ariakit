@@ -12,6 +12,7 @@ import {
   isFocusEventOutside,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
+import { hasFocus } from "@ariakit/core/utils/focus";
 import {
   isFalsyBooleanCallback,
   normalizeString,
@@ -248,6 +249,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!canAutoSelectRef.current) return;
+      const { baseElement } = store.getState();
+      if (baseElement && !hasFocus(baseElement)) return;
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
@@ -266,15 +269,17 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!inline) return;
       const combobox = ref.current;
       if (!combobox) return;
-      const elements = [combobox, contentElement].filter(Boolean);
+      const elements = [combobox, contentElement].filter(
+        (value): value is HTMLElement => !!value
+      );
       const onBlur = (event: FocusEvent) => {
         if (elements.every((el) => isFocusEventOutside(event, el))) {
           store.setValue(value);
         }
       };
-      elements.forEach((el) => el?.addEventListener("focusout", onBlur));
+      elements.forEach((el) => el.addEventListener("focusout", onBlur));
       return () => {
-        elements.forEach((el) => el?.removeEventListener("focusout", onBlur));
+        elements.forEach((el) => el.removeEventListener("focusout", onBlur));
       };
     }, [inline, contentElement, store, value]);
 
@@ -305,18 +310,19 @@ export const useCombobox = createHook<ComboboxOptions>(
         store.show();
       }
       if (setValueOnChangeProp(event)) {
+        const isSameValue = target.value === store.getState().value;
         store.setValue(target.value);
-      }
-      if (inline && autoSelect) {
-        // The store.setValue(event.target.value) above may not trigger a state
-        // update. For example, say the first item starts with "t". The user
-        // starts typing "t", then the first item is auto selected and the
-        // inline completion string is appended and highlited. The user then
-        // selects all the text and type "t" again. This change will produce the
-        // same value as the store value, and therefore the state update will
-        // not trigger a re-render. We need to force a re-render here so the
-        // inline completion effect will be fired.
-        forceValueUpdate();
+        if (inline && autoSelect && isSameValue) {
+          // The store.setValue(event.target.value) above may not trigger a
+          // state update. For example, say the first item starts with "t". The
+          // user starts typing "t", then the first item is auto selected and
+          // the inline completion string is appended and highlited. The user
+          // then selects all the text and type "t" again. This change will
+          // produce the same value as the store value, and therefore the state
+          // update will not trigger a re-render. We need to force a re-render
+          // here so the inline completion effect will be fired.
+          forceValueUpdate();
+        }
       }
       if (!autoSelect || !canAutoSelectRef.current) {
         // If autoSelect is not set or it's not an insertion of text, focus on
@@ -388,12 +394,12 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onBlurProp = props.onBlur;
 
     const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
-      onBlurProp?.(event);
-      if (event.defaultPrevented) return;
       // If we don't reset the canAutoSelectRef here, the combobox will keep the
       // first item selected when the combobox loses focus and its value gets
       // cleared. See combobox-cancel tests.
       canAutoSelectRef.current = false;
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
