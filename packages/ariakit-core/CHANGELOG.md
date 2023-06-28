@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.7
+
+### Patch Changes
+
+- Added new `EmptyObject` type export to `@ariakit/core/utils/types`. ([#2553](https://github.com/ariakit/ariakit/pull/2553))
+
 ## 0.2.6
 
 ### Patch Changes
