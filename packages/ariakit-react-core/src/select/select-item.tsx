@@ -71,6 +71,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
         const nextItem = {
           ...item,
           value: disabled ? undefined : value,
+          children: value,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
