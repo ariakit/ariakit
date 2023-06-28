@@ -69,7 +69,7 @@
     "@babel/preset-react": "7.22.5",
     "@babel/preset-typescript": "7.22.5",
     "@babel/types": "7.22.5",
-    "@changesets/cli": "2.26.1",
+    "@changesets/cli": "2.26.2",
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.35.1",
     "@stackblitz/sdk": "1.9.0",
