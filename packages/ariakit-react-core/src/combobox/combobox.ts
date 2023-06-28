@@ -249,12 +249,23 @@ export const useCombobox = createHook<ComboboxOptions>(
     useUpdateEffect(() => {
       if (!autoSelect) return;
       if (!canAutoSelectRef.current) return;
-      const { baseElement } = store.getState();
+      const { baseElement, contentElement } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
+      // The data-placing attribue is an internal state added by the Popover
+      // component. We can observe it to know when the popover is done placing
+      // itself. This is to prevent the focus from moving to the first item
+      // while the popover is still calculating its position, which could cause
+      // a srcoll jump. See combobox-group test-browser file.
+      if (contentElement?.hasAttribute("data-placing")) {
+        const observer = new MutationObserver(forceValueUpdate);
+        observer.observe(contentElement, { attributeFilter: ["data-placing"] });
+        return () => observer.disconnect();
+      }
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
       store.move(store.first() ?? null);
+      return;
     }, [store, valueUpdated, storeValue, autoSelect, items]);
 
     // Focus on the combobox input on type.
