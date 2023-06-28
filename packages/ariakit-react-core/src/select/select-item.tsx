@@ -8,7 +8,12 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.js";
 import { useCompositeHover } from "../composite/composite-hover.js";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
+import {
+  useBooleanEvent,
+  useEvent,
+  useId,
+  useWrapElement,
+} from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -23,15 +28,6 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
   if (itemValue == null) return false;
   if (Array.isArray(storeValue)) {
     return storeValue.includes(itemValue);
-  }
-  return storeValue === itemValue;
-}
-
-function shouldAutoFocus(storeValue?: string | string[], itemValue?: string) {
-  if (storeValue == null) return false;
-  if (itemValue == null) return false;
-  if (Array.isArray(storeValue)) {
-    return storeValue[storeValue.length - 1] === itemValue;
   }
   return storeValue === itemValue;
 }
@@ -66,6 +62,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
         "SelectItem must be wrapped in a SelectList or SelectPopover component"
     );
 
+    const id = useId(props.id);
     const disabled = props.disabled;
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -126,16 +123,22 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     const contentElement = store.useState("contentElement");
-    const autoFocus = store.useState((state) =>
-      shouldAutoFocus(state.value, value)
-    );
+    const autoFocus = store.useState((state) => {
+      if (state.activeId !== id && store?.item(state.activeId)) return false;
+      if (state.value == null) return false;
+      if (value == null) return false;
+      if (Array.isArray(state.value)) {
+        return state.value[state.value.length - 1] === value;
+      }
+      return state.value === value;
+    });
 
     props = {
+      id,
       role: getPopupItemRole(contentElement),
       "aria-selected": selected,
       children: value,
       ...props,
-      // TODO: Take autoFocusOnShow prop into account.
       autoFocus: props.autoFocus ?? autoFocus,
       onClick,
     };
