@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.12
+
+### Patch Changes
+
+- Fixed `CompositeItem` not being tabbable before hydration. ([#2601](https://github.com/ariakit/ariakit/pull/2601))
+
+- Updated dependencies: `@ariakit/react-core@0.2.12`.
+
 ## 0.2.11
 
 ### Patch Changes
