@@ -164,7 +164,7 @@
     "tiny-invariant": "1.3.1",
     "ts-morph": "18.0.0",
     "tsup": "7.1.0",
-    "typescript": "5.1.5",
+    "typescript": "5.1.6",
     "unified": "10.1.2",
     "unist-util-visit": "4.1.2",
     "use-local-storage-state": "18.3.3",

@@ -270,6 +270,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Cache playwright
+        id: cache-playwright
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
@@ -277,6 +278,7 @@ jobs:
           restore-keys: playwright-chromium-
 
       - name: Install playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Restore website
