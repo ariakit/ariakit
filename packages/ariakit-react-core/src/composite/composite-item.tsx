@@ -333,8 +333,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     );
 
     const isActiveItem = useStoreState(store, (state) => state.activeId === id);
-    const role = useRole(ref, props);
     const virtualFocus = useStoreState(store, "virtualFocus");
+    const role = useRole(ref, props);
     let ariaSelected: boolean | undefined;
 
     if (isActiveItem) {
@@ -350,11 +350,6 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         ariaSelected = true;
       }
     }
-
-    const shouldTabIndex = useStoreState(
-      store,
-      (state) => !store?.item(id) || (!state.virtualFocus && isActiveItem)
-    );
 
     const ariaSetSize = useStoreState(store, (state) => {
       if (ariaSetSizeProp != null) return ariaSetSizeProp;
@@ -373,13 +368,19 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
     });
 
+    const isTabbable =
+      useStoreState(store, (state) => {
+        if (!state.renderedItems.length) return true;
+        return !state.virtualFocus && state.activeId === id;
+      }) ?? true;
+
     props = {
       id,
       "aria-selected": ariaSelected,
       "data-active-item": isActiveItem ? "" : undefined,
       ...props,
       ref: useMergeRefs(ref, props.ref),
-      tabIndex: shouldTabIndex !== false ? props.tabIndex : -1,
+      tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,
       onKeyDown,

@@ -7,7 +7,7 @@ const getButton = (page: Page, name: string) =>
 test.use({ javaScriptEnabled: false });
 
 test("make sure elements are tabbable with JS disabled", async ({ page }) => {
-  await page.goto("/previews/toolbar", { waitUntil: "networkidle" });
+  await page.goto("/previews/toolbar");
   await page.keyboard.press("Tab");
   await expect(getButton(page, "Undo")).toBeFocused();
   await page.keyboard.press("Tab");
