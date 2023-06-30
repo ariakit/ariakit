@@ -3,6 +3,7 @@
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
   createContext,
+  forwardRef,
   memo,
   useContext,
   useEffect,
@@ -12,6 +13,7 @@ import {
 import { cx } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
+// import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import type {
   QueryFunctionContext,
@@ -32,6 +34,7 @@ import {
   HeaderMenuItem,
   HeaderMenuSeparator,
 } from "./header-menu.js";
+import type { HeaderMenuItemProps } from "./header-menu.js";
 
 type Data = Array<
   PageContent & { keywords: string[]; score?: number; key?: string }
@@ -199,15 +202,13 @@ function Shortcut() {
   );
 }
 
-type HeaderNavItemProps = {
+interface HeaderNavItemProps extends HeaderMenuItemProps {
   item: PageIndexDetail | SearchData[number];
   category?: string;
-  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
-  autoFocus?: boolean;
-};
+}
 
 const HeaderNavItem = memo(
-  ({ item, category, onClick, ...props }: HeaderNavItemProps) => {
+  forwardRef<any, HeaderNavItemProps>(({ item, category, ...props }, ref) => {
     category = category || ("category" in item ? item.category : undefined);
     if (!category) return null;
     const id = "id" in item ? item.id : null;
@@ -230,6 +231,7 @@ const HeaderNavItem = memo(
       : undefined;
     return (
       <HeaderMenuItem
+        ref={ref}
         title={nested ? section || item.title : item.title}
         description={description}
         value={href}
@@ -237,11 +239,10 @@ const HeaderNavItem = memo(
         path={path}
         nested={nested}
         thumbnail={getPageIcon(category, item.slug) || <span />}
-        onClick={onClick}
         {...props}
       />
     );
-  }
+  })
 );
 
 type HeaderNavMenuProps = {
@@ -367,6 +368,12 @@ const HeaderNavMenu = memo(
     const itemElements = useMemo(() => {
       if (noResults) return null;
       if (!items.length && !Object.keys(groups).length) return null;
+      // const groupItems = Object.entries(groups).map(([group, items]) => ({
+      //   group,
+      //   items,
+      //   itemSize: 96,
+      //   paddingStart: 40,
+      // }));
       return (
         <>
           {items?.map((item) => (
@@ -378,6 +385,25 @@ const HeaderNavMenu = memo(
               onClick={onItemClick}
             />
           ))}
+          {/* <SelectRenderer items={groupItems}>
+            {({ group, ...item }) => (
+              <SelectRenderer
+                key={group}
+                {...item}
+                render={<HeaderMenuGroup label={group} />}
+              >
+                {(item) => (
+                  <HeaderNavItem
+                    key={getItemKey(item)}
+                    autoFocus={hasSearchValue ? false : undefined}
+                    item={item}
+                    onClick={onItemClick}
+                    {...item}
+                  />
+                )}
+              </SelectRenderer>
+            )}
+          </SelectRenderer> */}
           {Object.entries(groups).map(([group, pages]) => (
             <HeaderMenuGroup key={group} label={group}>
               {pages.map((item) => (

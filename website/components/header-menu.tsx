@@ -1,8 +1,8 @@
 "use client";
 
 import type {
-  ButtonHTMLAttributes,
   ComponentPropsWithRef,
+  ComponentPropsWithoutRef,
   HTMLAttributes,
   MouseEvent,
   ReactNode,
@@ -58,7 +58,6 @@ import { NewWindow } from "icons/new-window.js";
 import { Search } from "icons/search.js";
 import { Spinner } from "icons/spinner.js";
 import Link from "next/link.js";
-import { afterTimeout } from "utils/after-timeout.js";
 import { tw } from "utils/tw.js";
 import { whenIdle } from "utils/when-idle.js";
 import { Popup } from "./popup.js";
@@ -187,10 +186,8 @@ const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
-type HeaderMenuProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  "value" | "onChange"
-> & {
+export interface HeaderMenuProps
+  extends Omit<ComponentPropsWithoutRef<"button">, "value" | "onChange"> {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
@@ -207,10 +204,10 @@ type HeaderMenuProps = Omit<
   contentLabel?: string;
   hasTitle?: boolean;
   href?: string;
-};
+}
 
 export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
-  (
+  function HeaderMenu(
     {
       children,
       label,
@@ -232,7 +229,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       ...props
     },
     ref
-  ) => {
+  ) {
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = useComboboxStore({
@@ -245,9 +242,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       combobox,
       value,
       setValue(value) {
-        if (typeof value === "string") {
-          onChange?.(value);
-        }
+        if (typeof value !== "string") return;
+        onChange?.(value);
       },
     });
     const menu = useMenuStore({
@@ -256,25 +252,24 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       placement: parent ? "right-start" : "bottom-start",
     });
 
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       return menu.syncBatch(
         (state) => {
-          if (!parent && state.open) {
-            menu.setAutoFocusOnShow(true);
-          }
+          if (parent) return;
+          if (!state.open) return;
+          menu.setAutoFocusOnShow(true);
         },
         ["open", "autoFocusOnShow"]
       );
     }, [parent, menu]);
 
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       return select.sync(
         (state) => {
-          if (!parent) {
-            menu.setDisclosureElement(state.selectElement);
-            select.setDisclosureElement(state.selectElement);
-            combobox.setDisclosureElement(state.selectElement);
-          }
+          if (parent) return;
+          menu.setDisclosureElement(state.selectElement);
+          select.setDisclosureElement(state.selectElement);
+          combobox.setDisclosureElement(state.selectElement);
         },
         ["selectElement", "disclosureElement"]
       );
@@ -294,9 +289,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
 
     useEffect(() => {
       if (comboboxValue === searchValue) return;
-      if (process.env.NODE_ENV === "development") {
-        return afterTimeout(500, () => onSearchProp(comboboxValue));
-      }
       return whenIdle(() => onSearchProp(comboboxValue), 500);
     }, [comboboxValue, searchValue, onSearchProp]);
 
@@ -325,7 +317,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         aria-label={contentLabel}
         aria-busy={loading}
         className={popoverSizes[size]}
-        renderScoller={(props) => (
+        renderScroller={(props) => (
           <div
             {...props}
             className={cx(
@@ -413,15 +405,14 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             fixed
             fitViewport
             gutter={4}
-            render={(props) => (
+            render={
               <MenuList
-                {...props}
                 store={menu}
                 typeahead={false}
                 composite={false}
                 render={renderPopover}
               />
-            )}
+            }
           />
         )}
       </SelectContext.Provider>
@@ -496,7 +487,7 @@ export const HeaderMenuGroup = forwardRef<HTMLDivElement, HeaderMenuGroupProps>(
   }
 );
 
-type HeaderMenuItemProps = HTMLAttributes<HTMLElement> & {
+export interface HeaderMenuItemProps extends HTMLAttributes<HTMLElement> {
   href?: string;
   value?: string;
   title?: string;
@@ -505,7 +496,7 @@ type HeaderMenuItemProps = HTMLAttributes<HTMLElement> & {
   path?: ReactNode[];
   nested?: boolean;
   autoFocus?: boolean;
-};
+}
 
 export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
   (

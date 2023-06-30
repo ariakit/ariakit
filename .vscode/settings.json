@@ -5,7 +5,10 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "tailwindCSS.experimental.classRegex": ["tw`([^`]*)`"],
+  "tailwindCSS.experimental.classRegex": [
+    "tw`([^`]*)`",
+    ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
+  ],
   "eslint.enable": true,
   "eslint.format.enable": true,
   "editor.formatOnSave": true,

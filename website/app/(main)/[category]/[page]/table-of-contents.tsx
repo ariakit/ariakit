@@ -62,6 +62,7 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
+        anchor.scrollIntoView({ block: "nearest" });
       }
     });
   }, [activeId, mounted, isLarge, children, popoverContents]);

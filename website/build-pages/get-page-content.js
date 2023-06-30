@@ -37,29 +37,55 @@ export function createReferencePageContent(reference) {
   const { name, description, examples, props, deprecated, returnProps } =
     reference;
 
-  const requiredProps = props.filter((prop) => !prop.optional);
-  const optionalProps = props.filter((prop) => prop.optional);
+  /**
+   * @param {import("./types.js").ReferenceProp} a
+   * @param {import("./types.js").ReferenceProp} b
+   */
+  const sortProp = (a, b) => {
+    if (a.deprecated && !b.deprecated) return 1;
+    if (!a.deprecated && b.deprecated) return -1;
+    return a.name.localeCompare(b.name);
+  };
+
+  const requiredProps = props.filter((prop) => !prop.optional).sort(sortProp);
+  const optionalProps = props
+    .filter((prop) => prop.optional && prop.name !== "as")
+    .sort(sortProp);
 
   /** @param {import("./types.js").ReferenceProp} prop */
   const renderProp = (prop) => {
-    return `### \`${prop.name}\`
-${
-  prop.deprecated
-    ? `\n**Deprecated**${
-        typeof prop.deprecated === "string" ? `: ${prop.deprecated}` : ""
-      }\n`
-    : ""
-}${prop.defaultValue ? `\ndefault: \`${prop.defaultValue}\`\n` : ""}
-${prop.description}
+    return `### ${prop.deprecated ? `~\`${prop.name}\`~` : `\`${prop.name}\``}
+
+${`\`\`\`ts definition
+${prop.type}${prop.defaultValue ? ` = ${prop.defaultValue}` : ""}
+\`\`\``}${
+      prop.deprecated
+        ? `\n**Deprecated**${
+            typeof prop.deprecated === "string" ? `: ${prop.deprecated}` : ""
+          }\n`
+        : ""
+    }
+${prop.description.replace(
+  "Live examples:",
+  `#### Live examples
+
+<div data-cards>
+
+`
+)}
+${prop.description.includes("Live examples:") ? "\n</div>" : ""}
 ${
   prop.examples.length > 0
-    ? `\n${prop.examples
-        .map((example) =>
-          `\`\`\`${example.language}
+    ? `
+#### Code examples
+
+${prop.examples
+  .map((example) =>
+    `\`\`\`${example.language}
 ${example.code}
 \`\`\``.trim()
-        )
-        .join("\n\n")}\n`
+  )
+  .join("\n\n")}\n`
     : ""
 }
 `.trim();
@@ -81,21 +107,27 @@ ${
   requiredProps.length > 0
     ? `## Required Props
 
-${requiredProps.map(renderProp).join("\n\n")}\n`
+---
+
+${requiredProps.map(renderProp).join("\n\n---\n\n")}\n`
     : ""
 }
 ${
   optionalProps.length > 0
     ? `## Optional Props
 
-${optionalProps.map(renderProp).join("\n\n")}\n`
+---
+
+${optionalProps.map(renderProp).join("\n\n---\n\n")}\n`
     : ""
 }
 ${
   returnProps && returnProps.length > 0
     ? `## Return Props
 
-${returnProps.map(renderProp).join("\n\n")}\n`
+---
+
+${returnProps.map(renderProp).join("\n\n---\n\n")}\n`
     : ""
 }
 `;

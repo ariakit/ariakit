@@ -28,6 +28,7 @@ import parseNumericRange from "parse-numeric-range";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
 import invariant from "tiny-invariant";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
@@ -83,6 +84,7 @@ const style = {
     underline-offset-[0.2em] hover:text-black dark:hover:text-white
     focus-visible:ariakit-outline-input
 
+    data-[depth="0"]:scroll-mt-96
     data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24
     md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12
   `,
@@ -126,6 +128,12 @@ const style = {
     ${headingBase}
     ${stickyHeading}
   `,
+  h4: tw`
+    text-sm uppercase opacity-70 tracking-wider
+  `,
+  hr: tw`
+    w-full border-t border-black/10 dark:border-white/10
+  `,
   description: tw`
     -translate-y-2
     text-lg sm:text-xl sm:leading-8
@@ -168,7 +176,7 @@ const style = {
     data-[wide]:md:rounded-2xl
   `,
   blockquote: tw`
-    flex flex-col gap-4 p-4 !max-w-[736px]
+    flex flex-col gap-4 px-4 !max-w-[736px]
     border-l-4 border-black/25 dark:border-white/25
     group-data-[bigquote]:border-0
     group-data-[bigquote]:italic
@@ -419,6 +427,7 @@ export default async function Page({ params }: PageProps) {
       </TableOfContents>
       <main className={style.main}>
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           rehypePlugins={[
             rehypeCodeMeta,
             rehypeRaw,
@@ -448,7 +457,9 @@ export default async function Page({ params }: PageProps) {
               if (node.properties?.dataCards != null) {
                 const links = findCardLinks(props.children);
                 const pages = links.flatMap((link) => {
-                  const [, category, slug] = link.split("/");
+                  const [, category, slug] = link
+                    .replace("https://ariakit.org", "")
+                    .split("/");
                   if (!category || !slug) return [];
                   const page = pagesIndex[category]?.find(
                     (item) => item.slug === slug
@@ -517,6 +528,14 @@ export default async function Page({ params }: PageProps) {
               <h3 {...props} className={cx(style.h3, props.className)}>
                 <a href={`#${id}`}>{props.children}</a>
               </h3>
+            ),
+            h4: ({ node, level, id, ...props }) => (
+              <h4 {...props} className={cx(style.h4, props.className)}>
+                {props.children}
+              </h4>
+            ),
+            hr: ({ node, ...props }) => (
+              <hr {...props} className={cx(style.hr, props.className)} />
             ),
             ul: ({ node, ordered, ...props }) => {
               const className = cx(style.list, props.className);
@@ -590,6 +609,7 @@ export default async function Page({ params }: PageProps) {
               const lang = child.props.className?.replace("language-", "");
               const meta = child.props.meta?.split(" ") || [];
               const lineNumbers = meta.includes("lineNumbers");
+              const definition = meta.includes("definition");
               const rangePattern = /^\{([\d\-,]+)\}$/;
               const highlightLines = meta
                 .filter((item) => rangePattern.test(item))
@@ -607,12 +627,13 @@ export default async function Page({ params }: PageProps) {
                 });
               return (
                 <CodeBlock
+                  type={definition ? "definition" : undefined}
                   lang={lang}
                   code={code}
                   lineNumbers={lineNumbers}
                   highlightLines={highlightLines}
                   highlightTokens={highlightTokens}
-                  className="!max-w-[832px]"
+                  className={definition ? "" : "!max-w-[832px]"}
                 />
               );
             },

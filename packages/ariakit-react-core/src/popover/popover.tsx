@@ -531,7 +531,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.
    *
-   * Examples using this prop:
+   * Live examples:
    *  - [Textarea with inline combobox](https://ariakit.org/examples/combobox-textarea)
    *  - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
    *  - [Context menu](https://ariakit.org/examples/menu-context-menu)
@@ -545,7 +545,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * original `updatePosition` function will be passed as an argument, so it can
    * be called inside the callback to apply the default behavior.
    *
-   * Example susing this prop:
+   * Live examples:
    *  - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    */
   updatePosition?: (props: {

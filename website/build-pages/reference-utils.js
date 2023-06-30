@@ -1,5 +1,4 @@
-import { basename, join } from "path";
-import chalk from "chalk";
+import { join } from "path";
 import invariant from "tiny-invariant";
 import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
 
@@ -12,24 +11,12 @@ const project = new Project({
  */
 export function getReferences(filename) {
   let sourceFile = project.getSourceFile(filename);
-  const logName = chalk.gray(basename(filename));
-  /** @param {string} msg */
-  const log = (msg) => console.log(`${chalk.green("pages")} - ${msg}`);
 
   if (!sourceFile) {
-    performance.mark("addSourceFile:start");
     sourceFile = project.addSourceFileAtPath(filename);
     project.resolveSourceFileDependencies();
-    performance.mark("addSourceFile:end");
-    const { duration } = performance.measure(
-      "addSourceFile",
-      "addSourceFile:start",
-      "addSourceFile:end"
-    );
-    log(`added ${logName} reference in ${Math.round(duration)}ms`);
   } else {
     sourceFile.refreshFromFileSystemSync();
-    log(`refreshed ${logName} reference`);
   }
 
   const exportedDecls = sourceFile.getExportedDeclarations();
@@ -169,7 +156,12 @@ function getDefaultValue(node) {
 function getType(node) {
   return node
     .getType()
-    .getText(undefined, ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
+    .getText(
+      undefined,
+      ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope |
+        ts.TypeFormatFlags.AddUndefined |
+        ts.TypeFormatFlags.UseFullyQualifiedType
+    );
 }
 
 /**
