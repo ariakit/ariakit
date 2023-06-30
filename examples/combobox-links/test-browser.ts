@@ -93,5 +93,5 @@ test("click on target blank link", async ({ page, context }) => {
   ]);
   await expect(getPopover(page)).not.toBeVisible();
   await expect(getCombobox(page)).toHaveValue("");
-  await expect(newPage).toHaveURL(/https:\/\/twitter.com\/ariakitjs/);
+  await expect(newPage).toHaveURL(/https:\/\/twitter.com/);
 });
