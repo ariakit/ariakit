@@ -79,7 +79,8 @@ function useSelectRenderer<T extends Item = any>({
       state.mounted ? itemsProp ?? (state.items as T[]) : 0
     ) || itemsProp;
 
-  const value = useStoreState(store, "value") ?? valueProp;
+  const value =
+    useStoreState(store, (state) => valueProp ?? state.value) ?? valueProp;
 
   const valueIndices = useMemo(() => {
     if (!items) return [];
