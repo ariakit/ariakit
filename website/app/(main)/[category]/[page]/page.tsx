@@ -658,7 +658,6 @@ export default async function Page({ params }: PageProps) {
             },
             img: ({ node, ...props }) => {
               const className = cx(style.media, props.className);
-              // @ts-expect-error
               return <Image {...props} className={className} />;
             },
             video: ({ node, ...props }) => {
