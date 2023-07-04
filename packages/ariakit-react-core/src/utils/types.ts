@@ -35,7 +35,13 @@ export type Children<T = any> =
  * @example
  * type ButtonOptions = Options<"button">;
  */
-export type Options<T extends As = any> = { as?: T };
+export type Options<T extends As = any> = {
+  /**
+   * @deprecated Use the [`render`](https://ariakit.org/guide/composition) prop
+   * instead.
+   */
+  as?: T;
+};
 
 /**
  * Props that automatically includes HTML props based on the `as` prop.
