@@ -157,7 +157,7 @@
     "rimraf": "5.0.1",
     "shiki": "0.14.2",
     "stylelint": "15.10.0",
-    "stylelint-config-standard": "33.0.0",
+    "stylelint-config-standard": "34.0.0",
     "stylis": "4.3.0",
     "sugarss": "4.0.1",
     "tailwind-merge": "1.13.2",
