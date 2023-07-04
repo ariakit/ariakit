@@ -1,7 +1,6 @@
 import type { ComponentPropsWithRef } from "react";
 import { useContext, useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
-import { invariant } from "@ariakit/core/utils/misc";
 import {
   getCompositeRendererItem,
   getCompositeRendererItemId,
@@ -14,6 +13,7 @@ import type {
   CompositeRendererItemProps,
   CompositeRendererOptions,
 } from "../composite/composite-renderer.js";
+import { useStoreState } from "../utils/store.js";
 import { createElement, forwardRef } from "../utils/system.js";
 import { SelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
@@ -67,22 +67,20 @@ function useSelectRenderer<T extends Item = any>({
   store,
   orientation: orientationProp,
   persistentIndices: persistentIndicesProp,
+  items: itemsProp,
+  value: valueProp,
   ...props
 }: SelectRendererProps<T>) {
   const context = useContext(SelectContext);
   store = store || context;
 
-  invariant(
-    store,
-    process.env.NODE_ENV !== "production" &&
-      "SelectRenderer must be wrapped in a SelectPopover or SelectList component"
-  );
+  const items =
+    useStoreState(store, (state) =>
+      state.mounted ? itemsProp ?? (state.items as T[]) : 0
+    ) || itemsProp;
 
-  const items = store.useState((state) =>
-    state.mounted ? props.items ?? (state.items as T[]) : 0
-  );
-
-  const value = store.useState("value");
+  const value =
+    useStoreState(store, (state) => valueProp ?? state.value) ?? valueProp;
 
   const valueIndices = useMemo(() => {
     if (!items) return [];
@@ -100,10 +98,10 @@ function useSelectRenderer<T extends Item = any>({
   }, [valueIndices, persistentIndicesProp]);
 
   return useCompositeRenderer({
-    store,
+    store: store as CompositeRendererOptions["store"],
+    items,
     persistentIndices,
     ...props,
-    items,
   });
 }
 
@@ -140,7 +138,14 @@ export interface SelectRendererOptions<T extends Item = any>
    * [`items`](https://ariakit.org/reference/select-items#items) prop is not
    * provided.
    */
-  store?: SelectStore & CompositeRendererOptions["store"];
+  store?: SelectStore;
+  /**
+   * The current value of the select. This will ensure the item with the given
+   * value is rendered even if it's not in the viewport, so it can be
+   * automatically focused when the select popover is opened. If not provided,
+   * the value will be read from the store.
+   */
+  value?: SelectStoreValue;
 }
 
 export interface SelectRendererProps<T extends Item = any>
