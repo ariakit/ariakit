@@ -62,6 +62,7 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
+        anchor.scrollIntoView({ block: "nearest" });
       }
     });
   }, [activeId, mounted, isLarge, children, popoverContents]);
@@ -77,13 +78,13 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
         {!isLarge && (
           <Ariakit.Popover
             store={popover}
-            as={Popup}
             portal
             fixed
             tabIndex={0}
             gutter={8}
             overflowPadding={12}
             className={style.popover}
+            render={<Popup />}
           >
             <Ariakit.PopoverHeading className={style.popoverHeading}>
               Table of Contents

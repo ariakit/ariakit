@@ -3,15 +3,18 @@
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
   createContext,
+  forwardRef,
   memo,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { cx } from "@ariakit/core/utils/misc";
+import { cx, getKeys } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
+import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import type {
   QueryFunctionContext,
@@ -32,9 +35,14 @@ import {
   HeaderMenuItem,
   HeaderMenuSeparator,
 } from "./header-menu.js";
+import type { HeaderMenuItemProps } from "./header-menu.js";
 
 type Data = Array<
-  PageContent & { keywords: string[]; score?: number; key?: string }
+  PageContent & {
+    keywords: string[];
+    score?: number;
+    key?: string;
+  }
 >;
 
 type SearchData = Array<Data[number] & { nested?: boolean }>;
@@ -44,7 +52,7 @@ const categoryTitles: Record<string, string> = {
   components: "Components",
   examples: "Examples",
   blog: "Blog",
-  api: "API Reference",
+  reference: "API Reference",
 };
 
 const searchTitles: Record<string, string> = {
@@ -52,8 +60,12 @@ const searchTitles: Record<string, string> = {
   components: "Search components",
   examples: "Search examples",
   blog: "Search blog",
-  api: "Search API",
+  reference: "Search API",
 };
+
+function getCategoryTitle(categorySlug: string) {
+  return categoryTitles[categorySlug] || "";
+}
 
 function getSearchParentPageData(items: Data): SearchData[number] | null {
   const parentPage = items?.find((item) => !item.section);
@@ -66,18 +78,18 @@ function getSearchParentPageData(items: Data): SearchData[number] | null {
   if (!page) return null;
   return {
     ...page,
-    id: null,
-    section: null,
-    parentSection: null,
+    sectionId: null,
     category,
+    section: null,
     keywords: [],
+    parentSection: null,
   };
 }
 
 function parseSearchData(data: Data) {
   const dataBySlug = groupBy(data, "slug");
   const searchData: SearchData = [];
-  const slugs = Object.keys(dataBySlug);
+  const slugs = getKeys(dataBySlug);
   slugs.forEach((slug) => {
     const items = dataBySlug[slug];
     if (!items) return;
@@ -99,6 +111,15 @@ function getItemKey(item: PageIndexDetail | SearchData[number]) {
   const category = "category" in item && item.category ? item.category : "";
   const section = "section" in item && item.section ? item.section : "";
   return category + item.slug + section;
+}
+
+function getItemHref(
+  item: PageIndexDetail | SearchData[number],
+  category = item.category
+) {
+  return `/${category}/${item.slug}${
+    "sectionId" in item && item.sectionId ? `#${item.sectionId}` : ""
+  }`;
 }
 
 function getAllIndexes(string: string, values: string[]) {
@@ -199,29 +220,29 @@ function Shortcut() {
   );
 }
 
-type HeaderNavItemProps = {
+interface HeaderNavItemProps extends HeaderMenuItemProps {
   item: PageIndexDetail | SearchData[number];
   category?: string;
-  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
-  autoFocus?: boolean;
-};
+}
 
 const HeaderNavItem = memo(
-  ({ item, category, onClick, ...props }: HeaderNavItemProps) => {
+  forwardRef<any, HeaderNavItemProps>(function HeaderNavItem(
+    { item, category, ...props },
+    ref
+  ) {
     category = category || ("category" in item ? item.category : undefined);
     if (!category) return null;
-    const id = "id" in item ? item.id : null;
     const keywords = "keywords" in item ? item.keywords : null;
     const section = "section" in item ? item.section : null;
     const parentSection = "parentSection" in item ? item.parentSection : null;
     const nested = "nested" in item ? item.nested : false;
-    const href = `/${category}/${item.slug}${id ? `#${id}` : ""}`;
+    const href = getItemHref(item, category);
     const description = keywords
       ? highlightValue(item.content, keywords)
       : item.content;
     const path = keywords
       ? [
-          highlightValue(categoryTitles[category], keywords),
+          highlightValue(getCategoryTitle(category), keywords),
           highlightValue(item.group, keywords),
           section && highlightValue(item.title, keywords),
           highlightValue(parentSection, keywords),
@@ -230,6 +251,7 @@ const HeaderNavItem = memo(
       : undefined;
     return (
       <HeaderMenuItem
+        ref={ref}
         title={nested ? section || item.title : item.title}
         description={description}
         value={href}
@@ -237,14 +259,13 @@ const HeaderNavItem = memo(
         path={path}
         nested={nested}
         thumbnail={getPageIcon(category, item.slug) || <span />}
-        onClick={onClick}
         {...props}
       />
     );
-  }
+  })
 );
 
-type HeaderNavMenuProps = {
+interface HeaderNavMenuProps {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   category?: string;
@@ -260,7 +281,7 @@ type HeaderNavMenuProps = {
   href?: string;
   hiddenOnMobile?: boolean;
   "aria-label"?: string;
-};
+}
 
 const HeaderNavMenuContext = createContext(false);
 
@@ -327,10 +348,11 @@ const HeaderNavMenu = memo(
       [category, allData]
     );
     const noResults = !!searchData && !searchData.length;
-    const pages = category
-      ? pageIndex[category]?.filter((page) => !page.unlisted)
-      : null;
-    const categoryTitle = category ? categoryTitles[category] : null;
+    const pages = useMemo(() => {
+      if (!category) return null;
+      return pageIndex[category]?.filter((page) => !page.unlisted);
+    }, [category]);
+    const categoryTitle = category ? getCategoryTitle(category) : null;
     const hasTitle = !!category && !searchData?.length && !noResults;
 
     useEffect(() => {
@@ -349,7 +371,13 @@ const HeaderNavMenu = memo(
         return [[], { [categoryTitle || "Search results"]: searchData }];
       }
       if (!pages) return [[], {}];
-      const groups = groupBy(pages, "group");
+      const groups = groupBy(
+        pages.map((page) => ({
+          ...page,
+          value: getItemHref(page),
+        })) as typeof pages,
+        "group"
+      );
       const items = groups.null || [];
       delete groups.null;
       return [items, groups];
@@ -367,6 +395,15 @@ const HeaderNavMenu = memo(
     const itemElements = useMemo(() => {
       if (noResults) return null;
       if (!items.length && !Object.keys(groups).length) return null;
+      const groupItems = Object.entries(groups).map(
+        ([group, items]) =>
+          ({
+            group,
+            items,
+            itemSize: 96,
+            paddingStart: 40,
+          } satisfies SelectRendererItem)
+      );
       return (
         <>
           {items?.map((item) => (
@@ -378,19 +415,33 @@ const HeaderNavMenu = memo(
               onClick={onItemClick}
             />
           ))}
-          {Object.entries(groups).map(([group, pages]) => (
-            <HeaderMenuGroup key={group} label={group}>
-              {pages.map((item) => (
-                <HeaderNavItem
-                  key={getItemKey(item)}
-                  autoFocus={hasSearchValue ? false : undefined}
-                  category={category}
-                  item={item}
-                  onClick={onItemClick}
-                />
-              ))}
-            </HeaderMenuGroup>
-          ))}
+          <SelectRenderer
+            items={groupItems}
+            role="presentation"
+            className="bg-inherit"
+          >
+            {({ group, ...item }) => (
+              <SelectRenderer
+                key={group}
+                {...item}
+                render={<HeaderMenuGroup label={group} />}
+              >
+                {(item) => (
+                  <HeaderNavItem
+                    key={item.id}
+                    id={item.id}
+                    ref={item.ref}
+                    style={item.style}
+                    aria-posinset={item["aria-posinset"]}
+                    aria-setsize={item["aria-setsize"]}
+                    item={item}
+                    onClick={onItemClick}
+                    autoFocus={hasSearchValue ? false : undefined}
+                  />
+                )}
+              </SelectRenderer>
+            )}
+          </SelectRenderer>
         </>
       );
     }, [
@@ -574,19 +625,19 @@ export function HeaderNav() {
     };
   }, [categoryOpen, pageOpen, category, pageMeta]);
 
-  const categoryTitle = category ? categoryTitles[category] : "Browse";
+  const categoryTitle = category ? getCategoryTitle(category) : "Browse";
 
   const categoryElements = useMemo(
     () =>
-      Object.keys(pageIndex).map((key) => {
-        const pages = pageIndex[key as keyof typeof pageIndex];
+      getKeys(pageIndex).map((key) => {
+        const pages = pageIndex[key];
         if (!pages) return null;
         return (
           <HeaderNavMenu
             key={key}
             href={`/${key}`}
             category={key}
-            label={categoryTitles[key]}
+            label={getCategoryTitle(key)}
           />
         );
       }),

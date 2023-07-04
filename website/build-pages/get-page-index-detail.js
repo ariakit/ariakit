@@ -1,16 +1,16 @@
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { getPageName } from "./get-page-name.js";
-import { getPageTreeFromFile } from "./get-page-tree.js";
+import { getPageTree } from "./get-page-tree.js";
 
 /**
- * @param {string} filename
+ * @param {string | import("./types.js").Reference} filename
  * @param {import("./types.js").Page["getGroup"]} [getGroup]
  * @param {import("hast").Root} [tree]
  * @return {Omit<import("./types.js").PageIndexDetail, "category">}
  */
 export function getPageIndexDetail(filename, getGroup, tree) {
-  tree = tree || getPageTreeFromFile(filename);
+  tree = tree || getPageTree(filename);
   const slug = getPageName(filename);
   let title = "";
   let content = "";

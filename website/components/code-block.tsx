@@ -10,6 +10,7 @@ import sh from "shiki/languages/shellscript.tmLanguage.json";
 import tsx from "shiki/languages/tsx.tmLanguage.json";
 import typescript from "shiki/languages/typescript.tmLanguage.json";
 import darkPlus from "shiki/themes/dark-plus.json";
+import { twJoin, twMerge } from "tailwind-merge";
 import { tw } from "utils/tw.js";
 import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
@@ -21,7 +22,8 @@ interface Props {
   lineNumbers?: boolean;
   highlightLines?: number[];
   highlightTokens?: (string | readonly [string, number[]])[];
-  type?: "static" | "editor";
+  type?: "static" | "editor" | "definition";
+  definition?: boolean;
   className?: string;
   preClassName?: string;
 }
@@ -79,7 +81,7 @@ export async function CodeBlock({
   highlightTokens,
   className,
 }: Props) {
-  code = type === "static" ? code.trim() : code;
+  code = type === "static" || type === "definition" ? code.trim() : code;
 
   let tokens: IThemedToken[][] = [];
 
@@ -108,37 +110,42 @@ export async function CodeBlock({
   const tokensSeen: Record<string, number> = {};
 
   return (
-    <div className={cx(className, "relative max-h-[inherit] w-full")}>
+    <div
+      className={twMerge(
+        type !== "definition" && "w-full",
+        "relative max-h-[inherit]",
+        className
+      )}
+    >
       {type === "static" && (
         <CopyToClipboard
           text={code}
-          className={tw`
+          className={twJoin(`
           absolute right-2 top-2 z-[11] h-[37px] rounded-md bg-transparent px-3
           text-sm text-white/75 hover:bg-white/[15%] hover:text-white
-          focus-visible:ariakit-outline-input dark:hover:!bg-white/5`}
+          focus-visible:ariakit-outline-input dark:hover:!bg-white/5`)}
         />
       )}
       <pre
-        className={cx(
+        className={twJoin(
+          type === "definition" ? "w-max max-w-full py-3" : "w-full pt-4",
+          type === "definition" && "rounded-lg bg-gray-850",
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg bg-gray-850 sm:rounded-xl",
           type === "editor" && "rounded-b-lg bg-[#1e1e1e] sm:rounded-b-xl",
-          highlightLines?.length || highlightTokens?.length
+          !oneLiner && (highlightLines?.length || highlightTokens?.length)
             ? "leading-[26px]"
             : "leading-[21px]",
-          tw`
-          relative z-10 flex max-h-[inherit] w-full overflow-auto
-          pt-4 text-sm text-white [color-scheme:dark]`
+          "relative z-10 flex max-h-[inherit] overflow-auto text-sm text-white [color-scheme:dark]"
         )}
       >
         {lineNumbers && (
           <div
             aria-hidden
-            className={cx(
+            className={twJoin(
               type === "static" && "flex",
               type === "editor" && "hidden sm:flex",
-              tw`sticky left-0 h-full select-none flex-col bg-inherit
-            text-right text-[#858585]`
+              "sticky left-0 h-full select-none flex-col bg-inherit text-right text-[#858585]"
             )}
           >
             {tokens.map((_, i) => {
@@ -159,19 +166,22 @@ export async function CodeBlock({
             })}
           </div>
         )}
-        <code className="grid h-max w-full">
+        <code
+          className={twJoin(type !== "definition" && "w-full", "grid h-max")}
+        >
           {tokens.map((line, i) => {
             const highlighted = highlightLines?.includes(i + 1);
             return (
               <div
                 key={i}
-                className={cx(
+                className={twJoin(
                   type === "static" && "sm:!px-8",
                   type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
                   type === "editor" && lineNumbers && "sm:!pl-0",
+                  type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
+                  type === "definition" && "px-4",
                   highlighted && "bg-blue-600/20 dark:bg-blue-600/[15%]",
-                  highlighted && !lineNumbers && style.highlightBefore,
-                  "px-4 pr-14 sm:pl-[26px]"
+                  highlighted && !lineNumbers && style.highlightBefore
                 )}
               >
                 {line.length ? (
@@ -210,7 +220,10 @@ export async function CodeBlock({
             );
           })}
           <div
-            className={cx(type === "static" && !oneLiner && "sm:h-8", "h-4")}
+            className={twJoin(
+              type === "static" && !oneLiner && "sm:h-8",
+              type !== "definition" && "h-4"
+            )}
           />
         </code>
       </pre>

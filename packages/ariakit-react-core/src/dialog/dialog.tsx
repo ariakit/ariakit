@@ -566,8 +566,10 @@ export interface DialogOptions<T extends As = "div">
     | ReactElement<ComponentPropsWithRef<"div">>
     | ElementType<ComponentPropsWithRef<"div">>;
   /**
-   * Props that will be passed to the backdrop element if `backdrop` is `true`.
-   * @deprecated Use the `backdrop` prop instead.
+   * Props that will be passed to the backdrop element if
+   * [`backdrop`](https://ariakit.org/reference/dialog#backdrop) is `true`.
+   * @deprecated Use the
+   * [`backdrop`](https://ariakit.org/reference/dialog#backdrop) prop instead.
    */
   backdropProps?: ComponentPropsWithRef<"div">;
   /**

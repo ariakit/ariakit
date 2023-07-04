@@ -14,6 +14,7 @@ const nextConfig = {
       "@babel/preset-react",
       "@babel/preset-typescript",
       "typescript",
+      "ts-morph",
       "onigasm",
       "shiki",
       "vscode-oniguruma",

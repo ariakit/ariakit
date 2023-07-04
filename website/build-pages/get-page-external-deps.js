@@ -2,13 +2,13 @@ import { dirname, resolve } from "path";
 import { visit } from "unist-util-visit";
 import { isPlaygroundNode } from "./ast.js";
 import { getExampleDeps } from "./get-example-deps.js";
-import { getPageTreeFromFile } from "./get-page-tree.js";
+import { getPageTree } from "./get-page-tree.js";
 
 /**
  * @param {string} filename
  */
 export function getPageExternalDeps(filename) {
-  const tree = getPageTreeFromFile(filename);
+  const tree = getPageTree(filename);
 
   /** @type {Record<string, string>} */
   let deps = {};

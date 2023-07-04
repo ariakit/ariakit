@@ -1,12 +1,11 @@
 "use client";
 
 import type {
-  ButtonHTMLAttributes,
   ComponentPropsWithRef,
+  ComponentPropsWithoutRef,
   HTMLAttributes,
   MouseEvent,
   ReactNode,
-  RefAttributes,
   RefObject,
 } from "react";
 import {
@@ -18,36 +17,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { cx } from "@ariakit/core/utils/misc";
-import {
-  Combobox,
-  ComboboxCancel,
-  ComboboxItem,
-  ComboboxList,
-  useComboboxStore,
-} from "@ariakit/react/combobox";
-import {
-  CompositeGroup,
-  CompositeGroupLabel,
-  CompositeSeparator,
-} from "@ariakit/react/composite";
-import {
-  Menu,
-  MenuButton,
-  MenuButtonArrow,
-  MenuItem,
-  MenuList,
-  useMenuStore,
-} from "@ariakit/react/menu";
-import { PopoverDismiss } from "@ariakit/react/popover";
-import { Role } from "@ariakit/react/role";
-import {
-  Select,
-  SelectItem,
-  SelectPopover,
-  useSelectStore,
-} from "@ariakit/react/select";
-import { VisuallyHidden } from "@ariakit/react/visually-hidden";
+import * as Ariakit from "@ariakit/react";
 import {
   useEvent,
   useId,
@@ -58,126 +28,9 @@ import { NewWindow } from "icons/new-window.js";
 import { Search } from "icons/search.js";
 import { Spinner } from "icons/spinner.js";
 import Link from "next/link.js";
-import { afterTimeout } from "utils/after-timeout.js";
-import { tw } from "utils/tw.js";
+import { twJoin } from "tailwind-merge";
 import { whenIdle } from "utils/when-idle.js";
 import { Popup } from "./popup.js";
-
-const style = {
-  button: tw`
-    flex items-center justify-center
-    h-10 gap-2 px-3 overflow-hidden
-    whitespace-nowrap cursor-default
-    border-none rounded-lg
-    hover:bg-black/5 dark:hover:bg-white/5
-    aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
-    [&:focus-visible]:ariakit-outline-input
-  `,
-  comboboxWrapper: tw`
-    sticky top-0
-    w-full py-2
-    rounded-b
-    bg-[color:inherit]
-    z-50
-    [&:not(:focus-within)+*>[aria-expanded="true"]]:bg-black/[7.5%]
-    dark:[&:not(:focus-within)+*>[aria-expanded="true"]]:bg-white/[7.5%]
-  `,
-  comboboxIcon: tw`
-    absolute top-3 left-2 h-4 w-4 opacity-50
-  `,
-  combobox: tw`
-    h-10 pl-[30px] pr-[50px] w-full
-    text-base
-    placeholder-black/60 dark:placeholder-white/[46%]
-    rounded border-none
-    text-black dark:text-white
-    bg-gray-150/40 dark:bg-gray-850
-    hover:bg-gray-150 dark:hover:bg-gray-900
-    shadow-input dark:shadow-input-dark
-    focus-visible:ariakit-outline-input
-  `,
-  comboboxCancel: tw`
-    absolute top-2 right-2
-    flex items-center justify-center
-    h-6 p-2
-    cursor-default
-    border-none rounded-sm
-    text-[10px]
-    text-black/80 dark:text-white/80
-    bg-black/10 dark:bg-white/10
-    hover:bg-black/20 dark:hover:bg-white/20
-    focus-visible:ariakit-outline-input
-  `,
-  comboboxList: tw`
-    flex flex-col
-    bg-[color:inherit]
-  `,
-  group: tw`
-    bg-[color:inherit]
-  `,
-  groupLabel: tw`
-    sticky
-    p-2 pt-3
-    text-sm font-medium text-black/60 dark:text-white/50
-    bg-[color:inherit]
-    z-10
-  `,
-  item: tw`
-    group
-    flex items-center gap-2
-    p-2 scroll-m-2
-    cursor-default [a&]:cursor-pointer
-    rounded focus-visible:!outline-none
-    active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25
-    active:bg-blue-200/70 dark:active:bg-blue-800/25
-  `,
-  itemDescription: tw`
-    text-sm text-black/70 dark:text-white/70
-    dark:[&_[data-autocomplete-value]]:text-white/[56%]
-    [&_[data-user-value]]:font-semibold
-    [&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white
-  `,
-  itemIcon: tw`
-    w-4 h-4
-    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
-  `,
-  itemThumbnail: tw`
-    flex items-center justify-center flex-none
-    w-16 h-16
-    rounded-sm
-    bg-gray-150 dark:bg-gray-800
-    group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70
-    group-active:bg-black/[7.5%] dark:group-active:bg-black/70
-  `,
-  itemNestedThumbnail: tw`
-    relative
-    flex flex-col flex-none items-center justify-center
-    w-16 h-16
-    after:absolute after:-top-4 after:h-24 after:w-0.5 after:bg-black/10 after:dark:bg-white/10
-  `,
-  itemPathSegment: tw`
-    truncate text-blue-700 dark:text-blue-400
-    [&_[data-user-value]]:font-semibold
-    [&_[data-user-value]]:text-blue-900 dark:[&_[data-user-value]]:text-blue-100
-  `,
-  separator: tw`
-    w-full my-2 h-0
-    border-t border-gray-250 dark:border-gray-550
-  `,
-  footer: tw`
-    sticky bottom-0
-    py-2 max-h-[theme(spacing.14)] min-h-[theme(spacing.14)]
-    bg-[color:inherit]
-    z-40
-  `,
-};
-
-const popoverSizes = {
-  sm: tw`w-[240px]`,
-  md: tw`w-[320px]`,
-  lg: tw`w-[480px]`,
-  xl: tw`w-[640px]`,
-};
 
 const SelectContext = createContext(false);
 const ComboboxContext = createContext(false);
@@ -187,10 +40,8 @@ const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
-type HeaderMenuProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  "value" | "onChange"
-> & {
+export interface HeaderMenuProps
+  extends Omit<ComponentPropsWithoutRef<"button">, "value" | "onChange"> {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
@@ -207,10 +58,10 @@ type HeaderMenuProps = Omit<
   contentLabel?: string;
   hasTitle?: boolean;
   href?: string;
-};
+}
 
 export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
-  (
+  function HeaderMenu(
     {
       children,
       label,
@@ -232,49 +83,47 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       ...props
     },
     ref
-  ) => {
+  ) {
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
-    const combobox = useComboboxStore({
+    const combobox = Ariakit.useComboboxStore({
       includesBaseElement: false,
       focusLoop: false,
       open,
       setOpen: onToggle,
     });
-    const select = useSelectStore({
+    const select = Ariakit.useSelectStore({
       combobox,
       value,
       setValue(value) {
-        if (typeof value === "string") {
-          onChange?.(value);
-        }
+        if (typeof value !== "string") return;
+        onChange?.(value);
       },
     });
-    const menu = useMenuStore({
+    const menu = Ariakit.useMenuStore({
       combobox,
       showTimeout: 0,
       placement: parent ? "right-start" : "bottom-start",
     });
 
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       return menu.syncBatch(
         (state) => {
-          if (!parent && state.open) {
-            menu.setAutoFocusOnShow(true);
-          }
+          if (parent) return;
+          if (!state.open) return;
+          menu.setAutoFocusOnShow(true);
         },
         ["open", "autoFocusOnShow"]
       );
     }, [parent, menu]);
 
-    useSafeLayoutEffect(() => {
+    useEffect(() => {
       return select.sync(
         (state) => {
-          if (!parent) {
-            menu.setDisclosureElement(state.selectElement);
-            select.setDisclosureElement(state.selectElement);
-            combobox.setDisclosureElement(state.selectElement);
-          }
+          if (parent) return;
+          menu.setDisclosureElement(state.selectElement);
+          select.setDisclosureElement(state.selectElement);
+          combobox.setDisclosureElement(state.selectElement);
         },
         ["selectElement", "disclosureElement"]
       );
@@ -294,14 +143,18 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
 
     useEffect(() => {
       if (comboboxValue === searchValue) return;
-      if (process.env.NODE_ENV === "development") {
-        return afterTimeout(500, () => onSearchProp(comboboxValue));
-      }
       return whenIdle(() => onSearchProp(comboboxValue), 500);
     }, [comboboxValue, searchValue, onSearchProp]);
 
     const footerElement = footer && (
-      <div className={style.footer}>{footer}</div>
+      <div
+        className={twJoin(
+          "sticky bottom-0 max-h-[theme(spacing.14)] min-h-[theme(spacing.14)] py-2",
+          "z-40 bg-[color:inherit]"
+        )}
+      >
+        {footer}
+      </div>
     );
 
     const renderButton = (props: HTMLAttributes<HTMLElement>) =>
@@ -310,13 +163,23 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           {...props}
           href={href}
           value={itemValue}
-          className={cx("justify-between", props.className)}
+          className={twJoin("justify-between", props.className)}
         >
           {props.children}
-          <MenuButtonArrow />
+          <Ariakit.MenuButtonArrow />
         </HeaderMenuItem>
       ) : (
-        <button {...props} className={cx(style.button, props.className)} />
+        <button
+          {...props}
+          className={twJoin(
+            "flex h-10 items-center justify-center gap-2 overflow-hidden px-3",
+            "cursor-default whitespace-nowrap rounded-lg border-none",
+            "hover:bg-black/5 dark:hover:bg-white/5",
+            "aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10",
+            "[&:focus-visible]:ariakit-outline-input",
+            props.className
+          )}
+        />
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
@@ -324,51 +187,82 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         {...props}
         aria-label={contentLabel}
         aria-busy={loading}
-        className={popoverSizes[size]}
-        renderScoller={(props) => (
+        className={twJoin(
+          size === "sm" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),240px)]",
+          size === "md" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),320px)]",
+          size === "lg" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),480px)]",
+          size === "xl" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),640px)]"
+        )}
+        renderScroller={(props) => (
           <div
             {...props}
-            className={cx(
-              props.className,
+            className={twJoin(
               searchable && "pt-0",
-              !!footer && "pb-0"
+              !!footer && "pb-0",
+              props.className
             )}
           />
         )}
       >
         {searchable ? (
           <>
-            <div className={style.comboboxWrapper}>
+            <div
+              className={twJoin(
+                "sticky top-0 z-50 w-full rounded-b bg-[color:inherit] py-2",
+                "[&:not(:focus-within)+*>[aria-expanded=true]]:bg-black/[7.5%]",
+                "dark:[&:not(:focus-within)+*>[aria-expanded=true]]:bg-white/[7.5%]"
+              )}
+            >
               <div className="relative">
                 {loading ? (
-                  <Spinner className={cx(style.comboboxIcon, "animate-spin")} />
+                  <Spinner className="absolute left-2 top-3 h-4 w-4 animate-spin opacity-50" />
                 ) : (
-                  <Search className={style.comboboxIcon} />
+                  <Search className="absolute left-2 top-3 h-4 w-4 opacity-50" />
                 )}
-                <Combobox
+                <Ariakit.Combobox
                   store={combobox}
                   placeholder={searchPlaceholder}
                   autoSelect={autoSelect}
-                  className={style.combobox}
+                  className={twJoin(
+                    "h-10 w-full pl-[30px] pr-[50px] text-base",
+                    "placeholder-black/60 dark:placeholder-white/[46%]",
+                    "rounded border-none",
+                    "text-black dark:text-white",
+                    "bg-gray-150/40 dark:bg-gray-850",
+                    "hover:bg-gray-150 dark:hover:bg-gray-900",
+                    "shadow-input dark:shadow-input-dark",
+                    "focus-visible:ariakit-outline-input"
+                  )}
                 />
-                <ComboboxCancel
+                <Ariakit.ComboboxCancel
                   store={combobox}
-                  as={PopoverDismiss}
                   aria-label="Cancel search"
-                  className={style.comboboxCancel}
+                  render={<Ariakit.PopoverDismiss />}
+                  className={twJoin(
+                    "absolute right-2 top-2 flex items-center justify-center",
+                    "h-6 cursor-default rounded-sm border-none p-2",
+                    "text-[10px] text-black/80 dark:text-white/80",
+                    "bg-black/10 dark:bg-white/10",
+                    "hover:bg-black/20 dark:hover:bg-white/20",
+                    "focus-visible:ariakit-outline-input"
+                  )}
                 >
                   ESC
-                </ComboboxCancel>
+                </Ariakit.ComboboxCancel>
               </div>
             </div>
             <ComboboxContext.Provider value={true}>
-              <ComboboxList
+              <Ariakit.ComboboxList
                 store={combobox}
                 aria-label={contentLabel}
-                className={style.comboboxList}
+                className="flex flex-col bg-[color:inherit]"
               >
                 {children}
-              </ComboboxList>
+              </Ariakit.ComboboxList>
             </ComboboxContext.Provider>
             {footerElement}
           </>
@@ -384,13 +278,18 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const selectChildren = select.useState((state) => label ?? state.value);
 
     const button = selectable ? (
-      <Select store={select} {...props} ref={ref} render={renderButton}>
+      <Ariakit.Select store={select} {...props} ref={ref} render={renderButton}>
         {selectChildren}
-      </Select>
+      </Ariakit.Select>
     ) : (
-      <MenuButton store={menu} {...props} ref={ref} render={renderButton}>
+      <Ariakit.MenuButton
+        store={menu}
+        {...props}
+        ref={ref}
+        render={renderButton}
+      >
         {label}
-      </MenuButton>
+      </Ariakit.MenuButton>
     );
 
     const [canMount, setCanMount] = useState(false);
@@ -405,7 +304,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const popover = selectable ? (
       <SelectContext.Provider value={true}>
         {selectMounted && (
-          <SelectPopover
+          <Ariakit.SelectPopover
             ref={popoverRef}
             store={select}
             typeahead={!searchable}
@@ -413,30 +312,30 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             fixed
             fitViewport
             gutter={4}
-            render={(props) => (
-              <MenuList
-                {...props}
+            render={
+              <Ariakit.MenuList
                 store={menu}
                 typeahead={false}
                 composite={false}
                 render={renderPopover}
               />
-            )}
+            }
           />
         )}
       </SelectContext.Provider>
     ) : (
       <SelectContext.Provider value={false}>
         {menuMounted && (
-          <Menu
+          <Ariakit.Menu
             store={menu}
             ref={popoverRef}
             fixed
-            fitViewport
-            gutter={4}
             portal
+            gutter={4}
+            fitViewport
             typeahead={!searchable}
             composite={!searchable}
+            render={renderPopover}
             getAnchorRect={(anchor) => {
               if (parent?.current) {
                 return parent.current.getBoundingClientRect();
@@ -444,7 +343,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
               if (!anchor) return null;
               return anchor.getBoundingClientRect();
             }}
-            render={renderPopover}
           />
         )}
       </SelectContext.Provider>
@@ -465,38 +363,39 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
   }
 );
 
-type HeaderMenuGroupProps = HTMLAttributes<HTMLDivElement> & {
+export interface HeaderMenuGroupProps extends ComponentPropsWithoutRef<"div"> {
   label?: string;
-};
+}
 
 export const HeaderMenuGroup = forwardRef<HTMLDivElement, HeaderMenuGroupProps>(
-  ({ children, label, ...props }, ref) => {
+  function HeaderMenuGroup({ children, label, ...props }, ref) {
     const hasTitle = useContext(HasTitleContext);
     return (
       <GroupContext.Provider value={label || true}>
-        <CompositeGroup
+        <Ariakit.CompositeGroup
           {...props}
           ref={ref}
-          className={cx(style.group, props.className)}
+          className={twJoin("w-full bg-inherit", props.className)}
         >
           {label && (
-            <CompositeGroupLabel
-              className={cx(
-                style.groupLabel,
+            <Ariakit.CompositeGroupLabel
+              className={twJoin(
+                "sticky z-[15] bg-inherit p-2 pt-3",
+                "text-sm font-medium text-black/60 dark:text-white/50",
                 hasTitle ? "top-[105px]" : "top-12"
               )}
             >
               {label}
-            </CompositeGroupLabel>
+            </Ariakit.CompositeGroupLabel>
           )}
           {children}
-        </CompositeGroup>
+        </Ariakit.CompositeGroup>
       </GroupContext.Provider>
     );
   }
 );
 
-type HeaderMenuItemProps = HTMLAttributes<HTMLElement> & {
+export interface HeaderMenuItemProps extends HTMLAttributes<HTMLElement> {
   href?: string;
   value?: string;
   title?: string;
@@ -505,10 +404,10 @@ type HeaderMenuItemProps = HTMLAttributes<HTMLElement> & {
   path?: ReactNode[];
   nested?: boolean;
   autoFocus?: boolean;
-};
+}
 
-export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
-  (
+export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
+  function HeaderMenuItem(
     {
       children,
       value,
@@ -521,7 +420,7 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       ...props
     },
     ref
-  ) => {
+  ) {
     const id = useId();
     const hasTitle = useContext(HasTitleContext);
     const hideAll = useContext(HideAllContext);
@@ -530,10 +429,9 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
     const group = useContext(GroupContext);
     const footer = useContext(FooterContext);
 
-    type Props = HTMLAttributes<HTMLElement> & RefAttributes<any>;
     const href = props.href;
 
-    const renderItem = (props: Props) => {
+    const renderItem = (props: ComponentPropsWithRef<"div">) => {
       const isLink = !!href;
       const isExternalLink = isLink && href?.startsWith("http");
 
@@ -543,13 +441,18 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       };
 
       const item = (
-        <Role
-          as={href ? "a" : "div"}
+        <Ariakit.Role
           {...linkProps}
           aria-labelledby={`${id}-label`}
           aria-describedby={`${id}-path ${id}-description`}
-          className={cx(
-            style.item,
+          render={
+            isLink ? isExternalLink ? <a /> : <Link href={href} /> : <div />
+          }
+          className={twJoin(
+            "group flex w-full cursor-default scroll-m-2 items-center gap-2 rounded p-2",
+            "active-item:bg-blue-200/40 active:bg-blue-200/70",
+            "focus-visible:!outline-none dark:active-item:bg-blue-600/25",
+            "dark:active:bg-blue-800/25 [a&]:cursor-pointer",
             combobox &&
               (group
                 ? hasTitle
@@ -566,11 +469,27 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
         >
           {children}
           {!nested && thumbnail && (
-            <div aria-hidden className={style.itemThumbnail}>
+            <div
+              aria-hidden
+              className={twJoin(
+                "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+                "bg-gray-150 dark:bg-gray-800",
+                "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
+                "group-active:bg-black/[7.5%] dark:group-active:bg-black/70"
+              )}
+            >
               {thumbnail}
             </div>
           )}
-          {nested && <div className={style.itemNestedThumbnail} />}
+          {nested && (
+            <div
+              className={twJoin(
+                "relative flex flex-none flex-col items-center justify-center",
+                "h-16 w-16 after:absolute after:-top-4 after:h-24 after:w-0.5",
+                "after:bg-black/10 after:dark:bg-white/10"
+              )}
+            />
+          )}
           {description || thumbnail ? (
             <div className="flex min-w-0 flex-col">
               <span
@@ -585,7 +504,7 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
                   aria-hidden
                   className="flex items-center text-sm"
                 >
-                  <VisuallyHidden>In </VisuallyHidden>
+                  <Ariakit.VisuallyHidden>In </Ariakit.VisuallyHidden>
                   {path.map(
                     (item, i) =>
                       item && (
@@ -598,8 +517,11 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
                           )}
                           <span
                             key={i}
-                            className={cx(
-                              style.itemPathSegment,
+                            className={twJoin(
+                              "truncate text-blue-700 dark:text-blue-400",
+                              "[&_[data-user-value]]:font-semibold",
+                              "[&_[data-user-value]]:text-blue-900",
+                              "dark:[&_[data-user-value]]:text-blue-100",
                               i === path.length - 1 && "flex-none"
                             )}
                           >
@@ -608,14 +530,17 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
                         </Fragment>
                       )
                   )}
-                  <VisuallyHidden>.</VisuallyHidden>
+                  <Ariakit.VisuallyHidden>.</Ariakit.VisuallyHidden>
                 </span>
               )}
               <span
                 id={`${id}-description`}
                 aria-hidden
-                className={cx(
-                  style.itemDescription,
+                className={twJoin(
+                  "text-sm text-black/70 dark:text-white/70",
+                  "dark:[&_[data-autocomplete-value]]:text-white/[56%]",
+                  "[&_[data-user-value]]:font-semibold",
+                  "[&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white",
                   path ? "truncate" : "line-clamp-2"
                 )}
               >
@@ -623,17 +548,12 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
               </span>
             </div>
           ) : (
-            isExternalLink && <NewWindow className={style.itemIcon} />
+            isExternalLink && (
+              <NewWindow className="h-4 w-4 stroke-black/75 group-active-item:stroke-current dark:stroke-white/75" />
+            )
           )}
-        </Role>
+        </Ariakit.Role>
       );
-      if (isLink && !isExternalLink) {
-        return (
-          <Link href={href} legacyBehavior>
-            {item}
-          </Link>
-        );
-      }
       return item;
     };
 
@@ -645,8 +565,8 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       return false;
     };
 
-    const renderSelectItem = (props: Props) => (
-      <SelectItem
+    const renderSelectItem = (props: ComponentPropsWithRef<"div">) => (
+      <Ariakit.SelectItem
         {...props}
         value={value}
         autoFocus={autoFocus}
@@ -655,8 +575,8 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       />
     );
 
-    const renderComboboxItem = (props: Props) => (
-      <ComboboxItem
+    const renderComboboxItem = (props: ComponentPropsWithRef<"div">) => (
+      <Ariakit.ComboboxItem
         {...props}
         focusOnHover
         hideOnClick={hideOnClick}
@@ -672,21 +592,24 @@ export const HeaderMenuItem = forwardRef<any, HeaderMenuItemProps>(
       return renderSelectItem({ ...props, ref });
     }
 
-    return <MenuItem {...props} ref={ref} render={renderItem} />;
+    return <Ariakit.MenuItem {...props} ref={ref} render={renderItem} />;
   }
 );
 
-type HeaderMenuSeparator = HTMLAttributes<HTMLHRElement>;
+export type HeaderMenuSeparator = ComponentPropsWithoutRef<"hr">;
 
 export const HeaderMenuSeparator = forwardRef<
   HTMLHRElement,
   HeaderMenuSeparator
->((props, ref) => {
+>(function HeaderMenuSeparator(props, ref) {
   return (
-    <CompositeSeparator
+    <Ariakit.CompositeSeparator
       {...props}
       ref={ref}
-      className={cx(style.separator, props.className)}
+      className={twJoin(
+        "my-2 h-0 w-full border-t border-gray-250 dark:border-gray-550",
+        props.className
+      )}
     />
   );
 });

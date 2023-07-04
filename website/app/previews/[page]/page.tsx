@@ -8,6 +8,7 @@ import { getPageName } from "build-pages/get-page-name.js";
 import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
 import pagesIndex from "build-pages/index.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
+import type { Page } from "build-pages/types.js";
 import { Preview } from "components/preview.jsx";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
@@ -19,14 +20,14 @@ interface Props {
 export function generateStaticParams() {
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();
-  const params = getPageNames(config.sourceContext).map((page) => ({ page }));
+  const params = getPageNames(config).map((page) => ({ page }));
   return params;
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
-function getPageNames(dir: string | string[]) {
-  return getPageEntryFiles(dir)
+function getPageNames({ sourceContext, pageFileRegex }: Page) {
+  return getPageEntryFiles(sourceContext, pageFileRegex)
     .filter((path) => !path.startsWith(process.cwd()))
     .map(getPageName);
 }
@@ -55,9 +56,9 @@ export default async function Page({ params }: Props) {
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();
 
-  const { sourceContext } = config;
+  const { sourceContext, pageFileRegex } = config;
 
-  const entryFiles = getPageEntryFiles(sourceContext);
+  const entryFiles = getPageEntryFiles(sourceContext, pageFileRegex);
   const file = entryFiles.find((file) => getPageName(file) === page);
   if (!file) return notFound();
 

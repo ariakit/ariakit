@@ -17,6 +17,7 @@ const meta = {
   blog: { size: "lg" },
   components: { size: "lg" },
   examples: { size: "md" },
+  reference: { size: "md" },
 } as const;
 
 export function generateMetadata({ params }: Props) {

@@ -22,7 +22,7 @@ const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
 const examples = pagesConfig.pages.find((page) => page.slug === "examples");
 const exampleFiles = examples?.sourceContext
-  ? getPageEntryFiles(examples.sourceContext)
+  ? getPageEntryFiles(examples.sourceContext, examples.pageFileRegex)
   : [];
 
 function getPreviewLink(path: string) {

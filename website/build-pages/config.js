@@ -58,6 +58,17 @@ const pages = [
       return upperFirst(camelCase(component));
     },
   },
+  {
+    slug: "reference",
+    title: "API Reference",
+    reference: true,
+    sourceContext: join(root, "packages/ariakit-react/src"),
+    pageFileRegex: /^((?!index).)*\.tsx?$/,
+    getGroup: (reference) => {
+      if (typeof reference === "string") return null;
+      return upperFirst(camelCase(getPageName(reference.filename)));
+    },
+  },
 ];
 
 export default { buildDir, pages };

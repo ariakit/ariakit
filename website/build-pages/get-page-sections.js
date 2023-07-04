@@ -2,15 +2,15 @@ import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 import { isPlaygroundParagraphNode } from "./ast.js";
 import { getPageIndexDetail } from "./get-page-index-detail.js";
-import { getPageTreeFromFile } from "./get-page-tree.js";
+import { getPageTree } from "./get-page-tree.js";
 
 /**
- * @param {string} filename
+ * @param {string | import("./types.js").Reference} filename
  * @param {string} category
  * @param {import("./types.js").Page["getGroup"]} [getGroup]
  */
 export function getPageSections(filename, category, getGroup) {
-  const tree = getPageTreeFromFile(filename);
+  const tree = getPageTree(filename);
   const meta = getPageIndexDetail(filename, getGroup, tree);
 
   /** @type {string | null} */
@@ -18,7 +18,7 @@ export function getPageSections(filename, category, getGroup) {
   /** @type {string | null} */
   let section = null;
   /** @type {string | null} */
-  let id = null;
+  let sectionId = null;
 
   const pageMeta = {
     ...meta,
@@ -31,17 +31,19 @@ export function getPageSections(filename, category, getGroup) {
     if (node.tagName === "h2") {
       parentSection = null;
       section = toString(node).trim();
-      id = `${node.properties?.id}`;
+      sectionId = `${node.properties?.id}`;
     }
     if (node.tagName === "h3") {
       parentSection = parentSection || section;
       section = toString(node).trim();
-      id = `${node.properties?.id}`;
+      sectionId = `${node.properties?.id}`;
     }
     if (node.tagName === "p") {
       if (isPlaygroundParagraphNode(node)) return;
       const content = toString(node).trim();
-      const existingSection = pageMeta.sections.find((s) => s.id === id);
+      const existingSection = pageMeta.sections.find(
+        (s) => s.sectionId === sectionId
+      );
       if (existingSection) {
         existingSection.content += `\n\n${content}`;
       } else {
@@ -50,7 +52,7 @@ export function getPageSections(filename, category, getGroup) {
           category,
           parentSection,
           section,
-          id,
+          sectionId,
           content,
         });
       }
