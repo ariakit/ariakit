@@ -678,8 +678,12 @@ export default async function Page({ params }: PageProps) {
             a: ({ node, href, ...props }) => {
               if ("data-playground" in props && href) {
                 return (
-                  // @ts-expect-error RSC
-                  <PageExample pageFilename={file} href={href} {...props} />
+                  <PageExample
+                    pageFilename={file}
+                    href={href}
+                    {...props}
+                    type={props.type as any}
+                  />
                 );
               }
               const className = cx(style.link, props.className);
@@ -722,7 +726,6 @@ export default async function Page({ params }: PageProps) {
             },
             img: ({ node, ...props }) => {
               const className = cx(style.media, props.className);
-              // @ts-expect-error
               return <Image {...props} className={className} />;
             },
             video: ({ node, ...props }) => {

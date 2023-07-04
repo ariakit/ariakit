@@ -220,7 +220,8 @@ export const useCombobox = createHook<ComboboxOptions>(
         // We won't disable the autoSelect behavior if the first item is still
         // focused.
         const { activeId } = store.getState();
-        if (activeId === null || activeId === store.first()) return;
+        if (activeId === null) return;
+        if (activeId === store.first()) return;
         canAutoSelectRef.current = false;
       };
       scrollingElement.addEventListener("scroll", onScroll, { passive: true });

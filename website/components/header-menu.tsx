@@ -188,10 +188,14 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         aria-label={contentLabel}
         aria-busy={loading}
         className={twJoin(
-          size === "sm" && "max-w-[240px]",
-          size === "md" && "max-w-[320px]",
-          size === "lg" && "max-w-[480px]",
-          size === "xl" && "max-w-[640px]"
+          size === "sm" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),240px)]",
+          size === "md" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),320px)]",
+          size === "lg" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),480px)]",
+          size === "xl" &&
+            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),640px)]"
         )}
         renderScroller={(props) => (
           <div

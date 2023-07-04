@@ -59,7 +59,7 @@ export interface PageContent extends PageIndexDetail {
    * If the content is a section of another page, this is the id of the section
    * heading that can be used to link to the section.
    */
-  id: string | null;
+  sectionId: string | null;
   /**
    * The parent section title if any.
    */

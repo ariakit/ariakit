@@ -14,6 +14,7 @@ import { cx, getKeys } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import type {
   QueryFunctionContext,
@@ -37,8 +38,7 @@ import {
 import type { HeaderMenuItemProps } from "./header-menu.js";
 
 type Data = Array<
-  Omit<PageContent, "id"> & {
-    sectionId: PageContent["id"];
+  PageContent & {
     keywords: string[];
     score?: number;
     key?: string;
@@ -111,6 +111,15 @@ function getItemKey(item: PageIndexDetail | SearchData[number]) {
   const category = "category" in item && item.category ? item.category : "";
   const section = "section" in item && item.section ? item.section : "";
   return category + item.slug + section;
+}
+
+function getItemHref(
+  item: PageIndexDetail | SearchData[number],
+  category = item.category
+) {
+  return `/${category}/${item.slug}${
+    "sectionId" in item && item.sectionId ? `#${item.sectionId}` : ""
+  }`;
 }
 
 function getAllIndexes(string: string, values: string[]) {
@@ -216,7 +225,6 @@ interface HeaderNavItemProps extends HeaderMenuItemProps {
   category?: string;
 }
 
-// TODO: The items object should be normalized.
 const HeaderNavItem = memo(
   forwardRef<any, HeaderNavItemProps>(function HeaderNavItem(
     { item, category, ...props },
@@ -224,12 +232,11 @@ const HeaderNavItem = memo(
   ) {
     category = category || ("category" in item ? item.category : undefined);
     if (!category) return null;
-    const id = "sectionId" in item ? item.sectionId : null;
     const keywords = "keywords" in item ? item.keywords : null;
     const section = "section" in item ? item.section : null;
     const parentSection = "parentSection" in item ? item.parentSection : null;
     const nested = "nested" in item ? item.nested : false;
-    const href = `/${category}/${item.slug}${id ? `#${id}` : ""}`;
+    const href = getItemHref(item, category);
     const description = keywords
       ? highlightValue(item.content, keywords)
       : item.content;
@@ -364,7 +371,13 @@ const HeaderNavMenu = memo(
         return [[], { [categoryTitle || "Search results"]: searchData }];
       }
       if (!pages) return [[], {}];
-      const groups = groupBy(pages, "group");
+      const groups = groupBy(
+        pages.map((page) => ({
+          ...page,
+          value: getItemHref(page),
+        })) as typeof pages,
+        "group"
+      );
       const items = groups.null || [];
       delete groups.null;
       return [items, groups];
@@ -382,12 +395,15 @@ const HeaderNavMenu = memo(
     const itemElements = useMemo(() => {
       if (noResults) return null;
       if (!items.length && !Object.keys(groups).length) return null;
-      const groupItems = Object.entries(groups).map(([group, items]) => ({
-        group,
-        items,
-        itemSize: 96,
-        paddingStart: 40,
-      }));
+      const groupItems = Object.entries(groups).map(
+        ([group, items]) =>
+          ({
+            group,
+            items,
+            itemSize: 96,
+            paddingStart: 40,
+          } satisfies SelectRendererItem)
+      );
       return (
         <>
           {items?.map((item) => (
@@ -399,7 +415,11 @@ const HeaderNavMenu = memo(
               onClick={onItemClick}
             />
           ))}
-          <SelectRenderer items={groupItems} className="bg-inherit">
+          <SelectRenderer
+            items={groupItems}
+            role="presentation"
+            className="bg-inherit"
+          >
             {({ group, ...item }) => (
               <SelectRenderer
                 key={group}
@@ -422,19 +442,6 @@ const HeaderNavMenu = memo(
               </SelectRenderer>
             )}
           </SelectRenderer>
-          {/* {Object.entries(groups).map(([group, pages]) => (
-            <HeaderMenuGroup key={group} label={group}>
-              {pages.map((item) => (
-                <HeaderNavItem
-                  key={getItemKey(item)}
-                  autoFocus={hasSearchValue ? false : undefined}
-                  category={category}
-                  item={item}
-                  onClick={onItemClick}
-                />
-              ))}
-            </HeaderMenuGroup>
-          ))} */}
         </>
       );
     }, [
