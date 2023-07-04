@@ -217,6 +217,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!scrollingElement) return;
       scrollingElementRef.current = scrollingElement;
       const onWheel = () => {
+        // A wheel event is always initiated by the user, so we can disable the
+        // autoSelect behavior without any additional checks.
         canAutoSelectRef.current = false;
       };
       const onScroll = () => {

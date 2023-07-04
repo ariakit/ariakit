@@ -79,7 +79,8 @@ function useSelectRenderer<T extends Item = any>({
       state.mounted ? itemsProp ?? (state.items as T[]) : 0
     ) || itemsProp;
 
-  const value = useStoreState(store, "value") ?? valueProp;
+  const value =
+    useStoreState(store, (state) => valueProp ?? state.value) ?? valueProp;
 
   const valueIndices = useMemo(() => {
     if (!items) return [];
@@ -139,7 +140,10 @@ export interface SelectRendererOptions<T extends Item = any>
    */
   store?: SelectStore;
   /**
-   * TODO: Document
+   * The current value of the select. This will ensure the item with the given
+   * value is rendered even if it's not in the viewport, so it can be
+   * automatically focused when the select popover is opened. If not provided,
+   * the value will be read from the store.
    */
   value?: SelectStoreValue;
 }
