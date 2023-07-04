@@ -258,7 +258,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!autoSelect) return;
       if (!canAutoSelectRef.current) return;
       const { baseElement, contentElement } = store.getState();
-      console.log("move");
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribue is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
