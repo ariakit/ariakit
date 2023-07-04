@@ -216,6 +216,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
       scrollingElementRef.current = scrollingElement;
+      const onWheel = () => {
+        canAutoSelectRef.current = false;
+      };
       const onScroll = () => {
         // We won't disable the autoSelect behavior if the first item is still
         // focused.
@@ -224,8 +227,12 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (activeId === store.first()) return;
         canAutoSelectRef.current = false;
       };
+      scrollingElement.addEventListener("wheel", onWheel, { passive: true });
       scrollingElement.addEventListener("scroll", onScroll, { passive: true });
-      return () => scrollingElement.removeEventListener("scroll", onScroll);
+      return () => {
+        scrollingElement.removeEventListener("wheel", onWheel);
+        scrollingElement.removeEventListener("scroll", onScroll);
+      };
     }, [open, contentElement, store]);
 
     // Set the changed flag to true whenever the combobox value changes and is
@@ -251,6 +258,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (!autoSelect) return;
       if (!canAutoSelectRef.current) return;
       const { baseElement, contentElement } = store.getState();
+      console.log("move");
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribue is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
