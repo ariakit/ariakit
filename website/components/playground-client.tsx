@@ -38,29 +38,30 @@ const style = {
     bg-gray-150 dark:bg-gray-850
   `,
   codeWrapper: tw`
-    w-full max-w-[832px] rounded-lg border-none border-gray-650
+    w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650
     md:rounded-xl
   `,
   codeHeader: tw`
     relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit]
-    bg-gray-750 sm:shadow-dark
+    bg-gray-100 dark:bg-gray-750
   `,
   tabList: tw`
     flex w-full flex-row overflow-x-auto p-2 sm:gap-2
-    dark [color-scheme:dark]
   `,
   tab: tw`
     flex-start group relative flex h-10
     items-center justify-center whitespace-nowrap rounded bg-transparent
-    px-2 text-sm tracking-tight
-    text-white/75 outline-none
-    hover:bg-white/10 aria-selected:text-white
-    data-[focus-visible]:ariakit-outline-input dark:hover:bg-white/5
+    px-2 text-sm tracking-tight outline-none
+    text-black/75 dark:text-white/75
+    hover:bg-black/5 dark:hover:bg-white/5
+    aria-selected:text-black dark:aria-selected:text-white
+    data-[focus-visible]:ariakit-outline-input
     sm:h-8
   `,
   tabIndicator: tw`
     pointer-events-none absolute left-0 top-full h-[3px] w-full
-    translate-y-[5px] bg-transparent group-hover:bg-gray-650
+    translate-y-[5px] bg-transparent
+    group-hover:bg-gray-250 dark:group-hover:bg-gray-650
     group-aria-selected:bg-blue-600
   `,
   tabPanel: tw`
@@ -72,22 +73,26 @@ const style = {
   expandButton: tw`
     group flex justify-center items-end text-sm pb-2 outline-none
     absolute bottom-0 left-0 z-10 w-full h-32 rounded-[inherit]
-    bg-gradient-to-t from-[#1e1e1e]/100 to-[#1e1e1e]/0 from-[24px]
+    bg-gradient-to-t from-[24px]
+    from-white/100 to-white/0
+    dark:from-gray-850/100 dark:to-gray-850/0
   `,
   expandButtonInner: tw`
-    group-data-[focus-visible]:ariakit-outline
-    group-hover:bg-gray-650 group-hover:border-gray-550 group-hover:text-white
+    group-data-[focus-visible]:ariakit-outline border
     flex items-center justify-center gap-1 h-8 pr-2 pl-4 rounded
-    bg-gray-750 border border-gray-650 text-white/90
+    group-hover:bg-gray-250 group-hover:text-black/90
+    dark:group-hover:bg-gray-650 dark:group-hover:border-gray-550 dark:group-hover:text-white
+    bg-gray-150 border-gray-300 text-black/80
+    dark:bg-gray-750 dark:border-gray-650 dark:text-white/90
   `,
   collapseButton: tw`
     flex items-center justify-center gap-1 h-8 pr-2 pl-4 rounded
     m-auto mt-2 text-sm border focus-visible:ariakit-outline
     shadow-sm dark:shadow-sm-dark
-    bg-gray-150 border-gray-300 text-black/80
     hover:bg-gray-250 hover:text-black/90
-    dark:bg-gray-750 dark:border-gray-650 dark:text-white/90
     dark:hover:bg-gray-650 dark:hover:border-gray-550 dark:hover:text-white
+    bg-gray-150 border-gray-300 text-black/80
+    dark:bg-gray-750 dark:border-gray-650 dark:text-white/90
   `,
 };
 
