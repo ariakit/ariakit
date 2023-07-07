@@ -10,13 +10,13 @@ The `render` prop lets you specify a different HTML element to be rendered inste
 
 For instance, the [Textarea with inline Combobox](/examples/combobox-textarea) example uses the `render` prop to replace the default `input` element rendered by the [Combobox](/components/combobox) component with a `textarea` element. You can pass specific `textarea` props to the element directly:
 
-```jsx "Combobox" "textarea"
+```jsx "Combobox" "textarea" "<textarea"
 <Combobox render={<textarea rows={5} />} />
 ```
 
 The [Combobox with links](/examples/combobox-links) example renders the [`ComboboxItem`](/apis/combobox-item) component as an anchor element. Specific props should be passed to their corresponding components:
 
-```jsx "ComboboxItem" "a"
+```jsx "ComboboxItem" "a" "<a"
 <ComboboxItem
   hideOnClick
   focusOnHover
@@ -26,7 +26,7 @@ The [Combobox with links](/examples/combobox-links) example renders the [`Combob
 
 The [Dialog with details & summary](/examples/dialog-details) example uses the `render` prop to replace the default `button` element of the [Button](/components/button) component with a `summary` element:
 
-```jsx "Button"0 "summary"
+```jsx "Button"0 "summary" "<summary"
 <Button render={<summary />}>Show modal</Button>
 ```
 

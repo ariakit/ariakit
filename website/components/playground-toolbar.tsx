@@ -51,10 +51,10 @@ const style = {
   `,
   toolbarItem: tw`
     flex h-12 w-12 items-center justify-center rounded-md
-    bg-transparent text-white/75 hover:bg-white/[15%] hover:text-white
-    focus-visible:ariakit-outline-input sm:rounded-lg
-    dark:hover:bg-white/5 sm:h-10 sm:w-10
-    aria-expanded:!bg-gray-850
+    focus-visible:ariakit-outline-input sm:rounded-lg sm:h-10 sm:w-10
+    text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white
+    bg-transparent hover:bg-black/5 dark:hover:bg-white/5
+    aria-expanded:!bg-black/10 dark:aria-expanded:!bg-gray-850
   `,
   popupLabel: tw`
     cursor-default
