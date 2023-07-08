@@ -89,10 +89,9 @@ export async function CodeBlock({
   }
 
   const oneLiner = darkTokens.length === 1;
-  const tokensSeen: Record<string, number> = {};
 
   const renderLine =
-    (className = "") =>
+    (className = "", tokensSeen: Record<string, number>) =>
     (line: IThemedToken[], i: number) => {
       const highlightLine = highlightLines?.includes(i + 1);
       return (
@@ -221,8 +220,8 @@ export async function CodeBlock({
         <code
           className={twJoin(type !== "definition" && "w-full", "grid h-max")}
         >
-          {lightTokens.map(renderLine("block dark:hidden"))}
-          {darkTokens.map(renderLine("hidden dark:block"))}
+          {lightTokens.map(renderLine("block dark:hidden", {}))}
+          {darkTokens.map(renderLine("hidden dark:block", {}))}
           <div
             className={twJoin(
               type === "static" && !oneLiner && "sm:h-8",
