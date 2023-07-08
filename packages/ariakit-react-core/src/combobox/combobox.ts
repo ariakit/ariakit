@@ -229,11 +229,12 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (activeId === store.first()) return;
         canAutoSelectRef.current = false;
       };
-      scrollingElement.addEventListener("wheel", onWheel, { passive: true });
-      scrollingElement.addEventListener("scroll", onScroll, { passive: true });
+      const options = { passive: true, capture: true };
+      scrollingElement.addEventListener("wheel", onWheel, options);
+      scrollingElement.addEventListener("scroll", onScroll, options);
       return () => {
-        scrollingElement.removeEventListener("wheel", onWheel);
-        scrollingElement.removeEventListener("scroll", onScroll);
+        scrollingElement.removeEventListener("wheel", onWheel, true);
+        scrollingElement.removeEventListener("scroll", onScroll, true);
       };
     }, [open, contentElement, store]);
 
