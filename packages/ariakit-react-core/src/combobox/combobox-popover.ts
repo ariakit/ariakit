@@ -61,7 +61,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
-      // comboobx popover elements.
+      // combobox popover elements.
       hideOnInteractOutside: (event: Event) => {
         const { contentElement, baseElement } = store.getState();
         const contentId = contentElement?.id;
