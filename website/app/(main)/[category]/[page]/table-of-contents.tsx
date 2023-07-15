@@ -27,7 +27,7 @@ const style = {
     [&:focus-visible]:ariakit-outline-input
   `,
   popover: tw`
-    min-w-[280px] max-w-[calc(100vw-24px)]
+    min-w-[280px] max-w-[calc(100vw-96px)]
   `,
   popoverHeading: tw`
     font-medium text-black/60 dark:text-white/50 px-2 pt-2
@@ -80,6 +80,7 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
             store={popover}
             portal
             fixed
+            backdrop
             tabIndex={0}
             gutter={8}
             overflowPadding={12}

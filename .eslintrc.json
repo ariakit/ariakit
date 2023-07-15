@@ -33,6 +33,7 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/consistent-type-exports": "error",
     "sort-imports": ["error", { "ignoreDeclarationSort": true }],

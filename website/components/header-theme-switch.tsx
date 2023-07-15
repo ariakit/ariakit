@@ -1,24 +1,13 @@
 "use client";
 
 import type { ButtonHTMLAttributes } from "react";
-import { cx } from "@ariakit/core/utils/misc";
 import { Moon } from "icons/moon.js";
 import { Sun } from "icons/sun.js";
-import { tw } from "utils/tw.js";
+import { twJoin } from "tailwind-merge";
 import { TooltipButton } from "./tooltip-button.js";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 type Theme = "light" | "dark";
-
-const style = tw`
-  flex items-center justify-center flex-none
-  h-10 w-10
-  cursor-default
-  border-none rounded-lg
-  hover:bg-black/5 dark:hover:bg-white/5
-  aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
-  [&:focus-visible]:ariakit-outline-input
-`;
 
 const EVENT_NAME = "themechange";
 
@@ -46,7 +35,13 @@ export function HeaderThemeSwitch(props: Props) {
           <span className="dark:hidden">dark</span> mode
         </>
       }
-      className={cx(style, props.className)}
+      className={twJoin(
+        "flex h-10 w-10 flex-none cursor-default items-center justify-center",
+        "rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10",
+        "dark:hover:bg-white/5 dark:aria-expanded:bg-white/10",
+        "[&:focus-visible]:ariakit-outline-input",
+        props.className
+      )}
       onClick={() => {
         if (document.documentElement.classList.contains("dark")) {
           document.documentElement.classList.remove("dark");

@@ -2,6 +2,7 @@ import { readdirSync } from "fs";
 import { basename, join, resolve } from "path";
 import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
+import { getPageTitle } from "./get-page-title.js";
 
 const root = resolve(process.cwd(), "..");
 
@@ -16,12 +17,12 @@ const buildDir = join(process.cwd(), ".pages");
 const pages = [
   {
     slug: "guide",
-    title: "Guide",
+    title: getPageTitle("guide"),
     sourceContext: join(root, "guide"),
   },
   {
     slug: "components",
-    title: "Components",
+    title: getPageTitle("components"),
     sourceContext: componentsContext,
     getGroup: (filename) => {
       const component = getPageName(filename);
@@ -44,7 +45,7 @@ const pages = [
   },
   {
     slug: "examples",
-    title: "Examples",
+    title: getPageTitle("examples"),
     sourceContext: [
       join(root, "examples"),
       join(process.cwd(), "app/(examples)/previews"),
@@ -60,7 +61,7 @@ const pages = [
   },
   {
     slug: "reference",
-    title: "API Reference",
+    title: getPageTitle("reference"),
     reference: true,
     sourceContext: join(root, "packages/ariakit-react/src"),
     pageFileRegex: /^((?!index).)*\.tsx?$/,

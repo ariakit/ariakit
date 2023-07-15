@@ -29,6 +29,7 @@ import { Search } from "icons/search.js";
 import { Spinner } from "icons/spinner.js";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
+import { useMedia } from "utils/use-media.js";
 import { whenIdle } from "utils/when-idle.js";
 import { Popup } from "./popup.js";
 
@@ -84,6 +85,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     },
     ref
   ) {
+    const isLarge = useMedia("(min-width: 640px)", true);
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = Ariakit.useComboboxStore({
@@ -103,7 +105,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const menu = Ariakit.useMenuStore({
       combobox,
       showTimeout: 0,
-      placement: parent ? "right-start" : "bottom-start",
+      placement: parent ? "right-start" : isLarge ? "bottom-start" : "bottom",
     });
 
     useEffect(() => {
@@ -188,16 +190,13 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         aria-label={contentLabel}
         aria-busy={loading}
         className={twJoin(
-          size === "sm" &&
-            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),240px)]",
-          size === "md" &&
-            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),320px)]",
-          size === "lg" &&
-            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),480px)]",
-          size === "xl" &&
-            "w-[min(calc(var(--popover-available-width)-var(--popover-overflow-padding)*2),640px)]"
+          "w-[--popover-available-width]",
+          size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
+          size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
+          size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
+          size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]"
         )}
-        renderScroller={(props) => (
+        scroller={(props) => (
           <div
             {...props}
             className={twJoin(
