@@ -1,5 +1,6 @@
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
+import { getPageTitle } from "build-pages/get-page-title.js";
 import { NewWindow } from "icons/new-window.js";
 import Link from "next/link.js";
 import { tw } from "utils/tw.js";
@@ -22,15 +23,17 @@ const links = [
   {
     title: "Documentation",
     links: [
-      { title: "Guide", href: "/guide" },
-      { title: "Components", href: "/components" },
-      { title: "Examples", href: "/examples" },
+      { title: getPageTitle("guide"), href: "/guide" },
+      { title: getPageTitle("components"), href: "/components" },
+      { title: getPageTitle("examples"), href: "/examples" },
+      { title: getPageTitle("reference"), href: "/reference" },
     ],
   },
   {
     title: "Updates",
     links: [
       // { title: "Blog", href: "/blog" },
+      { title: "All updates", href: "/updates" },
       { title: "Newsletter", href: "https://newsletter.ariakit.org" },
       {
         title: "Changelog",

@@ -66,7 +66,7 @@ const style = {
     border-l border-black/10 dark:border-white/10
   `,
   nav: tw`
-    flex-col gap-4 overflow-auto p-3 pr-0 w-full
+    flex-col gap-4 overflow-auto p-3 pr-1 w-full
   `,
   navList: tw`
     flex flex-col md:text-sm text-black/90 dark:text-white/80

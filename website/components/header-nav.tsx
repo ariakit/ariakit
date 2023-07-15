@@ -23,6 +23,7 @@ import type {
 import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import type { PageContent } from "build-pages/contents.js";
+import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
 import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
 import groupBy from "lodash/groupBy.js";
@@ -46,26 +47,6 @@ type Data = Array<
 >;
 
 type SearchData = Array<Data[number] & { nested?: boolean }>;
-
-const categoryTitles: Record<string, string> = {
-  guide: "Guide",
-  components: "Components",
-  examples: "Examples",
-  blog: "Blog",
-  reference: "API Reference",
-};
-
-const searchTitles: Record<string, string> = {
-  guide: "Search guide",
-  components: "Search components",
-  examples: "Search examples",
-  blog: "Search blog",
-  reference: "Search API",
-};
-
-function getCategoryTitle(categorySlug: string) {
-  return categoryTitles[categorySlug] || "";
-}
 
 function getSearchParentPageData(items: Data): SearchData[number] | null {
   const parentPage = items?.find((item) => !item.section);
@@ -242,7 +223,7 @@ const HeaderNavItem = memo(
       : item.content;
     const path = keywords
       ? [
-          highlightValue(getCategoryTitle(category), keywords),
+          highlightValue(getPageTitle(category), keywords),
           highlightValue(item.group, keywords),
           section && highlightValue(item.title, keywords),
           highlightValue(parentSection, keywords),
@@ -352,7 +333,7 @@ const HeaderNavMenu = memo(
       if (!category) return null;
       return pageIndex[category]?.filter((page) => !page.unlisted);
     }, [category]);
-    const categoryTitle = category ? getCategoryTitle(category) : null;
+    const categoryTitle = category ? getPageTitle(category) : null;
     const hasTitle = !!category && !searchData?.length && !noResults;
 
     useEffect(() => {
@@ -485,7 +466,7 @@ const HeaderNavMenu = memo(
           contentLabel={contentLabel}
           loading={loading}
           searchPlaceholder={
-            category ? searchTitles[category] : "Search all pages"
+            category ? getSearchTitle(category) : "Search all pages"
           }
           searchValue={searchValue}
           onSearch={setSearchValue}
@@ -602,7 +583,7 @@ export function HeaderNav() {
         event.preventDefault();
         const value = category
           ? document.querySelector<HTMLInputElement>(
-              `[role=combobox][placeholder='${searchTitles[category]}']`
+              `[role=combobox][placeholder='${getSearchTitle(category)}']`
             )?.value
           : "";
         if (categoryOpen) {
@@ -625,7 +606,7 @@ export function HeaderNav() {
     };
   }, [categoryOpen, pageOpen, category, pageMeta]);
 
-  const categoryTitle = category ? getCategoryTitle(category) : "Browse";
+  const categoryTitle = category ? getPageTitle(category) : "Browse";
 
   const categoryElements = useMemo(
     () =>
@@ -637,7 +618,7 @@ export function HeaderNav() {
             key={key}
             href={`/${key}`}
             category={key}
-            label={getCategoryTitle(key)}
+            label={getPageTitle(key)}
           />
         );
       }),
@@ -675,7 +656,7 @@ export function HeaderNav() {
       {
         <div
           className={cx(
-            "font-semibold opacity-30",
+            "cursor-default text-3xl font-thin opacity-30",
             !!element && "hidden sm:block"
           )}
         >
@@ -697,7 +678,9 @@ export function HeaderNav() {
       >
         {children}
       </HeaderNavMenu>
-      {element && <div className="font-semibold opacity-30">/</div>}
+      {element && (
+        <div className="cursor-default text-3xl font-thin opacity-30">/</div>
+      )}
       {element && (
         <HeaderNavMenu
           key="page"

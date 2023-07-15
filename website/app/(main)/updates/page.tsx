@@ -1,0 +1,32 @@
+import { cx } from "@ariakit/core/utils/misc";
+import { UpdateLink } from "components/update-link.jsx";
+import { getUpdates } from "utils/get-updates.js";
+import { PageContainer } from "../page-container.jsx";
+import { SeeNow } from "./see-now.jsx";
+
+export default function Page() {
+  const updates = getUpdates();
+  return (
+    <div className="flex items-start justify-center md:flex-row-reverse">
+      <SeeNow />
+      <main
+        className={cx(
+          "relative mt-8 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full",
+          "max-w-7xl [&>*]:max-w-[1040px]"
+        )}
+      >
+        <PageContainer title="Updates">
+          <div>
+            <ul className="flex max-w-2xl flex-col">
+              {updates.map((item, index) => (
+                <li key={index}>
+                  <UpdateLink {...item} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </PageContainer>
+      </main>
+    </div>
+  );
+}

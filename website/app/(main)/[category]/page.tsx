@@ -1,11 +1,11 @@
 import pagesConfig from "build-pages/config.js";
 import index from "build-pages/index.js";
 import { PageItem } from "components/page-item.jsx";
-import { groupBy } from "lodash";
+import { groupBy } from "lodash-es";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getPageIcon } from "utils/get-page-icon.js";
-import { ListPageSection } from "./list-page-section.js";
+import { PageSection } from "../page-section.jsx";
 import { ListPage } from "./list-page.js";
 
 interface Props {
@@ -63,7 +63,7 @@ export default function Page({ params }: Props) {
         </div>
       )}
       {Object.entries(groups).map(([group, pages]) => (
-        <ListPageSection key={group} title={group}>
+        <PageSection key={group} title={group}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {pages?.map((page) => (
               <PageItem
@@ -76,7 +76,7 @@ export default function Page({ params }: Props) {
               />
             ))}
           </div>
-        </ListPageSection>
+        </PageSection>
       ))}
     </ListPage>
   );
