@@ -63,7 +63,7 @@ function setSelected(element: HTMLOptionElement, selected: boolean) {
 
 function clickOption(
   element: HTMLOptionElement,
-  eventOptions?: MouseEventInit
+  eventOptions?: MouseEventInit,
 ) {
   // https://stackoverflow.com/a/16530782/5513909
   const select = closest(element, "select") as HTMLSelectElement & {
@@ -128,7 +128,7 @@ function clickOption(
 export async function click(
   element: Element,
   options?: MouseEventInit,
-  tap = false
+  tap = false,
 ) {
   if (!isVisible(element)) return;
 

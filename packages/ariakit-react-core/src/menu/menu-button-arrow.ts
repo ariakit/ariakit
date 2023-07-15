@@ -25,7 +25,7 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
   ({ store, ...props }) => {
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**
@@ -49,7 +49,7 @@ export const MenuButtonArrow = createComponent<MenuButtonArrowOptions>(
   (props) => {
     const htmlProps = useMenuButtonArrow(props);
     return createElement("span", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

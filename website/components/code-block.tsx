@@ -35,7 +35,7 @@ function parseFontStyle(fontStyle?: FontStyle) {
   return twJoin(
     fontStyle & FontStyle.Italic && "italic",
     fontStyle & FontStyle.Bold && "font-bold",
-    fontStyle & FontStyle.Underline && "underline"
+    fontStyle & FontStyle.Underline && "underline",
   );
 }
 
@@ -105,7 +105,7 @@ export async function CodeBlock({
             type === "definition" && "px-4",
             highlightLine && "bg-blue-200/20 dark:bg-blue-600/[15%]",
             highlightLine && !lineNumbers && style.highlightBefore,
-            className
+            className,
           )}
         >
           {line.length ? (
@@ -139,7 +139,7 @@ export async function CodeBlock({
                     className={twJoin(
                       parseFontStyle(token.fontStyle),
                       highlightToken &&
-                        "-mx-[3px] rounded bg-black/[7.5%] px-[3px] py-1 dark:bg-white/10"
+                        "-mx-[3px] rounded bg-black/[7.5%] px-[3px] py-1 dark:bg-white/10",
                     )}
                   >
                     {token.content}
@@ -160,7 +160,7 @@ export async function CodeBlock({
       className={twMerge(
         type !== "definition" && "w-full",
         "relative max-h-[inherit]",
-        className
+        className,
       )}
     >
       {type === "static" && (
@@ -170,7 +170,7 @@ export async function CodeBlock({
             "absolute right-2 top-2 z-[11] h-[37px] rounded-md bg-transparent px-3",
             "text-sm focus-visible:ariakit-outline-input",
             "text-black/75 hover:bg-black/[7.5%] hover:text-black",
-            "dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white"
+            "dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white",
           )}
         />
       )}
@@ -185,7 +185,7 @@ export async function CodeBlock({
             ? "leading-[26px]"
             : "leading-[21px]",
           "relative z-10 flex max-h-[inherit] overflow-auto text-sm text-black dark:text-white",
-          "border border-black/[15%] bg-white dark:border-0 dark:bg-gray-850"
+          "border border-black/[15%] bg-white dark:border-0 dark:bg-gray-850",
         )}
       >
         {lineNumbers && (
@@ -195,7 +195,7 @@ export async function CodeBlock({
               type === "static" && "flex",
               type === "editor" && "hidden sm:flex",
               "sticky left-0 h-full select-none flex-col bg-inherit text-right",
-              "text-[#237893] dark:text-[#858585]"
+              "text-[#237893] dark:text-[#858585]",
             )}
           >
             {darkTokens.map((_, i) => {
@@ -208,7 +208,7 @@ export async function CodeBlock({
                     type === "editor" && "min-w-[68px] pl-0 pr-[26px]",
                     highlighted &&
                       "bg-blue-200/20 text-[#0b216f] dark:bg-blue-600/[15%] dark:text-[#c6c6c6]",
-                    highlighted && style.highlightBefore
+                    highlighted && style.highlightBefore,
                   )}
                 >
                   {i + 1}
@@ -225,7 +225,7 @@ export async function CodeBlock({
           <div
             className={twJoin(
               type === "static" && !oneLiner && "sm:h-8",
-              type !== "definition" && "h-4"
+              type !== "definition" && "h-4",
             )}
           />
         </code>

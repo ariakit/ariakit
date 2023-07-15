@@ -14,7 +14,7 @@ import type { FormStore, FormStoreState } from "./form-store.js";
 
 function getFirstFieldsByName(
   items: FormStoreState["items"] | undefined,
-  name: string
+  name: string,
 ) {
   if (!items) return [];
   const fields: FormStoreState["items"] = [];
@@ -70,7 +70,7 @@ export const useFormPush = createHook<FormPushOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormPush must be wrapped in a Form component"
+        "FormPush must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -93,7 +93,7 @@ export const useFormPush = createHook<FormPushOptions>(
         }
         return nextItem;
       },
-      [name, getItemProp]
+      [name, getItemProp],
     );
 
     const onClickProp = props.onClick;
@@ -115,7 +115,7 @@ export const useFormPush = createHook<FormPushOptions>(
     props = useCollectionItem({ store, ...props, getItem });
 
     return props;
-  }
+  },
 );
 
 /**

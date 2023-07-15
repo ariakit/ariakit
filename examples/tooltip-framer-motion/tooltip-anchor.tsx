@@ -44,5 +44,5 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
         </AnimatePresence>
       </>
     );
-  }
+  },
 );

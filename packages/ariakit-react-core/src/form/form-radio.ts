@@ -41,7 +41,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormRadio must be wrapped in a Form component"
+        "FormRadio must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -55,7 +55,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
 
     const checkedProp = props.checked;
     const checked = store.useState(
-      () => checkedProp ?? store?.getValue(name) === value
+      () => checkedProp ?? store?.getValue(name) === value,
     );
 
     props = {
@@ -74,7 +74,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

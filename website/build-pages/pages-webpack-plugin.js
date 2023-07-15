@@ -31,7 +31,7 @@ function writeFiles(buildDir, pages) {
   const otherPages = pages.filter((page) => !page.reference);
 
   const entryFiles = otherPages.flatMap((page) =>
-    getPageEntryFiles(page.sourceContext, page.pageFileRegex)
+    getPageEntryFiles(page.sourceContext, page.pageFileRegex),
   );
 
   const sourceFiles = entryFiles.reduce(
@@ -39,15 +39,15 @@ function writeFiles(buildDir, pages) {
       acc[file] = getPageSourceFiles(file);
       return acc;
     },
-    {}
+    {},
   );
 
   const referencePages = pages.filter((page) => page.reference);
 
   const references = referencePages.flatMap((page) =>
     getPageEntryFiles(page.sourceContext, page.pageFileRegex).flatMap(
-      (file) => ({ page, references: getReferences(file) })
-    )
+      (file) => ({ page, references: getReferences(file) }),
+    ),
   );
 
   // deps.ts
@@ -111,7 +111,7 @@ function writeFiles(buildDir, pages) {
     .filter(
       (section) =>
         section.title === "Getting started" ||
-        section.section !== "Installation"
+        section.section !== "Installation",
     );
 
   const index = Object.entries(categories).reduce(
@@ -120,7 +120,7 @@ function writeFiles(buildDir, pages) {
       acc[category] = pages.map(({ sections, ...page }) => page);
       return acc;
     },
-    {}
+    {},
   );
 
   writeFileSync(indexFile, JSON.stringify(index, null, 2));
@@ -137,7 +137,7 @@ function writeFiles(buildDir, pages) {
       acc[file] = existsSync(iconPath) ? iconPath : null;
       return acc;
     },
-    {}
+    {},
   );
 
   // Second pass: find icons in the same folder as the source file
@@ -176,7 +176,7 @@ function writeFiles(buildDir, pages) {
       const pageName = getPageName(file);
       return iconPath
         ? `export { default as ${camelCase(
-            `${category.slug}/${pageName}`
+            `${category.slug}/${pageName}`,
           )} } from "${pathToImport(iconPath)}";\n`
         : "";
     })
@@ -188,10 +188,10 @@ function writeFiles(buildDir, pages) {
   const { duration } = performance.measure(
     "writeFiles",
     "writeFiles:start",
-    "writeFiles:end"
+    "writeFiles:end",
   );
   console.log(
-    `${chalk.green("pages")} - wrote pages in ${Math.round(duration)}ms`
+    `${chalk.green("pages")} - wrote pages in ${Math.round(duration)}ms`,
   );
 }
 
@@ -224,7 +224,7 @@ class PagesWebpackPlugin {
     });
 
     const externalContexts = contexts.filter(
-      (context) => !context.startsWith(process.cwd())
+      (context) => !context.startsWith(process.cwd()),
     );
 
     compiler.options.module.rules.push({
@@ -256,7 +256,7 @@ class PagesWebpackPlugin {
         console.log(
           `${
             removed ? chalk.red("removed page") : chalk.yellow("updated page")
-          } - ${file}`
+          } - ${file}`,
         );
       };
 

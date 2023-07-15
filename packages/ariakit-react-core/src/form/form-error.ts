@@ -42,7 +42,7 @@ export const useFormError = createHook<FormErrorOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormError must be wrapped in a Form component"
+        "FormError must be wrapped in a Form component",
     );
 
     const id = useId(props.id);
@@ -57,7 +57,7 @@ export const useFormError = createHook<FormErrorOptions>(
         }
         return nextItem;
       },
-      [id, name, getItemProp]
+      [id, name, getItemProp],
     );
 
     const children = store.useState(() => {
@@ -78,7 +78,7 @@ export const useFormError = createHook<FormErrorOptions>(
     props = useCollectionItem({ store, ...props, getItem });
 
     return props;
-  }
+  },
 );
 
 /**

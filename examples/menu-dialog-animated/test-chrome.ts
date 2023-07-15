@@ -12,7 +12,7 @@ const getMenu = (locator: Page | Locator) =>
 const getMenuItem = (
   locator: Page | Locator,
   name: string,
-  role = "menuitem"
+  role = "menuitem",
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 const getMenuItemCheckbox = (locator: Page | Locator, name: string) =>
@@ -82,7 +82,7 @@ test("create list", async ({ page }) => {
   // Wait for the submission to complete.
   await expect(getButton(page, "Create")).not.toHaveAttribute(
     "aria-disabled",
-    "true"
+    "true",
   );
   await expect(getError(page)).toBeVisible();
   await page.keyboard.type("F");
@@ -105,7 +105,7 @@ test("show/hide manage lists dialog", async ({ page }) => {
   await getButton(page, "Manage lists").click();
   await expect(getDialog(page, "Manage lists")).toBeVisible();
   await expect(
-    getButton(getDialog(page, "Manage lists"), "Dismiss popup")
+    getButton(getDialog(page, "Manage lists"), "Dismiss popup"),
   ).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(getButton(page, "Manage lists")).toBeFocused();
@@ -119,7 +119,7 @@ test("show/hide information dialog", async ({ page }) => {
   await getButton(page, "More information").click();
   await expect(getDialog(page, "More information")).toBeVisible();
   await expect(
-    getButton(getDialog(page, "More information"), "Dismiss popup")
+    getButton(getDialog(page, "More information"), "Dismiss popup"),
   ).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(getButton(page, "More information")).toBeFocused();
@@ -138,7 +138,7 @@ test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
     await page.keyboard.press("Enter");
     await expect(getDialog(page, "Manage lists")).toBeVisible();
     await expect(
-      getButton(getDialog(page, "Manage lists"), "Dismiss popup")
+      getButton(getDialog(page, "Manage lists"), "Dismiss popup"),
     ).toBeFocused();
     await page.keyboard.press("Enter");
   }, 10);
@@ -158,7 +158,7 @@ test("repeatedly showing/hiding information dialog", async ({ page }) => {
     await page.keyboard.press("Enter");
     await expect(getDialog(page, "More information")).toBeVisible();
     await expect(
-      getButton(getDialog(page, "More information"), "Dismiss popup")
+      getButton(getDialog(page, "More information"), "Dismiss popup"),
     ).toBeFocused();
     await page.keyboard.press("Enter");
   }, 10);

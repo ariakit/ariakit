@@ -16,7 +16,7 @@ function getPaddingProperty(documentElement: HTMLElement) {
 export function usePreventBodyScroll(
   contentElement: HTMLElement | null,
   contentId?: string,
-  enabled?: boolean
+  enabled?: boolean,
 ) {
   const isRootDialog = useRootDialog({
     attribute: "data-dialog-prevent-body-scroll",
@@ -41,7 +41,7 @@ export function usePreventBodyScroll(
       setCSSProperty(
         documentElement,
         "--scrollbar-width",
-        `${scrollbarWidth}px`
+        `${scrollbarWidth}px`,
       );
 
     const paddingProperty = getPaddingProperty(documentElement);
@@ -82,7 +82,7 @@ export function usePreventBodyScroll(
 
     return chain(
       setScrollbarWidthProperty(),
-      isIOS ? setIOSStyle() : setStyle()
+      isIOS ? setIOSStyle() : setStyle(),
     );
   }, [isRootDialog, contentElement]);
 }

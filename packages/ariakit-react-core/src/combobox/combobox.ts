@@ -42,7 +42,7 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 function isFirstItemAutoSelected(
   items: ComboboxStoreState["items"],
   activeValue: ComboboxStoreState["activeValue"],
-  autoSelect: ComboboxProps["autoSelect"]
+  autoSelect: ComboboxProps["autoSelect"],
 ) {
   if (!autoSelect) return false;
   const firstItem = items.find((item) => !item.disabled && item.value);
@@ -64,7 +64,7 @@ function isInputEvent(event: Event): event is InputEvent {
 }
 
 function isAriaAutoCompleteValue(
-  value: string
+  value: string,
 ): value is Required<AriaAttributes>["aria-autocomplete"] {
   return (
     value === "inline" ||
@@ -112,7 +112,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
     // first item on every keypress.
     const autoSelect = store.useState(
-      (state) => !!autoSelectProp && state.virtualFocus
+      (state) => !!autoSelectProp && state.virtualFocus,
     );
 
     const inline = autoComplete === "inline" || autoComplete === "both";
@@ -129,7 +129,7 @@ export const useCombobox = createHook<ComboboxOptions>(
 
     const storeValue = store.useState("value");
     const activeValue = store.useState((state) =>
-      inline && canInline ? state.activeValue : undefined
+      inline && canInline ? state.activeValue : undefined,
     );
     const items = store.useState("renderedItems");
     const open = store.useState("open");
@@ -146,7 +146,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
         activeValue,
-        autoSelect
+        autoSelect,
       );
       if (firstItemAutoSelected) {
         // If the first item is auto selected, we should append the completion
@@ -182,7 +182,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
         activeValue,
-        autoSelect
+        autoSelect,
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeValue, activeValue)) return;
@@ -292,7 +292,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       const combobox = ref.current;
       if (!combobox) return;
       const elements = [combobox, contentElement].filter(
-        (value): value is HTMLElement => !!value
+        (value): value is HTMLElement => !!value,
       );
       const onBlur = (event: FocusEvent) => {
         if (elements.every((el) => isFocusEventOutside(event, el))) {
@@ -368,7 +368,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (event.defaultPrevented) return;
         if (!autoSelect) return;
         forceValueUpdate();
-      }
+      },
     );
 
     const onMouseDownProp = props.onMouseDown;
@@ -410,7 +410,7 @@ export const useCombobox = createHook<ComboboxOptions>(
             store.show();
           }
         }
-      }
+      },
     );
 
     const onBlurProp = props.onBlur;
@@ -465,7 +465,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     props = usePopoverAnchor({ store, ...props });
 
     return { autoComplete: "off", ...props };
-  }
+  },
 );
 
 /**

@@ -16,7 +16,7 @@ export function getPageEntryFiles(
   context,
   pattern = PAGE_FILE_REGEX,
   files = [],
-  parentContext = null
+  parentContext = null,
 ) {
   const contexts = Array.isArray(context) ? context : [context];
   for (const context of contexts) {

@@ -29,7 +29,9 @@ import { MenuBarContext } from "./menu-context.js";
 export const useMenuBar = createHook<MenuBarOptions>(
   ({ store, composite = true, ...props }) => {
     const orientation = store.useState((state) =>
-      !composite || state.orientation === "both" ? undefined : state.orientation
+      !composite || state.orientation === "both"
+        ? undefined
+        : state.orientation,
     );
 
     props = useWrapElement(
@@ -39,7 +41,7 @@ export const useMenuBar = createHook<MenuBarOptions>(
           {element}
         </MenuBarContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     if (composite) {
@@ -53,7 +55,7 @@ export const useMenuBar = createHook<MenuBarOptions>(
     props = useComposite({ store, composite, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

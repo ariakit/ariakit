@@ -14,14 +14,14 @@ export type PlaygroundProps = Omit<
 
 // const theme = convertTheme({ type: "dark", ...darkPlus } as IVSCodeTheme);
 
-export function Playground(props: PlaygroundProps) {
+export async function Playground(props: PlaygroundProps) {
   const codeBlocks: Record<string, any> = {};
   const javascript: Record<string, { code: string; codeBlock: any }> = {};
 
-  Object.entries(props.files).forEach(([filename, code]) => {
+  Object.entries(props.files).forEach(async ([filename, code]) => {
     if (/\.tsx?$/.test(filename)) {
       const jsFilename = tsToJsFilename(filename);
-      const jsCode = tsToJs(code);
+      const jsCode = await tsToJs(code);
       javascript[filename] = {
         code: jsCode,
         codeBlock: (

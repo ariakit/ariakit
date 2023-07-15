@@ -43,7 +43,7 @@ export const MenuGroupLabel = createComponent<MenuGroupLabelOptions>(
   (props) => {
     const htmlProps = useMenuGroupLabel(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

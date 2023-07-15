@@ -28,18 +28,18 @@ const clickableInputTypes = [
 
 function submitFormByPressingEnterOn(
   element: HTMLInputElement,
-  options: KeyboardEventInit
+  options: KeyboardEventInit,
 ) {
   const { form } = element;
   if (!form) return;
   const elements = Array.from(form.elements);
   const validInputs = elements.filter(
-    (el) => el instanceof HTMLInputElement && isTextField(el)
+    (el) => el instanceof HTMLInputElement && isTextField(el),
   );
   const submitButton = elements.find(
     (el) =>
       (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
-      el.type === "submit"
+      el.type === "submit",
   );
   if (validInputs.length === 1 || submitButton) {
     fireEvent.submit(form, options);
@@ -98,7 +98,7 @@ const keyDownMap: KeyActionMap = {
       element.setSelectionRange(
         nextStart,
         nextEnd,
-        selectionDirection || "backward"
+        selectionDirection || "backward",
       );
     }
   },
@@ -114,7 +114,7 @@ const keyDownMap: KeyActionMap = {
       element.setSelectionRange(
         nextStart,
         nextEnd,
-        selectionDirection || "forward"
+        selectionDirection || "forward",
       );
     }
   },
@@ -176,7 +176,7 @@ const keyUpMap: KeyActionMap = {
 export async function press(
   key: string,
   element?: Element | null,
-  options: KeyboardEventInit = {}
+  options: KeyboardEventInit = {},
 ) {
   if (element == null) {
     element = document.activeElement || document.body;

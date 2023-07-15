@@ -13,7 +13,7 @@ const getMenuWrapper = (locator: Page) =>
 const getMenuItem = (
   locator: Page | Locator,
   name: string,
-  role = "menuitem"
+  role = "menuitem",
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 test.beforeEach(async ({ page }) => {
@@ -27,18 +27,18 @@ test("hide with wheel", async ({ page }) => {
   await getMenuItem(page, "History").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!
+    wrapper!,
   );
   await page.waitForTimeout(100);
   await getMenuItem(page, "Recently closed tabs").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
-    wrapper!
+    wrapper!,
   );
   await page.mouse.wheel(-200, 0);
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!
+    wrapper!,
   );
   await expect(getMenuItem(page, "Recently closed tabs")).toBeFocused();
   await expect(getMenu(page, "Recently closed tabs")).toBeHidden();

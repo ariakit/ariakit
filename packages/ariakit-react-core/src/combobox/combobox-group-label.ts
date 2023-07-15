@@ -20,7 +20,7 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
   (props) => {
     props = useCompositeGroupLabel(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -45,7 +45,7 @@ export const ComboboxGroupLabel = createComponent<ComboboxGroupLabelOptions>(
   (props) => {
     const htmlProps = useComboboxGroupLabel(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -63,7 +63,7 @@ function getDOMRect(anchorRect?: AnchorRect | null) {
 
 function getAnchorElement(
   anchorElement: HTMLElement | null,
-  getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null
+  getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null,
 ) {
   // https://floating-ui.com/docs/virtual-elements
   const contextElement = anchorElement || undefined;
@@ -92,7 +92,7 @@ function roundByDPR(value: number) {
 
 function getOffsetMiddleware(
   arrowElement: HTMLElement | null,
-  props: Pick<PopoverOptions, "gutter" | "shift">
+  props: Pick<PopoverOptions, "gutter" | "shift">,
 ) {
   // https://floating-ui.com/docs/offset
   return offset(({ placement }) => {
@@ -114,7 +114,7 @@ function getOffsetMiddleware(
 }
 
 function getFlipMiddleware(
-  props: Pick<PopoverOptions, "flip" | "overflowPadding">
+  props: Pick<PopoverOptions, "flip" | "overflowPadding">,
 ) {
   if (props.flip === false) return;
   const fallbackPlacements =
@@ -123,7 +123,7 @@ function getFlipMiddleware(
   invariant(
     !fallbackPlacements || fallbackPlacements.every(isValidPlacement),
     process.env.NODE_ENV !== "production" &&
-      "`flip` expects a spaced-delimited list of placements"
+      "`flip` expects a spaced-delimited list of placements",
   );
 
   // https://floating-ui.com/docs/flip
@@ -134,7 +134,7 @@ function getFlipMiddleware(
 }
 
 function getShiftMiddleware(
-  props: Pick<PopoverOptions, "slide" | "overlap" | "overflowPadding">
+  props: Pick<PopoverOptions, "slide" | "overlap" | "overflowPadding">,
 ) {
   if (!props.slide && !props.overlap) return;
   // https://floating-ui.com/docs/shift
@@ -146,7 +146,7 @@ function getShiftMiddleware(
 }
 
 function getSizeMiddleware(
-  props: Pick<PopoverOptions, "sameWidth" | "fitViewport" | "overflowPadding">
+  props: Pick<PopoverOptions, "sameWidth" | "fitViewport" | "overflowPadding">,
 ) {
   // https://floating-ui.com/docs/size
   return size({
@@ -160,15 +160,15 @@ function getSizeMiddleware(
 
       wrapper.style.setProperty(
         "--popover-anchor-width",
-        `${referenceWidth}px`
+        `${referenceWidth}px`,
       );
       wrapper.style.setProperty(
         "--popover-available-width",
-        `${availableWidth}px`
+        `${availableWidth}px`,
       );
       wrapper.style.setProperty(
         "--popover-available-height",
-        `${availableHeight}px`
+        `${availableHeight}px`,
       );
 
       if (props.sameWidth) {
@@ -185,7 +185,7 @@ function getSizeMiddleware(
 
 function getArrowMiddleware(
   arrowElement: HTMLElement | null,
-  props: Pick<PopoverOptions, "arrowPadding">
+  props: Pick<PopoverOptions, "arrowPadding">,
 ) {
   if (!arrowElement) return;
   // https://floating-ui.com/docs/arrow
@@ -251,7 +251,7 @@ export const usePopover = createHook<PopoverOptions>(
 
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
-        `${overflowPadding}px`
+        `${overflowPadding}px`,
       );
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
@@ -393,7 +393,7 @@ export const usePopover = createHook<PopoverOptions>(
           {element}
         </div>
       ),
-      [store, position, wrapperProps]
+      [store, position, wrapperProps],
     );
 
     props = useWrapElement(
@@ -403,7 +403,7 @@ export const usePopover = createHook<PopoverOptions>(
           {element}
         </PopoverContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     props = {
@@ -430,7 +430,7 @@ export const usePopover = createHook<PopoverOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

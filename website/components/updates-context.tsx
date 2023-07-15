@@ -18,18 +18,18 @@ function useUpdates({ defaultValue = "2017-01-01" } = {}) {
 
   const previousSeen = useMemo(
     () => new Date(previousSeenAt),
-    [previousSeenAt]
+    [previousSeenAt],
   );
   const seen = useMemo(() => new Date(seenAt), [seenAt]);
 
   return useMemo(
     () => ({ previousSeen, seen, seeNow }),
-    [previousSeen, seen, seeNow]
+    [previousSeen, seen, seeNow],
   );
 }
 
 const UpdatesContext = createContext<ReturnType<typeof useUpdates> | null>(
-  null
+  null,
 );
 
 export function useUpdatesContext() {

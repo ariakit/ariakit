@@ -47,14 +47,14 @@ export const useTabPanel = createHook<TabPanelOptions>(
         }
         return nextItem;
       },
-      [id, tabIdProp, getItemProp]
+      [id, tabIdProp, getItemProp],
     );
 
     const tabId = store.panels.useState(
-      () => tabIdProp || store.panels.item(id)?.tabId
+      () => tabIdProp || store.panels.item(id)?.tabId,
     );
     const open = store.useState(
-      (state) => !!tabId && state.selectedId === tabId
+      (state) => !!tabId && state.selectedId === tabId,
     );
 
     props = {
@@ -72,7 +72,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     props = useCollectionItem({ store: store.panels, ...props, getItem });
 
     return props;
-  }
+  },
 );
 
 /**

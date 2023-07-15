@@ -65,7 +65,7 @@ test("submit form", async () => {
   await type("john@example.com");
   await press.Enter();
   expect(alert).toHaveBeenCalledWith(
-    JSON.stringify({ name: "John", email: "john@example.com" })
+    JSON.stringify({ name: "John", email: "john@example.com" }),
   );
 });
 

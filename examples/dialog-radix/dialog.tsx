@@ -20,7 +20,7 @@ interface SlotProps extends React.ComponentPropsWithoutRef<"div"> {
 export const Slot = React.forwardRef<HTMLDivElement, SlotProps>(
   ({ children, ...props }, ref) => {
     return <Ariakit.Role ref={ref} {...props} render={children} />;
-  }
+  },
 );
 
 /* ROOT */
@@ -67,7 +67,7 @@ export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
         render={asChild ? <Slot /> : undefined}
       />
     );
-  }
+  },
 );
 
 /* PORTAL */
@@ -138,7 +138,7 @@ export const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
         render={asChild ? <Slot /> : undefined}
       />
     );
-  }
+  },
 );
 
 /* CONTENT */
@@ -165,7 +165,7 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
       onInteractOutside,
       ...props
     },
-    ref
+    ref,
   ) {
     const { store, modal } = React.useContext(DialogContext)!;
     const forceMountContext = React.useContext(ForceMountContext);
@@ -236,7 +236,7 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         }}
       />
     );
-  }
+  },
 );
 
 /* CLOSE */
@@ -254,7 +254,7 @@ export const Close = React.forwardRef<HTMLButtonElement, CloseProps>(
         render={asChild ? <Slot /> : undefined}
       />
     );
-  }
+  },
 );
 
 /* TITLE */
@@ -272,7 +272,7 @@ export const Title = React.forwardRef<HTMLHeadingElement, TitleProps>(
         render={asChild ? <Slot /> : undefined}
       />
     );
-  }
+  },
 );
 
 /* DESCRIPTION */

@@ -157,7 +157,7 @@ export function HeaderVersionSelect({ versions }: Props) {
                   {name}
                 </SelectGroupLabel>
                 {Object.entries(tags).map(([tag, version]) =>
-                  renderItem(getValueFromPkg({ name, version }), tag)
+                  renderItem(getValueFromPkg({ name, version }), tag),
                 )}
               </SelectGroup>
               <SelectSeparator className={style.separator} />

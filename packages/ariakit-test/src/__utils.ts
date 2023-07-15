@@ -19,6 +19,6 @@ export function queuedMicrotasks(): Promise<void> {
 
 export function nextFrame(): Promise<void> {
   return act<void>(
-    () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    () => new Promise((resolve) => requestAnimationFrame(() => resolve())),
   );
 }

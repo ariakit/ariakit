@@ -132,7 +132,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
           {element}
         </CheckboxCheckedContext.Provider>
       ),
-      [isChecked]
+      [isChecked],
     );
 
     props = {
@@ -152,7 +152,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
       checked: isChecked,
       ...props,
     };
-  }
+  },
 );
 
 /**

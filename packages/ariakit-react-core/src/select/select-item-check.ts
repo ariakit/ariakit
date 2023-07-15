@@ -23,7 +23,7 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });
     return props;
-  }
+  },
 );
 
 /**
@@ -51,7 +51,7 @@ export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
   (props) => {
     const htmlProps = useSelectItemCheck(props);
     return createElement("span", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

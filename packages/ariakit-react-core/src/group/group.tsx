@@ -23,7 +23,7 @@ export const useGroup = createHook<GroupOptions>((props) => {
         {element}
       </GroupLabelContext.Provider>
     ),
-    []
+    [],
   );
 
   props = {

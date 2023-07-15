@@ -75,7 +75,7 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -103,7 +103,7 @@ export const CompositeOverflow = createComponent<CompositeOverflowOptions>(
   (props) => {
     const htmlProps = useCompositeOverflow(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

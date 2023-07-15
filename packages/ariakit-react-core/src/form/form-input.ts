@@ -37,7 +37,7 @@ export const useFormInput = createHook<FormInputOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormInput must be wrapped in a Form component"
+        "FormInput must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -61,7 +61,7 @@ export const useFormInput = createHook<FormInputOptions>(
     props = useFormField({ store, name, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

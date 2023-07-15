@@ -8,7 +8,7 @@ const root = resolve(process.cwd(), "..");
 
 const componentsContext = join(root, "components");
 const components = readdirSync(componentsContext).map((filename) =>
-  basename(filename, ".md")
+  basename(filename, ".md"),
 );
 
 const buildDir = join(process.cwd(), ".pages");

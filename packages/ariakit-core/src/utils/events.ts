@@ -5,11 +5,11 @@ import { isApple } from "./platform.js";
  * Returns `true` if `event` has been fired within a React Portal element.
  */
 export function isPortalEvent(
-  event: Pick<Event, "currentTarget" | "target">
+  event: Pick<Event, "currentTarget" | "target">,
 ): boolean {
   return Boolean(
     event.currentTarget &&
-      !contains(event.currentTarget as Node, event.target as Element)
+      !contains(event.currentTarget as Node, event.target as Element),
   );
 }
 
@@ -17,7 +17,7 @@ export function isPortalEvent(
  * Returns `true` if `event.target` and `event.currentTarget` are the same.
  */
 export function isSelfTarget(
-  event: Pick<Event, "target" | "currentTarget">
+  event: Pick<Event, "target" | "currentTarget">,
 ): boolean {
   return event.target === event.currentTarget;
 }
@@ -26,7 +26,7 @@ export function isSelfTarget(
  * Checks whether the user event is triggering a page navigation in a new tab.
  */
 export function isOpeningInNewTab(
-  event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">
+  event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">,
 ) {
   const element = event.currentTarget as
     | HTMLAnchorElement
@@ -48,7 +48,7 @@ export function isOpeningInNewTab(
  * Checks whether the user event is triggering a download.
  */
 export function isDownloading(
-  event: Pick<MouseEvent, "altKey" | "currentTarget">
+  event: Pick<MouseEvent, "altKey" | "currentTarget">,
 ) {
   const element = event.currentTarget as
     | HTMLAnchorElement
@@ -75,7 +75,7 @@ export function isDownloading(
 export function fireEvent(
   element: Element,
   type: string,
-  eventInit?: EventInit
+  eventInit?: EventInit,
 ) {
   const event = new Event(type, eventInit);
   return element.dispatchEvent(event);
@@ -118,7 +118,7 @@ export function fireFocusEvent(element: Element, eventInit?: FocusEventInit) {
 export function fireKeyboardEvent(
   element: Element,
   type: string,
-  eventInit?: KeyboardEventInit
+  eventInit?: KeyboardEventInit,
 ) {
   const event = new KeyboardEvent(type, eventInit);
   return element.dispatchEvent(event);
@@ -147,7 +147,7 @@ export function fireClickEvent(element: Element, eventInit?: PointerEventInit) {
  */
 export function isFocusEventOutside(
   event: Pick<FocusEvent, "currentTarget" | "relatedTarget">,
-  container?: Element | null
+  container?: Element | null,
 ) {
   const containerElement = container || (event.currentTarget as Element);
   const relatedTarget = event.relatedTarget as HTMLElement | null;
@@ -160,7 +160,7 @@ export function isFocusEventOutside(
 export function queueBeforeEvent(
   element: Element,
   type: string,
-  callback: () => void
+  callback: () => void,
 ) {
   const raf = requestAnimationFrame(() => {
     element.removeEventListener(type, callImmediately, true);
@@ -186,19 +186,19 @@ export function addGlobalEventListener<K extends keyof DocumentEventMap>(
   type: K,
   listener: (event: DocumentEventMap[K]) => any,
   options?: boolean | AddEventListenerOptions,
-  scope?: Window
+  scope?: Window,
 ): () => void;
 export function addGlobalEventListener(
   type: string,
   listener: EventListenerOrEventListenerObject,
   options?: boolean | AddEventListenerOptions,
-  scope?: Window
+  scope?: Window,
 ): () => void;
 export function addGlobalEventListener(
   type: string,
   listener: EventListenerOrEventListenerObject,
   options?: boolean | AddEventListenerOptions,
-  scope: Window = window
+  scope: Window = window,
 ) {
   // Prevent errors from "sandbox" frames.
   try {
@@ -210,7 +210,7 @@ export function addGlobalEventListener(
     const frameWindow = scope.frames[i];
     if (frameWindow) {
       listeners.push(
-        addGlobalEventListener(type, listener, options, frameWindow)
+        addGlobalEventListener(type, listener, options, frameWindow),
       );
     }
   }

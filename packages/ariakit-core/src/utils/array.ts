@@ -21,7 +21,7 @@ export function toArray<T>(arg: T) {
 export function addItemToArray<T extends any[]>(
   array: T,
   item: T[number],
-  index = -1
+  index = -1,
 ) {
   if (!(index in array)) {
     return [...array, item] as T;

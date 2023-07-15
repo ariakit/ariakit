@@ -23,7 +23,7 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
   (props) => {
     props = useCompositeSeparator(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -45,7 +45,7 @@ export const SelectSeparator = createComponent<SelectSeparatorOptions>(
   (props) => {
     const htmlProps = useSelectSeparator(props);
     return createElement("hr", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

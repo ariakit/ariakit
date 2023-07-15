@@ -27,7 +27,7 @@ export const useFormReset = createHook<FormResetOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormReset must be wrapped in a Form component"
+        "FormReset must be wrapped in a Form component",
     );
 
     props = {
@@ -39,7 +39,7 @@ export const useFormReset = createHook<FormResetOptions>(
     props = useButton(props);
 
     return props;
-  }
+  },
 );
 
 /**

@@ -52,7 +52,7 @@ export function setAttribute(element: Element, attr: string, value: string) {
 export function setProperty<T extends Element, K extends keyof T & string>(
   element: T,
   property: K,
-  value: T[K]
+  value: T[K],
 ) {
   const setup = () => {
     const exists = property in element;
@@ -72,7 +72,7 @@ export function setProperty<T extends Element, K extends keyof T & string>(
 
 export function assignStyle(
   element: HTMLElement | null | undefined,
-  style: Partial<CSSStyleDeclaration>
+  style: Partial<CSSStyleDeclaration>,
 ) {
   if (!element) return () => {};
 
@@ -90,7 +90,7 @@ export function assignStyle(
 export function setCSSProperty(
   element: HTMLElement | null | undefined,
   property: string,
-  value: string
+  value: string,
 ) {
   if (!element) return () => {};
 

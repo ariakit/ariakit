@@ -26,8 +26,8 @@ export default function Example() {
           onValuesChange={(values: typeof menuValues) => {
             setFilters((filters) =>
               Object.fromEntries(
-                values.visibleFilters.map((label) => [label, filters[label]])
-              )
+                values.visibleFilters.map((label) => [label, filters[label]]),
+              ),
             );
           }}
         >

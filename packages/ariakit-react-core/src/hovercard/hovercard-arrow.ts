@@ -39,7 +39,7 @@ export const HovercardArrow = createComponent<HovercardArrowOptions>(
   (props) => {
     const htmlProps = useHovercardArrow(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

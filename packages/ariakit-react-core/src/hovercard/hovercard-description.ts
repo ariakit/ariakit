@@ -20,7 +20,7 @@ export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
   (props) => {
     props = usePopoverDescription(props);
     return props;
-  }
+  },
 );
 
 /**

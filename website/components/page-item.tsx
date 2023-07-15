@@ -61,7 +61,7 @@ export function PageItem({
         props.className,
         size === "sm" && "gap-2 p-2",
         size === "md" && "gap-3 p-3",
-        size === "lg" && "gap-4 p-4"
+        size === "lg" && "gap-4 p-4",
       )}
     >
       {props.children}
@@ -71,7 +71,7 @@ export function PageItem({
             style.thumbnail,
             size === "sm" && "h-16 w-16",
             size === "md" && "h-20 w-20",
-            size === "lg" && "h-28 w-28"
+            size === "lg" && "h-28 w-28",
           )}
         >
           {thumbnail}
@@ -85,7 +85,7 @@ export function PageItem({
               style.title,
               size === "sm" && "text-base",
               size === "md" && "pb-1 text-lg",
-              size === "lg" && "pb-2 text-xl"
+              size === "lg" && "pb-2 text-xl",
             )}
           >
             {title}
@@ -97,7 +97,7 @@ export function PageItem({
                 style.description,
                 size === "sm" && "line-clamp-2 text-sm",
                 size === "md" && "line-clamp-2 text-base",
-                size === "lg" && "line-clamp-3 text-base"
+                size === "lg" && "line-clamp-3 text-base",
               )}
             >
               {description}

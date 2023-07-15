@@ -54,7 +54,7 @@ const noopSubscribe = () => () => {};
  * useStoreState(store)
  */
 export function useStoreState<T extends StateStore>(
-  store: T
+  store: T,
 ): T extends CoreStore ? StoreState<T> : undefined;
 
 /**
@@ -66,7 +66,7 @@ export function useStoreState<T extends StateStore>(
  */
 export function useStoreState<T extends StateStore, K extends StateKey<T>>(
   store: T,
-  key: K
+  key: K,
 ): T extends CoreStore ? StoreState<T>[K] : undefined;
 
 /**
@@ -79,12 +79,12 @@ export function useStoreState<T extends StateStore, K extends StateKey<T>>(
  */
 export function useStoreState<T extends StateStore, V>(
   store: T,
-  selector: StateSelector<T, V>
+  selector: StateSelector<T, V>,
 ): T extends CoreStore ? V : undefined;
 
 export function useStoreState(
   store: StateStore,
-  keyOrSelector: StateKey | StateSelector = identity
+  keyOrSelector: StateKey | StateSelector = identity,
 ) {
   const getSnapshot = () => {
     if (!store) return;
@@ -99,7 +99,7 @@ export function useStoreState(
   return useSyncExternalStore(
     store?.subscribe || noopSubscribe,
     getSnapshot,
-    getSnapshot
+    getSnapshot,
   );
 }
 
@@ -115,7 +115,7 @@ export function useStoreProps<
   T extends CoreStore<S>,
   P extends S,
   K extends keyof S & keyof P,
-  SK extends keyof PickByValue<P, SetState<P[K]>>
+  SK extends keyof PickByValue<P, SetState<P[K]>>,
 >(store: T, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const propsRef = useLiveRef({
@@ -133,7 +133,7 @@ export function useStoreProps<
         if (state[key] === value) return;
         setValue(state[key]);
       },
-      [key]
+      [key],
     );
   }, [store, key]);
 
@@ -156,7 +156,7 @@ export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
 
   const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),
-    [store]
+    [store],
   );
 
   return useMemo(() => ({ ...store, useState }), [store, useState]);

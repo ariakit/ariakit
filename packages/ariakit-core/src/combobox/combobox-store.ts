@@ -41,7 +41,7 @@ export function createComboboxStore({
       "anchorElement",
       "contentElement",
       "popoverElement",
-      "disclosureElement"
+      "disclosureElement",
     ),
     select?.omit(
       "value",
@@ -52,8 +52,8 @@ export function createComboboxStore({
       "anchorElement",
       "contentElement",
       "popoverElement",
-      "disclosureElement"
-    )
+      "disclosureElement",
+    ),
   );
 
   const syncState = store.getState();
@@ -62,7 +62,7 @@ export function createComboboxStore({
     props.activeId,
     syncState.activeId,
     props.defaultActiveId,
-    null
+    null,
   );
 
   const composite = createCompositeStore({
@@ -72,19 +72,19 @@ export function createComboboxStore({
     includesBaseElement: defaultValue(
       props.includesBaseElement,
       syncState.includesBaseElement,
-      true
+      true,
     ),
     orientation: defaultValue(
       props.orientation,
       syncState.orientation,
-      "vertical" as const
+      "vertical" as const,
     ),
     focusLoop: defaultValue(props.focusLoop, syncState.focusLoop, true),
     focusWrap: defaultValue(props.focusWrap, syncState.focusWrap, true),
     virtualFocus: defaultValue(
       props.virtualFocus,
       syncState?.virtualFocus,
-      !isSafariOnMobile
+      !isSafariOnMobile,
     ),
   });
 
@@ -94,7 +94,7 @@ export function createComboboxStore({
     placement: defaultValue(
       props.placement,
       syncState.placement,
-      "bottom-start" as const
+      "bottom-start" as const,
     ),
   });
 
@@ -102,7 +102,7 @@ export function createComboboxStore({
     props.value,
     syncState.value,
     props.defaultValue,
-    ""
+    "",
   );
 
   const initialState: ComboboxStoreState = {
@@ -112,7 +112,7 @@ export function createComboboxStore({
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
       syncState.resetValueOnHide,
-      false
+      false,
     ),
     activeValue: syncState.activeValue,
   };
@@ -126,8 +126,8 @@ export function createComboboxStore({
         if (state.mounted) return;
         combobox.setState("value", initialValue);
       },
-      ["resetValueOnHide", "mounted"]
-    )
+      ["resetValueOnHide", "mounted"],
+    ),
   );
 
   // Resets the state when the combobox popover is hidden.
@@ -138,8 +138,8 @@ export function createComboboxStore({
         combobox.setState("activeId", activeId);
         combobox.setState("moves", 0);
       },
-      ["mounted"]
-    )
+      ["mounted"],
+    ),
   );
 
   // When the activeId changes, but the moves count doesn't, we reset the
@@ -152,8 +152,8 @@ export function createComboboxStore({
           combobox.setState("activeValue", undefined);
         }
       },
-      ["moves", "activeId"]
-    )
+      ["moves", "activeId"],
+    ),
   );
 
   // Otherwise, if the moves count changes, we update the activeValue state.
@@ -165,8 +165,8 @@ export function createComboboxStore({
         const activeItem = composite.item(activeId);
         combobox.setState("activeValue", activeItem?.value);
       },
-      ["moves", "renderedItems"]
-    )
+      ["moves", "renderedItems"],
+    ),
   );
 
   return {

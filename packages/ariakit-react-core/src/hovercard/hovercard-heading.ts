@@ -20,7 +20,7 @@ export const useHovercardHeading = createHook<HovercardHeadingOptions>(
   (props) => {
     props = usePopoverHeading(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -40,7 +40,7 @@ export const HovercardHeading = createComponent<HovercardHeadingOptions>(
   (props) => {
     const htmlProps = useHovercardHeading(props);
     return createElement("h1", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -29,7 +29,7 @@ export function useComboboxStoreOptions(props: ComboboxStoreProps) {
 
 export function useComboboxStoreProps<T extends ComboboxStore>(
   store: T,
-  props: ComboboxStoreProps
+  props: ComboboxStoreProps,
 ) {
   store = useCompositeStoreProps(store, props);
   store = usePopoverStoreProps(store, props);
@@ -52,11 +52,11 @@ export function useComboboxStoreProps<T extends ComboboxStore>(
  * ```
  */
 export function useComboboxStore(
-  props: ComboboxStoreProps = {}
+  props: ComboboxStoreProps = {},
 ): ComboboxStore {
   const options = useComboboxStoreOptions(props);
   const store = useStore(() =>
-    Core.createComboboxStore({ ...props, ...options })
+    Core.createComboboxStore({ ...props, ...options }),
   );
   return useComboboxStoreProps(store, props);
 }

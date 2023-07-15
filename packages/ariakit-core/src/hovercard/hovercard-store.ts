@@ -13,7 +13,7 @@ import type { SetState } from "../utils/types.js";
  * Creates a hovercard store.
  */
 export function createHovercardStore(
-  props: HovercardStoreProps = {}
+  props: HovercardStoreProps = {},
 ): HovercardStore {
   const syncState = props.store?.getState();
 
@@ -22,7 +22,7 @@ export function createHovercardStore(
     placement: defaultValue(
       props.placement,
       syncState?.placement,
-      "bottom" as const
+      "bottom" as const,
     ),
   });
 

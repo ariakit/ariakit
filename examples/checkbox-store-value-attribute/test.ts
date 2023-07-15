@@ -3,7 +3,7 @@ import { click, getByLabelText, getByRole, press } from "@ariakit/test";
 test("check checkbox on click", async () => {
   expect(getByRole("checkbox")).not.toBeChecked();
   await click(
-    getByLabelText("I have read and agree to the terms and conditions")
+    getByLabelText("I have read and agree to the terms and conditions"),
   );
   expect(getByRole("checkbox")).toBeChecked();
 });

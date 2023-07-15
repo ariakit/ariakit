@@ -43,7 +43,7 @@ spawn.sync(
     "--outDir",
     esmDir,
   ],
-  { stdio: "inherit" }
+  { stdio: "inherit" },
 );
 
 fse.copySync(esmDir, cjsDir);

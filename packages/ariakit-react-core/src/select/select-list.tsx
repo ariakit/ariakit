@@ -83,7 +83,7 @@ export const useSelectList = createHook<SelectListOptions>(
       (element) => (
         <SelectContext.Provider value={store}>{element}</SelectContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
@@ -121,7 +121,7 @@ export const useSelectList = createHook<SelectListOptions>(
     props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

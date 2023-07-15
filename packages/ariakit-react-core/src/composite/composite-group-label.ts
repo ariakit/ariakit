@@ -20,7 +20,7 @@ export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
   ({ store, ...props }) => {
     props = useGroupLabel(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -44,7 +44,7 @@ export const CompositeGroupLabel = createComponent<CompositeGroupLabelOptions>(
   (props) => {
     const htmlProps = useCompositeGroupLabel(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

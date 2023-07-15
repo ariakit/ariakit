@@ -17,7 +17,7 @@ export function useMenuBarStoreOptions(props: MenuBarStoreProps) {
 
 export function useMenuBarStoreProps<T extends MenuBarStore>(
   store: T,
-  props: MenuBarStoreProps
+  props: MenuBarStoreProps,
 ) {
   return useCompositeStoreProps(store, props);
 }
@@ -34,7 +34,7 @@ export function useMenuBarStoreProps<T extends MenuBarStore>(
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
   const options = useMenuBarStoreOptions(props);
   const store = useStore(() =>
-    Core.createMenuBarStore({ ...props, ...options })
+    Core.createMenuBarStore({ ...props, ...options }),
   );
   return useMenuBarStoreProps(store, props);
 }

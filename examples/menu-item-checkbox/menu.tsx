@@ -12,7 +12,7 @@ interface MenuProps extends Omit<Ariakit.MenuButtonProps, "store"> {
 
 export const Menu = forwardRef<HTMLButtonElement, MenuProps>(function Menu(
   { label, defaultValues, values, onValuesChange, ...props },
-  ref
+  ref,
 ) {
   const menu = Ariakit.useMenuStore({
     defaultValues,

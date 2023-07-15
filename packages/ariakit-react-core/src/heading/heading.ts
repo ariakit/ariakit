@@ -25,7 +25,7 @@ export const useHeading = createHook<HeadingOptions>((props) => {
   const tagName = useTagName(ref, props.as || as);
   const isNativeHeading = useMemo(
     () => !!tagName && /^h\d$/.test(tagName),
-    [tagName]
+    [tagName],
   );
 
   props = {

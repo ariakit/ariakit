@@ -35,7 +35,7 @@ export default function Example() {
         keys: ["children"],
         baseSort: (a, b) => (a.index < b.index ? -1 : 1),
       }),
-    [deferredValue]
+    [deferredValue],
   );
 
   const renderItem = ({ children, ...props }: (typeof links)[number]) => {

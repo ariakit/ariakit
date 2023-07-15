@@ -55,7 +55,7 @@ function itemTextStartsWith(item: CompositeStoreItem, text: string) {
 function getSameInitialItems(
   items: CompositeStoreItem[],
   char: string,
-  activeId?: string | null
+  activeId?: string | null,
 ) {
   if (!activeId) return items;
   const activeItem = items.find((item) => item.id === activeId);
@@ -70,7 +70,7 @@ function getSameInitialItems(
   // through them.
   return flipItems(
     items.filter((item) => itemTextStartsWith(item, chars)),
-    activeId
+    activeId,
   ).filter((item) => item.id !== activeId);
 }
 
@@ -95,7 +95,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeTypeahead must be a Composite component"
+        "CompositeTypeahead must be a Composite component",
     );
 
     const onKeyDownCaptureProp = props.onKeyDownCapture;
@@ -129,7 +129,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         chars += char;
         enabledItems = getSameInitialItems(enabledItems, char, activeId);
         const item = enabledItems.find((item) =>
-          itemTextStartsWith(item, chars)
+          itemTextStartsWith(item, chars),
         );
         if (item) {
           store.move(item.id);
@@ -138,7 +138,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
           // search.
           clearChars();
         }
-      }
+      },
     );
 
     props = {
@@ -147,7 +147,7 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -167,7 +167,7 @@ export const CompositeTypeahead = createComponent<CompositeTypeaheadOptions>(
   (props) => {
     const htmlProps = useCompositeTypeahead(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

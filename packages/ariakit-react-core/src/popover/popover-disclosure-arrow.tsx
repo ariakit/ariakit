@@ -36,7 +36,7 @@ export const usePopoverDisclosureArrow =
       invariant(
         store,
         process.env.NODE_ENV !== "production" &&
-          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component"
+          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component",
       );
 
       const position = store.useState((state) => placement || state.placement);
@@ -59,7 +59,7 @@ export const usePopoverDisclosureArrow =
             <polyline points={points} />
           </svg>
         ),
-        [points]
+        [points],
       );
 
       props = {
@@ -75,7 +75,7 @@ export const usePopoverDisclosureArrow =
       };
 
       return props;
-    }
+    },
   );
 
 /**

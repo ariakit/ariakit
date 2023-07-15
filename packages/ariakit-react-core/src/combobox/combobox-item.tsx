@@ -49,7 +49,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component"
+        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component",
     );
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -60,7 +60,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
         }
         return nextItem;
       },
-      [value, getItemProp]
+      [value, getItemProp],
     );
 
     const onClickProp = props.onClick;
@@ -117,7 +117,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
           {element}
         </ComboboxItemValueContext.Provider>
       ),
-      [value]
+      [value],
     );
 
     const contentElement = store.useState("contentElement");
@@ -151,7 +151,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     props = useCompositeHover({ store, focusOnHover, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -177,7 +177,7 @@ export const ComboboxItem = createMemoComponent<ComboboxItemOptions>(
   (props) => {
     const htmlProps = useComboboxItem(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

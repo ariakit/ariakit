@@ -22,13 +22,13 @@ function splitValue(itemValue: string, userValue: string) {
       parts.push(
         <span data-autocomplete-value="" key={parts.length}>
           {itemValue.substr(0, index)}
-        </span>
+        </span>,
       );
     }
     parts.push(
       <span data-user-value="" key={parts.length}>
         {itemValue.substr(index, userValue.length)}
-      </span>
+      </span>,
     );
     itemValue = itemValue.substr(index + userValue.length);
     index = normalizeValue(itemValue).indexOf(userValue);
@@ -37,7 +37,7 @@ function splitValue(itemValue: string, userValue: string) {
     parts.push(
       <span data-autocomplete-value="" key={parts.length}>
         {itemValue}
-      </span>
+      </span>,
     );
   }
   return parts;
@@ -74,17 +74,17 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxItemValue must be wrapped in a ComboboxItem component"
+        "ComboboxItemValue must be wrapped in a ComboboxItem component",
     );
 
     const stateValue = store.useState((state) =>
-      itemValue && state.value ? state.value : undefined
+      itemValue && state.value ? state.value : undefined,
     );
 
     const children = useMemo(
       () =>
         itemValue && stateValue ? splitValue(itemValue, stateValue) : itemValue,
-      [itemValue, stateValue]
+      [itemValue, stateValue],
     );
 
     props = {
@@ -93,7 +93,7 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -126,7 +126,7 @@ export const ComboboxItemValue = createComponent<ComboboxItemValueOptions>(
   (props) => {
     const htmlProps = useComboboxItemValue(props);
     return createElement("span", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

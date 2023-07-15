@@ -12,7 +12,7 @@ import { createStore } from "../utils/store.js";
  * Creates a tooltip store.
  */
 export function createTooltipStore(
-  props: TooltipStoreProps = {}
+  props: TooltipStoreProps = {},
 ): TooltipStore {
   const syncState = props.store?.getState();
 
@@ -21,7 +21,7 @@ export function createTooltipStore(
     placement: defaultValue(
       props.placement,
       syncState?.placement,
-      "top" as const
+      "top" as const,
     ),
     hideTimeout: defaultValue(props.hideTimeout, syncState?.hideTimeout, 0),
   });

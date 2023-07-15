@@ -17,7 +17,7 @@ export default function Page() {
       <main
         className={twJoin(
           "relative mt-8 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full",
-          "max-w-7xl [&>*]:max-w-[1040px]"
+          "max-w-7xl [&>*]:max-w-[1040px]",
         )}
       >
         <PageContainer title="Updates">

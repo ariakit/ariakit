@@ -29,7 +29,7 @@ import { MenuBarContext, MenuContext } from "./menu-context.js";
 type Values = Core.MenuStoreValues;
 
 export function useMenuStoreOptions<T extends Values = Values>(
-  props: MenuStoreProps<T>
+  props: MenuStoreProps<T>,
 ) {
   const state = props.store?.getState?.();
 
@@ -41,7 +41,7 @@ export function useMenuStoreOptions<T extends Values = Values>(
     parentMenu || parentMenuBar,
     (state) =>
       placementProp ||
-      (state.orientation === "vertical" ? "right-start" : "bottom-start")
+      (state.orientation === "vertical" ? "right-start" : "bottom-start"),
   );
 
   const parentIsMenuBar = !!parentMenuBar && !parentMenu;
@@ -59,7 +59,7 @@ export function useMenuStoreOptions<T extends Values = Values>(
 
 export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
   store: T,
-  props: MenuStoreProps
+  props: MenuStoreProps,
 ) {
   const parentMenu = useContext(MenuContext);
 
@@ -75,7 +75,7 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
         parentMenu?.hideAll();
       },
     }),
-    [store]
+    [store],
   );
 }
 
@@ -93,7 +93,7 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
  * ```
  */
 export function useMenuStore<T extends Values = Values>(
-  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">
+  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,
 ): MenuStore<T>;
 
 export function useMenuStore(props?: MenuStoreProps): MenuStore;

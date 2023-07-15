@@ -37,7 +37,7 @@ export const PopoverHeading = createComponent<PopoverHeadingOptions>(
   (props) => {
     const htmlProps = usePopoverHeading(props);
     return createElement("h1", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

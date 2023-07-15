@@ -49,7 +49,7 @@ export function shallowEqual(a?: AnyObject, b?: AnyObject) {
  */
 export function applyState<T>(
   argument: SetStateAction<T>,
-  currentValue: T | (() => T)
+  currentValue: T | (() => T),
 ) {
   if (isUpdater(argument)) {
     const value = isLazyValue(currentValue) ? currentValue() : currentValue;
@@ -59,7 +59,7 @@ export function applyState<T>(
 }
 
 function isUpdater<T>(
-  argument: SetStateAction<T>
+  argument: SetStateAction<T>,
 ): argument is BivariantCallback<(prevState: T) => T> {
   return typeof argument === "function";
 }
@@ -116,7 +116,7 @@ export function isInteger(arg: any): boolean {
  */
 export function hasOwnProperty<T extends AnyObject>(
   object: T,
-  prop: keyof any
+  prop: keyof any,
 ): prop is keyof T {
   return Object.prototype.hasOwnProperty.call(object, prop);
 }
@@ -156,7 +156,7 @@ export function normalizeString(str: string) {
  */
 export function omit<T extends AnyObject, K extends keyof T>(
   object: T,
-  keys: ReadonlyArray<K> | K[]
+  keys: ReadonlyArray<K> | K[],
 ) {
   const result = { ...object } as Omit<T, K>;
   for (const key of keys) {
@@ -174,7 +174,7 @@ export function omit<T extends AnyObject, K extends keyof T>(
  */
 export function pick<T extends AnyObject, K extends keyof T>(
   object: T,
-  paths: ReadonlyArray<K> | K[]
+  paths: ReadonlyArray<K> | K[],
 ) {
   const result = {} as Pick<T, K>;
   for (const key of paths) {
@@ -220,7 +220,7 @@ export function afterPaint(cb: () => void = noop) {
  */
 export function invariant(
   condition: any,
-  message?: string | boolean
+  message?: string | boolean,
 ): asserts condition {
   if (condition) return;
   if (typeof message !== "string") throw new Error("Invariant failed");

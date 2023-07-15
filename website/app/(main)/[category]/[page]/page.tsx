@@ -230,7 +230,7 @@ function findCardLinks(children: ReactNode & ReactNode[]): string[] {
         : child.props?.children
         ? findCardLinks(child.props.children)
         : []
-      : []
+      : [],
   );
 }
 
@@ -250,7 +250,7 @@ export function generateStaticParams() {
   referencePages.forEach((page) => {
     const entryFiles = getPageEntryFiles(
       page.sourceContext,
-      page.pageFileRegex
+      page.pageFileRegex,
     );
     const category = page.slug;
     const references = entryFiles.flatMap((file) => getReferences(file));
@@ -293,12 +293,12 @@ export default async function Page({ params }: PageProps) {
 
   const entryFiles = getPageEntryFiles(
     config.sourceContext,
-    config.pageFileRegex
+    config.pageFileRegex,
   );
 
   const file = config.reference
     ? entryFiles.find((file) =>
-        page.replace(/^use\-/, "").startsWith(getPageName(file))
+        page.replace(/^use\-/, "").startsWith(getPageName(file)),
       )
     : entryFiles.find((file) => getPageName(file) === page);
 
@@ -315,7 +315,7 @@ export default async function Page({ params }: PageProps) {
   const tree = getPageTreeFromContent(content);
   const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
   const categoryDetail = pagesConfig.pages.find(
-    (item) => item.slug === category
+    (item) => item.slug === category,
   );
 
   if (!categoryDetail) return notFound();
@@ -382,7 +382,7 @@ export default async function Page({ params }: PageProps) {
       if (a.group && !b.group) return 1;
       if (!a.group || !b.group) return 0;
       return a.group > b.group ? 1 : -1;
-    })
+    }),
   );
 
   const pageIndex =
@@ -448,7 +448,7 @@ export default async function Page({ params }: PageProps) {
                 const paragraph = props.children[1];
                 invariant(
                   isValidElement<ComponentPropsWithoutRef<"p">>(paragraph),
-                  "Expected paragraph"
+                  "Expected paragraph",
                 );
                 return cloneElement(paragraph, {
                   className: cx(paragraph.props.className, style.description),
@@ -462,7 +462,7 @@ export default async function Page({ params }: PageProps) {
                     .split("/");
                   if (!category || !slug) return [];
                   const page = pagesIndex[category]?.find(
-                    (item) => item.slug === slug
+                    (item) => item.slug === slug,
                   );
                   return page || [];
                 });
@@ -477,7 +477,7 @@ export default async function Page({ params }: PageProps) {
                       className={cx(
                         style.cards,
                         props.className,
-                        (isExamples || isComponents) && "!max-w-[832px]"
+                        (isExamples || isComponents) && "!max-w-[832px]",
                       )}
                     >
                       {pages.map((page) => (
@@ -614,7 +614,7 @@ export default async function Page({ params }: PageProps) {
               const highlightLines = meta
                 .filter((item) => rangePattern.test(item))
                 .flatMap((item) =>
-                  parseNumericRange(item.replace(rangePattern, "$1"))
+                  parseNumericRange(item.replace(rangePattern, "$1")),
                 );
               const tokenPattern = /^"(.+)"([\d\-,]+)?$/;
               const highlightTokens = meta
@@ -644,7 +644,7 @@ export default async function Page({ params }: PageProps) {
                   className={cx(
                     style.paragraph,
                     "data-description" in props && style.description,
-                    props.className
+                    props.className,
                   )}
                 />
               );
@@ -665,7 +665,7 @@ export default async function Page({ params }: PageProps) {
                 {...props}
                 className={cx(
                   "font-monospace rounded-[0.25em] border border-black/[15%] bg-black/[6.5%] p-[0.15em] px-[0.3em] text-[0.9375em] [box-shadow:0_0.15em_0_rgba(0,0,0,0.15)] dark:border-white/[15%] dark:bg-white/10 dark:[box-shadow:0_0.15em_0_rgba(255,255,255,0.15)]",
-                  props.className
+                  props.className,
                 )}
               />
             ),

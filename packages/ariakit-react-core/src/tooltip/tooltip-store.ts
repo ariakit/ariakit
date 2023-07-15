@@ -17,7 +17,7 @@ export function useTooltipStoreOptions(props: TooltipStoreProps) {
 
 export function useTooltipStoreProps<T extends TooltipStore>(
   store: T,
-  props: TooltipStoreProps
+  props: TooltipStoreProps,
 ) {
   store = useHovercardStoreProps(store, props);
   useStoreProps(store, props, "type");
@@ -38,7 +38,7 @@ export function useTooltipStoreProps<T extends TooltipStore>(
 export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
   const options = useTooltipStoreOptions(props);
   const store = useStore(() =>
-    Core.createTooltipStore({ ...props, ...options })
+    Core.createTooltipStore({ ...props, ...options }),
   );
   return useTooltipStoreProps(store, props);
 }

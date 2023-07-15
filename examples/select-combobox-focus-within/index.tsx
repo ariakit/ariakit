@@ -10,7 +10,7 @@ export default function Example() {
 
   const onSearch = (value: string) => {
     setMatches(
-      list.filter((item) => item.toLowerCase().includes(value.toLowerCase()))
+      list.filter((item) => item.toLowerCase().includes(value.toLowerCase())),
     );
   };
 

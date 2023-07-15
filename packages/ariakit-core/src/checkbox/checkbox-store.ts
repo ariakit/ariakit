@@ -9,13 +9,13 @@ type Value = boolean | string | number | Array<string | number>;
  * Creates a checkbox store.
  */
 export function createCheckboxStore<T extends Value = Value>(
-  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">
+  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">,
 ): CheckboxStore<T>;
 
 export function createCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;
 
 export function createCheckboxStore(
-  props: CheckboxStoreProps = {}
+  props: CheckboxStoreProps = {},
 ): CheckboxStore {
   const syncState = props.store?.getState();
   const initialState: CheckboxStoreState = {
@@ -23,7 +23,7 @@ export function createCheckboxStore(
       props.value,
       syncState?.value,
       props.defaultValue,
-      false
+      false,
     ),
   };
   const checkbox = createStore(initialState, props.store);

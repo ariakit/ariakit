@@ -28,7 +28,7 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const menu = Ariakit.useMenuStore({
       animated,
@@ -77,5 +77,5 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
         </Ariakit.Menu>
       </>
     );
-  }
+  },
 );

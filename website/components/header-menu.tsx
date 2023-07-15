@@ -83,7 +83,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       href,
       ...props
     },
-    ref
+    ref,
   ) {
     const isLarge = useMedia("(min-width: 640px)", true);
     const popoverRef = useRef<HTMLDivElement>(null);
@@ -115,7 +115,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           if (!state.open) return;
           menu.setAutoFocusOnShow(true);
         },
-        ["open", "autoFocusOnShow"]
+        ["open", "autoFocusOnShow"],
       );
     }, [parent, menu]);
 
@@ -127,7 +127,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           select.setDisclosureElement(state.selectElement);
           combobox.setDisclosureElement(state.selectElement);
         },
-        ["selectElement", "disclosureElement"]
+        ["selectElement", "disclosureElement"],
       );
     }, [parent, menu, select, combobox]);
 
@@ -152,7 +152,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       <div
         className={twJoin(
           "sticky bottom-0 max-h-[theme(spacing.14)] min-h-[theme(spacing.14)] py-2",
-          "z-40 bg-[color:inherit]"
+          "z-40 bg-[color:inherit]",
         )}
       >
         {footer}
@@ -179,7 +179,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             "hover:bg-black/5 dark:hover:bg-white/5",
             "aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10",
             "[&:focus-visible]:ariakit-outline-input",
-            props.className
+            props.className,
           )}
         />
       );
@@ -194,7 +194,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
           size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
           size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
-          size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]"
+          size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]",
         )}
         scroller={(props) => (
           <div
@@ -202,7 +202,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
             className={twJoin(
               searchable && "pt-0",
               !!footer && "pb-0",
-              props.className
+              props.className,
             )}
           />
         )}
@@ -213,7 +213,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
               className={twJoin(
                 "sticky top-0 z-50 w-full rounded-b bg-[color:inherit] py-2",
                 "[&:not(:focus-within)+*>[aria-expanded=true]]:bg-black/[7.5%]",
-                "dark:[&:not(:focus-within)+*>[aria-expanded=true]]:bg-white/[7.5%]"
+                "dark:[&:not(:focus-within)+*>[aria-expanded=true]]:bg-white/[7.5%]",
               )}
             >
               <div className="relative">
@@ -234,7 +234,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
                     "bg-gray-150/40 dark:bg-gray-850",
                     "hover:bg-gray-150 dark:hover:bg-gray-900",
                     "shadow-input dark:shadow-input-dark",
-                    "focus-visible:ariakit-outline-input"
+                    "focus-visible:ariakit-outline-input",
                   )}
                 />
                 <Ariakit.ComboboxCancel
@@ -247,7 +247,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
                     "text-[10px] text-black/80 dark:text-white/80",
                     "bg-black/10 dark:bg-white/10",
                     "hover:bg-black/20 dark:hover:bg-white/20",
-                    "focus-visible:ariakit-outline-input"
+                    "focus-visible:ariakit-outline-input",
                   )}
                 >
                   ESC
@@ -359,7 +359,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         </HideAllContext.Provider>
       </FooterContext.Provider>
     );
-  }
+  },
 );
 
 export interface HeaderMenuGroupProps extends ComponentPropsWithoutRef<"div"> {
@@ -381,7 +381,7 @@ export const HeaderMenuGroup = forwardRef<HTMLDivElement, HeaderMenuGroupProps>(
               className={twJoin(
                 "sticky z-[15] bg-inherit p-2 pt-3",
                 "text-sm font-medium text-black/60 dark:text-white/50",
-                hasTitle ? "top-[105px]" : "top-12"
+                hasTitle ? "top-[105px]" : "top-12",
               )}
             >
               {label}
@@ -391,7 +391,7 @@ export const HeaderMenuGroup = forwardRef<HTMLDivElement, HeaderMenuGroupProps>(
         </Ariakit.CompositeGroup>
       </GroupContext.Provider>
     );
-  }
+  },
 );
 
 export interface HeaderMenuItemProps extends HTMLAttributes<HTMLElement> {
@@ -418,7 +418,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       autoFocus,
       ...props
     },
-    ref
+    ref,
   ) {
     const id = useId();
     const hasTitle = useContext(HasTitleContext);
@@ -463,7 +463,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
             !!thumbnail && "!items-start !gap-4 !p-4",
             !!footer && "scroll-mb-14",
             isExternalLink && "justify-between",
-            props.className
+            props.className,
           )}
         >
           {children}
@@ -474,7 +474,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
                 "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
                 "bg-gray-150 dark:bg-gray-800",
                 "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
-                "group-active:bg-black/[7.5%] dark:group-active:bg-black/70"
+                "group-active:bg-black/[7.5%] dark:group-active:bg-black/70",
               )}
             >
               {thumbnail}
@@ -485,7 +485,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
               className={twJoin(
                 "relative flex flex-none flex-col items-center justify-center",
                 "h-16 w-16 after:absolute after:-top-4 after:h-24 after:w-0.5",
-                "after:bg-black/10 after:dark:bg-white/10"
+                "after:bg-black/10 after:dark:bg-white/10",
               )}
             />
           )}
@@ -521,13 +521,13 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
                               "[&_[data-user-value]]:font-semibold",
                               "[&_[data-user-value]]:text-blue-900",
                               "dark:[&_[data-user-value]]:text-blue-100",
-                              i === path.length - 1 && "flex-none"
+                              i === path.length - 1 && "flex-none",
                             )}
                           >
                             {item}
                           </span>
                         </Fragment>
-                      )
+                      ),
                   )}
                   <Ariakit.VisuallyHidden>.</Ariakit.VisuallyHidden>
                 </span>
@@ -540,7 +540,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
                   "dark:[&_[data-autocomplete-value]]:text-white/[56%]",
                   "[&_[data-user-value]]:font-semibold",
                   "[&_[data-user-value]]:text-black dark:[&_[data-user-value]]:text-white",
-                  path ? "truncate" : "line-clamp-2"
+                  path ? "truncate" : "line-clamp-2",
                 )}
               >
                 {description}
@@ -592,7 +592,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
     }
 
     return <Ariakit.MenuItem {...props} ref={ref} render={renderItem} />;
-  }
+  },
 );
 
 export type HeaderMenuSeparator = ComponentPropsWithoutRef<"hr">;
@@ -607,7 +607,7 @@ export const HeaderMenuSeparator = forwardRef<
       ref={ref}
       className={twJoin(
         "my-2 h-0 w-full border-t border-gray-250 dark:border-gray-550",
-        props.className
+        props.className,
       )}
     />
   );

@@ -15,14 +15,14 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Item = Core.CompositeStoreItem;
 
 export function useCompositeStoreOptions<T extends Item = Item>(
-  props: CompositeStoreProps<T>
+  props: CompositeStoreProps<T>,
 ) {
   return useCollectionStoreOptions(props);
 }
 
 export function useCompositeStoreProps<T extends CompositeStore>(
   store: T,
-  props: CompositeStoreProps
+  props: CompositeStoreProps,
 ) {
   store = useCollectionStoreProps(store, props);
   useStoreProps(store, props, "activeId", "setActiveId");
@@ -50,17 +50,17 @@ export function useCompositeStoreProps<T extends CompositeStore>(
  * ```
  */
 export function useCompositeStore<T extends Item = Item>(
-  props: PickRequired<CompositeStoreProps<T>, "items" | "defaultItems">
+  props: PickRequired<CompositeStoreProps<T>, "items" | "defaultItems">,
 ): CompositeStore<T>;
 
 export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
 
 export function useCompositeStore(
-  props: CompositeStoreProps = {}
+  props: CompositeStoreProps = {},
 ): CompositeStore {
   const options = useCompositeStoreOptions(props);
   const store = useStore(() =>
-    Core.createCompositeStore({ ...props, ...options })
+    Core.createCompositeStore({ ...props, ...options }),
   );
   return useCompositeStoreProps(store, props);
 }

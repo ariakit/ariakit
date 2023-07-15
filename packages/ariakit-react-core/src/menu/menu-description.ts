@@ -20,7 +20,7 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
   (props) => {
     props = useHovercardDescription(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -39,7 +39,7 @@ export const MenuDescription = createComponent<MenuDescriptionOptions>(
   (props) => {
     const htmlProps = useMenuDescription(props);
     return createElement("p", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

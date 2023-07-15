@@ -96,7 +96,7 @@ interface BaseItemProps {
 
 type ItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = unknown extends T ? P : P & (T extends AnyObject ? T : { value: T });
 
 type RawItemProps<T extends Item> = unknown extends T
@@ -139,7 +139,7 @@ function createTask() {
 function findNearestIndex<T extends Item = any>(
   items: Items<T>,
   target: number,
-  getValue: (index: number) => number
+  getValue: (index: number) => number,
 ) {
   let left = 0;
   let right = getItemsLength(items) - 1;
@@ -173,7 +173,7 @@ function getItemId(item: Item, index: number, baseId?: string) {
 
 function getItem<T extends Item = any>(
   items: Items<T>,
-  index: number
+  index: number,
 ): RawItemProps<T> | null {
   if (typeof items === "number") {
     if (index >= items) return null;
@@ -188,7 +188,7 @@ function getItem<T extends Item = any>(
 function getItemSize(
   item: Item,
   horizontal: boolean,
-  fallbackElement?: HTMLElement | null | false
+  fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
   horizontal = itemObject.orientation === "horizontal" ?? horizontal;
@@ -213,7 +213,7 @@ function getItemSize(
     }
     const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
-      initialSize
+      initialSize,
     );
     if (totalSize !== initialSize) return totalSize;
   }
@@ -287,7 +287,7 @@ function useScroller(rendererRef: RefObject<HTMLElement> | null) {
 function getRendererOffset(
   renderer: HTMLElement,
   scroller: Element,
-  horizontal: boolean
+  horizontal: boolean,
 ): number {
   const win = getWindow(renderer);
   const htmlElement = win?.document.documentElement;
@@ -306,7 +306,7 @@ function getRendererOffset(
 function getOffsets(
   renderer: HTMLElement,
   scroller: Element,
-  horizontal: boolean
+  horizontal: boolean,
 ) {
   const scrollOffset = getScrollOffset(scroller, horizontal);
   const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
@@ -344,7 +344,7 @@ function getItemsEnd<T extends Item>(props: {
   if (!Array.isArray(props.items)) return defaultEnd;
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
-    0
+    0,
   );
   if (!end) return defaultEnd;
   return end + totalGap + totalPadding;
@@ -388,7 +388,7 @@ function getData<T extends Item>(props: {
     const size = getItemSize(
       item,
       props.horizontal,
-      props.elements.get(itemId)
+      props.elements.get(itemId),
     );
 
     if (size) {
@@ -431,7 +431,7 @@ export function useCollectionRenderer<T extends Item = any>({
   invariant(
     items != null,
     process.env.NODE_ENV !== "production" &&
-      "CollectionRenderer must be either wrapped in a Collection component or be given an `items` prop."
+      "CollectionRenderer must be either wrapped in a Collection component or be given an `items` prop.",
   );
 
   let parent = useContext(CollectionRendererContext);
@@ -594,7 +594,7 @@ export function useCollectionRenderer<T extends Item = any>({
 
     const indices = Array.from(
       { length: end - start },
-      (_, index) => index + start
+      (_, index) => index + start,
     );
 
     setVisibleIndices((prevIndices) => {
@@ -725,7 +725,7 @@ export function useCollectionRenderer<T extends Item = any>({
         offsetsRef.current = getOffsets(renderer, scroller, horizontal);
         processVisibleIndicesEvent();
       },
-      { root: scroller === viewport ? scroller : null }
+      { root: scroller === viewport ? scroller : null },
     );
     observer.observe(renderer);
     return () => {
@@ -748,7 +748,7 @@ export function useCollectionRenderer<T extends Item = any>({
       elements.set(element.id, element);
       elementObserver?.observe(element);
     },
-    [itemSize, elements, updateElements, elementObserver]
+    [itemSize, elements, updateElements, elementObserver],
   );
 
   const getItemProps = useCallback(
@@ -781,7 +781,7 @@ export function useCollectionRenderer<T extends Item = any>({
         },
       } as ItemProps<T>;
     },
-    [baseId, data, itemSize, paddingStart, gap, horizontal, itemRef]
+    [baseId, data, itemSize, paddingStart, gap, horizontal, itemRef],
   );
 
   const itemsProps = useMemo(() => {
@@ -809,13 +809,13 @@ export function useCollectionRenderer<T extends Item = any>({
       [sizeProperty]: totalSize,
       ...styleProp,
     }),
-    [styleProp, sizeProperty, totalSize]
+    [styleProp, sizeProperty, totalSize],
   );
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
   const providerValue: CollectionRendererContextValue = useMemo(
     () => ({ store, orientation, overscan, childrenData }),
-    [store, orientation, overscan, childrenData]
+    [store, orientation, overscan, childrenData],
   );
 
   props = useWrapElement(
@@ -825,7 +825,7 @@ export function useCollectionRenderer<T extends Item = any>({
         {element}
       </CollectionRendererContext.Provider>
     ),
-    [providerValue]
+    [providerValue],
   );
 
   props = {
@@ -839,7 +839,7 @@ export function useCollectionRenderer<T extends Item = any>({
 }
 
 export const CollectionRenderer = forwardRef(function CollectionRenderer<
-  T extends Item = any
+  T extends Item = any,
 >(props: CollectionRendererProps<T>) {
   const htmlProps = useCollectionRenderer(props);
   return createElement("div", htmlProps);
@@ -853,7 +853,7 @@ export type CollectionRendererItem = Item;
 export type CollectionRendererBaseItemProps = BaseItemProps;
 export type CollectionRendererItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
 export interface CollectionRendererOptions<T extends Item = any> {

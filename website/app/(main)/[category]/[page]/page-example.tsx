@@ -38,7 +38,7 @@ function getPathFromExample(path: string, examplePath: string) {
 function getGithubLink(path: string) {
   return new URL(
     relative(resolve(process.cwd(), ".."), path),
-    "https://github.com/ariakit/ariakit/blob/main/"
+    "https://github.com/ariakit/ariakit/blob/main/",
   ).href;
 }
 
@@ -82,7 +82,7 @@ export async function PageExample({
       className={cx(
         type === "code" && "!max-w-[832px]",
         type === "compact" && "!max-w-[832px]",
-        type === "wide" && "!max-w-5xl"
+        type === "wide" && "!max-w-5xl",
       )}
     >
       <Playground

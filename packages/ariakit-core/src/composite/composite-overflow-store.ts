@@ -11,7 +11,7 @@ import { createPopoverStore } from "../popover/popover-store.js";
  * Creates a composite overflow store.
  */
 export function createCompositeOverflowStore(
-  props: CompositeOverflowStoreProps = {}
+  props: CompositeOverflowStoreProps = {},
 ): CompositeOverflowStore {
   return createPopoverStore(props);
 }

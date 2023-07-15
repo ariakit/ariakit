@@ -7,7 +7,7 @@ import type * as React from "react";
  * const children: RenderProp = (props) => <div {...props} />;
  */
 export type RenderProp<
-  P = React.HTMLAttributes<any> & React.RefAttributes<any>
+  P = React.HTMLAttributes<any> & React.RefAttributes<any>,
 > = (props: P) => React.ReactNode;
 
 /**
@@ -76,7 +76,7 @@ export type Props<O extends Options> = O & HTMLProps<O>;
  */
 export interface Component<O extends Options> {
   <T extends As>(
-    props: Props<{ as: T } & Omit<O, "as">>
+    props: Props<{ as: T } & Omit<O, "as">>,
   ): React.ReactElement | null;
   (props: Props<O>): React.ReactElement | null;
   displayName?: string;
@@ -91,7 +91,7 @@ export interface Component<O extends Options> {
  */
 export interface Hook<O extends Options> {
   <T extends As = NonNullable<O["as"]>>(
-    props?: Props<Options<T> & Omit<O, "as">>
+    props?: Props<Options<T> & Omit<O, "as">>,
   ): HTMLProps<Options<T>>;
   displayName?: string;
 }

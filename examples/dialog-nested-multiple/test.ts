@@ -85,7 +85,7 @@ test.each(["nested", "sibling"])(
     expect(getDialog("Dialog")).not.toBeInTheDocument();
     expect(getButton("Open dialog")).toHaveFocus();
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["nested", "sibling"])(
@@ -123,7 +123,7 @@ test.each(["nested", "sibling"])(
     expect(getButton("Open dialog")).toHaveFocus();
     expectAccessibleDialog("Dialog", false);
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["nested", "sibling"])(
@@ -168,7 +168,7 @@ test.each(["nested", "sibling"])(
     expect(getDialog("Dialog")).not.toBeInTheDocument();
     expect(getButton("Open dialog")).toHaveFocus();
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["nested", "sibling"])(
@@ -206,7 +206,7 @@ test.each(["nested", "sibling"])(
     expect(getDialog("Dialog")).not.toBeInTheDocument();
     expect(getButton("Open dialog")).toHaveFocus();
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["nested", "sibling"])(
@@ -233,7 +233,7 @@ test.each(["nested", "sibling"])(
     expect(expectAccessibleDialog(`${name} no backdrop ${name}`, false));
     expect(expectAccessibleDialog(`${name} no backdrop`, false));
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["nested", "sibling"])(
@@ -255,7 +255,7 @@ test.each(["nested", "sibling"])(
     expect(getButton("Open dialog")).toHaveFocus();
     expectAccessibleDialog(`${name} dismiss ${name}`, false);
     expectModalStyle(false);
-  }
+  },
 );
 
 test.each(["sibling"])(
@@ -275,9 +275,9 @@ test.each(["sibling"])(
     expectModalStyle(true);
     await press.Escape();
     expect(
-      getDialog(`${name} dismiss unmount ${name}`)
+      getDialog(`${name} dismiss unmount ${name}`),
     ).not.toBeInTheDocument();
     expect(getButton("Open dialog")).toHaveFocus();
     expectModalStyle(false);
-  }
+  },
 );

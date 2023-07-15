@@ -29,7 +29,7 @@ export const FilterSelect = React.forwardRef<
     children,
     ...props
   },
-  ref
+  ref,
 ) {
   const labelId = React.useId();
   const select = Ariakit.useSelectStore({

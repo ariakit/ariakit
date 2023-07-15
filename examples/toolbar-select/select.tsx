@@ -22,7 +22,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         </Ariakit.SelectPopover>
       </>
     );
-  }
+  },
 );
 
 export const SelectItem = React.forwardRef<

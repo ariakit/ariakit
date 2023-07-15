@@ -6,14 +6,14 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Value = Core.CheckboxStoreValue;
 
 export function useCheckboxStoreOptions(
-  _props: CheckboxStoreProps
+  _props: CheckboxStoreProps,
 ): Partial<CheckboxStoreOptions> {
   return {};
 }
 
 export function useCheckboxStoreProps<T extends CheckboxStore>(
   store: T,
-  props: CheckboxStoreProps
+  props: CheckboxStoreProps,
 ) {
   useStoreProps(store, props, "value", "setValue");
   return store;
@@ -29,13 +29,13 @@ export function useCheckboxStoreProps<T extends CheckboxStore>(
  * ```
  */
 export function useCheckboxStore<T extends Value = Value>(
-  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">
+  props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">,
 ): CheckboxStore<T>;
 
 export function useCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;
 
 export function useCheckboxStore(
-  props: CheckboxStoreProps = {}
+  props: CheckboxStoreProps = {},
 ): CheckboxStore {
   const store = useStore(() => Core.createCheckboxStore(props));
   return useCheckboxStoreProps(store, props);

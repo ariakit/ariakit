@@ -3,14 +3,14 @@ import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 export function useDisclosureStoreOptions(
-  _props: DisclosureStoreProps
+  _props: DisclosureStoreProps,
 ): Partial<DisclosureStoreOptions> {
   return {};
 }
 
 export function useDisclosureStoreProps<T extends DisclosureStore>(
   store: T,
-  props: DisclosureStoreProps
+  props: DisclosureStoreProps,
 ) {
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "animated");
@@ -28,11 +28,11 @@ export function useDisclosureStoreProps<T extends DisclosureStore>(
  * ```
  */
 export function useDisclosureStore(
-  props: DisclosureStoreProps = {}
+  props: DisclosureStoreProps = {},
 ): DisclosureStore {
   const options = useDisclosureStoreOptions(props);
   const store = useStore(() =>
-    Core.createDisclosureStore({ ...props, ...options })
+    Core.createDisclosureStore({ ...props, ...options }),
   );
   return useDisclosureStoreProps(store, props);
 }

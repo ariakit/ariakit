@@ -13,7 +13,7 @@ interface FilterMenuProps extends Omit<Ariakit.MenuButtonProps, "store"> {
 export const FilterMenu = forwardRef<HTMLButtonElement, FilterMenuProps>(
   function FilterMenu(
     { label, defaultValues, values, onValuesChange, ...props },
-    ref
+    ref,
   ) {
     const menu = Ariakit.useMenuStore({
       defaultValues,
@@ -36,7 +36,7 @@ export const FilterMenu = forwardRef<HTMLButtonElement, FilterMenuProps>(
         </Ariakit.Menu>
       </>
     );
-  }
+  },
 );
 
 interface FilterMenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {
@@ -57,7 +57,7 @@ export const FilterMenuItemCheckbox = forwardRef<
 export const FilterMenuItem = forwardRef<HTMLDivElement, Ariakit.MenuItemProps>(
   function FilterMenuItem(props, ref) {
     return <Ariakit.MenuItem ref={ref} className="menu-item" {...props} />;
-  }
+  },
 );
 
 export const FilterMenuSeparator = forwardRef<

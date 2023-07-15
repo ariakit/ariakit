@@ -31,7 +31,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
-      "horizontal" as const
+      "horizontal" as const,
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
@@ -44,12 +44,12 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
       props.selectedId,
       syncState?.selectedId,
       props.defaultSelectedId,
-      undefined
+      undefined,
     ),
     selectOnMove: defaultValue(
       props.selectOnMove,
       syncState?.selectOnMove,
-      true
+      true,
     ),
   };
   const tab = createStore(initialState, composite, props.store);
@@ -68,15 +68,15 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
       if (tabItem.dimmed) return;
       if (tabItem.disabled) return;
       tab.setState("selectedId", tabItem.id);
-    }, ["moves"])
+    }, ["moves"]),
   );
 
   // Keep activeId in sync with selectedId.
   tab.setup(() =>
     tab.syncBatch(
       (state) => tab.setState("activeId", state.selectedId),
-      ["selectedId"]
-    )
+      ["selectedId"],
+    ),
   );
 
   // Automatically set selectedId if it's undefined.
@@ -94,13 +94,13 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
         // first enabled tab instead.
         else {
           const tabItem = renderedItems.find(
-            (item) => !item.disabled && !item.dimmed
+            (item) => !item.disabled && !item.dimmed,
           );
           tab.setState("selectedId", tabItem?.id);
         }
       },
-      ["selectedId", "renderedItems"]
-    )
+      ["selectedId", "renderedItems"],
+    ),
   );
 
   // Keep panels tabIds in sync with the current tabs.
@@ -121,11 +121,11 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
               panels.renderItem({ ...panel, tabId: tabItem.id });
             });
           },
-          ["renderedItems"]
+          ["renderedItems"],
         );
       },
-      ["renderedItems"]
-    )
+      ["renderedItems"],
+    ),
   );
 
   return {

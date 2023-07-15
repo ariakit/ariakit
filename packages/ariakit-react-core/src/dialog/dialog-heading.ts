@@ -37,7 +37,7 @@ export const useDialogHeading = createHook<DialogHeadingOptions>(
     props = useHeading(props);
 
     return props;
-  }
+  },
 );
 
 /**

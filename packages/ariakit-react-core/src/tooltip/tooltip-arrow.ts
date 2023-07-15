@@ -31,12 +31,12 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "TooltipArrow must be wrapped in a Tooltip component"
+        "TooltipArrow must be wrapped in a Tooltip component",
     );
 
     props = usePopoverArrow({ store, size, ...props });
     return props;
-  }
+  },
 );
 
 /**

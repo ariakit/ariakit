@@ -40,7 +40,7 @@ export function HeaderThemeSwitch(props: Props) {
         "rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10",
         "dark:hover:bg-white/5 dark:aria-expanded:bg-white/10",
         "[&:focus-visible]:ariakit-outline-input",
-        props.className
+        props.className,
       )}
       onClick={() => {
         if (document.documentElement.classList.contains("dark")) {

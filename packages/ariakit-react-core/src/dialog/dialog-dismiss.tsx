@@ -51,7 +51,7 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
           <line x1="4" y1="12" x2="12" y2="4" />
         </svg>
       ),
-      []
+      [],
     );
 
     props = {
@@ -64,7 +64,7 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
     props = useButton(props);
 
     return props;
-  }
+  },
 );
 
 /**

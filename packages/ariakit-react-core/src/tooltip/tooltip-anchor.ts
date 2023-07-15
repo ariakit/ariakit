@@ -51,7 +51,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
           }, state.skipTimeout);
           return () => clearTimeout(id);
         },
-        ["mounted", "skipTimeout"]
+        ["mounted", "skipTimeout"],
       );
     }, [store]);
 
@@ -106,7 +106,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

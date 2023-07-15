@@ -53,7 +53,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
           </>
         );
       },
-      [enabled]
+      [enabled],
     );
 
     props = {
@@ -62,7 +62,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -81,7 +81,7 @@ export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
   (props) => {
     const htmlProps = useFocusTrapRegion(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

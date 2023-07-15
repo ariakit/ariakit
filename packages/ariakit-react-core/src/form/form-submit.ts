@@ -27,7 +27,7 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormSubmit must be wrapped in a Form component"
+        "FormSubmit must be wrapped in a Form component",
     );
 
     props = {
@@ -39,7 +39,7 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
     props = useButton({ ...props, accessibleWhenDisabled });
 
     return props;
-  }
+  },
 );
 
 /**

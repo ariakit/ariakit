@@ -24,7 +24,7 @@ export const useCompositeGroup = createHook<CompositeGroupOptions>(
   ({ store, ...props }) => {
     props = useGroup(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -46,7 +46,7 @@ export const CompositeGroup = createComponent<CompositeGroupOptions>(
   (props) => {
     const htmlProps = useCompositeGroup(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

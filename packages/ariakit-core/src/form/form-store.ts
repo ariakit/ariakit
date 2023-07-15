@@ -45,7 +45,7 @@ export function hasMessages(object: Values): boolean {
 export function get<T>(
   values: Values,
   path: StringLike | string[],
-  defaultValue?: T
+  defaultValue?: T,
 ): T {
   const [key, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
   if (key == null || !values) {
@@ -60,7 +60,7 @@ export function get<T>(
 function set<T extends Values | unknown[]>(
   values: T,
   path: StringLike | string[],
-  value: unknown
+  value: unknown,
 ): T {
   const [k, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
   if (k == null) return values;
@@ -145,7 +145,7 @@ export function createFormStore<T extends Values = Values>(
     | "defaultErrors"
     | "touched"
     | "defaultTouched"
-  >
+  >,
 ): FormStore<T>;
 
 export function createFormStore(props: FormStoreProps): FormStore;
@@ -158,21 +158,21 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
     props.values,
     syncState?.values,
     props.defaultValues,
-    {}
+    {},
   );
 
   const errors = defaultValue(
     props.errors,
     syncState?.errors,
     props.defaultErrors,
-    {}
+    {},
   );
 
   const touched = defaultValue(
     props.touched,
     syncState?.touched,
     props.defaultTouched,
-    {}
+    {},
   );
 
   const initialState: FormStoreState = {
@@ -308,7 +308,7 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
 }
 
 export type FormStoreCallback<T extends FormStoreState = FormStoreState> = (
-  state: T
+  state: T,
 ) => void | Promise<void>;
 
 export type FormStoreValues = Values;

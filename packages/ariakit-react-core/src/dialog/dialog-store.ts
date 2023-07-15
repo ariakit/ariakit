@@ -17,7 +17,7 @@ export function useDialogStoreOptions(props: DialogStoreProps) {
 
 export function useDialogStoreProps<T extends DialogStore>(
   store: T,
-  props: DialogStoreProps
+  props: DialogStoreProps,
 ) {
   return useDisclosureStoreProps(store, props);
 }
@@ -35,7 +35,7 @@ export function useDialogStoreProps<T extends DialogStore>(
 export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
   const options = useDialogStoreOptions(props);
   const store = useStore(() =>
-    Core.createDialogStore({ ...props, ...options })
+    Core.createDialogStore({ ...props, ...options }),
   );
   return useDialogStoreProps(store, props);
 }

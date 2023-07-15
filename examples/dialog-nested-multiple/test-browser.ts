@@ -13,7 +13,7 @@ const getDialog = (page: Page | Locator, name: string) =>
 function expectAccessibleDialog(
   page: Page | Locator,
   name: string,
-  toBeVisible: boolean
+  toBeVisible: boolean,
 ) {
   const dialog = getAccessibleDialog(page, name);
   if (toBeVisible) {
@@ -131,7 +131,7 @@ for (const name of ["nested", "sibling"]) {
     await expect(getDialog(page, "Dialog")).not.toBeVisible();
     await expect(getDialog(page, `${name} no backdrop`)).not.toBeVisible();
     await expect(
-      getDialog(page, `${name} no backdrop ${name}`)
+      getDialog(page, `${name} no backdrop ${name}`),
     ).not.toBeVisible();
     await expect(getButton(page, "Open dialog")).toBeFocused();
   });
@@ -151,7 +151,7 @@ for (const name of ["nested", "sibling"]) {
     await expect(getDialog(page, "Dialog")).toBeVisible();
     await expect(getDialog(page, `${name} no backdrop`)).toBeVisible();
     await expect(
-      getDialog(page, `${name} no backdrop ${name}`)
+      getDialog(page, `${name} no backdrop ${name}`),
     ).not.toBeVisible();
     await page.mouse.click(500, 280);
     await expect(getDialog(page, "Dialog")).toBeVisible();

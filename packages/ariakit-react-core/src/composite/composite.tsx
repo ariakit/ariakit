@@ -59,7 +59,7 @@ function isModifierKey(event: ReactKeyboardEvent) {
 
 function canProxyKeyboardEvent(
   event: ReactKeyboardEvent,
-  state: CompositeStoreState
+  state: CompositeStoreState,
 ) {
   if (!isSelfTarget(event)) return false;
   if (isModifierKey(event)) return false;
@@ -87,7 +87,7 @@ function canProxyKeyboardEvent(
 function useKeyboardEventProxy(
   store: CompositeStore,
   onKeyboardEvent?: KeyboardEventHandler,
-  previousElementRef?: RefObject<HTMLElement | null>
+  previousElementRef?: RefObject<HTMLElement | null>,
 ) {
   return useEvent((event: ReactKeyboardEvent) => {
     onKeyboardEvent?.(event);
@@ -118,7 +118,7 @@ function useKeyboardEventProxy(
 
 function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
   return findFirstEnabledItem(
-    flatten2DArray(reverseArray(groupItemsByRows(items)))
+    flatten2DArray(reverseArray(groupItemsByRows(items))),
   );
 }
 
@@ -126,7 +126,7 @@ function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
   const activeItem = store.useState((state) =>
-    getEnabledItem(store, state.activeId)
+    getEnabledItem(store, state.activeId),
   );
   useEffect(() => {
     const activeElement = activeItem?.element;
@@ -225,13 +225,13 @@ export const useComposite = createHook<CompositeOptions>(
     const onKeyDownCapture = useKeyboardEventProxy(
       store,
       props.onKeyDownCapture,
-      previousElementRef
+      previousElementRef,
     );
 
     const onKeyUpCapture = useKeyboardEventProxy(
       store,
       props.onKeyUpCapture,
-      previousElementRef
+      previousElementRef,
     );
 
     const onFocusCaptureProp = props.onFocusCapture;
@@ -403,13 +403,13 @@ export const useComposite = createHook<CompositeOptions>(
           {element}
         </CompositeContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const activeDescendant = store.useState((state) =>
       composite && state.virtualFocus
         ? getEnabledItem(store, state.activeId)?.id
-        : undefined
+        : undefined,
     );
 
     props = {
@@ -425,13 +425,13 @@ export const useComposite = createHook<CompositeOptions>(
     };
 
     const focusable = store.useState(
-      (state) => composite && (state.virtualFocus || state.activeId === null)
+      (state) => composite && (state.virtualFocus || state.activeId === null),
     );
 
     props = useFocusable({ focusable, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

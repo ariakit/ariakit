@@ -75,7 +75,7 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
 
 function getElementFromProp(
   prop?: HTMLElement | RefObject<HTMLElement> | null,
-  focusable = false
+  focusable = false,
 ) {
   if (!prop) return null;
   const element = "current" in prop ? prop.current : prop;
@@ -121,7 +121,7 @@ export const useDialog = createHook<DialogOptions>(
     // open.
     const preserveTabOrderProp = props.preserveTabOrder;
     const preserveTabOrder = store.useState(
-      (state) => preserveTabOrderProp && !modal && state.mounted
+      (state) => preserveTabOrderProp && !modal && state.mounted,
     );
     const id = useId(props.id);
     const open = store.useState("open");
@@ -232,12 +232,12 @@ export const useDialog = createHook<DialogOptions>(
       if (modal) {
         return chain(
           markTreeOutside(id, ...allElements),
-          disableTreeOutside(...allElements)
+          disableTreeOutside(...allElements),
         );
       }
       return chain(
         markTreeOutside(id, disclosureElement, ...allElements),
-        disableAccessibilityTreeOutside(...allElements)
+        disableAccessibilityTreeOutside(...allElements),
       );
     }, [
       domReady,
@@ -279,7 +279,7 @@ export const useDialog = createHook<DialogOptions>(
         // Focusable component will consume the autoFocus prop and add the
         // data-autofocus attribute to the element instead.
         contentElement.querySelector<HTMLElement>(
-          "[data-autofocus=true],[autofocus]"
+          "[data-autofocus=true],[autofocus]",
         ) ||
         // We have to fallback to the first focusable element otherwise portaled
         // dialogs with preserveTabOrder set to true will not receive focus
@@ -430,7 +430,7 @@ export const useDialog = createHook<DialogOptions>(
       (element) => (
         <HeadingLevel level={modal ? 1 : undefined}>{element}</HeadingLevel>
       ),
-      [modal]
+      [modal],
     );
 
     const hiddenProp = props.hidden;
@@ -454,7 +454,7 @@ export const useDialog = createHook<DialogOptions>(
           </>
         );
       },
-      [store, backdrop, backdropProps, hiddenProp, alwaysVisible]
+      [store, backdrop, backdropProps, hiddenProp, alwaysVisible],
     );
 
     const [headingId, setHeadingId] = useState<string>();
@@ -471,7 +471,7 @@ export const useDialog = createHook<DialogOptions>(
           </DialogHeadingContext.Provider>
         </DialogContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     props = {
@@ -494,7 +494,7 @@ export const useDialog = createHook<DialogOptions>(
     props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
 
     return props;
-  }
+  },
 );
 
 /**

@@ -66,15 +66,15 @@ export const useMenuList = createHook<MenuListOptions>(
 
     const onKeyDownProp = props.onKeyDown;
     const dir = store.useState(
-      (state) => state.placement.split("-")[0] as BasePlacement
+      (state) => state.placement.split("-")[0] as BasePlacement,
     );
     const orientation = store.useState((state) =>
-      state.orientation === "both" ? undefined : state.orientation
+      state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
     const isMenuBarHorizontal = !!useStoreState(
       parentMenuBar,
-      (state) => state.orientation !== "vertical"
+      (state) => state.orientation !== "vertical",
     );
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
@@ -128,7 +128,7 @@ export const useMenuList = createHook<MenuListOptions>(
       (element) => (
         <MenuContext.Provider value={store}>{element}</MenuContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
@@ -158,7 +158,7 @@ export const useMenuList = createHook<MenuListOptions>(
     props = useCompositeTypeahead({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

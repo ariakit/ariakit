@@ -7,11 +7,11 @@ import type { SetState } from "../utils/types.js";
  * Creates a disclosure store.
  */
 export function createDisclosureStore(
-  props: DisclosureStoreProps = {}
+  props: DisclosureStoreProps = {},
 ): DisclosureStore {
   const store = mergeStore(
     props.store,
-    props.disclosure?.omit("contentElement", "disclosureElement")
+    props.disclosure?.omit("contentElement", "disclosureElement"),
   );
 
   const syncState = store?.getState();
@@ -20,7 +20,7 @@ export function createDisclosureStore(
     props.open,
     syncState?.open,
     props.defaultOpen,
-    false
+    false,
   );
 
   const animated = defaultValue(props.animated, syncState?.animated, false);
@@ -43,8 +43,8 @@ export function createDisclosureStore(
         // Reset animating to false when animation is disabled.
         disclosure.setState("animating", false);
       },
-      ["animated", "animating"]
-    )
+      ["animated", "animating"],
+    ),
   );
 
   disclosure.setup(() =>
@@ -55,8 +55,8 @@ export function createDisclosureStore(
         const animating = mounting ? state.open : state.open !== prev.open;
         disclosure.setState("animating", animating);
       },
-      ["open", "animated"]
-    )
+      ["open", "animated"],
+    ),
   );
 
   disclosure.setup(() =>
@@ -64,8 +64,8 @@ export function createDisclosureStore(
       (state) => {
         disclosure.setState("mounted", state.open || state.animating);
       },
-      ["open", "animating"]
-    )
+      ["open", "animating"],
+    ),
   );
 
   return {

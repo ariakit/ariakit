@@ -9,14 +9,14 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Item = Core.CollectionStoreItem;
 
 export function useCollectionStoreOptions<T extends Item = Item>(
-  _props: CollectionStoreProps<T>
+  _props: CollectionStoreProps<T>,
 ): Partial<CollectionStoreOptions<T>> {
   return {};
 }
 
 export function useCollectionStoreProps<T extends CollectionStore>(
   store: T,
-  props: CollectionStoreProps
+  props: CollectionStoreProps,
 ) {
   useStoreProps(store, props, "items", "setItems");
   return store;
@@ -36,19 +36,19 @@ export function useCollectionStoreProps<T extends CollectionStore>(
  * ```
  */
 export function useCollectionStore<T extends Item = Item>(
-  props: PickRequired<CollectionStoreProps<T>, "items" | "defaultItems">
+  props: PickRequired<CollectionStoreProps<T>, "items" | "defaultItems">,
 ): CollectionStore<T>;
 
 export function useCollectionStore(
-  props?: CollectionStoreProps
+  props?: CollectionStoreProps,
 ): CollectionStore;
 
 export function useCollectionStore(
-  props: CollectionStoreProps = {}
+  props: CollectionStoreProps = {},
 ): CollectionStore {
   const options = useCollectionStoreOptions(props);
   const store = useStore(() =>
-    Core.createCollectionStore({ ...props, ...options })
+    Core.createCollectionStore({ ...props, ...options }),
   );
   return useCollectionStoreProps(store, props);
 }

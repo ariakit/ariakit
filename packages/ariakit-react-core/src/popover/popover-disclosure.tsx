@@ -35,7 +35,7 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
           {element}
         </PopoverContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     props = {
@@ -47,7 +47,7 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
     props = useDialogDisclosure({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -64,7 +64,7 @@ export const PopoverDisclosure = createComponent<PopoverDisclosureOptions>(
   (props) => {
     const htmlProps = usePopoverDisclosure(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

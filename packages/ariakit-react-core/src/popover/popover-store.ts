@@ -17,7 +17,7 @@ export function usePopoverStoreOptions(props: PopoverStoreProps) {
 
 export function usePopoverStoreProps<T extends PopoverStore>(
   store: T,
-  props: PopoverStoreProps
+  props: PopoverStoreProps,
 ) {
   store = useDialogStoreProps(store, props);
   useStoreProps(store, props, "placement");
@@ -37,7 +37,7 @@ export function usePopoverStoreProps<T extends PopoverStore>(
 export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
   const options = usePopoverStoreOptions(props);
   const store = useStore(() =>
-    Core.createPopoverStore({ ...props, ...options })
+    Core.createPopoverStore({ ...props, ...options }),
   );
   return usePopoverStoreProps(store, props);
 }

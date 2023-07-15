@@ -3,7 +3,7 @@ import { defaultTriggers } from "./list.js";
 
 export function getTriggerOffset(
   element: HTMLTextAreaElement,
-  triggers = defaultTriggers
+  triggers = defaultTriggers,
 ) {
   const { value, selectionStart } = element;
   for (let i = selectionStart; i >= 0; i--) {
@@ -17,7 +17,7 @@ export function getTriggerOffset(
 
 export function getTrigger(
   element: HTMLTextAreaElement,
-  triggers = defaultTriggers
+  triggers = defaultTriggers,
 ) {
   const { value, selectionStart } = element;
   const previousChar = value[selectionStart - 1];
@@ -31,7 +31,7 @@ export function getTrigger(
 
 export function getSearchValue(
   element: HTMLTextAreaElement,
-  triggers = defaultTriggers
+  triggers = defaultTriggers,
 ) {
   const offset = getTriggerOffset(element, triggers);
   if (offset === -1) return "";
@@ -40,7 +40,7 @@ export function getSearchValue(
 
 export function getAnchorRect(
   element: HTMLTextAreaElement,
-  triggers = defaultTriggers
+  triggers = defaultTriggers,
 ) {
   const offset = getTriggerOffset(element, triggers);
   const { left, top, height } = getCaretCoordinates(element, offset + 1);
@@ -55,7 +55,7 @@ export function getAnchorRect(
 export function replaceValue(
   offset: number,
   searchValue: string,
-  displayValue: string
+  displayValue: string,
 ) {
   return (prevValue: string) => {
     const nextValue =

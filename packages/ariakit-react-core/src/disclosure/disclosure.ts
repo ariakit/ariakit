@@ -74,7 +74,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     props = useButton(props);
 
     return props;
-  }
+  },
 );
 
 /**

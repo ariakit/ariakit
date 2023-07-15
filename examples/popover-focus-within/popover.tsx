@@ -60,5 +60,5 @@ export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
         />
       </>
     );
-  }
+  },
 );

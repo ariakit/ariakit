@@ -66,7 +66,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
           observer.observe(anchor, { attributeFilter: ["data-focus-visible"] });
           return () => observer.disconnect();
         },
-        ["anchorElement"]
+        ["anchorElement"],
       );
     }, [store]);
 
@@ -130,7 +130,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     props = useDialogDisclosure({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -150,7 +150,7 @@ export const HovercardDisclosure = createComponent<HovercardDisclosureOptions>(
   (props) => {
     const htmlProps = useHovercardDisclosure(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

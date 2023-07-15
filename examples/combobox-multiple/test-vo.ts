@@ -17,7 +17,7 @@ test("navigate to listbox and select an item", async ({
   await vo.next();
   expect(await vo.itemText()).toBe("list box");
   expect(await vo.lastSpokenPhrase()).toContain(
-    "1 item selected. Bacon selected (2 of 34)"
+    "1 item selected. Bacon selected (2 of 34)",
   );
   await vo.interact();
   expect(await vo.itemText()).toBe("Bacon selected");
@@ -29,7 +29,7 @@ test("navigate to listbox and select an item", async ({
   expect(await vo.itemText()).toBe("Banana");
   await vo.act();
   expect(await vo.lastSpokenPhrase()).toBe(
-    "Banana added to selection 2 items selected"
+    "Banana added to selection 2 items selected",
   );
   await vo.type("gr");
   expect(await vo.itemText()).toContain("gr Your favorite food list box");
@@ -41,6 +41,6 @@ test("navigate to listbox and select an item", async ({
   expect(await vo.lastSpokenPhrase()).toContain("3 items selected");
   await vo.stopInteracting();
   expect(await vo.lastSpokenPhrase()).toContain(
-    "3 items selected. Bacon selected (2 of 34) Banana selected (3 of 34) Green apple selected (17 of 34)"
+    "3 items selected. Bacon selected (2 of 34) Banana selected (3 of 34) Green apple selected (17 of 34)",
   );
 });

@@ -10,7 +10,7 @@ import {
 const getInput = (index: number) => getAllByRole("textbox").at(index)!;
 const getValidationError = () =>
   queryByText(
-    "Constraints not satisfied - Field 1 - Field 2 - Abstract Form - Form"
+    "Constraints not satisfied - Field 1 - Field 2 - Abstract Form - Form",
   );
 const getSubmitErrors = () =>
   queryAllByText("Field - Abstract Form 1 - Abstract Form 2 - Form 1 - Form 2");

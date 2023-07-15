@@ -26,7 +26,7 @@ function getPackageName(source: string) {
 function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
-    {}
+    {},
   );
 }
 
@@ -91,7 +91,7 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
 
 function getIndexCss(
   theme: StackblitzProps["theme"] = "light",
-  id: StackblitzProps["id"]
+  id: StackblitzProps["id"],
 ) {
   const isRadix = /\-radix/.test(id);
   theme = isRadix ? "light" : theme;
@@ -191,7 +191,7 @@ if (root) {
       acc[`${exampleName}/${filename}`] = content;
       return acc;
     },
-    {}
+    {},
   );
 
   return {
@@ -310,7 +310,7 @@ export default function Page() {
       acc[key] = content;
       return acc;
     },
-    {}
+    {},
   );
 
   return {

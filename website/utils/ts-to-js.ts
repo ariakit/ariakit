@@ -18,7 +18,7 @@ const parser = {
   },
 };
 
-export function tsToJs(code: string) {
+export async function tsToJs(code: string) {
   const ast = parse(code, { parser });
 
   const options = {

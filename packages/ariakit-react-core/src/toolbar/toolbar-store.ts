@@ -17,7 +17,7 @@ export function useToolbarStoreOptions(props: ToolbarStoreProps) {
 
 export function useToolbarStoreProps<T extends ToolbarStore>(
   store: T,
-  props: ToolbarStoreProps
+  props: ToolbarStoreProps,
 ) {
   return useCompositeStoreProps(store, props);
 }
@@ -38,7 +38,7 @@ export function useToolbarStoreProps<T extends ToolbarStore>(
 export function useToolbarStore(props: ToolbarStoreProps = {}): ToolbarStore {
   const options = useToolbarStoreOptions(props);
   const store = useStore(() =>
-    Core.createToolbarStore({ ...props, ...options })
+    Core.createToolbarStore({ ...props, ...options }),
   );
   return useToolbarStoreProps(store, props);
 }

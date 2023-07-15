@@ -15,7 +15,7 @@ const NULL_ITEM = { id: null as unknown as string };
 export function flipItems(
   items: CompositeStoreItem[],
   activeId: string,
-  shouldInsertNullItem = false
+  shouldInsertNullItem = false,
 ) {
   const index = items.findIndex((item) => item.id === activeId);
   return [
@@ -30,7 +30,7 @@ export function flipItems(
  */
 export function findFirstEnabledItem(
   items: CompositeStoreItem[],
-  excludeId?: string
+  excludeId?: string,
 ) {
   return items.find((item) => {
     if (excludeId) {
@@ -71,7 +71,7 @@ export function selectTextField(element: HTMLElement, collapseToEnd = false) {
   if (isTextField(element)) {
     element.setSelectionRange(
       collapseToEnd ? element.value.length : 0,
-      element.value.length
+      element.value.length,
     );
   } else if (element.isContentEditable) {
     const selection = getDocument(element).getSelection();
@@ -110,7 +110,7 @@ export function silentlyFocused(element: FocusSilentlyElement) {
 export function isItem(
   store: CompositeStore,
   element?: Element | null,
-  exclude?: Element
+  exclude?: Element,
 ) {
   if (!element) return false;
   if (element === exclude) return false;

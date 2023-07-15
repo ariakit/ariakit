@@ -32,14 +32,14 @@ expect.extend({
             this.utils.matcherHint(
               `${this.isNot ? ".not" : ""}.toHaveFocus`,
               "element",
-              ""
+              "",
             ),
             "",
             "Expected:",
             `  ${this.utils.printExpected(element)}`,
             "Received:",
             `  ${this.utils.printReceived(
-              element.ownerDocument.getElementById(activeId)
+              element.ownerDocument.getElementById(activeId),
             )}`,
           ].join("\n");
         }
@@ -77,7 +77,7 @@ beforeEach(async ({ meta }) => {
   const [, example] = match;
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
   const { unmount } = render(
-    createElement(Suspense, { fallback: null, children: createElement(comp) })
+    createElement(Suspense, { fallback: null, children: createElement(comp) }),
   );
   return unmount;
 });

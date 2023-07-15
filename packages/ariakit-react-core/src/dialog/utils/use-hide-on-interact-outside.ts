@@ -82,7 +82,7 @@ function useEventOutside({
 
 function shouldHideOnInteractOutside(
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
-  event: Event
+  event: Event,
 ) {
   if (typeof hideOnInteractOutside === "function") {
     return hideOnInteractOutside(event);
@@ -92,7 +92,7 @@ function shouldHideOnInteractOutside(
 
 export function useHideOnInteractOutside(
   store: DialogOptions["store"],
-  hideOnInteractOutside: DialogOptions["hideOnInteractOutside"]
+  hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
 ) {
   const open = store.useState("open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);

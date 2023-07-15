@@ -8,14 +8,14 @@ const ignoreTags = ["SCRIPT", "STYLE"];
 export function isValidElement(element: Element, ignoredElements: Elements) {
   if (ignoreTags.includes(element.tagName)) return false;
   return !ignoredElements.some(
-    (enabledElement) => enabledElement && contains(element, enabledElement)
+    (enabledElement) => enabledElement && contains(element, enabledElement),
   );
 }
 
 export function walkTreeOutside(
   elements: Elements,
   callback: (element: Element) => void,
-  ancestorCallback?: (element: Element) => void
+  ancestorCallback?: (element: Element) => void,
 ) {
   for (let element of elements) {
     if (!element?.isConnected) continue;

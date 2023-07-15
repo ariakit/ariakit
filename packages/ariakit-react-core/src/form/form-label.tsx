@@ -50,7 +50,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormLabel must be wrapped in a Form component"
+        "FormLabel must be wrapped in a Form component",
     );
 
     const id = useId(props.id);
@@ -65,11 +65,11 @@ export const useFormLabel = createHook<FormLabelOptions>(
         }
         return nextItem;
       },
-      [id, name, getItemProp]
+      [id, name, getItemProp],
     );
 
     const field = store.useState((state) =>
-      state.items.find((item) => item.type === "field" && item.name === name)
+      state.items.find((item) => item.type === "field" && item.name === name),
     );
     const fieldTagName = useTagName(field?.element, "input");
     const isNativeLabel = supportsNativeLabel(fieldTagName);
@@ -111,7 +111,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     props = useCollectionItem({ store, ...props, getItem });
 
     return props;
-  }
+  },
 );
 
 /**

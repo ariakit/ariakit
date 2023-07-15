@@ -2,7 +2,7 @@ import { getDocument } from "@ariakit/core/utils/dom";
 
 export function prependHiddenDismiss(
   container: HTMLElement,
-  onClick: () => unknown
+  onClick: () => unknown,
 ) {
   const document = getDocument(container);
   const button = document.createElement("button");

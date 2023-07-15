@@ -22,6 +22,6 @@ test("auto select first option", async ({ page }) => {
   await getCombobox(page).type("a");
   await expect(getOption(page, "Audio")).toHaveAttribute(
     "data-active-item",
-    ""
+    "",
   );
 });

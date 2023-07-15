@@ -70,7 +70,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
         </Ariakit.ComboboxPopover>
       </>
     );
-  }
+  },
 );
 
 export interface ComboboxItemProps extends ComponentPropsWithoutRef<"div"> {
@@ -93,5 +93,5 @@ export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
         {props.children || props.value}
       </Ariakit.SelectItem>
     );
-  }
+  },
 );

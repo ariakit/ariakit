@@ -26,7 +26,7 @@ export const useToolbarInput = createHook<ToolbarInputOptions>(
     props = useCompositeInput({ store, ...props });
     props = useToolbarItem({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**
@@ -44,7 +44,7 @@ export const ToolbarInput = createMemoComponent<ToolbarInputOptions>(
   (props) => {
     const htmlProps = useToolbarInput(props);
     return createElement("input", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

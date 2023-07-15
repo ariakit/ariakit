@@ -32,7 +32,7 @@ interface BaseItemProps extends CollectionRendererBaseItemProps {
 
 type ItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = CollectionRendererItemProps<T, P>;
 
 function getItemObject(item: Item): ItemObject {
@@ -83,7 +83,7 @@ function findLast<T extends Item>(items: readonly T[]) {
 function findById<T extends Item>(
   items: readonly T[],
   id: string,
-  baseId: string
+  baseId: string,
 ): number {
   return items.findIndex((item, index) => {
     const itemId = getCollectionRendererItemId(item, index, baseId);
@@ -112,7 +112,7 @@ export function useCompositeRenderer<T extends Item = any>({
     useStoreState(store, (state) =>
       orientationProp ?? state.orientation === "both"
         ? "vertical"
-        : state.orientation
+        : state.orientation,
     ) ?? orientationProp;
 
   const items =
@@ -127,7 +127,7 @@ export function useCompositeRenderer<T extends Item = any>({
 
   const setSize = useMemo(
     () => ariaSetSize ?? itemsCount[itemsCount.length - 1] ?? 0,
-    [ariaSetSize, itemsCount]
+    [ariaSetSize, itemsCount],
   );
 
   const firstIndex = useMemo(() => {
@@ -157,7 +157,7 @@ export function useCompositeRenderer<T extends Item = any>({
 
   const persistentIndices = useMemo(() => {
     const indices = [firstIndex, activeIndex, lastIndex].filter(
-      (index) => index >= 0
+      (index) => index >= 0,
     );
     if (persistentIndicesProp) {
       return [...persistentIndicesProp, ...indices];
@@ -192,11 +192,11 @@ export type CompositeRendererItem = Item;
 export type CompositeRendererBaseItemProps = BaseItemProps;
 export type CompositeRendererItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
 export const CompositeRenderer = forwardRef(function CompositeRenderer<
-  T extends Item = any
+  T extends Item = any,
 >(props: CompositeRendererProps<T>) {
   const htmlProps = useCompositeRenderer(props);
   return createElement("div", htmlProps);

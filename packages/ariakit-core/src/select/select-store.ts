@@ -26,7 +26,7 @@ type Item = CompositeStoreItem & {
 };
 
 export function createSelectStore<T extends Value = Value>(
-  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
+  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
 export function createSelectStore(props?: SelectStoreProps): SelectStore;
@@ -46,8 +46,8 @@ export function createSelectStore({
       "anchorElement",
       "contentElement",
       "popoverElement",
-      "disclosureElement"
-    )
+      "disclosureElement",
+    ),
   );
   const syncState = store.getState();
 
@@ -57,23 +57,23 @@ export function createSelectStore({
     virtualFocus: defaultValue(
       props.virtualFocus,
       syncState.virtualFocus,
-      true
+      true,
     ),
     includesBaseElement: defaultValue(
       props.includesBaseElement,
       syncState.includesBaseElement,
-      false
+      false,
     ),
     activeId: defaultValue(
       props.activeId,
       syncState.activeId,
       props.defaultActiveId,
-      null
+      null,
     ),
     orientation: defaultValue(
       props.orientation,
       syncState.orientation,
-      "vertical" as const
+      "vertical" as const,
     ),
   });
 
@@ -83,7 +83,7 @@ export function createSelectStore({
     placement: defaultValue(
       props.placement,
       syncState.placement,
-      "bottom-start" as const
+      "bottom-start" as const,
     ),
   });
 
@@ -97,12 +97,12 @@ export function createSelectStore({
       props.value,
       syncState.value,
       props.defaultValue,
-      initialValue
+      initialValue,
     ),
     setValueOnMove: defaultValue(
       props.setValueOnMove,
       syncState.setValueOnMove,
-      false
+      false,
     ),
     selectElement: defaultValue(syncState.selectElement, null),
     labelElement: defaultValue(syncState.labelElement, null),
@@ -117,13 +117,13 @@ export function createSelectStore({
         if (state.value !== initialValue) return;
         if (!state.items.length) return;
         const item = state.items.find(
-          (item) => !item.disabled && item.value != null
+          (item) => !item.disabled && item.value != null,
         );
         if (item?.value == null) return;
         select.setState("value", item.value);
       },
-      ["value", "items"]
-    )
+      ["value", "items"],
+    ),
   );
 
   // Sets the active id when the value changes and the popover is hidden.
@@ -138,14 +138,14 @@ export function createSelectStore({
         const lastValue = values[values.length - 1];
         if (lastValue == null) return;
         const item = state.items.find(
-          (item) => !item.disabled && item.value === lastValue
+          (item) => !item.disabled && item.value === lastValue,
         );
         if (!item) return;
         // TODO: This may be problematic.
         select.setState("activeId", item.id);
       },
-      ["mounted", "items", "value"]
-    )
+      ["mounted", "items", "value"],
+    ),
   );
 
   // Sets the select value when the active item changes by moving (which usually
@@ -162,8 +162,8 @@ export function createSelectStore({
         if (!item || item.disabled || item.value == null) return;
         select.setState("value", item.value);
       },
-      ["setValueOnMove", "moves"]
-    )
+      ["setValueOnMove", "moves"],
+    ),
   );
 
   return {

@@ -73,7 +73,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
           if (!isMouseMoving()) return;
           store.show();
         }, showTimeout ?? timeout);
-      }
+      },
     );
 
     props = {
@@ -85,7 +85,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     props = useFocusable(props);
 
     return props;
-  }
+  },
 );
 
 /**
@@ -102,7 +102,7 @@ export const HovercardAnchor = createComponent<HovercardAnchorOptions>(
   (props) => {
     const htmlProps = useHovercardAnchor(props);
     return createElement("a", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

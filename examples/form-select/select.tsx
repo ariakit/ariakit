@@ -19,7 +19,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       defaultValue,
     });
     const selectValue = select.useState(
-      (state) => state.value || "Select an item"
+      (state) => state.value || "Select an item",
     );
     return (
       <>
@@ -58,7 +58,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         </Ariakit.SelectPopover>
       </>
     );
-  }
+  },
 );
 
 export type SelectItemProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -68,5 +68,5 @@ export type SelectItemProps = React.HTMLAttributes<HTMLDivElement> & {
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   (props, ref) => {
     return <Ariakit.SelectItem ref={ref} className="select-item" {...props} />;
-  }
+  },
 );

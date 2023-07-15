@@ -93,7 +93,7 @@ export const useSelect = createHook<SelectOptions>(
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const isGrid = !!items.find(
-        (item) => !item.disabled && item.value != null
+        (item) => !item.disabled && item.value != null,
       )?.rowId;
       const moveKeyMap = {
         ArrowUp: (isGrid || isVertical) && nextWithValue(store, store.up),
@@ -146,7 +146,7 @@ export const useSelect = createHook<SelectOptions>(
       (element) => (
         <SelectContext.Provider value={store}>{element}</SelectContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const [autofill, setAutofill] = useState(false);
@@ -169,7 +169,7 @@ export const useSelect = createHook<SelectOptions>(
     const values = useMemo(
       // Filter out items without value and duplicate values.
       () => [...new Set(items.map((i) => i.value!).filter((v) => v != null))],
-      [items]
+      [items],
     );
 
     // Renders a native select element with the same value as the select so we
@@ -214,7 +214,7 @@ export const useSelect = createHook<SelectOptions>(
                 store.setValue(
                   multiSelectable
                     ? getSelectedValues(event.target)
-                    : event.target.value
+                    : event.target.value,
                 );
               }}
             >
@@ -238,7 +238,7 @@ export const useSelect = createHook<SelectOptions>(
         value,
         multiSelectable,
         values,
-      ]
+      ],
     );
 
     const children = (
@@ -268,7 +268,7 @@ export const useSelect = createHook<SelectOptions>(
     props = useCompositeTypeahead({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

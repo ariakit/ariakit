@@ -30,12 +30,12 @@ export const useComboboxSeparator = createHook<ComboboxSeparatorOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxSeparator must be wrapped in a ComboboxList or ComboboxPopover component"
+        "ComboboxSeparator must be wrapped in a ComboboxList or ComboboxPopover component",
     );
 
     props = useCompositeSeparator({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**
@@ -57,7 +57,7 @@ export const ComboboxSeparator = createComponent<ComboboxSeparatorOptions>(
   (props) => {
     const htmlProps = useComboboxSeparator(props);
     return createElement("hr", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

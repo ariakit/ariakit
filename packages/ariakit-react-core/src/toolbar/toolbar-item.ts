@@ -24,7 +24,7 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
   ({ store, ...props }) => {
     props = useCompositeItem({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**

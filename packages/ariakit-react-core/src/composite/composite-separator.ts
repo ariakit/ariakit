@@ -29,17 +29,17 @@ export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeSeparator must be wrapped in a Composite component"
+        "CompositeSeparator must be wrapped in a Composite component",
     );
 
     const orientation = store.useState((state) =>
-      state.orientation === "horizontal" ? "vertical" : "horizontal"
+      state.orientation === "horizontal" ? "vertical" : "horizontal",
     );
 
     props = useSeparator({ ...props, orientation });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -59,7 +59,7 @@ export const CompositeSeparator = createComponent<CompositeSeparatorOptions>(
   (props) => {
     const htmlProps = useCompositeSeparator(props);
     return createElement("hr", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

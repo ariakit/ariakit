@@ -20,7 +20,7 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
   (props) => {
     props = useDialogDescription(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -40,7 +40,7 @@ export const PopoverDescription = createComponent<PopoverDescriptionOptions>(
   (props) => {
     const htmlProps = usePopoverDescription(props);
     return createElement("p", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

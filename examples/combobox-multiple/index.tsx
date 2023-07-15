@@ -11,7 +11,7 @@ export default function Example() {
 
   const matches = useMemo(
     () => matchSorter(list, deferredValue),
-    [deferredValue]
+    [deferredValue],
   );
 
   return (
