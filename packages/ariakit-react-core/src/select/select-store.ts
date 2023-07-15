@@ -28,7 +28,7 @@ type Item = Core.SelectStoreItem;
 type Value = Core.SelectStoreValue;
 
 export function useSelectStoreOptions<T extends Value = Value>(
-  props: SelectStoreProps<T>
+  props: SelectStoreProps<T>,
 ) {
   return {
     ...useCompositeStoreOptions(props),
@@ -38,7 +38,7 @@ export function useSelectStoreOptions<T extends Value = Value>(
 
 export function useSelectStoreProps<T extends SelectStore>(
   store: T,
-  props: SelectStoreProps
+  props: SelectStoreProps,
 ) {
   store = useCompositeStoreProps(store, props);
   store = usePopoverStoreProps(store, props);
@@ -60,7 +60,7 @@ export function useSelectStoreProps<T extends SelectStore>(
  * ```
  */
 export function useSelectStore<T extends Value = Value>(
-  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">
+  props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
@@ -68,7 +68,7 @@ export function useSelectStore(props?: SelectStoreProps): SelectStore;
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
   const options = useSelectStoreOptions(props);
   const store = useStore(() =>
-    Core.createSelectStore({ ...props, ...options })
+    Core.createSelectStore({ ...props, ...options }),
   );
   return useSelectStoreProps(store, props);
 }

@@ -119,10 +119,10 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
       } satisfies monaco.languages.typescript.DiagnosticsOptions;
 
       monaco.languages.typescript?.javascriptDefaults.setDiagnosticsOptions(
-        diagnosticsOptions
+        diagnosticsOptions,
       );
       monaco.languages.typescript?.typescriptDefaults.setDiagnosticsOptions(
-        diagnosticsOptions
+        diagnosticsOptions,
       );
 
       const grammars = new Map<string, string>();
@@ -136,12 +136,12 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
         return monaco.editor.createModel(
           content,
           language.name,
-          monaco.Uri.file(file)
+          monaco.Uri.file(file),
         );
       });
 
       const model = monaco.editor.getModel(
-        monaco.Uri.file(tab.getState().selectedId!.replace(`${id}:`, ""))
+        monaco.Uri.file(tab.getState().selectedId!.replace(`${id}:`, "")),
       );
 
       console.log(grammars);

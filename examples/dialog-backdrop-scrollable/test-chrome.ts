@@ -16,7 +16,7 @@ const waitForBackdropScrollTop = async (page: Page, value: number) => {
   const backdrop = await getBackdrop(page).elementHandle();
   await page.waitForFunction(
     ({ backdrop, value }) => backdrop?.scrollTop === value,
-    { backdrop, value }
+    { backdrop, value },
   );
 };
 

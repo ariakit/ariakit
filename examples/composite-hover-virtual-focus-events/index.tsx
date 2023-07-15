@@ -16,7 +16,7 @@ export default function Example() {
         relatedTarget?.id ? `relatedTarget: ${relatedTarget.id}` : undefined,
       ]
         .filter(Boolean)
-        .join(" | ")
+        .join(" | "),
     );
   };
 

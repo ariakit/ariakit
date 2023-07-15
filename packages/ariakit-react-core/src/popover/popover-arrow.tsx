@@ -53,11 +53,11 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "PopoverArrow must be wrapped in a Popover component"
+        "PopoverArrow must be wrapped in a Popover component",
     );
 
     const dir = store.useState(
-      (state) => state.currentPlacement.split("-")[0] as BasePlacement
+      (state) => state.currentPlacement.split("-")[0] as BasePlacement,
     );
 
     const style = useComputedStyle(store);
@@ -76,7 +76,7 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
           </g>
         </svg>
       ),
-      [transform]
+      [transform],
     );
 
     props = {
@@ -99,7 +99,7 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

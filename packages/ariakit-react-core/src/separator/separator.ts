@@ -18,7 +18,7 @@ export const useSeparator = createHook<SeparatorOptions>(
       ...props,
     };
     return props;
-  }
+  },
 );
 
 /**

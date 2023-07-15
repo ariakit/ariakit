@@ -187,7 +187,7 @@ export function useDeferredValue<T>(value: T): T {
  */
 export function useTagName(
   refOrElement?: RefObject<HTMLElement> | HTMLElement | null,
-  type?: string | ComponentType
+  type?: string | ComponentType,
 ) {
   const stringOrUndefined = (type?: string | ComponentType) => {
     if (typeof type !== "string") return;
@@ -219,7 +219,7 @@ export function useTagName(
 export function useAttribute(
   refOrElement: RefObject<HTMLElement> | HTMLElement | null,
   attributeName: string,
-  defaultValue?: string
+  defaultValue?: string,
 ) {
   const [attribute, setAttribute] = useState(defaultValue);
 
@@ -253,7 +253,7 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
     () => () => {
       mounted.current = false;
     },
-    []
+    [],
   );
 }
 
@@ -262,7 +262,7 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
  */
 export function useUpdateLayoutEffect(
   effect: EffectCallback,
-  deps?: DependencyList
+  deps?: DependencyList,
 ) {
   const mounted = useRef(false);
 
@@ -277,7 +277,7 @@ export function useUpdateLayoutEffect(
     () => () => {
       mounted.current = false;
     },
-    []
+    [],
   );
 }
 
@@ -288,7 +288,7 @@ export function useUpdateLayoutEffect(
 export function useControlledState<S>(
   defaultState: S | (() => S),
   state?: S,
-  setState?: (value: S) => void
+  setState?: (value: S) => void,
 ): [S, SetState<S>] {
   const [localState, setLocalState] = useState(defaultState);
   const nextState = state !== undefined ? state : localState;
@@ -343,12 +343,12 @@ export function useForceUpdate() {
  * boolean value, which will be turned into a function.
  */
 export function useBooleanEvent<T extends unknown[]>(
-  booleanOrCallback: boolean | ((...args: T) => boolean)
+  booleanOrCallback: boolean | ((...args: T) => boolean),
 ) {
   return useEvent(
     typeof booleanOrCallback === "function"
       ? booleanOrCallback
-      : () => booleanOrCallback
+      : () => booleanOrCallback,
   );
 }
 
@@ -358,7 +358,7 @@ export function useBooleanEvent<T extends unknown[]>(
 export function useWrapElement<P>(
   props: P & { wrapElement?: WrapElement },
   callback: WrapElement,
-  deps: DependencyList = []
+  deps: DependencyList = [],
 ): P & { wrapElement: WrapElement } {
   const wrapElement: WrapElement = useCallback(
     (element) => {
@@ -367,7 +367,7 @@ export function useWrapElement<P>(
       }
       return callback(element);
     },
-    [...deps, props.wrapElement]
+    [...deps, props.wrapElement],
   );
 
   return { ...props, wrapElement };
@@ -381,7 +381,7 @@ export function usePortalRef(
   portalProp = false,
   portalRefProp?:
     | RefCallback<HTMLElement>
-    | MutableRefObject<HTMLElement | null>
+    | MutableRefObject<HTMLElement | null>,
 ) {
   const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
   const portalRef = useMergeRefs(setPortalNode, portalRefProp);

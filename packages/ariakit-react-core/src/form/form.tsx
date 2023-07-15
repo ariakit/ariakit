@@ -16,7 +16,7 @@ import type { FormStore, FormStoreState } from "./form-store.js";
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(
-    (item) => item.type === "field" && item.element === element
+    (item) => item.type === "field" && item.element === element,
   );
 }
 
@@ -24,7 +24,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
   return items.find(
     (item) =>
       item.type === "field" &&
-      item.element?.getAttribute("aria-invalid") === "true"
+      item.element?.getAttribute("aria-invalid") === "true",
   );
 }
 
@@ -57,7 +57,7 @@ export const useForm = createHook<FormOptions>(
 
     useEffect(
       () => (resetOnUnmount ? store.reset : undefined),
-      [resetOnUnmount, store.reset]
+      [resetOnUnmount, store.reset],
     );
 
     useUpdateEffect(() => {
@@ -122,7 +122,7 @@ export const useForm = createHook<FormOptions>(
       (element) => (
         <FormContext.Provider value={store}>{element}</FormContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const tagName = useTagName(ref, props.as || "form");
@@ -138,7 +138,7 @@ export const useForm = createHook<FormOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

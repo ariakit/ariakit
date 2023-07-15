@@ -52,7 +52,7 @@ function getItemsInRow(items: Item[], rowId?: string) {
 function flipItems(
   items: Item[],
   activeId: string,
-  shouldInsertNullItem = false
+  shouldInsertNullItem = false,
 ): Item[] {
   const index = items.findIndex((item) => item.id === activeId);
   return [
@@ -96,7 +96,7 @@ function createEmptyItem(rowId?: string) {
 function normalizeRows(
   rows: Item[][],
   activeId?: string | null,
-  focusShift?: boolean
+  focusShift?: boolean,
 ) {
   const maxLength = getMaxRowLength(rows);
   for (const row of rows) {
@@ -143,7 +143,7 @@ function verticalizeItems(items: Item[]) {
  * Creates a composite store.
  */
 export function createCompositeStore<T extends Item = Item>(
-  props: CompositeStoreProps<T> = {}
+  props: CompositeStoreProps<T> = {},
 ): CompositeStore<T> {
   const syncState = props.store?.getState();
 
@@ -152,7 +152,7 @@ export function createCompositeStore<T extends Item = Item>(
   const activeId = defaultValue(
     props.activeId,
     syncState?.activeId,
-    props.defaultActiveId
+    props.defaultActiveId,
   );
 
   const initialState: CompositeStoreState<T> = {
@@ -162,19 +162,19 @@ export function createCompositeStore<T extends Item = Item>(
     includesBaseElement: defaultValue(
       props.includesBaseElement,
       syncState?.includesBaseElement,
-      activeId === null
+      activeId === null,
     ),
     moves: defaultValue(syncState?.moves, 0),
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
-      "both" as const
+      "both" as const,
     ),
     rtl: defaultValue(props.rtl, syncState?.rtl, false),
     virtualFocus: defaultValue(
       props.virtualFocus,
       syncState?.virtualFocus,
-      false
+      false,
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, false),
     focusWrap: defaultValue(props.focusWrap, syncState?.focusWrap, false),
@@ -193,15 +193,15 @@ export function createCompositeStore<T extends Item = Item>(
           return findFirstEnabledItem(state.renderedItems)?.id;
         });
       },
-      ["renderedItems", "activeId"]
-    )
+      ["renderedItems", "activeId"],
+    ),
   );
 
   const getNextId = (
     items: Item[],
     orientation: Orientation,
     hasNullItem: boolean,
-    skip?: number
+    skip?: number,
   ): string | null | undefined => {
     const { activeId, rtl, focusLoop, focusWrap, includesBaseElement } =
       composite.getState();
@@ -235,7 +235,7 @@ export function createCompositeStore<T extends Item = Item>(
       // If it's a grid and orientation is not set, it's a next/previous call,
       // which is inherently horizontal. up/down will call next with orientation
       // set to vertical by default (see below on up/down methods).
-      isGrid ? orientation || "horizontal" : orientation
+      isGrid ? orientation || "horizontal" : orientation,
     );
     const canLoop = focusLoop && focusLoop !== oppositeOrientation;
     const canWrap = isGrid && focusWrap && focusWrap !== oppositeOrientation;
@@ -266,7 +266,7 @@ export function createCompositeStore<T extends Item = Item>(
         // composite container. On grid composites, horizontal navigation never
         // focuses on the composite container, only vertical.
         hasNullItem ? nextItemsInRow : nextItems,
-        activeId
+        activeId,
       );
       const nextId = hasNullItem ? nextItem?.id || null : nextItem?.id;
       return nextId;
@@ -316,7 +316,7 @@ export function createCompositeStore<T extends Item = Item>(
         reverseArray(renderedItems),
         orientation,
         hasNullItem,
-        skip
+        skip,
       );
     },
 
@@ -333,8 +333,8 @@ export function createCompositeStore<T extends Item = Item>(
       // with disabled fake items. Then, we reorganize the items.
       const verticalItems = verticalizeItems(
         flatten2DArray(
-          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift)
-        )
+          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift),
+        ),
       );
       const canLoop = focusLoop && focusLoop !== "horizontal";
       // Pressing down arrow key will only focus on the composite container if
@@ -353,10 +353,10 @@ export function createCompositeStore<T extends Item = Item>(
             normalizeRows(
               groupItemsByRows(renderedItems),
               activeId,
-              shouldShift
-            )
-          )
-        )
+              shouldShift,
+            ),
+          ),
+        ),
       );
       // If activeId is initially set to null, we'll always focus on the
       // composite container when the up arrow key is pressed in the first row.

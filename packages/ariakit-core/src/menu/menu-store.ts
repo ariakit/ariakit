@@ -27,7 +27,7 @@ type Values = Record<
 >;
 
 export function createMenuStore<T extends Values = Values>(
-  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">
+  props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,
 ): MenuStore<T>;
 
 export function createMenuStore(props?: MenuStoreProps): MenuStore;
@@ -43,8 +43,8 @@ export function createMenuStore({
       "anchorElement",
       "contentElement",
       "popoverElement",
-      "disclosureElement"
-    )
+      "disclosureElement",
+    ),
   );
   const syncState = store.getState();
 
@@ -54,7 +54,7 @@ export function createMenuStore({
     orientation: defaultValue(
       props.orientation,
       syncState.orientation,
-      "vertical" as const
+      "vertical" as const,
     ),
   });
 
@@ -64,7 +64,7 @@ export function createMenuStore({
     placement: defaultValue(
       props.placement,
       syncState.placement,
-      "bottom-start" as const
+      "bottom-start" as const,
     ),
     hideTimeout: defaultValue(props.hideTimeout, syncState.hideTimeout, 0),
   });
@@ -77,7 +77,7 @@ export function createMenuStore({
       props.values,
       syncState.values,
       props.defaultValues,
-      {}
+      {},
     ),
   };
 
@@ -89,8 +89,8 @@ export function createMenuStore({
         if (state.mounted) return;
         menu.setState("activeId", null);
       },
-      ["mounted"]
-    )
+      ["mounted"],
+    ),
   );
 
   return {
@@ -167,7 +167,7 @@ export interface MenuStoreFunctions<T extends Values = Values>
   setValue: BivariantCallback<
     (
       name: string,
-      value: SetStateAction<MenuStoreState<T>["values"][string]>
+      value: SetStateAction<MenuStoreState<T>["values"][string]>,
     ) => void
   >;
 }

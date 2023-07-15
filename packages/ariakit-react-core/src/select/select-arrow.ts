@@ -25,7 +25,7 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
   ({ store, ...props }) => {
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**

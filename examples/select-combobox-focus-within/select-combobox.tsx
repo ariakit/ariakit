@@ -34,7 +34,7 @@ export const SelectCombobox = React.forwardRef<
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const combobox = Ariakit.useComboboxStore({
       open,
@@ -53,7 +53,7 @@ export const SelectCombobox = React.forwardRef<
 
     const [popoverFocused, setPopoverFocused] = React.useState(false);
     const showComboboxCancel = combobox.useState(
-      (state) => popoverFocused || state.value !== ""
+      (state) => popoverFocused || state.value !== "",
     );
 
     const mounted = select.useState("mounted");
@@ -99,7 +99,7 @@ export const SelectCombobox = React.forwardRef<
         )}
       </>
     );
-  }
+  },
 );
 
 type SelectComboboxItemProps = React.HTMLAttributes<HTMLDivElement> & {

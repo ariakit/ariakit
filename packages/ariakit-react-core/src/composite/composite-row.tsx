@@ -37,18 +37,18 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeRow must be wrapped in a Composite component"
+        "CompositeRow must be wrapped in a Composite component",
     );
 
     const id = useId(props.id);
 
     const baseElement = store.useState(
-      (state) => state.baseElement || undefined
+      (state) => state.baseElement || undefined,
     );
 
     const providerValue = useMemo(
       () => ({ id, baseElement, ariaSetSize, ariaPosInSet }),
-      [id, baseElement, ariaSetSize, ariaPosInSet]
+      [id, baseElement, ariaSetSize, ariaPosInSet],
     );
 
     props = useWrapElement(
@@ -58,13 +58,13 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
           {element}
         </CompositeRowContext.Provider>
       ),
-      [providerValue]
+      [providerValue],
     );
 
     props = { id, ...props };
 
     return props;
-  }
+  },
 );
 
 /**

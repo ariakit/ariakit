@@ -63,7 +63,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
     });
 
     const label = store.useState((state) =>
-      state.open ? "Hide popup" : "Show popup"
+      state.open ? "Hide popup" : "Show popup",
     );
 
     props = {
@@ -81,7 +81,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
     props = useDialogDisclosure({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -104,7 +104,7 @@ export const ComboboxDisclosure = createComponent<ComboboxDisclosureOptions>(
   (props) => {
     const htmlProps = useComboboxDisclosure(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -30,8 +30,8 @@ export function createPopoverStore({
       "anchorElement",
       "contentElement",
       "popoverElement",
-      "disclosureElement"
-    )
+      "disclosureElement",
+    ),
   );
   const syncState = store?.getState();
 
@@ -40,7 +40,7 @@ export function createPopoverStore({
   const placement = defaultValue(
     props.placement,
     syncState?.placement,
-    "bottom" as const
+    "bottom" as const,
   );
 
   const initialState: PopoverStoreState = {

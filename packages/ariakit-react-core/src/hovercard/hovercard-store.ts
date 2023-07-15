@@ -17,7 +17,7 @@ export function useHovercardStoreOptions(props: HovercardStoreProps) {
 
 export function useHovercardStoreProps<T extends HovercardStore>(
   store: T,
-  props: HovercardStoreProps
+  props: HovercardStoreProps,
 ) {
   store = usePopoverStoreProps(store, props);
   useStoreProps(store, props, "timeout");
@@ -37,11 +37,11 @@ export function useHovercardStoreProps<T extends HovercardStore>(
  * ```
  */
 export function useHovercardStore(
-  props: HovercardStoreProps = {}
+  props: HovercardStoreProps = {},
 ): HovercardStore {
   const options = useHovercardStoreOptions(props);
   const store = useStore(() =>
-    Core.createHovercardStore({ ...props, ...options })
+    Core.createHovercardStore({ ...props, ...options }),
   );
   return useHovercardStoreProps(store, props);
 }

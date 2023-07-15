@@ -62,7 +62,7 @@ export default function Example() {
           open={!!removing}
           onConfirm={() =>
             setProducts((products) =>
-              products.filter((product) => product !== removing)
+              products.filter((product) => product !== removing),
             )
           }
           onClose={() => setRemoving("")}

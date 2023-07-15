@@ -57,7 +57,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           (parent?.getOffsetRight() ?? 0) +
           (menu.getState().baseElement?.offsetWidth ?? 0),
       }),
-      [menu, parent]
+      [menu, parent],
     );
 
     // Hide the submenu when it's not visible on scroll.
@@ -177,7 +177,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
         )}
       </>
     );
-  }
+  },
 );
 
 export type MenuItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -196,7 +196,7 @@ export const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
         {label}
       </Ariakit.MenuItem>
     );
-  }
+  },
 );
 
 export type MenuSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
@@ -224,5 +224,5 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
         {props.children}
       </Ariakit.MenuGroup>
     );
-  }
+  },
 );

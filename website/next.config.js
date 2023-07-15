@@ -35,7 +35,7 @@ const nextConfig = {
       config.plugins.push(
         new context.webpack.DefinePlugin({
           "process.env.NEXT_BUILD_ID": JSON.stringify(context.buildId),
-        })
+        }),
       );
     }
 
@@ -53,7 +53,7 @@ const nextConfig = {
             "!stickyScroll",
             "!contextmenu",
           ],
-        })
+        }),
       );
     }
     config.module.rules.push({

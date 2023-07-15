@@ -82,7 +82,7 @@ function parseSearchData(data: Data) {
     searchData.push(
       ...itemsWithoutParentPage
         .slice(0, parentPage ? 3 : undefined)
-        .map((item) => ({ ...item, nested: !!parentPage }))
+        .map((item) => ({ ...item, nested: !!parentPage })),
     );
   });
   return searchData;
@@ -96,7 +96,7 @@ function getItemKey(item: PageIndexDetail | SearchData[number]) {
 
 function getItemHref(
   item: PageIndexDetail | SearchData[number],
-  category = item.category
+  category = item.category,
 ) {
   return `/${category}/${item.slug}${
     "sectionId" in item && item.sectionId ? `#${item.sectionId}` : ""
@@ -121,7 +121,7 @@ function getAllIndexes(string: string, values: string[]) {
 
 function highlightValue(
   itemValue: string | null | undefined,
-  userValues: string[]
+  userValues: string[],
 ) {
   if (!itemValue) return itemValue;
   userValues = userValues.filter(Boolean);
@@ -142,8 +142,8 @@ function highlightValue(
       ([index, length], i, arr) =>
         index !== -1 &&
         !arr.some(
-          ([idx, l], j) => j !== i && idx <= index && idx + l >= index + length
-        )
+          ([idx, l], j) => j !== i && idx <= index && idx + l >= index + length,
+        ),
     )
     .sort(([a], [b]) => a - b);
 
@@ -209,7 +209,7 @@ interface HeaderNavItemProps extends HeaderMenuItemProps {
 const HeaderNavItem = memo(
   forwardRef<any, HeaderNavItemProps>(function HeaderNavItem(
     { item, category, ...props },
-    ref
+    ref,
   ) {
     category = category || ("category" in item ? item.category : undefined);
     if (!category) return null;
@@ -243,7 +243,7 @@ const HeaderNavItem = memo(
         {...props}
       />
     );
-  })
+  }),
 );
 
 interface HeaderNavMenuProps {
@@ -317,7 +317,7 @@ const HeaderNavMenu = memo(
     const { data: allData, isFetching: allIsFetching } = useQuery<Data>(
       [allUrl],
       queryFetch,
-      options
+      options,
     );
 
     const loading = usePerceptibleValue(isFetching || allIsFetching, {
@@ -326,7 +326,7 @@ const HeaderNavMenu = memo(
     const searchData = useMemo(() => data && parseSearchData(data), [data]);
     const searchAllData = useMemo(
       () => (category && allData && parseSearchData(allData)) || undefined,
-      [category, allData]
+      [category, allData],
     );
     const noResults = !!searchData && !searchData.length;
     const pages = useMemo(() => {
@@ -357,7 +357,7 @@ const HeaderNavMenu = memo(
           ...page,
           value: getItemHref(page),
         })) as typeof pages,
-        "group"
+        "group",
       );
       const items = groups.null || [];
       delete groups.null;
@@ -383,7 +383,7 @@ const HeaderNavMenu = memo(
             items,
             itemSize: 96,
             paddingStart: 40,
-          } satisfies SelectRendererItem)
+          }) satisfies SelectRendererItem,
       );
       return (
         <>
@@ -489,7 +489,7 @@ const HeaderNavMenu = memo(
                   "bg-gray-150 dark:bg-gray-650",
                   "hover:bg-blue-200/40 dark:hover:bg-blue-600/25",
                   "active:bg-blue-200/70 dark:active:bg-blue-800/25",
-                  "focus-visible:ariakit-outline-input"
+                  "focus-visible:ariakit-outline-input",
                 )}
                 onClick={() => {
                   requestAnimationFrame(() => {
@@ -527,7 +527,7 @@ const HeaderNavMenu = memo(
               role="presentation"
               className={cx(
                 "p-10 text-center text-lg text-black/60 dark:text-white/50",
-                !otherItemElements && "py-20"
+                !otherItemElements && "py-20",
               )}
             >
               <div className="truncate">
@@ -556,7 +556,7 @@ const HeaderNavMenu = memo(
         </HeaderMenu>
       </HeaderNavMenuContext.Provider>
     );
-  }
+  },
 );
 
 export function HeaderNav() {
@@ -583,7 +583,7 @@ export function HeaderNav() {
         event.preventDefault();
         const value = category
           ? document.querySelector<HTMLInputElement>(
-              `[role=combobox][placeholder='${getSearchTitle(category)}']`
+              `[role=combobox][placeholder='${getSearchTitle(category)}']`,
             )?.value
           : "";
         if (categoryOpen) {
@@ -622,7 +622,7 @@ export function HeaderNav() {
           />
         );
       }),
-    []
+    [],
   );
 
   const children = useMemo(
@@ -641,7 +641,7 @@ export function HeaderNav() {
         </HeaderMenuItem>
       </>
     ),
-    [categoryElements]
+    [categoryElements],
   );
 
   const element = !!pageMeta && !!category;
@@ -657,7 +657,7 @@ export function HeaderNav() {
         <div
           className={cx(
             "cursor-default text-3xl font-thin opacity-30",
-            !!element && "hidden sm:block"
+            !!element && "hidden sm:block",
           )}
         >
           /

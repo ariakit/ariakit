@@ -74,7 +74,7 @@ function findNextPageItemId(
   element: Element,
   store?: CompositeStore,
   next?: CompositeStore["next"],
-  pageUp = false
+  pageUp = false,
 ) {
   if (!store) return;
   if (!next) return;
@@ -196,7 +196,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         }
         return nextItem;
       },
-      [id, rowId, trulyDisabled, getItemProp]
+      [id, rowId, trulyDisabled, getItemProp],
     );
 
     const onFocusProp = props.onFocus;
@@ -314,12 +314,12 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const baseElement = useStoreState(
       store,
-      (state) => state.baseElement || undefined
+      (state) => state.baseElement || undefined,
     );
 
     const providerValue = useMemo(
       () => ({ id, baseElement }),
-      [id, baseElement]
+      [id, baseElement],
     );
 
     props = useWrapElement(
@@ -329,7 +329,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
           {element}
         </CompositeItemContext.Provider>
       ),
-      [providerValue]
+      [providerValue],
     );
 
     const isActiveItem = useStoreState(store, (state) => state.activeId === id);
@@ -363,7 +363,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (!row?.ariaPosInSet) return;
       if (row.baseElement !== state.baseElement) return;
       const itemsInRow = state.renderedItems.filter(
-        (item) => item.rowId === rowId
+        (item) => item.rowId === rowId,
       );
       return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
     });
@@ -399,7 +399,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       "aria-setsize": ariaSetSize,
       "aria-posinset": ariaPosInSet,
     };
-  }
+  },
 );
 
 /**
@@ -419,7 +419,7 @@ export const CompositeItem = createMemoComponent<CompositeItemOptions>(
   (props) => {
     const htmlProps = useCompositeItem(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

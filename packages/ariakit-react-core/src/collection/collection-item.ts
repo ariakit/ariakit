@@ -44,7 +44,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
         const item = getItem({ id, element });
         unrenderItem.current = store?.renderItem(item);
       },
-      [id, shouldRegisterItem, getItem, store]
+      [id, shouldRegisterItem, getItem, store],
     );
 
     props = {
@@ -53,7 +53,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -73,7 +73,7 @@ export const CollectionItem = createComponent<CollectionItemOptions>(
   (props) => {
     const htmlProps = useCollectionItem(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -21,11 +21,11 @@ export const useFocusableContainer = createHook<FocusableContainerOptions>(
           {element}
         </FocusableContext.Provider>
       ),
-      [autoFocusOnShow]
+      [autoFocusOnShow],
     );
 
     return props;
-  }
+  },
 );
 
 /**
@@ -43,7 +43,7 @@ export const FocusableContainer = createComponent<FocusableContainerOptions>(
   (props) => {
     const htmlProps = useFocusableContainer(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

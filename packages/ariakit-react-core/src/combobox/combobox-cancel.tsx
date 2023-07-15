@@ -65,7 +65,7 @@ export const useComboboxCancel = createHook<ComboboxCancelOptions>(
     props = useButton(props);
 
     return props;
-  }
+  },
 );
 
 /**
@@ -87,7 +87,7 @@ export const ComboboxCancel = createComponent<ComboboxCancelOptions>(
   (props) => {
     const htmlProps = useComboboxCancel(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

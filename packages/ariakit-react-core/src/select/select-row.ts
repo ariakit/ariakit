@@ -31,7 +31,7 @@ export const useSelectRow = createHook<SelectRowOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "SelectRow must be wrapped in a SelectList or SelectPopover component"
+        "SelectRow must be wrapped in a SelectList or SelectPopover component",
     );
 
     const contentElement = store.useState("contentElement");
@@ -43,7 +43,7 @@ export const useSelectRow = createHook<SelectRowOptions>(
     props = useCompositeRow({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

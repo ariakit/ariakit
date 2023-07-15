@@ -9,7 +9,7 @@ import {
 
 function nextFrame(): Promise<void> {
   return act<void>(
-    () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    () => new Promise((resolve) => requestAnimationFrame(() => resolve())),
   );
 }
 

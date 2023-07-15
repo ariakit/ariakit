@@ -13,7 +13,7 @@ const getMenuWrapper = (locator: Page) =>
 const getMenuItem = (
   locator: Page | Locator,
   name: string,
-  role = "menuitem"
+  role = "menuitem",
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 test.beforeEach(async ({ page }) => {
@@ -28,7 +28,7 @@ test("show/hide with click", async ({ page }) => {
   await getMenuItem(page, "History").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!
+    wrapper!,
   );
   await expect(getMenu(page, "History")).toBeVisible();
   expect(await wrapper?.screenshot()).toMatchSnapshot();
@@ -36,11 +36,11 @@ test("show/hide with click", async ({ page }) => {
   await getMenuItem(page, "Recently closed windows").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
-    wrapper!
+    wrapper!,
   );
   await getMenuItem(
     getMenu(page, "Recently closed windows"),
-    "Back to parent menu"
+    "Back to parent menu",
   ).click();
   await expect(getMenu(page, "Recently closed windows")).toBeHidden();
   await getMenuItem(getMenu(page, "History"), "Back to parent menu").click();
@@ -57,21 +57,21 @@ test("show/hide with keyboard", async ({ page }) => {
   await page.keyboard.press("Enter");
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!
+    wrapper!,
   );
   await expect(
-    getMenuItem(getMenu(page, "History"), "Back to parent menu")
+    getMenuItem(getMenu(page, "History"), "Back to parent menu"),
   ).toBeFocused();
   await page.keyboard.type("rr");
   await page.waitForTimeout(500);
   await page.keyboard.press("ArrowRight");
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
-    wrapper!
+    wrapper!,
   );
   await page.keyboard.press(" ");
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!
+    wrapper!,
   );
 });

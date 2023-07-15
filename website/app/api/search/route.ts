@@ -43,7 +43,7 @@ const categories = contents.reduce<Record<string, typeof contents>>(
     acc[category]?.push(curr);
     return acc;
   },
-  {}
+  {},
 );
 
 const entries = Object.entries(categories);
@@ -70,7 +70,7 @@ function truncate(
   string: string,
   minStart: number,
   maxLength: number,
-  suffix = ""
+  suffix = "",
 ) {
   string = string.replace(/\s/g, " ");
   if (string.length < maxLength) return string;
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
   if (process.env.NODE_ENV === "production") {
     headers.set(
       "Cache-Control",
-      "public, s-maxage=1800, stale-while-revalidate=86400"
+      "public, s-maxage=1800, stale-while-revalidate=86400",
     );
   }
 
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
         : truncate(
             item.content,
             Math.max(0, match.index - (maxContentLength - match.length) / 2),
-            maxContentLength
+            maxContentLength,
           );
     const value = [
       item.title,

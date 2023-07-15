@@ -29,10 +29,10 @@ export const useCollection = createHook<CollectionOptions>(
           {element}
         </CollectionContext.Provider>
       ),
-      [store]
+      [store],
     );
     return props;
-  }
+  },
 );
 
 /**

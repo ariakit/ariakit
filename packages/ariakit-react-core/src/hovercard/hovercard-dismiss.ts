@@ -20,7 +20,7 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
   (props) => {
     props = usePopoverDismiss(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -38,7 +38,7 @@ export const HovercardDismiss = createComponent<HovercardDismissOptions>(
   (props) => {
     const htmlProps = useHovercardDismiss(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

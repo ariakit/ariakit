@@ -71,7 +71,7 @@ ${prop.description.replace(
 
 <div data-cards>
 
-`
+`,
 )}
 ${prop.description.includes("Live examples:") ? "\n</div>" : ""}
 ${
@@ -83,7 +83,7 @@ ${prop.examples
   .map((example) =>
     `\`\`\`${example.language}
 ${example.code}
-\`\`\``.trim()
+\`\`\``.trim(),
   )
   .join("\n\n")}\n`
     : ""
@@ -100,7 +100,7 @@ ${examples
   .map((example) =>
     `\`\`\`${example.language}
 ${example.code}
-\`\`\``.trim()
+\`\`\``.trim(),
   )
   .join("\n\n")}
 ${

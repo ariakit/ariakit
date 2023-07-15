@@ -29,7 +29,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
     exit,
     ...props
   },
-  ref
+  ref,
 ) {
   const menu = Ariakit.useMenuStore({ open, setOpen });
   const currentPlacement = menu.useState("currentPlacement");
@@ -77,5 +77,5 @@ export const MenuItem = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
         render={<motion.div {...props} />}
       />
     );
-  }
+  },
 );

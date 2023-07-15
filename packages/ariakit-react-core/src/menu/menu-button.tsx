@@ -84,7 +84,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     });
 
     const dir = store.useState(
-      (state) => state.placement.split("-")[0] as BasePlacement
+      (state) => state.placement.split("-")[0] as BasePlacement,
     );
 
     const onKeyDownProp = props.onKeyDown;
@@ -190,7 +190,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

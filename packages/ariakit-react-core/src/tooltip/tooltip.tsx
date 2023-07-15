@@ -36,11 +36,11 @@ export const useTooltip = createHook<TooltipOptions>(
           {element}
         </TooltipContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const role = store.useState((state) =>
-      state.type === "description" ? "tooltip" : "none"
+      state.type === "description" ? "tooltip" : "none",
     );
 
     props = { role, ...props };
@@ -76,7 +76,7 @@ export const useTooltip = createHook<TooltipOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

@@ -12,13 +12,13 @@ import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
 export function useCompositeOverflowStoreOptions(
-  props: CompositeOverflowStoreProps
+  props: CompositeOverflowStoreProps,
 ) {
   return usePopoverStoreOptions(props);
 }
 
 export function useCompositeOverflowStoreProps<
-  T extends CompositeOverflowStore
+  T extends CompositeOverflowStore,
 >(store: T, props: CompositeOverflowStoreProps) {
   return usePopoverStoreProps(store, props);
 }
@@ -44,11 +44,11 @@ export function useCompositeOverflowStoreProps<
  * ```
  */
 export function useCompositeOverflowStore(
-  props: CompositeOverflowStoreProps = {}
+  props: CompositeOverflowStoreProps = {},
 ): CompositeOverflowStore {
   const options = useCompositeOverflowStoreOptions(props);
   const store = useStore(() =>
-    Core.createCompositeOverflowStore({ ...props, ...options })
+    Core.createCompositeOverflowStore({ ...props, ...options }),
   );
   return useCompositeOverflowStoreProps(store, props);
 }

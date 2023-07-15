@@ -16,7 +16,7 @@ import type { RadioStore, RadioStoreState } from "./radio-store.js";
 
 function getIsChecked(
   value: RadioOptions["value"],
-  storeValue?: RadioStoreState["value"]
+  storeValue?: RadioStoreState["value"],
 ) {
   if (storeValue === undefined) return;
   if (value != null && storeValue != null) {
@@ -53,7 +53,7 @@ export const useRadio = createHook<RadioOptions>(
     const isChecked =
       useStoreState(
         store,
-        (state) => checked ?? getIsChecked(value, state.value)
+        (state) => checked ?? getIsChecked(value, state.value),
       ) ?? checked;
 
     // When the radio store has a default value, we need to update the active id
@@ -126,7 +126,7 @@ export const useRadio = createHook<RadioOptions>(
       checked: isChecked,
       ...props,
     };
-  }
+  },
 );
 
 /**

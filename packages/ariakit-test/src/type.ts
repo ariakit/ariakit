@@ -30,7 +30,7 @@ function workAroundEmailInput(element: Element) {
 export async function type(
   text: string,
   element?: (DirtiableElement & HTMLElement) | null,
-  options: InputEventInit | KeyboardEventInit = {}
+  options: InputEventInit | KeyboardEventInit = {},
 ) {
   if (element == null) {
     element = document.activeElement as HTMLInputElement;

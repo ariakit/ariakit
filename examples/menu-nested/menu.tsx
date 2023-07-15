@@ -16,7 +16,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         {label}
       </Ariakit.MenuItem>
     );
-  }
+  },
 );
 
 export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -62,5 +62,5 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
         </Ariakit.Menu>
       </>
     );
-  }
+  },
 );

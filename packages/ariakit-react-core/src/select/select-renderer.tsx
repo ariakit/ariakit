@@ -28,7 +28,7 @@ type BaseItemProps = CompositeRendererBaseItemProps;
 
 type ItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = CompositeRendererItemProps<T, P>;
 
 function getItemObject(item: Item): ItemObject {
@@ -40,7 +40,7 @@ function getItemObject(item: Item): ItemObject {
 
 function findIndicesByValue<V extends SelectStoreValue>(
   items: readonly Item[],
-  value: V
+  value: V,
 ): number[] {
   const values = toArray(value);
   const indices: number[] = [];
@@ -76,7 +76,7 @@ function useSelectRenderer<T extends Item = any>({
 
   const items =
     useStoreState(store, (state) =>
-      state.mounted ? itemsProp ?? (state.items as T[]) : 0
+      state.mounted ? itemsProp ?? (state.items as T[]) : 0,
     ) ?? itemsProp;
 
   const value =
@@ -106,7 +106,7 @@ function useSelectRenderer<T extends Item = any>({
 }
 
 export const SelectRenderer = forwardRef(function SelectRenderer<
-  T extends Item = any
+  T extends Item = any,
 >(props: SelectRendererProps<T>) {
   const htmlProps = useSelectRenderer(props);
   return createElement("div", htmlProps);
@@ -122,7 +122,7 @@ export type SelectRendererItem = Item;
 export type SelectRendererBaseItemProps = BaseItemProps;
 export type SelectRendererItemProps<
   T extends Item,
-  P extends BaseItemProps = BaseItemProps
+  P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
 export interface SelectRendererOptions<T extends Item = any>

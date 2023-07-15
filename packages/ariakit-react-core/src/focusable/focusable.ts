@@ -103,7 +103,7 @@ function getTabIndex(
   trulyDisabled: boolean,
   nativeTabbable: boolean,
   supportsDisabled: boolean,
-  tabIndexProp?: number
+  tabIndexProp?: number,
 ) {
   if (!focusable) {
     return tabIndexProp;
@@ -129,7 +129,7 @@ function getTabIndex(
 
 function useDisableEvent(
   onEvent?: EventHandler<SyntheticEvent>,
-  disabled?: boolean
+  disabled?: boolean,
 ) {
   return useEvent((event: SyntheticEvent) => {
     onEvent?.(event);
@@ -204,7 +204,7 @@ export const useFocusable = createHook<FocusableOptions>(
         labels.forEach((label) => label.addEventListener("mouseup", onMouseUp));
         return () => {
           labels.forEach((label) =>
-            label.removeEventListener("mouseup", onMouseUp)
+            label.removeEventListener("mouseup", onMouseUp),
           );
         };
       }, [focusable]);
@@ -246,11 +246,11 @@ export const useFocusable = createHook<FocusableOptions>(
     // Disable events when the element is disabled.
     const onKeyPressCapture = useDisableEvent(
       props.onKeyPressCapture,
-      disabled
+      disabled,
     );
     const onMouseDownCapture = useDisableEvent(
       props.onMouseDownCapture,
-      disabled
+      disabled,
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
 
@@ -292,7 +292,7 @@ export const useFocusable = createHook<FocusableOptions>(
 
     const handleFocusVisible = (
       event: SyntheticEvent<HTMLDivElement>,
-      currentTarget?: HTMLDivElement
+      currentTarget?: HTMLDivElement,
     ) => {
       if (currentTarget) {
         event.currentTarget = currentTarget;
@@ -323,7 +323,7 @@ export const useFocusable = createHook<FocusableOptions>(
         if (!isSelfTarget(event)) return;
         const element = event.currentTarget;
         queueMicrotask(() => handleFocusVisible(event, element));
-      }
+      },
     );
 
     const onFocusCaptureProp = props.onFocusCapture;
@@ -404,7 +404,7 @@ export const useFocusable = createHook<FocusableOptions>(
         trulyDisabled,
         nativeTabbable,
         supportsDisabled,
-        props.tabIndex
+        props.tabIndex,
       ),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // TODO: Test Focusable contentEditable.
@@ -419,7 +419,7 @@ export const useFocusable = createHook<FocusableOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

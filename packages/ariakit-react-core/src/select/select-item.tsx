@@ -59,7 +59,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "SelectItem must be wrapped in a SelectList or SelectPopover component"
+        "SelectItem must be wrapped in a SelectList or SelectPopover component",
     );
 
     const id = useId(props.id);
@@ -78,11 +78,11 @@ export const useSelectItem = createHook<SelectItemOptions>(
         }
         return nextItem;
       },
-      [disabled, value, getItemProp]
+      [disabled, value, getItemProp],
     );
 
     const multiSelectable = store.useState((state) =>
-      Array.isArray(state.value)
+      Array.isArray(state.value),
     );
 
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
@@ -119,7 +119,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
           {element}
         </SelectItemCheckedContext.Provider>
       ),
-      [selected]
+      [selected],
     );
 
     const contentElement = store.useState("contentElement");
@@ -166,7 +166,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

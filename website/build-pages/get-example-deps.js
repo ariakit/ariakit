@@ -102,7 +102,7 @@ function assignExternal(deps, source, filename) {
  */
 export function getExampleDeps(
   filename,
-  deps = { dependencies: {}, devDependencies: {} }
+  deps = { dependencies: {}, devDependencies: {} },
 ) {
   if (!/\.[tj]sx?$/.test(filename)) return deps;
 

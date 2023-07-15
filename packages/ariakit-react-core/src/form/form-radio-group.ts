@@ -25,7 +25,7 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -48,7 +48,7 @@ export const FormRadioGroup = createComponent<FormRadioGroupOptions>(
   (props) => {
     const htmlProps = useFormRadioGroup(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

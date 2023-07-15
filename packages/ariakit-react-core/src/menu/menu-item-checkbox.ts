@@ -35,7 +35,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItemCheckbox must be wrapped in a MenuList or Menu component"
+        "MenuItemCheckbox must be wrapped in a MenuList or Menu component",
     );
 
     const checkboxStore = useCheckboxStore({
@@ -52,7 +52,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     props = useMenuItem({ store, hideOnClick, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -71,7 +71,7 @@ export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
   (props) => {
     const htmlProps = useMenuItemCheckbox(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

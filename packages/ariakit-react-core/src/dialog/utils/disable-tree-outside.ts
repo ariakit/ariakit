@@ -22,7 +22,7 @@ function disableElement(element: Element | HTMLElement) {
       pointerEvents: "none",
       userSelect: "none",
       cursor: "default",
-    })
+    }),
   );
 }
 

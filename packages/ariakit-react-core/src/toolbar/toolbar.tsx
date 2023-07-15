@@ -21,7 +21,7 @@ import type { ToolbarStore } from "./toolbar-store.js";
  */
 export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
   const orientation = store.useState((state) =>
-    state.orientation === "both" ? undefined : state.orientation
+    state.orientation === "both" ? undefined : state.orientation,
   );
 
   props = useWrapElement(
@@ -29,7 +29,7 @@ export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
     (element) => (
       <ToolbarContext.Provider value={store}>{element}</ToolbarContext.Provider>
     ),
-    [store]
+    [store],
   );
 
   props = {

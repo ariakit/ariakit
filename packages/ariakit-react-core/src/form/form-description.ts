@@ -35,7 +35,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormDescription must be wrapped in a Form component"
+        "FormDescription must be wrapped in a Form component",
     );
 
     const id = useId(props.id);
@@ -55,7 +55,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
         }
         return nextItem;
       },
-      [id, name, getItemProp]
+      [id, name, getItemProp],
     );
 
     props = {
@@ -67,7 +67,7 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
     props = useCollectionItem({ store, ...props, getItem });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -89,7 +89,7 @@ export const FormDescription = createMemoComponent<FormDescriptionOptions>(
   (props) => {
     const htmlProps = useFormDescription(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

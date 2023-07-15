@@ -24,7 +24,7 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
     props = usePopover({ store, alwaysVisible, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

@@ -50,5 +50,5 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         {props.children}
       </Ariakit.Dialog>
     );
-  }
+  },
 );

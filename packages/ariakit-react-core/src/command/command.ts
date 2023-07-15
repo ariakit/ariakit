@@ -52,7 +52,7 @@ export const useCommand = createHook<CommandOptions>(
     const tagName = useTagName(ref, props.as);
     const type = props.type;
     const [isNativeButton, setIsNativeButton] = useState(
-      () => !!tagName && isButton({ tagName, type })
+      () => !!tagName && isButton({ tagName, type }),
     );
 
     useEffect(() => {
@@ -151,7 +151,7 @@ export const useCommand = createHook<CommandOptions>(
     props = useFocusable(props);
 
     return props;
-  }
+  },
 );
 
 /**

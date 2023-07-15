@@ -36,7 +36,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormCheckbox must be wrapped in a Form component"
+        "FormCheckbox must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -56,7 +56,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -77,7 +77,7 @@ export const FormCheckbox = createMemoComponent<FormCheckboxOptions>(
   (props) => {
     const htmlProps = useFormCheckbox(props);
     return createElement("input", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -20,7 +20,7 @@ export function useTabStoreOptions(props: TabStoreProps) {
 
 export function useTabStoreProps<T extends Store<Core.TabStore>>(
   store: T,
-  props: TabStoreProps
+  props: TabStoreProps,
 ) {
   store = useCompositeStoreProps(store, props);
   useStoreProps(store, props, "selectedId", "setSelectedId");

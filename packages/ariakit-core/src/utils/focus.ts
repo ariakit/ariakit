@@ -42,7 +42,7 @@ export function isFocusable(element: Element): element is HTMLElement {
  * isTabbable(document.querySelector("input:disabled")); // false
  */
 export function isTabbable(
-  element: Element | HTMLElement | HTMLInputElement
+  element: Element | HTMLElement | HTMLInputElement,
 ): element is HTMLElement {
   if (!isFocusable(element)) return false;
   if (hasNegativeTabIndex(element)) return false;
@@ -76,10 +76,10 @@ export function isTabbable(
  */
 export function getAllFocusableIn(
   container: HTMLElement,
-  includeContainer?: boolean
+  includeContainer?: boolean,
 ) {
   const elements = Array.from(
-    container.querySelectorAll<HTMLElement>(selector)
+    container.querySelectorAll<HTMLElement>(selector),
   );
   if (includeContainer) {
     elements.unshift(container);
@@ -109,7 +109,7 @@ export function getAllFocusable(includeBody?: boolean) {
  */
 export function getFirstFocusableIn(
   container: HTMLElement,
-  includeContainer?: boolean
+  includeContainer?: boolean,
 ) {
   const [first] = getAllFocusableIn(container, includeContainer);
   return first || null;
@@ -129,10 +129,10 @@ export function getFirstFocusable(includeBody?: boolean) {
 export function getAllTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   const elements = Array.from(
-    container.querySelectorAll<HTMLElement>(selector)
+    container.querySelectorAll<HTMLElement>(selector),
   );
   const tabbableElements = elements.filter(isTabbable);
 
@@ -146,7 +146,7 @@ export function getAllTabbableIn(
       const allFrameTabbable = getAllTabbableIn(
         frameBody,
         false,
-        fallbackToFocusable
+        fallbackToFocusable,
       );
       tabbableElements.splice(i, 1, ...allFrameTabbable);
     }
@@ -172,12 +172,12 @@ export function getAllTabbable(fallbackToFocusable?: boolean) {
 export function getFirstTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   const [first] = getAllTabbableIn(
     container,
     includeContainer,
-    fallbackToFocusable
+    fallbackToFocusable,
   );
   return first || null;
 }
@@ -196,12 +196,12 @@ export function getFirstTabbable(fallbackToFocusable?: boolean) {
 export function getLastTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   const allTabbable = getAllTabbableIn(
     container,
     includeContainer,
-    fallbackToFocusable
+    fallbackToFocusable,
   );
   return allTabbable[allTabbable.length - 1] || null;
 }
@@ -220,7 +220,7 @@ export function getNextTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
   fallbackToFirst?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   const activeElement = getActiveElement(container);
   const allFocusable = getAllFocusableIn(container, includeContainer);
@@ -239,13 +239,13 @@ export function getNextTabbableIn(
  */
 export function getNextTabbable(
   fallbackToFirst?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   return getNextTabbableIn(
     document.body,
     false,
     fallbackToFirst,
-    fallbackToFocusable
+    fallbackToFocusable,
   );
 }
 
@@ -257,7 +257,7 @@ export function getPreviousTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
   fallbackToLast?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   const activeElement = getActiveElement(container);
   const allFocusable = getAllFocusableIn(container, includeContainer).reverse();
@@ -276,13 +276,13 @@ export function getPreviousTabbableIn(
  */
 export function getPreviousTabbable(
   fallbackToFirst?: boolean,
-  fallbackToFocusable?: boolean
+  fallbackToFocusable?: boolean,
 ) {
   return getPreviousTabbableIn(
     document.body,
     false,
     fallbackToFirst,
-    fallbackToFocusable
+    fallbackToFocusable,
   );
 }
 
@@ -351,7 +351,7 @@ export function disableFocus(element: HTMLElement) {
  */
 export function disableFocusIn(
   container: HTMLElement,
-  includeContainer?: boolean
+  includeContainer?: boolean,
 ) {
   const tabbableElements = getAllTabbableIn(container, includeContainer);
   tabbableElements.forEach(disableFocus);
@@ -383,7 +383,7 @@ export function restoreFocusIn(container: HTMLElement) {
  */
 export function focusIntoView(
   element: HTMLElement,
-  options?: ScrollIntoViewOptions
+  options?: ScrollIntoViewOptions,
 ) {
   if (!("scrollIntoView" in element)) {
     // @ts-expect-error

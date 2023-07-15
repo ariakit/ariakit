@@ -34,7 +34,7 @@ function parseCSSTime(...times: string[]) {
 export function isHidden(
   mounted: boolean,
   hidden?: boolean | null,
-  alwaysVisible?: boolean | null
+  alwaysVisible?: boolean | null,
 ) {
   return !alwaysVisible && hidden !== false && (!mounted || !!hidden);
 }
@@ -127,7 +127,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -144,7 +144,7 @@ export const DisclosureContent = createComponent<DisclosureContentOptions>(
   (props) => {
     const htmlProps = useDisclosureContent(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

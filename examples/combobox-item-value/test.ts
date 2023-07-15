@@ -9,7 +9,7 @@ test("show highlighted text", async () => {
   await press.ArrowDown();
   expect(getOption("Apple")).toHaveFocus();
   expect(getOption("Apple").innerHTML).toMatchInlineSnapshot(
-    '"<span><span data-user-value=\\"\\">A</span><span data-autocomplete-value=\\"\\">pple</span></span>"'
+    '"<span><span data-user-value=\\"\\">A</span><span data-autocomplete-value=\\"\\">pple</span></span>"',
   );
   await press.Enter();
   expect(getByRole("combobox")).toHaveValue("Apple");

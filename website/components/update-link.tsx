@@ -69,7 +69,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
       unread,
       ...props
     },
-    ref
+    ref,
   ) {
     let id = useId();
     id = props.id ?? id;
@@ -85,7 +85,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         className={twMerge(
           "group relative flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4 focus-visible:bg-blue-200/70 focus-visible:outline-none",
           "active:!bg-blue-200/70 dark:active:!bg-blue-800/25 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25",
-          props.className
+          props.className,
         )}
       >
         {unread && (
@@ -95,7 +95,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
           aria-hidden
           className={twJoin(
             "flex h-16 w-16 flex-none items-center justify-center rounded-sm bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%] dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
-            layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800"
+            layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
           )}
         >
           {type === "page" && category ? (
@@ -127,5 +127,5 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         </div>
       </Link>
     );
-  }
+  },
 );

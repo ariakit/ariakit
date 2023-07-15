@@ -7,7 +7,7 @@ const date = new Date();
 export default function sitemap(): MetadataRoute.Sitemap {
   const categories = pagesConfig.pages.map((page) => page.slug);
   const pages = categories.flatMap((category) =>
-    index[category]!.map((page) => `${category}/${page.slug}`)
+    index[category]!.map((page) => `${category}/${page.slug}`),
   );
   return [
     { url: "https://ariakit.org", lastModified: date },

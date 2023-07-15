@@ -55,7 +55,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
             event.stopPropagation();
           }
         }
-      }
+      },
     );
 
     const onFocusProp = props.onFocus;
@@ -73,7 +73,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -93,7 +93,7 @@ export const CompositeInput = createComponent<CompositeInputOptions>(
   (props) => {
     const htmlProps = useCompositeInput(props);
     return createElement("input", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

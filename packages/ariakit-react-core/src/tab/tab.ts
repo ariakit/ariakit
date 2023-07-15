@@ -39,7 +39,7 @@ export const useTab = createHook<TabOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "Tab must be wrapped in a TabList component"
+        "Tab must be wrapped in a TabList component",
     );
 
     // Keep a reference to the default id so we can wait before all tabs have
@@ -57,7 +57,7 @@ export const useTab = createHook<TabOptions>(
         }
         return nextItem;
       },
-      [dimmed, getItemProp]
+      [dimmed, getItemProp],
     );
 
     const onClickProp = props.onClick;
@@ -69,7 +69,7 @@ export const useTab = createHook<TabOptions>(
     });
 
     const panelId = store.panels.useState(
-      (state) => state.items.find((item) => item.tabId === id)?.id
+      (state) => state.items.find((item) => item.tabId === id)?.id,
     );
     const selected = store.useState((state) => !!id && state.selectedId === id);
 
@@ -91,7 +91,7 @@ export const useTab = createHook<TabOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

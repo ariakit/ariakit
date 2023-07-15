@@ -13,7 +13,7 @@ import { hasOwnProperty } from "@ariakit/core/utils/misc";
  */
 export function setRef<T>(
   ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
-  value: T
+  value: T,
 ) {
   if (typeof ref === "function") {
     ref(value);
@@ -26,7 +26,7 @@ export function setRef<T>(
  * Checks if an element is a valid React element with a ref.
  */
 export function isValidElementWithRef<P>(
-  element: unknown
+  element: unknown,
 ): element is ReactElement<P> & RefAttributes<any> {
   if (!element) return false;
   if (!isValidElement(element)) return false;
@@ -47,7 +47,7 @@ export function getRefProperty(element: unknown) {
  */
 export function mergeProps<T extends HTMLAttributes<any>>(
   base: T,
-  overrides: T
+  overrides: T,
 ) {
   const props = { ...base };
 

@@ -46,11 +46,11 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItemRadio must be wrapped in a MenuList or Menu component"
+        "MenuItemRadio must be wrapped in a MenuList or Menu component",
     );
 
     const isChecked = store.useState(
-      (state) => checked ?? state.values[name] === value
+      (state) => checked ?? state.values[name] === value,
     );
 
     props = useWrapElement(
@@ -60,7 +60,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
           {element}
         </MenuItemCheckedContext.Provider>
       ),
-      [isChecked]
+      [isChecked],
     );
 
     props = {
@@ -82,7 +82,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     props = useMenuItem({ store, hideOnClick, ...props });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -106,7 +106,7 @@ export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
   (props) => {
     const htmlProps = useMenuItemRadio(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -12,7 +12,7 @@ import { defaultValue } from "../utils/misc.js";
  * Creates a menu bar store.
  */
 export function createMenuBarStore(
-  props: MenuBarStoreProps = {}
+  props: MenuBarStoreProps = {},
 ): MenuBarStore {
   const syncState = props.store?.getState();
 
@@ -21,7 +21,7 @@ export function createMenuBarStore(
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
-      "horizontal" as const
+      "horizontal" as const,
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });

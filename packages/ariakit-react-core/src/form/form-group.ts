@@ -22,7 +22,7 @@ export const useFormGroup = createHook<FormGroupOptions>(
   ({ store, ...props }) => {
     props = useGroup(props);
     return props;
-  }
+  },
 );
 
 /**

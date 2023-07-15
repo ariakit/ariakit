@@ -26,7 +26,7 @@ function getRootElement(element?: Element | null) {
 
 function getPortalElement(
   element: HTMLElement,
-  portalElement: PortalOptions["portalElement"]
+  portalElement: PortalOptions["portalElement"],
 ) {
   if (!portalElement) {
     return getDocument(element).createElement("div");
@@ -259,7 +259,7 @@ export const usePortal = createHook<PortalOptions>(
 
         return element;
       },
-      [portalNode, context, portal, props.id, preserveTabOrder]
+      [portalNode, context, portal, props.id, preserveTabOrder],
     );
 
     props = {
@@ -268,7 +268,7 @@ export const usePortal = createHook<PortalOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

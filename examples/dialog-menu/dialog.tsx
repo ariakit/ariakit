@@ -20,7 +20,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         store={dialog}
       />
     );
-  }
+  },
 );
 
 export { DialogHeading, DialogDismiss } from "@ariakit/react";

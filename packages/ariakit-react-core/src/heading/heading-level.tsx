@@ -21,7 +21,7 @@ export function HeadingLevel({ level, children }: HeadingLevelProps) {
   const contextLevel = useContext(HeadingContext);
   const nextLevel = Math.max(
     Math.min(level || contextLevel + 1, 6),
-    1
+    1,
   ) as HeadingLevels;
   return (
     <HeadingContext.Provider value={nextLevel}>

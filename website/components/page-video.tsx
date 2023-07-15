@@ -34,7 +34,7 @@ export function PageVideo({ gif, lazy, src, ...props }: Props) {
           element.currentTime = 0;
         }
       },
-      { threshold: [0, 1] }
+      { threshold: [0, 1] },
     );
 
     observer.observe(element);

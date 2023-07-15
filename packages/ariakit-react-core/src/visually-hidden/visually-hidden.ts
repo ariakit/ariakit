@@ -48,7 +48,7 @@ export const VisuallyHidden = createComponent<VisuallyHiddenOptions>(
   (props) => {
     const htmlProps = useVisuallyHidden(props);
     return createElement("span", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

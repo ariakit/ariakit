@@ -76,7 +76,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**
@@ -100,7 +100,7 @@ export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(
   (props) => {
     const htmlProps = useComboboxPopover(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

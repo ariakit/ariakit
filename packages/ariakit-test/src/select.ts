@@ -9,7 +9,7 @@ import { sleep } from "./sleep.js";
 export async function select(
   text: string,
   element: Element = document.body,
-  options?: MouseEventInit
+  options?: MouseEventInit,
 ) {
   if (!isVisible(element)) return;
 
@@ -23,7 +23,7 @@ export async function select(
       bubbles: true,
       cancelable: true,
       composed: false,
-    })
+    }),
   );
 
   const startIndex = element.textContent?.indexOf(text) ?? -1;

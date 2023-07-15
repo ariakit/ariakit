@@ -26,7 +26,7 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
       (element) => (
         <RadioContext.Provider value={store}>{element}</RadioContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     props = {
@@ -37,7 +37,7 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
     props = useComposite({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

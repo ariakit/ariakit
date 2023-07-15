@@ -81,7 +81,7 @@ test("submit succeed", async () => {
     JSON.stringify({
       name: "John",
       fruit: "Banana",
-    })
+    }),
   );
   // Reset on submit
   expect(getSelect()).toHaveTextContent("Select an item");

@@ -7,7 +7,7 @@ interface ItemContext {
 }
 
 export const CompositeItemContext = createContext<ItemContext | undefined>(
-  undefined
+  undefined,
 );
 
 interface RowContext extends ItemContext {
@@ -16,9 +16,9 @@ interface RowContext extends ItemContext {
 }
 
 export const CompositeRowContext = createContext<RowContext | undefined>(
-  undefined
+  undefined,
 );
 
 export const CompositeContext = createContext<CompositeStore | undefined>(
-  undefined
+  undefined,
 );

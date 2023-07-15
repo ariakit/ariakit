@@ -59,7 +59,7 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

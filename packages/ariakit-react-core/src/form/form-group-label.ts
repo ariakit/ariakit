@@ -20,7 +20,7 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
   ({ store, ...props }) => {
     props = useGroupLabel(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -51,7 +51,7 @@ export const FormGroupLabel = createComponent<FormGroupLabelOptions>(
   (props) => {
     const htmlProps = useFormGroupLabel(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

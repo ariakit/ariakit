@@ -21,7 +21,7 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });
     return props;
-  }
+  },
 );
 
 /**

@@ -29,7 +29,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         </Ariakit.ComboboxPopover>
       </>
     );
-  }
+  },
 );
 
 export interface ComboboxGroupProps extends Ariakit.ComboboxGroupProps {
@@ -65,7 +65,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 export type ComboboxSeparatorProps = Ariakit.ComboboxSeparatorProps;

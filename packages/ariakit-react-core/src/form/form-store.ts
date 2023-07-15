@@ -23,7 +23,7 @@ export function useFormStoreOptions(props: FormStoreProps) {
 }
 
 export function useFormStoreProps<
-  T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">
+  T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
 >(store: T, props: FormStoreProps) {
   store = useCollectionStoreProps(store, props);
   useStoreProps(store, props, "values", "setValues");
@@ -32,7 +32,7 @@ export function useFormStoreProps<
 
   const useValue = useCallback<FormStore["useValue"]>(
     (name) => store.useState(() => store.getValue(name)),
-    [store]
+    [store],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
@@ -44,7 +44,7 @@ export function useFormStoreProps<
       const items = store.useState("items");
       useEffect(() => store.onValidate(callback), [items, callback]);
     },
-    [store]
+    [store],
   );
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
@@ -54,7 +54,7 @@ export function useFormStoreProps<
       const items = store.useState("items");
       useEffect(() => store.onSubmit(callback), [items, callback]);
     },
-    [store]
+    [store],
   );
 
   return useMemo(
@@ -64,7 +64,7 @@ export function useFormStoreProps<
       useValidate,
       useSubmit,
     }),
-    []
+    [],
   );
 }
 
@@ -90,7 +90,7 @@ export function useFormStore<T extends Values = Values>(
     | "defaultErrors"
     | "touched"
     | "defaultTouched"
-  >
+  >,
 ): FormStore<T>;
 
 export function useFormStore(props: FormStoreProps): FormStore;

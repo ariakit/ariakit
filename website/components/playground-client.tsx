@@ -126,7 +126,7 @@ export function PlaygroundClient({
 
   const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
     "language",
-    { defaultValue: "ts" }
+    { defaultValue: "ts" },
   );
   const isJS = language === "js";
 
@@ -161,9 +161,9 @@ export function PlaygroundClient({
           ...acc,
           [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
         }),
-        {}
+        {},
       ),
-    [files, javascript]
+    [files, javascript],
   );
 
   useUpdateEffect(() => {
@@ -182,7 +182,7 @@ export function PlaygroundClient({
               "bg-gradient-to-br from-blue-600 to-purple-600",
             type === "wide"
               ? "min-h-[320px] md:rounded-2xl md:p-8"
-              : "md:rounded-xl md:p-6"
+              : "md:rounded-xl md:p-6",
           )}
         >
           {preview}
@@ -194,7 +194,7 @@ export function PlaygroundClient({
             style.embed,
             type === "wide"
               ? "h-[480px] md:rounded-2xl"
-              : "h-[320px] md:rounded-xl"
+              : "h-[320px] md:rounded-xl",
           )}
         >
           <PlaygroundBrowser previewLink={previewLink} />
@@ -231,7 +231,7 @@ export function PlaygroundClient({
               style.tabPanel,
               collapsed
                 ? "max-h-64 [&_pre]:!overflow-hidden"
-                : "max-h-[min(max(calc(100vh-640px),480px),800px)]"
+                : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
             )}
           >
             {codeBlock}

@@ -36,7 +36,7 @@ test("maintain completion string while typing", async ({ page }) => {
   await expect(getOption(page, "Avocado")).toBeVisible();
   await expect(getOption(page, "Avocado")).toHaveAttribute(
     "data-active-item",
-    ""
+    "",
   );
 });
 

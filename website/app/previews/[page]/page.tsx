@@ -34,7 +34,7 @@ function getPageNames({ sourceContext, pageFileRegex }: Page) {
 
 async function parseStyles(cssFiles: string[]) {
   const styles = await Promise.all(
-    cssFiles.map((file) => parseCSSFile(file, { tailwindConfig }))
+    cssFiles.map((file) => parseCSSFile(file, { tailwindConfig })),
   );
   return styles.join("\n");
 }
@@ -75,7 +75,7 @@ export default async function Page({ params }: Props) {
         "flex min-h-[200vh] w-full flex-col items-center pt-[min(30vh,400px)]",
         /\-radix/.test(page)
           ? "bg-gradient-to-br from-blue-600 to-purple-600"
-          : "bg-gray-150 dark:bg-gray-850"
+          : "bg-gray-150 dark:bg-gray-850",
       )}
     >
       <Preview path={source} css={css} />

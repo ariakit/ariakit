@@ -20,7 +20,7 @@ export const useButton = createHook<ButtonOptions>((props) => {
   const ref = useRef<HTMLButtonElement>(null);
   const tagName = useTagName(ref, props.as || "button");
   const [isNativeButton, setIsNativeButton] = useState(
-    () => !!tagName && isButton({ tagName, type: props.type })
+    () => !!tagName && isButton({ tagName, type: props.type }),
   );
 
   useEffect(() => {

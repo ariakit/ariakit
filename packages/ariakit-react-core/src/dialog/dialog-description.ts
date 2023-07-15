@@ -33,7 +33,7 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -53,7 +53,7 @@ export const DialogDescription = createComponent<DialogDescriptionOptions>(
   (props) => {
     const htmlProps = useDialogDescription(props);
     return createElement("p", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

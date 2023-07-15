@@ -28,7 +28,7 @@ export const useToolbarContainer = createHook<ToolbarContainerOptions>(
     props = useCompositeContainer({ store, ...props });
     props = useToolbarItem({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**
@@ -48,7 +48,7 @@ export const ToolbarContainer = createMemoComponent<ToolbarContainerOptions>(
   (props) => {
     const htmlProps = useToolbarContainer(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

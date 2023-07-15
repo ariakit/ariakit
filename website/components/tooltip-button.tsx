@@ -42,7 +42,7 @@ export const TooltipButton = createComponent<TooltipButtonOptions>(
               "bg-gray-150 dark:bg-gray-700",
               "text-black dark:text-white",
               "border border-gray-300 dark:border-gray-600",
-              tooltipProps?.className
+              tooltipProps?.className,
             )}
           >
             {title}
@@ -50,5 +50,5 @@ export const TooltipButton = createComponent<TooltipButtonOptions>(
         )}
       </>
     );
-  }
+  },
 );

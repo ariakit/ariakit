@@ -41,17 +41,17 @@ test("check/uncheck menu item on space", async () => {
   await press.End();
   expect(getMenuItem("Security alerts")).toHaveAttribute(
     "aria-checked",
-    "false"
+    "false",
   );
   await press.Space();
   expect(getMenuItem("Security alerts")).toHaveAttribute(
     "aria-checked",
-    "true"
+    "true",
   );
   await press.Space();
   expect(getMenuItem("Security alerts")).toHaveAttribute(
     "aria-checked",
-    "false"
+    "false",
   );
 });
 

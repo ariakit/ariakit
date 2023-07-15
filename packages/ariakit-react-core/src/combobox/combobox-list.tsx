@@ -83,7 +83,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
           {element}
         </ComboboxContext.Provider>
       ),
-      [store]
+      [store],
     );
 
     const mounted = store.useState("mounted");
@@ -106,7 +106,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     props = useFocusable({ focusable, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

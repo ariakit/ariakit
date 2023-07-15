@@ -32,7 +32,7 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxRow must be wrapped in a ComboboxList or ComboboxPopover component"
+        "ComboboxRow must be wrapped in a ComboboxList or ComboboxPopover component",
     );
 
     const contentElement = store.useState("contentElement");
@@ -44,7 +44,7 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
     props = useCompositeRow({ store, ...props });
 
     return props;
-  }
+  },
 );
 
 /**

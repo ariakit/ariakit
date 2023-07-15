@@ -17,7 +17,7 @@ export function useRadioStoreOptions(props: RadioStoreProps) {
 
 export function useRadioStoreProps<T extends RadioStore>(
   store: T,
-  props: RadioStoreProps
+  props: RadioStoreProps,
 ) {
   store = useCompositeStoreProps(store, props);
   useStoreProps(store, props, "value", "setValue");

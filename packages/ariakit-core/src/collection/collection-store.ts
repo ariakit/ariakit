@@ -11,7 +11,7 @@ type Item = {
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
-    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING
+    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
   );
 }
 
@@ -60,7 +60,7 @@ function getCommonParent(items: Item[]) {
  * Creates a collection store.
  */
 export function createCollectionStore<T extends Item = Item>(
-  props: CollectionStoreProps<T> = {}
+  props: CollectionStoreProps<T> = {},
 ): CollectionStore<T> {
   const syncState = props.store?.getState();
 
@@ -68,7 +68,7 @@ export function createCollectionStore<T extends Item = Item>(
     props.items,
     syncState?.items,
     props.defaultItems,
-    []
+    [],
   );
 
   const itemsMap = new Map<string, T>(items.map((item) => [item.id, item]));
@@ -115,14 +115,14 @@ export function createCollectionStore<T extends Item = Item>(
           observer.disconnect();
         };
       },
-      ["renderedItems"]
+      ["renderedItems"],
     );
   });
 
   const mergeItem = (
     item: T,
     setItems: (getItems: (items: T[]) => T[]) => void,
-    canDeleteFromMap = false
+    canDeleteFromMap = false,
   ) => {
     let prevItem: T | undefined;
     setItems((items) => {
@@ -169,8 +169,8 @@ export function createCollectionStore<T extends Item = Item>(
       chain(
         registerItem(item),
         mergeItem(item, (getItems) =>
-          privateStore.setState("renderedItems", getItems)
-        )
+          privateStore.setState("renderedItems", getItems),
+        ),
       ),
 
     item: (id) => {

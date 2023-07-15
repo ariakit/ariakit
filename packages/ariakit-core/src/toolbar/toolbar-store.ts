@@ -13,7 +13,7 @@ import type { StoreOptions } from "../utils/store.js";
  * Creates a toolbar store.
  */
 export function createToolbarStore(
-  props: ToolbarStoreProps = {}
+  props: ToolbarStoreProps = {},
 ): ToolbarStore {
   const syncState = props.store?.getState();
 
@@ -22,7 +22,7 @@ export function createToolbarStore(
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
-      "horizontal" as const
+      "horizontal" as const,
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });

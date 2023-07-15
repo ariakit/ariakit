@@ -36,7 +36,7 @@ function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
 
 function useItem(store: FormStore, name: string, type: ItemType) {
   return store.useState((state) =>
-    state.items.find((item) => item.type === type && item.name === name)
+    state.items.find((item) => item.type === type && item.name === name),
   );
 }
 
@@ -78,7 +78,7 @@ export const useFormField = createHook<FormFieldOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormField must be wrapped in a Form component"
+        "FormField must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -103,7 +103,7 @@ export const useFormField = createHook<FormFieldOptions>(
         }
         return nextItem;
       },
-      [id, name, getItemProp]
+      [id, name, getItemProp],
     );
 
     const onBlurProp = props.onBlur;
@@ -122,11 +122,11 @@ export const useFormField = createHook<FormFieldOptions>(
     const describedBy = cx(
       error?.id,
       description?.id,
-      props["aria-describedby"]
+      props["aria-describedby"],
     );
 
     const invalid = store.useState(
-      () => !!store?.getError(name) && store.getFieldTouched(name)
+      () => !!store?.getError(name) && store.getFieldTouched(name),
     );
 
     props = {
@@ -142,7 +142,7 @@ export const useFormField = createHook<FormFieldOptions>(
     props = useCollectionItem({ store, ...props, name, getItem });
 
     return props;
-  }
+  },
 );
 
 /**

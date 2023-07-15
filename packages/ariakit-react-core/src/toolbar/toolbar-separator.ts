@@ -22,7 +22,7 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
   (props) => {
     props = useCompositeSeparator(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -42,7 +42,7 @@ export const ToolbarSeparator = createComponent<ToolbarSeparatorOptions>(
   (props) => {
     const htmlProps = useToolbarSeparator(props);
     return createElement("hr", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -214,7 +214,7 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

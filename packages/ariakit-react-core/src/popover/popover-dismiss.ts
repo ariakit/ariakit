@@ -36,7 +36,7 @@ export const PopoverDismiss = createComponent<PopoverDismissOptions>(
   (props) => {
     const htmlProps = usePopoverDismiss(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

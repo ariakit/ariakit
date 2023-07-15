@@ -20,7 +20,7 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
   (props) => {
     props = useCompositeGroupLabel(props);
     return props;
-  }
+  },
 );
 
 /**
@@ -50,7 +50,7 @@ export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
   (props) => {
     const htmlProps = useSelectGroupLabel(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -20,7 +20,7 @@ export const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
   function MenuButton(props, ref) {
     const menu = React.useContext(MenuContext)!;
     return <Ariakit.MenuButton ref={ref} {...props} store={menu} />;
-  }
+  },
 );
 
 type MenuPopoverProps = Omit<Ariakit.MenuProps, "store">;
@@ -29,7 +29,7 @@ export const MenuPopover = React.forwardRef<HTMLDivElement, MenuPopoverProps>(
   function MenuPopover(props, ref) {
     const menu = React.useContext(MenuContext)!;
     return <Ariakit.Menu ref={ref} portal {...props} store={menu} />;
-  }
+  },
 );
 
 export { MenuItem } from "@ariakit/react";

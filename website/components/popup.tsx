@@ -10,7 +10,7 @@ interface PopupProps extends RoleProps {
 
 export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
   { scroller, size = "medium", children, ...props },
-  ref
+  ref,
 ) {
   return (
     <Role
@@ -20,7 +20,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
         size === "small" && "text-sm",
         size === "responsive" && "sm:text-sm",
         "z-50 flex max-h-[min(var(--popover-available-height,800px),800px)] max-w-[--popover-available-width] flex-col rounded-lg border border-gray-250 bg-white text-black outline-none shadow-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:shadow-lg-dark",
-        props.className
+        props.className,
       )}
     >
       <Role
@@ -30,7 +30,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
           size === "small" && "p-1.5",
           size === "medium" && "p-2",
           size === "responsive" && "p-2 sm:p-1.5",
-          "flex flex-col overflow-auto overscroll-contain rounded-[inherit] bg-inherit"
+          "flex flex-col overflow-auto overscroll-contain rounded-[inherit] bg-inherit",
         )}
       >
         {children}

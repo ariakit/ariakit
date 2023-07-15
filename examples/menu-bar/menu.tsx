@@ -20,7 +20,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         <span className="label">{label}</span>
       </Ariakit.MenuItem>
     );
-  }
+  },
 );
 
 export type MenuSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
@@ -75,7 +75,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
         )}
       </>
     );
-  }
+  },
 );
 
 export type MenuBarProps = React.HTMLAttributes<HTMLDivElement>;
@@ -89,5 +89,5 @@ export const MenuBar = React.forwardRef<HTMLDivElement, MenuBarProps>(
     return (
       <Ariakit.MenuBar store={menu} className="menu-bar" ref={ref} {...props} />
     );
-  }
+  },
 );

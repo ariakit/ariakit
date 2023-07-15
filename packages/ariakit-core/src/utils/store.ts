@@ -47,8 +47,8 @@ export function createStore<S extends State>(
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
           return store?.sync?.((state) => setState(key, state[key]!), [key]);
-        })
-      )
+        }),
+      ),
     );
 
     const teardowns: Array<void | (() => void)> = [];
@@ -213,7 +213,7 @@ export type Sync<S = State> = {
    */
   <K extends keyof S = keyof S>(
     listener: Listener<Pick<S, K>>,
-    keys?: K[]
+    keys?: K[],
   ): () => void;
 };
 

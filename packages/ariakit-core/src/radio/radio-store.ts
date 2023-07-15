@@ -28,7 +28,7 @@ export function createRadioStore({
       props.value,
       syncState?.value,
       props.defaultValue,
-      null
+      null,
     ),
   };
 

@@ -12,7 +12,7 @@ function fetchPackage(name: string) {
   const buildId = process.env.NEXT_BUILD_ID;
   const cacheString = buildId ? `?${buildId}` : "";
   return fetch(
-    `https://registry.npmjs.org/-/package/${name}/dist-tags${cacheString}`
+    `https://registry.npmjs.org/-/package/${name}/dist-tags${cacheString}`,
   );
 }
 

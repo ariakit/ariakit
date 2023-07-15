@@ -37,7 +37,7 @@ function isMovingOnHovercard(
   target: Node | null,
   card: HTMLElement,
   anchor: HTMLElement | null,
-  nested?: HTMLElement[]
+  nested?: HTMLElement[],
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
@@ -74,13 +74,13 @@ function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
         store.setAutoFocusOnShow(false);
       }
     },
-    [store]
+    [store],
   );
 
   // If the hovercard is modal, we should always autoFocus on show.
   const modal = !!props.modal;
   const autoFocusOnShow = store.useState(
-    (state) => modal || state.autoFocusOnShow
+    (state) => modal || state.autoFocusOnShow,
   );
 
   return { autoFocusOnShow, ...props };
@@ -115,7 +115,7 @@ function useAutoFocusOnHide({ store, ...props }: HovercardProps) {
       (state) => {
         finalFocusRef.current = state.anchorElement;
       },
-      ["anchorElement"]
+      ["anchorElement"],
     );
   }, []);
 
@@ -164,7 +164,7 @@ export const useHovercard = createHook<HovercardOptions>(
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
     const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
     const disablePointerEventsProp = useBooleanEvent(
-      disablePointerEventsOnApproach
+      disablePointerEventsOnApproach,
     );
 
     const mounted = store.useState("mounted");
@@ -225,7 +225,7 @@ export const useHovercard = createHook<HovercardOptions>(
         }, hideTimeout ?? timeout);
       };
       return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
-        clearTimeout(hideTimeoutRef.current)
+        clearTimeout(hideTimeoutRef.current),
       );
     }, [
       store,
@@ -262,7 +262,7 @@ export const useHovercard = createHook<HovercardOptions>(
         addGlobalEventListener("mouseenter", disableEvent, true),
         addGlobalEventListener("mouseover", disableEvent, true),
         addGlobalEventListener("mouseout", disableEvent, true),
-        addGlobalEventListener("mouseleave", disableEvent, true)
+        addGlobalEventListener("mouseleave", disableEvent, true),
       );
     }, [domReady, mounted, mayDisablePointerEvents, disablePointerEventsProp]);
 
@@ -292,12 +292,12 @@ export const useHovercard = createHook<HovercardOptions>(
         const parentUnregister = registerOnParent?.(element);
         return () => {
           setNestedHovercards((prevElements) =>
-            prevElements.filter((item) => item !== element)
+            prevElements.filter((item) => item !== element),
           );
           parentUnregister?.();
         };
       },
-      [registerOnParent]
+      [registerOnParent],
     );
 
     props = useWrapElement(
@@ -307,7 +307,7 @@ export const useHovercard = createHook<HovercardOptions>(
           {element}
         </NestedHovercardContext.Provider>
       ),
-      [registerNestedHovercard]
+      [registerNestedHovercard],
     );
 
     props = {
@@ -335,7 +335,7 @@ export const useHovercard = createHook<HovercardOptions>(
     });
 
     return props;
-  }
+  },
 );
 
 /**

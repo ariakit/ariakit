@@ -23,7 +23,7 @@ import type { TabStore } from "./tab-store.js";
  */
 export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
   const orientation = store.useState((state) =>
-    state.orientation === "both" ? undefined : state.orientation
+    state.orientation === "both" ? undefined : state.orientation,
   );
 
   props = useWrapElement(
@@ -31,7 +31,7 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
     (element) => (
       <TabContext.Provider value={store}>{element}</TabContext.Provider>
     ),
-    [store]
+    [store],
   );
 
   props = {

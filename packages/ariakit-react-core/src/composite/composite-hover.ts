@@ -57,7 +57,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeHover must be wrapped in a Composite component"
+        "CompositeHover must be wrapped in a Composite component",
     );
 
     const isMouseMoving = useIsMouseMoving();
@@ -105,7 +105,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**
@@ -126,7 +126,7 @@ export const CompositeHover = createMemoComponent<CompositeHoverOptions>(
   (props) => {
     const htmlProps = useCompositeHover(props);
     return createElement("div", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

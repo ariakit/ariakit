@@ -97,7 +97,7 @@ function getIdentifier(element: HTMLElement) {
     element.id ||
     element.getAttribute("aria-label") ||
     element.ownerDocument?.getElementById(
-      element.getAttribute("aria-labelledby") || ""
+      element.getAttribute("aria-labelledby") || "",
     )?.textContent ||
     element.textContent
   );
@@ -112,7 +112,7 @@ export function useAllEvents(ref: React.RefObject<Element>, stack: string[]) {
     eventNames.forEach((event) => element.addEventListener(event, handler));
     return () => {
       eventNames.forEach((event) =>
-        element.removeEventListener(event, handler)
+        element.removeEventListener(event, handler),
       );
     };
   }, [ref]);

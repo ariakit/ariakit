@@ -14,10 +14,10 @@ import type { FormStore, FormStoreState } from "./form-store.js";
 function findNextOrPreviousField(
   items: FormStoreState["items"] | undefined,
   name: string,
-  index: number
+  index: number,
 ) {
   const fields = items?.filter(
-    (item) => item.type === "field" && item.name.startsWith(name)
+    (item) => item.type === "field" && item.name.startsWith(name),
   );
   const regex = new RegExp(`^${name}\\.(\\d+)`);
   const nextField = fields?.find((field) => {
@@ -33,7 +33,7 @@ function findNextOrPreviousField(
 
 function findPushButton(
   items: FormStoreState["items"] | undefined,
-  name: string
+  name: string,
 ) {
   return items?.find((item) => item.type === "button" && item.name === name);
 }
@@ -71,7 +71,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormRemove must be wrapped in a Form component"
+        "FormRemove must be wrapped in a Form component",
     );
 
     const name = `${nameProp}`;
@@ -105,7 +105,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
     props = useButton(props);
 
     return props;
-  }
+  },
 );
 
 /**

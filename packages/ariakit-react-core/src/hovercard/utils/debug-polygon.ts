@@ -19,7 +19,7 @@ function getPolygon() {
   svg.style.zIndex = "999999";
   const polygon = document.createElementNS(
     "http://www.w3.org/2000/svg",
-    "polygon"
+    "polygon",
   );
   polygon.setAttribute("id", id);
   polygon.setAttribute("points", "0,0 0,0");

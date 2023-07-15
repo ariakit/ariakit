@@ -19,7 +19,7 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
   ({ store, ...props }) => {
     props = useDisclosure({ store, ...props });
     return props;
-  }
+  },
 );
 
 /**
@@ -36,7 +36,7 @@ export const DialogDisclosure = createComponent<DialogDisclosureOptions>(
   (props) => {
     const htmlProps = useDialogDisclosure(props);
     return createElement("button", htmlProps);
-  }
+  },
 );
 
 if (process.env.NODE_ENV !== "production") {

@@ -69,7 +69,7 @@ export async function parseCSSFile(filename, options) {
 
   if (options.format) {
     processor.use(
-      combineDuplicatedSelectors({ removeDuplicatedProperties: true })
+      combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );
     processor.use(
       mergeSelectors({
@@ -83,7 +83,7 @@ export async function parseCSSFile(filename, options) {
             promote: true,
           },
         },
-      })
+      }),
     );
     processor.use(prettify());
   }
@@ -118,7 +118,7 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (options.format) {
-    css = format(css, { parser: "css" });
+    css = await format(css, { parser: "css" });
   }
 
   return css;

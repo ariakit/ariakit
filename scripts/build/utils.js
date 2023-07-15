@@ -58,7 +58,7 @@ export function getPackageJson(rootPath, prod = false) {
       const pathname = `./${name.replace(/\/index$/, "")}`;
       return { ...acc, [pathname]: getExports(path) };
     },
-    {}
+    {},
   );
 
   /** @type {Record<string, any>} */
@@ -163,7 +163,7 @@ export function getProxyFolders(rootPath) {
   return Object.fromEntries(
     Object.keys(publicFiles)
       .map((name) => [name.replace(/\/index$/, ""), name])
-      .filter(([name]) => name !== "index")
+      .filter(([name]) => name !== "index"),
   );
 }
 
@@ -219,7 +219,7 @@ export function cleanBuild(rootPath) {
  */
 export function getIndexPath(path) {
   const index = readdirSync(path).find((file) =>
-    /^index\.(c|m)?(j|t)sx?/.test(file)
+    /^index\.(c|m)?(j|t)sx?/.test(file),
   );
   if (!index) {
     throw new Error(`Missing index file in ${path}`);
@@ -241,12 +241,12 @@ export function makeGitignore(rootPath) {
     .join("\n");
   writeFileSync(
     join(rootPath, ".gitignore"),
-    `# Automatically generated\n${contents}\n`
+    `# Automatically generated\n${contents}\n`,
   );
   console.log(
     `\nCreated in ${chalk.bold(pkg.name)}: ${chalk.bold(
-      chalk.green(".gitignore")
-    )}`
+      chalk.green(".gitignore"),
+    )}`,
   );
 }
 
@@ -282,7 +282,7 @@ export function makeProxies(rootPath) {
     fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
-      getProxyPackageContents(rootPath, name, path)
+      getProxyPackageContents(rootPath, name, path),
     );
     created.push(chalk.bold(chalk.green(name)));
   });
@@ -292,7 +292,7 @@ export function makeProxies(rootPath) {
         "",
         `Created proxies in ${chalk.bold(pkg.name)}:`,
         `${created.join(", ")}`,
-      ].join("\n")
+      ].join("\n"),
     );
   }
 }

@@ -160,7 +160,7 @@ function getType(node) {
       undefined,
       ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope |
         ts.TypeFormatFlags.AddUndefined |
-        ts.TypeFormatFlags.UseFullyQualifiedType
+        ts.TypeFormatFlags.UseFullyQualifiedType,
     );
 }
 
@@ -178,7 +178,7 @@ function getExamples(node) {
       const text = tag.text?.toString();
       if (!text) return;
       const match = text.match(
-        /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m
+        /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
       );
       examples.push({
         description: (match?.groups?.description || "").trim(),

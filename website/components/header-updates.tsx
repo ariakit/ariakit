@@ -35,7 +35,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
   const mounted = popover.useState("mounted");
   const items = useMemo(
     () => updates.map((item) => ({ ...item, date: new Date(item.dateTime) })),
-    [updates]
+    [updates],
   );
   const [unreadItems, recentItems] = useMemo(() => {
     return partition(items, (item) => item.date > previousSeen);
@@ -54,7 +54,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
         title="Updates"
         className={twJoin(
           "relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10 dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:ariakit-outline-input",
-          props.className
+          props.className,
         )}
         render={<Ariakit.PopoverDisclosure store={popover} />}
       >

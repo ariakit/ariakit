@@ -53,7 +53,7 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
     };
 
     return props;
-  }
+  },
 );
 
 /**

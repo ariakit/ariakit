@@ -31,7 +31,7 @@ export function forwardRef<T extends React.FC>(render: T) {
  */
 export function memo<P, T extends React.FC<P>>(
   Component: T,
-  propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean
+  propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean,
 ) {
   const Role = React.memo(Component, propsAreEqual);
   Role.displayName = Component.displayName || Component.name;
@@ -56,7 +56,7 @@ export function memo<P, T extends React.FC<P>>(
  * <Component customProp render={<button />} />
  */
 export function createComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactElement
+  render: (props: Props<O>) => React.ReactElement,
 ) {
   const Role = (props: Props<O>, ref: React.Ref<any>) =>
     render({ ref, ...props });
@@ -82,7 +82,7 @@ export function createComponent<O extends Options>(
  * <Component customProp render={<button />} />
  */
 export function createMemoComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactElement
+  render: (props: Props<O>) => React.ReactElement,
 ) {
   const Role = createComponent(render);
   return React.memo(Role) as unknown as typeof Role;
@@ -103,7 +103,7 @@ export function createMemoComponent<O extends Options>(
  */
 export function createElement(
   Type: React.ElementType,
-  props: HTMLProps<Options>
+  props: HTMLProps<Options>,
 ) {
   const { as: As, wrapElement, render, ...rest } = props;
   let element: React.ReactElement;
@@ -151,7 +151,7 @@ export function createElement(
  * const props = useComponent({ as: "button", customProp: true });
  */
 export function createHook<O extends Options>(
-  useProps: (props: Props<O>) => HTMLProps<O>
+  useProps: (props: Props<O>) => HTMLProps<O>,
 ) {
   const useRole = (props: Props<O> = {} as Props<O>) => {
     const htmlProps = useProps(props);

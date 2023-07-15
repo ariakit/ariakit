@@ -26,7 +26,7 @@ export function useNestedDialogs(store: DialogStore) {
         setDialogs((dialogs) => dialogs.filter((d) => d !== dialog));
       });
     },
-    [context]
+    [context],
   );
 
   // If it's a nested dialog, add it to the context
@@ -37,7 +37,7 @@ export function useNestedDialogs(store: DialogStore) {
         if (!state.contentElement) return;
         return context.add?.(store);
       },
-      ["open", "contentElement"]
+      ["open", "contentElement"],
     );
   }, [store, context]);
 
@@ -48,7 +48,7 @@ export function useNestedDialogs(store: DialogStore) {
         if (state.open) return;
         store.hide();
       },
-      ["open"]
+      ["open"],
     );
   }, [context, store]);
 
@@ -61,7 +61,7 @@ export function useNestedDialogs(store: DialogStore) {
         {element}
       </NestedDialogsContext.Provider>
     ),
-    [providerValue]
+    [providerValue],
   );
 
   return { wrapElement, nestedDialogs: dialogs };

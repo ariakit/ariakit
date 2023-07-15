@@ -42,7 +42,7 @@ export function getPageSections(filename, category, getGroup) {
       if (isPlaygroundParagraphNode(node)) return;
       const content = toString(node).trim();
       const existingSection = pageMeta.sections.find(
-        (s) => s.sectionId === sectionId
+        (s) => s.sectionId === sectionId,
       );
       if (existingSection) {
         existingSection.content += `\n\n${content}`;

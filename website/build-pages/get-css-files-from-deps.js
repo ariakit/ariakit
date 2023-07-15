@@ -5,7 +5,7 @@
 export function getCSSFilesFromDeps(deps) {
   return Object.values(deps)
     .flatMap((deps) =>
-      Object.values(deps).filter((dep) => dep.endsWith(".css"))
+      Object.values(deps).filter((dep) => dep.endsWith(".css")),
     )
     .filter(Boolean);
 }

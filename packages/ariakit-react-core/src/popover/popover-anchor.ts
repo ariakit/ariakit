@@ -21,7 +21,7 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
       ref: useMergeRefs(store.setAnchorElement, props.ref),
     };
     return props;
-  }
+  },
 );
 
 /**

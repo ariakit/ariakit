@@ -32,7 +32,7 @@ export function getWindow(node?: Node | null): Window {
  */
 export function getActiveElement(
   node?: Node | null,
-  activeDescendant = false
+  activeDescendant = false,
 ): HTMLElement | null {
   const { activeElement } = getDocument(node);
   if (!activeElement?.nodeName) {
@@ -43,7 +43,7 @@ export function getActiveElement(
   if (isFrame(activeElement) && activeElement.contentDocument) {
     return getActiveElement(
       activeElement.contentDocument.body,
-      activeDescendant
+      activeDescendant,
     );
   }
   if (activeDescendant) {
@@ -141,15 +141,15 @@ export function isVisible(element: Element) {
  */
 export function closest<K extends keyof HTMLElementTagNameMap>(
   element: Element,
-  selectors: K
+  selectors: K,
 ): HTMLElementTagNameMap[K];
 export function closest<K extends keyof SVGElementTagNameMap>(
   element: Element,
-  selectors: K
+  selectors: K,
 ): SVGElementTagNameMap[K];
 export function closest<T extends Element = Element>(
   element: Element,
-  selectors: string
+  selectors: string,
 ): T | null;
 export function closest(element: Element, selectors: string) {
   if ("closest" in element) return element.closest(selectors);
@@ -170,7 +170,7 @@ export function closest(element: Element, selectors: string) {
  * isTextField(document.querySelector("textarea")); // true
  */
 export function isTextField(
-  element: Element
+  element: Element,
 ): element is HTMLInputElement | HTMLTextAreaElement {
   try {
     const isTextInput =
@@ -194,7 +194,7 @@ export function isTextField(
  */
 export function getPopupRole(
   element?: Element | null,
-  fallback?: AriaHasPopup
+  fallback?: AriaHasPopup,
 ) {
   const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
   const role = element?.getAttribute("role");
@@ -209,7 +209,7 @@ export function getPopupRole(
  */
 export function getPopupItemRole(
   element?: Element | null,
-  fallback?: AriaRole
+  fallback?: AriaRole,
 ) {
   const itemRoleByPopupRole = {
     menu: "menuitem",
@@ -259,7 +259,7 @@ export function getTextboxSelection(element: HTMLElement) {
  */
 export function scrollIntoViewIfNeeded(
   element: Element,
-  arg?: boolean | ScrollIntoViewOptions
+  arg?: boolean | ScrollIntoViewOptions,
 ) {
   if (isPartiallyHidden(element) && "scrollIntoView" in element) {
     element.scrollIntoView(arg);
@@ -270,7 +270,7 @@ export function scrollIntoViewIfNeeded(
  * Returns the scrolling container element of a given element.
  */
 export function getScrollingElement(
-  element?: Element | null
+  element?: Element | null,
 ): HTMLElement | Element | null {
   if (!element) return null;
   if (element.clientHeight && element.scrollHeight > element.clientHeight) {
