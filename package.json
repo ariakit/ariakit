@@ -120,7 +120,6 @@
     "jsdom": "22.1.0",
     "lerna": "7.1.1",
     "lint-staged": "13.2.3",
-    "lodash": "4.17.21",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
     "match-sorter": "6.3.1",

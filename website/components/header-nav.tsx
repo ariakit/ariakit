@@ -26,7 +26,7 @@ import type { PageContent } from "build-pages/contents.js";
 import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
 import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
-import groupBy from "lodash/groupBy.js";
+import { groupBy } from "lodash-es";
 import { usePathname } from "next/navigation.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import { usePerceptibleValue } from "utils/use-perceptible-value.js";
