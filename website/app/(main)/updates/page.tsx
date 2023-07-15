@@ -1,8 +1,13 @@
 import { UpdateLink } from "components/update-link.jsx";
 import { twJoin } from "tailwind-merge";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getUpdates } from "utils/get-updates.js";
 import { PageContainer } from "../page-container.jsx";
 import { SeeNow } from "./see-now.jsx";
+
+export function generateMetadata() {
+  return getNextPageMetadata({ title: `Updates - Ariakit` });
+}
 
 export default function Page() {
   const updates = getUpdates();
