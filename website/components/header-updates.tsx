@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
+import { track } from "@vercel/analytics";
 import { Bell } from "icons/bell.jsx";
 import { partition } from "lodash-es";
 import Link from "next/link.js";
@@ -28,6 +29,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
     setOpen(open) {
       if (open) {
         seeNow();
+        track("header-updates", { unreadLength });
       }
     },
   });
