@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { cx, getKeys } from "@ariakit/core/utils/misc";
+import { getKeys } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
@@ -28,6 +28,7 @@ import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
 import { groupBy } from "lodash-es";
 import { usePathname } from "next/navigation.js";
+import { twJoin } from "tailwind-merge";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import { usePerceptibleValue } from "utils/use-perceptible-value.js";
 import {
@@ -196,7 +197,7 @@ function Shortcut() {
           Ctrl
         </abbr>
       )}
-      <span className={cx(platform !== "mac" && "font-bold")}>K</span>
+      <span className={twJoin(platform !== "mac" && "font-bold")}>K</span>
     </span>
   );
 }
@@ -483,7 +484,7 @@ const HeaderNavMenu = memo(
             !isSubNav &&
             footer && (
               <PopoverDismiss
-                className={cx(
+                className={twJoin(
                   "grid grid-cols-[theme(spacing.14)_auto_theme(spacing.14)]",
                   "h-10 w-full items-center rounded p-2",
                   "bg-gray-150 dark:bg-gray-650",
@@ -525,7 +526,7 @@ const HeaderNavMenu = memo(
           {noResults && (
             <div
               role="presentation"
-              className={cx(
+              className={twJoin(
                 "p-10 text-center text-lg text-black/60 dark:text-white/50",
                 !otherItemElements && "py-20",
               )}
@@ -655,8 +656,8 @@ export function HeaderNav() {
     <>
       {
         <div
-          className={cx(
-            "cursor-default text-3xl font-thin opacity-30",
+          className={twJoin(
+            "cursor-default text-3xl font-thin -translate-y-px opacity-30",
             !!element && "hidden sm:block",
           )}
         >
@@ -679,7 +680,9 @@ export function HeaderNav() {
         {children}
       </HeaderNavMenu>
       {element && (
-        <div className="cursor-default text-3xl font-thin opacity-30">/</div>
+        <div className="cursor-default text-3xl font-thin opacity-30 -translate-y-px">
+          /
+        </div>
       )}
       {element && (
         <HeaderNavMenu
