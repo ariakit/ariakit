@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
+import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { track } from "@vercel/analytics";
 import { Bell } from "icons/bell.jsx";
 import { partition } from "lodash-es";
@@ -44,7 +45,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
 
   const [unreadLength, setUnreadLength] = useState(0);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     setUnreadLength(items.filter((item) => item.date > seen).length);
   }, [items, seen]);
 
