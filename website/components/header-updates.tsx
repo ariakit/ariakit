@@ -10,7 +10,6 @@ import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
 import { useMedia } from "utils/use-media.js";
-import { NewsletterForm } from "./newsletter-form.jsx";
 import { Popup } from "./popup.jsx";
 import { TooltipButton } from "./tooltip-button.jsx";
 import { UpdateLink } from "./update-link.jsx";
@@ -73,9 +72,9 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
       {mounted && (
         <Ariakit.Popover
           store={popover}
-          backdrop={!isLarge}
+          modal
           shift={-8}
-          className="max-w-[min(var(--popover-available-width),420px)]"
+          className="max-w-[min(var(--popover-available-width),480px)]"
           onClick={(event) => {
             if (!(event.target instanceof Element)) return;
             const closestAnchor = event.target.closest("a");
@@ -105,7 +104,41 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
             </Ariakit.PopoverHeading>
             <Ariakit.PopoverDismiss className="relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-md border-none hover:bg-black/5 dark:hover:bg-white/5 [&:focus-visible]:ariakit-outline-input [&_svg]:stroke-[1pt]" />
           </div>
-          <NewsletterForm />
+          <Ariakit.HeadingLevel>
+            <div className="flex flex-col gap-3 rounded bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/30">
+              <Ariakit.Heading className="font-medium m-0">
+                Newsletter
+              </Ariakit.Heading>
+              <p className="text-[15px] dark:font-light">
+                Join 1,000+ subscribers and receive monthly{" "}
+                <strong className="font-semibold">tips &amp; updates</strong> on
+                new Ariakit content.
+              </p>
+              <form
+                action="https://newsletter.ariakit.org/api/v1/free?email="
+                method="post"
+                target="_blank"
+              >
+                <div className="flex gap-2">
+                  <Ariakit.Focusable
+                    className="h-10 w-full flex-1 scroll-mt-96 rounded border-none bg-white px-4 text-base text-black placeholder-black/60 focus-visible:ariakit-outline-input"
+                    autoFocus
+                    render={
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        placeholder="Your email address"
+                      />
+                    }
+                  />
+                  <button className="flex h-10 cursor-pointer scroll-mt-96 items-center justify-center gap-2 whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline">
+                    Subscribe
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Ariakit.HeadingLevel>
           {!!unreadItems.length && (
             <div className="flex flex-col bg-inherit pt-4">
               <Ariakit.HeadingLevel>
@@ -122,6 +155,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                         dateStyle="fromNow"
                         layer="popup"
                         unread
+                        connected={index !== 0}
                         {...item}
                       />
                     </li>
@@ -142,7 +176,12 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                 <ul aria-labelledby={`${id}/recent`} className="flex flex-col">
                   {recentItems.map((item, index) => (
                     <li key={index}>
-                      <UpdateLink dateStyle="fromNow" layer="popup" {...item} />
+                      <UpdateLink
+                        dateStyle="fromNow"
+                        layer="popup"
+                        connected={index !== 0}
+                        {...item}
+                      />
                     </li>
                   ))}
                 </ul>

@@ -3,8 +3,8 @@ import type { ComponentPropsWithoutRef } from "react";
 import { getPageTitle } from "build-pages/get-page-title.js";
 import pageIndex from "build-pages/index.js";
 import { ChevronRight } from "icons/chevron-right.jsx";
-import { Github } from "icons/github.jsx";
 import { NewWindow } from "icons/new-window.jsx";
+import { Npm } from "icons/npm.jsx";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
@@ -18,6 +18,7 @@ export interface UpdateLinkProps
   layer?: "popup" | "page";
   date?: Date;
   unread?: boolean;
+  connected?: boolean;
 }
 
 function renderPaths(id: string, url: URL) {
@@ -67,6 +68,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
       dateTime,
       date = new Date(dateTime),
       unread,
+      connected,
       ...props
     },
     ref,
@@ -83,7 +85,8 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         target={url.origin !== "https://ariakit.org" ? "_blank" : undefined}
         {...props}
         className={twMerge(
-          "group relative flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4 focus-visible:bg-blue-200/70 focus-visible:outline-none",
+          "group relative flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",
+          "focus-visible:[box-shadow:inset_0_0_0_2px_theme(colors.blue.600)] focus-visible:outline-none",
           "active:!bg-blue-200/70 dark:active:!bg-blue-800/25 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25",
           props.className,
         )}
@@ -91,17 +94,22 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         {unread && (
           <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500"></div>
         )}
+        {connected && (
+          <div className="absolute left-[47px] -top-3 w-0.5 h-6 bg-black/10 dark:bg-white/10" />
+        )}
         <div
           aria-hidden
           className={twJoin(
-            "flex h-16 w-16 flex-none items-center justify-center rounded-sm bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%] dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
+            "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+            "bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
+            "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
             layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
           )}
         >
           {type === "page" && category ? (
             getPageIcon(category, page)
           ) : type === "release" ? (
-            <Github className="h-6 w-6" />
+            <Npm />
           ) : null}
         </div>
         <div className="flex min-w-0 flex-col">

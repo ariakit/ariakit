@@ -21,11 +21,11 @@ export default function Page() {
         )}
       >
         <PageContainer title="Updates">
-          <div>
+          <div className="!max-w-[1064px]">
             <ul className="flex max-w-2xl flex-col">
               {updates.map((item, index) => (
                 <li key={index}>
-                  <UpdateLink {...item} />
+                  <UpdateLink {...item} connected={index !== 0} />
                 </li>
               ))}
             </ul>
