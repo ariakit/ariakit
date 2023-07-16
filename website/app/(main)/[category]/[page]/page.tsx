@@ -84,6 +84,7 @@ const style = {
     underline-offset-[0.2em] hover:text-black dark:hover:text-white
     focus-visible:ariakit-outline-input
 
+    scroll-my-2
     data-[depth="0"]:scroll-mt-96
     data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24
     md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12
@@ -362,6 +363,7 @@ export default async function Page({ params }: PageProps) {
             href={item.href}
             data-depth={depth}
             className={style.navLink}
+            aria-current={isPage ? "true" : undefined}
           >
             {icon}
             <span className={style.navLinkText}>{item.text}</span>
