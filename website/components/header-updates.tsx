@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
