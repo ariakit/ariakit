@@ -21,7 +21,7 @@ export default function Page() {
         )}
       >
         <PageContainer title="Updates">
-          <div className="!max-w-[1064px]">
+          <div className="!max-w-[1066px]">
             <ul className="flex max-w-2xl flex-col">
               {updates.map((item, index) => (
                 <li key={index}>
