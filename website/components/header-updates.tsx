@@ -11,10 +11,10 @@ import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
 import { useMedia } from "utils/use-media.js";
+import { useUpdates } from "utils/use-updates.js";
 import { Popup } from "./popup.jsx";
 import { TooltipButton } from "./tooltip-button.jsx";
 import { UpdateLink } from "./update-link.jsx";
-import { useUpdatesContext } from "./updates-context.jsx";
 
 export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
   updates: UpdateItem[];
@@ -23,7 +23,7 @@ export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
 export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
   const id = useId();
   const isLarge = useMedia("(min-width: 640px)", true);
-  const { seen, previousSeen, seeNow } = useUpdatesContext();
+  const { seen, previousSeen, seeNow } = useUpdates();
   const popover = Ariakit.usePopoverStore({
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {

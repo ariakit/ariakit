@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useUpdatesContext } from "components/updates-context.jsx";
+import { useUpdates } from "utils/use-updates.js";
 
 export function SeeNow() {
-  const { seeNow } = useUpdatesContext();
+  const { seeNow } = useUpdates();
   useEffect(seeNow, [seeNow]);
   return null;
 }
