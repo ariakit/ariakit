@@ -86,7 +86,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         {...props}
         className={twMerge(
           "group relative flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",
-          "focus-visible:[box-shadow:inset_0_0_0_2px_theme(colors.blue.600)] focus-visible:outline-none",
+          "focus-visible:outline-none focus-visible:[box-shadow:inset_0_0_0_2px_theme(colors.blue.600)]",
           "active:!bg-blue-200/70 dark:active:!bg-blue-800/25 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25",
           props.className,
         )}
@@ -95,7 +95,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
           <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500"></div>
         )}
         {connected && (
-          <div className="absolute left-[47px] -top-3 w-0.5 h-6 bg-black/10 dark:bg-white/10" />
+          <div className="absolute -top-3 left-[47px] h-6 w-0.5 bg-black/10 dark:bg-white/10" />
         )}
         <div
           aria-hidden

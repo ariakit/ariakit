@@ -68,10 +68,6 @@ const style = {
   nav: tw`
     flex-col gap-4 overflow-auto p-3 pr-1 w-full
   `,
-  navList: tw`
-    flex flex-col md:text-sm text-black/90 dark:text-white/80
-    md:text-black/80 md:dark:text-white/70 p-2 md:p-0
-  `,
   navSublist: tw`
     flex flex-col
   `,
@@ -408,7 +404,9 @@ export default async function Page({ params }: PageProps) {
   );
 
   const navList = (
-    <ul className={style.navList}>{renderTableOfContents(tableOfContents)}</ul>
+    <ul className="flex flex-col p-2 text-black/90 dark:text-white/80 md:p-0 md:text-sm md:text-black/80 md:dark:text-white/70">
+      {renderTableOfContents(tableOfContents)}
+    </ul>
   );
 
   return (

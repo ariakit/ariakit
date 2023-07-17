@@ -107,7 +107,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
           </div>
           <Ariakit.HeadingLevel>
             <div className="flex flex-col gap-3 rounded bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/30">
-              <Ariakit.Heading className="font-medium m-0">
+              <Ariakit.Heading className="m-0 font-medium">
                 Newsletter
               </Ariakit.Heading>
               <p className="text-[15px] dark:font-light">

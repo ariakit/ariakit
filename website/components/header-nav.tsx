@@ -657,7 +657,7 @@ export function HeaderNav() {
       {
         <div
           className={twJoin(
-            "cursor-default text-3xl font-thin -translate-y-px opacity-30",
+            "-translate-y-px cursor-default text-3xl font-thin opacity-30",
             !!element && "hidden sm:block",
           )}
         >
@@ -680,7 +680,7 @@ export function HeaderNav() {
         {children}
       </HeaderNavMenu>
       {element && (
-        <div className="cursor-default text-3xl font-thin opacity-30 -translate-y-px">
+        <div className="-translate-y-px cursor-default text-3xl font-thin opacity-30">
           /
         </div>
       )}
