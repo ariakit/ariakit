@@ -97,8 +97,6 @@ function getLinkableType(token: IThemedToken, line: IThemedToken[]) {
   return null;
 }
 
-const references = links.filter((link) => link.path.startsWith("/reference/"));
-
 interface TokenContext {
   contextId: string;
   contextTabLevel: number;
@@ -127,7 +125,7 @@ function getTokenHref(
       ? `/reference/${context.contextId}#${id}`
       : `/reference/${id}`;
 
-  if (!isValidHref(href, references)) return;
+  if (!isValidHref(href, links)) return;
 
   if (type === "component" || type === "function") {
     context.contextId = id;
