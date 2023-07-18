@@ -4,6 +4,7 @@ import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
 import invariant from "tiny-invariant";
+import { nonNullable } from "../utils/non-nullable.js";
 import { getPageEntryFiles } from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageName } from "./get-page-name.js";
@@ -123,8 +124,28 @@ function writeFiles(buildDir, pages) {
     {},
   );
 
-  writeFileSync(indexFile, JSON.stringify(index, null, 2));
-  writeFileSync(contentsFile, JSON.stringify(contents, null, 2));
+  writeFileSync(indexFile, JSON.stringify(index));
+  writeFileSync(contentsFile, JSON.stringify(contents));
+
+  // links.json
+  const linksFile = join(buildDir, "links.json");
+
+  const links = meta.map((page) => ({
+    path: `/${page.category}/${page.slug}`,
+    hashes: page.sections
+      .map((section) => section.sectionId)
+      .filter(nonNullable),
+  }));
+
+  links.unshift(
+    { path: "/", hashes: [] },
+    ...Object.keys(categories).map((category) => ({
+      path: `/${category}`,
+      hashes: [],
+    })),
+  );
+
+  writeFileSync(linksFile, JSON.stringify(links));
 
   // icons.ts
   const iconsFile = join(buildDir, "icons.ts");

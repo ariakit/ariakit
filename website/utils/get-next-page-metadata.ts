@@ -31,6 +31,7 @@ export function getNextPageMetadata({
   index = true,
 }: Props = {}): Metadata {
   return {
+    metadataBase: new URL(url),
     title,
     description,
     keywords,

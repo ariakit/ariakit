@@ -7,6 +7,7 @@ import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
+import links from "build-pages/links.js";
 import { getReferences } from "build-pages/reference-utils.js";
 import type {
   Page,
@@ -687,7 +688,7 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               const className = cx(style.link, props.className);
-              href = href?.replace("https://ariakit.org", "");
+              href = href?.replace(/^https:\/\/(www\.)?ariakit.org/, "");
               if (href?.startsWith("http")) {
                 return (
                   <a
@@ -720,6 +721,12 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               if (href) {
+                const url = new URL(href, "https://ariakit.org");
+                const link = links.find((link) => link.path === url.pathname);
+                const hash = url.hash.replace("#", "");
+                if (!link || (hash && !link.hashes.includes(hash))) {
+                  throw new Error(`Invalid link: ${href}`);
+                }
                 return <Link {...props} href={href} className={className} />;
               }
               return <a {...props} className={className} />;
