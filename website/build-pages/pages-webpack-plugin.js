@@ -4,6 +4,7 @@ import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
 import invariant from "tiny-invariant";
+import { nonNullable } from "../utils/non-nullable.js";
 import { getPageEntryFiles } from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageName } from "./get-page-name.js";
@@ -133,10 +134,7 @@ function writeFiles(buildDir, pages) {
     path: `/${page.category}/${page.slug}`,
     hashes: page.sections
       .map((section) => section.sectionId)
-      .filter(
-        /** @return {id is string} */
-        (id) => !!id,
-      ),
+      .filter(nonNullable),
   }));
 
   links.unshift(
