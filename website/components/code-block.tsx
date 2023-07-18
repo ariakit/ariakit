@@ -1,7 +1,10 @@
+import links from "build-pages/links.js";
+import { kebabCase } from "lodash-es";
+import Link from "next/link.js";
 import { FontStyle, getHighlighter } from "shiki";
 import type { Highlighter, IThemedToken } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
-import { tw } from "utils/tw.js";
+import { isValidHref } from "utils/is-valid-href.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 
 interface Props {
@@ -17,12 +20,9 @@ interface Props {
   preClassName?: string;
 }
 
-const style = {
-  highlightBefore: tw`
-    relative before:absolute before:left-0 before:top-0
-    before:h-full before:w-1 before:bg-blue-600
-  `,
-};
+const highlightBeforeStyle = twJoin(
+  "relative before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-blue-600",
+);
 
 function getExtension(filename?: string) {
   const extension = filename?.split(".").pop();
@@ -37,6 +37,105 @@ function parseFontStyle(fontStyle?: FontStyle) {
     fontStyle & FontStyle.Bold && "font-bold",
     fontStyle & FontStyle.Underline && "underline",
   );
+}
+
+function getLinkableType(token: IThemedToken, line: IThemedToken[]) {
+  if (!token.explanation) return null;
+
+  for (const { scopes } of token.explanation) {
+    const s = scopes.map((s) => s.scopeName.replace(/\.[tj]sx?/g, ""));
+    if (
+      s.includes("variable.other.readwrite.alias") &&
+      (s.includes("meta.import") || s.includes("meta.export")) &&
+      line.some((token) => token.content.startsWith('"@ariakit/react'))
+    ) {
+      if (/^[A-Z]/.test(token.content)) return "component-import";
+      return "function-import";
+    }
+    if (
+      s.includes("entity.name.function") &&
+      s.includes("meta.function-call")
+    ) {
+      return "function";
+    }
+    if (
+      s.includes("support.class.component") &&
+      s.includes("entity.name.tag")
+    ) {
+      return "component";
+    }
+    if (
+      s.includes("entity.other.attribute-name") &&
+      s.includes("meta.tag.attributes")
+    ) {
+      return "prop";
+    }
+    if (
+      s.includes("meta.object-literal.key") &&
+      s.includes("meta.object.member") &&
+      s.includes("meta.objectliteral")
+    ) {
+      return "prop";
+    }
+    if (
+      s.includes("variable.other.readwrite") &&
+      s.includes("meta.object.member") &&
+      s.includes("meta.objectliteral")
+    ) {
+      return "prop";
+    }
+    if (
+      s.includes("entity.name.function") &&
+      s.includes("meta.definition.method") &&
+      s.includes("meta.method.declaration") &&
+      s.includes("meta.objectliteral")
+    ) {
+      return "prop";
+    }
+  }
+
+  return null;
+}
+
+const references = links.filter((link) => link.path.startsWith("/reference/"));
+
+interface TokenContext {
+  contextId: string;
+  contextTabLevel: number;
+}
+
+function getTokenHref(
+  token: IThemedToken,
+  line: IThemedToken[],
+  context: TokenContext,
+) {
+  if (/^\s{2,}$/.test(token.content)) {
+    const tabLevel = token.content.length / 2;
+    if (tabLevel <= context.contextTabLevel) {
+      context.contextId = "";
+      context.contextTabLevel = 0;
+    }
+    return;
+  }
+  const type = getLinkableType(token, line);
+  if (!type) return;
+  const word = token.content.replace("Ariakit.", "").replace(/\:$/, "");
+  const id = type === "prop" ? word.toLowerCase() : kebabCase(word);
+
+  const href =
+    type === "prop"
+      ? `/reference/${context.contextId}#${id}`
+      : `/reference/${id}`;
+
+  if (!isValidHref(href, references)) return;
+
+  if (type === "component" || type === "function") {
+    context.contextId = id;
+    context.contextTabLevel =
+      (line.find((t) => /^\s{2,}$/.test(t.content))?.content.length ?? 0) / 2;
+  }
+
+  return href;
 }
 
 let highlighter: Highlighter | undefined;
@@ -78,21 +177,18 @@ export async function CodeBlock({
   }
 
   try {
-    lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus", {
-      includeExplanation: false,
-    });
-    darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus", {
-      includeExplanation: false,
-    });
+    lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
+    darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
   } catch (error) {
     console.error(error);
   }
 
   const oneLiner = darkTokens.length === 1;
 
-  const renderLine =
-    (className = "", tokensSeen: Record<string, number>) =>
-    (line: IThemedToken[], i: number) => {
+  const renderLine = (className = "") => {
+    const tokensSeen: Record<string, number> = {};
+    const context: TokenContext = { contextId: "", contextTabLevel: 0 };
+    return (line: IThemedToken[], i: number) => {
       const highlightLine = highlightLines?.includes(i + 1);
       return (
         <div
@@ -104,7 +200,7 @@ export async function CodeBlock({
             type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
             type === "definition" && "px-4",
             highlightLine && "bg-blue-200/20 dark:bg-blue-600/[15%]",
-            highlightLine && !lineNumbers && style.highlightBefore,
+            highlightLine && !lineNumbers && highlightBeforeStyle,
             className,
           )}
         >
@@ -121,26 +217,59 @@ export async function CodeBlock({
                   const index = tokensSeen[word]++;
                   return indexes.includes(index);
                 });
+
+                const color =
+                  !highlightToken && !highlightLine
+                    ? token.color
+                    : // Adjust contrast for custom component tokens
+                    token.color === "#267F99"
+                    ? "#227289"
+                    : // Adjust contrast for component prop tokens
+                    token.color === "#E50000"
+                    ? "#CE0000"
+                    : token.color;
+
+                const className = twJoin(
+                  highlightToken &&
+                    "-mx-[3px] rounded bg-black/[7.5%] px-[3px] py-1 dark:bg-white/10",
+                  parseFontStyle(token.fontStyle),
+                );
+
+                const href =
+                  lang &&
+                  /[jt]sx?/.test(lang) &&
+                  getTokenHref(token, line, context);
+
+                const getScopes = () => {
+                  if (process.env.NODE_ENV === "production") return;
+                  return token.explanation
+                    ?.flatMap((exp) => exp.scopes.map((s) => s.scopeName))
+                    .join(" ");
+                };
+
+                if (href) {
+                  return (
+                    <Link
+                      key={j}
+                      href={href}
+                      style={{ color }}
+                      className={twJoin(
+                        className,
+                        "underline decoration-dotted decoration-1 underline-offset-[3px] hover:decoration-solid hover:decoration-2",
+                      )}
+                      data-scopes={getScopes()}
+                    >
+                      {token.content}
+                    </Link>
+                  );
+                }
+
                 return (
                   <span
                     key={j}
-                    style={{
-                      color:
-                        !highlightToken && !highlightLine
-                          ? token.color
-                          : // Adjust contrast for custom component tokens
-                          token.color === "#267F99"
-                          ? "#227289"
-                          : // Adjust contrast for component prop tokens
-                          token.color === "#E50000"
-                          ? "#CE0000"
-                          : token.color,
-                    }}
-                    className={twJoin(
-                      parseFontStyle(token.fontStyle),
-                      highlightToken &&
-                        "-mx-[3px] rounded bg-black/[7.5%] px-[3px] py-1 dark:bg-white/10",
-                    )}
+                    style={{ color }}
+                    className={className}
+                    data-scopes={getScopes()}
                   >
                     {token.content}
                   </span>
@@ -154,6 +283,7 @@ export async function CodeBlock({
         </div>
       );
     };
+  };
 
   return (
     <div
@@ -208,7 +338,7 @@ export async function CodeBlock({
                     type === "editor" && "min-w-[68px] pl-0 pr-[26px]",
                     highlighted &&
                       "bg-blue-200/20 text-[#0b216f] dark:bg-blue-600/[15%] dark:text-[#c6c6c6]",
-                    highlighted && style.highlightBefore,
+                    highlighted && highlightBeforeStyle,
                   )}
                 >
                   {i + 1}
@@ -220,8 +350,8 @@ export async function CodeBlock({
         <code
           className={twJoin(type !== "definition" && "w-full", "grid h-max")}
         >
-          {lightTokens.map(renderLine("block dark:hidden", {}))}
-          {darkTokens.map(renderLine("hidden dark:block", {}))}
+          {lightTokens.map(renderLine("block dark:hidden"))}
+          {darkTokens.map(renderLine("hidden dark:block"))}
           <div
             className={twJoin(
               type === "static" && !oneLiner && "sm:h-8",

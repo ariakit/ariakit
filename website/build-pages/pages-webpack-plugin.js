@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import chalk from "chalk";
 import fse from "fs-extra";
@@ -20,6 +20,18 @@ function getBuildDir(buildDir) {
 /** @param {string} path */
 function pathToImport(path) {
   return path.replace(/\.ts(x?)$/, ".js$1");
+}
+
+/**
+ * @param {string} file
+ * @param {string} contents
+ */
+function writeFileIfNeeded(file, contents) {
+  try {
+    const prevContents = readFileSync(file, "utf8");
+    if (prevContents === contents) return;
+  } catch {}
+  writeFileSync(file, contents);
 }
 
 /**
@@ -66,7 +78,7 @@ function writeFiles(buildDir, pages) {
     .map((key) => `  "${key}": () => import("${key}") as unknown`)
     .join(",\n")}\n};\n`;
 
-  writeFileSync(depsFile, depsContents);
+  writeFileIfNeeded(depsFile, depsContents);
 
   // examples.js
   const sourceFilesWithoutAppDir = Object.values(sourceFiles)
@@ -79,7 +91,7 @@ function writeFiles(buildDir, pages) {
     .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
     .join(",\n")}\n};\n`;
 
-  writeFileSync(examplesFile, examplesContents);
+  writeFileIfNeeded(examplesFile, examplesContents);
 
   // index.json and contents.json
   const markdownFiles = entryFiles.filter((file) => file.endsWith(".md"));
@@ -124,8 +136,8 @@ function writeFiles(buildDir, pages) {
     {},
   );
 
-  writeFileSync(indexFile, JSON.stringify(index));
-  writeFileSync(contentsFile, JSON.stringify(contents));
+  writeFileIfNeeded(indexFile, JSON.stringify(index));
+  writeFileIfNeeded(contentsFile, JSON.stringify(contents));
 
   // links.json
   const linksFile = join(buildDir, "links.json");
@@ -145,7 +157,7 @@ function writeFiles(buildDir, pages) {
     })),
   );
 
-  writeFileSync(linksFile, JSON.stringify(links));
+  writeFileIfNeeded(linksFile, JSON.stringify(links));
 
   // icons.ts
   const iconsFile = join(buildDir, "icons.ts");
@@ -203,7 +215,7 @@ function writeFiles(buildDir, pages) {
     })
     .join("");
 
-  writeFileSync(iconsFile, iconsContents);
+  writeFileIfNeeded(iconsFile, iconsContents);
 
   performance.mark("writeFiles:end");
   const { duration } = performance.measure(
