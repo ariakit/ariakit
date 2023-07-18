@@ -33,6 +33,7 @@ import remarkGfm from "remark-gfm";
 import invariant from "tiny-invariant";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
+import { isValidHref } from "utils/is-valid-href.js";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
 import { tw } from "utils/tw.js";
@@ -721,10 +722,7 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               if (href) {
-                const url = new URL(href, "https://ariakit.org");
-                const link = links.find((link) => link.path === url.pathname);
-                const hash = url.hash.replace("#", "");
-                if (!link || (hash && !link.hashes.includes(hash))) {
+                if (!isValidHref(href, links)) {
                   throw new Error(`Invalid link: ${href}`);
                 }
                 return <Link {...props} href={href} className={className} />;

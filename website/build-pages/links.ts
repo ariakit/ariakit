@@ -1,4 +1,9 @@
 // @ts-ignore
 import links from "../.pages/links.json";
 
-export default links as Array<{ path: string; hashes: string[] }>;
+export interface PageLink {
+  path: string;
+  hashes: string[];
+}
+
+export default links as PageLink[];

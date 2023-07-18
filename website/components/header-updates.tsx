@@ -133,7 +133,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                       />
                     }
                   />
-                  <button className="flex h-10 cursor-pointer scroll-mt-96 items-center justify-center gap-2 whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline">
+                  <button className="flex h-10 !cursor-pointer scroll-mt-96 items-center justify-center gap-2 whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline">
                     Subscribe
                   </button>
                 </div>
