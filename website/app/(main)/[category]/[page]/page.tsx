@@ -5,6 +5,7 @@ import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
+import { getPageTitle } from "build-pages/get-page-title.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import pagesIndex from "build-pages/index.js";
 import links from "build-pages/links.js";
@@ -14,6 +15,7 @@ import type {
   TableOfContents as TableOfContentsData,
 } from "build-pages/types.js";
 import { CodeBlock } from "components/code-block.js";
+import { NewsletterForm } from "components/newsletter-form.jsx";
 import { PageItem } from "components/page-item.jsx";
 import { PageVideo } from "components/page-video.jsx";
 import matter from "gray-matter";
@@ -741,6 +743,36 @@ export default async function Page({ params }: PageProps) {
         >
           {contentWithoutMatter}
         </ReactMarkdown>
+        <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/10 sm:grid-cols-2 sm:rounded-xl sm:p-8">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-lg font-medium sm:text-2xl">Follow updates</h2>
+            <p className="dark:font-light">
+              Join 1,000+ subscribers and receive monthly updates with the
+              latest improvements on{" "}
+              <strong className="font-semibold">
+                {getPageTitle(category)}
+              </strong>
+              .
+            </p>
+          </div>
+          <NewsletterForm location="page" className="flex flex-col gap-3">
+            <div className="flex gap-3 sm:flex-col sm:gap-4">
+              <input
+                className="h-10 w-full flex-1 rounded border-none bg-white px-4 text-black placeholder-black/60 focus-visible:ariakit-outline-input sm:h-12 sm:flex-none sm:px-5 sm:text-lg"
+                type="email"
+                name="email"
+                required
+                placeholder="Your email address"
+              />
+              <button className="h-10 !cursor-pointer whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline sm:h-12 sm:px-5 sm:text-lg">
+                Subscribe
+              </button>
+            </div>
+            <p className="text-sm opacity-70 sm:text-center">
+              No Spam. Unsubscribe at any time.
+            </p>
+          </NewsletterForm>
+        </div>
       </main>
     </div>
   );
