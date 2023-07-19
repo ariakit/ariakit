@@ -15,7 +15,6 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
 } from "react";
 import * as Ariakit from "@ariakit/react";
 import {
@@ -291,14 +290,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       </Ariakit.MenuButton>
     );
 
-    const [canMount, setCanMount] = useState(false);
-    const selectMounted = select.useState((state) => canMount || state.mounted);
-    const menuMounted = menu.useState((state) => canMount || state.mounted);
-
-    useEffect(() => {
-      if (canMount) return;
-      setCanMount(selectMounted || menuMounted);
-    }, [canMount, selectMounted, menuMounted]);
+    const selectMounted = select.useState("mounted");
+    const menuMounted = menu.useState("mounted");
 
     const popover = selectable ? (
       <SelectContext.Provider value={true}>
