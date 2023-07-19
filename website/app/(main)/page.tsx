@@ -25,26 +25,28 @@ export default function Page() {
               </strong>{" "}
               on new Ariakit content.
             </p>
-            <a
-              href="https://newsletter.ariakit.org"
-              target="_blank"
-              className="relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium text-blue-700 underline decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:decoration-[3px] focus-visible:no-underline focus-visible:ariakit-outline-input dark:font-normal dark:text-blue-400 [&>code]:text-blue-900 [&>code]:dark:text-blue-300"
-              rel="noreferrer"
-            >
-              Read past issues
-              <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
-            </a>
+            <p>
+              <a
+                href="https://newsletter.ariakit.org"
+                target="_blank"
+                className="relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium text-blue-700 underline decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:decoration-[3px] focus-visible:no-underline focus-visible:ariakit-outline-input dark:font-normal dark:text-blue-400 [&>code]:text-blue-900 [&>code]:dark:text-blue-300"
+                rel="noreferrer"
+              >
+                Read past issues
+                <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+              </a>
+            </p>
           </div>
           <NewsletterForm location="home" className="flex flex-col gap-3">
             <div className="flex gap-3 sm:flex-col sm:gap-4">
               <input
-                className="h-10 w-full flex-1 rounded border-none bg-white px-4 text-black placeholder-black/60 shadow-input focus-visible:ariakit-outline-input sm:h-12 sm:flex-none sm:px-5 sm:text-lg md:h-14 md:rounded-md md:text-xl"
+                className="h-10 w-full flex-1 rounded border-none bg-white px-4 text-black placeholder-black/60 shadow-input focus-visible:ariakit-outline-input sm:h-12 sm:flex-none sm:rounded-md sm:px-5 sm:text-lg"
                 type="email"
                 name="email"
                 required
                 placeholder="Your email address"
               />
-              <button className="h-10 !cursor-pointer whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline sm:h-12 sm:px-5 sm:text-lg md:h-14 md:rounded-md md:text-xl">
+              <button className="h-10 !cursor-pointer whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline sm:h-12 sm:rounded-md sm:px-5 sm:text-lg">
                 Subscribe
               </button>
             </div>
