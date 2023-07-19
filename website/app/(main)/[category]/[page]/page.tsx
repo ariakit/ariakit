@@ -743,19 +743,19 @@ export default async function Page({ params }: PageProps) {
         >
           {contentWithoutMatter}
         </ReactMarkdown>
-        <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/10 sm:grid-cols-2 sm:rounded-xl sm:p-8">
+        <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:to-pink-600/10 sm:grid-cols-2 sm:gap-8 sm:rounded-xl sm:p-8">
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-medium sm:text-2xl">Follow updates</h2>
-            <p className="dark:font-light">
+            <p className="text-black/80 dark:font-light dark:text-white/80">
               Join 1,000+ subscribers and receive monthly updates with the
               latest improvements on{" "}
-              <strong className="font-semibold">
+              <strong className="font-semibold text-black dark:text-white">
                 {getPageTitle(category)}
               </strong>
               .
             </p>
           </div>
-          <NewsletterForm location="page" className="flex flex-col gap-3">
+          <NewsletterForm location="page" className="mt-4 flex flex-col gap-3">
             <div className="flex gap-3 sm:flex-col sm:gap-4">
               <input
                 className="h-10 w-full flex-1 rounded border-none bg-white px-4 text-black placeholder-black/60 focus-visible:ariakit-outline-input sm:h-12 sm:flex-none sm:px-5 sm:text-lg"

@@ -108,7 +108,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
             <Ariakit.PopoverDismiss className="relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-md border-none hover:bg-black/5 dark:hover:bg-white/5 [&:focus-visible]:ariakit-outline-input [&_svg]:stroke-[1pt]" />
           </div>
           <Ariakit.HeadingLevel>
-            <div className="grid gap-3 rounded bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/10">
+            <div className="grid gap-3 rounded bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:to-pink-600/10">
               <div className="flex flex-col gap-2">
                 <Ariakit.Heading className="font-medium">
                   Newsletter
@@ -126,7 +126,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                 <div className="flex gap-2">
                   <Ariakit.Focusable
                     autoFocus
-                    className="h-10 w-full scroll-mt-96 rounded border-none bg-white px-4 text-black placeholder-black/60 focus-visible:ariakit-outline-input"
+                    className="h-10 w-full scroll-mt-96 rounded border-none bg-white px-4 text-black placeholder-black/60 shadow-input focus-visible:ariakit-outline-input"
                     render={
                       <input
                         type="email"
@@ -140,9 +140,6 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                     Subscribe
                   </button>
                 </div>
-                <p className="text-sm opacity-70">
-                  No Spam. Unsubscribe at any time.
-                </p>
               </NewsletterForm>
             </div>
           </Ariakit.HeadingLevel>
