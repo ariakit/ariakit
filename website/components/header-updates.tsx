@@ -125,7 +125,6 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
               >
                 <div className="flex gap-2">
                   <Ariakit.Focusable
-                    autoFocus
                     className="h-10 w-full scroll-mt-96 rounded border-none bg-white px-4 text-black placeholder-black/60 shadow-input focus-visible:ariakit-outline-input"
                     render={
                       <input

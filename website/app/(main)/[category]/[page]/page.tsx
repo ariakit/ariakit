@@ -19,6 +19,7 @@ import { NewsletterForm } from "components/newsletter-form.jsx";
 import { PageItem } from "components/page-item.jsx";
 import { PageVideo } from "components/page-video.jsx";
 import matter from "gray-matter";
+import type { Element, ElementContent } from "hast";
 import { ArrowRight } from "icons/arrow-right.jsx";
 import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
@@ -32,6 +33,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
@@ -111,7 +113,7 @@ const style = {
     underline-offset-[0.25em]
     font-medium dark:font-normal
     text-blue-700 dark:text-blue-400
-    [&>code]:text-blue-900 [&>code]:dark:text-blue-300
+    [&>code]:text-inherit
   `,
   h1: tw`
     text-2xl sm:text-4xl md:text-5xl font-extrabold dark:font-bold
@@ -222,6 +224,12 @@ const style = {
     grid grid-cols-1 gap-4 md:grid-cols-2
   `,
 };
+
+function getNodeText(node: Element | ElementContent): string {
+  if ("children" in node) return node.children.map(getNodeText).join("");
+  if ("value" in node) return node.value;
+  return "";
+}
 
 function findCardLinks(children: ReactNode & ReactNode[]): string[] {
   return Children.toArray(children).flatMap((child) =>
@@ -667,7 +675,7 @@ export default async function Page({ params }: PageProps) {
             kbd: ({ node, ...props }) => (
               <kbd
                 {...props}
-                className={cx(
+                className={twJoin(
                   "font-monospace rounded-[0.25em] border border-black/[15%] bg-black/[6.5%] p-[0.15em] px-[0.3em] text-[0.9375em] [box-shadow:0_0.15em_0_rgba(0,0,0,0.15)] dark:border-white/[15%] dark:bg-white/10 dark:[box-shadow:0_0.15em_0_rgba(255,255,255,0.15)]",
                   props.className,
                 )}
@@ -690,7 +698,7 @@ export default async function Page({ params }: PageProps) {
                   />
                 );
               }
-              const className = cx(style.link, props.className);
+              let className = twJoin(style.link, props.className);
               href = href?.replace(/^https:\/\/(www\.)?ariakit.org/, "");
               if (href?.startsWith("http")) {
                 return (
@@ -702,10 +710,7 @@ export default async function Page({ params }: PageProps) {
                     className={className}
                   >
                     {props.children}
-                    <NewWindow
-                      className={tw`mb-0.5 ml-0.5 inline h-[1em] w-[1em]
-                    stroke-black/60 dark:stroke-white/60`}
-                    />
+                    <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
                   </a>
                 );
               }
@@ -715,10 +720,7 @@ export default async function Page({ params }: PageProps) {
               if (href?.startsWith("#")) {
                 return (
                   <a {...props} href={href} className={className}>
-                    <Hashtag
-                      className={tw`mb-0.5 inline h-[1em] w-[1em] stroke-black/60
-                      dark:stroke-white/60`}
-                    />
+                    <Hashtag className="mb-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
                     {props.children}
                   </a>
                 );
@@ -726,6 +728,25 @@ export default async function Page({ params }: PageProps) {
               if (href) {
                 if (!isValidHref(href, links)) {
                   throw new Error(`Invalid link: ${href}`);
+                }
+                const url = new URL(href, "https://ariakit.org");
+                const [, category, page] = url.pathname.split("/");
+                if (category === "reference" && page) {
+                  const hash = url.hash.replace("#", "");
+                  const text = getNodeText(node);
+                  const isComponent = /^[A-Z]/.test(text);
+                  const isHook = page.startsWith("use-");
+                  className = twMerge(
+                    className,
+                    "decoration-dotted hover:decoration-solid",
+                    hash
+                      ? isHook
+                        ? "text-[#000f80] dark:text-[#9cdcfe]"
+                        : "text-[#ce0000] dark:text-[#9cdcfe]"
+                      : isComponent
+                      ? "text-[#227289] dark:text-[#4ec9b0]"
+                      : "text-[#795e26] dark:text-[#dcdcaa]",
+                  );
                 }
                 return <Link {...props} href={href} className={className} />;
               }

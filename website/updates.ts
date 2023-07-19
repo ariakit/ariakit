@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Button",
+    type: "page",
+    href: "/components/button",
+    dateTime: "2023-07-19T13:10Z",
+  },
+  {
     title: "New page: API Reference",
     type: "page",
     href: "/reference",
