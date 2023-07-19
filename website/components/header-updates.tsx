@@ -1,4 +1,5 @@
 "use client";
+
 import { useId, useMemo, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
@@ -12,6 +13,7 @@ import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
 import { useMedia } from "utils/use-media.js";
 import { useUpdates } from "utils/use-updates.js";
+import { NewsletterForm } from "./newsletter-form.jsx";
 import { Popup } from "./popup.jsx";
 import { TooltipButton } from "./tooltip-button.jsx";
 import { UpdateLink } from "./update-link.jsx";
@@ -106,24 +108,25 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
             <Ariakit.PopoverDismiss className="relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-md border-none hover:bg-black/5 dark:hover:bg-white/5 [&:focus-visible]:ariakit-outline-input [&_svg]:stroke-[1pt]" />
           </div>
           <Ariakit.HeadingLevel>
-            <div className="flex flex-col gap-3 rounded bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/30">
-              <Ariakit.Heading className="m-0 font-medium">
-                Newsletter
-              </Ariakit.Heading>
-              <p className="text-[15px] dark:font-light">
-                Join 1,000+ subscribers and receive monthly{" "}
-                <strong className="font-semibold">tips &amp; updates</strong> on
-                new Ariakit content.
-              </p>
-              <form
-                action="https://newsletter.ariakit.org/api/v1/free?email="
-                method="post"
-                target="_blank"
+            <div className="grid gap-3 rounded bg-gradient-to-br from-blue-100 to-pink-100 p-4 dark:from-blue-600/30 dark:to-pink-600/10">
+              <div className="flex flex-col gap-2">
+                <Ariakit.Heading className="font-medium">
+                  Newsletter
+                </Ariakit.Heading>
+                <p className="text-[15px] dark:font-light">
+                  Join 1,000+ subscribers and receive monthly{" "}
+                  <strong className="font-semibold">tips &amp; updates</strong>{" "}
+                  on new Ariakit content.
+                </p>
+              </div>
+              <NewsletterForm
+                location="header-updates"
+                className="flex flex-col gap-2"
               >
                 <div className="flex gap-2">
                   <Ariakit.Focusable
-                    className="h-10 w-full flex-1 scroll-mt-96 rounded border-none bg-white px-4 text-base text-black placeholder-black/60 focus-visible:ariakit-outline-input"
                     autoFocus
+                    className="h-10 w-full scroll-mt-96 rounded border-none bg-white px-4 text-black placeholder-black/60 focus-visible:ariakit-outline-input"
                     render={
                       <input
                         type="email"
@@ -133,11 +136,14 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
                       />
                     }
                   />
-                  <button className="flex h-10 !cursor-pointer scroll-mt-96 items-center justify-center gap-2 whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline">
+                  <button className="h-10 !cursor-pointer scroll-mt-96 whitespace-nowrap rounded bg-blue-600 px-4 text-white shadow-xl hover:bg-blue-800 focus-visible:ariakit-outline">
                     Subscribe
                   </button>
                 </div>
-              </form>
+                <p className="text-sm opacity-70">
+                  No Spam. Unsubscribe at any time.
+                </p>
+              </NewsletterForm>
             </div>
           </Ariakit.HeadingLevel>
           {!!unreadItems.length && (

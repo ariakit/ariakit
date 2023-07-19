@@ -1,5 +1,38 @@
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { As, Component, Options, Props } from "../utils/types.js";
+
+const elements = [
+  "a",
+  "button",
+  "details",
+  "dialog",
+  "div",
+  "form",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "header",
+  "img",
+  "input",
+  "label",
+  "li",
+  "nav",
+  "ol",
+  "p",
+  "section",
+  "select",
+  "span",
+  "textarea",
+  "ul",
+  "svg",
+] as const;
+
+type RoleElements = {
+  [K in (typeof elements)[number]]: Component<RoleOptions<K>>;
+};
 
 /**
  * Returns props to create a `Role` component.
@@ -26,11 +59,21 @@ export const useRole = createHook<RoleOptions>((props) => {
  */
 export const Role = createComponent<RoleOptions>((props) => {
   return createElement("div", props);
-});
+}) as Component<RoleOptions<"div">> & RoleElements;
 
 if (process.env.NODE_ENV !== "production") {
   Role.displayName = "Role";
 }
+
+Object.assign(
+  Role,
+  elements.reduce((acc, element) => {
+    acc[element] = createComponent<RoleOptions<typeof element>>((props) => {
+      return createElement(element, props);
+    });
+    return acc;
+  }, {} as RoleElements),
+);
 
 export type RoleOptions<T extends As = "div"> = Options<T>;
 
