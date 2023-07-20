@@ -486,10 +486,10 @@ export default async function Page({ params }: PageProps) {
                   <>
                     <div
                       {...props}
-                      className={cx(
+                      className={twJoin(
                         style.cards,
                         props.className,
-                        (isExamples || isComponents) && "!max-w-[832px]",
+                        "!max-w-[792px]",
                       )}
                     >
                       {pages.map((page) => (

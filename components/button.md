@@ -1,8 +1,10 @@
 # Button
 
-<p data-description>
-  Trigger an action or event, such as submitting a <a href="/components/form">Form</a>, opening a <a href="/components/dialog">Dialog</a>, canceling an action, or performing a delete operation in React. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/">WAI-ARIA Button Pattern</a>.
-</p>
+<div data-description>
+
+Trigger an action or event, such as submitting a [Form](/components/form), opening a [Dialog](/components/dialog), canceling an action, or performing a delete operation in React. This component is based on the [WAI-ARIA Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/).
+
+</div>
 
 <a href="../examples/button/index.tsx" data-playground>Example</a>
 

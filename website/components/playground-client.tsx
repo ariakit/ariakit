@@ -62,7 +62,7 @@ const style = {
     pointer-events-none absolute left-0 top-full h-[3px] w-full
     translate-y-[5px] bg-transparent
     group-hover:bg-gray-250 dark:group-hover:bg-gray-650
-    group-aria-selected:bg-blue-600
+    group-aria-selected:bg-blue-600 dark:group-aria-selected:bg-blue-600
   `,
   tabPanel: tw`
     relative overflow-hidden
