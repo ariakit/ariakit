@@ -27,12 +27,12 @@ export default function Page() {
             </p>
             <p>
               <a
-                href="https://newsletter.ariakit.org"
+                href="https://newsletter.ariakit.org/latest"
                 target="_blank"
                 className="relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium text-blue-700 underline decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:decoration-[3px] focus-visible:no-underline focus-visible:ariakit-outline-input dark:font-normal dark:text-blue-400 [&>code]:text-blue-900 [&>code]:dark:text-blue-300"
                 rel="noreferrer"
               >
-                Read past issues
+                Read latest issue
                 <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
               </a>
             </p>
