@@ -212,16 +212,10 @@ export interface CheckboxOptions<T extends As = "input">
    * The `checked` state of the checkbox. This will override the value inferred
    * from `store` prop, if provided. This can be `"mixed"` to indicate that the
    * checkbox is partially checked.
-   *
-   * Live examples:
-   * - [Controlled Checkbox](https://ariakit.org/examples/checkbox-controlled)
    */
   checked?: "mixed" | boolean;
   /**
    * A function that is called when the checkbox's `checked` store changes.
-   *
-   * Live examples:
-   * - [Controlled Checkbox](https://ariakit.org/examples/checkbox-controlled)
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }

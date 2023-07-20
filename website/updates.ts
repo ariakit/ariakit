@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Checkbox",
+    type: "page",
+    href: "/components/checkbox",
+    dateTime: "2023-07-20T12:00Z",
+  },
+  {
     title: "Improved docs: Button",
     type: "page",
     href: "/components/button",
