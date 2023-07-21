@@ -2,10 +2,6 @@ import contents from "build-pages/contents.js";
 import type { PageContent } from "build-pages/contents.js";
 import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
-import type { NextRequest } from "next/server.js";
-import { NextResponse } from "next/server.js";
-
-export const runtime = "edge";
 
 const searcherOptions = {
   keySelector: (obj) => {
@@ -88,22 +84,10 @@ function truncate(
   return final + suffix;
 }
 
-export async function GET(req: NextRequest) {
-  const query = req.nextUrl.searchParams.get("q");
-  const category = req.nextUrl.searchParams.get("category");
-  const headers = new Headers();
-
-  if (process.env.NODE_ENV === "production") {
-    headers.set(
-      "Cache-Control",
-      "public, s-maxage=1800, stale-while-revalidate=86400",
-    );
-  }
-
-  if (!query) {
-    return NextResponse.json([], { status: 200, headers });
-  }
-
+onmessage = (
+  event: MessageEvent<{ query: string; category?: string; allData?: boolean }>,
+) => {
+  const { query, category } = event.data;
   const searchTerm = query;
   const results =
     category && Object.prototype.hasOwnProperty.call(searchers, category)
@@ -144,5 +128,5 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  return NextResponse.json(items.slice(0, 15), { status: 200, headers });
-}
+  postMessage({ items: items.slice(0, 15), allData: event.data.allData });
+};
