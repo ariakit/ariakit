@@ -16,11 +16,6 @@ import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import type {
-  QueryFunctionContext,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import type { PageContent } from "build-pages/contents.js";
 import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
@@ -30,7 +25,6 @@ import { groupBy } from "lodash-es";
 import { usePathname } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
 import { getPageIcon } from "utils/get-page-icon.jsx";
-import { usePerceptibleValue } from "utils/use-perceptible-value.js";
 import {
   HeaderMenu,
   HeaderMenuGroup,
@@ -175,11 +169,6 @@ function highlightValue(
   return parts;
 }
 
-function queryFetch({ queryKey, signal }: QueryFunctionContext) {
-  const [url] = queryKey as [string];
-  return fetch(url, { signal }).then((response) => response.json());
-}
-
 function Shortcut() {
   const [platform, setPlatform] = useState<"mac" | "pc" | null>(null);
   useSafeLayoutEffect(() => {
@@ -302,32 +291,48 @@ const HeaderNavMenu = memo(
       }
     }, [searchValueProp]);
 
-    const url = `/api/search?q=${searchValue}${
-      category ? `&category=${category}` : ""
-    }`;
+    const [data, setData] = useState<Data>();
+    const [allData, setAllData] = useState<Data>();
+    const [worker, setWorker] = useState<Worker>();
+    const showSearchData = open && !!searchValue;
 
-    const options = {
-      staleTime: process.env.NODE_ENV === "production" ? Infinity : 0,
-      enabled: open && !!searchValue,
-      keepPreviousData: open && !!searchValue,
-    } satisfies UseQueryOptions<Data>;
+    useEffect(() => {
+      if (!open) return;
+      const worker = new Worker(
+        new URL("../utils/search-worker.ts", import.meta.url),
+      );
+      worker.onmessage = (
+        event: MessageEvent<{ items: Data; allData?: boolean }>,
+      ) => {
+        if (event.data.allData) {
+          setAllData(event.data.items);
+        } else {
+          setData(event.data.items);
+        }
+      };
+      setWorker(worker);
+      return () => worker.terminate();
+    }, [open]);
 
-    const { data, isFetching } = useQuery<Data>([url], queryFetch, options);
+    useEffect(() => {
+      if (!open) return;
+      if (!worker) return;
+      if (!searchValue) return;
+      worker.postMessage({ query: searchValue, category });
+      if (category) {
+        worker.postMessage({ query: searchValue, allData: true });
+      }
+    }, [open, worker, searchValue, category]);
 
-    const allUrl = `/api/search?q=${searchValue}`;
-    const { data: allData, isFetching: allIsFetching } = useQuery<Data>(
-      [allUrl],
-      queryFetch,
-      options,
+    const searchData = useMemo(
+      () => (showSearchData && data && parseSearchData(data)) || undefined,
+      [showSearchData, data],
     );
-
-    const loading = usePerceptibleValue(isFetching || allIsFetching, {
-      delay: 250,
-    });
-    const searchData = useMemo(() => data && parseSearchData(data), [data]);
     const searchAllData = useMemo(
-      () => (category && allData && parseSearchData(allData)) || undefined,
-      [category, allData],
+      () =>
+        (showSearchData && category && allData && parseSearchData(allData)) ||
+        undefined,
+      [showSearchData, category, allData],
     );
     const noResults = !!searchData && !searchData.length;
     const pages = useMemo(() => {
@@ -465,7 +470,6 @@ const HeaderNavMenu = memo(
             </>
           }
           contentLabel={contentLabel}
-          loading={loading}
           searchPlaceholder={
             category ? getSearchTitle(category) : "Search all pages"
           }
