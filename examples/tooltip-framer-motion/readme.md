@@ -30,5 +30,6 @@ You can learn more about this pattern on the [Composition](/guide/composition) g
 
 - [](/examples/menu-framer-motion)
 - [](/examples/dialog-framer-motion)
+- [](/examples/tooltip-follow-mouse)
 
 </div>
