@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Getting started",
+    type: "page",
+    href: "/guide/getting-started",
+    dateTime: "2023-07-25T20:16Z",
+  },
+  {
     title: "Improved docs: Checkbox",
     type: "page",
     href: "/components/checkbox",

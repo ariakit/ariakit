@@ -6,17 +6,21 @@
 
 ## Installation
 
-First, make sure you have `react` and `react-dom` installed. Ariakit works with React 17 and above.
+1. First, make sure you have `react` and `react-dom` installed. Ariakit works with React v17 and above.
 
-```sh
-npm i react react-dom
-```
+2. Then, install Ariakit using your package manager of choice:
 
-Then, install Ariakit:
+    ```sh
+    npm install @ariakit/react
+    ```
 
-```sh
-npm i @ariakit/react
-```
+    ```sh
+    yarn add @ariakit/react
+    ```
+
+    ```sh
+    pnpm add @ariakit/react
+    ```
 
 ## Usage
 
@@ -55,3 +59,17 @@ You can also use Ariakit directly in the browser via a CDN. This method is only 
   </body>
 </html>
 ```
+
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/styling)
+- [](/guide/composition)
+
+</div>
+
+Check out our [Components](/components), [Examples](/examples), and [API Reference](/reference) pages for more information.
