@@ -1,15 +1,24 @@
 import { useMemo, useState } from "react";
 import { useEvent } from "@ariakit/react-core/utils/hooks";
+import type { UpdateItem } from "updates.js";
 import { useLocalStorageState } from "./use-local-storage-state.js";
 
-export function useUpdates({ defaultValue = "2017-01-01" } = {}) {
+export interface UseUpdatesProps {
+  defaultValue?: string;
+  updates?: UpdateItem[];
+}
+
+export function useUpdates({
+  defaultValue = "2017-01-01",
+  updates,
+}: UseUpdatesProps = {}) {
   const [previousSeenAt, setPreviousSeenAt] = useState(defaultValue);
   const [seenAt, setSeenAt] = useLocalStorageState("seenAt", { defaultValue });
   // const [seenAt, setSeenAt] = useState(defaultValue);
 
   const seeNow = useEvent(() => {
     setPreviousSeenAt(seenAt);
-    setSeenAt(new Date().toISOString());
+    setSeenAt(updates?.[0]?.dateTime || new Date().toISOString());
   });
 
   const previousSeen = useMemo(

@@ -13,7 +13,7 @@ export default function Page() {
   const updates = getUpdates();
   return (
     <div className="flex items-start justify-center md:flex-row-reverse">
-      <SeeNow />
+      <SeeNow updates={updates} />
       <main
         className={twJoin(
           "relative mt-8 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full",

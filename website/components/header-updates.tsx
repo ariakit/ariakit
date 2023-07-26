@@ -25,7 +25,7 @@ export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
 export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
   const id = useId();
   const isLarge = useMedia("(min-width: 640px)", true);
-  const { seen, previousSeen, seeNow } = useUpdates();
+  const { seen, previousSeen, seeNow } = useUpdates({ updates });
   const popover = Ariakit.usePopoverStore({
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {
