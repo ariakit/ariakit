@@ -312,7 +312,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      const { target } = event;
+      const { value, selectionStart } = event.target;
       const nativeEvent = event.nativeEvent;
       canAutoSelectRef.current = true;
       if (isInputEvent(nativeEvent)) {
@@ -324,7 +324,7 @@ export const useCombobox = createHook<ComboboxOptions>(
           const textInserted =
             nativeEvent.inputType === "insertText" ||
             nativeEvent.inputType === "insertCompositionText";
-          const caretAtEnd = target.selectionStart === target.value.length;
+          const caretAtEnd = selectionStart === value.length;
           setCanInline(textInserted && caretAtEnd);
         }
       }
@@ -332,8 +332,8 @@ export const useCombobox = createHook<ComboboxOptions>(
         store.show();
       }
       if (setValueOnChangeProp(event)) {
-        const isSameValue = target.value === store.getState().value;
-        store.setValue(target.value);
+        const isSameValue = value === store.getState().value;
+        store.setValue(value);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The

@@ -10,6 +10,7 @@ import type {
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
+import { flushSync } from "react-dom";
 import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
 import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
 
@@ -131,7 +132,7 @@ export function useStoreProps<
         if (!setValue) return;
         if (state[key] === prev[key]) return;
         if (state[key] === value) return;
-        setValue(state[key]);
+        flushSync(() => setValue(state[key]));
       },
       [key],
     );
