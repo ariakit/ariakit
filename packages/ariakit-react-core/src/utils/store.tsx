@@ -126,15 +126,12 @@ export function useStoreProps<
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    let maybeFlushSync: typeof flushSync = (
-      fn: (() => unknown) | ((arg: unknown) => unknown),
-      arg?: unknown,
-    ) => fn(arg);
+    let canFlushSync = false;
     // flushSync throws a warning if called from inside a lifecycle method.
     // Since the store.sync callback can be called immediately, we'll make it
     // use the flushSync function only in subsequent calls.
     queueMicrotask(() => {
-      maybeFlushSync = flushSync;
+      canFlushSync = true;
     });
     return store.sync(
       (state, prev) => {
@@ -142,7 +139,11 @@ export function useStoreProps<
         if (!setValue) return;
         if (state[key] === prev[key]) return;
         if (state[key] === value) return;
-        maybeFlushSync(() => setValue(state[key]));
+        if (canFlushSync) {
+          flushSync(() => setValue(state[key]));
+        } else {
+          setValue(state[key]);
+        }
       },
       [key],
     );
