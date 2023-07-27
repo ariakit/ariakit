@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.14
+
+### Patch Changes
+
+- Fixed `flushSync` warning. ([#2672](https://github.com/ariakit/ariakit/pull/2672))
+
+- Updated dependencies: `@ariakit/react-core@0.2.14`.
+
 ## 0.2.13
 
 ### Patch Changes
