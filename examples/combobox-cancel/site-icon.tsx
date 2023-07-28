@@ -7,7 +7,7 @@ export default function Icon() {
             <div className="flex h-10 w-full flex-row-reverse items-center rounded-md border border-black/30 bg-white px-2 py-1 dark:border-white/30 dark:bg-black">
               <svg
                 viewBox="0 0 16 16"
-                className="h-7 w-7 stroke-black/80 dark:stroke-white/80"
+                className="h-7 w-7 fill-none stroke-black dark:stroke-white/80"
               >
                 <line x1="5" y1="5" x2="11" y2="11" />
                 <line x1="5" y1="11" x2="11" y2="5" />
