@@ -9,13 +9,12 @@ export default function Icon() {
                 viewBox="0 0 16 16"
                 className="h-7 w-7 stroke-black/80 dark:stroke-white/80"
               >
-                <line x1="5" y1="5" x2="11" y2="11" />
-                <line x1="5" y1="11" x2="11" y2="5" />
+                <polyline points="4,6 8,10 12,6" />
               </svg>
             </div>
             <div className="flex w-full flex-col gap-4 rounded-md border border-black/20 bg-white p-4 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
+              <div className="h-2.5 w-[60%] bg-blue-600 dark:bg-blue-500" />
               <div className="h-2.5 w-[75%] bg-black/50 dark:bg-white/50" />
-              <div className="h-2.5 w-[65%] bg-blue-600 dark:bg-blue-500" />
               <div className="h-2.5 w-[80%] bg-black/50 dark:bg-white/50" />
             </div>
           </div>
