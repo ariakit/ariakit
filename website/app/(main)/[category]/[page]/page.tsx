@@ -62,49 +62,6 @@ const stickyHeading = tw`
 `;
 
 const style = {
-  main: tw`
-    relative flex w-full min-w-[1px] max-w-5xl
-    flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8
-  `,
-  sidebar: tw`
-    hidden md:flex sticky top-32 m-4 flex-col gap-8 flex-none
-    w-60 max-h-[calc(100vh-theme(spacing.36))]
-    border-l border-black/10 dark:border-white/10
-  `,
-  nav: tw`
-    flex-col gap-4 overflow-auto p-3 pr-1 w-full
-  `,
-  navSublist: tw`
-    flex flex-col
-  `,
-  navItem: tw`
-    flex flex-col
-  `,
-  navLink: tw`
-    group flex items-start gap-2 md:gap-1 py-1.5 pr-4 rounded
-    aria-[current]:bg-blue-200/40 dark:aria-[current]:bg-blue-600/25
-    underline-offset-[0.2em] hover:text-black dark:hover:text-white
-    focus-visible:ariakit-outline-input
-
-    scroll-my-2
-    data-[depth="0"]:scroll-mt-96
-    data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24
-    md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12
-  `,
-  navLinkText: tw`
-    [@media(any-hover:hover)]:group-hover:underline
-    group-aria-[current]:text-black dark:group-aria-[current]:text-white
-  `,
-  navIcon: tw`
-    w-5 h-5 md:w-4 md:h-4 flex-none opacity-60 translate-y-px
-    group-aria-[current]:opacity-100
-  `,
-  wrapper: tw`
-    flex flex-col items-center justify-center gap-8 w-full
-    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-16 md:scroll-mt-24
-
-    data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
-  `,
   link: tw`
     pb-1.5 pt-1 -mb-1.5 -mt-1 relative
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
@@ -360,24 +317,34 @@ export default async function Page({ params }: PageProps) {
       const isFolder = !item.id && item.href.split("/").length === 2;
       const Component = item.id || !isFolder ? "a" : Link;
       const isPage = !isFolder && !item.id;
-      const icon = isFolder ? (
-        <FolderOpen className={style.navIcon} />
-      ) : isPage ? (
-        <Document className={style.navIcon} />
+      const Icon = isFolder ? FolderOpen : isPage ? Document : null;
+      const icon = Icon ? (
+        <Icon className="h-5 w-5 flex-none translate-y-px opacity-60 group-aria-[current]:opacity-100 md:h-4 md:w-4" />
       ) : null;
       return (
-        <li key={item.href} className={style.navItem}>
+        <li key={item.href} className="flex flex-col">
           <Component
             href={item.href}
             data-depth={depth}
-            className={style.navLink}
             aria-current={isPage ? "true" : undefined}
+            className={twJoin(
+              "group relative flex items-start gap-2 rounded py-1.5 pr-4 md:gap-1",
+              "aria-[current]:bg-blue-200/40 dark:aria-[current]:bg-blue-600/25",
+              "underline-offset-[0.2em] hover:text-black dark:hover:text-white",
+              "scroll-my-2 focus-visible:ariakit-outline-input",
+              `data-[depth="0"]:scroll-mt-96`,
+              `data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24`,
+              `md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12`,
+            )}
           >
+            <span className="absolute -left-4 top-0 hidden h-full w-2 rounded-r bg-blue-600 group-aria-[current]:block" />
             {icon}
-            <span className={style.navLinkText}>{item.text}</span>
+            <span className="group-aria-[current]:text-black dark:group-aria-[current]:text-white [@media(any-hover:hover)]:group-hover:underline">
+              {item.text}
+            </span>
           </Component>
           {item.children && (
-            <ul className={style.navSublist}>
+            <ul className="flex flex-col">
               {renderTableOfContents(item.children, depth + 1)}
             </ul>
           )}
@@ -432,12 +399,14 @@ export default async function Page({ params }: PageProps) {
           </div>
         }
       >
-        <div className={style.sidebar}>
-          <nav className={style.nav}>{navList}</nav>
+        <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
+          <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
+            {navList}
+          </nav>
           {nextPageLink}
         </div>
       </TableOfContents>
-      <main className={style.main}>
+      <main className="relative flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[
@@ -452,7 +421,12 @@ export default async function Page({ params }: PageProps) {
                 return (
                   <div
                     {...props}
-                    className={cx(style.wrapper, props.className)}
+                    className={twJoin(
+                      "flex w-full flex-col items-center justify-center gap-8",
+                      "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
+                      `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
+                      props.className,
+                    )}
                   />
                 );
               }
