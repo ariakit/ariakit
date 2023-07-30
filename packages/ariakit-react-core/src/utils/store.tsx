@@ -130,7 +130,7 @@ export function useStoreProps<
     // flushSync throws a warning if called from inside a lifecycle method.
     // Since the store.sync callback can be called immediately, we'll make it
     // use the flushSync function only in subsequent calls.
-    queueMicrotask(() => {
+    requestAnimationFrame(() => {
       canFlushSync = true;
     });
     return store.sync(

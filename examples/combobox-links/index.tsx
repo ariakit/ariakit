@@ -1,8 +1,8 @@
+import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { NewWindow } from "./icons.jsx";
-import "./style.css";
 
 const links = [
   {
