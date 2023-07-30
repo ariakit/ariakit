@@ -95,7 +95,7 @@ function getOffsetMiddleware(
   props: Pick<PopoverOptions, "gutter" | "shift">,
 ) {
   // https://floating-ui.com/docs/offset
-  return offset(({ placement }) => {
+  return offset(({ placement }: { placement: Placement }) => {
     const arrowOffset = (arrowElement?.clientHeight || 0) / 2;
     const finalGutter =
       typeof props.gutter === "number"
