@@ -48,6 +48,21 @@ type StateSelector<T = CoreStore, V = any> = (state: StoreState<T>) => V;
 
 const noopSubscribe = () => () => {};
 
+let inFlushSyncContext = false;
+
+function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
+  if (inFlushSyncContext || !canFlushSync) {
+    fn();
+    return;
+  }
+  inFlushSyncContext = true;
+  try {
+    flushSync(fn);
+  } finally {
+    inFlushSyncContext = false;
+  }
+}
+
 /**
  * Subscribes to and returns the entire state of a store.
  * @param store The store to subscribe to.
@@ -130,7 +145,7 @@ export function useStoreProps<
     // flushSync throws a warning if called from inside a lifecycle method.
     // Since the store.sync callback can be called immediately, we'll make it
     // use the flushSync function only in subsequent calls.
-    requestAnimationFrame(() => {
+    queueMicrotask(() => {
       canFlushSync = true;
     });
     return store.sync(
@@ -139,11 +154,7 @@ export function useStoreProps<
         if (!setValue) return;
         if (state[key] === prev[key]) return;
         if (state[key] === value) return;
-        if (canFlushSync) {
-          flushSync(() => setValue(state[key]));
-        } else {
-          setValue(state[key]);
-        }
+        safeFlushSync(() => setValue(state[key]), canFlushSync);
       },
       [key],
     );
