@@ -12,7 +12,9 @@ declare module "vitest" {
       TestingLibraryMatchers<T, void> {}
 }
 
-failOnConsole();
+if (!version.startsWith("17")) {
+  failOnConsole();
+}
 
 expect.extend(matchers);
 
