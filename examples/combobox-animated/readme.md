@@ -37,6 +37,7 @@ Learn more on the [Styling](/guide/styling) guide.
 
 <div data-cards="examples">
 
+- [](/examples/combobox-group)
 - [](/examples/dialog-animated)
 - [](/examples/dialog-framer-motion)
 - [](/examples/menu-framer-motion)

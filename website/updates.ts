@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: ComboboxGroup",
+    type: "page",
+    href: "/examples/combobox-group",
+    dateTime: "2023-07-30T02:09Z",
+  },
+  {
     title: "Improved docs: ComboboxDisclosure",
     type: "page",
     href: "/examples/combobox-disclosure",

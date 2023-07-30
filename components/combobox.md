@@ -13,6 +13,7 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 <div data-cards="examples">
 
 - [](/examples/combobox-animated)
+- [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
 
