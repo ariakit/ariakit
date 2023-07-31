@@ -1,10 +1,10 @@
 @import url("../combobox/style.css");
 
-.combobox-item [data-user-value] {
+.combobox-item {
   @apply
-    rounded-sm
-    bg-yellow-300
-    dark:bg-yellow-500
-    dark:text-black
+    [&_[data-user-value]]:rounded-sm
+    [&_[data-user-value]]:bg-yellow-300
+    [&_[data-user-value]]:dark:bg-yellow-500
+    [&_[data-user-value]]:dark:text-black
   ;
 }

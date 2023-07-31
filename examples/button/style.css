@@ -13,12 +13,15 @@
     touch-none
     no-underline
     whitespace-nowrap
-    focus-visible:ariakit-outline
     aria-disabled:opacity-50
     sm:gap-2
     bg-blue-600
     text-white
     hover:bg-blue-800
+    outline-2
+    outline-offset-2
+    outline-blue-600
+    data-[focus-visible]:outline
   ;
 }
 

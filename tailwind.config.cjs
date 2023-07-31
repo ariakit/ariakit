@@ -158,7 +158,7 @@ module.exports = {
             };
             return acc;
           },
-          {}
+          {},
         );
 
         addUtilities(dropShadowUtils);
@@ -171,7 +171,7 @@ module.exports = {
             };
             return acc;
           },
-          {}
+          {},
         );
 
         addUtilities(boxShadowUtils);
@@ -188,7 +188,7 @@ module.exports = {
 
         addVariant(
           "supports-backdrop-blur",
-          "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
+          "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))",
         );
 
         addVariant("enter", "&[data-enter]");
