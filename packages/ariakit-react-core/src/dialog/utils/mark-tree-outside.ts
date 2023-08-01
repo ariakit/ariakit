@@ -53,6 +53,7 @@ export function markTreeOutside(dialogId: string, ...elements: Elements) {
       cleanups.unshift(markElement(element, dialogId));
     },
     (ancestor, element) => {
+      // See https://github.com/ariakit/ariakit/issues/2687
       const isAnotherDialogAncestor =
         element.hasAttribute("data-dialog") && element.id !== dialogId;
       if (isAnotherDialogAncestor) return;
