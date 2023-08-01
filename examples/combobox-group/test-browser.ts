@@ -113,6 +113,7 @@ test("set value on click outside", async ({ page }) => {
 test("keep caret position when typing", async ({ page }) => {
   await getCombobox(page).click();
   await page.keyboard.type("ap");
+  expect(await getSelectionValue(page)).toBe("ple");
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.type("pp");
   await expect(getCombobox(page)).toHaveValue("apppple");
