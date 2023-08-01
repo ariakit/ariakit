@@ -14,8 +14,8 @@ export function isValidElement(element: Element, ignoredElements: Elements) {
 
 export function walkTreeOutside(
   elements: Elements,
-  callback: (element: Element) => void,
-  ancestorCallback?: (element: Element) => void,
+  callback: (element: Element, originalElement: Element) => void,
+  ancestorCallback?: (element: Element, originalElement: Element) => void,
 ) {
   for (let element of elements) {
     if (!element?.isConnected) continue;
@@ -26,14 +26,15 @@ export function walkTreeOutside(
       return maybeAncestor.contains(element);
     });
     const doc = getDocument(element);
+    const originalElement = element;
     // Loops through the parent elements and then through each of their
     // children.
     while (element.parentElement && element !== doc.body) {
-      ancestorCallback?.(element.parentElement);
+      ancestorCallback?.(element.parentElement, originalElement);
       if (!hasAncestorAlready) {
         for (const child of element.parentElement.children) {
           if (isValidElement(child, elements)) {
-            callback(child);
+            callback(child, originalElement);
           }
         }
       }

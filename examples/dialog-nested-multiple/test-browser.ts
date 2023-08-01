@@ -40,6 +40,8 @@ test.beforeEach(async ({ page }) => {
 for (const { name, type } of [
   { name: "nested", type: "" },
   { name: "sibling", type: "" },
+  { name: "nested", type: " parent backdrop" },
+  { name: "sibling", type: " parent backdrop" },
   { name: "nested", type: " unmount" },
   { name: "sibling", type: " unmount" },
   { name: "nested", type: " no portal" },
@@ -81,6 +83,8 @@ for (const { name, type } of [
 for (const { name, type } of [
   { name: "nested", type: "" },
   { name: "sibling", type: "" },
+  { name: "nested", type: " parent backdrop" },
+  { name: "sibling", type: " parent backdrop" },
   { name: "nested", type: " unmount" },
   { name: "sibling", type: " unmount" },
   { name: "nested", type: " no portal" },

@@ -8,6 +8,10 @@ export default function Example() {
   const [nested, setNested] = useState(false);
   const [nestedNested, setNestedNested] = useState(false);
 
+  const [nestedParentBackdrop, setNestedParentBackdrop] = useState(false);
+  const [nestedParentBackdropNested, setNestedParentBackdropNested] =
+    useState(false);
+
   const [nestedUnmount, setNestedUnmount] = useState(false);
   const [nestedUnmountNested, setNestedUnmountNested] = useState(false);
 
@@ -30,6 +34,10 @@ export default function Example() {
 
   const [sibling, setSibling] = useState(false);
   const [siblingSibling, setSiblingSibling] = useState(false);
+
+  const [siblingParentBackdrop, setSiblingParentBackdrop] = useState(false);
+  const [siblingParentBackdropSibling, setSiblingParentBackdropSibling] =
+    useState(false);
 
   const [siblingUnmount, setSiblingUnmount] = useState(false);
   const [siblingUnmountSibling, setSiblingUnmountSibling] = useState(false);
@@ -63,8 +71,10 @@ export default function Example() {
     setSiblingDismissAnimatedUnmountSibling,
   ] = useState(false);
 
-  const siblindId = useId();
+  const siblingId = useId();
   const siblingSiblingId = useId();
+  const siblingParentBackdropId = useId();
+  const siblingParentBackdropSiblingId = useId();
   const siblingNoPortalId = useId();
   const siblingNoPortalSiblingId = useId();
   const siblingNoPortalPortalId = useId();
@@ -86,8 +96,10 @@ export default function Example() {
         open={open}
         onClose={() => setOpen(false)}
         getPersistentElements={() => [
-          document.getElementById(siblindId)!,
+          document.getElementById(siblingId)!,
           document.getElementById(siblingSiblingId)!,
+          document.getElementById(siblingParentBackdropId)!,
+          document.getElementById(siblingParentBackdropSiblingId)!,
           document.getElementById(siblingNoPortalId)!,
           document.getElementById(siblingNoPortalSiblingId)!,
           document.getElementById(siblingNoPortalPortalId)!,
@@ -101,6 +113,10 @@ export default function Example() {
 
         {/* Nested buttons */}
         <Button onClick={() => setNested(true)}>nested</Button>
+
+        <Button onClick={() => setNestedParentBackdrop(true)}>
+          nested parent backdrop
+        </Button>
 
         <Button onClick={() => setNestedUnmount(true)}>nested unmount</Button>
 
@@ -132,6 +148,10 @@ export default function Example() {
 
         {/* Sibling buttons */}
         <Button onClick={() => setSibling(true)}>sibling</Button>
+
+        <Button onClick={() => setSiblingParentBackdrop(true)}>
+          sibling parent backdrop
+        </Button>
 
         <Button onClick={() => setSiblingUnmount(true)}>sibling unmount</Button>
 
@@ -172,6 +192,39 @@ export default function Example() {
 
           <Dialog open={nestedNested} onClose={() => setNestedNested(false)}>
             <DialogHeading>nested nested</DialogHeading>
+            <DialogDismiss>Close</DialogDismiss>
+          </Dialog>
+        </Dialog>
+
+        {/* Nested parent backdrop */}
+        <Dialog
+          open={nestedParentBackdrop}
+          onClose={() => setNestedParentBackdrop(false)}
+          backdrop={false}
+          render={(props) => (
+            <div className="parent-backdrop" hidden={props.hidden}>
+              <div {...props} />
+            </div>
+          )}
+        >
+          <DialogHeading>nested parent backdrop</DialogHeading>
+          <DialogDismiss>Close</DialogDismiss>
+
+          <Button onClick={() => setNestedParentBackdropNested(true)}>
+            nested parent backdrop nested
+          </Button>
+
+          <Dialog
+            open={nestedParentBackdropNested}
+            onClose={() => setNestedParentBackdropNested(false)}
+            backdrop={false}
+            render={(props) => (
+              <div className="parent-backdrop" hidden={props.hidden}>
+                <div {...props} />
+              </div>
+            )}
+          >
+            <DialogHeading>nested parent backdrop nested</DialogHeading>
             <DialogDismiss>Close</DialogDismiss>
           </Dialog>
         </Dialog>
@@ -319,7 +372,7 @@ export default function Example() {
 
       {/* Sibling */}
       <Dialog
-        id={siblindId}
+        id={siblingId}
         open={sibling}
         style={{ zIndex: 100 }}
         onClose={() => setSibling(false)}
@@ -340,6 +393,52 @@ export default function Example() {
         onClose={() => setSiblingSibling(false)}
       >
         <DialogHeading>sibling sibling</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+      </Dialog>
+
+      {/* Sibling parent backdrop */}
+      <Dialog
+        id={siblingParentBackdropId}
+        open={siblingParentBackdrop}
+        onClose={() => setSiblingParentBackdrop(false)}
+        getPersistentElements={() => [
+          document.getElementById(siblingParentBackdropSiblingId)!,
+        ]}
+        backdrop={false}
+        render={(props) => (
+          <div
+            className="parent-backdrop"
+            style={{ zIndex: 100 }}
+            hidden={props.hidden}
+          >
+            <div {...props} />
+          </div>
+        )}
+      >
+        <DialogHeading>sibling parent backdrop</DialogHeading>
+        <DialogDismiss>Close</DialogDismiss>
+        <Button onClick={() => setSiblingParentBackdropSibling(true)}>
+          sibling parent backdrop sibling
+        </Button>
+      </Dialog>
+
+      {/* Sibling parent backdrop sibling */}
+      <Dialog
+        id={siblingParentBackdropSiblingId}
+        open={siblingParentBackdropSibling}
+        onClose={() => setSiblingParentBackdropSibling(false)}
+        backdrop={false}
+        render={(props) => (
+          <div
+            className="parent-backdrop"
+            style={{ zIndex: 100 }}
+            hidden={props.hidden}
+          >
+            <div {...props} />
+          </div>
+        )}
+      >
+        <DialogHeading>sibling parent backdrop sibling</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 

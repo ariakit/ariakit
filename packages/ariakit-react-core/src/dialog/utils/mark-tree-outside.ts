@@ -13,6 +13,9 @@ function getPropertyName(id = "", ancestor = false) {
 
 export function markElement(element: Element, id = "") {
   return chain(
+    // Debug
+    // setAttribute(element, getPropertyName(), "true"),
+    // setAttribute(element, getPropertyName(id), "true"),
     setProperty(element, getPropertyName(), true),
     setProperty(element, getPropertyName(id), true),
   );
@@ -20,6 +23,9 @@ export function markElement(element: Element, id = "") {
 
 export function markAncestor(element: Element, id = "") {
   return chain(
+    // Debug
+    // setAttribute(element, getPropertyName("", true), "true"),
+    // setAttribute(element, getPropertyName(id, true), "true"),
     setProperty(element, getPropertyName("", true), true),
     setProperty(element, getPropertyName(id, true), true),
   );
@@ -46,7 +52,12 @@ export function markTreeOutside(dialogId: string, ...elements: Elements) {
       if (isBackdrop(element, ...ids)) return;
       cleanups.unshift(markElement(element, dialogId));
     },
-    (ancestor) => cleanups.unshift(markAncestor(ancestor, dialogId)),
+    (ancestor, element) => {
+      const isAnotherDialogAncestor =
+        element.hasAttribute("data-dialog") && element.id !== dialogId;
+      if (isAnotherDialogAncestor) return;
+      cleanups.unshift(markAncestor(ancestor, dialogId));
+    },
   );
 
   const restoreAccessibilityTree = () => {
