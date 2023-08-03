@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import type { FocusEvent } from "react";
+import { useEffect, useRef } from "react";
+import type { FocusEvent, MouseEvent } from "react";
 import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createStore } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
@@ -28,6 +28,22 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
+    // Imagine the scenario: the user hovers over an anchor, which shows a
+    // tooltip, then presses escape to close the tooltip. We don't want to show
+    // the tooltip again while the anchor is still hovered. So we keep this flag
+    // that's set to true on mouse enter.
+    const canShowOnHoverRef = useRef(false);
+
+    useEffect(() => {
+      return store.sync(
+        (state) => {
+          if (state.mounted) return;
+          canShowOnHoverRef.current = false;
+        },
+        ["mounted"],
+      );
+    }, [store]);
+
     useEffect(() => {
       return store.sync(
         (state) => {
@@ -54,6 +70,13 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
         ["mounted", "skipTimeout"],
       );
     }, [store]);
+
+    const onMouseEnterProp = props.onMouseEnter;
+
+    const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
+      onMouseEnterProp?.(event);
+      canShowOnHoverRef.current = true;
+    });
 
     const onFocusVisibleProp = props.onFocusVisible;
 
@@ -87,6 +110,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       "aria-labelledby": type === "label" ? contentId : undefined,
       "aria-describedby": type === "description" ? contentId : undefined,
       ...props,
+      onMouseEnter,
       onFocusVisible,
       onBlur,
     };
@@ -94,6 +118,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     props = useHovercardAnchor({
       store,
       showOnHover: (event) => {
+        if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
         const { activeStore } = globalStore.getState();
         if (!activeStore) return true;

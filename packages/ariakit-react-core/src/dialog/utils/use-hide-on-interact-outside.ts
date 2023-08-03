@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { useEvent } from "../../utils/hooks.js";
+import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.js";
 import type { DialogOptions } from "../dialog.js";
 import { isElementMarked } from "./mark-tree-outside.js";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.js";
@@ -11,6 +11,7 @@ type EventOutsideOptions = {
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
+  domReady?: boolean | HTMLElement | null;
 };
 
 function isInDocument(target: Element) {
@@ -48,9 +49,23 @@ function useEventOutside({
   type,
   listener,
   capture,
+  domReady,
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
   const open = store.useState("open");
+  const focusedRef = useRef(false);
+
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    if (!domReady) return;
+    const { contentElement } = store.getState();
+    if (!contentElement) return;
+    const onFocus = () => {
+      focusedRef.current = true;
+    };
+    contentElement.addEventListener("focusin", onFocus, true);
+    return () => contentElement.removeEventListener("focusin", onFocus, true);
+  }, [store, open, domReady]);
 
   useEffect(() => {
     if (!open) return;
@@ -71,9 +86,13 @@ function useEventOutside({
       if (target.hasAttribute("data-focus-trap")) return;
       // Clicked on dialog's bounding box
       if (isMouseEventOnDialog(event, contentElement)) return;
+      // We need to check if the content element has been focused at least once
+      // before checking if it's marked. This is so hovercards and tooltips
+      // don't stay open when new nodes are added to the DOM and focused.
+      const focused = focusedRef.current;
+      if (focused && !isElementMarked(target, contentElement.id)) return;
       // Finally, if the target has been marked as "outside" or is an ancestor
       // of the content element, we call the listener.
-      if (!isElementMarked(target, contentElement.id)) return;
       callListener(event);
     };
     return addGlobalEventListener(type, onEvent, capture);
@@ -93,10 +112,11 @@ function shouldHideOnInteractOutside(
 export function useHideOnInteractOutside(
   store: DialogOptions["store"],
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
+  domReady?: boolean | HTMLElement | null,
 ) {
   const open = store.useState("open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
-  const props = { store, capture: true };
+  const props = { store, domReady, capture: true };
 
   useEventOutside({
     ...props,

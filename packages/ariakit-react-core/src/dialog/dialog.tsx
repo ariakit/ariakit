@@ -6,7 +6,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   closest,
   contains,
@@ -130,7 +130,7 @@ export const useDialog = createHook<DialogOptions>(
     const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
     usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
-    useHideOnInteractOutside(store, hideOnInteractOutside);
+    useHideOnInteractOutside(store, hideOnInteractOutside, domReady);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
     props = useWrapElement(props, wrapElement, [wrapElement]);
@@ -322,19 +322,13 @@ export const useDialog = createHook<DialogOptions>(
       return () => setHasOpened(false);
     }, [open]);
 
-    // Auto focus on hide. This must be a layout effect because we need to move
-    // focus synchronously before another dialog is shown in parallel.
-    useSafeLayoutEffect(() => {
-      // We only want to auto focus on hide if the dialog was open before.
-      if (!hasOpened) return;
-      if (!mayAutoFocusOnHide) return;
-      const dialog = ref.current;
-      // A function so we can use it on the effect setup and cleanup phases.
-      const focusOnHide = (retry = true) => {
+    const focusOnHide = useCallback(
+      (dialog: HTMLElement | null, retry = true) => {
+        const { open, disclosureElement } = store.getState();
+        if (open) return;
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog)) return;
-        const { disclosureElement } = store.getState();
         let element = getElementFromProp(finalFocus) || disclosureElement;
         if (element?.id) {
           const doc = getDocument(element);
@@ -368,24 +362,32 @@ export const useDialog = createHook<DialogOptions>(
           // again on the next frame. This is sometimes necessary because there
           // may be nested dialogs that still need a tick to remove the inert
           // attribute from elements outside.
-          requestAnimationFrame(() => focusOnHide(false));
+          requestAnimationFrame(() => focusOnHide(dialog, false));
           return;
         }
         if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
         if (!isElementFocusable) return;
         element?.focus();
-      };
-      if (!open) {
-        // If this effect is running while the open state is false, this means
-        // that the Dialog component doesn't get unmounted when it's not open,
-        // so we can immediatelly move focus.
-        return focusOnHide();
-      }
-      // Otherwise, we just return the focusOnHide function so it's going to be
-      // executed when the Dialog component gets unmounted. This is useful so we
-      // can support both mounting and unmounting Dialog components.
-      return focusOnHide;
-    }, [hasOpened, open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
+      },
+      [store, finalFocus, autoFocusOnHideProp],
+    );
+
+    // Auto focus on hide with an always rendered dialog.
+    useEffect(() => {
+      if (open) return;
+      if (!hasOpened) return;
+      if (!mayAutoFocusOnHide) return;
+      const dialog = ref.current;
+      focusOnHide(dialog);
+    }, [open, hasOpened, mayAutoFocusOnHide, focusOnHide]);
+
+    // Auto focus on hide with a dialog that gets unmounted when hidden.
+    useEffect(() => {
+      if (!hasOpened) return;
+      if (!mayAutoFocusOnHide) return;
+      const dialog = ref.current;
+      return () => focusOnHide(dialog);
+    }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 

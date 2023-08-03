@@ -9,6 +9,10 @@ const hoverOutside = async () => {
   await hover(document.body, { clientX: 20, clientY: 20 });
 };
 
+afterEach(async () => {
+  await hoverOutside();
+});
+
 test("show tooltip on hover", async () => {
   expect(getTooltip()).not.toBeVisible();
   await hover(getAnchor());
@@ -81,6 +85,7 @@ test("do not show tooltip immediately if focus was lost", async () => {
   await press.Tab();
   await press.Tab();
   expect(getTooltip()).not.toBeVisible();
+  await hoverOutside();
   await hover(getAnchor());
   expect(getTooltip()).not.toBeVisible();
   await waitFor(() => expect(getTooltip()).toBeVisible());
