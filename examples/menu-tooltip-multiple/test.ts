@@ -26,6 +26,10 @@ const labels = [
   "unmount modal",
 ] as const;
 
+afterEach(async () => {
+  await hoverOutside();
+});
+
 describe.each(labels)("%s", (label) => {
   test("show/hide tooltip on hover", async () => {
     await hover(getMenuButton(label));

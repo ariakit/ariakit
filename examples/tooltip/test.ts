@@ -9,6 +9,10 @@ const hoverOutside = async () => {
   await hover(document.body, { clientX: 20, clientY: 20 });
 };
 
+afterEach(async () => {
+  await hoverOutside();
+});
+
 test("show tooltip on hover", async () => {
   expect(getTooltip()).not.toBeVisible();
   await hover(getAnchor());
