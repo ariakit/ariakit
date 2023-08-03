@@ -1,5 +1,21 @@
 # @ariakit/react
 
+## 0.2.15
+
+### Patch Changes
+
+- Fixed clicking on a custom dialog backdrop hiding all parent dialogs. ([#2688](https://github.com/ariakit/ariakit/pull/2688))
+
+- Fixed `ReactDOM.flushSync` warning on low-end devices. ([#2677](https://github.com/ariakit/ariakit/pull/2677))
+
+- Fixed `Tooltip` not hiding when opening a dialog that was previously unmounted. ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Fixed `Focusable` not triggering `onFocusVisible` (and thus not rendering the `data-focus-visible` attribute) when an element is focused after closing a dialog. ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Fixed `Tooltip` showing on mouse move right after it was dismissed (by pressing Esc or opening a popover, for example). ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Updated dependencies: `@ariakit/react-core@0.2.15`.
+
 ## 0.2.14
 
 ### Patch Changes
