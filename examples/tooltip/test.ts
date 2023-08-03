@@ -81,6 +81,7 @@ test("do not show tooltip immediately if focus was lost", async () => {
   await press.Tab();
   await press.Tab();
   expect(getTooltip()).not.toBeVisible();
+  await hoverOutside();
   await hover(getAnchor());
   expect(getTooltip()).not.toBeVisible();
   await waitFor(() => expect(getTooltip()).toBeVisible());
