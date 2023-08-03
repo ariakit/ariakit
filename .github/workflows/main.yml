@@ -54,7 +54,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -87,7 +87,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -117,7 +117,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -151,7 +151,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -185,7 +185,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -218,7 +218,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -257,7 +257,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -282,7 +282,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Restore website
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
@@ -319,7 +319,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         id: cache-node-modules
         with:
           path: |
@@ -342,7 +342,7 @@ jobs:
         run: npx playwright install --with-deps firefox webkit
 
       - name: Restore website
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
