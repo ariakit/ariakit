@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 
 test("scroll into view", async ({ page }) => {
   test.info().snapshotSuffix = "";
-  await getButton(page).click();
+  await getButton(page).click({ delay: 50 });
   await expect(getPopover(page)).toBeFocused();
   for (let i = 0; i < 7; i++) {
     await page.keyboard.press("ArrowDown");

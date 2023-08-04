@@ -10,38 +10,38 @@
 
 <div data-cards="examples">
 
-- [](/examples/menu-framer-motion)
 - [](/examples/menu-item-checkbox)
+- [](/examples/menu-framer-motion)
+- [](/examples/menu-tooltip)
 
 </div>
 
 ## API
 
-<pre data-api>
-<a href="/apis/menu-store">useMenuStore</a>()
+```jsx
+useMenuStore()
 
-&lt;<a href="/apis/menu-button">MenuButton</a>&gt;
-  &lt;<a href="/apis/menu-button-arrow">MenuButtonArrow</a> /&gt;
-&lt;/MenuButton&gt;
-&lt;<a href="/apis/menu-list">MenuList</a>|<a href="/apis/menu">Menu</a>&gt;
-  &lt;<a href="/apis/menu-arrow">MenuArrow</a> /&gt;
-  &lt;<a href="/apis/menu-heading">MenuHeading</a> /&gt;
-  &lt;<a href="/apis/menu-description">MenuDescription</a> /&gt;
-  &lt;<a href="/apis/menu-dismiss">MenuDismiss</a> /&gt;
-  &lt;<a href="/apis/menu-group">MenuGroup</a>&gt;
-    &lt;<a href="/apis/menu-group-label">MenuGroupLabel</a> /&gt;
-    &lt;<a href="/apis/menu-item">MenuItem</a> /&gt;
-    &lt;<a href="/apis/menu-item-checkbox">MenuItemCheckbox</a>|<a href="/apis/menu-item-radio">MenuItemRadio</a>&gt;
-      &lt;<a href="/apis/menu-item-check">MenuItemCheck</a> /&gt;
-    &lt;/MenuItemCheckbox|MenuItemRadio&gt;
-    &lt;<a href="/apis/menu-separator">MenuSeparator</a> /&gt;
-  &lt;/MenuGroup&gt;
-&lt;/MenuList|Menu&gt;
-
-<a href="/apis/menu-bar-store">useMenuBarStore</a>()
-
-&lt;<a href="/apis/menu-bar">MenuBar</a> /&gt;
-</pre>
+<MenuButton />
+<MenuButtonArrow />
+<MenuList />
+<Menu>
+  <MenuArrow />
+  <MenuHeading />
+  <MenuDescription />
+  <MenuDismiss />
+  <MenuGroup>
+    <MenuGroupLabel />
+    <MenuItem />
+    <MenuItemCheckbox>
+      <MenuItemCheck />
+    </MenuItemCheckbox>
+    <MenuItemRadio>
+      <MenuItemCheck />
+    </MenuItemRadio>
+    <MenuSeparator />
+  </MenuGroup>
+</Menu>
+```
 
 ## Styling
 

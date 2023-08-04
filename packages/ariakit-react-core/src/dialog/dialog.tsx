@@ -146,7 +146,7 @@ export const useDialog = createHook<DialogOptions>(
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
-    }, [open]);
+    }, [open, store]);
 
     // Safari does not focus on native buttons on mousedown. The
     // DialogDisclosure component normalizes this behavior using the
@@ -176,7 +176,7 @@ export const useDialog = createHook<DialogOptions>(
         return () => {
           disclosureElement.removeEventListener("mousedown", onMouseDown);
         };
-      }, [mounted]);
+      }, [mounted, store]);
     }
 
     const shouldDisableAccessibilityTree =
@@ -424,7 +424,7 @@ export const useDialog = createHook<DialogOptions>(
       // We can't do this on a onKeyDown prop on the disclosure element because
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
-    }, [mounted, domReady, hideOnEscapeProp]);
+    }, [mounted, domReady, store, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(

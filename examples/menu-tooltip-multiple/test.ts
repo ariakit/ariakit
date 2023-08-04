@@ -26,6 +26,8 @@ const labels = [
   "unmount modal",
 ] as const;
 
+const nonModalLabels = labels.filter((label) => !label.includes("modal"));
+
 afterEach(async () => {
   await hoverOutside();
 });
@@ -80,5 +82,22 @@ describe.each(labels)("%s", (label) => {
     await press.Escape();
     expect(getMenu(label)).not.toBeInTheDocument();
     await waitFor(() => expect(getTooltip(label)).toBeVisible());
+  });
+});
+
+describe.each(nonModalLabels)("%s", (label) => {
+  test("tooltip closes when re-opening the menu", async () => {
+    await hover(getMenuButton(label));
+    await waitFor(() => expect(getTooltip(label)).toBeVisible());
+    await click(getMenuButton(label));
+    expect(getMenu(label)).toBeInTheDocument();
+    expect(getTooltip(label)).not.toBeVisible();
+    await hoverOutside();
+    await hover(getMenuButton(label));
+    await waitFor(() => expect(getTooltip(label)).toBeVisible());
+    await click(getMenuButton(label));
+    await click(getMenuButton(label));
+    expect(getMenu(label)).toBeInTheDocument();
+    expect(getTooltip(label)).not.toBeVisible();
   });
 });
