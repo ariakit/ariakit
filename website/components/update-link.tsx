@@ -100,7 +100,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         <div
           aria-hidden
           className={twJoin(
-            "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+            "flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-sm",
             "bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
             "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
             layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
