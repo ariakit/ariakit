@@ -20,14 +20,7 @@ export const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
   function MenuButton(props, ref) {
     const store = React.useContext(MenuContext);
     invariant(store, "MenuButton must be used within MenuProvider");
-    return (
-      <Ariakit.MenuButton
-        ref={ref}
-        className="button"
-        {...props}
-        store={store}
-      />
-    );
+    return <Ariakit.MenuButton ref={ref} {...props} store={store} />;
   },
 );
 
@@ -37,23 +30,9 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   function Menu(props, ref) {
     const store = React.useContext(MenuContext);
     invariant(store, "Menu must be used within MenuProvider");
-    return <Ariakit.Menu ref={ref} className="menu" {...props} store={store} />;
+    return <Ariakit.Menu ref={ref} {...props} store={store} />;
   },
 );
 
-export interface MenuItemProps extends Omit<Ariakit.MenuItemProps, "store"> {}
-
-export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  function MenuItem(props, ref) {
-    const store = React.useContext(MenuContext);
-    invariant(store, "MenuItem must be used within MenuProvider");
-    return (
-      <Ariakit.MenuItem
-        ref={ref}
-        className="menu-item"
-        {...props}
-        store={store}
-      />
-    );
-  },
-);
+export type { MenuItemProps } from "@ariakit/react";
+export { MenuItem } from "@ariakit/react";

@@ -30,6 +30,7 @@ You can leverage this technique to create your own custom menu components tailor
 
 <div data-cards="examples">
 
+- [](/examples/menu-tooltip)
 - [](/examples/menu-framer-motion)
 
 </div>

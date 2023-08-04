@@ -27,6 +27,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  */
 export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
+    const mounted = store.useState("mounted");
     const disabled =
       props.disabled ||
       props["aria-disabled"] === true ||
@@ -78,7 +79,14 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     props = {
       ...props,
-      ref: useMergeRefs(store.setAnchorElement, props.ref),
+      ref: useMergeRefs(
+        store.setAnchorElement,
+        // We need to set the anchor element as the hovercard disclosure
+        // disclosure element only when the hovercard is shown so it doesn't get
+        // assigned an arbitrary element by the dialog component.
+        mounted ? store.setDisclosureElement : undefined,
+        props.ref,
+      ),
       onMouseMove,
     };
 

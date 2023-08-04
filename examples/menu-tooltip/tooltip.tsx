@@ -33,8 +33,6 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   function Tooltip(props, ref) {
     const store = React.useContext(TooltipContext);
     invariant(store, "Tooltip must be used within TooltipProvider");
-    return (
-      <Ariakit.Tooltip ref={ref} className="tooltip" {...props} store={store} />
-    );
+    return <Ariakit.Tooltip ref={ref} {...props} store={store} />;
   },
 );
