@@ -57,8 +57,10 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // Makes sure that the menu button is assigned as the menu disclosure
       // element. This is needed to support screen reader focusing on sibling
       // menu items.
-      store.setDisclosureElement(ref.current);
-    });
+      return store.sync(() => {
+        store.setState("disclosureElement", ref.current);
+      }, ["disclosureElement"]);
+    }, [store]);
 
     const onFocusProp = props.onFocus;
 
