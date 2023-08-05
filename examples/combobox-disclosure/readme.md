@@ -22,6 +22,7 @@ Opening and closing a [Combobox](/components/combobox) with the help of a button
 
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
+- [](/examples/combobox-links)
 - [](/examples/combobox-animated)
 
 </div>

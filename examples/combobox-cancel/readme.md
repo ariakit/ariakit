@@ -22,6 +22,7 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
+- [](/examples/combobox-links)
 - [](/examples/combobox-animated)
 
 </div>

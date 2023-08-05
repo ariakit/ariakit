@@ -29,31 +29,12 @@ export default function Example() {
   const value = combobox.useState("value");
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () =>
-      matchSorter(links, deferredValue, {
-        keys: ["children"],
-        baseSort: (a, b) => (a.index < b.index ? -1 : 1),
-      }),
-    [deferredValue],
-  );
-
-  const renderItem = ({ children, ...props }: (typeof links)[number]) => {
-    return (
-      <Ariakit.ComboboxItem
-        key={children}
-        focusOnHover
-        hideOnClick
-        className="combobox-item"
-        render={<a {...props} />}
-      >
-        {children}
-        {props.target === "_blank" && (
-          <NewWindow className="combobox-item-icon" />
-        )}
-      </Ariakit.ComboboxItem>
-    );
-  };
+  const matches = useMemo(() => {
+    return matchSorter(links, deferredValue, {
+      keys: ["children"],
+      baseSort: (a, b) => (a.index < b.index ? -1 : 1),
+    });
+  }, [deferredValue]);
 
   return (
     <div className="wrapper">
@@ -74,7 +55,20 @@ export default function Example() {
           className="popover"
         >
           {matches.length ? (
-            matches.map(renderItem)
+            matches.map(({ children, ...props }) => (
+              <Ariakit.ComboboxItem
+                key={children}
+                focusOnHover
+                hideOnClick
+                className="combobox-item"
+                render={<a {...props} />}
+              >
+                {children}
+                {props.target === "_blank" && (
+                  <NewWindow className="combobox-item-icon" />
+                )}
+              </Ariakit.ComboboxItem>
+            ))
           ) : (
             <div className="no-results">No results found</div>
           )}

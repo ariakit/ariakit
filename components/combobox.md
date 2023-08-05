@@ -16,6 +16,7 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
+- [](/examples/combobox-links)
 
 </div>
 
