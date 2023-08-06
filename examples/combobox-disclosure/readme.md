@@ -20,6 +20,7 @@ Opening and closing a [Combobox](/components/combobox) with the help of a button
 
 <div data-cards="examples">
 
+- [](/examples/combobox-filtering)
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-links)

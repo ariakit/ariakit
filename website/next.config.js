@@ -1,9 +1,11 @@
-import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
+// import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
+import { redirects } from "./redirects.js";
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+  redirects,
   experimental: {
     appDir: true,
     serverActions: true,
@@ -41,20 +43,20 @@ const nextConfig = {
 
     if (!context.isServer) {
       config.plugins.unshift(new PagesWebpackPlugin(pagesConfig));
-      config.plugins.push(
-        new MonacoWebpackPlugin({
-          filename: context.dev
-            ? "static/monaco/[name].worker.js"
-            : "static/monaco/[name].[contenthash].worker.js",
-          features: [
-            "!hover",
-            "!gotoError",
-            "!colorPicker",
-            "!stickyScroll",
-            "!contextmenu",
-          ],
-        }),
-      );
+      // config.plugins.push(
+      //   new MonacoWebpackPlugin({
+      //     filename: context.dev
+      //       ? "static/monaco/[name].worker.js"
+      //       : "static/monaco/[name].[contenthash].worker.js",
+      //     features: [
+      //       "!hover",
+      //       "!gotoError",
+      //       "!colorPicker",
+      //       "!stickyScroll",
+      //       "!contextmenu",
+      //     ],
+      //   }),
+      // );
     }
     config.module.rules.push({
       test: /\.wasm$/,

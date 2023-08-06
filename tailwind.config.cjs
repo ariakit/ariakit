@@ -183,6 +183,7 @@ module.exports = {
           },
           ".ariakit-outline-input": {
             outline: `2px solid ${theme("colors.blue.600")}`,
+            outlineOffset: "0px",
           },
         });
 

@@ -57,7 +57,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
         {...props}
         title="Updates"
         className={twJoin(
-          "relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10 dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:ariakit-outline-input",
+          "relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10 data-[focus-visible]:!ariakit-outline-input dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:outline-none",
           props.className,
         )}
         render={<Ariakit.PopoverDisclosure store={popover} />}
@@ -105,7 +105,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
             <Ariakit.PopoverHeading className="font-medium">
               Updates
             </Ariakit.PopoverHeading>
-            <Ariakit.PopoverDismiss className="relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-md border-none hover:bg-black/5 dark:hover:bg-white/5 [&:focus-visible]:ariakit-outline-input [&_svg]:stroke-[1pt]" />
+            <Ariakit.PopoverDismiss className="relative flex h-10 w-10 flex-none cursor-default items-center justify-center rounded-md border-none hover:bg-black/5 data-[focus-visible]:!ariakit-outline-input dark:hover:bg-white/5 [&:focus-visible]:outline-none [&_svg]:stroke-[1pt]" />
           </div>
           <Ariakit.HeadingLevel>
             <div className="grid gap-3 rounded bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:to-pink-600/10">

@@ -1,18 +1,19 @@
-import { useDeferredValue, useMemo } from "react";
+import "./style.css";
+import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
-import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore();
-  const value = combobox.useState("value");
-  const deferredValue = useDeferredValue(value);
+  const [searchValue, setSearchValue] = useState("");
 
-  const matches = useMemo(
-    () => matchSorter(list, deferredValue),
-    [deferredValue],
-  );
+  const combobox = Ariakit.useComboboxStore({
+    setValue(value) {
+      startTransition(() => setSearchValue(value));
+    },
+  });
+
+  const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
 
   return (
     <div className="wrapper">
