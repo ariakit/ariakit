@@ -192,7 +192,7 @@ export interface ComboboxStoreState
    * Live examples:
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
-   * - [Filterable Combobox](https://ariakit.org/examples/combobox-matches)
+   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Textarea with inline
