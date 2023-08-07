@@ -117,7 +117,7 @@ const Component = Ariakit.Combobox;
 
 </aside>
 
-## Import `.jsx` Extension
+## Import `.jsx` extension
 
 The code examples are written using the [ECMAScript modules](https://nodejs.org/api/esm.html) syntax, which is the official standard format for JavaScript modules supported by modern browsers.
 
@@ -136,7 +136,7 @@ import "./component.js";
 import "./component.jsx";
 ```
 
-## Import Style First
+## Import style first
 
 In our code examples, we place the import statement for styles at the top of the file. This ensures that when we edit the example, the autoimport feature will add import statements at the end of the import list. This prevents the style import from being inserted in the middle of the list.
 
