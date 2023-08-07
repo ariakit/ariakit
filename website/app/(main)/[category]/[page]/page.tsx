@@ -342,7 +342,7 @@ export default async function Page({ params }: PageProps) {
             {icon}
             <span className="flex gap-[2px] group-aria-[current]:text-black dark:group-aria-[current]:text-white [@media(any-hover:hover)]:group-hover:underline">
               {depth > 1 && (
-                <ChevronRight className="h-3.5 w-3.5 flex-none -translate-x-[2px] translate-y-[5px] opacity-60 sm:translate-y-[3px]" />
+                <ChevronRight className="h-3.5 w-3.5 flex-none -translate-x-[2px] translate-y-[4.5px] opacity-60 md:translate-y-[3px]" />
               )}
               {item.text}
             </span>
