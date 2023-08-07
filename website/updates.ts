@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New guide: Coding guidelines",
+    type: "page",
+    href: "/guide/coding-guidelines",
+    dateTime: "2023-08-07T11:46Z",
+  },
+  {
     title: "New example: Combobox filtering",
     type: "page",
     href: "/examples/combobox-filtering",

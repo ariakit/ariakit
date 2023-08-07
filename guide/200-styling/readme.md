@@ -1,8 +1,10 @@
 # Styling
 
-<p data-description>
-  Ariakit provides unstyled components by default. You're free to style them using your favorite styling method.
-</p>
+<div data-description>
+
+Ariakit provides unstyled components by default. You're free to style them using your favorite styling method.
+
+</div>
 
 ## Applying styles
 

@@ -1,8 +1,10 @@
 # Component stores
 
-<p data-description>
-  Access and manipulate the state of Ariakit components in a performant way through component stores.
-</p>
+<div data-description>
+
+Access and manipulate the state of Ariakit components in a performant way through component stores.
+
+</div>
 
 ## Overview
 

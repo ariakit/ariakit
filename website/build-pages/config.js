@@ -1,5 +1,5 @@
 import { readdirSync } from "fs";
-import { basename, join, resolve } from "path";
+import { basename, dirname, join, resolve } from "path";
 import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
 import { getPageTitle } from "./get-page-title.js";
@@ -19,12 +19,20 @@ const pages = [
     slug: "guide",
     title: getPageTitle("guide"),
     sourceContext: join(root, "guide"),
+    getGroup(filename) {
+      if (typeof filename !== "string") return null;
+      const match = basename(dirname(filename)).match(/^\d+/);
+      if (!match) return null;
+      const number = parseInt(match[0]);
+      if (number >= 900) return "Other";
+      return null;
+    },
   },
   {
     slug: "components",
     title: getPageTitle("components"),
     sourceContext: componentsContext,
-    getGroup: (filename) => {
+    getGroup(filename) {
       const component = getPageName(filename);
       const abstract = [
         "collection",
@@ -50,7 +58,7 @@ const pages = [
       join(root, "examples"),
       join(process.cwd(), "app/(examples)/previews"),
     ],
-    getGroup: (filename) => {
+    getGroup(filename) {
       const page = getPageName(filename);
       const component = [...components]
         .reverse()
@@ -65,7 +73,7 @@ const pages = [
     reference: true,
     sourceContext: join(root, "packages/ariakit-react/src"),
     pageFileRegex: /^((?!index).)*\.tsx?$/,
-    getGroup: (reference) => {
+    getGroup(reference) {
       if (typeof reference === "string") return null;
       return upperFirst(camelCase(getPageName(reference.filename)));
     },

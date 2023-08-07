@@ -1,8 +1,10 @@
 # Composition
 
-<p data-description>
-  The <code>render</code> prop makes Ariakit components more versatile, allowing you to easily replace the default HTML element or enhance its features with custom components.
-</p>
+<div data-description>
+
+The `render` prop makes Ariakit components more versatile, allowing you to easily replace the default HTML element or enhance its features with custom components.
+
+</div>
 
 ## Changing the HTML element
 

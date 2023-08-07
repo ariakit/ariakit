@@ -1,8 +1,10 @@
 # Getting started
 
-<p data-description>
-  Ariakit is an open source library that provides lower-level <a href="https://reactjs.org">React</a> components and hooks for building accessible web apps, design systems, and component libraries.
-</p>
+<div data-description>
+
+Ariakit is an open source library that provides lower-level [React](https://react.dev) components and hooks for building accessible web apps, design systems, and component libraries.
+
+</div>
 
 ## Installation
 
