@@ -1,27 +1,28 @@
+---
+tags:
+  - Disclosure
+---
+
 # Disclosure
 
-<p data-description>
-  Click on a button to <a href="/apis/disclosure-store#show"><code>show</code></a> (expand, open) or <a href="/apis/disclosure-store#hide"><code>hide</code></a> (collapse, close) a content element in React. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/">WAI-ARIA Disclosure Pattern</a>.
-</p>
+<div data-description>
+
+Click a button to either [`show`](/reference/use-disclosure-store#show) (expand, open) or [`hide`](/reference/use-disclosure-store#hide) (collapse, close) a content element in React. This component is based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/disclosure/index.tsx" data-playground>Example</a>
 
-## Installation
-
-```sh
-npm i @ariakit/react
-```
-
-Learn more on the [Getting started](/guide/getting-started) guide.
-
 ## API
 
-<pre data-api>
-<a href="/apis/disclosure-store">useDisclosureStore</a>()
+```jsx
+useDisclosureStore()
 
-&lt;<a href="/apis/disclosure">Disclosure</a> /&gt;
-&lt;<a href="/apis/disclosure-content">DisclosureContent</a> /&gt;
-</pre>
+<Disclosure />
+<DisclosureContent />
+```
 
 ## Styling
 

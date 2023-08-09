@@ -6,7 +6,7 @@ import { getExampleDeps } from "build-pages/get-example-deps.js";
 import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
-import pagesIndex from "build-pages/index.js";
+import pageIndex from "build-pages/index.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import type { Page } from "build-pages/types.js";
 import { Preview } from "components/preview.jsx";
@@ -41,7 +41,7 @@ async function parseStyles(cssFiles: string[]) {
 
 export async function generateMetadata({ params }: Props) {
   const { page } = params;
-  const data = pagesIndex.examples?.find((item) => item.slug === page);
+  const data = pageIndex.examples?.find((item) => item.slug === page);
 
   return getNextPageMetadata({
     title: `Preview ${data?.title ?? page} - Ariakit`,

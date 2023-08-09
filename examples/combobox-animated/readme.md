@@ -1,3 +1,13 @@
+---
+tags:
+  - Combobox
+  - Animated
+  - CSS transitions
+  - Dropdowns
+  - Form controls
+  - Composite widgets
+---
+
 # Animated Combobox
 
 <div data-description>
@@ -5,6 +15,8 @@
 Animating a [Combobox](/components/combobox) using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover using the [`animated`](/reference/use-combobox-store#animated) prop.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

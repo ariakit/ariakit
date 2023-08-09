@@ -12,7 +12,7 @@ export function generateMetadata() {
 export default function Page() {
   const updates = getUpdates();
   return (
-    <div className="flex items-start justify-center md:flex-row-reverse">
+    <div className="flex items-start justify-center">
       <SeeNow updates={updates} />
       <main
         className={twJoin(

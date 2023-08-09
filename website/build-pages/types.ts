@@ -52,6 +52,11 @@ export interface PageIndexDetail {
    * Whether the page is unlisted.
    */
   unlisted: boolean;
+  /**
+   * Page tags.
+   * @default []
+   */
+  tags: string[];
 }
 
 export interface PageContent extends PageIndexDetail {

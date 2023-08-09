@@ -1,8 +1,20 @@
+---
+tags:
+  - Dialog
+  - Button
+  - Animated
+  - CSS transitions
+---
+
 # Animated Dialog
 
-<p data-description>
-  Animating a modal <a href="/components/dialog">Dialog</a> and its <a href="/apis/dialog#backdrop"><code>backdrop</code></a> element using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
-</p>
+<div data-description>
+
+Animating a modal <a href="/components/dialog">Dialog</a> and its <a href="/reference/dialog#backdrop"><code>backdrop</code></a> element using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

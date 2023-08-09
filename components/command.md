@@ -1,29 +1,30 @@
+---
+tags:
+  - Command
+---
+
 # Command
 
-<p data-description>
-  Click with a mouse or keyboard to trigger an action. This abstract component is based on the <a href="https://w3c.github.io/aria/#command">WAI-ARIA Command Role</a>.
-</p>
+<div data-description>
+
+Click with a mouse or keyboard to trigger an action. This abstract component is based on the [WAI-ARIA Command Role](https://w3c.github.io/aria/#command).
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/command/index.tsx" data-playground>Example</a>
 
-## Installation
-
-```sh
-npm i @ariakit/react
-```
-
-Learn more on the [Getting started](/guide/getting-started) guide.
-
 ## API
 
-<pre data-api>
-&lt;<a href="/apis/command">Command</a> /&gt;
-</pre>
+```jsx
+<Command />
+```
 
 ## Command vs. Button
 
-In short, if you need a semantic button element, you should use the [Button](/components/button) component.
+In summary, for a semantic button element, the [Button](/components/button) component is recommended.
 
-The `Button` component uses `Command` underneath and inherits all its features, but `Button` automatically adds the `role="button"` attribute when necessary (for example, when rendering a non-native button).
+The `Button` component operates on `Command` and inherits all its features. It also automatically adds the `role="button"` attribute when needed, such as when rendering a non-native button.
 
-If you need a clickable element with a different semantic role (e.g., `menuitem`), and you're not using the specific Ariakit component (e.g., [`MenuItem`](/apis/menu-item)), you can use `Command`.
+For a clickable element with a different semantic role, like `menuitem`, and if you're not using the specific Ariakit component like [`MenuItem`](/reference/menu-item), `Command` is your go-to option.

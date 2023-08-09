@@ -382,21 +382,15 @@ We can create a markdown file in the components folder and render an anchor elem
 ````markdown
 # My component
 
+<div data-description>
+
 This is my component.
 
+</div>
+
+<div data-tags></div>
+
 <a href="../examples/my-component/index.tsx" data-playground>Example</a>
-
-## Features
-
-- Renders a nice "My component" text.
-
-## Installation
-
-```bash
-npm i @ariakit/react
-```
-
-Learn more on the [Getting started](/guide/getting-started) guide.
 ````
 
 Now open http://localhost:3000/components/my-component to see the component documentation.
@@ -414,7 +408,11 @@ Unlike default examples, other examples will be primarily accessed through their
 ````markdown
 # My component with `customProp`
 
+<div data-description>
+
 This is my component using `customProp`.
+
+</div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

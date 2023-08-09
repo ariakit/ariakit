@@ -1,28 +1,29 @@
+---
+tags:
+  - Focusable
+---
+
 # Focusable
 
-<p data-description>
-  Click or press <kbd>Tab</kbd> to move focus to any React element using this abstract component that normalizes the focus behavior across browsers.
-</p>
+<div data-description>
 
-## Installation
+Press <kbd>Tab</kbd> or click to shift focus to any React element. This abstract component standardizes focus behavior across different browsers.
 
-```sh
-npm i @ariakit/react
-```
+</div>
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+<div data-tags></div>
 
 ## API
 
-<pre data-api>
-&lt;<a href="/apis/focusable">Focusable</a> /&gt;
-</pre>
+```jsx
+<Focusable />
+```
 
 ## Styling
 
 ### Styling the focus-visible state
 
-You can style the focus-visible state of `Focusable` elements using the `data-focus-visible` attribute. This is similar to the [:focus-visible pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible), but it also supports [composite widgets](/components/composite) with [`virtualFocus`](/apis/composite-state#virtualfocus):
+You can style the focus-visible state of `Focusable` elements using the `data-focus-visible` attribute. This is similar to the [:focus-visible pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible), but it also supports [composite widgets](/components/composite) with [`virtualFocus`](/reference/use-composite-store#virtualfocus):
 
 ```css
 .focusable[data-focus-visible] {
@@ -30,6 +31,6 @@ You can style the focus-visible state of `Focusable` elements using the `data-fo
 }
 ```
 
-Alternatively, you can use the [`onFocusVisible`](/apis/focusable#onfocusvisible) prop to handle the state in JavaScript.
+Alternatively, you can use the [`onFocusVisible`](/reference/focusable#onfocusvisible) prop to handle the state in JavaScript.
 
 Learn more on the [Styling](/guide/styling) guide.

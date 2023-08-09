@@ -1,3 +1,11 @@
+---
+tags:
+  - Combobox
+  - Dropdowns
+  - Form controls
+  - Composite widgets
+---
+
 # Combobox
 
 <div data-description>
@@ -5,6 +13,8 @@
 Fill in a React input field with autocomplete &amp; autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component is based on the [WAI-ARIA Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
 
 </div>
+
+<div data-tags></div>
 
 <a href="../examples/combobox/index.tsx" data-playground>Example</a>
 
@@ -24,7 +34,7 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 ## API
 
 ```jsx
-useComboboxStore();
+useComboboxStore()
 
 <Combobox />
 <ComboboxCancel />

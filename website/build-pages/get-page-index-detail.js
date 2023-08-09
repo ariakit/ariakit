@@ -23,5 +23,12 @@ export function getPageIndexDetail(filename, getGroup, tree) {
     }
   });
   const group = getGroup?.(filename) || null;
-  return { group, slug, title, content, unlisted: !!tree.data?.unlisted };
+  return {
+    group,
+    slug,
+    title,
+    content,
+    unlisted: !!tree.data?.unlisted,
+    tags: Array.isArray(tree.data?.tags) ? tree.data?.tags || [] : [],
+  };
 }

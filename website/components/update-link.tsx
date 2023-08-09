@@ -43,7 +43,7 @@ function renderPaths(id: string, url: URL) {
     <span aria-hidden id={`${id}/path`} className="flex items-center text-sm">
       <span className="sr-only">In </span>
       <span className="truncate text-blue-700 dark:text-blue-400 ">
-        {getPageTitle(category)}
+        {getPageTitle(category, true)}
       </span>
       {pageTitle && (
         <>

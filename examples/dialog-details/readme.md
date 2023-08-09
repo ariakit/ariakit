@@ -1,8 +1,18 @@
+---
+tags:
+  - Dialog
+  - Button
+---
+
 # Dialog with details &amp; summary
 
-<p data-description>
-  Combining <a href="/components/dialog">Dialog</a> with the native <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details element</a> in React so users can interact with it before JavaScript finishes loading.
-</p>
+<div data-description>
+
+Combining <a href="/components/dialog">Dialog</a> with the native <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details element</a> in React so users can interact with it before JavaScript finishes loading.
+
+</div>
+
+<div data-tags></div>
 
 <aside data-type="warn" title="Before you use this example">
 
@@ -16,8 +26,8 @@ This is not the best way to make modal dialogs accessible without JavaScript. Co
 
 <div data-cards="components">
 
-- [](/components/button)
 - [](/components/dialog)
+- [](/components/button)
 
 </div>
 

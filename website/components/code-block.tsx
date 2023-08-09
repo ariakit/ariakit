@@ -1,4 +1,4 @@
-import links from "build-pages/links.js";
+import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
 import { FontStyle, getHighlighter } from "shiki";
@@ -125,7 +125,7 @@ function getTokenHref(
       ? `/reference/${context.contextId}#${id}`
       : `/reference/${id}`;
 
-  if (!isValidHref(href, links)) return;
+  if (!isValidHref(href, pageLinks)) return;
 
   if (type === "component" || type === "function") {
     context.contextId = id;

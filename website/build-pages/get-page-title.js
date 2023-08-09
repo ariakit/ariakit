@@ -21,8 +21,8 @@ const searchTitles = {
 /**
  * @param {string} category
  */
-export function getPageTitle(category) {
-  return categoryTitles[category] ?? startCase(category);
+export function getPageTitle(category, fallback = false) {
+  return categoryTitles[category] ?? (fallback ? startCase(category) : "");
 }
 
 /**

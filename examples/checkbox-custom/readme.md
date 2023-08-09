@@ -1,8 +1,19 @@
+---
+tags:
+  - Checkbox
+  - VisuallyHidden
+  - Form controls
+---
+
 # Custom Checkbox
 
-<p data-description>
-  Rendering a visually hidden <a href="/components/checkbox">Checkbox</a> using the <a href="/components/visually-hidden">VisuallyHidden</a> component to show a custom checkbox presentation in React.
-</p>
+<div data-description>
+
+Rendering a visually hidden <a href="/components/checkbox">Checkbox</a> using the <a href="/components/visually-hidden">VisuallyHidden</a> component to show a custom checkbox presentation in React.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

@@ -1,8 +1,18 @@
+---
+tags:
+  - Checkbox
+  - Form controls
+---
+
 # Checkbox as button
 
-<p data-description>
-  Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
-</p>
+<div data-description>
+
+Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
+
+</div>
+
+<div data-tags></div>
 
 <aside data-type="note" title="Need to render a native checkbox element?">
 
@@ -17,7 +27,6 @@ This example demonstrates the rendering of a button element. However, if you int
 <div data-cards="components">
 
 - [](/components/checkbox)
-- [](/components/button)
 
 </div>
 

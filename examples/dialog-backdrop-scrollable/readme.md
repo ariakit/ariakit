@@ -1,8 +1,19 @@
+---
+tags:
+  - Dialog
+  - Button
+---
+
 # Dialog with scrollable backdrop
 
-<p data-description>
-  Rendering a modal <a href="/components/dialog">Dialog</a> component inside a scrollable backdrop container for dialogs that are taller than the viewport.
-</p>
+<div data-description>
+
+Rendering a modal <a href="/components/dialog">Dialog</a> component inside a scrollable backdrop container for dialogs that are
+taller than the viewport.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

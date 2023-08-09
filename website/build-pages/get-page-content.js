@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { basename, extname } from "path";
+import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";
 
@@ -34,8 +35,19 @@ function createPageContent(filename) {
  * @param {import("./types.js").Reference} reference
  */
 export function createReferencePageContent(reference) {
-  const { name, description, examples, props, deprecated, returnProps } =
-    reference;
+  const {
+    filename,
+    name,
+    description,
+    examples,
+    props,
+    deprecated,
+    returnProps,
+  } = reference;
+
+  const moduleName = upperFirst(
+    camelCase(basename(filename, extname(filename))),
+  );
 
   /**
    * @param {import("./types.js").ReferenceProp} a
@@ -91,10 +103,22 @@ ${example.code}
 `.trim();
   };
 
-  const content = `# ${name}
+  const content = `---
+tags:
+  - ${moduleName}
+---
+
+# ${name}
 ${deprecated ? "\n**Deprecated**\n" : ""}
 
+<div data-tags></div>
+
 ${description}
+
+${
+  examples.length > 0
+    ? `
+## Code examples
 
 ${examples
   .map((example) =>
@@ -102,7 +126,9 @@ ${examples
 ${example.code}
 \`\`\``.trim(),
   )
-  .join("\n\n")}
+  .join("\n\n")}`
+    : ""
+}
 ${
   requiredProps.length > 0
     ? `## Required Props

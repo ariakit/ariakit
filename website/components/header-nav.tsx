@@ -213,7 +213,7 @@ const HeaderNavItem = memo(
       : item.content;
     const path = keywords
       ? [
-          highlightValue(getPageTitle(category), keywords),
+          highlightValue(getPageTitle(category, true), keywords),
           highlightValue(item.group, keywords),
           section && highlightValue(item.title, keywords),
           highlightValue(parentSection, keywords),
@@ -611,7 +611,9 @@ export function HeaderNav() {
     };
   }, [categoryOpen, pageOpen, category, pageMeta]);
 
-  const categoryTitle = category ? getPageTitle(category) : "Browse";
+  const categoryTitle = category
+    ? getPageTitle(category) || "Browse"
+    : "Browse";
 
   const categoryElements = useMemo(
     () =>

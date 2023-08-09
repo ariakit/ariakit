@@ -1,8 +1,10 @@
 # Animated Select
 
-<p data-description>
-  Animating <a href="/components/select">Select</a> using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
-</p>
+<div data-description>
+
+Animating <a href="/components/select">Select</a> using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
+
+</div>
 
 The [`animated`](/apis/select-store#animated) prop on the [`useSelectStore`](/apis/select-store) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the select popover.
 

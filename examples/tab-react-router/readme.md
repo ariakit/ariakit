@@ -1,8 +1,10 @@
 # Tab with React Router
 
-<p data-description>
-  Using <a href="https://reactrouter.com/">React Router</a> to create <a href="/components/tab">Tab</a> links and tab panels controlled by the browser history, while maintaining keyboard navigation.
-</p>
+<div data-description>
+
+Using <a href="https://reactrouter.com/">React Router</a> to create <a href="/components/tab">Tab</a> links and tab panels controlled by the browser history, while maintaining keyboard navigation.
+
+</div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

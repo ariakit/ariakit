@@ -1,8 +1,10 @@
 # MenuItemCheckbox
 
-<p data-description>
-  Rendering a dropdown <a href="/components/menu">Menu</a> using the <a href="/apis/menu-item-checkbox"><code>MenuItemCheckbox</code></a> component with the <a href="/apis/menu-store#values"><code>values</code></a> and <a href="/apis/menu-store#setvalues"><code>setValues</code></a> props from <a href="/apis/menu-store"><code>useMenuStore</code></a> to control the checked items.
-</p>
+<div data-description>
+
+Rendering a dropdown <a href="/components/menu">Menu</a> using the <a href="/apis/menu-item-checkbox"><code>MenuItemCheckbox</code></a> component with the <a href="/apis/menu-store#values"><code>values</code></a> and <a href="/apis/menu-store#setvalues"><code>setValues</code></a> props from <a href="/apis/menu-store"><code>useMenuStore</code></a> to control the checked items.
+
+</div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

@@ -7,8 +7,8 @@ import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTitle } from "build-pages/get-page-title.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
-import pagesIndex from "build-pages/index.js";
-import links from "build-pages/links.js";
+import pageIndex from "build-pages/index.js";
+import pageLinks from "build-pages/links.js";
 import { getReferences } from "build-pages/reference-utils.js";
 import type {
   Page,
@@ -26,6 +26,7 @@ import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
+import { kebabCase } from "lodash-es";
 import Image from "next/image.js";
 import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
@@ -236,7 +237,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { category, page } = params;
-  const data = pagesIndex[category]?.find((item) => item.slug === page);
+  const data = pageIndex[category]?.find((item) => item.slug === page);
 
   if (!data) {
     // Pages without a readme.md file
@@ -280,7 +281,7 @@ export default async function Page({ params }: PageProps) {
   const content = getPageContent(reference || file);
   const { content: contentWithoutMatter } = matter(content);
   const tree = getPageTreeFromContent(content);
-  const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
+  const pageDetail = pageIndex[category]?.find((item) => item.slug === page);
   const categoryDetail = pagesConfig.pages.find(
     (item) => item.slug === category,
   );
@@ -356,7 +357,7 @@ export default async function Page({ params }: PageProps) {
       );
     });
 
-  const sortedIndex = Object.values(pagesIndex).flatMap((item) =>
+  const sortedIndex = Object.values(pageIndex).flatMap((item) =>
     [...item].sort((a, b) => {
       if (a.group === b.group) return 0;
       if (!a.group && b.group) return -1;
@@ -366,13 +367,12 @@ export default async function Page({ params }: PageProps) {
     }),
   );
 
-  let pageIndex =
-    pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
-  let nextPage = pageIndex !== -1 ? sortedIndex?.[pageIndex + 1] : undefined;
+  let index = pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
+  let nextPage = index !== -1 ? sortedIndex?.[index + 1] : undefined;
 
   while (nextPage?.unlisted || nextPage?.group === "Other") {
-    pageIndex += 1;
-    nextPage = sortedIndex?.[pageIndex + 1];
+    index += 1;
+    nextPage = sortedIndex?.[index + 1];
   }
 
   const nextPageLink = nextPage && (
@@ -444,9 +444,38 @@ export default async function Page({ params }: PageProps) {
                   isValidElement<ComponentPropsWithoutRef<"p">>(paragraph),
                   "Expected paragraph",
                 );
+                const { children, ...otherProps } = props;
                 return cloneElement(paragraph, {
-                  className: cx(paragraph.props.className, style.description),
+                  ...otherProps,
+                  className: twJoin(
+                    props.className,
+                    paragraph.props.className,
+                    style.description,
+                  ),
                 });
+              }
+              if (node.properties?.dataTags != null) {
+                const tags = pageDetail?.tags ?? [];
+                if (!tags.length) return null;
+                return (
+                  <div
+                    {...props}
+                    className={twJoin(
+                      "flex flex-wrap gap-2 [[data-description]+&]:-translate-y-2",
+                      props.className,
+                    )}
+                  >
+                    {tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/tags/${kebabCase(tag)}`}
+                        className="rounded-full border border-black/[15%] bg-black/5 p-2 px-4 font-medium text-black/90 hover:bg-black/10 focus-visible:ariakit-outline-input dark:border-gray-650 dark:bg-gray-850 dark:text-white/90 hover:dark:bg-gray-750 sm:text-sm"
+                      >
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
+                );
               }
               if (node.properties?.dataCards != null) {
                 const links = findCardLinks(props.children);
@@ -455,7 +484,7 @@ export default async function Page({ params }: PageProps) {
                     .replace("https://ariakit.org", "")
                     .split("/");
                   if (!category || !slug) return [];
-                  const page = pagesIndex[category]?.find(
+                  const page = pageIndex[category]?.find(
                     (item) => item.slug === slug,
                   );
                   return page || [];
@@ -635,11 +664,7 @@ export default async function Page({ params }: PageProps) {
               const paragraph = (
                 <p
                   {...props}
-                  className={cx(
-                    style.paragraph,
-                    "data-description" in props && style.description,
-                    props.className,
-                  )}
+                  className={twJoin(style.paragraph, props.className)}
                 />
               );
               if (Array.isArray(props.children) && props.children.length > 1) {
@@ -658,7 +683,7 @@ export default async function Page({ params }: PageProps) {
               <kbd
                 {...props}
                 className={twJoin(
-                  "font-monospace rounded-[0.25em] border border-black/[15%] bg-black/[6.5%] p-[0.15em] px-[0.3em] text-[0.9375em] [box-shadow:0_0.15em_0_rgba(0,0,0,0.15)] dark:border-white/[15%] dark:bg-white/10 dark:[box-shadow:0_0.15em_0_rgba(255,255,255,0.15)]",
+                  "font-monospace rounded-[0.2667em] rounded-b-[0.3334em] border-b-[0.1334em] border-t-[0.0667em] border-b-black/[7.5%] border-t-white bg-gradient-to-b from-black/[15%] to-black/5 p-[0.1334em] px-[0.2667em] text-[0.9375em] [box-shadow:0_0_0_max(1px,0.033333em)_rgba(0,0,0,0.25)] dark:rounded-b-[0.4em] dark:border-b-[0.2em] dark:border-t-0 dark:border-b-black/40 dark:from-white/10 dark:to-white/[15%] dark:[box-shadow:0_min(-1px,-0.0666em)_rgba(255,255,255,0.1),0_0_0_max(1px,0.0666em)_rgba(255,255,255,0.15)]",
                   props.className,
                 )}
               />
@@ -708,7 +733,7 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               if (href) {
-                if (!isValidHref(href, links)) {
+                if (!isValidHref(href, pageLinks)) {
                   throw new Error(`Invalid link: ${href}`);
                 }
                 const url = new URL(href, "https://ariakit.org");
@@ -753,7 +778,7 @@ export default async function Page({ params }: PageProps) {
               Join 1,000+ subscribers and receive monthly updates with the
               latest improvements on{" "}
               <strong className="font-semibold text-black dark:text-white">
-                {getPageTitle(category)}
+                {getPageTitle(category, true)}
               </strong>
               .
             </p>
