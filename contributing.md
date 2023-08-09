@@ -388,8 +388,6 @@ This is my component.
 
 </div>
 
-<div data-tags></div>
-
 <a href="../examples/my-component/index.tsx" data-playground>Example</a>
 ````
 
