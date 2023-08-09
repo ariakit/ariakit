@@ -20,6 +20,7 @@ const searcherOptions = {
       obj.slug,
       [obj.title, obj.category].join(" "),
       [obj.title, obj.section, obj.category].join(" "),
+      ...obj.tags,
     ];
   },
   useSellers: true,
