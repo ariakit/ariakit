@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Multi-selectable Combobox",
+    type: "page",
+    href: "/examples/combobox-multiple",
+    dateTime: "2023-08-09T23:27Z",
+  },
+  {
     title: "New guide: Coding guidelines",
     type: "page",
     href: "/guide/coding-guidelines",

@@ -36,5 +36,6 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
+- [](/examples/combobox-multiple)
 
 </div>

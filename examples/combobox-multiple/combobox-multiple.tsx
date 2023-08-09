@@ -5,12 +5,12 @@ import * as Ariakit from "@ariakit/react";
 export interface ComboboxProps
   extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
   label?: string;
-  defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
-  defaultValues?: string[];
+  defaultValue?: string;
   values?: string[];
   onValuesChange?: (values: string[]) => void;
+  defaultValues?: string[];
 }
 
 export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
@@ -28,17 +28,17 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
     } = props;
 
     const combobox = Ariakit.useComboboxStore({
-      defaultValue,
       value,
       setValue: onChange,
+      defaultValue,
       resetValueOnHide: true,
     });
 
     const select = Ariakit.useSelectStore({
       combobox,
-      defaultValue: defaultValues,
       value: values,
       setValue: onValuesChange,
+      defaultValue: defaultValues,
     });
 
     const selectValue = select.useState("value");
@@ -64,7 +64,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
           sameWidth
           gutter={8}
           className="popover"
-          render={(props) => <Ariakit.SelectList store={select} {...props} />}
+          render={<Ariakit.SelectList store={select} />}
         >
           {children}
         </Ariakit.ComboboxPopover>
@@ -86,8 +86,8 @@ export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
       <Ariakit.SelectItem
         ref={ref}
         className="combobox-item"
-        render={(props) => <Ariakit.ComboboxItem {...props} />}
         {...props}
+        render={<Ariakit.ComboboxItem />}
       >
         <Ariakit.SelectItemCheck />
         {props.children || props.value}
