@@ -3,7 +3,6 @@ tags:
   - Select
   - Dropdowns
   - Form controls
-  - Composite widgets
 ---
 
 # Select

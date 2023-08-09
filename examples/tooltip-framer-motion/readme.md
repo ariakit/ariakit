@@ -1,3 +1,10 @@
+---
+tags:
+  - Tooltip
+  - Animated
+  - Framer Motion
+---
+
 # Tooltip with Framer Motion
 
 <div data-description>
@@ -5,6 +12,8 @@
 Abstracting <a href="/components/tooltip">Tooltip</a> into a reusable custom component that uses <a href="https://www.framer.com/motion/">Framer Motion</a> to create smooth initial and exit animations.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

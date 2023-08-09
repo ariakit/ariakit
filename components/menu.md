@@ -2,7 +2,6 @@
 tags:
   - Menu
   - Dropdowns
-  - Composite widgets
 ---
 
 # Menu

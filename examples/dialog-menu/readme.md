@@ -4,7 +4,6 @@ tags:
   - Menu
   - Button
   - Dropdowns
-  - Composite widgets
 ---
 
 # Dialog with Menu

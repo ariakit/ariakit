@@ -2,7 +2,6 @@
 tags:
   - Radio
   - Form controls
-  - Composite widgets
 ---
 
 # Radio

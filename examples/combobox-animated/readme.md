@@ -5,7 +5,6 @@ tags:
   - CSS transitions
   - Dropdowns
   - Form controls
-  - Composite widgets
 ---
 
 # Animated Combobox

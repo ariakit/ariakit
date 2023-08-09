@@ -1,7 +1,6 @@
 ---
 tags:
   - Composite
-  - Composite widgets
 ---
 
 # Composite

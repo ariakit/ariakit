@@ -1,3 +1,9 @@
+---
+tags:
+  - Menu
+  - Dropdowns
+---
+
 # MenuBar
 
 <div data-description>
@@ -5,6 +11,8 @@
 Rendering a visually persistent menu similar to those found near the top of the window in desktop applications. This example is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Bar Pattern</a>.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

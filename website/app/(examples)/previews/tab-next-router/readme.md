@@ -1,3 +1,11 @@
+---
+tags:
+  - Tab
+  - Routing
+  - Next.js
+  - Next.js App Router
+---
+
 # Tab with Next.js App Router
 
 <div data-description>
@@ -5,6 +13,8 @@
 Using <a href="https://nextjs.org/docs/app/building-your-application/routing/parallel-routes">Next.js Parallel Routes</a> to create accessible <a href="/components/tab">Tabs</a> and tab panels that are rendered on the server and controlled by the URL.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./layout.tsx" data-playground>Example</a>
 

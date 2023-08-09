@@ -1,3 +1,12 @@
+---
+tags:
+  - Select
+  - Animated
+  - CSS transitions
+  - Dropdowns
+  - Form controls
+---
+
 # Animated Select
 
 <div data-description>
@@ -6,7 +15,9 @@ Animating <a href="/components/select">Select</a> using CSS transitions in React
 
 </div>
 
-The [`animated`](/apis/select-store#animated) prop on the [`useSelectStore`](/apis/select-store) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the select popover.
+<div data-tags></div>
+
+The [`animated`](/reference/use-select-store#animated) prop on the [`useSelectStore`](/reference/use-select-store) hook must be set to `true`. Ariakit will assign the `data-enter` and `data-leave` attributes and wait for the transition to finish before hiding or unmounting the select popover.
 
 <a href="./index.tsx" data-playground>Example</a>
 

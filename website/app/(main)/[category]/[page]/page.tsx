@@ -26,7 +26,6 @@ import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
 import { Hashtag } from "icons/hashtag.js";
 import { NewWindow } from "icons/new-window.js";
-import { kebabCase } from "lodash-es";
 import Image from "next/image.js";
 import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
@@ -42,6 +41,7 @@ import { getPageIcon } from "utils/get-page-icon.jsx";
 import { isValidHref } from "utils/is-valid-href.js";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
+import { getTagSlug } from "utils/tag.js";
 import { tw } from "utils/tw.js";
 import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
@@ -468,8 +468,8 @@ export default async function Page({ params }: PageProps) {
                     {tags.map((tag) => (
                       <Link
                         key={tag}
-                        href={`/tags/${kebabCase(tag)}`}
-                        className="rounded-full border border-black/[15%] bg-black/5 p-2 px-4 font-medium text-black/90 hover:bg-black/10 focus-visible:ariakit-outline-input dark:border-gray-650 dark:bg-gray-850 dark:text-white/90 hover:dark:bg-gray-750 sm:text-sm"
+                        href={`/tags/${getTagSlug(tag)}`}
+                        className="rounded-full border-black/[15%] bg-black/[7.5%] p-2 px-4 text-sm font-medium text-black/90 hover:bg-black/[15%] focus-visible:ariakit-outline-input dark:border dark:border-gray-650 dark:bg-gray-850 dark:text-white/90 hover:dark:bg-gray-750"
                       >
                         {tag}
                       </Link>

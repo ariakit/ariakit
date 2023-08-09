@@ -1,3 +1,10 @@
+---
+tags:
+  - Popover
+  - Dropdowns
+  - Concurrent React
+---
+
 # Lazy Popover
 
 <div data-description>
@@ -6,11 +13,13 @@ Lazy loading <a href="/components/popover">Popover</a> using <a href="https://re
 
 </div>
 
+<div data-tags></div>
+
 <a href="./index.tsx" data-playground>Example</a>
 
 ## Controlling the popover state
 
-You can control the open state of the popover by passing the [`open`](/apis/popover-store#open) and [`setOpen`](/apis/popover-store#setopen) props to the [`usePopoverStore`](/apis/popover-store) hook:
+You can control the open state of the popover by passing the [`open`](/reference/use-popover-store#open) and [`setOpen`](/reference/use-popover-store#setopen) props to the [`usePopoverStore`](/reference/use-popover-store) hook:
 
 ```js
 const [open, setOpen] = React.useState(false);

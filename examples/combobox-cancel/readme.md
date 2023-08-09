@@ -3,7 +3,6 @@ tags:
   - Combobox
   - Dropdowns
   - Form controls
-  - Composite widgets
 ---
 
 # ComboboxCancel

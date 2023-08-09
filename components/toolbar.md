@@ -1,7 +1,6 @@
 ---
 tags:
   - Toolbar
-  - Composite widgets
 ---
 
 # Toolbar

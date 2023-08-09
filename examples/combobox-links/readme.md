@@ -5,7 +5,6 @@ tags:
   - Search
   - Dropdowns
   - Form controls
-  - Composite widgets
 ---
 
 # Combobox with links

@@ -1,7 +1,6 @@
 ---
 tags:
   - Tab
-  - Composite widgets
 ---
 
 # Tab
