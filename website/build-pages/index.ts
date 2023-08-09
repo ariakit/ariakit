@@ -4,4 +4,6 @@ import type { PageIndex, PageIndexDetail } from "./types.js";
 
 export type { PageIndexDetail, PageIndex };
 
-export default index as PageIndex;
+const pageIndex = index as PageIndex;
+
+export default pageIndex;

@@ -1,8 +1,17 @@
+---
+tags:
+  - Tab
+---
+
 # Tab
 
-<p data-description>
-  Display one panel of content at a time with a tabbed interface. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/">WAI-ARIA Tabs Pattern</a>.
-</p>
+<div data-description>
+
+Display one panel of content at a time with a tabbed interface. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/">WAI-ARIA Tabs Pattern</a>.
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/tab/index.tsx" data-playground>Example</a>
 
@@ -17,14 +26,14 @@
 
 ## API
 
-<pre data-api>
-<a href="/apis/tab-store">useTabStore</a>()
+```jsx
+useTabStore()
 
-&lt;<a href="/apis/tab-list">TabList</a>&gt;
-  &lt;<a href="/apis/tab">Tab</a> /&gt;
-&lt;/TabList&gt;
-&lt;<a href="/apis/tab-panel">TabPanel</a> /&gt;
-</pre>
+<TabList>
+  <Tab />
+</TabList>
+<TabPanel />
+```
 
 ## Related components
 

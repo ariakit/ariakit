@@ -1,3 +1,9 @@
+---
+tags:
+  - Button
+  - Form controls
+---
+
 # Button
 
 <div data-description>
@@ -5,6 +11,8 @@
 Trigger an action or event, such as submitting a [Form](/components/form), opening a [Dialog](/components/dialog), canceling an action, or performing a delete operation in React. This component is based on the [WAI-ARIA Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/).
 
 </div>
+
+<div data-tags></div>
 
 <a href="../examples/button/index.tsx" data-playground>Example</a>
 

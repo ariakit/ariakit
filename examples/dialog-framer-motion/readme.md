@@ -1,8 +1,20 @@
+---
+tags:
+  - Dialog
+  - Button
+  - Animated
+  - Framer Motion
+---
+
 # Dialog with Framer Motion
 
-<p data-description>
-  Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/apis/dialog#backdrop"><code>backdrop</code></a> element.
-</p>
+<div data-description>
+
+Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/reference/dialog#backdrop"><code>backdrop</code></a> element.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 
@@ -10,8 +22,8 @@
 
 <div data-cards="components">
 
-- [](/components/button)
 - [](/components/dialog)
+- [](/components/button)
 
 </div>
 
@@ -44,7 +56,7 @@ We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) co
 </AnimatePresence>
 ```
 
-To dynamically render the dialog component, you can use the [`mounted`](/apis/dialog-store#mounted) state that can be retrieved from the store:
+To dynamically render the dialog component, you can use the [`mounted`](/apis/use-dialog-store#mounted) state that can be retrieved from the store:
 
 ```jsx
 const dialog = Ariakit.useDialogStore();

@@ -1,3 +1,12 @@
+---
+tags:
+  - Combobox
+  - Concurrent React
+  - Search
+  - Dropdowns
+  - Form controls
+---
+
 # ComboboxGroup
 
 <div data-description>
@@ -5,6 +14,8 @@
 Organizing [Combobox](/components/combobox) items into labelled groups using the [`ComboboxGroup`](/reference/combobox-group) and [`ComboboxGroupLabel`](/reference/combobox-group-label) components in React.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

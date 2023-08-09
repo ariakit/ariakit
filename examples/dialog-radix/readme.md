@@ -4,9 +4,11 @@ unlisted: true
 
 # Radix UI Dialog
 
-<p data-description>
-  Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
-</p>
+<div data-description>
+
+Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
+
+</div>
 
 <aside data-type="note" title="Note">
 

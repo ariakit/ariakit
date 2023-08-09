@@ -1,8 +1,18 @@
+---
+tags:
+  - Menu
+  - Dropdowns
+---
+
 # Menu
 
-<p data-description>
-  Access a set of commands within a menu bar or dropdown menu. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
-</p>
+<div data-description>
+
+Access a set of commands within a menu bar or dropdown menu. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/menu/index.tsx" data-playground>Example</a>
 

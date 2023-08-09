@@ -6,4 +6,6 @@ export interface PageLink {
   hashes: string[];
 }
 
-export default links as PageLink[];
+const pageLinks = links as PageLink[];
+
+export default pageLinks;

@@ -1,30 +1,31 @@
+---
+tags:
+  - Hovercard
+---
+
 # Hovercard
 
-<p data-description>
-  Show a <a href="/components/popover">Popover</a> with additional information when users hover over an element.
-</p>
+<div data-description>
+
+Show a <a href="/components/popover">Popover</a> with additional information when users hover over an element.
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/hovercard/index.tsx" data-playground>Example</a>
 
-## Installation
-
-```sh
-npm i @ariakit/react
-```
-
-Learn more on the [Getting started](/guide/getting-started) guide.
-
 ## API
 
-<pre data-api>
-<a href="/apis/hovercard-store">useHovercardStore</a>()
+```jsx
+useHovercardStore()
 
-&lt;<a href="/apis/hovercard-anchor">HovercardAnchor</a> /&gt;
-&lt;<a href="/apis/hovercard-disclosure">HovercardDisclosure</a> /&gt;
-&lt;<a href="/apis/hovercard">Hovercard</a>&gt;
-  &lt;<a href="/apis/hovercard-arrow">HovercardArrow</a> /&gt;
-  &lt;<a href="/apis/hovercard-heading">HovercardHeading</a> /&gt;
-  &lt;<a href="/apis/hovercard-description">HovercardDescription</a> /&gt;
-  &lt;<a href="/apis/hovercard-dismiss">HovercardDismiss</a> /&gt;
-&lt;/Hovercard&gt;
-</pre>
+<HovercardAnchor />
+<HovercardDisclosure />
+<Hovercard>
+  <HovercardArrow />
+  <HovercardHeading />
+  <HovercardDescription />
+  <HovercardDismiss />
+</Hovercard>
+```

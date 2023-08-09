@@ -1,3 +1,10 @@
+---
+tags:
+  - Combobox
+  - Dropdowns
+  - Form controls
+---
+
 # ComboboxDisclosure
 
 <div data-description>
@@ -5,6 +12,8 @@
 Opening and closing a [Combobox](/components/combobox) with the help of a button rendered next to it using the [`ComboboxDisclosure`](/reference/combobox-disclosure) component.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

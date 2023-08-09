@@ -1,3 +1,10 @@
+---
+tags:
+  - Menu
+  - Tooltip
+  - Dropdowns
+---
+
 # Menu with Tooltip
 
 <div data-description>
@@ -5,6 +12,8 @@
 Rendering [Menu](/components/menu) with a [Tooltip](/components/tooltip) that appears when hovering over the [`MenuButton`](/reference/menu-button) component by combining it with the [`TooltipAnchor`](/reference/tooltip-anchor) component.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

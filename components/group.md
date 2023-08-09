@@ -1,16 +1,25 @@
+---
+tags:
+  - Group
+---
+
 # Group
 
-<p data-description>
-  Group related elements in a generic container that may have a label. This abstract component is based on the <a href="https://w3c.github.io/aria/#group">WAI-ARIA Group Role</a>.
-</p>
+<div data-description>
+
+Group related elements in a generic container that may have a label. This abstract component is based on the <a href="https://w3c.github.io/aria/#group">WAI-ARIA Group Role</a>.
+
+</div>
+
+<div data-tags></div>
 
 ## API
 
-<pre data-api>
-&lt;<a href="/apis/group">Group</a>&gt;
-  &lt;<a href="/apis/group-label">GroupLabel</a> /&gt;
-&lt;/Group&gt;
-</pre>
+```jsx
+<Group>
+  <GroupLabel />
+</Group>
+```
 
 ## Related components
 

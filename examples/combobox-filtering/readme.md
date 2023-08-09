@@ -1,3 +1,12 @@
+---
+tags:
+  - Combobox
+  - Concurrent React
+  - Search
+  - Dropdowns
+  - Form controls
+---
+
 # Combobox filtering
 
 <div data-description>
@@ -5,6 +14,8 @@
 Listing suggestions in a [Combobox](/components/combobox) component based on the input value using [`React.startTransition`](https://react.dev/reference/react/startTransition) to ensure the UI remains responsive during typing.
 
 </div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 
