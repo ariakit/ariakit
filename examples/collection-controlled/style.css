@@ -1,14 +1,1 @@
-.collection {
-  @apply
-    min-w-[240px]
-    flex
-    flex-col
-    p-4
-    gap-2
-    rounded-lg
-    bg-white
-    dark:bg-gray-700
-    shadow
-    dark:shadow-dark
-  ;
-}
+@import url("../collection/style.css");
