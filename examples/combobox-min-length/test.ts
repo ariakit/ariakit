@@ -17,6 +17,12 @@ test("popover is not shown on arrow down key when combobox is pristine", async (
   expect(getPopover()).not.toBeVisible();
 });
 
+test("show popover after typing", async () => {
+  await press.Tab();
+  await type("a");
+  expect(getPopover()).toBeVisible();
+});
+
 test("popover is shown on click when combobox is dirty", async () => {
   await press.Tab();
   await type("a");
