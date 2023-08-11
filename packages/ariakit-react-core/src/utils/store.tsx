@@ -170,7 +170,7 @@ export function useStoreProps<
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
-    return store.sync(() => {
+    return store.syncBatch(() => {
       if (value === undefined) return;
       store.setState(key, value);
     }, [key]);
