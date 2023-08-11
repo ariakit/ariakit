@@ -1,6 +1,6 @@
+import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

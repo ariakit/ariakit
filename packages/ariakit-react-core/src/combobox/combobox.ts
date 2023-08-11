@@ -328,9 +328,6 @@ export const useCombobox = createHook<ComboboxOptions>(
           setCanInline(textInserted && caretAtEnd);
         }
       }
-      if (showOnChangeProp(event)) {
-        store.show();
-      }
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
         store.setValue(value);
@@ -345,6 +342,9 @@ export const useCombobox = createHook<ComboboxOptions>(
           // here so the inline completion effect will be fired.
           forceValueUpdate();
         }
+      }
+      if (showOnChangeProp(event)) {
+        store.show();
       }
       if (!autoSelect || !canAutoSelectRef.current) {
         // If autoSelect is not set or it's not an insertion of text, focus on
