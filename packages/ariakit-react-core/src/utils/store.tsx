@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
 import type {
   Store as CoreStore,
@@ -169,7 +169,7 @@ export function useStoreProps<
   }, [store, key]);
 
   // If the value prop is provided, we'll always reset the store state to it.
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     return store.sync(() => {
       if (value === undefined) return;
       store.setState(key, value);
