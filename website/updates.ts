@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Focusable",
+    type: "page",
+    href: "/reference/focusable",
+    dateTime: "2023-08-12T02:27Z",
+  },
+  {
     title: "Improved docs: Multi-selectable Combobox",
     type: "page",
     href: "/examples/combobox-multiple",
