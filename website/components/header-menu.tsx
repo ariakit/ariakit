@@ -16,6 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { batch, sync } from "@ariakit/core/utils/store";
 import * as Ariakit from "@ariakit/react";
 import {
   useEvent,
@@ -108,7 +109,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     });
 
     useEffect(() => {
-      return menu.syncBatch(
+      return batch(
+        menu,
         (state) => {
           if (parent) return;
           if (!state.open) return;
@@ -119,7 +121,8 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     }, [parent, menu]);
 
     useEffect(() => {
-      return select.sync(
+      return sync(
+        select,
         (state) => {
           if (parent) return;
           menu.setDisclosureElement(state.selectElement);

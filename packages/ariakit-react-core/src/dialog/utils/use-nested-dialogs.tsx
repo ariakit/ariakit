@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { chain } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import { useSafeLayoutEffect } from "../../utils/hooks.js";
 import type { WrapElement } from "../../utils/types.js";
 import type { DialogStore } from "../dialog-store.js";
@@ -31,7 +32,8 @@ export function useNestedDialogs(store: DialogStore) {
 
   // If it's a nested dialog, add it to the context
   useSafeLayoutEffect(() => {
-    return store.sync(
+    return sync(
+      store,
       (state) => {
         if (!state.open) return;
         if (!state.contentElement) return;
@@ -43,7 +45,8 @@ export function useNestedDialogs(store: DialogStore) {
 
   // Close all nested dialogs when the parent dialog closes
   useSafeLayoutEffect(() => {
-    return context.store?.sync(
+    return sync(
+      context.store,
       (state) => {
         if (state.open) return;
         store.hide();

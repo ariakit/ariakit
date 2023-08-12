@@ -1,6 +1,7 @@
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useContext, useEffect, useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
+import { sync } from "@ariakit/core/utils/store";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
@@ -57,9 +58,13 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // Makes sure that the menu button is assigned as the menu disclosure
       // element. This is needed to support screen reader focusing on sibling
       // menu items.
-      return store.sync(() => {
-        store.setState("disclosureElement", ref.current);
-      }, ["disclosureElement"]);
+      return sync(
+        store,
+        () => {
+          store.setState("disclosureElement", ref.current);
+        },
+        ["disclosureElement"],
+      );
     }, [store]);
 
     const onFocusProp = props.onFocus;

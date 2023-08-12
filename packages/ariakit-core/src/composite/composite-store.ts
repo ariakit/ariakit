@@ -8,7 +8,7 @@ import { createCollectionStore } from "../collection/collection-store.js";
 import { flatten2DArray, reverseArray } from "../utils/array.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { createStore, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 type Orientation = "horizontal" | "vertical" | "both";
@@ -185,8 +185,9 @@ export function createCompositeStore<T extends Item = Item>(
 
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
-  composite.setup(() =>
-    composite.sync(
+  setup(composite, () =>
+    sync(
+      composite,
       (state) => {
         composite.setState("activeId", (activeId) => {
           if (activeId !== undefined) return activeId;

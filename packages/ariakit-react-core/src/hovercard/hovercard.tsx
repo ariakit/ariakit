@@ -11,6 +11,7 @@ import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { chain, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
@@ -111,7 +112,8 @@ function useAutoFocusOnHide({ store, ...props }: HovercardProps) {
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    return store.sync(
+    return sync(
+      store,
       (state) => {
         finalFocusRef.current = state.anchorElement;
       },

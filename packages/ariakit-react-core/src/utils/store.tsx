@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
+import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -110,6 +111,14 @@ export function useStoreState(
   store: StateStore,
   keyOrSelector: StateKey | StateSelector = identity,
 ) {
+  const storeSubscribe = useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store, callback);
+    },
+    [store],
+  );
+
   const getSnapshot = () => {
     if (!store) return;
     const state = store.getState();
@@ -120,11 +129,8 @@ export function useStoreState(
     if (!hasOwnProperty(state, key)) return;
     return state[key];
   };
-  return useSyncExternalStore(
-    store?.subscribe || noopSubscribe,
-    getSnapshot,
-    getSnapshot,
-  );
+
+  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
 }
 
 /**
@@ -156,7 +162,8 @@ export function useStoreProps<
     queueMicrotask(() => {
       canFlushSync = true;
     });
-    return store.sync(
+    return sync(
+      store,
       (state, prev) => {
         const { value, setValue } = propsRef.current;
         if (!setValue) return;
@@ -170,10 +177,14 @@ export function useStoreProps<
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
-    return store.syncBatch(() => {
-      if (value === undefined) return;
-      store.setState(key, value);
-    }, [key]);
+    return batch(
+      store,
+      () => {
+        if (value === undefined) return;
+        store.setState(key, value);
+      },
+      [key],
+    );
   }, [store, key, value]);
 }
 /**
@@ -183,7 +194,7 @@ export function useStoreProps<
 export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
   const store = useLazyValue(createStore);
 
-  useSafeLayoutEffect(() => store.init(), [store]);
+  useSafeLayoutEffect(() => init(store), [store]);
 
   const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),
