@@ -24,13 +24,24 @@ type StoreOmit<
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
 > = (keys: K) => Store<Omit<S, K[number]>>;
 
-const SETUP = Symbol("setup");
-const INIT = Symbol("init");
-const SUBSCRIBE = Symbol("subscribe");
-const SYNC = Symbol("sync");
-const BATCH = Symbol("batch");
-const PICK = Symbol("pick");
-const OMIT = Symbol("omit");
+interface StoreInternals<S = State> {
+  setup: StoreSetup;
+  init: StoreInit;
+  subscribe: StoreSubscribe<S>;
+  sync: StoreSync<S>;
+  batch: StoreBatch<S>;
+  pick: StorePick<S>;
+  omit: StoreOmit<S>;
+}
+
+function getInternal<K extends keyof StoreInternals>(
+  store: Store & { __unstableInternals?: StoreInternals },
+  key: K,
+): StoreInternals[K] {
+  const internals = store.__unstableInternals;
+  invariant(internals, "Invalid store");
+  return internals[key];
+}
 
 /**
  * Creates a store.
@@ -165,13 +176,15 @@ export function createStore<S extends State>(
   const finalStore = {
     getState,
     setState,
-    [SETUP]: storeSetup,
-    [INIT]: storeInit,
-    [SUBSCRIBE]: storeSubscribe,
-    [SYNC]: storeSync,
-    [BATCH]: storeBatch,
-    [PICK]: storePick,
-    [OMIT]: storeOmit,
+    __unstableInternals: {
+      setup: storeSetup,
+      init: storeInit,
+      subscribe: storeSubscribe,
+      sync: storeSync,
+      batch: storeBatch,
+      pick: storePick,
+      omit: storeOmit,
+    },
   };
 
   return finalStore;
@@ -185,13 +198,9 @@ export function setup<T extends Store>(
 /**
  * Register a callback function that's called when the store is initialized.
  */
-export function setup(
-  store?: Store & { [SETUP]?: StoreSetup },
-  ...args: Parameters<StoreSetup>
-) {
+export function setup(store?: Store, ...args: Parameters<StoreSetup>) {
   if (!store) return;
-  invariant(store[SETUP], "Invalid store");
-  return store[SETUP](...args);
+  return getInternal(store, "setup")(...args);
 }
 
 export function init<T extends Store>(
@@ -202,13 +211,9 @@ export function init<T extends Store>(
 /**
  * Function that should be called when the store is initialized.
  */
-export function init(
-  store?: Store & { [INIT]?: StoreInit },
-  ...args: Parameters<StoreInit>
-) {
+export function init(store?: Store, ...args: Parameters<StoreInit>) {
   if (!store) return;
-  invariant(store[INIT], "Invalid store");
-  return store[INIT](...args);
+  return getInternal(store, "init")(...args);
 }
 
 export function subscribe<T extends Store>(
@@ -219,13 +224,9 @@ export function subscribe<T extends Store>(
 /**
  * Registers a listener function that's called after state changes in the store.
  */
-export function subscribe(
-  store?: Store & { [SUBSCRIBE]?: StoreSubscribe },
-  ...args: Parameters<StoreSubscribe>
-) {
+export function subscribe(store?: Store, ...args: Parameters<StoreSubscribe>) {
   if (!store) return;
-  invariant(store[SUBSCRIBE], "Invalid store");
-  return store[SUBSCRIBE](...args);
+  return getInternal(store, "subscribe")(...args);
 }
 
 export function sync<T extends Store>(
@@ -237,13 +238,9 @@ export function sync<T extends Store>(
  * Registers a listener function that's called immediately and synchronously
  * whenever the store state changes.
  */
-export function sync(
-  store?: Store & { [SYNC]?: StoreSync },
-  ...args: Parameters<StoreSync>
-) {
+export function sync(store?: Store, ...args: Parameters<StoreSync>) {
   if (!store) return;
-  invariant(store[SYNC], "Invalid store");
-  return store[SYNC](...args);
+  return getInternal(store, "sync")(...args);
 }
 
 export function batch<T extends Store>(
@@ -255,13 +252,9 @@ export function batch<T extends Store>(
  * Registers a listener function that's called immediately and after a batch
  * of state changes in the store.
  */
-export function batch(
-  store?: Store & { [BATCH]?: StoreBatch },
-  ...args: Parameters<StoreBatch>
-) {
+export function batch(store?: Store, ...args: Parameters<StoreBatch>) {
   if (!store) return;
-  invariant(store[BATCH], "Invalid store");
-  return store[BATCH](...args);
+  return getInternal(store, "batch")(...args);
 }
 
 export function omit<
@@ -276,13 +269,9 @@ export function omit<
  * Creates a new store with a subset of the current store state and keeps them
  * in sync.
  */
-export function omit(
-  store?: Store & { [OMIT]?: StoreOmit },
-  ...args: Parameters<StoreOmit>
-) {
+export function omit(store?: Store, ...args: Parameters<StoreOmit>) {
   if (!store) return;
-  invariant(store[OMIT], "Invalid store");
-  return store[OMIT](...args);
+  return getInternal(store, "omit")(...args);
 }
 
 export function pick<
@@ -297,13 +286,9 @@ export function pick<
  * Creates a new store with a subset of the current store state and keeps them
  * in sync.
  */
-export function pick(
-  store: Store & { [PICK]?: StorePick },
-  ...args: Parameters<StorePick>
-) {
+export function pick(store: Store, ...args: Parameters<StorePick>) {
   if (!store) return;
-  invariant(store[PICK], "Invalid store");
-  return store[PICK](...args);
+  return getInternal(store, "pick")(...args);
 }
 
 /**
