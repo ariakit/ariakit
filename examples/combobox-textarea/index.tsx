@@ -1,3 +1,4 @@
+import "./style.css";
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
@@ -9,7 +10,6 @@ import {
   getTriggerOffset,
   replaceValue,
 } from "./utils.js";
-import "./style.css";
 
 export default function Example() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
@@ -54,16 +54,16 @@ export default function Example() {
   const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const trigger = getTrigger(event.target);
     const searchValue = getSearchValue(event.target);
-    // If there's a trigger character, we'll show the combobox popover.
-    // This can be true both when the trigger character has just been
-    // typed and when content has been deleted (e.g., with backspace)
-    // and the character right before the caret is the trigger.
+    // If there's a trigger character, we'll show the combobox popover. This can
+    // be true both when the trigger character has just been typed and when
+    // content has been deleted (e.g., with backspace) and the character right
+    // before the caret is the trigger.
     if (trigger) {
       setTrigger(trigger);
       combobox.show();
     }
-    // There will be no trigger and no search value if the trigger
-    // character has just been deleted.
+    // There will be no trigger and no search value if the trigger character has
+    // just been deleted.
     else if (!searchValue) {
       setTrigger(null);
       combobox.hide();
@@ -108,8 +108,8 @@ export default function Example() {
               ref={ref}
               rows={5}
               placeholder="Type @, # or :"
-              // We need to re-calculate the position of the combobox popover when
-              // the textarea contents are scrolled.
+              // We need to re-calculate the position of the combobox popover
+              // when the textarea contents are scrolled.
               onScroll={combobox.render}
               // Hide the combobox popover whenever the selection changes.
               onPointerDown={combobox.hide}
