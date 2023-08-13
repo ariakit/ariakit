@@ -10,11 +10,18 @@ import {
 } from "./misc.js";
 import type { AnyObject, SetStateAction } from "./types.js";
 
+type Listener<S> = (state: S, prevState: S) => void | (() => void);
+
+type Sync<S, K extends keyof S> = (
+  keys: K[] | null,
+  listener: Listener<Pick<S, K>>,
+) => () => void;
+
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 type StoreInit = () => () => void;
-type StoreSubscribe<S = State> = Sync<S>;
-type StoreSync<S = State> = Sync<S>;
-type StoreBatch<S = State> = Sync<S>;
+type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
+type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
+type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StorePick<
   S = State,
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
@@ -220,10 +227,10 @@ export function init(store?: Store, ...args: Parameters<StoreInit>) {
   return getInternal(store, "init")(...args);
 }
 
-export function subscribe<T extends Store>(
+export function subscribe<T extends Store, K extends keyof StoreState<T>>(
   store?: T,
-  ...args: Parameters<StoreSubscribe<StoreState<T>>>
-): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>>> : void;
+  ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
 
 /**
  * Registers a listener function that's called after state changes in the store.
@@ -233,10 +240,10 @@ export function subscribe(store?: Store, ...args: Parameters<StoreSubscribe>) {
   return getInternal(store, "subscribe")(...args);
 }
 
-export function sync<T extends Store>(
+export function sync<T extends Store, K extends keyof StoreState<T>>(
   store?: T,
-  ...args: Parameters<StoreSync<StoreState<T>>>
-): T extends Store ? ReturnType<StoreSync<StoreState<T>>> : void;
+  ...args: Parameters<StoreSync<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
 
 /**
  * Registers a listener function that's called immediately and synchronously
@@ -247,10 +254,10 @@ export function sync(store?: Store, ...args: Parameters<StoreSync>) {
   return getInternal(store, "sync")(...args);
 }
 
-export function batch<T extends Store>(
+export function batch<T extends Store, K extends keyof StoreState<T>>(
   store?: T,
-  ...args: Parameters<StoreBatch<StoreState<T>>>
-): T extends Store ? ReturnType<StoreBatch<StoreState<T>>> : void;
+  ...args: Parameters<StoreBatch<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
 
 /**
  * Registers a listener function that's called immediately and after a batch
@@ -335,28 +342,6 @@ export type StoreProps<S extends State = State> = { store?: Store<Partial<S>> };
  * @template T Store type.
  */
 export type StoreState<T> = T extends { getState(): infer S } ? S : never;
-
-/**
- * Store listener type.
- * @template S State type.
- */
-export type Listener<S> = (state: S, prevState: S) => void | (() => void);
-
-/**
- * Subscriber function type used by `sync`, `subscribe` and `effect`.
- * @template S State type.
- */
-export type Sync<S = State> = {
-  /**
-   * @param listener The listener function. It's called with the current state
-   * and the previous state as arguments and may return a cleanup function.
-   * @param keys Optional array of state keys to listen to.
-   */
-  <K extends keyof S = keyof S>(
-    keys: K[] | null,
-    listener: Listener<Pick<S, K>>,
-  ): () => void;
-};
 
 /**
  * Store.
