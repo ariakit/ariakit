@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { FocusEvent, MouseEvent } from "react";
 import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import { createStore } from "@ariakit/core/utils/store";
+import { createStore, sync } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
@@ -35,7 +35,8 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     const canShowOnHoverRef = useRef(false);
 
     useEffect(() => {
-      return store.sync(
+      return sync(
+        store,
         (state) => {
           if (state.mounted) return;
           canShowOnHoverRef.current = false;
@@ -45,7 +46,8 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     }, [store]);
 
     useEffect(() => {
-      return store.sync(
+      return sync(
+        store,
         (state) => {
           // If the current tooltip is open, we should immediately hide the
           // active one and set the current one as the active tooltip.

@@ -16,7 +16,14 @@ import type { SelectStore } from "../select/select-store.js";
 import { defaultValue } from "../utils/misc.js";
 import { isSafari, isTouchDevice } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+} from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 type Item = CompositeStoreItem & {
@@ -35,15 +42,16 @@ export function createComboboxStore({
 }: ComboboxStoreProps = {}): ComboboxStore {
   const store = mergeStore(
     props.store,
-    menu?.omit(
+    omit(menu, [
       "baseElement",
       "arrowElement",
       "anchorElement",
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
-    select?.omit(
+      "anchorElement",
+    ]),
+    omit(select, [
       "value",
       "items",
       "renderedItems",
@@ -53,7 +61,7 @@ export function createComboboxStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
 
   const syncState = store.getState();
@@ -119,8 +127,9 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
 
-  combobox.setup(() =>
-    combobox.sync(
+  setup(combobox, () =>
+    sync(
+      combobox,
       (state) => {
         if (!state.resetValueOnHide) return;
         if (state.mounted) return;
@@ -131,8 +140,9 @@ export function createComboboxStore({
   );
 
   // Resets the state when the combobox popover is hidden.
-  combobox.setup(() =>
-    combobox.syncBatch(
+  setup(combobox, () =>
+    batch(
+      combobox,
       (state) => {
         if (state.mounted) return;
         combobox.setState("activeId", activeId);
@@ -145,8 +155,9 @@ export function createComboboxStore({
   // When the activeId changes, but the moves count doesn't, we reset the
   // activeValue state. This is useful when the activeId changes because of
   // a mouse move interaction.
-  combobox.setup(() =>
-    combobox.sync(
+  setup(combobox, () =>
+    sync(
+      combobox,
       (state, prevState) => {
         if (state.moves === prevState.moves) {
           combobox.setState("activeValue", undefined);
@@ -157,8 +168,9 @@ export function createComboboxStore({
   );
 
   // Otherwise, if the moves count changes, we update the activeValue state.
-  combobox.setup(() =>
-    combobox.syncBatch(
+  setup(combobox, () =>
+    batch(
+      combobox,
       (state, prev) => {
         if (state.moves === prev.moves) return;
         const { activeId } = combobox.getState();

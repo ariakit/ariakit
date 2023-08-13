@@ -1,5 +1,6 @@
 import type { FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { sync } from "@ariakit/core/utils/store";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
@@ -26,9 +27,13 @@ export const useCompositeOverflowDisclosure =
     const [shouldRegisterItem, setShouldRegisterItem] = useState(false);
 
     useEffect(() => {
-      return store.sync(() => {
-        store.setDisclosureElement(ref.current);
-      }, ["disclosureElement"]);
+      return sync(
+        store,
+        () => {
+          store.setDisclosureElement(ref.current);
+        },
+        ["disclosureElement"],
+      );
     }, [store]);
 
     const onFocusProp = props.onFocus;

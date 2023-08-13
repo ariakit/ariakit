@@ -15,7 +15,14 @@ import { createPopoverStore } from "../popover/popover-store.js";
 import { toArray } from "../utils/array.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+} from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
 type Value = string | string[];
@@ -37,7 +44,7 @@ export function createSelectStore({
 }: SelectStoreProps = {}): SelectStore {
   const store = mergeStore(
     props.store,
-    combobox?.omit(
+    omit(combobox, [
       "value",
       "items",
       "renderedItems",
@@ -47,7 +54,7 @@ export function createSelectStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
   const syncState = store.getState();
 
@@ -111,8 +118,9 @@ export function createSelectStore({
   const select = createStore(initialState, composite, popover, store);
 
   // Automatically sets the default value if it's not set.
-  select.setup(() =>
-    select.sync(
+  setup(select, () =>
+    sync(
+      select,
       (state) => {
         if (state.value !== initialValue) return;
         if (!state.items.length) return;
@@ -127,8 +135,9 @@ export function createSelectStore({
   );
 
   // Sets the active id when the value changes and the popover is hidden.
-  select.setup(() =>
-    select.sync(
+  setup(select, () =>
+    sync(
+      select,
       (state) => {
         // TODO: Revisit this. See test "open with keyboard, then try to open
         // again"
@@ -150,8 +159,9 @@ export function createSelectStore({
 
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
-  select.setup(() =>
-    select.syncBatch(
+  setup(select, () =>
+    batch(
+      select,
       (state) => {
         const { mounted, value, activeId } = select.getState();
         if (!state.setValueOnMove && mounted) return;

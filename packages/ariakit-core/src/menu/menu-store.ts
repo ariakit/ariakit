@@ -13,7 +13,7 @@ import type {
 import { createHovercardStore } from "../hovercard/hovercard-store.js";
 import { applyState, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import { createStore, mergeStore, omit, setup, sync } from "../utils/store.js";
 import type {
   BivariantCallback,
   PickRequired,
@@ -38,13 +38,13 @@ export function createMenuStore({
 }: MenuStoreProps = {}): MenuStore {
   const store = mergeStore(
     props.store,
-    combobox?.omit(
+    omit(combobox, [
       "arrowElement",
       "anchorElement",
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
   const syncState = store.getState();
 
@@ -83,8 +83,9 @@ export function createMenuStore({
 
   const menu = createStore(initialState, composite, hovercard, store);
 
-  menu.setup(() =>
-    menu.sync(
+  setup(menu, () =>
+    sync(
+      menu,
       (state) => {
         if (state.mounted) return;
         menu.setState("activeId", null);

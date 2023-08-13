@@ -12,7 +12,7 @@ import type {
 import { createCompositeStore } from "../composite/composite-store.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { batch, createStore, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 type Item = CompositeStoreItem & {
@@ -58,30 +58,34 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
   // the moves state, but not the activeId state, this callback will run only
   // when there's a move, which is usually triggered by moving through the tabs
   // using the keyboard.
-  tab.setup(() =>
-    tab.sync(() => {
-      const { activeId, selectOnMove } = tab.getState();
-      if (!selectOnMove) return;
-      if (!activeId) return;
-      const tabItem = composite.item(activeId);
-      if (!tabItem) return;
-      if (tabItem.dimmed) return;
-      if (tabItem.disabled) return;
-      tab.setState("selectedId", tabItem.id);
-    }, ["moves"]),
-  );
-
-  // Keep activeId in sync with selectedId.
-  tab.setup(() =>
-    tab.syncBatch(
-      (state) => tab.setState("activeId", state.selectedId),
-      ["selectedId"],
+  setup(tab, () =>
+    sync(
+      tab,
+      () => {
+        const { activeId, selectOnMove } = tab.getState();
+        if (!selectOnMove) return;
+        if (!activeId) return;
+        const tabItem = composite.item(activeId);
+        if (!tabItem) return;
+        if (tabItem.dimmed) return;
+        if (tabItem.disabled) return;
+        tab.setState("selectedId", tabItem.id);
+      },
+      ["moves"],
     ),
   );
 
+  // Keep activeId in sync with selectedId.
+  setup(tab, () =>
+    batch(tab, (state) => tab.setState("activeId", state.selectedId), [
+      "selectedId",
+    ]),
+  );
+
   // Automatically set selectedId if it's undefined.
-  tab.setup(() =>
-    tab.sync(
+  setup(tab, () =>
+    sync(
+      tab,
       (state) => {
         if (state.selectedId !== undefined) return;
         // First, we try to set selectedId based on the current active tab.
@@ -104,12 +108,14 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
   );
 
   // Keep panels tabIds in sync with the current tabs.
-  tab.setup(() =>
-    tab.sync(
+  setup(tab, () =>
+    sync(
+      tab,
       (state) => {
         const tabs = state.renderedItems;
         if (!tabs.length) return;
-        return panels.sync(
+        return sync(
+          panels,
           (state) => {
             const items = state.renderedItems;
             const hasOrphanPanels = items.some((panel) => !panel.tabId);

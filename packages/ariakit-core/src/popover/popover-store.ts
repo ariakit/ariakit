@@ -6,7 +6,7 @@ import type {
 import { createDialogStore } from "../dialog/dialog-store.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import { createStore, mergeStore, omit } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -25,13 +25,13 @@ export function createPopoverStore({
 }: PopoverStoreProps = {}): PopoverStore {
   const store = mergeStore(
     props.store,
-    otherPopover?.omit(
+    omit(otherPopover, [
       "arrowElement",
       "anchorElement",
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
   const syncState = store?.getState();
 

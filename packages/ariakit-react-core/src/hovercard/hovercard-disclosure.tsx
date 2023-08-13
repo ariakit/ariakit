@@ -2,6 +2,7 @@ import type { MouseEvent, FocusEvent as ReactFocusEvent } from "react";
 import { useEffect, useState } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
@@ -55,7 +56,8 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
 
     // Shows the hovercard disclosure when the anchor receives keyboard focus.
     useEffect(() => {
-      return store.sync(
+      return sync(
+        store,
         (state) => {
           const anchor = state.anchorElement;
           if (!anchor) return;

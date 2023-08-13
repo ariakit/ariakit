@@ -1,6 +1,6 @@
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import { createStore, mergeStore, omit, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 /**
@@ -11,7 +11,7 @@ export function createDisclosureStore(
 ): DisclosureStore {
   const store = mergeStore(
     props.store,
-    props.disclosure?.omit("contentElement", "disclosureElement"),
+    omit(props.disclosure, ["contentElement", "disclosureElement"]),
   );
 
   const syncState = store?.getState();
@@ -36,8 +36,9 @@ export function createDisclosureStore(
 
   const disclosure = createStore(initialState, store);
 
-  disclosure.setup(() =>
-    disclosure.sync(
+  setup(disclosure, () =>
+    sync(
+      disclosure,
       (state) => {
         if (state.animated) return;
         // Reset animating to false when animation is disabled.
@@ -47,8 +48,9 @@ export function createDisclosureStore(
     ),
   );
 
-  disclosure.setup(() =>
-    disclosure.sync(
+  setup(disclosure, () =>
+    sync(
+      disclosure,
       (state, prev) => {
         if (!state.animated) return;
         const mounting = state === prev;
@@ -59,8 +61,9 @@ export function createDisclosureStore(
     ),
   );
 
-  disclosure.setup(() =>
-    disclosure.sync(
+  setup(disclosure, () =>
+    sync(
+      disclosure,
       (state) => {
         disclosure.setState("mounted", state.open || state.animating);
       },

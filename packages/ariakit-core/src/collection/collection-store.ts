@@ -1,7 +1,7 @@
 import { getDocument } from "../utils/dom.js";
 import { chain, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { batch, createStore, setup } from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
 type Item = {
@@ -90,8 +90,9 @@ export function createCollectionStore<T extends Item = Item>(
     collection.setState("renderedItems", renderedItems);
   };
 
-  collection.setup(() => {
-    return privateStore.syncBatch(
+  setup(collection, () => {
+    return batch(
+      privateStore,
       (state) => {
         let firstRun = true;
         let raf = requestAnimationFrame(sortItems);

@@ -5,9 +5,43 @@ import {
   chain,
   getKeys,
   hasOwnProperty,
+  invariant,
   noop,
 } from "./misc.js";
 import type { AnyObject, SetStateAction } from "./types.js";
+
+type StoreSetup = (callback: () => void | (() => void)) => () => void;
+type StoreInit = () => () => void;
+type StoreSubscribe<S = State> = Sync<S>;
+type StoreSync<S = State> = Sync<S>;
+type StoreBatch<S = State> = Sync<S>;
+type StorePick<
+  S = State,
+  K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
+> = (keys: K) => Store<Pick<S, K[number]>>;
+type StoreOmit<
+  S = State,
+  K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
+> = (keys: K) => Store<Omit<S, K[number]>>;
+
+interface StoreInternals<S = State> {
+  setup: StoreSetup;
+  init: StoreInit;
+  subscribe: StoreSubscribe<S>;
+  sync: StoreSync<S>;
+  batch: StoreBatch<S>;
+  pick: StorePick<S>;
+  omit: StoreOmit<S>;
+}
+
+function getInternal<K extends keyof StoreInternals>(
+  store: Store & { __unstableInternals?: StoreInternals },
+  key: K,
+): StoreInternals[K] {
+  const internals = store.__unstableInternals;
+  invariant(internals, "Invalid store");
+  return internals[key];
+}
 
 /**
  * Creates a store.
@@ -16,7 +50,7 @@ import type { AnyObject, SetStateAction } from "./types.js";
  */
 export function createStore<S extends State>(
   initialState: S,
-  ...stores: Array<Partial<Store<Partial<S>>> | undefined>
+  ...stores: Array<Store<Partial<S>> | undefined>
 ): Store<S> {
   let state = initialState;
   let prevStateBatch = state;
@@ -30,12 +64,12 @@ export function createStore<S extends State>(
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
   const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
 
-  const setup: Store<S>["setup"] = (callback) => {
+  const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
     return () => setups.delete(callback);
   };
 
-  const init: Store<S>["init"] = () => {
+  const storeInit: StoreInit = () => {
     if (initialized) return noop;
     if (!stores.length) return noop;
     initialized = true;
@@ -46,7 +80,7 @@ export function createStore<S extends State>(
           const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return store?.sync?.((state) => setState(key, state[key]!), [key]);
+          return sync(store, (state) => setState(key, state[key]!), [key]);
         }),
       ),
     );
@@ -54,7 +88,7 @@ export function createStore<S extends State>(
     const teardowns: Array<void | (() => void)> = [];
     setups.forEach((setup) => teardowns.push(setup()));
 
-    const cleanups = stores.map((store) => store?.init?.());
+    const cleanups = stores.map(init);
 
     return chain(...desyncs, ...teardowns, ...cleanups, () => {
       initialized = false;
@@ -73,18 +107,24 @@ export function createStore<S extends State>(
     };
   };
 
-  const subscribe: Store<S>["subscribe"] = (listener, keys) =>
+  const storeSubscribe: StoreSubscribe<S> = (listener, keys) =>
     sub(listener, keys);
 
-  const sync: Store<S>["sync"] = (listener, keys) => {
+  const storeSync: StoreSync<S> = (listener, keys) => {
     disposables.set(listener, listener(state, state));
     return sub(listener, keys);
   };
 
-  const syncBatch: Store<S>["syncBatch"] = (listener, keys) => {
+  const storeBatch: StoreBatch<S> = (listener, keys) => {
     disposables.set(listener, listener(state, prevStateBatch));
     return sub(listener, keys, true);
   };
+
+  const storePick: StorePick<S, ReadonlyArray<keyof S>> = (keys) =>
+    createStore(_pick(state, keys), finalStore);
+
+  const storeOmit: StoreOmit<S, ReadonlyArray<keyof S>> = (keys) =>
+    createStore(_omit(state, keys), finalStore);
 
   const getState: Store<S>["getState"] = () => state;
 
@@ -133,32 +173,129 @@ export function createStore<S extends State>(
     });
   };
 
-  const pick: Store<S>["pick"] = (...keys) =>
-    createStore(_pick(state, keys), finalStore);
-
-  const omit: Store<S>["omit"] = (...keys) =>
-    createStore(_omit(state, keys), finalStore);
-
   const finalStore = {
-    setup,
-    init,
-    subscribe,
-    sync,
-    syncBatch,
     getState,
     setState,
-    pick,
-    omit,
+    __unstableInternals: {
+      setup: storeSetup,
+      init: storeInit,
+      subscribe: storeSubscribe,
+      sync: storeSync,
+      batch: storeBatch,
+      pick: storePick,
+      omit: storeOmit,
+    },
   };
 
   return finalStore;
+}
+
+export function setup<T extends Store>(
+  store?: T,
+  ...args: Parameters<StoreSetup>
+): T extends Store ? ReturnType<StoreSetup> : void;
+
+/**
+ * Register a callback function that's called when the store is initialized.
+ */
+export function setup(store?: Store, ...args: Parameters<StoreSetup>) {
+  if (!store) return;
+  return getInternal(store, "setup")(...args);
+}
+
+export function init<T extends Store>(
+  store?: T,
+  ...args: Parameters<StoreInit>
+): T extends Store ? ReturnType<StoreInit> : void;
+
+/**
+ * Function that should be called when the store is initialized.
+ */
+export function init(store?: Store, ...args: Parameters<StoreInit>) {
+  if (!store) return;
+  return getInternal(store, "init")(...args);
+}
+
+export function subscribe<T extends Store>(
+  store?: T,
+  ...args: Parameters<StoreSubscribe<StoreState<T>>>
+): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>>> : void;
+
+/**
+ * Registers a listener function that's called after state changes in the store.
+ */
+export function subscribe(store?: Store, ...args: Parameters<StoreSubscribe>) {
+  if (!store) return;
+  return getInternal(store, "subscribe")(...args);
+}
+
+export function sync<T extends Store>(
+  store?: T,
+  ...args: Parameters<StoreSync<StoreState<T>>>
+): T extends Store ? ReturnType<StoreSync<StoreState<T>>> : void;
+
+/**
+ * Registers a listener function that's called immediately and synchronously
+ * whenever the store state changes.
+ */
+export function sync(store?: Store, ...args: Parameters<StoreSync>) {
+  if (!store) return;
+  return getInternal(store, "sync")(...args);
+}
+
+export function batch<T extends Store>(
+  store?: T,
+  ...args: Parameters<StoreBatch<StoreState<T>>>
+): T extends Store ? ReturnType<StoreBatch<StoreState<T>>> : void;
+
+/**
+ * Registers a listener function that's called immediately and after a batch
+ * of state changes in the store.
+ */
+export function batch(store?: Store, ...args: Parameters<StoreBatch>) {
+  if (!store) return;
+  return getInternal(store, "batch")(...args);
+}
+
+export function omit<
+  T extends Store,
+  K extends ReadonlyArray<keyof StoreState<T>>,
+>(
+  store?: T,
+  ...args: Parameters<StoreOmit<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
+
+/**
+ * Creates a new store with a subset of the current store state and keeps them
+ * in sync.
+ */
+export function omit(store?: Store, ...args: Parameters<StoreOmit>) {
+  if (!store) return;
+  return getInternal(store, "omit")(...args);
+}
+
+export function pick<
+  T extends Store,
+  K extends ReadonlyArray<keyof StoreState<T>>,
+>(
+  store?: T,
+  ...args: Parameters<StorePick<StoreState<T>, K>>
+): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
+
+/**
+ * Creates a new store with a subset of the current store state and keeps them
+ * in sync.
+ */
+export function pick(store: Store, ...args: Parameters<StorePick>) {
+  if (!store) return;
+  return getInternal(store, "pick")(...args);
 }
 
 /**
  * Merges multiple stores into a single store.
  */
 export function mergeStore<S extends State>(
-  ...stores: Array<Partial<Store<S>> | undefined>
+  ...stores: Array<Store<S> | undefined>
 ): Store<S> {
   const initialState = stores.reduce((state, store) => {
     const nextState = store?.getState?.();
@@ -230,51 +367,4 @@ export interface Store<S = State> {
    * Sets a state value.
    */
   setState<K extends keyof S>(key: K, value: SetStateAction<S[K]>): void;
-  /**
-   * Register a callback function that's called when the store is initialized.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  setup: (callback: () => void | (() => void)) => () => void;
-  /**
-   * Function that should be called when the store is initialized.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  init: () => () => void;
-  /**
-   * Registers a listener function that's called immediately and synchronously
-   * whenever the store state changes.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  sync: Sync<S>;
-  /**
-   * Registers a listener function that's called after state changes in the
-   * store.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  subscribe: Sync<S>;
-  /**
-   * Registers a listener function that's called immediately and after a batch
-   * of state changes in the store.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  syncBatch: Sync<S>;
-  /**
-   * Creates a new store with a subset of the current store state and keeps them
-   * in sync.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  pick<K extends Array<keyof S>>(...keys: K): Store<Pick<S, K[number]>>;
-  /**
-   * Creates a new store with a subset of the current store state and keeps them
-   * in sync.
-   * @deprecated Experimental. This API may change in minor or patch releases.
-   * @private
-   */
-  omit<K extends Array<keyof S>>(...keys: K): Store<Omit<S, K[number]>>;
 }
