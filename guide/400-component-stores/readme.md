@@ -78,10 +78,11 @@ const form = useFormStore({ values, setValues });
 
 You can also receive controlled props, such as `value` and `onChange`, from a parent component and pass them directly to the store:
 
-```js "value" "onChange"
+```js "value" "onChange" "defaultValue"
 const select = useSelectStore({
   value: props.value,
   setValue: props.onChange,
+  defaultValue: props.defaultValue,
 });
 ```
 
