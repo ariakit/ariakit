@@ -60,7 +60,7 @@ export async function Header() {
           <HeaderNav />
         </div>
         <div className="flex-1" />
-        <HeaderUpdates updates={updates.slice(0, 9)} />
+        <HeaderUpdates updates={updates.slice(0, 15)} />
         <HeaderThemeSwitch />
       </div>
     </div>
