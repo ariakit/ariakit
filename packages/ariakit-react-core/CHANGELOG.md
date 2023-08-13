@@ -1,5 +1,19 @@
 # @ariakit/react-core
 
+## 0.2.16
+
+### Patch Changes
+
+- Fixed `Collection` not populating the `items` state when passing `items` and `setItems` to `useCollectionStore`. ([#2704](https://github.com/ariakit/ariakit/pull/2704))
+
+- Fixed `Combobox` controlled derived state. ([#2705](https://github.com/ariakit/ariakit/pull/2705))
+
+- The `Menu`'s `disclosureElement` state is now guaranteed to be defined as the `MenuButton` element. Before, it could be overridden by a different element that received focus right before the menu opened, which could cause some weird issues. ([#2695](https://github.com/ariakit/ariakit/pull/2695))
+
+- Fixed `Tooltip` not closing when it's open while another popover is still visible. ([#2692](https://github.com/ariakit/ariakit/pull/2692))
+
+- Updated dependencies: `@ariakit/core@0.2.8`.
+
 ## 0.2.15
 
 ### Patch Changes
