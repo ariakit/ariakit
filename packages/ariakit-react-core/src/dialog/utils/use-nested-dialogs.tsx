@@ -32,27 +32,19 @@ export function useNestedDialogs(store: DialogStore) {
 
   // If it's a nested dialog, add it to the context
   useSafeLayoutEffect(() => {
-    return sync(
-      store,
-      (state) => {
-        if (!state.open) return;
-        if (!state.contentElement) return;
-        return context.add?.(store);
-      },
-      ["open", "contentElement"],
-    );
+    return sync(store, ["open", "contentElement"], (state) => {
+      if (!state.open) return;
+      if (!state.contentElement) return;
+      return context.add?.(store);
+    });
   }, [store, context]);
 
   // Close all nested dialogs when the parent dialog closes
   useSafeLayoutEffect(() => {
-    return sync(
-      context.store,
-      (state) => {
-        if (state.open) return;
-        store.hide();
-      },
-      ["open"],
-    );
+    return sync(context.store, ["open"], (state) => {
+      if (state.open) return;
+      store.hide();
+    });
   }, [context, store]);
 
   // Provider

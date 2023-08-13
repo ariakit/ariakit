@@ -128,57 +128,41 @@ export function createComboboxStore({
   const combobox = createStore(initialState, composite, popover, store);
 
   setup(combobox, () =>
-    sync(
-      combobox,
-      (state) => {
-        if (!state.resetValueOnHide) return;
-        if (state.mounted) return;
-        combobox.setState("value", initialValue);
-      },
-      ["resetValueOnHide", "mounted"],
-    ),
+    sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
+      if (!state.resetValueOnHide) return;
+      if (state.mounted) return;
+      combobox.setState("value", initialValue);
+    }),
   );
 
   // Resets the state when the combobox popover is hidden.
   setup(combobox, () =>
-    batch(
-      combobox,
-      (state) => {
-        if (state.mounted) return;
-        combobox.setState("activeId", activeId);
-        combobox.setState("moves", 0);
-      },
-      ["mounted"],
-    ),
+    batch(combobox, ["mounted"], (state) => {
+      if (state.mounted) return;
+      combobox.setState("activeId", activeId);
+      combobox.setState("moves", 0);
+    }),
   );
 
   // When the activeId changes, but the moves count doesn't, we reset the
   // activeValue state. This is useful when the activeId changes because of
   // a mouse move interaction.
   setup(combobox, () =>
-    sync(
-      combobox,
-      (state, prevState) => {
-        if (state.moves === prevState.moves) {
-          combobox.setState("activeValue", undefined);
-        }
-      },
-      ["moves", "activeId"],
-    ),
+    sync(combobox, ["moves", "activeId"], (state, prevState) => {
+      if (state.moves === prevState.moves) {
+        combobox.setState("activeValue", undefined);
+      }
+    }),
   );
 
   // Otherwise, if the moves count changes, we update the activeValue state.
   setup(combobox, () =>
-    batch(
-      combobox,
-      (state, prev) => {
-        if (state.moves === prev.moves) return;
-        const { activeId } = combobox.getState();
-        const activeItem = composite.item(activeId);
-        combobox.setState("activeValue", activeItem?.value);
-      },
-      ["moves", "renderedItems"],
-    ),
+    batch(combobox, ["moves", "renderedItems"], (state, prev) => {
+      if (state.moves === prev.moves) return;
+      const { activeId } = combobox.getState();
+      const activeItem = composite.item(activeId);
+      combobox.setState("activeValue", activeItem?.value);
+    }),
   );
 
   return {

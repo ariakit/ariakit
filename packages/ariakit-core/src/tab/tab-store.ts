@@ -59,79 +59,63 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
   // when there's a move, which is usually triggered by moving through the tabs
   // using the keyboard.
   setup(tab, () =>
-    sync(
-      tab,
-      () => {
-        const { activeId, selectOnMove } = tab.getState();
-        if (!selectOnMove) return;
-        if (!activeId) return;
-        const tabItem = composite.item(activeId);
-        if (!tabItem) return;
-        if (tabItem.dimmed) return;
-        if (tabItem.disabled) return;
-        tab.setState("selectedId", tabItem.id);
-      },
-      ["moves"],
-    ),
+    sync(tab, ["moves"], () => {
+      const { activeId, selectOnMove } = tab.getState();
+      if (!selectOnMove) return;
+      if (!activeId) return;
+      const tabItem = composite.item(activeId);
+      if (!tabItem) return;
+      if (tabItem.dimmed) return;
+      if (tabItem.disabled) return;
+      tab.setState("selectedId", tabItem.id);
+    }),
   );
 
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
-    batch(tab, (state) => tab.setState("activeId", state.selectedId), [
-      "selectedId",
-    ]),
+    batch(tab, ["selectedId"], (state) =>
+      tab.setState("activeId", state.selectedId),
+    ),
   );
 
   // Automatically set selectedId if it's undefined.
   setup(tab, () =>
-    sync(
-      tab,
-      (state) => {
-        if (state.selectedId !== undefined) return;
-        // First, we try to set selectedId based on the current active tab.
-        const { activeId, renderedItems } = tab.getState();
-        const tabItem = composite.item(activeId);
-        if (tabItem && !tabItem.disabled && !tabItem.dimmed) {
-          tab.setState("selectedId", tabItem.id);
-        }
-        // If there's no active tab or the active tab is dimmed, we get the
-        // first enabled tab instead.
-        else {
-          const tabItem = renderedItems.find(
-            (item) => !item.disabled && !item.dimmed,
-          );
-          tab.setState("selectedId", tabItem?.id);
-        }
-      },
-      ["selectedId", "renderedItems"],
-    ),
+    sync(tab, ["selectedId", "renderedItems"], (state) => {
+      if (state.selectedId !== undefined) return;
+      // First, we try to set selectedId based on the current active tab.
+      const { activeId, renderedItems } = tab.getState();
+      const tabItem = composite.item(activeId);
+      if (tabItem && !tabItem.disabled && !tabItem.dimmed) {
+        tab.setState("selectedId", tabItem.id);
+      }
+      // If there's no active tab or the active tab is dimmed, we get the
+      // first enabled tab instead.
+      else {
+        const tabItem = renderedItems.find(
+          (item) => !item.disabled && !item.dimmed,
+        );
+        tab.setState("selectedId", tabItem?.id);
+      }
+    }),
   );
 
   // Keep panels tabIds in sync with the current tabs.
   setup(tab, () =>
-    sync(
-      tab,
-      (state) => {
-        const tabs = state.renderedItems;
-        if (!tabs.length) return;
-        return sync(
-          panels,
-          (state) => {
-            const items = state.renderedItems;
-            const hasOrphanPanels = items.some((panel) => !panel.tabId);
-            if (!hasOrphanPanels) return;
-            items.forEach((panel, i) => {
-              if (panel.tabId) return;
-              const tabItem = tabs[i];
-              if (!tabItem) return;
-              panels.renderItem({ ...panel, tabId: tabItem.id });
-            });
-          },
-          ["renderedItems"],
-        );
-      },
-      ["renderedItems"],
-    ),
+    sync(tab, ["renderedItems"], (state) => {
+      const tabs = state.renderedItems;
+      if (!tabs.length) return;
+      return sync(panels, ["renderedItems"], (state) => {
+        const items = state.renderedItems;
+        const hasOrphanPanels = items.some((panel) => !panel.tabId);
+        if (!hasOrphanPanels) return;
+        items.forEach((panel, i) => {
+          if (panel.tabId) return;
+          const tabItem = tabs[i];
+          if (!tabItem) return;
+          panels.renderItem({ ...panel, tabId: tabItem.id });
+        });
+      });
+    }),
   );
 
   return {

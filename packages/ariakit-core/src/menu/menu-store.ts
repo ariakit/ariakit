@@ -84,14 +84,10 @@ export function createMenuStore({
   const menu = createStore(initialState, composite, hovercard, store);
 
   setup(menu, () =>
-    sync(
-      menu,
-      (state) => {
-        if (state.mounted) return;
-        menu.setState("activeId", null);
-      },
-      ["mounted"],
-    ),
+    sync(menu, ["mounted"], (state) => {
+      if (state.mounted) return;
+      menu.setState("activeId", null);
+    }),
   );
 
   return {

@@ -119,61 +119,49 @@ export function createSelectStore({
 
   // Automatically sets the default value if it's not set.
   setup(select, () =>
-    sync(
-      select,
-      (state) => {
-        if (state.value !== initialValue) return;
-        if (!state.items.length) return;
-        const item = state.items.find(
-          (item) => !item.disabled && item.value != null,
-        );
-        if (item?.value == null) return;
-        select.setState("value", item.value);
-      },
-      ["value", "items"],
-    ),
+    sync(select, ["value", "items"], (state) => {
+      if (state.value !== initialValue) return;
+      if (!state.items.length) return;
+      const item = state.items.find(
+        (item) => !item.disabled && item.value != null,
+      );
+      if (item?.value == null) return;
+      select.setState("value", item.value);
+    }),
   );
 
   // Sets the active id when the value changes and the popover is hidden.
   setup(select, () =>
-    sync(
-      select,
-      (state) => {
-        // TODO: Revisit this. See test "open with keyboard, then try to open
-        // again"
-        if (combobox) return;
-        if (state.mounted) return;
-        const values = toArray(state.value);
-        const lastValue = values[values.length - 1];
-        if (lastValue == null) return;
-        const item = state.items.find(
-          (item) => !item.disabled && item.value === lastValue,
-        );
-        if (!item) return;
-        // TODO: This may be problematic.
-        select.setState("activeId", item.id);
-      },
-      ["mounted", "items", "value"],
-    ),
+    sync(select, ["mounted", "items", "value"], (state) => {
+      // TODO: Revisit this. See test "open with keyboard, then try to open
+      // again"
+      if (combobox) return;
+      if (state.mounted) return;
+      const values = toArray(state.value);
+      const lastValue = values[values.length - 1];
+      if (lastValue == null) return;
+      const item = state.items.find(
+        (item) => !item.disabled && item.value === lastValue,
+      );
+      if (!item) return;
+      // TODO: This may be problematic.
+      select.setState("activeId", item.id);
+    }),
   );
 
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   setup(select, () =>
-    batch(
-      select,
-      (state) => {
-        const { mounted, value, activeId } = select.getState();
-        if (!state.setValueOnMove && mounted) return;
-        if (Array.isArray(value)) return;
-        if (!state.moves) return;
-        if (!activeId) return;
-        const item = composite.item(activeId);
-        if (!item || item.disabled || item.value == null) return;
-        select.setState("value", item.value);
-      },
-      ["setValueOnMove", "moves"],
-    ),
+    batch(select, ["setValueOnMove", "moves"], (state) => {
+      const { mounted, value, activeId } = select.getState();
+      if (!state.setValueOnMove && mounted) return;
+      if (Array.isArray(value)) return;
+      if (!state.moves) return;
+      if (!activeId) return;
+      const item = composite.item(activeId);
+      if (!item || item.disabled || item.value == null) return;
+      select.setState("value", item.value);
+    }),
   );
 
   return {

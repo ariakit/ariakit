@@ -62,7 +62,7 @@ export function createStore<S extends State>(
   const listeners = new Set<Listener<S>>();
   const listenersBatch = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
-  const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | undefined>();
+  const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | null>();
 
   const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
@@ -80,7 +80,7 @@ export function createStore<S extends State>(
           const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return sync(store, (state) => setState(key, state[key]!), [key]);
+          return sync(store, [key], (state) => setState(key, state[key]!));
         }),
       ),
     );
@@ -95,7 +95,11 @@ export function createStore<S extends State>(
     });
   };
 
-  const sub = (listener: Listener<S>, keys?: Array<keyof S>, batch = false) => {
+  const sub = (
+    keys: Array<keyof S> | null,
+    listener: Listener<S>,
+    batch = false,
+  ) => {
     const set = batch ? listenersBatch : listeners;
     set.add(listener);
     listenerKeys.set(listener, keys);
@@ -107,17 +111,17 @@ export function createStore<S extends State>(
     };
   };
 
-  const storeSubscribe: StoreSubscribe<S> = (listener, keys) =>
-    sub(listener, keys);
+  const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
+    sub(keys, listener);
 
-  const storeSync: StoreSync<S> = (listener, keys) => {
+  const storeSync: StoreSync<S> = (keys, listener) => {
     disposables.set(listener, listener(state, state));
-    return sub(listener, keys);
+    return sub(keys, listener);
   };
 
-  const storeBatch: StoreBatch<S> = (listener, keys) => {
+  const storeBatch: StoreBatch<S> = (keys, listener) => {
     disposables.set(listener, listener(state, prevStateBatch));
-    return sub(listener, keys, true);
+    return sub(keys, listener, true);
   };
 
   const storePick: StorePick<S, ReadonlyArray<keyof S>> = (keys) =>
@@ -349,8 +353,8 @@ export type Sync<S = State> = {
    * @param keys Optional array of state keys to listen to.
    */
   <K extends keyof S = keyof S>(
+    keys: K[] | null,
     listener: Listener<Pick<S, K>>,
-    keys?: K[],
   ): () => void;
 };
 

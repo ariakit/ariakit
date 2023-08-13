@@ -112,13 +112,9 @@ function useAutoFocusOnHide({ store, ...props }: HovercardProps) {
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    return sync(
-      store,
-      (state) => {
-        finalFocusRef.current = state.anchorElement;
-      },
-      ["anchorElement"],
-    );
+    return sync(store, ["anchorElement"], (state) => {
+      finalFocusRef.current = state.anchorElement;
+    });
   }, []);
 
   props = {

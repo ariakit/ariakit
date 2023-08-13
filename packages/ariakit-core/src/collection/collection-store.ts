@@ -91,33 +91,29 @@ export function createCollectionStore<T extends Item = Item>(
   };
 
   setup(collection, () => {
-    return batch(
-      privateStore,
-      (state) => {
-        let firstRun = true;
-        let raf = requestAnimationFrame(sortItems);
-        if (typeof IntersectionObserver !== "function") return;
-        const callback = () => {
-          if (firstRun) {
-            firstRun = false;
-            return;
-          }
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(sortItems);
-        };
-        const root = getCommonParent(state.renderedItems);
-        const observer = new IntersectionObserver(callback, { root });
-        state.renderedItems.forEach((item) => {
-          if (!item.element) return;
-          observer.observe(item.element);
-        });
-        return () => {
-          cancelAnimationFrame(raf);
-          observer.disconnect();
-        };
-      },
-      ["renderedItems"],
-    );
+    return batch(privateStore, ["renderedItems"], (state) => {
+      let firstRun = true;
+      let raf = requestAnimationFrame(sortItems);
+      if (typeof IntersectionObserver !== "function") return;
+      const callback = () => {
+        if (firstRun) {
+          firstRun = false;
+          return;
+        }
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sortItems);
+      };
+      const root = getCommonParent(state.renderedItems);
+      const observer = new IntersectionObserver(callback, { root });
+      state.renderedItems.forEach((item) => {
+        if (!item.element) return;
+        observer.observe(item.element);
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+        observer.disconnect();
+      };
+    });
   });
 
   const mergeItem = (

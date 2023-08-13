@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
 import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
@@ -111,10 +111,10 @@ export function useStoreState(
   store: StateStore,
   keyOrSelector: StateKey | StateSelector = identity,
 ) {
-  const storeSubscribe = useCallback(
+  const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
-      return subscribe(store, callback);
+      return subscribe(store, null, callback);
     },
     [store],
   );
@@ -162,31 +162,24 @@ export function useStoreProps<
     queueMicrotask(() => {
       canFlushSync = true;
     });
-    return sync(
-      store,
-      (state, prev) => {
-        const { value, setValue } = propsRef.current;
-        if (!setValue) return;
-        if (state[key] === prev[key]) return;
-        if (state[key] === value) return;
-        safeFlushSync(() => setValue(state[key]), canFlushSync);
-      },
-      [key],
-    );
+    return sync(store, [key], (state, prev) => {
+      const { value, setValue } = propsRef.current;
+      if (!setValue) return;
+      if (state[key] === prev[key]) return;
+      if (state[key] === value) return;
+      safeFlushSync(() => setValue(state[key]), canFlushSync);
+    });
   }, [store, key]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
-    return batch(
-      store,
-      () => {
-        if (value === undefined) return;
-        store.setState(key, value);
-      },
-      [key],
-    );
+    return batch(store, [key], () => {
+      if (value === undefined) return;
+      store.setState(key, value);
+    });
   }, [store, key, value]);
 }
+
 /**
  * Creates a React store from a core store object.
  * @param createStore The function that creates the core store object.
@@ -196,12 +189,15 @@ export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
 
   useSafeLayoutEffect(() => init(store), [store]);
 
-  const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
+  const useState: UseState<StoreState<T>> = React.useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),
     [store],
   );
 
-  return useMemo(() => ({ ...store, useState }), [store, useState]);
+  return React.useMemo(
+    () => ({ ...store, useState: useState }),
+    [store, useState],
+  );
 }
 
 export type Store<T extends CoreStore> = T & {

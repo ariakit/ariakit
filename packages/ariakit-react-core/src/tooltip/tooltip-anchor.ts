@@ -35,42 +35,34 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     const canShowOnHoverRef = useRef(false);
 
     useEffect(() => {
-      return sync(
-        store,
-        (state) => {
-          if (state.mounted) return;
-          canShowOnHoverRef.current = false;
-        },
-        ["mounted"],
-      );
+      return sync(store, ["mounted"], (state) => {
+        if (state.mounted) return;
+        canShowOnHoverRef.current = false;
+      });
     }, [store]);
 
     useEffect(() => {
-      return sync(
-        store,
-        (state) => {
-          // If the current tooltip is open, we should immediately hide the
-          // active one and set the current one as the active tooltip.
-          if (state.mounted) {
-            const { activeStore } = globalStore.getState();
-            if (activeStore !== store) {
-              activeStore?.hide();
-            }
-            return globalStore.setState("activeStore", store);
+      return sync(store, ["mounted", "skipTimeout"], (state) => {
+        // If the current tooltip is open, we should immediately hide the
+        // active one and set the current one as the active tooltip.
+        if (state.mounted) {
+          const { activeStore } = globalStore.getState();
+          if (activeStore !== store) {
+            activeStore?.hide();
           }
-          // Otherwise, if the current tooltip is closed, we should set a
-          // timeout to hide the active tooltip in the global store. This is so
-          // we can show other tooltips without a delay when there's already an
-          // active tooltip (see the showOnHover method below).
-          const id = setTimeout(() => {
-            const { activeStore } = globalStore.getState();
-            if (activeStore !== store) return;
-            globalStore.setState("activeStore", null);
-          }, state.skipTimeout);
-          return () => clearTimeout(id);
-        },
-        ["mounted", "skipTimeout"],
-      );
+          return globalStore.setState("activeStore", store);
+        }
+        // Otherwise, if the current tooltip is closed, we should set a
+        // timeout to hide the active tooltip in the global store. This is so
+        // we can show other tooltips without a delay when there's already an
+        // active tooltip (see the showOnHover method below).
+        const id = setTimeout(() => {
+          const { activeStore } = globalStore.getState();
+          if (activeStore !== store) return;
+          globalStore.setState("activeStore", null);
+        }, state.skipTimeout);
+        return () => clearTimeout(id);
+      });
     }, [store]);
 
     const onMouseEnterProp = props.onMouseEnter;
