@@ -37,38 +37,26 @@ export function createDisclosureStore(
   const disclosure = createStore(initialState, store);
 
   setup(disclosure, () =>
-    sync(
-      disclosure,
-      (state) => {
-        if (state.animated) return;
-        // Reset animating to false when animation is disabled.
-        disclosure.setState("animating", false);
-      },
-      ["animated", "animating"],
-    ),
+    sync(disclosure, ["animated", "animating"], (state) => {
+      if (state.animated) return;
+      // Reset animating to false when animation is disabled.
+      disclosure.setState("animating", false);
+    }),
   );
 
   setup(disclosure, () =>
-    sync(
-      disclosure,
-      (state, prev) => {
-        if (!state.animated) return;
-        const mounting = state === prev;
-        const animating = mounting ? state.open : state.open !== prev.open;
-        disclosure.setState("animating", animating);
-      },
-      ["open", "animated"],
-    ),
+    sync(disclosure, ["open", "animated"], (state, prev) => {
+      if (!state.animated) return;
+      const mounting = state === prev;
+      const animating = mounting ? state.open : state.open !== prev.open;
+      disclosure.setState("animating", animating);
+    }),
   );
 
   setup(disclosure, () =>
-    sync(
-      disclosure,
-      (state) => {
-        disclosure.setState("mounted", state.open || state.animating);
-      },
-      ["open", "animating"],
-    ),
+    sync(disclosure, ["open", "animating"], (state) => {
+      disclosure.setState("mounted", state.open || state.animating);
+    }),
   );
 
   return {

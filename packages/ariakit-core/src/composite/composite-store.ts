@@ -186,16 +186,12 @@ export function createCompositeStore<T extends Item = Item>(
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
   setup(composite, () =>
-    sync(
-      composite,
-      (state) => {
-        composite.setState("activeId", (activeId) => {
-          if (activeId !== undefined) return activeId;
-          return findFirstEnabledItem(state.renderedItems)?.id;
-        });
-      },
-      ["renderedItems", "activeId"],
-    ),
+    sync(composite, ["renderedItems", "activeId"], (state) => {
+      composite.setState("activeId", (activeId) => {
+        if (activeId !== undefined) return activeId;
+        return findFirstEnabledItem(state.renderedItems)?.id;
+      });
+    }),
   );
 
   const getNextId = (

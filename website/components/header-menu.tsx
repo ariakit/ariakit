@@ -109,28 +109,20 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     });
 
     useEffect(() => {
-      return batch(
-        menu,
-        (state) => {
-          if (parent) return;
-          if (!state.open) return;
-          menu.setAutoFocusOnShow(true);
-        },
-        ["open", "autoFocusOnShow"],
-      );
+      return batch(menu, ["open", "autoFocusOnShow"], (state) => {
+        if (parent) return;
+        if (!state.open) return;
+        menu.setAutoFocusOnShow(true);
+      });
     }, [parent, menu]);
 
     useEffect(() => {
-      return sync(
-        select,
-        (state) => {
-          if (parent) return;
-          menu.setDisclosureElement(state.selectElement);
-          select.setDisclosureElement(state.selectElement);
-          combobox.setDisclosureElement(state.selectElement);
-        },
-        ["selectElement", "disclosureElement"],
-      );
+      return sync(select, ["selectElement", "disclosureElement"], (state) => {
+        if (parent) return;
+        menu.setDisclosureElement(state.selectElement);
+        select.setDisclosureElement(state.selectElement);
+        combobox.setDisclosureElement(state.selectElement);
+      });
     }, [parent, menu, select, combobox]);
 
     const selectable = value != null || !!onChange;

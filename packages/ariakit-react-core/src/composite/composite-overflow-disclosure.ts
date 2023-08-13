@@ -27,13 +27,9 @@ export const useCompositeOverflowDisclosure =
     const [shouldRegisterItem, setShouldRegisterItem] = useState(false);
 
     useEffect(() => {
-      return sync(
-        store,
-        () => {
-          store.setDisclosureElement(ref.current);
-        },
-        ["disclosureElement"],
-      );
+      return sync(store, ["disclosureElement"], () => {
+        store.setDisclosureElement(ref.current);
+      });
     }, [store]);
 
     const onFocusProp = props.onFocus;

@@ -56,20 +56,16 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
 
     // Shows the hovercard disclosure when the anchor receives keyboard focus.
     useEffect(() => {
-      return sync(
-        store,
-        (state) => {
-          const anchor = state.anchorElement;
-          if (!anchor) return;
-          const observer = new MutationObserver(() => {
-            if (!anchor.hasAttribute("data-focus-visible")) return;
-            setVisible(true);
-          });
-          observer.observe(anchor, { attributeFilter: ["data-focus-visible"] });
-          return () => observer.disconnect();
-        },
-        ["anchorElement"],
-      );
+      return sync(store, ["anchorElement"], (state) => {
+        const anchor = state.anchorElement;
+        if (!anchor) return;
+        const observer = new MutationObserver(() => {
+          if (!anchor.hasAttribute("data-focus-visible")) return;
+          setVisible(true);
+        });
+        observer.observe(anchor, { attributeFilter: ["data-focus-visible"] });
+        return () => observer.disconnect();
+      });
     }, [store]);
 
     const onClickProp = props.onClick;
