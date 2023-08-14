@@ -1,5 +1,13 @@
 # @ariakit/core
 
+## 0.2.8
+
+### Patch Changes
+
+- Removed private properties from the store object. ([#2706](https://github.com/ariakit/ariakit/pull/2706))
+
+  Instead of accessing `store.setup`, `store.sync`, `store.subscribe`, etc. directly, use the equivalent functions exported by the `@ariakit/core/utils/store` module.
+
 ## 0.2.7
 
 ### Patch Changes
