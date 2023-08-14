@@ -56,7 +56,7 @@ useComboboxStore()
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/apis/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/reference/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .combobox-item[data-active-item] {

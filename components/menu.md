@@ -57,7 +57,7 @@ useMenuStore()
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/apis/menu-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/reference/menu-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .menu-item[data-active-item] {
@@ -75,9 +75,9 @@ Because they behave similarly, it may not be obvious when to use `Menu` and when
 - Use `Select` when the purpose is to select a value from a list of options. For example, a dropdown to select a country from a list of countries.
 - Use `Menu` when the purpose is to access a set of commands, actions, or links. For example, a dropdown to access a set of commands to edit a document.
 
-There are also some differences in how both components behave. Similarly to the native `<select>` element, the [`Select`](/apis/select) button's text will reflect the selected item. The button should also have a label in addition to the value. When the [`SelectPopover`](/apis/select-popover) opens, the selected item will be focused and brought into view.
+There are also some differences in how both components behave. Similarly to the native `<select>` element, the [`Select`](/reference/select) button's text will reflect the selected item. The button should also have a label in addition to the value. When the [`SelectPopover`](/reference/select-popover) opens, the selected item will be focused and brought into view.
 
-On the other hand, [`MenuButton`](/apis/menu-button) can't hold a value, only a label, which won't reflect the active item. It's usually a static call to action.
+On the other hand, [`MenuButton`](/reference/menu-button) can't hold a value, only a label, which won't reflect the active item. It's usually a static call to action.
 
 ## Related components
 

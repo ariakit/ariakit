@@ -84,7 +84,7 @@ It's important to note that, to avoid doing unnecessary work, the `data-active` 
 
 ### `[data-active-item]`
 
-The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/apis/composite-hover#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite) component itself, composite widgets include [Combobox](/components/combobox), [Menu](/components/menu), [Radio](/components/radio), [Select](/components/select), [Tab](/components/tab), and [Toolbar](/components/toolbar).
+The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/reference/composite-hover#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite) component itself, composite widgets include [Combobox](/components/combobox), [Menu](/components/menu), [Radio](/components/radio), [Select](/components/select), [Tab](/components/tab), and [Toolbar](/components/toolbar).
 
 ```css
 .item[data-active-item] {
@@ -148,7 +148,7 @@ Usually, you just need `data-enter`. The animation will be reversed when the ele
 
 The `data-focus-visible` attribute is applied to the [Focusable](/components/focusable) component and all components that use it underneath when there's a keyboard interaction on a focusable element.
 
-It works the same way as the [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) pseudo-class. However, unlike `:focus-visible`, the `data-focus-visible` attribute is also applied to composite widget items, such as [ComboboxItem](/components/combobox), when they receive [`virtualFocus`](/apis/composite-store#virtualfocus).
+It works the same way as the [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) pseudo-class. However, unlike `:focus-visible`, the `data-focus-visible` attribute is also applied to composite widget items, such as [ComboboxItem](/components/combobox), when they receive [`virtualFocus`](/reference/use-composite-store#virtualfocus).
 
 If you're styling Ariakit components, it's recommended to use the `[data-focus-visible]` selector to keep your styles consistent.
 

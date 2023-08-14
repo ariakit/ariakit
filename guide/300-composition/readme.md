@@ -16,7 +16,7 @@ For instance, the [Textarea with inline Combobox](/examples/combobox-textarea) e
 <Combobox render={<textarea rows={5} />} />
 ```
 
-The [Combobox with links](/examples/combobox-links) example renders the [`ComboboxItem`](/apis/combobox-item) component as an anchor element. Specific props should be passed to their corresponding components:
+The [Combobox with links](/examples/combobox-links) example renders the [`ComboboxItem`](/reference/combobox-item) component as an anchor element. Specific props should be passed to their corresponding components:
 
 ```jsx "ComboboxItem" "a" "<a"
 <ComboboxItem
