@@ -179,9 +179,6 @@ export function queueBeforeEvent(
   return raf;
 }
 
-/**
- * Adds a global event listener, including on child frames.
- */
 export function addGlobalEventListener<K extends keyof DocumentEventMap>(
   type: K,
   listener: (event: DocumentEventMap[K]) => any,
@@ -194,31 +191,32 @@ export function addGlobalEventListener(
   options?: boolean | AddEventListenerOptions,
   scope?: Window,
 ): () => void;
+
+/**
+ * Adds a global event listener, including on child frames.
+ */
 export function addGlobalEventListener(
   type: string,
   listener: EventListenerOrEventListenerObject,
   options?: boolean | AddEventListenerOptions,
   scope: Window = window,
 ) {
+  const children: Array<() => void> = [];
+
   // Prevent errors from "sandbox" frames.
   try {
     scope.document.addEventListener(type, listener, options);
-  } catch (e) {}
-
-  const listeners: Array<() => void> = [];
-  for (let i = 0; i < scope.frames?.length; i += 1) {
-    const frameWindow = scope.frames[i];
-    if (frameWindow) {
-      listeners.push(
-        addGlobalEventListener(type, listener, options, frameWindow),
-      );
+    for (const frame of Array.from(scope.frames)) {
+      children.push(addGlobalEventListener(type, listener, options, frame));
     }
-  }
+  } catch {}
+
   const removeEventListener = () => {
     try {
       scope.document.removeEventListener(type, listener, options);
-    } catch (e) {}
-    listeners.forEach((listener) => listener());
+    } catch {}
+    children.forEach((remove) => remove());
   };
+
   return removeEventListener;
 }
