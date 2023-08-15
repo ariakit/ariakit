@@ -1,6 +1,6 @@
 export interface UpdateItem {
   title: string;
-  type: "page" | "release";
+  type: "page" | "release" | "newsletter";
   href: string;
   dateTime: string;
 }

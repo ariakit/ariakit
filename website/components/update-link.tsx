@@ -5,6 +5,7 @@ import pageIndex from "build-pages/index.js";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { NewWindow } from "icons/new-window.jsx";
 import { Npm } from "icons/npm.jsx";
+import { Substack } from "icons/substack.jsx";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
@@ -110,6 +111,8 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
             getPageIcon(category, page)
           ) : type === "release" ? (
             <Npm />
+          ) : type === "newsletter" ? (
+            <Substack />
           ) : null}
         </div>
         <div className="flex min-w-0 flex-col">

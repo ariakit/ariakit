@@ -1,10 +1,11 @@
+import type { AnyObject } from "@ariakit/core/utils/types";
 import spawn from "cross-spawn";
 import updates from "updates.js";
 import type { UpdateItem } from "updates.js";
 
 let releasesCache: UpdateItem[] | null = null;
 
-export function getReleaseUpdates(): UpdateItem[] {
+function getReleaseUpdates() {
   if (releasesCache) {
     return releasesCache;
   }
@@ -28,9 +29,30 @@ export function getReleaseUpdates(): UpdateItem[] {
   return releasesCache;
 }
 
-export function getUpdates(): UpdateItem[] {
+let substackCache: UpdateItem[] | null = null;
+
+async function getSubstackUpdates() {
+  if (substackCache) {
+    return substackCache;
+  }
+  const response = await fetch(
+    "https://newsletter.ariakit.org/api/v1/archive?limit=50&sort=new",
+  );
+  const data: AnyObject[] = await response.json();
+  const items = data.map<UpdateItem>((item) => ({
+    type: "newsletter",
+    title: `Newsletter: ${item.title}`,
+    dateTime: `${item.post_date}`,
+    href: `${item.canonical_url}`,
+  }));
+  substackCache = items;
+  return items;
+}
+
+export async function getUpdates(): Promise<UpdateItem[]> {
   const releaseUpdates = getReleaseUpdates();
-  const allUpdates = [...updates, ...releaseUpdates];
+  const substackUpdates = await getSubstackUpdates();
+  const allUpdates = [...updates, ...releaseUpdates, ...substackUpdates];
   return allUpdates.sort((a, b) => {
     const dateA = new Date(a.dateTime);
     const dateB = new Date(b.dateTime);
