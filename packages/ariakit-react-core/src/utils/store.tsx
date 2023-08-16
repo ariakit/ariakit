@@ -13,7 +13,12 @@ import type {
 } from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
 import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
-import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
+import {
+  useLazyValue,
+  useLiveRef,
+  useSafeLayoutEffect,
+  useUpdateLayoutEffect,
+} from "./hooks.js";
 
 type UseState<S> = {
   /**
@@ -180,6 +185,29 @@ export function useStoreProps<
   }, [store, key, value]);
 }
 
+export function useStore2<T extends CoreStore, P>(
+  createStore: (props: P) => T,
+  props: P,
+  deps?: React.DependencyList,
+) {
+  const [store, setStore] = React.useState(() => createStore(props));
+
+  const storeRef = useLiveRef(store);
+
+  useUpdateLayoutEffect(() => {
+    setStore(createStore({ ...props, ...storeRef.current.getState() }));
+  }, deps);
+
+  useSafeLayoutEffect(() => init(store), [store]);
+
+  const useState: UseState<StoreState<T>> = React.useCallback<AnyFunction>(
+    (keyOrSelector) => useStoreState(store, keyOrSelector),
+    [store],
+  );
+
+  return React.useMemo(() => ({ ...store, useState }), [store, useState]);
+}
+
 /**
  * Creates a React store from a core store object.
  * @param createStore The function that creates the core store object.
@@ -194,10 +222,7 @@ export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
     [store],
   );
 
-  return React.useMemo(
-    () => ({ ...store, useState: useState }),
-    [store, useState],
-  );
+  return React.useMemo(() => ({ ...store, useState }), [store, useState]);
 }
 
 export type Store<T extends CoreStore> = T & {
