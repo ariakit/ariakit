@@ -8,40 +8,28 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
-import {
-  usePopoverStoreOptions,
-  usePopoverStoreProps,
-} from "../popover/popover-store.js";
+import { usePopoverStoreProps } from "../popover/popover-store.js";
+import { useUpdateLayoutEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.SelectStoreItem;
 type Value = Core.SelectStoreValue;
 
-export function useSelectStoreOptions<T extends Value = Value>(
-  props: SelectStoreProps<T>,
-) {
-  return {
-    ...useCompositeStoreOptions(props),
-    ...usePopoverStoreOptions(props),
-  };
-}
-
 export function useSelectStoreProps<T extends SelectStore>(
   store: T,
+  update: () => void,
   props: SelectStoreProps,
 ) {
-  store = useCompositeStoreProps(store, props);
-  store = usePopoverStoreProps(store, props);
+  useUpdateLayoutEffect(update, [props.combobox]);
+  store = useCompositeStoreProps(store, update, props);
+  store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
   return store;
 }
@@ -66,11 +54,8 @@ export function useSelectStore<T extends Value = Value>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
-  const options = useSelectStoreOptions(props);
-  const store = useStore(() =>
-    Core.createSelectStore({ ...props, ...options }),
-  );
-  return useSelectStoreProps(store, props);
+  const [store, update] = useStore(Core.createSelectStore, props);
+  return useSelectStoreProps(store, update, props);
 }
 
 export type SelectStoreItem = Item;

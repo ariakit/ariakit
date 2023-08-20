@@ -4,22 +4,16 @@ import type {
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
-import {
-  usePopoverStoreOptions,
-  usePopoverStoreProps,
-} from "../popover/popover-store.js";
+import { usePopoverStoreProps } from "../popover/popover-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useHovercardStoreOptions(props: HovercardStoreProps) {
-  return usePopoverStoreOptions(props);
-}
-
 export function useHovercardStoreProps<T extends HovercardStore>(
   store: T,
+  update: () => void,
   props: HovercardStoreProps,
 ) {
-  store = usePopoverStoreProps(store, props);
+  store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "timeout");
   useStoreProps(store, props, "showTimeout");
   useStoreProps(store, props, "hideTimeout");
@@ -39,11 +33,8 @@ export function useHovercardStoreProps<T extends HovercardStore>(
 export function useHovercardStore(
   props: HovercardStoreProps = {},
 ): HovercardStore {
-  const options = useHovercardStoreOptions(props);
-  const store = useStore(() =>
-    Core.createHovercardStore({ ...props, ...options }),
-  );
-  return useHovercardStoreProps(store, props);
+  const [store, update] = useStore(Core.createHovercardStore, props);
+  return useHovercardStoreProps(store, update, props);
 }
 
 export interface HovercardStoreState

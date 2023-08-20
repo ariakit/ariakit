@@ -1,17 +1,16 @@
+import type { DependencyList } from "react";
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
+import { useUpdateLayoutEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useDisclosureStoreOptions(
-  _props: DisclosureStoreProps,
-): Partial<DisclosureStoreOptions> {
-  return {};
-}
-
-export function useDisclosureStoreProps<T extends DisclosureStore>(
+export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   store: T,
+  update: () => void,
   props: DisclosureStoreProps,
+  deps: DependencyList = [],
 ) {
+  useUpdateLayoutEffect(update, [props.store, props.disclosure, ...deps]);
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "animated");
   return store;
@@ -30,11 +29,8 @@ export function useDisclosureStoreProps<T extends DisclosureStore>(
 export function useDisclosureStore(
   props: DisclosureStoreProps = {},
 ): DisclosureStore {
-  const options = useDisclosureStoreOptions(props);
-  const store = useStore(() =>
-    Core.createDisclosureStore({ ...props, ...options }),
-  );
-  return useDisclosureStoreProps(store, props);
+  const [store, update] = useStore(Core.createDisclosureStore, props);
+  return useDisclosureStoreProps(store, update, props);
 }
 
 export type DisclosureStoreState = Core.DisclosureStoreState;

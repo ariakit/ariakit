@@ -4,22 +4,16 @@ import type {
   DisclosureStoreOptions,
   DisclosureStoreState,
 } from "../disclosure/disclosure-store.js";
-import {
-  useDisclosureStoreOptions,
-  useDisclosureStoreProps,
-} from "../disclosure/disclosure-store.js";
-import type { Store } from "../utils/store.js";
+import { useDisclosureStoreProps } from "../disclosure/disclosure-store.js";
 import { useStore } from "../utils/store.js";
+import type { Store } from "../utils/store.js";
 
-export function useDialogStoreOptions(props: DialogStoreProps) {
-  return useDisclosureStoreOptions(props);
-}
-
-export function useDialogStoreProps<T extends DialogStore>(
+export function useDialogStoreProps<T extends Core.DialogStore>(
   store: T,
+  update: () => void,
   props: DialogStoreProps,
 ) {
-  return useDisclosureStoreProps(store, props);
+  return useDisclosureStoreProps(store, update, props);
 }
 
 /**
@@ -33,11 +27,8 @@ export function useDialogStoreProps<T extends DialogStore>(
  * ```
  */
 export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
-  const options = useDialogStoreOptions(props);
-  const store = useStore(() =>
-    Core.createDialogStore({ ...props, ...options }),
-  );
-  return useDialogStoreProps(store, props);
+  const [store, update] = useStore(Core.createDialogStore, props);
+  return useDialogStoreProps(store, update, props);
 }
 
 export interface DialogStoreState

@@ -4,22 +4,16 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useRadioStoreOptions(props: RadioStoreProps) {
-  return useCompositeStoreOptions(props);
-}
-
 export function useRadioStoreProps<T extends RadioStore>(
   store: T,
+  update: () => void,
   props: RadioStoreProps,
 ) {
-  store = useCompositeStoreProps(store, props);
+  store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
   return store;
 }
@@ -37,9 +31,8 @@ export function useRadioStoreProps<T extends RadioStore>(
  * ```
  */
 export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
-  const options = useRadioStoreOptions(props);
-  const store = useStore(() => Core.createRadioStore({ ...props, ...options }));
-  return useRadioStoreProps(store, props);
+  const [store, update] = useStore(Core.createRadioStore, props);
+  return useRadioStoreProps(store, update, props);
 }
 
 export interface RadioStoreState

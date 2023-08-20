@@ -7,10 +7,7 @@ import type {
   CollectionStoreOptions,
   CollectionStoreState,
 } from "../collection/collection-store.js";
-import {
-  useCollectionStoreOptions,
-  useCollectionStoreProps,
-} from "../collection/collection-store.js";
+import { useCollectionStoreProps } from "../collection/collection-store.js";
 import { useEvent } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
@@ -18,14 +15,11 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Values = Core.FormStoreValues;
 type Item = Core.FormStoreItem;
 
-export function useFormStoreOptions(props: FormStoreProps) {
-  return useCollectionStoreOptions(props);
-}
-
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
->(store: T, props: FormStoreProps) {
-  store = useCollectionStoreProps(store, props);
+>(store: T, update: () => void, props: FormStoreProps) {
+  store = useCollectionStoreProps(store, update, props);
+
   useStoreProps(store, props, "values", "setValues");
   useStoreProps(store, props, "errors", "setErrors");
   useStoreProps(store, props, "touched", "setTouched");
@@ -96,9 +90,8 @@ export function useFormStore<T extends Values = Values>(
 export function useFormStore(props: FormStoreProps): FormStore;
 
 export function useFormStore(props: FormStoreProps = {}): FormStore {
-  const options = useFormStoreOptions(props);
-  const store = useStore(() => Core.createFormStore({ ...props, ...options }));
-  return useFormStoreProps(store, props);
+  const [store, update] = useStore(Core.createFormStore, props);
+  return useFormStoreProps(store, update, props);
 }
 
 export type FormStoreItem = Item;
