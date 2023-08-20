@@ -155,9 +155,16 @@ export const useCommand = createHook<CommandOptions>(
 );
 
 /**
- * Renders a clickable element (like a button). If the underlying element is not
- * a native clickable element, this component will pass additional attributes to
- * make sure it's accessible.
+ * Renders a clickable element, which is a `button` by default, and inherits
+ * features from the [`Focusable`](https://ariakit.org/reference/focusable)
+ * component.
+ *
+ * If the base element isn't a native clickable one, this component will provide
+ * extra attributes and event handlers to ensure accessibility. It can be
+ * activated with the keyboard using the
+ * [`clickOnEnter`](https://ariakit.org/reference/command#clickonenter) and
+ * [`clickOnSpace`](https://ariakit.org/reference/command#clickonspace)
+ * props. Both are set to `true` by default.
  * @see https://ariakit.org/components/command
  * @example
  * ```jsx
@@ -176,12 +183,18 @@ if (process.env.NODE_ENV !== "production") {
 export interface CommandOptions<T extends As = "button">
   extends FocusableOptions<T> {
   /**
-   * If true, pressing the enter key will trigger a click on the button.
+   * If set to `true`, pressing the enter key while this element is focused will
+   * trigger a click on the element, regardless of whether it's a native button
+   * or not. If this prop is set to `false`, pressing enter will not initiate a
+   * click.
    * @default true
    */
   clickOnEnter?: boolean;
   /**
-   * If true, pressing the space key will trigger a click on the button.
+   * If set to `true`, pressing and releasing the space key while this element
+   * is focused will trigger a click on the element, regardless of whether it's
+   * a native button or not. If this prop is set to `false`, space will not
+   * initiate a click.
    * @default true
    */
   clickOnSpace?: boolean;

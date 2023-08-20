@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Command",
+    type: "page",
+    href: "/reference/command",
+    dateTime: "2023-08-20T17:17Z",
+  },
+  {
     title: "Improved docs: Focusable",
     type: "page",
     href: "/reference/focusable",
