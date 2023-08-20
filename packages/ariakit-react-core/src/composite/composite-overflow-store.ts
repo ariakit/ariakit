@@ -4,23 +4,14 @@ import type {
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
-import {
-  usePopoverStoreOptions,
-  usePopoverStoreProps,
-} from "../popover/popover-store.js";
+import { usePopoverStoreProps } from "../popover/popover-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
-export function useCompositeOverflowStoreOptions(
-  props: CompositeOverflowStoreProps,
-) {
-  return usePopoverStoreOptions(props);
-}
-
 export function useCompositeOverflowStoreProps<
   T extends CompositeOverflowStore,
->(store: T, props: CompositeOverflowStoreProps) {
-  return usePopoverStoreProps(store, props);
+>(store: T, update: () => void, props: CompositeOverflowStoreProps) {
+  return usePopoverStoreProps(store, update, props);
 }
 
 /**
@@ -46,11 +37,8 @@ export function useCompositeOverflowStoreProps<
 export function useCompositeOverflowStore(
   props: CompositeOverflowStoreProps = {},
 ): CompositeOverflowStore {
-  const options = useCompositeOverflowStoreOptions(props);
-  const store = useStore(() =>
-    Core.createCompositeOverflowStore({ ...props, ...options }),
-  );
-  return useCompositeOverflowStoreProps(store, props);
+  const [store, update] = useStore(Core.createCompositeOverflowStore, props);
+  return useCompositeOverflowStoreProps(store, update, props);
 }
 
 export interface CompositeOverflowStoreState
