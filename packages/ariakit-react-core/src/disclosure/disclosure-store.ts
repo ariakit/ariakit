@@ -1,6 +1,6 @@
 import type { DependencyList } from "react";
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -10,7 +10,7 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   props: DisclosureStoreProps,
   deps: DependencyList = [],
 ) {
-  useUpdateLayoutEffect(update, [props.store, props.disclosure, ...deps]);
+  useUpdateEffect(update, [props.store, props.disclosure, ...deps]);
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "animated");
   return store;

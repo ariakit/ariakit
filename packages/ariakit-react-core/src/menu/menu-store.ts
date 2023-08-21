@@ -16,7 +16,7 @@ import type {
   HovercardStoreState,
 } from "../hovercard/hovercard-store.js";
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps, useStoreState } from "../utils/store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
@@ -57,7 +57,7 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
 ) {
   const parent = useContext(MenuContext);
 
-  useUpdateLayoutEffect(update, [props.combobox]);
+  useUpdateEffect(update, [props.combobox]);
 
   store = useCompositeStoreProps(store, update, props);
   store = useHovercardStoreProps(store, update, props);

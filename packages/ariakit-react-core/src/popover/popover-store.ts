@@ -5,7 +5,7 @@ import type {
   DialogStoreState,
 } from "../dialog/dialog-store.js";
 import { useDialogStoreProps } from "../dialog/dialog-store.js";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -14,7 +14,7 @@ export function usePopoverStoreProps<T extends Core.PopoverStore>(
   update: () => void,
   props: PopoverStoreProps,
 ) {
-  useUpdateLayoutEffect(update, [props.popover]);
+  useUpdateEffect(update, [props.popover]);
   store = useDialogStoreProps(store, update, props);
   useStoreProps(store, props, "placement");
   return store;

@@ -11,7 +11,7 @@ import type {
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { usePopoverStoreProps } from "../popover/popover-store.js";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -20,7 +20,7 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   update: () => void,
   props: ComboboxStoreProps,
 ) {
-  useUpdateLayoutEffect(update, [props.menu, props.select]);
+  useUpdateEffect(update, [props.menu, props.select]);
   store = usePopoverStoreProps(store, update, props);
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");

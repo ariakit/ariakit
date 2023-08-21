@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -11,7 +11,7 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   update: () => void,
   props: CheckboxStoreProps,
 ) {
-  useUpdateLayoutEffect(update, [props.store]);
+  useUpdateEffect(update, [props.store]);
   useStoreProps(store, props, "value", "setValue");
   return store;
 }

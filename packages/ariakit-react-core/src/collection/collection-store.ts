@@ -3,7 +3,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
-import { useUpdateLayoutEffect } from "../utils/hooks.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -14,7 +14,7 @@ export function useCollectionStoreProps<T extends Core.CollectionStore>(
   update: () => void,
   props: CollectionStoreProps,
 ) {
-  useUpdateLayoutEffect(update, [props.store]);
+  useUpdateEffect(update, [props.store]);
   useStoreProps(store, props, "items", "setItems");
   return store;
 }
