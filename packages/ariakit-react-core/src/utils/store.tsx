@@ -12,7 +12,11 @@ import type {
   SetState,
 } from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
-import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
+// import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
+// This doesn't work in ESM, because use-sync-external-store only exposes CJS.
+// The following is a workaround until ESM is supported.
+import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
+const { useSyncExternalStore } = useSyncExternalStoreExports;
 import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
 
 type UseState<S> = {
