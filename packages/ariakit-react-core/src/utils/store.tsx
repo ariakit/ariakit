@@ -180,6 +180,13 @@ export function useStoreProps<
   }, [store, key, value]);
 }
 
+/**
+ * Creates a React store from a core store object and returns a tuple with the
+ * store and a function to update the store.
+ * @param createStore A function that receives the props and returns a core
+ * store object.
+ * @param props The props to pass to the createStore function.
+ */
 export function useStore<T extends CoreStore, P>(
   createStore: (props: P) => T,
   props: P,

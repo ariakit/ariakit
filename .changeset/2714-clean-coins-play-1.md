@@ -5,7 +5,7 @@
 
 [`#2714`](https://github.com/ariakit/ariakit/pull/2714) Added support for a dynamic `store` prop on component stores.
 
-This is similar to the `store` prop on components. Now, component store hooks can support modifying the value of the `store` prop after the initial render. For instance:
+This is similar to the `store` prop on components, keeping both stores in sync. Now, component store hooks can support modifying the value of the `store` prop after the initial render. For instance:
 
 ```js
 // props.store can change between renders now
