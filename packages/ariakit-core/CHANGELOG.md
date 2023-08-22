@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.2.9
+
+### Patch Changes
+
+- [`#2709`](https://github.com/ariakit/ariakit/pull/2709) Fixed `addGlobalEventListener` function when used in a document with sandbox iframes.
+
 ## 0.2.8
 
 ### Patch Changes
