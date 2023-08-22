@@ -1,6 +1,10 @@
 import { useContext, useMemo, useRef } from "react";
 import { useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
 import type { As, Options, Props } from "../utils/types.js";
 import { HeadingContext } from "./heading-context.js";
 import type { HeadingLevels } from "./utils.js";
@@ -21,15 +25,15 @@ type HeadingElements = `h${HeadingLevels}`;
 export const useHeading = createHook<HeadingOptions>((props) => {
   const ref = useRef<HTMLHeadingElement>(null);
   const level: HeadingLevels = useContext(HeadingContext) || 1;
-  const as = `h${level}` as const;
-  const tagName = useTagName(ref, props.as || as);
+  const Element = `h${level}` as const;
+  const tagName = useTagName(ref, Element);
   const isNativeHeading = useMemo(
     () => !!tagName && /^h\d$/.test(tagName),
     [tagName],
   );
 
   props = {
-    as,
+    render: <Element />,
     role: !isNativeHeading ? "heading" : undefined,
     "aria-level": !isNativeHeading ? level : undefined,
     ...props,

@@ -127,7 +127,7 @@
     "./hovercard/hovercard-arrow": "./src/hovercard/hovercard-arrow.ts",
     "./hovercard/hovercard-anchor": "./src/hovercard/hovercard-anchor.ts",
     "./heading/utils": "./src/heading/utils.ts",
-    "./heading/heading": "./src/heading/heading.ts",
+    "./heading/heading": "./src/heading/heading.tsx",
     "./heading/heading-level": "./src/heading/heading-level.tsx",
     "./heading/heading-context": "./src/heading/heading-context.ts",
     "./group/group": "./src/group/group.tsx",
