@@ -148,7 +148,7 @@
     "read-pkg-up": "10.1.0",
     "recast": "0.23.4",
     "rehype": "12.0.1",
-    "rehype-parse": "8.0.4",
+    "rehype-parse": "8.0.5",
     "rehype-raw": "6.1.1",
     "rehype-slug": "5.1.0",
     "remark-gfm": "3.0.1",
