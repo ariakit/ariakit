@@ -1,5 +1,4 @@
 import "./style.css";
-import React from "react";
 import * as Ariakit from "@ariakit/react";
 
 // TODO: This is a temporary example. Replace this with a Listbox component.
