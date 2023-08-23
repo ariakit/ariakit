@@ -1,5 +1,13 @@
 # @ariakit/react
 
+## 0.2.17
+
+### Patch Changes
+
+- [`#2718`](https://github.com/ariakit/ariakit/pull/2718) Fixed import of `use-sync-external-store` package for ESM builds.
+
+- Updated dependencies: `@ariakit/react-core@0.2.17`.
+
 ## 0.2.16
 
 ### Patch Changes
