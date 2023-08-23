@@ -71,7 +71,7 @@
     "@babel/types": "7.22.10",
     "@changesets/cli": "2.26.2",
     "@guidepup/playwright": "0.10.0",
-    "@playwright/test": "1.36.2",
+    "@playwright/test": "1.37.1",
     "@stackblitz/sdk": "1.9.0",
     "@testing-library/dom": "9.3.1",
     "@testing-library/jest-dom": "5.17.0",
