@@ -347,6 +347,8 @@ Instead, pass the default state to the topmost store:
 const store = useSelectStore({ defaultValue: "Apple" });
 <SelectProvider store={store} />
 
+See https://github.com/ariakit/ariakit/pull/2745 for more details.
+
 If there's a particular need for this, please submit a feature request at https://github.com/ariakit/ariakit
 `,
   );
