@@ -12,7 +12,7 @@ import {
   isObject,
 } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { createStore, throwOnConflictingProps } from "../utils/store.js";
 import type {
   AnyObject,
   PickRequired,
@@ -151,6 +151,8 @@ export function createFormStore<T extends Values = Values>(
 export function createFormStore(props: FormStoreProps): FormStore;
 
 export function createFormStore(props: FormStoreProps = {}): FormStore {
+  throwOnConflictingProps(props, props.store);
+
   const syncState = props.store?.getState();
   const collection = createCollectionStore(props);
 

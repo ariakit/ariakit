@@ -13,7 +13,14 @@ import type {
 import { createHovercardStore } from "../hovercard/hovercard-store.js";
 import { applyState, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore, omit, setup, sync } from "../utils/store.js";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type {
   BivariantCallback,
   PickRequired,
@@ -46,6 +53,9 @@ export function createMenuStore({
       "disclosureElement",
     ]),
   );
+
+  throwOnConflictingProps(props, store);
+
   const syncState = store.getState();
 
   const composite = createCompositeStore({

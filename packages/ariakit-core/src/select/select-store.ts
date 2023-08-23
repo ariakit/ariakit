@@ -22,6 +22,7 @@ import {
   omit,
   setup,
   sync,
+  throwOnConflictingProps,
 } from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
@@ -56,6 +57,9 @@ export function createSelectStore({
       "disclosureElement",
     ]),
   );
+
+  throwOnConflictingProps(props, store);
+
   const syncState = store.getState();
 
   const composite = createCompositeStore({

@@ -112,7 +112,6 @@ export function createElement(
   if (process.env.NODE_ENV !== "production") {
     React.useEffect(() => {
       if (!As) return;
-      console.log(As);
       console.warn(
         "The `as` prop is deprecated. Use the `render` prop instead.",
         "See https://ariakit.org/guide/composition",
