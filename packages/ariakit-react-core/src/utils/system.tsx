@@ -109,6 +109,17 @@ export function createElement(
   let element: React.ReactElement;
   const mergedRef = useMergeRefs(props.ref, getRefProperty(render));
 
+  if (process.env.NODE_ENV !== "production") {
+    React.useEffect(() => {
+      if (!As) return;
+      console.log(As);
+      console.warn(
+        "The `as` prop is deprecated. Use the `render` prop instead.",
+        "See https://ariakit.org/guide/composition",
+      );
+    }, [As]);
+  }
+
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
   } else if (React.isValidElement<AnyObject>(render)) {
@@ -118,6 +129,14 @@ export function createElement(
     // @ts-expect-error
     element = render(rest) as React.ReactElement;
   } else if (isRenderProp(props.children)) {
+    if (process.env.NODE_ENV !== "production") {
+      React.useEffect(() => {
+        console.warn(
+          "The `children` prop as a function is deprecated. Use the `render` prop instead.",
+          "See https://ariakit.org/guide/composition",
+        );
+      }, []);
+    }
     const { children, ...otherProps } = rest;
     element = props.children(otherProps) as React.ReactElement;
   } else if (As) {

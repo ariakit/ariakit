@@ -135,6 +135,16 @@ export const useDialog = createHook<DialogOptions>(
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
     props = useWrapElement(props, wrapElement, [wrapElement]);
 
+    if (process.env.NODE_ENV !== "production") {
+      useEffect(() => {
+        if (!backdropProps) return;
+        console.warn(
+          "The `backdropProps` prop is deprecated. Use the `backdrop` prop instead.",
+          "See https://ariakit.org/reference/dialog#backdrop",
+        );
+      }, [backdropProps]);
+    }
+
     // Sets disclosure element using the current active element right after the
     // dialog is opened.
     useSafeLayoutEffect(() => {

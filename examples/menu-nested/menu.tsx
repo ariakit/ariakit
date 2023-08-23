@@ -45,9 +45,12 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           // If it's a submenu, we have to combine the MenuButton and the
           // MenuItem components into a single component, so it works as a
           // submenu button.
-          <Ariakit.MenuItem className="menu-item" ref={ref} {...props}>
-            {renderMenuButton}
-          </Ariakit.MenuItem>
+          <Ariakit.MenuItem
+            className="menu-item"
+            ref={ref}
+            {...props}
+            render={renderMenuButton}
+          />
         ) : (
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })
