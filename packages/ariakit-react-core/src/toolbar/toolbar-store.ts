@@ -4,22 +4,16 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
-export function useToolbarStoreOptions(props: ToolbarStoreProps) {
-  return useCompositeStoreOptions(props);
-}
-
 export function useToolbarStoreProps<T extends ToolbarStore>(
   store: T,
+  update: () => void,
   props: ToolbarStoreProps,
 ) {
-  return useCompositeStoreProps(store, props);
+  return useCompositeStoreProps(store, update, props);
 }
 
 /**
@@ -36,11 +30,8 @@ export function useToolbarStoreProps<T extends ToolbarStore>(
  * ```
  */
 export function useToolbarStore(props: ToolbarStoreProps = {}): ToolbarStore {
-  const options = useToolbarStoreOptions(props);
-  const store = useStore(() =>
-    Core.createToolbarStore({ ...props, ...options }),
-  );
-  return useToolbarStoreProps(store, props);
+  const [store, update] = useStore(Core.createToolbarStore, props);
+  return useToolbarStoreProps(store, update, props);
 }
 
 export interface ToolbarStoreState

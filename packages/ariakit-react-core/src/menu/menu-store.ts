@@ -9,19 +9,14 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
 } from "../hovercard/hovercard-store.js";
-import {
-  useHovercardStoreOptions,
-  useHovercardStoreProps,
-} from "../hovercard/hovercard-store.js";
+import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps, useStoreState } from "../utils/store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
@@ -48,8 +43,6 @@ export function useMenuStoreOptions<T extends Values = Values>(
   const timeout = parentIsMenuBar ? 0 : 150;
 
   return {
-    ...useCompositeStoreOptions(props),
-    ...useHovercardStoreOptions(props),
     // TODO: Pass parent prop and remove these default values
     values: props.values ?? state?.values ?? props.defaultValues,
     timeout: props.timeout ?? state?.timeout ?? timeout,
@@ -59,12 +52,16 @@ export function useMenuStoreOptions<T extends Values = Values>(
 
 export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
   store: T,
+  update: () => void,
   props: MenuStoreProps,
 ) {
-  const parentMenu = useContext(MenuContext);
+  const parent = useContext(MenuContext);
 
-  store = useCompositeStoreProps(store, props);
-  store = useHovercardStoreProps(store, props);
+  useUpdateEffect(update, [props.combobox]);
+
+  store = useCompositeStoreProps(store, update, props);
+  store = useHovercardStoreProps(store, update, props);
+
   useStoreProps(store, props, "values", "setValues");
 
   return useMemo(
@@ -72,7 +69,7 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
       ...store,
       hideAll: () => {
         store.hide();
-        parentMenu?.hideAll();
+        parent?.hideAll();
       },
     }),
     [store],
@@ -100,8 +97,11 @@ export function useMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
   const options = useMenuStoreOptions(props);
-  const store = useStore(() => Core.createMenuStore({ ...props, ...options }));
-  return useMenuStoreProps(store, props);
+  const [store, update] = useStore(Core.createMenuStore, {
+    ...props,
+    ...options,
+  });
+  return useMenuStoreProps(store, update, props);
 }
 
 export type MenuStoreValues = Core.MenuStoreValues;

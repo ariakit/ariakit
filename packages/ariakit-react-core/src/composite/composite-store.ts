@@ -5,26 +5,18 @@ import type {
   CollectionStoreOptions,
   CollectionStoreState,
 } from "../collection/collection-store.js";
-import {
-  useCollectionStoreOptions,
-  useCollectionStoreProps,
-} from "../collection/collection-store.js";
+import { useCollectionStoreProps } from "../collection/collection-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.CompositeStoreItem;
 
-export function useCompositeStoreOptions<T extends Item = Item>(
-  props: CompositeStoreProps<T>,
-) {
-  return useCollectionStoreOptions(props);
-}
-
-export function useCompositeStoreProps<T extends CompositeStore>(
+export function useCompositeStoreProps<T extends Core.CompositeStore>(
   store: T,
+  update: () => void,
   props: CompositeStoreProps,
 ) {
-  store = useCollectionStoreProps(store, props);
+  store = useCollectionStoreProps(store, update, props);
   useStoreProps(store, props, "activeId", "setActiveId");
   useStoreProps(store, props, "includesBaseElement");
   useStoreProps(store, props, "virtualFocus");
@@ -49,6 +41,7 @@ export function useCompositeStoreProps<T extends CompositeStore>(
  * </Composite>
  * ```
  */
+
 export function useCompositeStore<T extends Item = Item>(
   props: PickRequired<CompositeStoreProps<T>, "items" | "defaultItems">,
 ): CompositeStore<T>;
@@ -58,11 +51,8 @@ export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
 export function useCompositeStore(
   props: CompositeStoreProps = {},
 ): CompositeStore {
-  const options = useCompositeStoreOptions(props);
-  const store = useStore(() =>
-    Core.createCompositeStore({ ...props, ...options }),
-  );
-  return useCompositeStoreProps(store, props);
+  const [store, update] = useStore(Core.createCompositeStore, props);
+  return useCompositeStoreProps(store, update, props);
 }
 
 export type CompositeStoreItem = Core.CompositeStoreItem;

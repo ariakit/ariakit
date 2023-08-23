@@ -1,5 +1,5 @@
-import { Checkbox, useCheckboxStore } from "@ariakit/react";
 import "./style.css";
+import { Checkbox, useCheckboxStore } from "@ariakit/react";
 
 export default function Example() {
   const checked = useCheckboxStore({ defaultValue: true });
