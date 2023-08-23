@@ -17,7 +17,7 @@ import { flushSync } from "react-dom";
 // The following is a workaround until ESM is supported.
 import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
 const { useSyncExternalStore } = useSyncExternalStoreExports;
-import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
+import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
 
 type UseState<S> = {
   /**
