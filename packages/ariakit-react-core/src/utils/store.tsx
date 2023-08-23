@@ -1,6 +1,6 @@
 import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
+import { init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -156,6 +156,7 @@ export function useStoreProps<
     value,
     setValue: setKey ? (props[setKey] as SetState<S[K]>) : undefined,
   });
+  const canSyncValue = React.useRef(true);
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
@@ -171,17 +172,23 @@ export function useStoreProps<
       if (!setValue) return;
       if (state[key] === prev[key]) return;
       if (state[key] === value) return;
+      // Disable controlled value sync until the next render to avoid resetting
+      // the value to a previous state before the component has a chance to
+      // re-render.
+      canSyncValue.current = false;
       safeFlushSync(() => setValue(state[key]), canFlushSync);
     });
   }, [store, key]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
-    return batch(store, [key], () => {
-      if (value === undefined) return;
+    if (value === undefined) return;
+    canSyncValue.current = true;
+    return sync(store, [key], () => {
+      if (!canSyncValue.current) return;
       store.setState(key, value);
     });
-  }, [store, key, value]);
+  });
 }
 
 /**
