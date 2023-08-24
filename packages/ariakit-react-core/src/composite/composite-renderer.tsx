@@ -108,18 +108,16 @@ export function useCompositeRenderer<T extends Item = any>({
   const context = useContext(CompositeContext);
   store = store || (context as typeof store);
 
-  const orientation =
-    useStoreState(store, (state) =>
-      orientationProp ?? state.orientation === "both"
-        ? "vertical"
-        : state.orientation,
-    ) ?? orientationProp;
+  const orientation = useStoreState(store, (state) =>
+    orientationProp ?? state?.orientation === "both"
+      ? "vertical"
+      : state?.orientation,
+  );
 
-  const items =
-    useStoreState(store, (state) => {
-      if ("mounted" in state && state.mounted) return 0;
-      return props.items ?? (state.items as T[]);
-    }) || props.items;
+  const items = useStoreState(store, (state) => {
+    if (state && "mounted" in state && state.mounted) return 0;
+    return props.items ?? (state?.items as T[]);
+  });
 
   const id = useId(props.id);
 

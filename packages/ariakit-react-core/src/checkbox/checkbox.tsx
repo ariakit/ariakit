@@ -56,9 +56,11 @@ export const useCheckbox = createHook<CheckboxOptions>(
     const context = useCheckboxContext();
     store = store || context;
 
-    const storeChecked = useStoreState(store, (state) => {
+    const [_checked, setChecked] = useState(defaultChecked ?? false);
+
+    const checked = useStoreState(store, (state) => {
       if (checkedProp !== undefined) return checkedProp;
-      if (state.value === undefined) return;
+      if (state?.value === undefined) return _checked;
       if (valueProp != null) {
         if (Array.isArray(state.value)) {
           const nonArrayValue = getNonArrayValue(valueProp);
@@ -70,9 +72,6 @@ export const useCheckbox = createHook<CheckboxOptions>(
       if (typeof state.value === "boolean") return state.value;
       return false;
     });
-
-    const [_checked, setChecked] = useState(defaultChecked ?? false);
-    const checked = checkedProp ?? storeChecked ?? _checked;
 
     const ref = useRef<HTMLInputElement>(null);
     const tagName = useTagName(ref, props.as || "input");

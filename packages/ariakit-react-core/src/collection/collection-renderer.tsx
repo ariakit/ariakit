@@ -424,9 +424,10 @@ export function useCollectionRenderer<T extends Item = any>({
   const context = useCollectionContext();
   store = store || (context as typeof store);
 
-  const items =
-    useStoreState(store, (state) => itemsProp ?? (state.items as T[])) ||
-    itemsProp;
+  const items = useStoreState(
+    store,
+    (state) => itemsProp ?? (state?.items as T[]),
+  );
 
   invariant(
     items != null,

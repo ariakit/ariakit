@@ -36,7 +36,7 @@ export function useMenuStoreOptions<T extends Values = Values>(
     parentMenu || parentMenuBar,
     (state) =>
       placementProp ||
-      (state.orientation === "vertical" ? "right-start" : "bottom-start"),
+      (state?.orientation === "vertical" ? "right-start" : "bottom-start"),
   );
 
   const parentIsMenuBar = !!parentMenuBar && !parentMenu;
