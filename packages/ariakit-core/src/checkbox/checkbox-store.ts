@@ -1,6 +1,6 @@
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import { createStore, throwOnConflictingProps } from "../utils/store.js";
 import type { PickRequired, SetState, ToPrimitive } from "../utils/types.js";
 
 type Value = boolean | string | number | Array<string | number>;
@@ -17,6 +17,8 @@ export function createCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;
 export function createCheckboxStore(
   props: CheckboxStoreProps = {},
 ): CheckboxStore {
+  throwOnConflictingProps(props, props.store);
+
   const syncState = props.store?.getState();
   const initialState: CheckboxStoreState = {
     value: defaultValue(

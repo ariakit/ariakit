@@ -1,6 +1,13 @@
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore, omit, setup, sync } from "../utils/store.js";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 /**
@@ -13,6 +20,8 @@ export function createDisclosureStore(
     props.store,
     omit(props.disclosure, ["contentElement", "disclosureElement"]),
   );
+
+  throwOnConflictingProps(props, store);
 
   const syncState = store?.getState();
 

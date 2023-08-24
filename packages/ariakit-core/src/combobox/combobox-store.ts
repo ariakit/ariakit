@@ -23,6 +23,7 @@ import {
   omit,
   setup,
   sync,
+  throwOnConflictingProps,
 } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
@@ -63,6 +64,8 @@ export function createComboboxStore({
       "disclosureElement",
     ]),
   );
+
+  throwOnConflictingProps(props, store);
 
   const syncState = store.getState();
 

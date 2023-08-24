@@ -1,7 +1,12 @@
 import { getDocument } from "../utils/dom.js";
 import { chain, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { batch, createStore, setup } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  setup,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
 type Item = {
@@ -62,6 +67,8 @@ function getCommonParent(items: Item[]) {
 export function createCollectionStore<T extends Item = Item>(
   props: CollectionStoreProps<T> = {},
 ): CollectionStore<T> {
+  throwOnConflictingProps(props, props.store);
+
   const syncState = props.store?.getState();
 
   const items = defaultValue(

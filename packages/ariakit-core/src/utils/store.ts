@@ -318,6 +318,43 @@ export function mergeStore<S extends State>(
 }
 
 /**
+ * Throws when a store prop is passed in conjunction with a default state.
+ */
+export function throwOnConflictingProps(props: AnyObject, store?: Store) {
+  if (process.env.NODE_ENV === "production") return;
+  if (!store) return;
+  const defaultKeys = Object.entries(props)
+    .filter(([key, value]) => key.startsWith("default") && value !== undefined)
+    .map(([key]) => {
+      const stateKey = key.replace("default", "");
+      return `${stateKey[0]?.toLowerCase() || ""}${stateKey.slice(1)}`;
+    });
+  if (!defaultKeys.length) return;
+  const storeState = store.getState();
+  const conflictingProps = defaultKeys.filter((key) =>
+    hasOwnProperty(storeState, key),
+  );
+  if (!conflictingProps.length) return;
+  throw new Error(
+    `Passing a store prop in conjunction with a default state is not supported.
+
+const store = useSelectStore();
+<SelectProvider store={store} defaultValue="Apple" />
+                ^             ^
+
+Instead, pass the default state to the topmost store:
+
+const store = useSelectStore({ defaultValue: "Apple" });
+<SelectProvider store={store} />
+
+See https://github.com/ariakit/ariakit/pull/2745 for more details.
+
+If there's a particular need for this, please submit a feature request at https://github.com/ariakit/ariakit
+`,
+  );
+}
+
+/**
  * Store state type.
  */
 export type State = AnyObject;
