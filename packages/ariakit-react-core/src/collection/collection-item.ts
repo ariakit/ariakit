@@ -1,10 +1,10 @@
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity } from "@ariakit/core/utils/misc";
 import { useId, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CollectionContext } from "./collection-context.js";
+import { useCollectionContext } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
 /**
@@ -29,7 +29,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     element,
     ...props
   }) => {
-    const context = useContext(CollectionContext);
+    const context = useCollectionContext();
     store = store || context;
 
     const id = useId(props.id);

@@ -34,7 +34,7 @@ import {
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.jsx";
 import type { RenderProp } from "../utils/types.js";
-import { CollectionContext } from "./collection-context.js";
+import { useCollectionContext } from "./collection-context.js";
 import type {
   CollectionStore,
   CollectionStoreItem,
@@ -421,7 +421,7 @@ export function useCollectionRenderer<T extends Item = any>({
   children: renderItem,
   ...props
 }: CollectionRendererProps<T>) {
-  const context = useContext(CollectionContext);
+  const context = useCollectionContext();
   store = store || (context as typeof store);
 
   const items =
