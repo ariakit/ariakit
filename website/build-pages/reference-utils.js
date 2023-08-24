@@ -247,16 +247,21 @@ function getNodeName(node) {
  * @returns {import("./types.js").Reference}
  */
 function getReference(filename, node, props, returnedProps) {
+  const name = getNodeName(node);
   node = Node.isVariableDeclaration(node)
     ? node.getVariableStatementOrThrow()
     : node;
 
   props = props || getFunction(node)?.getParameters()?.at(0);
-  returnedProps = returnedProps || getFunction(node)?.getReturnTypeNode();
+  returnedProps =
+    returnedProps ||
+    (name.endsWith("Store")
+      ? getFunction(node)?.getReturnTypeNode()
+      : undefined);
 
   return {
     filename,
-    name: getNodeName(node),
+    name,
     description: getDescription(node),
     deprecated: getDeprecated(node),
     examples: getExamples(node),

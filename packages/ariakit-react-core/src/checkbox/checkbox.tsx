@@ -12,6 +12,7 @@ import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
+import { useCheckboxContext } from "./checkbox-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
 
 function setMixed(element: HTMLInputElement, mixed?: boolean) {
@@ -52,6 +53,9 @@ export const useCheckbox = createHook<CheckboxOptions>(
     defaultChecked,
     ...props
   }) => {
+    const context = useCheckboxContext();
+    store = store || context;
+
     const storeChecked = useStoreState(store, (state) => {
       if (checkedProp !== undefined) return checkedProp;
       if (state.value === undefined) return;
