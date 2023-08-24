@@ -217,6 +217,8 @@
     "./collection/collection-context": "./src/collection/collection-context.ts",
     "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",
     "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
+    "./checkbox/checkbox-provider": "./src/checkbox/checkbox-provider.tsx",
+    "./checkbox/checkbox-context": "./src/checkbox/checkbox-context.tsx",
     "./checkbox/checkbox-checked-context": "./src/checkbox/checkbox-checked-context.ts",
     "./checkbox/checkbox-check": "./src/checkbox/checkbox-check.tsx",
     "./button/button": "./src/button/button.ts",
