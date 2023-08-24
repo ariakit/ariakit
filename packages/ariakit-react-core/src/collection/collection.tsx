@@ -1,7 +1,10 @@
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CollectionContext } from "./collection-context.js";
+import {
+  CollectionContextProvider,
+  useCollectionContext,
+} from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
 /**
@@ -22,12 +25,15 @@ import type { CollectionStore } from "./collection-store.js";
  */
 export const useCollection = createHook<CollectionOptions>(
   ({ store, ...props }) => {
+    const context = useCollectionContext();
+    store = store || context;
+
     props = useWrapElement(
       props,
       (element) => (
-        <CollectionContext.Provider value={store}>
+        <CollectionContextProvider value={store}>
           {element}
-        </CollectionContext.Provider>
+        </CollectionContextProvider>
       ),
       [store],
     );
@@ -63,7 +69,7 @@ export interface CollectionOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the `useCollectionStore` hook.
    */
-  store: CollectionStore;
+  store?: CollectionStore;
 }
 
 export type CollectionProps<T extends As = "div"> = Props<CollectionOptions<T>>;
