@@ -50,11 +50,10 @@ export const useRadio = createHook<RadioOptions>(
     const id = useId(props.id);
 
     const ref = useRef<HTMLInputElement>(null);
-    const isChecked =
-      useStoreState(
-        store,
-        (state) => checked ?? getIsChecked(value, state.value),
-      ) ?? checked;
+    const isChecked = useStoreState(
+      store,
+      (state) => checked ?? getIsChecked(value, state?.value),
+    );
 
     // When the radio store has a default value, we need to update the active id
     // to point to the checked element, otherwise it'll be the first item in the

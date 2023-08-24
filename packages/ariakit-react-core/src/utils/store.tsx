@@ -8,6 +8,7 @@ import type {
 } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
+  AnyObject,
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
@@ -49,7 +50,6 @@ type UseState<S> = {
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
-type StateSelector<T = CoreStore, V = any> = (state: StoreState<T>) => V;
 
 const noopSubscribe = () => () => {};
 
@@ -76,44 +76,35 @@ function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
   }
 }
 
-/**
- * Subscribes to and returns the entire state of a store.
- * @param store The store to subscribe to.
- * @example
- * useStoreState(store)
- */
-export function useStoreState<T extends StateStore>(
-  store: T,
-): T extends CoreStore ? StoreState<T> : undefined;
+export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
-/**
- * Subscribes to and returns a specific key of a store.
- * @param store The store to subscribe to.
- * @param key The key to subscribe to.
- * @example
- * useStoreState(store, "key")
- */
-export function useStoreState<T extends StateStore, K extends StateKey<T>>(
+export function useStoreState<T extends CoreStore>(
+  store: T | null | undefined,
+): StoreState<T> | undefined;
+
+export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
   store: T,
   key: K,
-): T extends CoreStore ? StoreState<T>[K] : undefined;
+): StoreState<T>[K];
 
-/**
- * Subscribes to and returns a computed value of a store based on the selector
- * function.
- * @param store The store to subscribe to.
- * @param selector The selector function that computes the observed value.
- * @example
- * useStoreState(store, (state) => state.key)
- */
-export function useStoreState<T extends StateStore, V>(
+export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
+  store: T | null | undefined,
+  key: K,
+): StoreState<T>[K] | undefined;
+
+export function useStoreState<T extends CoreStore, V>(
   store: T,
-  selector: StateSelector<T, V>,
-): T extends CoreStore ? V : undefined;
+  selector: (state: StoreState<T>) => V,
+): V;
+
+export function useStoreState<T extends CoreStore, V>(
+  store: T | null | undefined,
+  selector: (state?: StoreState<T>) => V,
+): V;
 
 export function useStoreState(
   store: StateStore,
-  keyOrSelector: StateKey | StateSelector = identity,
+  keyOrSelector: StateKey | ((state?: AnyObject) => any) = identity,
 ) {
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
@@ -124,11 +115,11 @@ export function useStoreState(
   );
 
   const getSnapshot = () => {
-    if (!store) return;
-    const state = store.getState();
-    const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
     const key = typeof keyOrSelector === "string" ? keyOrSelector : null;
+    const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
+    const state = store?.getState();
     if (selector) return selector(state);
+    if (!state) return;
     if (!key) return;
     if (!hasOwnProperty(state, key)) return;
     return state[key];

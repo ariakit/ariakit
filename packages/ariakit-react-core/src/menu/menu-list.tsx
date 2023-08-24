@@ -72,9 +72,9 @@ export const useMenuList = createHook<MenuListOptions>(
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
-    const isMenuBarHorizontal = !!useStoreState(
+    const isMenuBarHorizontal = useStoreState(
       parentMenuBar,
-      (state) => state.orientation !== "vertical",
+      (state) => !!state && state.orientation !== "vertical",
     );
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
