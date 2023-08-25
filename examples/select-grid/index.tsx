@@ -32,7 +32,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Position</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} showOnKeyDown={false} className="select">
+      <Ariakit.Select store={select} showOnKeyDown={false} className="button">
         <Square value={value} />
         {value}
         <Ariakit.SelectArrow />

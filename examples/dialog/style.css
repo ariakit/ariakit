@@ -1,5 +1,11 @@
 @import url("../button/style.css");
 
+.button {
+  @apply
+    font-medium
+  ;
+}
+
 .backdrop {
   @apply
     [backdrop-filter:blur(4px)]

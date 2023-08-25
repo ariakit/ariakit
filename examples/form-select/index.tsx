@@ -46,7 +46,9 @@ export default function Example() {
         <Ariakit.FormError name={form.names.fruit} className="error" />
       </div>
       <div className="buttons">
-        <Ariakit.FormSubmit className="button">Submit</Ariakit.FormSubmit>
+        <Ariakit.FormSubmit className="button primary">
+          Submit
+        </Ariakit.FormSubmit>
       </div>
     </Ariakit.Form>
   );

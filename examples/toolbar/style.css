@@ -21,12 +21,6 @@
     gap-2
     rounded
     scroll-mx-1
-    bg-transparent
-    dark:bg-transparent
-    text-black
-    dark:text-white
-    hover:bg-black/10
-    dark:hover:bg-white/10
   ;
 }
 

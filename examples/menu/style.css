@@ -1,6 +1,12 @@
 @import url("../button/style.css");
 @import url("../separator/style.css");
 
+.button {
+  @apply
+    font-medium
+  ;
+}
+
 .menu {
   @apply
     max-h-[var(--popover-available-height)]

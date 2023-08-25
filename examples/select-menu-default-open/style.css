@@ -40,6 +40,8 @@
 
 .button {
   @apply
+    w-auto
+    justify-center
     rounded-md
     aria-expanded:bg-black/10
     aria-expanded:dark:bg-white/10

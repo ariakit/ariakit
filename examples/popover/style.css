@@ -1,5 +1,11 @@
 @import url("../button/style.css");
 
+.button {
+  @apply
+    font-medium
+  ;
+}
+
 .popover {
   @apply
     z-50

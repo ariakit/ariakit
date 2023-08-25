@@ -6,7 +6,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="select" />
+      <Ariakit.Select store={select} className="button" />
       <Ariakit.SelectPopover
         store={select}
         gutter={4}
