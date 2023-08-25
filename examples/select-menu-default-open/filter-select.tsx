@@ -50,7 +50,7 @@ export const FilterSelect = React.forwardRef<
     <div className="filter">
       <Ariakit.Select
         ref={ref}
-        className="select"
+        className="button select"
         {...props}
         store={select}
         aria-labelledby={labelId}
@@ -72,7 +72,7 @@ export const FilterSelect = React.forwardRef<
       </Ariakit.SelectPopover>
       {onRemove && (
         <Ariakit.Button
-          className="select"
+          className="button select"
           aria-label={`Remove ${label} filter`}
           onClick={() => onRemove()}
         >

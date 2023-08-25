@@ -4,3 +4,9 @@
 .select-item {
   @apply pr-8;
 }
+
+.button {
+  @apply
+    w-auto
+  ;
+}

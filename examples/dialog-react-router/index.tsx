@@ -39,7 +39,7 @@ function Tweet() {
             render={<textarea placeholder="What's happening?" rows={5} />}
           />
         </label>
-        <Ariakit.Button type="submit" className="button">
+        <Ariakit.Button type="submit" className="button primary">
           Tweet
         </Ariakit.Button>
       </form>
@@ -50,7 +50,7 @@ function Tweet() {
 function Home() {
   return (
     <>
-      <Link to="/tweet" className="button">
+      <Link to="/tweet" className="button primary">
         Tweet
       </Link>
       <Outlet />

@@ -33,7 +33,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Account</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="select">
+      <Ariakit.Select store={select} className="button">
         {renderValue(value)}
         <Ariakit.SelectArrow />
       </Ariakit.Select>

@@ -26,7 +26,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         <Ariakit.Select
           store={select}
           ref={ref}
-          className="select"
+          className="button"
           {...props}
           onBlur={(event) => {
             props.onBlur?.(event);

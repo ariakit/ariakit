@@ -22,7 +22,7 @@
   ;
 }
 
-.select {
+.button {
   @apply
     [&[data-autofill]]:bg-[rgb(219_237_255)]
     [&[data-autofill]]:dark:bg-[rgb(36_107_179)]

@@ -50,7 +50,7 @@ export default function Example() {
           </tbody>
         </table>
 
-        <Ariakit.DialogDismiss className="button">
+        <Ariakit.DialogDismiss className="button primary">
           Checkout
         </Ariakit.DialogDismiss>
 

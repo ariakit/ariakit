@@ -15,13 +15,39 @@
     whitespace-nowrap
     aria-disabled:opacity-50
     sm:gap-2
-    bg-blue-600
-    text-white
-    hover:bg-blue-800
+    bg-white
+    dark:bg-white/5
+    text-black
+    dark:text-white
+    hover:bg-gray-100
+    dark:hover:bg-white/10
+    aria-expanded:bg-gray-100
+    aria-expanded:dark:bg-white/10
+    data-[focus-visible]:outline
+    active:[transform:scale(0.98)]
+    aria-expanded:active:[transform:scale(1)]
+    [box-shadow:inset_0_0_0_1px_rgba(0,0,0,0.1),inset_0_-1px_0_rgba(0,0,0,0.1),0_1px_1px_rgba(0,0,0,0.1)]
+    dark:[box-shadow:inset_0_0_0_1px_rgba(255,255,255,0.1),inset_0_-1px_0_1px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]
     outline-2
     outline-offset-2
     outline-blue-600
-    data-[focus-visible]:outline
+  ;
+}
+
+.flat {
+  @apply
+    [box-shadow:none]
+    dark:[box-shadow:none]
+  ;
+}
+
+.primary {
+  @apply
+    text-white
+    bg-blue-600
+    dark:bg-blue-800
+    hover:bg-blue-800
+    dark:hover:bg-blue-600
   ;
 }
 
@@ -32,12 +58,17 @@
     dark:bg-transparent
     hover:bg-black/5
     dark:hover:bg-white/5
+    [box-shadow:none]
+    dark:[box-shadow:none]
   ;
 }
 
 .danger {
   @apply
+    text-white
     bg-red-600
+    dark:bg-red-700
     hover:bg-red-700
+    dark:hover:bg-red-600
   ;
 }

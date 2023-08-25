@@ -15,7 +15,9 @@ export const ToolbarButton = React.forwardRef<
   HTMLButtonElement,
   Ariakit.ToolbarItemProps
 >(function ToolbarButton(props, ref) {
-  return <Ariakit.ToolbarItem ref={ref} className="button" {...props} />;
+  return (
+    <Ariakit.ToolbarItem ref={ref} className="button secondary" {...props} />
+  );
 });
 
 export const ToolbarSeparator = React.forwardRef<

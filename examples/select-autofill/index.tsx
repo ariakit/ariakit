@@ -8,7 +8,7 @@ export default function Example() {
       <label htmlFor="email">Email</label>
       <input type="email" id="email" name="email" className="input" />
       <Ariakit.SelectLabel store={select}>Role</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} name="role" className="select" />
+      <Ariakit.Select store={select} name="role" className="button" />
       <Ariakit.SelectPopover store={select} sameWidth className="popover">
         <Ariakit.SelectItem className="select-item" value="Student" />
         <Ariakit.SelectItem className="select-item" value="Tutor" />
