@@ -74,9 +74,11 @@ function useSelectRenderer<T extends Item = any>({
   const context = useContext(SelectContext);
   store = store || context;
 
-  const items = useStoreState(store, (state) =>
-    state?.mounted ? itemsProp ?? (state.items as T[]) : 0,
-  );
+  const items = useStoreState(store, (state) => {
+    if (!state) return itemsProp;
+    if (!state.mounted) return 0;
+    return itemsProp ?? (state.items as T[]);
+  });
 
   const value = useStoreState(store, (state) => valueProp ?? state?.value);
 

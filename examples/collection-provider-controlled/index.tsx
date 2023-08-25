@@ -6,13 +6,13 @@ import { CollectionProvider } from "@ariakit/react-core/collection/collection-pr
 export default function Example() {
   const [items, setItems] = useState<Ariakit.CollectionStoreState["items"]>([]);
   return (
-    <CollectionProvider items={items} setItems={setItems}>
-      <Ariakit.Collection className="collection">
+    <div className="collection">
+      <CollectionProvider setItems={setItems}>
         <div>Items count: {items.length}</div>
         <Ariakit.CollectionItem>🍎 Apple</Ariakit.CollectionItem>
         <Ariakit.CollectionItem>🍇 Grape</Ariakit.CollectionItem>
         <Ariakit.CollectionItem>🍊 Orange</Ariakit.CollectionItem>
-      </Ariakit.Collection>
-    </CollectionProvider>
+      </CollectionProvider>
+    </div>
   );
 }

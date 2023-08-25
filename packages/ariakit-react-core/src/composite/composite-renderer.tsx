@@ -115,8 +115,9 @@ export function useCompositeRenderer<T extends Item = any>({
   );
 
   const items = useStoreState(store, (state) => {
-    if (state && "mounted" in state && state.mounted) return 0;
-    return props.items ?? (state?.items as T[]);
+    if (!state) return props.items;
+    if ("mounted" in state && state.mounted) return 0;
+    return props.items ?? (state.items as T[]);
   });
 
   const id = useId(props.id);
