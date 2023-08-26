@@ -60,7 +60,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "Disclosure must receive a `store` prop or be wrapped in a DisclosureProvider component.",
+        "DisclosureContent must receive a `store` prop or be wrapped in a DisclosureProvider component.",
     );
 
     const id = useId(props.id);
