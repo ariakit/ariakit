@@ -1,11 +1,13 @@
 import type { MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useDisclosureContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 /**
@@ -21,6 +23,15 @@ import type { DisclosureStore } from "./disclosure-store.js";
  */
 export const useDisclosure = createHook<DisclosureOptions>(
   ({ store, toggleOnClick = true, ...props }) => {
+    const context = useDisclosureContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Disclosure must receive a `store` prop or be wrapped in a DisclosureProvider component.",
+    );
+
     const ref = useRef<HTMLButtonElement>(null);
     const [expanded, setExpanded] = useState(false);
     const disclosureElement = store.useState("disclosureElement");
@@ -33,7 +44,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     useEffect(() => {
       let isCurrentDisclosure = disclosureElement === ref.current;
       if (!disclosureElement || !disclosureElement.isConnected) {
-        store.setDisclosureElement(ref.current);
+        store?.setDisclosureElement(ref.current);
         isCurrentDisclosure = true;
       }
       setExpanded(open && isCurrentDisclosure);
@@ -42,7 +53,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const onMouseDownProp = props.onMouseDown;
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store.setDisclosureElement(event.currentTarget);
+      store?.setDisclosureElement(event.currentTarget);
       onMouseDownProp?.(event);
     });
 
@@ -51,12 +62,12 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const isDuplicate = "data-disclosure" in props;
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store.setDisclosureElement(event.currentTarget);
+      store?.setDisclosureElement(event.currentTarget);
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
       if (!toggleOnClickProp(event)) return;
-      store.toggle();
+      store?.toggle();
     });
 
     const contentElement = store.useState("contentElement");
@@ -102,7 +113,7 @@ export interface DisclosureOptions<T extends As = "button">
   /**
    * Object returned by the `useDisclosureStore` hook.
    */
-  store: DisclosureStore;
+  store?: DisclosureStore;
   /**
    * Determines whether `store.toggle()` will be called on click. This is useful
    * if you want to handle the toggle logic yourself.
