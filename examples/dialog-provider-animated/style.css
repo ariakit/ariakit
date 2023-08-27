@@ -1,0 +1,22 @@
+@import url("../dialog/style.css");
+
+.backdrop {
+  @apply
+    transition-[opacity,backdrop-filter]
+    [backdrop-filter:blur(0)]
+    data-[enter]:[backdrop-filter:blur(4px)]
+    opacity-0
+    data-[enter]:opacity-100
+  ;
+}
+
+.dialog {
+  @apply
+    origin-center
+    transition-[opacity,transform]
+    opacity-0
+    data-[enter]:opacity-100
+    [transform:scale(0.95)]
+    data-[enter]:[transform:scale(1)]
+  ;
+}

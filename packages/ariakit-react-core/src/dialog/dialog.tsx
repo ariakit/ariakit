@@ -23,7 +23,7 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { chain } from "@ariakit/core/utils/misc";
+import { chain, invariant } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -53,6 +53,7 @@ import {
   DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
+  useDialogContext,
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
@@ -112,6 +113,15 @@ export const useDialog = createHook<DialogOptions>(
     finalFocus,
     ...props
   }) => {
+    const context = useDialogContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Dialog must receive a `store` prop or be wrapped in a DialogProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
@@ -149,6 +159,7 @@ export const useDialog = createHook<DialogOptions>(
     // dialog is opened.
     useSafeLayoutEffect(() => {
       if (!open) return;
+      if (!store) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -156,7 +167,7 @@ export const useDialog = createHook<DialogOptions>(
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
-    }, [open, store]);
+    }, [store, open]);
 
     // Safari does not focus on native buttons on mousedown. The
     // DialogDisclosure component normalizes this behavior using the
@@ -165,6 +176,7 @@ export const useDialog = createHook<DialogOptions>(
     // disclosure button gets focused here.
     if (isSafariBrowser) {
       useEffect(() => {
+        if (!store) return;
         if (!mounted) return;
         const { disclosureElement } = store.getState();
         if (!disclosureElement) return;
@@ -186,7 +198,7 @@ export const useDialog = createHook<DialogOptions>(
         return () => {
           disclosureElement.removeEventListener("mousedown", onMouseDown);
         };
-      }, [mounted, store]);
+      }, [store, mounted]);
     }
 
     const shouldDisableAccessibilityTree =
@@ -202,6 +214,7 @@ export const useDialog = createHook<DialogOptions>(
     // So that screen reader users aren't trapped in the dialog when there's no
     // visible dismiss button.
     useEffect(() => {
+      if (!store) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
@@ -215,12 +228,13 @@ export const useDialog = createHook<DialogOptions>(
       const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
       if (existingDismiss) return;
       return prependHiddenDismiss(dialog, store.hide);
-    }, [mounted, domReady, shouldDisableAccessibilityTree]);
+    }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
 
     const getPersistentElementsProp = useEvent(getPersistentElements);
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
+      if (!store) return;
       if (!domReady) return;
       if (!id) return;
       // When the dialog is animating, we immediately restore the element tree
@@ -250,10 +264,10 @@ export const useDialog = createHook<DialogOptions>(
         disableAccessibilityTreeOutside(...allElements),
       );
     }, [
+      store,
       domReady,
       id,
       open,
-      store,
       getPersistentElementsProp,
       nestedDialogs,
       shouldDisableAccessibilityTree,
@@ -334,6 +348,7 @@ export const useDialog = createHook<DialogOptions>(
 
     const focusOnHide = useCallback(
       (dialog: HTMLElement | null, retry = true) => {
+        if (!store) return;
         const { open, disclosureElement } = store.getState();
         if (open) return;
         // Hide was triggered by a click/focus on a tabbable element outside the
@@ -408,6 +423,7 @@ export const useDialog = createHook<DialogOptions>(
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key !== "Escape") return;
         if (event.defaultPrevented) return;
+        if (!store) return;
         const dialog = ref.current;
         if (!dialog) return;
         // Ignore the event if the current dialog is marked by another dialog.
@@ -434,7 +450,7 @@ export const useDialog = createHook<DialogOptions>(
       // We can't do this on a onKeyDown prop on the disclosure element because
       // we don't have access to the hideOnEscape prop there.
       return addGlobalEventListener("keydown", onKeyDown);
-    }, [mounted, domReady, store, hideOnEscapeProp]);
+    }, [store, mounted, domReady, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(
@@ -452,6 +468,7 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
+        if (!store) return element;
         if (!backdrop) return element;
         return (
           <>
@@ -535,7 +552,7 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Object returned by the `useDialogStore` hook.
    */
-  store: DialogStore;
+  store?: DialogStore;
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:

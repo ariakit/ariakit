@@ -1,0 +1,69 @@
+@import url("../button/style.css");
+
+.button {
+  @apply
+    font-medium
+  ;
+}
+
+.backdrop {
+  @apply
+    [backdrop-filter:blur(4px)]
+    bg-black/10
+    dark:bg-black/50
+  ;
+}
+
+.dialog {
+  @apply
+    fixed
+    inset-3
+    sm:inset-y-[10vh]
+    m-auto
+    sm:mt-0
+    h-fit
+    max-h-[calc(100vh-2*theme(spacing.3))]
+    sm:max-h-[80vh]
+    sm:w-[420px]
+    overflow-auto
+    z-50
+    flex
+    flex-col
+    gap-4
+    p-4
+    sm:p-6
+    rounded-xl
+    sm:rounded-2xl
+    dark:border
+    dark:border-solid
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
+    shadow-2xl
+  ;
+}
+
+.heading {
+  @apply
+    m-0
+    text-xl
+    font-semibold
+  ;
+}
+
+.dismiss {
+  @apply
+    w-10
+    h-10
+    p-0
+  ;
+}
+
+.buttons {
+  @apply
+    flex
+    gap-2
+  ;
+}

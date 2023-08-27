@@ -3,13 +3,17 @@ import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import { Role } from "../role/role.js";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
+import type { DialogStore } from "./dialog-store.js";
 import type { DialogProps } from "./dialog.js";
 import { markAncestor } from "./utils/mark-tree-outside.js";
 
-type DialogBackdropProps = Pick<
-  DialogProps,
-  "store" | "backdrop" | "backdropProps" | "alwaysVisible" | "hidden"
->;
+interface DialogBackdropProps
+  extends Pick<
+    DialogProps,
+    "backdrop" | "backdropProps" | "alwaysVisible" | "hidden"
+  > {
+  store: DialogStore;
+}
 
 export function DialogBackdrop({
   store,

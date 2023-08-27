@@ -1,6 +1,6 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import { DisclosureProvider } from "@ariakit/react-core/disclosure/collection-provider";
+import { DisclosureProvider } from "@ariakit/react-core/disclosure/disclosure-provider";
 
 export default function Example() {
   return (
