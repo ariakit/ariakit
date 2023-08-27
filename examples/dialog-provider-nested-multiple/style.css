@@ -1,0 +1,33 @@
+@import url("../dialog-nested/style.css");
+
+.button {
+  @apply
+    flex-none
+  ;
+}
+
+.dialog {
+  @apply
+    data-[animated]:transition-opacity
+    data-[animated]:opacity-0
+    data-[animated]:data-[enter]:opacity-100
+  ;
+}
+
+.backdrop {
+  @apply
+    data-[animated]:transition-opacity
+    data-[animated]:opacity-0
+    data-[animated]:data-[enter]:opacity-100
+  ;
+}
+
+.parent-backdrop {
+  @apply
+    fixed
+    inset-0
+    z-50
+    bg-black/10
+    dark:bg-black/50
+  ;
+}
