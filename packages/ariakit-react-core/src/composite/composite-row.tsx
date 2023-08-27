@@ -1,9 +1,12 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CompositeContext, CompositeRowContext } from "./composite-context.js";
+import {
+  CompositeRowContext,
+  useCompositeContext,
+} from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 
 /**
@@ -31,13 +34,13 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
     "aria-posinset": ariaPosInSet,
     ...props
   }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeRow must be wrapped in a Composite component",
+        "CompositeRow must be wrapped in a Composite component.",
     );
 
     const id = useId(props.id);

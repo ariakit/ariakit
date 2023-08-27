@@ -1,10 +1,9 @@
+import "./style.css";
 import type { SyntheticEvent } from "react";
 import * as Ariakit from "@ariakit/react";
-import "./style.css";
+import { CompositeProvider } from "@ariakit/react-core/composite/composite-provider";
 
 export default function Example() {
-  const composite = Ariakit.useCompositeStore({ virtualFocus: true });
-
   const onEvent = (event: SyntheticEvent) => {
     const target = event.target as HTMLElement;
     const relatedTarget = (event as any).relatedTarget as HTMLElement | null;
@@ -29,28 +28,30 @@ export default function Example() {
   };
 
   return (
-    <Ariakit.Composite store={composite} id="toolbar" role="toolbar" {...props}>
-      <Ariakit.CompositeHover
-        id="item-1"
-        render={<Ariakit.CompositeItem />}
-        {...props}
-      >
-        item-1
-      </Ariakit.CompositeHover>
-      <Ariakit.CompositeHover
-        id="item-2"
-        render={<Ariakit.CompositeItem />}
-        {...props}
-      >
-        item-2
-      </Ariakit.CompositeHover>
-      <Ariakit.CompositeHover
-        id="item-3"
-        render={<Ariakit.CompositeItem />}
-        {...props}
-      >
-        item-3
-      </Ariakit.CompositeHover>
-    </Ariakit.Composite>
+    <CompositeProvider virtualFocus>
+      <Ariakit.Composite id="toolbar" role="toolbar" {...props}>
+        <Ariakit.CompositeHover
+          id="item-1"
+          render={<Ariakit.CompositeItem />}
+          {...props}
+        >
+          item-1
+        </Ariakit.CompositeHover>
+        <Ariakit.CompositeHover
+          id="item-2"
+          render={<Ariakit.CompositeItem />}
+          {...props}
+        >
+          item-2
+        </Ariakit.CompositeHover>
+        <Ariakit.CompositeHover
+          id="item-3"
+          render={<Ariakit.CompositeItem />}
+          {...props}
+        >
+          item-3
+        </Ariakit.CompositeHover>
+      </Ariakit.Composite>
+    </CompositeProvider>
   );
 }

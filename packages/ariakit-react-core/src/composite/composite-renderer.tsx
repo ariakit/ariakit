@@ -1,5 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import {
   getCollectionRendererItem,
   getCollectionRendererItemId,
@@ -16,7 +16,7 @@ import type { CollectionStoreItem } from "../collection/collection-store.js";
 import { useId } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.js";
-import { CompositeContext } from "./composite-context.js";
+import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 
 interface ItemObject extends CollectionRendererItemObject {
@@ -105,7 +105,7 @@ export function useCompositeRenderer<T extends Item = any>({
   "aria-posinset": ariaPosInSet = 1,
   ...props
 }: CompositeRendererProps<T>) {
-  const context = useContext(CompositeContext);
+  const context = useCompositeContext();
   store = store || (context as typeof store);
 
   const orientation = useStoreState(store, (state) =>
