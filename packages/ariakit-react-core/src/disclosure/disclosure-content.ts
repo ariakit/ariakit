@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
+import { useDisclosureContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 type TransitionState = "enter" | "leave" | null;
@@ -52,6 +54,15 @@ export function isHidden(
  */
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
   ({ store, alwaysVisible, ...props }) => {
+    const context = useDisclosureContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "DisclosureContent must receive a `store` prop or be wrapped in a DisclosureProvider component.",
+    );
+
     const id = useId(props.id);
     const [transition, setTransition] = useState<TransitionState>(null);
     const open = store.useState("open");
@@ -77,6 +88,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     }, [animated, contentElement, open]);
 
     useSafeLayoutEffect(() => {
+      if (!store) return;
       if (!animated) return;
       if (!contentElement) return;
       if (!transition) return;
@@ -111,7 +123,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // TODO: We should probably warn if `stopAnimation` hasn't been called
       // after X seconds.
       return afterTimeout(timeoutMs, store.stopAnimation);
-    }, [animated, contentElement, open, transition]);
+    }, [store, animated, contentElement, open, transition]);
 
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
@@ -156,7 +168,7 @@ export interface DisclosureContentOptions<T extends As = "div">
   /**
    * Object returned by the `useDisclosureStore` hook.
    */
-  store: DisclosureStore;
+  store?: DisclosureStore;
   /**
    * Determines whether the content element should remain visible even when the
    * `open` state is `false`. If this prop is set to `true`, the `hidden` prop
