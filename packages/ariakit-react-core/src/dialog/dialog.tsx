@@ -468,6 +468,7 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
+        if (!store) return element;
         if (!backdrop) return element;
         return (
           <>

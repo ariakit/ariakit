@@ -2,12 +2,13 @@ import { useEffect, useRef } from "react";
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.js";
+import type { DialogStore } from "../dialog-store.js";
 import type { DialogOptions } from "../dialog.js";
 import { isElementMarked } from "./mark-tree-outside.js";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.js";
 
 type EventOutsideOptions = {
-  store: DialogOptions["store"];
+  store: DialogStore;
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
@@ -110,7 +111,7 @@ function shouldHideOnInteractOutside(
 }
 
 export function useHideOnInteractOutside(
-  store: DialogOptions["store"],
+  store: DialogStore,
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
   domReady?: boolean | HTMLElement | null,
 ) {
