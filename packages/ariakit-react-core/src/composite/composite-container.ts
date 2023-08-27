@@ -1,6 +1,6 @@
 // TODO: Add data-attribute to indicate whether it's expanded?
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
 import {
@@ -16,7 +16,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CompositeContext } from "./composite-context.js";
+import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";
 
@@ -46,7 +46,7 @@ function getFirstTabbable(container: HTMLElement) {
  */
 export const useCompositeContainer = createHook<CompositeContainerOptions>(
   ({ store, ...props }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     const ref = useRef<HTMLDivElement>(null);

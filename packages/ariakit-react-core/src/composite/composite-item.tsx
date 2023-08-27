@@ -32,9 +32,9 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
+  useCompositeContext,
 } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 import { focusSilently, getEnabledItem, isItem } from "./utils.js";
@@ -169,7 +169,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     "aria-posinset": ariaPosInSetProp,
     ...props
   }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     const id = useId(props.id);

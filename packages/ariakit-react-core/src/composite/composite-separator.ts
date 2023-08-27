@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { SeparatorOptions } from "../separator/separator.js";
 import { useSeparator } from "../separator/separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { CompositeContext } from "./composite-context.js";
+import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 
 /**
@@ -23,13 +22,13 @@ import type { CompositeStore } from "./composite-store.js";
  */
 export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
   ({ store, ...props }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeSeparator must be wrapped in a Composite component",
+        "CompositeSeparator must be wrapped in a Composite component.",
     );
 
     const orientation = store.useState((state) =>

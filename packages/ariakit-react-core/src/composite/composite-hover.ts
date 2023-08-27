@@ -1,5 +1,4 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
-import { useContext } from "react";
 import { closest, contains } from "@ariakit/core/utils/dom";
 import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -11,7 +10,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CompositeContext } from "./composite-context.js";
+import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
@@ -51,13 +50,13 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
   ({ store, focusOnHover = true, ...props }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "CompositeHover must be wrapped in a Composite component",
+        "CompositeHover must be wrapped in a Composite component.",
     );
 
     const isMouseMoving = useIsMouseMoving();
