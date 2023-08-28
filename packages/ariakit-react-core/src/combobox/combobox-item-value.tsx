@@ -4,8 +4,8 @@ import { invariant, normalizeString } from "@ariakit/core/utils/misc";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import {
-  ComboboxContext,
   ComboboxItemValueContext,
+  useComboboxContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -66,15 +66,16 @@ function splitValue(itemValue: string, userValue: string) {
  */
 export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
   ({ store, value, ...props }) => {
-    const context = useContext(ComboboxContext);
+    const context = useComboboxContext();
     store = store || context;
+
     const itemContext = useContext(ComboboxItemValueContext);
     const itemValue = value ?? itemContext;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxItemValue must be wrapped in a ComboboxItem component",
+        "ComboboxItemValue must be wrapped in a ComboboxItem component.",
     );
 
     const stateValue = store.useState((state) =>

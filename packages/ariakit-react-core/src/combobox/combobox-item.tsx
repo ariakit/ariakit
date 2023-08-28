@@ -1,5 +1,5 @@
 import type { KeyboardEvent, MouseEvent } from "react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
@@ -17,8 +17,8 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  ComboboxContext,
   ComboboxItemValueContext,
+  useComboboxContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -43,13 +43,13 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const context = useContext(ComboboxContext);
+    const context = useComboboxContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component",
+        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(

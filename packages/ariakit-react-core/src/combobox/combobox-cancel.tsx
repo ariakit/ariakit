@@ -1,9 +1,11 @@
 import type { MouseEvent } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useComboboxContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 const children = (
@@ -39,14 +41,23 @@ const children = (
  */
 export const useComboboxCancel = createHook<ComboboxCancelOptions>(
   ({ store, ...props }) => {
+    const context = useComboboxContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxCancel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      store.setValue("");
+      store?.setValue("");
       // Move focus to the combobox input.
-      store.move(null);
+      store?.move(null);
     });
 
     const comboboxId = store.useState((state) => state.baseElement?.id);
@@ -99,7 +110,7 @@ export interface ComboboxCancelOptions<T extends As = "button">
   /**
    * Object returned by the `useComboboxStore` hook.
    */
-  store: ComboboxStore;
+  store?: ComboboxStore;
 }
 
 export type ComboboxCancelProps<T extends As = "button"> = Props<

@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ComboboxContext } from "./combobox-context.js";
+import { useComboboxContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -26,7 +25,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxRow = createHook<ComboboxRowOptions>(
   ({ store, ...props }) => {
-    const context = useContext(ComboboxContext);
+    const context = useComboboxContext();
     store = store || context;
 
     invariant(
