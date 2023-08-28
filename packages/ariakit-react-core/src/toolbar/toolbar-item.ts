@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import {
@@ -6,6 +7,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { ToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
 
 /**
@@ -22,6 +24,8 @@ import type { ToolbarStore } from "./toolbar-store.js";
  */
 export const useToolbarItem = createHook<ToolbarItemOptions>(
   ({ store, ...props }) => {
+    const context = useContext(ToolbarContext);
+    store = store || context;
     props = useCompositeItem({ store, ...props });
     return props;
   },

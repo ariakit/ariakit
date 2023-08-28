@@ -39,9 +39,9 @@ export function useSelectStoreProps<T extends SelectStore>(
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectState({ defaultValue: "Apple" });
- * <Select state={select} />
- * <SelectPopover state={select}>
+ * const select = useSelectStore({ defaultValue: "Apple" });
+ * <Select store={select} />
+ * <SelectPopover store={select}>
  *   <SelectItem value="Apple" />
  *   <SelectItem value="Orange" />
  * </SelectPopover>

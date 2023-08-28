@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -20,7 +20,10 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContext, SelectItemCheckedContext } from "./select-context.js";
+import {
+  SelectItemCheckedContext,
+  useSelectContext,
+} from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
@@ -53,13 +56,13 @@ export const useSelectItem = createHook<SelectItemOptions>(
     focusOnHover = true,
     ...props
   }) => {
-    const context = useContext(SelectContext);
+    const context = useSelectContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "SelectItem must be wrapped in a SelectList or SelectPopover component",
+        "SelectItem must be wrapped in a SelectList or SelectPopover component.",
     );
 
     const id = useId(props.id);

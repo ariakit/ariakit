@@ -1,0 +1,62 @@
+@import url("../button/style.css");
+
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
+.button {
+  @apply
+    w-[200px]
+    justify-between
+  ;
+}
+
+.popover {
+  @apply
+    z-50
+    flex
+    flex-col
+    rounded-lg
+    border
+    p-2
+    overflow-auto
+    overscroll-contain
+    border-solid
+    border-gray-250
+    bg-white
+    text-black
+    dark:border-gray-600
+    dark:bg-gray-700
+    dark:text-white
+    shadow-lg
+    dark:shadow-lg-dark
+    focus-visible:ariakit-outline-input
+    max-h-[min(var(--popover-available-height,300px),300px)]
+  ;
+}
+
+.select-item {
+  @apply
+    flex
+    gap-2
+    items-center
+    scroll-m-2
+    cursor-default
+    rounded
+    p-2
+    ![outline:none]
+    aria-disabled:opacity-50
+    active-item:text-white
+    active-item:bg-blue-600
+  ;
+}

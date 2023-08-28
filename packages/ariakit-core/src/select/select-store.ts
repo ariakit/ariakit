@@ -103,7 +103,7 @@ export function createSelectStore({
   const initialState: SelectStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    combobox: defaultValue(syncState.combobox, !!combobox),
+    hasCombobox: defaultValue(syncState.hasCombobox, !!combobox),
     value: defaultValue(
       props.value,
       syncState.value,
@@ -198,7 +198,7 @@ export interface SelectStoreState<T extends Value = Value>
   /**
    * Whether the select store has received a combobox prop.
    */
-  combobox: boolean;
+  hasCombobox: boolean;
   /**
    * The select value.
    *

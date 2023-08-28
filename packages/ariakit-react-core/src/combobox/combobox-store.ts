@@ -24,6 +24,7 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store = usePopoverStoreProps(store, update, props);
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
+  useStoreProps(store, props, "resetValueOnHide");
   return store;
 }
 
