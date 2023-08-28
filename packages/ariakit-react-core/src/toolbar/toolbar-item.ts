@@ -24,7 +24,6 @@ import type { ToolbarStore } from "./toolbar-store.js";
  */
 export const useToolbarItem = createHook<ToolbarItemOptions>(
   ({ store, ...props }) => {
-    // TODO: Do this for all components that may not use the store directly.
     const context = useContext(ToolbarContext);
     store = store || context;
     props = useCompositeItem({ store, ...props });
