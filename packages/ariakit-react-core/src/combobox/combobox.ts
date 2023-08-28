@@ -14,6 +14,7 @@ import {
 } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
 import {
+  invariant,
   isFalsyBooleanCallback,
   normalizeString,
 } from "@ariakit/core/utils/misc";
@@ -37,6 +38,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useComboboxContext } from "./combobox-context.js";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 
 function isFirstItemAutoSelected(
@@ -103,6 +105,15 @@ export const useCombobox = createHook<ComboboxOptions>(
     autoComplete = "list",
     ...props
   }) => {
+    const context = useComboboxContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Combobox must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const ref = useRef<HTMLInputElement>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
@@ -222,6 +233,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         canAutoSelectRef.current = false;
       };
       const onScroll = () => {
+        if (!store) return;
         // We won't disable the autoSelect behavior if the first item is still
         // focused.
         const { activeId } = store.getState();
@@ -258,6 +270,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
+      if (!store) return;
       if (!autoSelect) return;
       if (!canAutoSelectRef.current) return;
       const { baseElement, contentElement } = store.getState();
@@ -282,7 +295,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     // Focus on the combobox input on type.
     useSafeLayoutEffect(() => {
       if (autoSelect) return;
-      store.setActiveId(null);
+      store?.setActiveId(null);
     }, [valueUpdated, autoSelect, store]);
 
     // If it has inline auto completion, set the store value when the combobox
@@ -296,7 +309,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       );
       const onBlur = (event: FocusEvent) => {
         if (elements.every((el) => isFocusEventOutside(event, el))) {
-          store.setValue(value);
+          store?.setValue(value);
         }
       };
       elements.forEach((el) => el.addEventListener("focusout", onBlur));
@@ -312,6 +325,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const { value, selectionStart } = event.target;
       const nativeEvent = event.nativeEvent;
       canAutoSelectRef.current = true;
@@ -380,6 +394,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (event.defaultPrevented) return;
       if (event.button) return;
       if (event.ctrlKey) return;
+      if (!store) return;
       store.setActiveId(null);
       if (setValueOnClickProp(event)) {
         store.setValue(value);
@@ -400,6 +415,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         if (event.altKey) return;
         if (event.shiftKey) return;
         if (event.metaKey) return;
+        if (!store) return;
         const { open, activeId } = store.getState();
         if (open) return;
         if (activeId !== null) return;
@@ -497,7 +513,7 @@ export interface ComboboxOptions<T extends As = "input">
   /**
    * Object returned by the `useComboboxStore` hook.
    */
-  store: ComboboxStore;
+  store?: ComboboxStore;
   /**
    * Whether the first item will be automatically selected when the combobox
    * input value changes. When it's set to `true`, the exact behavior will

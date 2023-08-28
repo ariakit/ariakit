@@ -1,6 +1,7 @@
 import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -13,7 +14,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ComboboxContext } from "./combobox-context.js";
+import {
+  ComboboxContextProvider,
+  useComboboxContext,
+} from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -32,6 +36,15 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
   ({ store, focusable = true, alwaysVisible, ...props }) => {
+    const context = useComboboxContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -41,7 +54,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape") {
-        store.move(null);
+        store?.move(null);
       }
     });
 
@@ -57,6 +70,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
       if (event.type !== "focus") return;
+      if (!store) return;
       const { virtualFocus } = store.getState();
       if (!virtualFocus) return;
       const { relatedTarget, currentTarget } = event;
@@ -73,15 +87,15 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       if (!restoreVirtualFocus.current) return;
       if (!isFocusEventOutside(event)) return;
       restoreVirtualFocus.current = false;
-      store.setState("virtualFocus", true);
+      store?.setState("virtualFocus", true);
     });
 
     props = useWrapElement(
       props,
       (element) => (
-        <ComboboxContext.Provider value={store}>
+        <ComboboxContextProvider value={store}>
           {element}
-        </ComboboxContext.Provider>
+        </ComboboxContextProvider>
       ),
       [store],
     );
@@ -141,7 +155,7 @@ export interface ComboboxListOptions<T extends As = "div">
   /**
    * Object returned by the `useComboboxStore` hook.
    */
-  store: ComboboxStore;
+  store?: ComboboxStore;
 }
 
 export type ComboboxListProps<T extends As = "div"> = Props<
