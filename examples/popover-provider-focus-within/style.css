@@ -1,0 +1,16 @@
+@import url("../popover/style.css");
+
+.wrapper {
+  @apply
+    p-4
+    border-l-4
+    border-transparent
+  ;
+}
+
+.focus-within {
+  @apply
+    border-blue-200
+    dark:border-blue-600/40
+  ;
+}

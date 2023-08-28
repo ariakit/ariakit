@@ -1,8 +1,8 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { PopoverContext } from "./popover-context.js";
+import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -30,7 +30,7 @@ const pointsMap = {
 export const usePopoverDisclosureArrow =
   createHook<PopoverDisclosureArrowOptions>(
     ({ store, placement, ...props }) => {
-      const context = useContext(PopoverContext);
+      const context = usePopoverContext();
       store = store || context;
 
       invariant(

@@ -1,4 +1,5 @@
 import type { MouseEvent } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useWrapElement } from "../utils/hooks.js";
@@ -6,7 +7,11 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
-import { PopoverContext } from "./popover-context.js";
+import {
+  PopoverContext,
+  PopoverContextProvider,
+  usePopoverContext,
+} from "./popover-context.js";
 
 /**
  * Returns props to create a `PopoverDisclosure` component.
@@ -21,19 +26,26 @@ import { PopoverContext } from "./popover-context.js";
  */
 export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
   ({ store, ...props }) => {
+    const context = usePopoverContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "PopoverDisclosure must receive a `store` prop or be wrapped in a PopoverProvider component.",
+    );
+
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store.setAnchorElement(event.currentTarget);
+      store?.setAnchorElement(event.currentTarget);
       onClickProp?.(event);
     });
 
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverContext.Provider value={store}>
-          {element}
-        </PopoverContext.Provider>
+        <PopoverContextProvider value={store}>{element}</PopoverContextProvider>
       ),
       [store],
     );
