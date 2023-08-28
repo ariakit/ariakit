@@ -1,11 +1,11 @@
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
-import { PopoverContext } from "./popover-context.js";
+import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -47,13 +47,13 @@ function useComputedStyle(store: PopoverStore) {
  */
 export const usePopoverArrow = createHook<PopoverArrowOptions>(
   ({ store, size = defaultSize, ...props }) => {
-    const context = useContext(PopoverContext);
+    const context = usePopoverContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "PopoverArrow must be wrapped in a Popover component",
+        "PopoverArrow must be wrapped in a Popover component.",
     );
 
     const dir = store.useState(

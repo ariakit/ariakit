@@ -27,7 +27,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { CompositeContext, useCompositeContext } from "./composite-context.js";
+import {
+  CompositeContextProvider,
+  useCompositeContext,
+} from "./composite-context.js";
 import type {
   CompositeStore,
   CompositeStoreItem,
@@ -416,9 +419,9 @@ export const useComposite = createHook<CompositeOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <CompositeContext.Provider value={store}>
+        <CompositeContextProvider value={store}>
           {element}
-        </CompositeContext.Provider>
+        </CompositeContextProvider>
       ),
       [store],
     );

@@ -20,7 +20,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { PopoverContext } from "./popover-context.js";
+import {
+  PopoverContextProvider,
+  usePopoverContext,
+} from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -227,6 +230,15 @@ export const usePopover = createHook<PopoverOptions>(
     updatePosition,
     ...props
   }) => {
+    const context = usePopoverContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Popover must receive a `store` prop or be wrapped in a PopoverProvider component.",
+    );
+
     const arrowElement = store.useState("arrowElement");
     const anchorElement = store.useState("anchorElement");
     const popoverElement = store.useState("popoverElement");
@@ -278,7 +290,7 @@ export const usePopover = createHook<PopoverOptions>(
           middleware,
         });
 
-        store.setState("currentPlacement", pos.placement);
+        store?.setState("currentPlacement", pos.placement);
         setPositioned(true);
 
         const x = roundByDPR(pos.x);
@@ -388,7 +400,7 @@ export const usePopover = createHook<PopoverOptions>(
             width: "max-content",
             ...wrapperProps?.style,
           }}
-          ref={store.setPopoverElement}
+          ref={store?.setPopoverElement}
         >
           {element}
         </div>
@@ -399,9 +411,7 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverContext.Provider value={store}>
-          {element}
-        </PopoverContext.Provider>
+        <PopoverContextProvider value={store}>{element}</PopoverContextProvider>
       ),
       [store],
     );
@@ -457,7 +467,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * Object returned by the `usePopoverStore` hook.
    * @see https://ariakit.org/guide/component-stores
    */
-  store: PopoverStore;
+  store?: PopoverStore;
   /**
    * Props that will be passed to the popover wrapper element. This element will
    * be used to position the popover.
