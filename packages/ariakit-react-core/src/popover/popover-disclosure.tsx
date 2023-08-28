@@ -8,7 +8,6 @@ import type { As, Props } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
 import {
-  PopoverContext,
   PopoverContextProvider,
   usePopoverContext,
 } from "./popover-context.js";
