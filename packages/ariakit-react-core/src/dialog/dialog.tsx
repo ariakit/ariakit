@@ -50,7 +50,7 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
-  DialogContext,
+  DialogContextProvider,
   DialogDescriptionContext,
   DialogHeadingContext,
   useDialogContext,
@@ -492,13 +492,13 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <DialogContext.Provider value={store}>
+        <DialogContextProvider value={store}>
           <DialogHeadingContext.Provider value={setHeadingId}>
             <DialogDescriptionContext.Provider value={setDescriptionId}>
               {element}
             </DialogDescriptionContext.Provider>
           </DialogHeadingContext.Provider>
-        </DialogContext.Provider>
+        </DialogContextProvider>
       ),
       [store],
     );

@@ -20,7 +20,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { PopoverContext, usePopoverContext } from "./popover-context.js";
+import {
+  PopoverContextProvider,
+  usePopoverContext,
+} from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -408,9 +411,7 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverContext.Provider value={store}>
-          {element}
-        </PopoverContext.Provider>
+        <PopoverContextProvider value={store}>{element}</PopoverContextProvider>
       ),
       [store],
     );
