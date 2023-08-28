@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContext } from "./select-context.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -25,7 +24,7 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectRow = createHook<SelectRowOptions>(
   ({ store, ...props }) => {
-    const context = useContext(SelectContext);
+    const context = useSelectContext();
     store = store || context;
 
     invariant(

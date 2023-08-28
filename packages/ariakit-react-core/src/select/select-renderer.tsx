@@ -1,5 +1,5 @@
 import type { ComponentPropsWithRef } from "react";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import {
   getCompositeRendererItem,
@@ -15,7 +15,7 @@ import type {
 } from "../composite/composite-renderer.js";
 import { useStoreState } from "../utils/store.js";
 import { createElement, forwardRef } from "../utils/system.js";
-import { SelectContext } from "./select-context.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
 
 interface ItemObject extends CompositeRendererItemObject {
@@ -71,7 +71,7 @@ function useSelectRenderer<T extends Item = any>({
   value: valueProp,
   ...props
 }: SelectRendererProps<T>) {
-  const context = useContext(SelectContext);
+  const context = useSelectContext();
   store = store || context;
 
   const items = useStoreState(store, (state) => {

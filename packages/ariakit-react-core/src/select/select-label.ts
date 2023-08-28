@@ -1,4 +1,5 @@
 import type { MouseEvent } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
@@ -6,6 +7,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -24,6 +26,15 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectLabel = createHook<SelectLabelOptions>(
   ({ store, ...props }) => {
+    const context = useSelectContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "SelectLabel must receive a `store` prop or be wrapped in a SelectProvider component.",
+    );
+
     const id = useId(props.id);
 
     const onClickProp = props.onClick;
@@ -35,7 +46,7 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
       // triggered only after the current event queue is flushed (which includes
       // this click event).
       queueMicrotask(() => {
-        const select = store.getState().selectElement;
+        const select = store?.getState().selectElement;
         select?.focus();
         select?.click();
       });
@@ -87,7 +98,7 @@ export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
    * Object returned by the `useSelectStore` hook. If not provided, the parent
    * `Select` component's context will be used.
    */
-  store: SelectStore;
+  store?: SelectStore;
 }
 
 export type SelectLabelProps<T extends As = "div"> = Props<

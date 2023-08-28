@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
@@ -18,7 +19,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContext } from "./select-context.js";
+import { SelectContextProvider, useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -44,6 +45,15 @@ export const useSelectList = createHook<SelectListOptions>(
     alwaysVisible,
     ...props
   }) => {
+    const context = useSelectContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "SelectList must receive a `store` prop or be wrapped in a SelectProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
     const value = store.useState("value");
@@ -68,12 +78,12 @@ export const useSelectList = createHook<SelectListOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape" && resetOnEscapeProp(event)) {
-        store.setValue(defaultValue);
+        store?.setValue(defaultValue);
       }
       if (event.key === " " || event.key === "Enter") {
         if (isSelfTarget(event) && hideOnEnterProp(event)) {
           event.preventDefault();
-          store.hide();
+          store?.hide();
         }
       }
     });
@@ -81,13 +91,13 @@ export const useSelectList = createHook<SelectListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <SelectContext.Provider value={store}>{element}</SelectContext.Provider>
+        <SelectContextProvider value={store}>{element}</SelectContextProvider>
       ),
       [store],
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
-    const hasCombobox = store.useState("combobox");
+    const hasCombobox = store.useState("hasCombobox");
     composite = composite ?? !hasCombobox;
 
     if (composite) {
@@ -156,7 +166,7 @@ export interface SelectListOptions<T extends As = "div">
   /**
    * Object returned by the `useSelectStore` hook.
    */
-  store: SelectStore;
+  store?: SelectStore;
   /**
    * Whether the select value should be reset to the value before the list got
    * shown when Escape is pressed. This has effect only when `selectOnMove` is
