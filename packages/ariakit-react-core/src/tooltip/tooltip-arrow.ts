@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TooltipContext } from "./tooltip-context.js";
+import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
 /**
@@ -25,13 +24,13 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
   ({ store, size = 16, ...props }) => {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
-    const context = useContext(TooltipContext);
+    const context = useTooltipContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "TooltipArrow must be wrapped in a Tooltip component",
+        "TooltipArrow must be wrapped in a Tooltip component.",
     );
 
     props = usePopoverArrow({ store, size, ...props });

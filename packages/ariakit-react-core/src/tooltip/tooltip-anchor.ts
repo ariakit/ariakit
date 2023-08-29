@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import type { FocusEvent, MouseEvent } from "react";
-import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createStore, sync } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
 // Create a global store to keep track of the active tooltip store so we can
@@ -28,6 +29,15 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
+    const context = useTooltipContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "TooltipAnchor must receive a `store` prop or be wrapped in a TooltipProvider component.",
+    );
+
     // Imagine the scenario: the user hovers over an anchor, which shows a
     // tooltip, then presses escape to close the tooltip. We don't want to show
     // the tooltip again while the anchor is still hovered. So we keep this flag
@@ -43,6 +53,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 
     useEffect(() => {
       return sync(store, ["mounted", "skipTimeout"], (state) => {
+        if (!store) return;
         // If the current tooltip is open, we should immediately hide the
         // active one and set the current one as the active tooltip.
         if (state.mounted) {
@@ -77,8 +88,8 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
     const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
-      store.setAnchorElement(event.currentTarget);
-      store.show();
+      store?.setAnchorElement(event.currentTarget);
+      store?.show();
     });
 
     const onBlurProp = props.onBlur;
@@ -118,7 +129,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
         if (!activeStore) return true;
         // Show the tooltip immediately if the current tooltip is the active
         // tooltip instead of waiting for the showTimeout delay.
-        store.show();
+        store?.show();
         return false;
       },
       ...props,
@@ -154,7 +165,7 @@ export interface TooltipAnchorOptions<T extends As = "div">
   /**
    * Object returned by the `useTooltipStore` hook.
    */
-  store: TooltipStore;
+  store?: TooltipStore;
 }
 
 export type TooltipAnchorProps<T extends As = "div"> = Props<
