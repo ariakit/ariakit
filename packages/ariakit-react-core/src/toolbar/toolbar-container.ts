@@ -6,6 +6,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";
 
@@ -25,6 +26,8 @@ import { useToolbarItem } from "./toolbar-item.js";
  */
 export const useToolbarContainer = createHook<ToolbarContainerOptions>(
   ({ store, ...props }) => {
+    const context = useToolbarContext();
+    store = store || context;
     props = useCompositeContainer({ store, ...props });
     props = useToolbarItem({ store, ...props });
     return props;

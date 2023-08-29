@@ -1,0 +1,34 @@
+@import url("../button/style.css");
+
+.toolbar {
+  @apply
+    flex
+    p-1
+    gap-1
+    rounded-lg
+    items-center
+    max-w-full
+    overflow-x-auto
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
+.button {
+  @apply
+    gap-2
+    rounded
+    scroll-mx-1
+  ;
+}
+
+.separator {
+  @apply
+    h-8
+    border-r
+    border-gray-250
+    dark:border-gray-550
+  ;
+}
