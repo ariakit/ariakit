@@ -22,7 +22,7 @@ type Values = FormStoreValues;
 
 export function FormProvider<T extends Values = Values>(
   props: PickRequired<
-    FormStoreProps<T>,
+    FormProviderProps<T>,
     | "values"
     | "defaultValues"
     | "errors"
@@ -32,7 +32,7 @@ export function FormProvider<T extends Values = Values>(
   >,
 ): ReactElement;
 
-export function FormProvider(props: FormStoreProps): ReactElement;
+export function FormProvider(props: FormProviderProps): ReactElement;
 
 export function FormProvider(props: FormProviderProps = {}) {
   const store = useFormStore(props);
@@ -41,6 +41,7 @@ export function FormProvider(props: FormProviderProps = {}) {
   );
 }
 
-export interface FormProviderProps extends FormStoreProps {
+export interface FormProviderProps<T extends Values = Values>
+  extends FormStoreProps<T> {
   children?: ReactNode;
 }
