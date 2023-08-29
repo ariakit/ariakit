@@ -1,0 +1,50 @@
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-2
+    gap-2
+    rounded-lg
+    bg-white
+    dark:bg-gray-700
+    shadow
+    dark:shadow-dark
+  ;
+}
+
+.tab-list {
+  @apply
+    flex
+    gap-2
+  ;
+}
+
+.tab {
+  @apply
+    flex
+    h-10
+    items-center
+    justify-center
+    gap-2
+    rounded
+    border-none
+    px-4
+    text-base
+    focus-visible:ariakit-outline
+    aria-disabled:opacity-50
+    hover:bg-black/10
+    dark:hover:bg-white/10
+    aria-selected:bg-blue-600
+    aria-selected:text-white
+    aria-selected:hover:bg-blue-800
+    dark:aria-selected:bg-blue-600
+    dark:aria-selected:text-white
+    dark:aria-selected:hover:bg-blue-800
+  ;
+}
+
+.panels {
+  @apply
+    p-2
+  ;
+}
