@@ -1,0 +1,13 @@
+.label {
+  @apply
+    flex
+    items-center
+    gap-2
+  ;
+}
+
+.radio {
+  @apply
+    focus-visible:ariakit-outline
+  ;
+}
