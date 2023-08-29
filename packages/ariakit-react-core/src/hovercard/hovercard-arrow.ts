@@ -2,6 +2,7 @@ import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -17,10 +18,14 @@ import type { HovercardStore } from "./hovercard-store.js";
  * </Hovercard>
  * ```
  */
-export const useHovercardArrow = createHook<HovercardArrowOptions>((props) => {
-  props = usePopoverArrow(props);
-  return props;
-});
+export const useHovercardArrow = createHook<HovercardArrowOptions>(
+  ({ store, ...props }) => {
+    const context = useHovercardContext();
+    store = store || context;
+    props = usePopoverArrow({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders an arrow element in a hovercard.

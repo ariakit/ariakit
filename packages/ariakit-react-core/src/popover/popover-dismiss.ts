@@ -2,6 +2,7 @@ import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 /**
@@ -16,10 +17,14 @@ import type { PopoverStore } from "./popover-store.js";
  * </Popover>
  * ```
  */
-export const usePopoverDismiss = createHook<PopoverDismissOptions>((props) => {
-  props = useDialogDismiss(props);
-  return props;
-});
+export const usePopoverDismiss = createHook<PopoverDismissOptions>(
+  ({ store, ...props }) => {
+    const context = usePopoverContext();
+    store = store || context;
+    props = useDialogDismiss({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a button that hides a popover.
