@@ -1,9 +1,13 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ToolbarContext } from "./toolbar-context.js";
+import {
+  ToolbarContextProvider,
+  useToolbarContext,
+} from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
 
 /**
@@ -20,6 +24,15 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * ```
  */
 export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
+  const context = useToolbarContext();
+  store = store || context;
+
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "Toolbar must receive a `store` prop or be wrapped in a ToolbarProvider component.",
+  );
+
   const orientation = store.useState((state) =>
     state.orientation === "both" ? undefined : state.orientation,
   );
@@ -27,7 +40,7 @@ export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
   props = useWrapElement(
     props,
     (element) => (
-      <ToolbarContext.Provider value={store}>{element}</ToolbarContext.Provider>
+      <ToolbarContextProvider value={store}>{element}</ToolbarContextProvider>
     ),
     [store],
   );
@@ -69,7 +82,7 @@ export interface ToolbarOptions<T extends As = "div">
   /**
    * Object returned by the `useToolbarStore` hook.
    */
-  store: ToolbarStore;
+  store?: ToolbarStore;
 }
 
 export type ToolbarProps<T extends As = "div"> = Props<ToolbarOptions<T>>;
