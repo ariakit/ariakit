@@ -2,6 +2,7 @@ import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -17,8 +18,10 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```
  */
 export const useHovercardDismiss = createHook<HovercardDismissOptions>(
-  (props) => {
-    props = usePopoverDismiss(props);
+  ({ store, ...props }) => {
+    const context = useHovercardContext();
+    store = store || context;
+    props = usePopoverDismiss({ store, ...props });
     return props;
   },
 );

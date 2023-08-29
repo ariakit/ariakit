@@ -1,6 +1,7 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -12,6 +13,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -27,6 +29,15 @@ import type { HovercardStore } from "./hovercard-store.js";
  */
 export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
+    const context = useHovercardContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "HovercardAnchor must receive a `store` prop or be wrapped in a HovercardProvider component.",
+    );
+
     const mounted = store.useState("mounted");
     const disabled =
       props.disabled ||
@@ -44,6 +55,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     // for when the mouse is moving toward the Hovercard.
     useEffect(() => {
       const onMouseLeave = (event: MouseEvent) => {
+        if (!store) return;
         const { anchorElement } = store.getState();
         if (!anchorElement) return;
         if (event.target !== anchorElement) return;
@@ -59,12 +71,13 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     const onMouseMove = useEvent(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
-        store.setAnchorElement(event.currentTarget);
+        store?.setAnchorElement(event.currentTarget);
         onMouseMoveProp?.(event);
         if (disabled) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
         if (!isMouseMoving()) return;
+        if (!store) return;
         if (!showOnHoverProp(event)) return;
         const { showTimeout, timeout } = store.getState();
         showTimeoutRef.current = window.setTimeout(() => {
@@ -72,7 +85,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
           // Let's check again if the mouse is moving. This is to avoid showing
           // the hovercard on mobile clicks or after clicking on the anchor.
           if (!isMouseMoving()) return;
-          store.show();
+          store?.show();
         }, showTimeout ?? timeout);
       },
     );
@@ -122,7 +135,7 @@ export interface HovercardAnchorOptions<T extends As = "a">
   /**
    * Object returned by the `useHovercardStore` hook.
    */
-  store: HovercardStore;
+  store?: HovercardStore;
   /**
    * Whether to show the hovercard on mouse move.
    * @default true

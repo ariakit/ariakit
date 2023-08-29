@@ -2,6 +2,7 @@ import type { MouseEvent, FocusEvent as ReactFocusEvent } from "react";
 import { useEffect, useState } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
@@ -9,6 +10,7 @@ import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
+import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -25,6 +27,15 @@ import type { HovercardStore } from "./hovercard-store.js";
  */
 export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
   ({ store, ...props }) => {
+    const context = useHovercardContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "HovercardDisclosure must receive a `store` prop or be wrapped in a HovercardProvider component.",
+    );
+
     const [visible, setVisible] = useState(false);
 
     // Listens to blur events on the whole document and hides the hovercard
@@ -33,6 +44,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     useEffect(() => {
       if (!visible) return;
       const onBlur = (event: FocusEvent) => {
+        if (!store) return;
         const nextActiveElement = event.relatedTarget as Element | null;
         if (nextActiveElement) {
           const {
@@ -76,7 +88,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      store.setAutoFocusOnShow(true);
+      store?.setAutoFocusOnShow(true);
     });
 
     const onFocusProp = props.onFocus;
@@ -160,7 +172,7 @@ export interface HovercardDisclosureOptions<T extends As = "button">
   /**
    * Object returned by the `useHovercardStore` hook.
    */
-  store: HovercardStore;
+  store?: HovercardStore;
 }
 
 export type HovercardDisclosureProps<T extends As = "button"> = Props<
