@@ -1,11 +1,11 @@
 import { contains } from "@ariakit/core/utils/dom";
-import { isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TooltipContext } from "./tooltip-context.js";
+import { TooltipContext, useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
 /**
@@ -29,6 +29,15 @@ export const useTooltip = createHook<TooltipOptions>(
     hideOnInteractOutside = true,
     ...props
   }) => {
+    const context = useTooltipContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Tooltip must receive a `store` prop or be wrapped in a TooltipProvider component.",
+    );
+
     props = useWrapElement(
       props,
       (element) => (
@@ -53,7 +62,7 @@ export const useTooltip = createHook<TooltipOptions>(
       preserveTabOrder,
       hideOnHoverOutside: (event) => {
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
-        const { anchorElement } = store.getState();
+        const anchorElement = store?.getState().anchorElement;
         if (!anchorElement) return true;
         // If the anchor element has the `data-focus-visible` attribute (added
         // by the `Focusable` component that is used by several components), we
@@ -65,7 +74,7 @@ export const useTooltip = createHook<TooltipOptions>(
       },
       hideOnInteractOutside: (event) => {
         if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
-        const { anchorElement } = store.getState();
+        const anchorElement = store?.getState().anchorElement;
         if (!anchorElement) return true;
         // Prevent hiding the tooltip when the user interacts with the anchor
         // element. It's up to the developer to hide the tooltip when the user
@@ -103,7 +112,7 @@ export interface TooltipOptions<T extends As = "div">
   /**
    * Object returned by the `useTooltipStore` hook.
    */
-  store: TooltipStore;
+  store?: TooltipStore;
   /** @default true */
   portal?: HovercardOptions<T>["portal"];
   /** @default 8 */
