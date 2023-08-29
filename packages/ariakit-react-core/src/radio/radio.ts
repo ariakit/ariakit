@@ -1,5 +1,5 @@
 import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -11,7 +11,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { RadioContext } from "./radio-context.js";
+import { useRadioContext } from "./radio-context.js";
 import type { RadioStore, RadioStoreState } from "./radio-store.js";
 
 function getIsChecked(
@@ -44,7 +44,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  */
 export const useRadio = createHook<RadioOptions>(
   ({ store, value, checked, ...props }) => {
-    const context = useContext(RadioContext);
+    const context = useRadioContext();
     store = store || context;
 
     const id = useId(props.id);

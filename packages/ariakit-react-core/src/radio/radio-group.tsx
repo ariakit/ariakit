@@ -1,9 +1,10 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { RadioContext } from "./radio-context.js";
+import { RadioContextProvider, useRadioContext } from "./radio-context.js";
 import type { RadioStore } from "./radio-store.js";
 
 /**
@@ -21,10 +22,19 @@ import type { RadioStore } from "./radio-store.js";
  */
 export const useRadioGroup = createHook<RadioGroupOptions>(
   ({ store, ...props }) => {
+    const context = useRadioContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "RadioGroup must receive a `store` prop or be wrapped in a RadioProvider component.",
+    );
+
     props = useWrapElement(
       props,
       (element) => (
-        <RadioContext.Provider value={store}>{element}</RadioContext.Provider>
+        <RadioContextProvider value={store}>{element}</RadioContextProvider>
       ),
       [store],
     );
@@ -66,7 +76,7 @@ export interface RadioGroupOptions<T extends As = "div">
   /**
    * Object returned by the `useRadioStore` hook.
    */
-  store: RadioStore;
+  store?: RadioStore;
 }
 
 export type RadioGroupProps<T extends As = "div"> = Props<RadioGroupOptions<T>>;
