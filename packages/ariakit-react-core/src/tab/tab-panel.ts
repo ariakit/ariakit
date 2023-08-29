@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -10,6 +11,7 @@ import { useFocusable } from "../focusable/focusable.js";
 import { useId, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useTabContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -27,6 +29,15 @@ import type { TabStore } from "./tab-store.js";
  */
 export const useTabPanel = createHook<TabPanelOptions>(
   ({ store, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
+    const context = useTabContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "TabPanel must receive a `store` prop or be wrapped in a TabProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -51,7 +62,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
     );
 
     const tabId = store.panels.useState(
-      () => tabIdProp || store.panels.item(id)?.tabId,
+      () => tabIdProp || store?.panels.item(id)?.tabId,
     );
     const open = store.useState(
       (state) => !!tabId && state.selectedId === tabId,
@@ -105,7 +116,7 @@ export interface TabPanelOptions<T extends As = "div">
   /**
    * Object returned by the `useTabStore` hook.
    */
-  store: TabStore;
+  store?: TabStore;
   /**
    * The id of the tab that controls this panel. By default, this value will
    * be inferred based on the order of the tabs and the panels.
