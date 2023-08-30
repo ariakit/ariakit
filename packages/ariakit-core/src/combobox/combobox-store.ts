@@ -5,22 +5,18 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { createCompositeStore } from "../composite/composite-store.js";
-import type { MenuStore } from "../menu/menu-store.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { createPopoverStore } from "../popover/popover-store.js";
-import type { SelectStore } from "../select/select-store.js";
 import { defaultValue } from "../utils/misc.js";
 import { isSafari, isTouchDevice } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
   createStore,
-  mergeStore,
-  omit,
   setup,
   sync,
   throwOnConflictingProps,
@@ -36,62 +32,35 @@ const isSafariOnMobile = isSafari() && isTouchDevice();
 /**
  * Creates a combobox store.
  */
-export function createComboboxStore({
-  menu,
-  select,
-  ...props
-}: ComboboxStoreProps = {}): ComboboxStore {
-  const store = mergeStore(
-    props.store,
-    omit(menu, [
-      "baseElement",
-      "arrowElement",
-      "anchorElement",
-      "contentElement",
-      "popoverElement",
-      "disclosureElement",
-      "anchorElement",
-    ]),
-    omit(select, [
-      "value",
-      "items",
-      "renderedItems",
-      "baseElement",
-      "arrowElement",
-      "anchorElement",
-      "contentElement",
-      "popoverElement",
-      "disclosureElement",
-    ]),
-  );
+export function createComboboxStore(
+  props: ComboboxStoreProps = {},
+): ComboboxStore {
+  throwOnConflictingProps(props, props.store);
 
-  throwOnConflictingProps(props, store);
-
-  const syncState = store.getState();
+  const syncState = props.store?.getState();
 
   const activeId = defaultValue(
     props.activeId,
-    syncState.activeId,
+    syncState?.activeId,
     props.defaultActiveId,
     null,
   );
 
   const composite = createCompositeStore({
     ...props,
-    store,
     activeId,
     includesBaseElement: defaultValue(
       props.includesBaseElement,
-      syncState.includesBaseElement,
+      syncState?.includesBaseElement,
       true,
     ),
     orientation: defaultValue(
       props.orientation,
-      syncState.orientation,
+      syncState?.orientation,
       "vertical" as const,
     ),
-    focusLoop: defaultValue(props.focusLoop, syncState.focusLoop, true),
-    focusWrap: defaultValue(props.focusWrap, syncState.focusWrap, true),
+    focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
+    focusWrap: defaultValue(props.focusWrap, syncState?.focusWrap, true),
     virtualFocus: defaultValue(
       props.virtualFocus,
       syncState?.virtualFocus,
@@ -101,17 +70,16 @@ export function createComboboxStore({
 
   const popover = createPopoverStore({
     ...props,
-    store,
     placement: defaultValue(
       props.placement,
-      syncState.placement,
+      syncState?.placement,
       "bottom-start" as const,
     ),
   });
 
   const initialValue = defaultValue(
     props.value,
-    syncState.value,
+    syncState?.value,
     props.defaultValue,
     "",
   );
@@ -122,13 +90,13 @@ export function createComboboxStore({
     value: initialValue,
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
-      syncState.resetValueOnHide,
+      syncState?.resetValueOnHide,
       false,
     ),
-    activeValue: syncState.activeValue,
+    activeValue: syncState?.activeValue,
   };
 
-  const combobox = createStore(initialState, composite, popover, store);
+  const combobox = createStore(initialState, composite, popover, props.store);
 
   setup(combobox, () =>
     sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
@@ -172,8 +140,6 @@ export function createComboboxStore({
     ...popover,
     ...composite,
     ...combobox,
-    menu,
-    select,
     setValue: (value) => combobox.setState("value", value),
   };
 }
@@ -217,8 +183,7 @@ export interface ComboboxStoreState
 
 export interface ComboboxStoreFunctions
   extends CompositeStoreFunctions<Item>,
-    PopoverStoreFunctions,
-    Pick<ComboboxStoreProps, "menu" | "select"> {
+    PopoverStoreFunctions {
   /**
    * Sets the `value` state.
    *
@@ -245,18 +210,6 @@ export interface ComboboxStoreOptions
    * @default null
    */
   defaultActiveId?: CompositeStoreOptions<Item>["activeId"];
-  /**
-   * A reference to a menu store. This is used when combining the combobox with
-   * a menu (e.g., dropdown menu with a search input). The stores will share the
-   * same state.
-   */
-  menu?: MenuStore;
-  /**
-   * A reference to a select store. This is used when combining the combobox
-   * with a select (e.g., select with a search input). The stores will share the
-   * same state.
-   */
-  select?: SelectStore;
   /**
    * The combobox initial value.
    *

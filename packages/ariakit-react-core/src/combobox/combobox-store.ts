@@ -5,15 +5,12 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { MenuStore } from "../menu/menu-store.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { usePopoverStoreProps } from "../popover/popover-store.js";
-import type { SelectStore } from "../select/select-store.js";
-import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -22,12 +19,11 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   update: () => void,
   props: ComboboxStoreProps,
 ) {
-  useUpdateEffect(update, [props.menu, props.select]);
   store = usePopoverStoreProps(store, update, props);
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "resetValueOnHide");
-  return Object.assign(store, { menu: props.menu, select: props.select });
+  return store;
 }
 
 /**
@@ -59,13 +55,12 @@ export interface ComboboxStoreState
     PopoverStoreState {}
 
 export interface ComboboxStoreFunctions
-  extends Pick<ComboboxStoreOptions, "menu" | "select">,
-    Omit<Core.ComboboxStoreFunctions, "menu" | "select">,
+  extends Core.ComboboxStoreFunctions,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {}
 
 export interface ComboboxStoreOptions
-  extends Omit<Core.ComboboxStoreOptions, "menu" | "select">,
+  extends Core.ComboboxStoreOptions,
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
@@ -77,14 +72,6 @@ export interface ComboboxStoreOptions
    * }
    */
   setValue?: (value: ComboboxStoreState["value"]) => void;
-  /**
-   * TODO: Comment
-   */
-  menu?: MenuStore;
-  /**
-   * TODO: Comment
-   */
-  select?: SelectStore;
 }
 
 export type ComboboxStoreProps = ComboboxStoreOptions & Core.ComboboxStoreProps;
