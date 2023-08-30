@@ -172,6 +172,8 @@ export function createComboboxStore({
     ...popover,
     ...composite,
     ...combobox,
+    menu,
+    select,
     setValue: (value) => combobox.setState("value", value),
   };
 }
@@ -215,7 +217,8 @@ export interface ComboboxStoreState
 
 export interface ComboboxStoreFunctions
   extends CompositeStoreFunctions<Item>,
-    PopoverStoreFunctions {
+    PopoverStoreFunctions,
+    Pick<ComboboxStoreProps, "menu" | "select"> {
   /**
    * Sets the `value` state.
    *

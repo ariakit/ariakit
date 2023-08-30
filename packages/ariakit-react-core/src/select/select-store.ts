@@ -3,6 +3,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -22,7 +23,7 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Item = Core.SelectStoreItem;
 type Value = Core.SelectStoreValue;
 
-export function useSelectStoreProps<T extends SelectStore>(
+export function useSelectStoreProps<T extends Omit<SelectStore, "combobox">>(
   store: T,
   update: () => void,
   props: SelectStoreProps,
@@ -31,7 +32,7 @@ export function useSelectStoreProps<T extends SelectStore>(
   store = useCompositeStoreProps(store, update, props);
   store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
-  return store;
+  return Object.assign(store, { combobox: props.combobox });
 }
 
 /**
@@ -68,7 +69,8 @@ export interface SelectStoreState<T extends Value = Value>
     PopoverStoreState {}
 
 export interface SelectStoreFunctions<T extends Value = Value>
-  extends Core.SelectStoreFunctions<T>,
+  extends Pick<SelectStoreOptions<T>, "combobox">,
+    Omit<Core.SelectStoreFunctions<T>, "combobox">,
     CompositeStoreFunctions<Item>,
     PopoverStoreFunctions {}
 
@@ -85,6 +87,10 @@ export interface SelectStoreOptions<T extends Value = Value>
    * }
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
+  /**
+   * TODO: Comment
+   */
+  combobox?: ComboboxStore;
 }
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &

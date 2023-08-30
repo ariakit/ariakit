@@ -104,6 +104,7 @@ export function createMenuStore({
     ...composite,
     ...hovercard,
     ...menu,
+    combobox,
     setInitialFocus: (value) => menu.setState("initialFocus", value),
     setValues: (values) => menu.setState("values", values),
     setValue: (name, value) => {
@@ -150,7 +151,8 @@ export interface MenuStoreState<T extends Values = Values>
 }
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends CompositeStoreFunctions,
+  extends Pick<MenuStoreOptions, "combobox">,
+    CompositeStoreFunctions,
     HovercardStoreFunctions {
   /**
    * Sets the `initialFocus` state.
