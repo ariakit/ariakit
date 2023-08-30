@@ -1,4 +1,5 @@
 ---
+"@ariakit/core": minor
 "@ariakit/react-core": minor
 "@ariakit/react": minor
 ---
