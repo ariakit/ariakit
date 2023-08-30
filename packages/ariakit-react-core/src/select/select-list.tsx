@@ -97,7 +97,7 @@ export const useSelectList = createHook<SelectListOptions>(
     );
 
     const labelId = store.useState((state) => state.labelElement?.id);
-    const hasCombobox = store.useState("hasCombobox");
+    const hasCombobox = !!store.combobox;
     composite = composite ?? !hasCombobox;
 
     if (composite) {

@@ -4,6 +4,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -50,11 +51,9 @@ export function useMenuStoreOptions<T extends Values = Values>(
   };
 }
 
-export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
-  store: T,
-  update: () => void,
-  props: MenuStoreProps,
-) {
+export function useMenuStoreProps<
+  T extends Omit<MenuStore, "combobox" | "hideAll">,
+>(store: T, update: () => void, props: MenuStoreProps) {
   const parent = useContext(MenuContext);
 
   useUpdateEffect(update, [props.combobox]);
@@ -67,12 +66,13 @@ export function useMenuStoreProps<T extends Omit<MenuStore, "hideAll">>(
   return useMemo(
     () => ({
       ...store,
+      combobox: props.combobox,
       hideAll: () => {
         store.hide();
         parent?.hideAll();
       },
     }),
-    [store],
+    [store, props.combobox],
   );
 }
 
@@ -112,7 +112,8 @@ export interface MenuStoreState<T extends Values = Values>
     HovercardStoreState {}
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends Core.MenuStoreFunctions<T>,
+  extends Pick<MenuStoreOptions, "combobox">,
+    Omit<Core.MenuStoreFunctions<T>, "combobox">,
     CompositeStoreFunctions,
     HovercardStoreFunctions {
   /**
@@ -133,6 +134,15 @@ export interface MenuStoreOptions<T extends Values = Values>
    * const menu = useMenuStore({ values, setValues });
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
+  /**
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a menu (e.g., dropdown menu with a search input). The stores will
+   * share the same state.
+   *
+   * Live examples:
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   */
+  combobox?: ComboboxStore;
 }
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
