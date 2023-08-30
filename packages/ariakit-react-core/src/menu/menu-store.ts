@@ -135,7 +135,12 @@ export interface MenuStoreOptions<T extends Values = Values>
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
   /**
-   * TODO: Comment
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a menu (e.g., dropdown menu with a search input). The stores will
+   * share the same state.
+   *
+   * Live examples:
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
   combobox?: ComboboxStore;
 }

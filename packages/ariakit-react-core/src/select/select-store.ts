@@ -88,7 +88,13 @@ export interface SelectStoreOptions<T extends Value = Value>
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**
-   * TODO: Comment
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a select (e.g., select with a search input). The stores will share the
+   * same state.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   combobox?: ComboboxStore;
 }
