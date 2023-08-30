@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -10,7 +9,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormFieldOptions } from "./form-field.js";
 import { useFormField } from "./form-field.js";
 
@@ -31,13 +30,13 @@ import { useFormField } from "./form-field.js";
  */
 export const useFormInput = createHook<FormInputOptions>(
   ({ store, name: nameProp, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormInput must be wrapped in a Form component",
+        "FormInput must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;

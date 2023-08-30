@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -10,7 +10,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
 /**
@@ -29,13 +29,13 @@ import type { FormStore } from "./form-store.js";
  */
 export const useFormDescription = createHook<FormDescriptionOptions>(
   ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormDescription must be wrapped in a Form component",
+        "FormDescription must be wrapped in a Form component.",
     );
 
     const id = useId(props.id);

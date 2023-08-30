@@ -1,6 +1,7 @@
+import "./style.css";
 import { useEffect, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import "./style.css";
+import invariant from "tiny-invariant";
 
 interface NameFieldProps extends Ariakit.FormInputProps {
   store: Ariakit.FormStore;
@@ -36,6 +37,8 @@ interface FormProps extends Ariakit.FormProps {
 }
 
 function RequiredForm({ store, requiredNames, ...props }: FormProps) {
+  invariant(store);
+
   store.useValidate(() => {
     requiredNames.forEach((name) => {
       if (!store.getValue(name)) {

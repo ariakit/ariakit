@@ -1,5 +1,4 @@
 import type { MouseEvent } from "react";
-import { useContext } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -8,7 +7,7 @@ import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
 function findNextOrPreviousField(
@@ -65,13 +64,13 @@ function findPushButton(
  */
 export const useFormRemove = createHook<FormRemoveOptions>(
   ({ store, name: nameProp, index, autoFocusOnClick = true, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormRemove must be wrapped in a Form component",
+        "FormRemove must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;

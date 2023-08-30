@@ -1,10 +1,9 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
 /**
@@ -21,13 +20,13 @@ import type { FormStore } from "./form-store.js";
  */
 export const useFormSubmit = createHook<FormSubmitOptions>(
   ({ store, accessibleWhenDisabled = true, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormSubmit must be wrapped in a Form component",
+        "FormSubmit must be wrapped in a Form component.",
     );
 
     props = {
