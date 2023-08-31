@@ -31,8 +31,8 @@ import {
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  HovercardContextProvider,
-  useHovercardContext,
+  HovercardScopedContextProvider,
+  useHovercardProviderContext,
 } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 import type { Point } from "./utils/polygon.js";
@@ -166,7 +166,7 @@ export const useHovercard = createHook<HovercardOptions>(
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
   }) => {
-    const context = useHovercardContext();
+    const context = useHovercardProviderContext();
     store = store || context;
 
     invariant(
@@ -325,11 +325,11 @@ export const useHovercard = createHook<HovercardOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <HovercardContextProvider value={store}>
+        <HovercardScopedContextProvider value={store}>
           <NestedHovercardContext.Provider value={registerNestedHovercard}>
             {element}
           </NestedHovercardContext.Provider>
-        </HovercardContextProvider>
+        </HovercardScopedContextProvider>
       ),
       [store, registerNestedHovercard],
     );

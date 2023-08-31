@@ -1,9 +1,14 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CompositeContextProvider } from "../composite/composite-context.js";
+import {
+  CompositeContextProvider,
+  CompositeScopedContextProvider,
+} from "../composite/composite-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { RadioStore } from "./radio-store.js";
 
-export const RadioContext = createContext<RadioStore | undefined>(undefined);
+const ctx = createStoreContext<RadioStore>(
+  [CompositeContextProvider],
+  [CompositeScopedContextProvider],
+);
 
 /**
  * Returns the radio store from the nearest radio container.
@@ -18,16 +23,12 @@ export const RadioContext = createContext<RadioStore | undefined>(undefined);
  *   // Use the store...
  * }
  */
-export function useRadioContext() {
-  return useContext(RadioContext);
-}
+export const useRadioContext = ctx.useStoreContext;
 
-export function RadioContextProvider(
-  props: ComponentPropsWithoutRef<typeof RadioContext.Provider>,
-) {
-  return (
-    <CompositeContextProvider {...props}>
-      <RadioContext.Provider {...props} />
-    </CompositeContextProvider>
-  );
-}
+export const useRadioScopedContext = ctx.useScopedStoreContext;
+
+export const useRadioProviderContext = ctx.useStoreProviderContext;
+
+export const RadioContextProvider = ctx.StoreContextProvider;
+
+export const RadioScopedContextProvider = ctx.StoreScopedContextProvider;

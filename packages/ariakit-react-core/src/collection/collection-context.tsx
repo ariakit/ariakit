@@ -1,10 +1,7 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { createStoreContext } from "../utils/system.js";
 import type { CollectionStore } from "./collection-store.js";
 
-export const CollectionContext = createContext<CollectionStore | undefined>(
-  undefined,
-);
+const ctx = createStoreContext<CollectionStore>();
 
 /**
  * Returns the collection store from the nearest collection container.
@@ -19,12 +16,12 @@ export const CollectionContext = createContext<CollectionStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useCollectionContext() {
-  return useContext(CollectionContext);
-}
+export const useCollectionContext = ctx.useStoreContext;
 
-export function CollectionContextProvider(
-  props: ComponentPropsWithoutRef<typeof CollectionContext.Provider>,
-) {
-  return <CollectionContext.Provider {...props} />;
-}
+export const useCollectionScopedContext = ctx.useScopedStoreContext;
+
+export const useCollectionProviderContext = ctx.useStoreProviderContext;
+
+export const CollectionContextProvider = ctx.StoreContextProvider;
+
+export const CollectionScopedContextProvider = ctx.StoreScopedContextProvider;

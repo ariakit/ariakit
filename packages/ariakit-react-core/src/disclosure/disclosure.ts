@@ -7,7 +7,7 @@ import { useButton } from "../button/button.js";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useDisclosureContext } from "./disclosure-context.js";
+import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 /**
@@ -23,7 +23,7 @@ import type { DisclosureStore } from "./disclosure-store.js";
  */
 export const useDisclosure = createHook<DisclosureOptions>(
   ({ store, toggleOnClick = true, ...props }) => {
-    const context = useDisclosureContext();
+    const context = useDisclosureProviderContext();
     store = store || context;
 
     invariant(

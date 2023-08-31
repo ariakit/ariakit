@@ -1,10 +1,7 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { createStoreContext } from "../utils/system.js";
 import type { CheckboxStore } from "./checkbox-store.js";
 
-export const CheckboxContext = createContext<CheckboxStore | undefined>(
-  undefined,
-);
+const ctx = createStoreContext<CheckboxStore>();
 
 /**
  * Returns the checkbox store from the nearest checkbox container.
@@ -19,12 +16,12 @@ export const CheckboxContext = createContext<CheckboxStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useCheckboxContext() {
-  return useContext(CheckboxContext);
-}
+export const useCheckboxContext = ctx.useStoreContext;
 
-export function CheckboxContextProvider(
-  props: ComponentPropsWithoutRef<typeof CheckboxContext.Provider>,
-) {
-  return <CheckboxContext.Provider {...props} />;
-}
+export const useCheckboxScopedContext = ctx.useScopedStoreContext;
+
+export const useCheckboxProviderContext = ctx.useStoreProviderContext;
+
+export const CheckboxContextProvider = ctx.StoreContextProvider;
+
+export const CheckboxScopedContextProvider = ctx.StoreScopedContextProvider;

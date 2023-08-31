@@ -1,10 +1,16 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { createContext } from "react";
 import type { SetState } from "@ariakit/core/utils/types";
-import { DisclosureContextProvider } from "../disclosure/disclosure-context.js";
+import {
+  DisclosureContextProvider,
+  DisclosureScopedContextProvider,
+} from "../disclosure/disclosure-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { DialogStore } from "./dialog-store.js";
 
-export const DialogContext = createContext<DialogStore | undefined>(undefined);
+const ctx = createStoreContext<DialogStore>(
+  [DisclosureContextProvider],
+  [DisclosureScopedContextProvider],
+);
 
 /**
  * Returns the dialog store from the nearest dialog container.
@@ -19,19 +25,15 @@ export const DialogContext = createContext<DialogStore | undefined>(undefined);
  *   // Use the store...
  * }
  */
-export function useDialogContext() {
-  return useContext(DialogContext);
-}
+export const useDialogContext = ctx.useStoreContext;
 
-export function DialogContextProvider(
-  props: ComponentPropsWithoutRef<typeof DialogContext.Provider>,
-) {
-  return (
-    <DisclosureContextProvider {...props}>
-      <DialogContext.Provider {...props} />
-    </DisclosureContextProvider>
-  );
-}
+export const useDialogScopedContext = ctx.useScopedStoreContext;
+
+export const useDialogProviderContext = ctx.useStoreProviderContext;
+
+export const DialogContextProvider = ctx.StoreContextProvider;
+
+export const DialogScopedContextProvider = ctx.StoreScopedContextProvider;
 
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined

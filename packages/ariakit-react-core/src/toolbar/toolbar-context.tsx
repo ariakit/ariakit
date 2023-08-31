@@ -1,10 +1,13 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CompositeContextProvider } from "../composite/composite-context.js";
+import {
+  CompositeContextProvider,
+  CompositeScopedContextProvider,
+} from "../composite/composite-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { ToolbarStore } from "./toolbar-store.js";
 
-export const ToolbarContext = createContext<ToolbarStore | undefined>(
-  undefined,
+const ctx = createStoreContext<ToolbarStore>(
+  [CompositeContextProvider],
+  [CompositeScopedContextProvider],
 );
 
 /**
@@ -20,16 +23,12 @@ export const ToolbarContext = createContext<ToolbarStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useToolbarContext() {
-  return useContext(ToolbarContext);
-}
+export const useToolbarContext = ctx.useStoreContext;
 
-export function ToolbarContextProvider(
-  props: ComponentPropsWithoutRef<typeof ToolbarContext.Provider>,
-) {
-  return (
-    <CompositeContextProvider {...props}>
-      <ToolbarContext.Provider {...props} />
-    </CompositeContextProvider>
-  );
-}
+export const useToolbarScopedContext = ctx.useScopedStoreContext;
+
+export const useToolbarProviderContext = ctx.useStoreProviderContext;
+
+export const ToolbarContextProvider = ctx.StoreContextProvider;
+
+export const ToolbarScopedContextProvider = ctx.StoreScopedContextProvider;

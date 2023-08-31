@@ -7,7 +7,7 @@ import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useTooltipContext } from "./tooltip-context.js";
+import { useTooltipProviderContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
 // Create a global store to keep track of the active tooltip store so we can
@@ -29,7 +29,7 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  */
 export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
-    const context = useTooltipContext();
+    const context = useTooltipProviderContext();
     store = store || context;
 
     invariant(

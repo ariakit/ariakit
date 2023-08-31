@@ -38,7 +38,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useComboboxContext } from "./combobox-context.js";
+import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
 
 function isFirstItemAutoSelected(
@@ -105,7 +105,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     autoComplete = "list",
     ...props
   }) => {
-    const context = useComboboxContext();
+    const context = useComboboxProviderContext();
     store = store || context;
 
     invariant(

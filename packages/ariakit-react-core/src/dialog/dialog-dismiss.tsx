@@ -5,7 +5,7 @@ import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useDialogContext } from "./dialog-context.js";
+import { useDialogScopedContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
 /**
@@ -22,7 +22,7 @@ import type { DialogStore } from "./dialog-store.js";
  */
 export const useDialogDismiss = createHook<DialogDismissOptions>(
   ({ store, ...props }) => {
-    const context = useDialogContext();
+    const context = useDialogScopedContext();
     store = store || context;
 
     const onClickProp = props.onClick;

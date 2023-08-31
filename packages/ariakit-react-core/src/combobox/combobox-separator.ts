@@ -3,7 +3,7 @@ import type { CompositeSeparatorOptions } from "../composite/composite-separator
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useComboboxContext } from "./combobox-context.js";
+import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -23,7 +23,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxSeparator = createHook<ComboboxSeparatorOptions>(
   ({ store, ...props }) => {
-    const context = useComboboxContext();
+    const context = useComboboxScopedContext();
     store = store || context;
 
     invariant(

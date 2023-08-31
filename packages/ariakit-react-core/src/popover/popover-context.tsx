@@ -1,10 +1,13 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { DialogContextProvider } from "../dialog/dialog-context.js";
+import {
+  DialogContextProvider,
+  DialogScopedContextProvider,
+} from "../dialog/dialog-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { PopoverStore } from "./popover-store.js";
 
-export const PopoverContext = createContext<PopoverStore | undefined>(
-  undefined,
+const ctx = createStoreContext<PopoverStore>(
+  [DialogContextProvider],
+  [DialogScopedContextProvider],
 );
 
 /**
@@ -20,16 +23,12 @@ export const PopoverContext = createContext<PopoverStore | undefined>(
  *   // Use the store...
  * }
  */
-export function usePopoverContext() {
-  return useContext(PopoverContext);
-}
+export const usePopoverContext = ctx.useStoreContext;
 
-export function PopoverContextProvider(
-  props: ComponentPropsWithoutRef<typeof PopoverContext.Provider>,
-) {
-  return (
-    <DialogContextProvider {...props}>
-      <PopoverContext.Provider {...props} />
-    </DialogContextProvider>
-  );
-}
+export const usePopoverScopedContext = ctx.useScopedStoreContext;
+
+export const usePopoverProviderContext = ctx.useStoreProviderContext;
+
+export const PopoverContextProvider = ctx.StoreContextProvider;
+
+export const PopoverScopedContextProvider = ctx.StoreScopedContextProvider;

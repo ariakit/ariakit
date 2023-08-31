@@ -5,7 +5,10 @@ import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TooltipContext, useTooltipContext } from "./tooltip-context.js";
+import {
+  TooltipScopedContextProvider,
+  useTooltipProviderContext,
+} from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
 /**
@@ -29,7 +32,7 @@ export const useTooltip = createHook<TooltipOptions>(
     hideOnInteractOutside = true,
     ...props
   }) => {
-    const context = useTooltipContext();
+    const context = useTooltipProviderContext();
     store = store || context;
 
     invariant(
@@ -41,9 +44,9 @@ export const useTooltip = createHook<TooltipOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <TooltipContext.Provider value={store}>
+        <TooltipScopedContextProvider value={store}>
           {element}
-        </TooltipContext.Provider>
+        </TooltipScopedContextProvider>
       ),
       [store],
     );

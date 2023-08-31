@@ -1,10 +1,7 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { createStoreContext } from "../utils/system.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
-export const DisclosureContext = createContext<DisclosureStore | undefined>(
-  undefined,
-);
+const ctx = createStoreContext<DisclosureStore>();
 
 /**
  * Returns the disclosure store from the nearest disclosure container.
@@ -19,12 +16,12 @@ export const DisclosureContext = createContext<DisclosureStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useDisclosureContext() {
-  return useContext(DisclosureContext);
-}
+export const useDisclosureContext = ctx.useStoreContext;
 
-export function DisclosureContextProvider(
-  props: ComponentPropsWithoutRef<typeof DisclosureContext.Provider>,
-) {
-  return <DisclosureContext.Provider {...props} />;
-}
+export const useDisclosureScopedContext = ctx.useScopedStoreContext;
+
+export const useDisclosureProviderContext = ctx.useStoreProviderContext;
+
+export const DisclosureContextProvider = ctx.StoreContextProvider;
+
+export const DisclosureScopedContextProvider = ctx.StoreScopedContextProvider;

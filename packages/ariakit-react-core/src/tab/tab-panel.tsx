@@ -3,15 +3,22 @@ import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
-import { useDisclosureContent } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.jsx";
+import { useDisclosureContent } from "../disclosure/disclosure-content.jsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useId, useMergeRefs } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
 import type { As, Props } from "../utils/types.js";
-import { useTabContext } from "./tab-context.js";
+import {
+  TabScopedContextProvider,
+  useTabProviderContext,
+} from "./tab-context.jsx";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -29,7 +36,7 @@ import type { TabStore } from "./tab-store.js";
  */
 export const useTabPanel = createHook<TabPanelOptions>(
   ({ store, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
-    const context = useTabContext();
+    const context = useTabProviderContext();
     store = store || context;
 
     invariant(
@@ -59,6 +66,16 @@ export const useTabPanel = createHook<TabPanelOptions>(
         return nextItem;
       },
       [id, tabIdProp, getItemProp],
+    );
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <TabScopedContextProvider value={store}>
+          {element}
+        </TabScopedContextProvider>
+      ),
+      [store],
     );
 
     const tabId = store.panels.useState(

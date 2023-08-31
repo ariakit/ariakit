@@ -2,7 +2,7 @@ import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useDialogContext } from "./dialog-context.js";
+import { useDialogProviderContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
 /**
@@ -18,7 +18,7 @@ import type { DialogStore } from "./dialog-store.js";
  */
 export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
   ({ store, ...props }) => {
-    const context = useDialogContext();
+    const context = useDialogProviderContext();
     store = store || context;
     props = useDisclosure({ store, ...props });
     return props;

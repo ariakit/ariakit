@@ -1,11 +1,18 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CompositeContextProvider } from "../composite/composite-context.js";
-import { PopoverContextProvider } from "../popover/popover-context.js";
+import { createContext } from "react";
+import {
+  CompositeContextProvider,
+  CompositeScopedContextProvider,
+} from "../composite/composite-context.js";
+import {
+  PopoverContextProvider,
+  PopoverScopedContextProvider,
+} from "../popover/popover-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
-export const ComboboxContext = createContext<ComboboxStore | undefined>(
-  undefined,
+const ctx = createStoreContext<ComboboxStore>(
+  [PopoverContextProvider, CompositeContextProvider],
+  [PopoverScopedContextProvider, CompositeScopedContextProvider],
 );
 
 /**
@@ -21,21 +28,15 @@ export const ComboboxContext = createContext<ComboboxStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useComboboxContext() {
-  return useContext(ComboboxContext);
-}
+export const useComboboxContext = ctx.useStoreContext;
 
-export function ComboboxContextProvider(
-  props: ComponentPropsWithoutRef<typeof ComboboxContext.Provider>,
-) {
-  return (
-    <PopoverContextProvider {...props}>
-      <CompositeContextProvider {...props}>
-        <ComboboxContext.Provider {...props} />
-      </CompositeContextProvider>
-    </PopoverContextProvider>
-  );
-}
+export const useComboboxScopedContext = ctx.useScopedStoreContext;
+
+export const useComboboxProviderContext = ctx.useStoreProviderContext;
+
+export const ComboboxContextProvider = ctx.StoreContextProvider;
+
+export const ComboboxScopedContextProvider = ctx.StoreScopedContextProvider;
 
 export const ComboboxItemValueContext = createContext<string | undefined>(
   undefined,

@@ -1,9 +1,14 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CollectionContextProvider } from "../collection/collection-context.js";
+import {
+  CollectionContextProvider,
+  CollectionScopedContextProvider,
+} from "../collection/collection-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { FormStore } from "./form-store.js";
 
-export const FormContext = createContext<FormStore | undefined>(undefined);
+const ctx = createStoreContext<FormStore>(
+  [CollectionContextProvider],
+  [CollectionScopedContextProvider],
+);
 
 /**
  * Returns the form store from the nearest form container.
@@ -18,16 +23,12 @@ export const FormContext = createContext<FormStore | undefined>(undefined);
  *   // Use the store...
  * }
  */
-export function useFormContext() {
-  return useContext(FormContext);
-}
+export const useFormContext = ctx.useStoreContext;
 
-export function FormContextProvider(
-  props: ComponentPropsWithoutRef<typeof FormContext.Provider>,
-) {
-  return (
-    <CollectionContextProvider {...props}>
-      <FormContext.Provider {...props} />
-    </CollectionContextProvider>
-  );
-}
+export const useFormScopedContext = ctx.useScopedStoreContext;
+
+export const useFormProviderContext = ctx.useStoreProviderContext;
+
+export const FormContextProvider = ctx.StoreContextProvider;
+
+export const FormScopedContextProvider = ctx.StoreScopedContextProvider;

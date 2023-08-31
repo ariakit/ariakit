@@ -2,6 +2,7 @@ import type { CompositeSeparatorOptions } from "../composite/composite-separator
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -20,8 +21,10 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectSeparator = createHook<SelectSeparatorOptions>(
-  (props) => {
-    props = useCompositeSeparator(props);
+  ({ store, ...props }) => {
+    const context = useSelectContext();
+    store = store || context;
+    props = useCompositeSeparator({ store, ...props });
     return props;
   },
 );

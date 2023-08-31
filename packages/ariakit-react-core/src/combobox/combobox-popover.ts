@@ -4,7 +4,7 @@ import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useComboboxContext } from "./combobox-context.js";
+import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxListOptions } from "./combobox-list.js";
 import { useComboboxList } from "./combobox-list.js";
 
@@ -46,7 +46,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
     hideOnInteractOutside = true,
     ...props
   }) => {
-    const context = useComboboxContext();
+    const context = useComboboxProviderContext();
     store = store || context;
 
     invariant(
