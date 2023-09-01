@@ -10,7 +10,7 @@ import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
-import { useHovercardContext } from "./hovercard-context.js";
+import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -27,7 +27,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  */
 export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
   ({ store, ...props }) => {
-    const context = useHovercardContext();
+    const context = useHovercardProviderContext();
     store = store || context;
 
     invariant(

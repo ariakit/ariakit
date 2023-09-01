@@ -50,10 +50,10 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
-  DialogContextProvider,
   DialogDescriptionContext,
   DialogHeadingContext,
-  useDialogContext,
+  DialogScopedContextProvider,
+  useDialogProviderContext,
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
@@ -113,7 +113,7 @@ export const useDialog = createHook<DialogOptions>(
     finalFocus,
     ...props
   }) => {
-    const context = useDialogContext();
+    const context = useDialogProviderContext();
     store = store || context;
 
     invariant(
@@ -492,13 +492,13 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <DialogContextProvider value={store}>
+        <DialogScopedContextProvider value={store}>
           <DialogHeadingContext.Provider value={setHeadingId}>
             <DialogDescriptionContext.Provider value={setDescriptionId}>
               {element}
             </DialogDescriptionContext.Provider>
           </DialogHeadingContext.Provider>
-        </DialogContextProvider>
+        </DialogScopedContextProvider>
       ),
       [store],
     );

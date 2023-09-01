@@ -1,10 +1,14 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CollectionContextProvider } from "../collection/collection-context.js";
+import { createContext } from "react";
+import {
+  CollectionContextProvider,
+  CollectionScopedContextProvider,
+} from "../collection/collection-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { CompositeStore } from "./composite-store.js";
 
-export const CompositeContext = createContext<CompositeStore | undefined>(
-  undefined,
+const ctx = createStoreContext<CompositeStore>(
+  [CollectionContextProvider],
+  [CollectionScopedContextProvider],
 );
 
 /**
@@ -20,19 +24,15 @@ export const CompositeContext = createContext<CompositeStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useCompositeContext() {
-  return useContext(CompositeContext);
-}
+export const useCompositeContext = ctx.useStoreContext;
 
-export function CompositeContextProvider(
-  props: ComponentPropsWithoutRef<typeof CompositeContext.Provider>,
-) {
-  return (
-    <CollectionContextProvider {...props}>
-      <CompositeContext.Provider {...props} />
-    </CollectionContextProvider>
-  );
-}
+export const useCompositeScopedContext = ctx.useScopedStoreContext;
+
+export const useCompositeProviderContext = ctx.useStoreProviderContext;
+
+export const CompositeContextProvider = ctx.StoreContextProvider;
+
+export const CompositeScopedContextProvider = ctx.StoreScopedContextProvider;
 
 interface ItemContext {
   baseElement?: HTMLElement;

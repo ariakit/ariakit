@@ -10,7 +10,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useTabContext } from "./tab-context.js";
+import { useTabScopedContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -33,7 +33,7 @@ export const useTab = createHook<TabOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const context = useTabContext();
+    const context = useTabScopedContext();
     store = store || context;
 
     invariant(

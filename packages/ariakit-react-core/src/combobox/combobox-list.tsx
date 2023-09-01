@@ -15,8 +15,8 @@ import {
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  ComboboxContextProvider,
-  useComboboxContext,
+  ComboboxScopedContextProvider,
+  useComboboxProviderContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -36,7 +36,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
   ({ store, focusable = true, alwaysVisible, ...props }) => {
-    const context = useComboboxContext();
+    const context = useComboboxProviderContext();
     store = store || context;
 
     invariant(
@@ -93,9 +93,9 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <ComboboxContextProvider value={store}>
+        <ComboboxScopedContextProvider value={store}>
           {element}
-        </ComboboxContextProvider>
+        </ComboboxScopedContextProvider>
       ),
       [store],
     );

@@ -1,9 +1,14 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CompositeContextProvider } from "../composite/composite-context.js";
+import {
+  CompositeContextProvider,
+  CompositeScopedContextProvider,
+} from "../composite/composite-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { TabStore } from "./tab-store.js";
 
-export const TabContext = createContext<TabStore | undefined>(undefined);
+const ctx = createStoreContext<TabStore>(
+  [CompositeContextProvider],
+  [CompositeScopedContextProvider],
+);
 
 /**
  * Returns the tab store from the nearest tab container.
@@ -18,16 +23,12 @@ export const TabContext = createContext<TabStore | undefined>(undefined);
  *   // Use the store...
  * }
  */
-export function useTabContext() {
-  return useContext(TabContext);
-}
+export const useTabContext = ctx.useStoreContext;
 
-export function TabContextProvider(
-  props: ComponentPropsWithoutRef<typeof TabContext.Provider>,
-) {
-  return (
-    <CompositeContextProvider {...props}>
-      <TabContext.Provider {...props} />
-    </CompositeContextProvider>
-  );
-}
+export const useTabScopedContext = ctx.useScopedStoreContext;
+
+export const useTabProviderContext = ctx.useStoreProviderContext;
+
+export const TabContextProvider = ctx.StoreContextProvider;
+
+export const TabScopedContextProvider = ctx.StoreScopedContextProvider;

@@ -18,7 +18,7 @@ import {
 import type { As, Props } from "../utils/types.js";
 import {
   ComboboxItemValueContext,
-  useComboboxContext,
+  useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -43,7 +43,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const context = useComboboxContext();
+    const context = useComboboxScopedContext();
     store = store || context;
 
     invariant(

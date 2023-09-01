@@ -8,8 +8,8 @@ import type { As, Props } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
 import {
-  PopoverContextProvider,
-  usePopoverContext,
+  PopoverScopedContextProvider,
+  usePopoverProviderContext,
 } from "./popover-context.js";
 
 /**
@@ -25,7 +25,7 @@ import {
  */
 export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
   ({ store, ...props }) => {
-    const context = usePopoverContext();
+    const context = usePopoverProviderContext();
     store = store || context;
 
     invariant(
@@ -44,7 +44,9 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverContextProvider value={store}>{element}</PopoverContextProvider>
+        <PopoverScopedContextProvider value={store}>
+          {element}
+        </PopoverScopedContextProvider>
       ),
       [store],
     );

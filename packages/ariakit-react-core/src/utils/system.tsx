@@ -3,6 +3,7 @@ import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { useMergeRefs } from "./hooks.js";
 import { getRefProperty, mergeProps } from "./misc.js";
+import type { Store } from "./store.js";
 import type {
   Component,
   HTMLProps,
@@ -183,4 +184,69 @@ export function createHook<O extends Options>(
     return copy;
   };
   return useRole as Hook<O>;
+}
+
+type StoreProvider<T extends Store> = React.ComponentType<{
+  value: T | undefined;
+  children?: React.ReactNode;
+}>;
+
+/**
+ * Creates an Ariakit store context with hooks and provider components.
+ */
+export function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+) {
+  const context = React.createContext<T | undefined>(undefined);
+  const scopedContext = React.createContext<T | undefined>(undefined);
+
+  const useStoreContext = () => React.useContext(context);
+
+  const useScopedStoreContext = () => {
+    const scoped = React.useContext(scopedContext);
+    const store = useStoreContext();
+    return scoped || store;
+  };
+
+  const useStoreProviderContext = () => {
+    const scoped = React.useContext(scopedContext);
+    const store = useStoreContext();
+    if (scoped && scoped === store) return;
+    return store;
+  };
+
+  const StoreContextProvider = (
+    props: React.ComponentPropsWithoutRef<typeof context.Provider>,
+  ) => {
+    return providers.reduceRight(
+      (children, Provider) => <Provider {...props}>{children}</Provider>,
+      <context.Provider {...props} />,
+    );
+  };
+
+  const StoreScopedContextProvider = (
+    props: React.ComponentPropsWithoutRef<typeof scopedContext.Provider>,
+  ) => {
+    return (
+      <StoreContextProvider {...props}>
+        {scopedProviders.reduceRight(
+          (children, Provider) => (
+            <Provider {...props}>{children}</Provider>
+          ),
+          <scopedContext.Provider {...props} />,
+        )}
+      </StoreContextProvider>
+    );
+  };
+
+  return {
+    context,
+    scopedContext,
+    useStoreContext,
+    useScopedStoreContext,
+    useStoreProviderContext,
+    StoreContextProvider,
+    StoreScopedContextProvider,
+  };
 }

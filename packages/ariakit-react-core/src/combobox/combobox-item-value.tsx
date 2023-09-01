@@ -5,7 +5,7 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import {
   ComboboxItemValueContext,
-  useComboboxContext,
+  useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -66,7 +66,7 @@ function splitValue(itemValue: string, userValue: string) {
  */
 export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
   ({ store, value, ...props }) => {
-    const context = useComboboxContext();
+    const context = useComboboxScopedContext();
     store = store || context;
 
     const itemContext = useContext(ComboboxItemValueContext);

@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
+import {
+  useId,
+  useMergeRefs,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "../utils/hooks.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
 import type { As, Options, Props } from "../utils/types.js";
-import { useDisclosureContext } from "./disclosure-context.js";
+import { useDisclosureProviderContext } from "./disclosure-context.jsx";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 type TransitionState = "enter" | "leave" | null;
@@ -54,7 +64,7 @@ export function isHidden(
  */
 export const useDisclosureContent = createHook<DisclosureContentOptions>(
   ({ store, alwaysVisible, ...props }) => {
-    const context = useDisclosureContext();
+    const context = useDisclosureProviderContext();
     store = store || context;
 
     invariant(
@@ -124,6 +134,16 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // after X seconds.
       return afterTimeout(timeoutMs, store.stopAnimation);
     }, [store, animated, contentElement, open, transition]);
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <DialogScopedContextProvider value={store}>
+          {element}
+        </DialogScopedContextProvider>
+      ),
+      [store],
+    );
 
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;

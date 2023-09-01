@@ -4,7 +4,10 @@ import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { RadioContextProvider, useRadioContext } from "./radio-context.js";
+import {
+  RadioScopedContextProvider,
+  useRadioProviderContext,
+} from "./radio-context.js";
 import type { RadioStore } from "./radio-store.js";
 
 /**
@@ -22,7 +25,7 @@ import type { RadioStore } from "./radio-store.js";
  */
 export const useRadioGroup = createHook<RadioGroupOptions>(
   ({ store, ...props }) => {
-    const context = useRadioContext();
+    const context = useRadioProviderContext();
     store = store || context;
 
     invariant(
@@ -34,7 +37,9 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <RadioContextProvider value={store}>{element}</RadioContextProvider>
+        <RadioScopedContextProvider value={store}>
+          {element}
+        </RadioScopedContextProvider>
       ),
       [store],
     );

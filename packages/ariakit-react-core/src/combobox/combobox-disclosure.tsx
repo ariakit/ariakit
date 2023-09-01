@@ -5,7 +5,7 @@ import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useComboboxContext } from "./combobox-context.js";
+import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 const children = (
@@ -45,7 +45,7 @@ const children = (
  */
 export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
   ({ store, ...props }) => {
-    const context = useComboboxContext();
+    const context = useComboboxProviderContext();
     store = store || context;
 
     invariant(

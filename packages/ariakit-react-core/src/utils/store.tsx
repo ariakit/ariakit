@@ -214,7 +214,7 @@ export function useStore<T extends CoreStore, P>(
   return [memoizedStore, updateStore] as const;
 }
 
-export type Store<T extends CoreStore> = T & {
+export type Store<T extends CoreStore = CoreStore> = T & {
   /**
    * Re-renders the component when the state changes and returns the current
    * state.

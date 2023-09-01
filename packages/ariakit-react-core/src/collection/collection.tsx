@@ -2,8 +2,8 @@ import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import {
-  CollectionContextProvider,
-  useCollectionContext,
+  CollectionScopedContextProvider,
+  useCollectionProviderContext,
 } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
@@ -25,15 +25,15 @@ import type { CollectionStore } from "./collection-store.js";
  */
 export const useCollection = createHook<CollectionOptions>(
   ({ store, ...props }) => {
-    const context = useCollectionContext();
+    const context = useCollectionProviderContext();
     store = store || context;
 
     props = useWrapElement(
       props,
       (element) => (
-        <CollectionContextProvider value={store}>
+        <CollectionScopedContextProvider value={store}>
           {element}
-        </CollectionContextProvider>
+        </CollectionScopedContextProvider>
       ),
       [store],
     );

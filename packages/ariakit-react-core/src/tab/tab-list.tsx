@@ -4,7 +4,10 @@ import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TabContextProvider, useTabContext } from "./tab-context.js";
+import {
+  TabScopedContextProvider,
+  useTabProviderContext,
+} from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -23,7 +26,7 @@ import type { TabStore } from "./tab-store.js";
  * ```
  */
 export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
-  const context = useTabContext();
+  const context = useTabProviderContext();
   store = store || context;
 
   invariant(
@@ -39,7 +42,9 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
   props = useWrapElement(
     props,
     (element) => (
-      <TabContextProvider value={store}>{element}</TabContextProvider>
+      <TabScopedContextProvider value={store}>
+        {element}
+      </TabScopedContextProvider>
     ),
     [store],
   );

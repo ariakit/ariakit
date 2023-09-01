@@ -17,7 +17,10 @@ import {
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { SelectArrow } from "./select-arrow.js";
-import { SelectContextProvider, useSelectContext } from "./select-context.js";
+import {
+  SelectScopedContextProvider,
+  useSelectProviderContext,
+} from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -68,7 +71,7 @@ export const useSelect = createHook<SelectOptions>(
     toggleOnPress = !toggleOnClick,
     ...props
   }) => {
-    const context = useSelectContext();
+    const context = useSelectProviderContext();
     store = store || context;
 
     invariant(
@@ -155,7 +158,9 @@ export const useSelect = createHook<SelectOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <SelectContextProvider value={store}>{element}</SelectContextProvider>
+        <SelectScopedContextProvider value={store}>
+          {element}
+        </SelectScopedContextProvider>
       ),
       [store],
     );

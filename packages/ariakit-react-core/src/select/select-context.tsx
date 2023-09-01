@@ -1,12 +1,19 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { CompositeContextProvider } from "../composite/composite-context.js";
-import { PopoverContextProvider } from "../popover/popover-context.js";
+import { createContext } from "react";
+import {
+  CompositeContextProvider,
+  CompositeScopedContextProvider,
+} from "../composite/composite-context.js";
+import {
+  PopoverContextProvider,
+  PopoverScopedContextProvider,
+} from "../popover/popover-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { SelectStore } from "./select-store.js";
 
-export const SelectItemCheckedContext = createContext(false);
-
-export const SelectContext = createContext<SelectStore | undefined>(undefined);
+const ctx = createStoreContext<SelectStore>(
+  [PopoverContextProvider, CompositeContextProvider],
+  [PopoverScopedContextProvider, CompositeScopedContextProvider],
+);
 
 /**
  * Returns the select store from the nearest select container.
@@ -21,18 +28,14 @@ export const SelectContext = createContext<SelectStore | undefined>(undefined);
  *   // Use the store...
  * }
  */
-export function useSelectContext() {
-  return useContext(SelectContext);
-}
+export const useSelectContext = ctx.useStoreContext;
 
-export function SelectContextProvider(
-  props: ComponentPropsWithoutRef<typeof SelectContext.Provider>,
-) {
-  return (
-    <PopoverContextProvider {...props}>
-      <CompositeContextProvider {...props}>
-        <SelectContext.Provider {...props} />
-      </CompositeContextProvider>
-    </PopoverContextProvider>
-  );
-}
+export const useSelectScopedContext = ctx.useScopedStoreContext;
+
+export const useSelectProviderContext = ctx.useStoreProviderContext;
+
+export const SelectContextProvider = ctx.StoreContextProvider;
+
+export const SelectScopedContextProvider = ctx.StoreScopedContextProvider;
+
+export const SelectItemCheckedContext = createContext(false);

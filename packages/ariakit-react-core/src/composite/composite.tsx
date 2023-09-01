@@ -29,7 +29,7 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   CompositeContextProvider,
-  useCompositeContext,
+  useCompositeProviderContext,
 } from "./composite-context.js";
 import type {
   CompositeStore,
@@ -163,7 +163,7 @@ export const useComposite = createHook<CompositeOptions>(
     moveOnKeyPress = true,
     ...props
   }) => {
-    const context = useCompositeContext();
+    const context = useCompositeProviderContext();
     store = store || context;
 
     invariant(

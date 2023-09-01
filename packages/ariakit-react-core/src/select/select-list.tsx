@@ -19,7 +19,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContextProvider, useSelectContext } from "./select-context.js";
+import {
+  SelectScopedContextProvider,
+  useSelectProviderContext,
+} from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -45,7 +48,7 @@ export const useSelectList = createHook<SelectListOptions>(
     alwaysVisible,
     ...props
   }) => {
-    const context = useSelectContext();
+    const context = useSelectProviderContext();
     store = store || context;
 
     invariant(
@@ -91,7 +94,9 @@ export const useSelectList = createHook<SelectListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <SelectContextProvider value={store}>{element}</SelectContextProvider>
+        <SelectScopedContextProvider value={store}>
+          {element}
+        </SelectScopedContextProvider>
       ),
       [store],
     );

@@ -1,10 +1,13 @@
-import { createContext, useContext } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { PopoverContextProvider } from "../popover/popover-context.js";
+import {
+  PopoverContextProvider,
+  PopoverScopedContextProvider,
+} from "../popover/popover-context.js";
+import { createStoreContext } from "../utils/system.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
-export const HovercardContext = createContext<HovercardStore | undefined>(
-  undefined,
+const ctx = createStoreContext<HovercardStore>(
+  [PopoverContextProvider],
+  [PopoverScopedContextProvider],
 );
 
 /**
@@ -20,16 +23,12 @@ export const HovercardContext = createContext<HovercardStore | undefined>(
  *   // Use the store...
  * }
  */
-export function useHovercardContext() {
-  return useContext(HovercardContext);
-}
+export const useHovercardContext = ctx.useStoreContext;
 
-export function HovercardContextProvider(
-  props: ComponentPropsWithoutRef<typeof HovercardContext.Provider>,
-) {
-  return (
-    <PopoverContextProvider {...props}>
-      <HovercardContext.Provider {...props} />
-    </PopoverContextProvider>
-  );
-}
+export const useHovercardScopedContext = ctx.useScopedStoreContext;
+
+export const useHovercardProviderContext = ctx.useStoreProviderContext;
+
+export const HovercardContextProvider = ctx.StoreContextProvider;
+
+export const HovercardScopedContextProvider = ctx.StoreScopedContextProvider;

@@ -12,7 +12,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { FormContext, useFormContext } from "./form-context.js";
+import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
@@ -131,7 +131,9 @@ export const useForm = createHook<FormOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <FormContext.Provider value={store}>{element}</FormContext.Provider>
+        <FormScopedContextProvider value={store}>
+          {element}
+        </FormScopedContextProvider>
       ),
       [store],
     );

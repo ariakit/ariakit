@@ -2,6 +2,7 @@ import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosur
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -23,6 +24,8 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectArrow = createHook<SelectArrowOptions>(
   ({ store, ...props }) => {
+    const context = useSelectContext();
+    store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },

@@ -22,7 +22,7 @@ import {
 import type { As, Props } from "../utils/types.js";
 import {
   SelectItemCheckedContext,
-  useSelectContext,
+  useSelectScopedContext,
 } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -56,7 +56,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     focusOnHover = true,
     ...props
   }) => {
-    const context = useSelectContext();
+    const context = useSelectScopedContext();
     store = store || context;
 
     invariant(

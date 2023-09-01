@@ -2,6 +2,7 @@ import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
 import { useSelectList } from "./select-list.js";
 
@@ -20,9 +21,10 @@ import { useSelectList } from "./select-list.js";
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ store, alwaysVisible, ...props }) => {
+    const context = useSelectProviderContext();
+    store = store || context;
     props = useSelectList({ store, alwaysVisible, ...props });
     props = usePopover({ store, alwaysVisible, ...props });
-
     return props;
   },
 );

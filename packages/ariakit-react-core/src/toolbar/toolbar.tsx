@@ -5,7 +5,7 @@ import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  ToolbarContextProvider,
+  ToolbarScopedContextProvider,
   useToolbarContext,
 } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
@@ -40,7 +40,9 @@ export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
   props = useWrapElement(
     props,
     (element) => (
-      <ToolbarContextProvider value={store}>{element}</ToolbarContextProvider>
+      <ToolbarScopedContextProvider value={store}>
+        {element}
+      </ToolbarScopedContextProvider>
     ),
     [store],
   );
