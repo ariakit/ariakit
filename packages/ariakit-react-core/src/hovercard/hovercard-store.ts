@@ -8,7 +8,7 @@ import { usePopoverStoreProps } from "../popover/popover-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useHovercardStoreProps<T extends HovercardStore>(
+export function useHovercardStoreProps<T extends Core.HovercardStore>(
   store: T,
   update: () => void,
   props: HovercardStoreProps,

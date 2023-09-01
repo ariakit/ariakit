@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import * as Core from "@ariakit/core/menu/menu-store";
 import type {
   BivariantCallback,
@@ -19,43 +19,16 @@ import type {
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps, useStoreState } from "../utils/store.js";
+import { useStore, useStoreProps } from "../utils/store.js";
 import { MenuBarContext, MenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;
 
-export function useMenuStoreOptions<T extends Values = Values>(
-  props: MenuStoreProps<T>,
+export function useMenuStoreProps<T extends Core.MenuStore>(
+  store: T,
+  update: () => void,
+  props: MenuStoreProps,
 ) {
-  const state = props.store?.getState?.();
-
-  const parentMenu = useContext(MenuContext);
-  const parentMenuBar = useContext(MenuBarContext);
-  const placementProp = props.placement;
-
-  const placement = useStoreState(
-    parentMenu || parentMenuBar,
-    (state) =>
-      placementProp ||
-      (state?.orientation === "vertical" ? "right-start" : "bottom-start"),
-  );
-
-  const parentIsMenuBar = !!parentMenuBar && !parentMenu;
-  const timeout = parentIsMenuBar ? 0 : 150;
-
-  return {
-    // TODO: Pass parent prop and remove these default values
-    values: props.values ?? state?.values ?? props.defaultValues,
-    timeout: props.timeout ?? state?.timeout ?? timeout,
-    placement,
-  };
-}
-
-export function useMenuStoreProps<
-  T extends Omit<MenuStore, "combobox" | "hideAll">,
->(store: T, update: () => void, props: MenuStoreProps) {
-  const parent = useContext(MenuContext);
-
   useUpdateEffect(update, [props.combobox]);
 
   store = useCompositeStoreProps(store, update, props);
@@ -63,17 +36,7 @@ export function useMenuStoreProps<
 
   useStoreProps(store, props, "values", "setValues");
 
-  return useMemo(
-    () => ({
-      ...store,
-      combobox: props.combobox,
-      hideAll: () => {
-        store.hide();
-        parent?.hideAll();
-      },
-    }),
-    [store, props.combobox],
-  );
+  return Object.assign(store, { combobox: props.combobox });
 }
 
 /**
@@ -96,11 +59,10 @@ export function useMenuStore<T extends Values = Values>(
 export function useMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
-  const options = useMenuStoreOptions(props);
-  const [store, update] = useStore(Core.createMenuStore, {
-    ...props,
-    ...options,
-  });
+  const parentMenu = useContext(MenuContext);
+  const parentMenuBar = useContext(MenuBarContext);
+  props = { ...props, parent: parentMenu || parentMenuBar };
+  const [store, update] = useStore(Core.createMenuStore, props);
   return useMenuStoreProps(store, update, props);
 }
 
@@ -115,12 +77,7 @@ export interface MenuStoreFunctions<T extends Values = Values>
   extends Pick<MenuStoreOptions, "combobox">,
     Omit<Core.MenuStoreFunctions<T>, "combobox">,
     CompositeStoreFunctions,
-    HovercardStoreFunctions {
-  /**
-   * Hides the menu and all its parent menus.
-   */
-  hideAll: () => void;
-}
+    HovercardStoreFunctions {}
 
 export interface MenuStoreOptions<T extends Values = Values>
   extends Core.MenuStoreOptions<T>,
