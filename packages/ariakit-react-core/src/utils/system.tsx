@@ -203,9 +203,10 @@ export function createStoreContext<T extends Store>(
 
   const useStoreContext = () => React.useContext(context);
 
-  const useScopedStoreContext = () => {
+  const useScopedStoreContext = (onlyScoped = false) => {
     const scoped = React.useContext(scopedContext);
     const store = useStoreContext();
+    if (onlyScoped) return scoped;
     return scoped || store;
   };
 

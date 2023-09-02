@@ -46,7 +46,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     focusOnHover,
     ...props
   }) => {
-    const menuContext = useMenuScopedContext();
+    const menuContext = useMenuScopedContext(true);
     const menuBarContext = useMenuBarScopedContext();
     store = store || menuContext || (menuBarContext as any);
 
