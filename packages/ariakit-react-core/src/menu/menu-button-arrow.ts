@@ -2,6 +2,7 @@ import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosur
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
 /**
@@ -23,6 +24,8 @@ import type { MenuStore } from "./menu-store.js";
  */
 export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
   ({ store, ...props }) => {
+    const context = useMenuContext();
+    store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },

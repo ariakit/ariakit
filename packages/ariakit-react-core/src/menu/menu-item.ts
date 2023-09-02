@@ -1,5 +1,4 @@
 import type { MouseEvent } from "react";
-import { useContext } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -17,7 +16,10 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import {
+  useMenuBarScopedContext,
+  useMenuScopedContext,
+} from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
@@ -44,8 +46,8 @@ export const useMenuItem = createHook<MenuItemOptions>(
     focusOnHover,
     ...props
   }) => {
-    const menuContext = useContext(MenuContext);
-    const menuBarContext = useContext(MenuBarContext);
+    const menuContext = useMenuScopedContext();
+    const menuBarContext = useMenuBarScopedContext();
     store = store || menuContext || (menuBarContext as any);
 
     invariant(

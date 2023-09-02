@@ -44,14 +44,14 @@ export function createMenuStore(props?: MenuStoreProps): MenuStore;
 export function createMenuStore({
   combobox,
   parent,
+  menubar,
   ...props
 }: MenuStoreProps = {}): MenuStore {
-  const parentIsMenubar = !!parent && !("parent" in parent);
-  const parentMenu = parentIsMenubar ? undefined : parent;
+  const parentIsMenubar = !!menubar && !parent;
 
   const store = mergeStore(
     props.store,
-    pick(parentMenu, ["values"]),
+    pick(parent, ["values"]),
     omit(combobox, [
       "arrowElement",
       "anchorElement",
@@ -127,9 +127,10 @@ export function createMenuStore({
     ...menu,
     combobox,
     parent,
+    menubar,
     hideAll: () => {
       hovercard.hide();
-      parentMenu?.hideAll();
+      parent?.hideAll();
     },
     setInitialFocus: (value) => menu.setState("initialFocus", value),
     setValues: (values) => menu.setState("values", values),
@@ -177,7 +178,7 @@ export interface MenuStoreState<T extends Values = Values>
 }
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends Pick<MenuStoreOptions, "combobox" | "parent">,
+  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
     CompositeStoreFunctions,
     HovercardStoreFunctions {
   /**
@@ -227,7 +228,11 @@ export interface MenuStoreOptions<T extends Values = Values>
   /**
    * TODO: Comment
    */
-  parent?: MenuStore | MenuBarStore;
+  parent?: MenuStore;
+  /**
+   * TODO: Comment
+   */
+  menubar?: MenuBarStore;
   /**
    * The default values for the `values` state.
    * @default {}

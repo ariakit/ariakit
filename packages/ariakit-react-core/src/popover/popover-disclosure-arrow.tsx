@@ -36,7 +36,7 @@ export const usePopoverDisclosureArrow =
       invariant(
         store,
         process.env.NODE_ENV !== "production" &&
-          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component",
+          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component.",
       );
 
       const position = store.useState((state) => placement || state.placement);

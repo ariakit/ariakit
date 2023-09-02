@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
@@ -10,7 +9,10 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuContext, MenuItemCheckedContext } from "./menu-context.js";
+import {
+  MenuItemCheckedContext,
+  useMenuScopedContext,
+} from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
@@ -40,7 +42,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     hideOnClick = false,
     ...props
   }) => {
-    const context = useContext(MenuContext);
+    const context = useMenuScopedContext();
     store = store || context;
 
     invariant(

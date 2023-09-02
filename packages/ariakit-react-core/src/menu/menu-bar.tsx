@@ -1,10 +1,14 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
-import { MenuBarContext } from "./menu-context.js";
+import {
+  MenuBarScopedContextProvider,
+  useMenuBarProviderContext,
+} from "./menu-context.js";
 
 /**
  * Returns props to create a `MenuBar` component.
@@ -28,6 +32,15 @@ import { MenuBarContext } from "./menu-context.js";
  */
 export const useMenuBar = createHook<MenuBarOptions>(
   ({ store, composite = true, ...props }) => {
+    const context = useMenuBarProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "MenuBar must receive a `store` prop or be wrapped in a MenuBarProvider component.",
+    );
+
     const orientation = store.useState((state) =>
       !composite || state.orientation === "both"
         ? undefined
@@ -37,9 +50,9 @@ export const useMenuBar = createHook<MenuBarOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <MenuBarContext.Provider value={store}>
+        <MenuBarScopedContextProvider value={store}>
           {element}
-        </MenuBarContext.Provider>
+        </MenuBarScopedContextProvider>
       ),
       [store],
     );
@@ -101,7 +114,7 @@ export interface MenuBarOptions<T extends As = "div">
   /**
    * Object returned by the `useMenuBarStore` hook.
    */
-  store: MenuBarStore;
+  store?: MenuBarStore;
 }
 
 export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;
