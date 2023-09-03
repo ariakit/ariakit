@@ -9,11 +9,17 @@ import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
+import { Role } from "../role/role.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { useMenuProviderContext } from "./menu-context.js";
+import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
@@ -140,12 +146,23 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       }
     });
 
+    props = useWrapElement(
+      props,
+      (element) => (
+        <MenuContextProvider value={store}>{element}</MenuContextProvider>
+      ),
+      [store],
+    );
+
     if (hasParentMenu) {
       // On Safari, VO+Space triggers a click twice on native button elements
       // with role menuitem (https://bugs.webkit.org/show_bug.cgi?id=228318).
       // So, if the menu button is rendered within a menu, we need to render it
       // as another element.
-      props = { render: <div />, ...props };
+      props = {
+        ...props,
+        render: <Role.div render={props.render} />,
+      };
     }
 
     // We'll use this id to render the aria-labelledby attribute on the menu.

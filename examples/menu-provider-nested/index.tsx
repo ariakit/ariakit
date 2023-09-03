@@ -10,10 +10,10 @@ export default function Example() {
         <MenuItem className="menu-item">Undo</MenuItem>
         <MenuItem className="menu-item">Redo</MenuItem>
         <MenuProvider>
-          <MenuItem className="menu-item" render={<MenuButton />}>
+          <MenuButton className="menu-item" render={<MenuItem />}>
             <span className="label">Find</span>
             <MenuButtonArrow />
-          </MenuItem>
+          </MenuButton>
           <Menu className="menu" gutter={8} shift={-9}>
             <MenuItem className="menu-item">Search the Web...</MenuItem>
             <MenuItem className="menu-item">Find...</MenuItem>
@@ -22,10 +22,10 @@ export default function Example() {
           </Menu>
         </MenuProvider>
         <MenuProvider>
-          <MenuItem className="menu-item" render={<MenuButton />}>
+          <MenuButton className="menu-item" render={<MenuItem />}>
             <span className="label">Speech</span>
             <MenuButtonArrow />
-          </MenuItem>
+          </MenuButton>
           <Menu className="menu" gutter={8} shift={-9}>
             <MenuItem className="menu-item">Start Speaking</MenuItem>
             <MenuItem className="menu-item" disabled>
