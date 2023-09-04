@@ -2,6 +2,7 @@ import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js"
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
 /**
@@ -16,10 +17,14 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuDismiss = createHook<MenuDismissOptions>((props) => {
-  props = useHovercardDismiss(props);
-  return props;
-});
+export const useMenuDismiss = createHook<MenuDismissOptions>(
+  ({ store, ...props }) => {
+    const context = useMenuScopedContext();
+    store = store || context;
+    props = useHovercardDismiss({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a button that hides a menu.

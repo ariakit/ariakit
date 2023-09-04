@@ -8,7 +8,7 @@ import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
-export function useMenuBarStoreProps<T extends MenuBarStore>(
+export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
   store: T,
   update: () => void,
   props: MenuBarStoreProps,

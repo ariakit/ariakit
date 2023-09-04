@@ -1,4 +1,3 @@
-import { useContext, useMemo } from "react";
 import * as Core from "@ariakit/core/menu/menu-store";
 import type {
   BivariantCallback,
@@ -11,6 +10,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
+import { useDialogScopedContext } from "../dialog/dialog-context.js";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
@@ -19,61 +19,29 @@ import type {
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps, useStoreState } from "../utils/store.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import { useStore, useStoreProps } from "../utils/store.js";
+import type { MenuBarStore } from "./menu-bar-store.js";
+import { useMenuBarContext, useMenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;
 
-export function useMenuStoreOptions<T extends Values = Values>(
-  props: MenuStoreProps<T>,
+export function useMenuStoreProps<T extends Core.MenuStore>(
+  store: T,
+  update: () => void,
+  props: MenuStoreProps,
 ) {
-  const state = props.store?.getState?.();
-
-  const parentMenu = useContext(MenuContext);
-  const parentMenuBar = useContext(MenuBarContext);
-  const placementProp = props.placement;
-
-  const placement = useStoreState(
-    parentMenu || parentMenuBar,
-    (state) =>
-      placementProp ||
-      (state?.orientation === "vertical" ? "right-start" : "bottom-start"),
-  );
-
-  const parentIsMenuBar = !!parentMenuBar && !parentMenu;
-  const timeout = parentIsMenuBar ? 0 : 150;
-
-  return {
-    // TODO: Pass parent prop and remove these default values
-    values: props.values ?? state?.values ?? props.defaultValues,
-    timeout: props.timeout ?? state?.timeout ?? timeout,
-    placement,
-  };
-}
-
-export function useMenuStoreProps<
-  T extends Omit<MenuStore, "combobox" | "hideAll">,
->(store: T, update: () => void, props: MenuStoreProps) {
-  const parent = useContext(MenuContext);
-
-  useUpdateEffect(update, [props.combobox]);
+  useUpdateEffect(update, [props.combobox, props.parent, props.menubar]);
 
   store = useCompositeStoreProps(store, update, props);
   store = useHovercardStoreProps(store, update, props);
 
   useStoreProps(store, props, "values", "setValues");
 
-  return useMemo(
-    () => ({
-      ...store,
-      combobox: props.combobox,
-      hideAll: () => {
-        store.hide();
-        parent?.hideAll();
-      },
-    }),
-    [store, props.combobox],
-  );
+  return Object.assign(store, {
+    combobox: props.combobox,
+    parent: props.parent,
+    menubar: props.menubar,
+  });
 }
 
 /**
@@ -96,11 +64,20 @@ export function useMenuStore<T extends Values = Values>(
 export function useMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
-  const options = useMenuStoreOptions(props);
-  const [store, update] = useStore(Core.createMenuStore, {
+  // Obtain the dialog context and compare it to the parent menu. If they
+  // differ, it implies an intermediate dialog, which is not a menu, exists
+  // between the parent menu and this menu, indicating they're not directly
+  // nested.
+  const dialog = useDialogScopedContext();
+  const parent = useMenuContext();
+  const menubar = useMenuBarContext();
+  props = {
     ...props,
-    ...options,
-  });
+    parent:
+      props.parent !== undefined && dialog === parent ? props.parent : parent,
+    menubar: props.menubar !== undefined ? props.menubar : menubar,
+  };
+  const [store, update] = useStore(Core.createMenuStore, props);
   return useMenuStoreProps(store, update, props);
 }
 
@@ -112,15 +89,10 @@ export interface MenuStoreState<T extends Values = Values>
     HovercardStoreState {}
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends Pick<MenuStoreOptions, "combobox">,
-    Omit<Core.MenuStoreFunctions<T>, "combobox">,
+  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
+    Omit<Core.MenuStoreFunctions<T>, "combobox" | "parent" | "menubar">,
     CompositeStoreFunctions,
-    HovercardStoreFunctions {
-  /**
-   * Hides the menu and all its parent menus.
-   */
-  hideAll: () => void;
-}
+    HovercardStoreFunctions {}
 
 export interface MenuStoreOptions<T extends Values = Values>
   extends Core.MenuStoreOptions<T>,
@@ -143,6 +115,17 @@ export interface MenuStoreOptions<T extends Values = Values>
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
   combobox?: ComboboxStore;
+  /**
+   * A reference to a parent menu store. It's automatically set when nesting
+   * menus in the React tree. You should manually set this if menus aren't nested
+   * in the React tree.
+   */
+  parent?: MenuStore;
+  /**
+   * A reference to a menu bar store. It's automatically set when rendering
+   * menus inside a menu bar in the React tree.
+   */
+  menubar?: MenuBarStore;
 }
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &

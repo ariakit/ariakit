@@ -17,6 +17,7 @@ import {
   createStore,
   mergeStore,
   omit,
+  pick,
   setup,
   sync,
   throwOnConflictingProps,
@@ -27,6 +28,7 @@ import type {
   SetState,
   SetStateAction,
 } from "../utils/types.js";
+import type { MenuBarStore } from "./menu-bar-store.js";
 
 type Values = Record<
   string,
@@ -41,10 +43,15 @@ export function createMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function createMenuStore({
   combobox,
+  parent,
+  menubar,
   ...props
 }: MenuStoreProps = {}): MenuStore {
+  const parentIsMenubar = !!menubar && !parent;
+
   const store = mergeStore(
     props.store,
+    pick(parent, ["values"]),
     omit(combobox, [
       "arrowElement",
       "anchorElement",
@@ -76,6 +83,11 @@ export function createMenuStore({
       syncState.placement,
       "bottom-start" as const,
     ),
+    timeout: defaultValue(
+      props.timeout,
+      syncState.timeout,
+      parentIsMenubar ? 0 : 150,
+    ),
     hideTimeout: defaultValue(props.hideTimeout, syncState.hideTimeout, 0),
   });
 
@@ -100,11 +112,26 @@ export function createMenuStore({
     }),
   );
 
+  setup(menu, () =>
+    sync(parent, ["orientation"], (state) => {
+      menu.setState(
+        "placement",
+        state.orientation === "vertical" ? "right-start" : "bottom-start",
+      );
+    }),
+  );
+
   return {
     ...composite,
     ...hovercard,
     ...menu,
     combobox,
+    parent,
+    menubar,
+    hideAll: () => {
+      hovercard.hide();
+      parent?.hideAll();
+    },
     setInitialFocus: (value) => menu.setState("initialFocus", value),
     setValues: (values) => menu.setState("values", values),
     setValue: (name, value) => {
@@ -151,9 +178,13 @@ export interface MenuStoreState<T extends Values = Values>
 }
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends Pick<MenuStoreOptions, "combobox">,
+  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
     CompositeStoreFunctions,
     HovercardStoreFunctions {
+  /**
+   * Hides the menu and all its parent menus.
+   */
+  hideAll: () => void;
   /**
    * Sets the `initialFocus` state.
    */
@@ -194,6 +225,15 @@ export interface MenuStoreOptions<T extends Values = Values>
    * share the same state.
    */
   combobox?: ComboboxStore;
+  /**
+   * A reference to a parent menu store. This should be used on nested menus.
+   */
+  parent?: MenuStore;
+  /**
+   * A reference to a menu bar store. This should be used when rendering menus
+   * inside a menu bar.
+   */
+  menubar?: MenuBarStore;
   /**
    * The default values for the `values` state.
    * @default {}

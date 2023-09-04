@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
@@ -9,7 +8,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuContext } from "./menu-context.js";
+import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
@@ -29,7 +28,7 @@ import type { MenuStore } from "./menu-store.js";
  */
 export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
   ({ store, name, checked, defaultChecked, hideOnClick = false, ...props }) => {
-    const context = useContext(MenuContext);
+    const context = useMenuScopedContext();
     store = store || context;
 
     invariant(

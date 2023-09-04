@@ -23,7 +23,7 @@ import { useStore, useStoreProps } from "../utils/store.js";
 type Item = Core.SelectStoreItem;
 type Value = Core.SelectStoreValue;
 
-export function useSelectStoreProps<T extends Omit<SelectStore, "combobox">>(
+export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
   update: () => void,
   props: SelectStoreProps,

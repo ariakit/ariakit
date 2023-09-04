@@ -1,12 +1,13 @@
 import type { KeyboardEvent, MutableRefObject, RefObject } from "react";
-import { createRef, useContext, useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import { useMenuProviderContext } from "./menu-context.js";
 import type { MenuListOptions } from "./menu-list.js";
 import { useMenuList } from "./menu-list.js";
 
@@ -33,10 +34,19 @@ export const useMenu = createHook<MenuOptions>(
     alwaysVisible,
     ...props
   }) => {
+    const context = useMenuProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Menu must receive a `store` prop or be wrapped in a MenuProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
 
-    const parentMenu = useContext(MenuContext);
-    const parentMenuBar = useContext(MenuBarContext);
+    const parentMenu = store.parent;
+    const parentMenuBar = store.menubar;
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
@@ -53,7 +63,7 @@ export const useMenu = createHook<MenuOptions>(
           // pressing Esc should close all menus
           event.stopPropagation();
         }
-        return store.hide();
+        return store?.hide();
       }
     });
 
@@ -144,8 +154,7 @@ export const useMenu = createHook<MenuOptions>(
           return true;
         }
         if (!parentIsMenuBar) return false;
-        const { disclosureElement } = store.getState();
-        const disclosure = disclosureElement;
+        const disclosure = store?.getState().disclosureElement;
         if (!disclosure) return true;
         if (hasFocusWithin(disclosure)) return false;
         return true;

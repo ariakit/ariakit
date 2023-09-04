@@ -8,7 +8,7 @@ import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
-export function useToolbarStoreProps<T extends ToolbarStore>(
+export function useToolbarStoreProps<T extends Core.ToolbarStore>(
   store: T,
   update: () => void,
   props: ToolbarStoreProps,
