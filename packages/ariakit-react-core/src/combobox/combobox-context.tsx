@@ -28,15 +28,15 @@ const ctx = createStoreContext<ComboboxStore>(
  *   // Use the store...
  * }
  */
-export const useComboboxContext = ctx.useStoreContext;
+export const useComboboxContext = ctx.useContext;
 
-export const useComboboxScopedContext = ctx.useScopedStoreContext;
+export const useComboboxScopedContext = ctx.useScopedContext;
 
-export const useComboboxProviderContext = ctx.useStoreProviderContext;
+export const useComboboxProviderContext = ctx.useProviderContext;
 
-export const ComboboxContextProvider = ctx.StoreContextProvider;
+export const ComboboxContextProvider = ctx.ContextProvider;
 
-export const ComboboxScopedContextProvider = ctx.StoreScopedContextProvider;
+export const ComboboxScopedContextProvider = ctx.ScopedContextProvider;
 
 export const ComboboxItemValueContext = createContext<string | undefined>(
   undefined,

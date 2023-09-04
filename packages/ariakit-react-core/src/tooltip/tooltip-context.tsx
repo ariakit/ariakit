@@ -23,12 +23,12 @@ const ctx = createStoreContext<TooltipStore>(
  *   // Use the store...
  * }
  */
-export const useTooltipContext = ctx.useStoreContext;
+export const useTooltipContext = ctx.useContext;
 
-export const useTooltipScopedContext = ctx.useScopedStoreContext;
+export const useTooltipScopedContext = ctx.useScopedContext;
 
-export const useTooltipProviderContext = ctx.useStoreProviderContext;
+export const useTooltipProviderContext = ctx.useProviderContext;
 
-export const TooltipContextProvider = ctx.StoreContextProvider;
+export const TooltipContextProvider = ctx.ContextProvider;
 
-export const TooltipScopedContextProvider = ctx.StoreScopedContextProvider;
+export const TooltipScopedContextProvider = ctx.ScopedContextProvider;

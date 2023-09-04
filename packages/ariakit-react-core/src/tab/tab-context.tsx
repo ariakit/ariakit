@@ -23,12 +23,12 @@ const ctx = createStoreContext<TabStore>(
  *   // Use the store...
  * }
  */
-export const useTabContext = ctx.useStoreContext;
+export const useTabContext = ctx.useContext;
 
-export const useTabScopedContext = ctx.useScopedStoreContext;
+export const useTabScopedContext = ctx.useScopedContext;
 
-export const useTabProviderContext = ctx.useStoreProviderContext;
+export const useTabProviderContext = ctx.useProviderContext;
 
-export const TabContextProvider = ctx.StoreContextProvider;
+export const TabContextProvider = ctx.ContextProvider;
 
-export const TabScopedContextProvider = ctx.StoreScopedContextProvider;
+export const TabScopedContextProvider = ctx.ScopedContextProvider;

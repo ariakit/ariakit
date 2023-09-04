@@ -28,14 +28,14 @@ const ctx = createStoreContext<SelectStore>(
  *   // Use the store...
  * }
  */
-export const useSelectContext = ctx.useStoreContext;
+export const useSelectContext = ctx.useContext;
 
-export const useSelectScopedContext = ctx.useScopedStoreContext;
+export const useSelectScopedContext = ctx.useScopedContext;
 
-export const useSelectProviderContext = ctx.useStoreProviderContext;
+export const useSelectProviderContext = ctx.useProviderContext;
 
-export const SelectContextProvider = ctx.StoreContextProvider;
+export const SelectContextProvider = ctx.ContextProvider;
 
-export const SelectScopedContextProvider = ctx.StoreScopedContextProvider;
+export const SelectScopedContextProvider = ctx.ScopedContextProvider;
 
 export const SelectItemCheckedContext = createContext(false);

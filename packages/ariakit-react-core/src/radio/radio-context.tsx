@@ -23,12 +23,12 @@ const ctx = createStoreContext<RadioStore>(
  *   // Use the store...
  * }
  */
-export const useRadioContext = ctx.useStoreContext;
+export const useRadioContext = ctx.useContext;
 
-export const useRadioScopedContext = ctx.useScopedStoreContext;
+export const useRadioScopedContext = ctx.useScopedContext;
 
-export const useRadioProviderContext = ctx.useStoreProviderContext;
+export const useRadioProviderContext = ctx.useProviderContext;
 
-export const RadioContextProvider = ctx.StoreContextProvider;
+export const RadioContextProvider = ctx.ContextProvider;
 
-export const RadioScopedContextProvider = ctx.StoreScopedContextProvider;
+export const RadioScopedContextProvider = ctx.ScopedContextProvider;

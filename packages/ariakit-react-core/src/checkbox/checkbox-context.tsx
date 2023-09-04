@@ -16,12 +16,12 @@ const ctx = createStoreContext<CheckboxStore>();
  *   // Use the store...
  * }
  */
-export const useCheckboxContext = ctx.useStoreContext;
+export const useCheckboxContext = ctx.useContext;
 
-export const useCheckboxScopedContext = ctx.useScopedStoreContext;
+export const useCheckboxScopedContext = ctx.useScopedContext;
 
-export const useCheckboxProviderContext = ctx.useStoreProviderContext;
+export const useCheckboxProviderContext = ctx.useProviderContext;
 
-export const CheckboxContextProvider = ctx.StoreContextProvider;
+export const CheckboxContextProvider = ctx.ContextProvider;
 
-export const CheckboxScopedContextProvider = ctx.StoreScopedContextProvider;
+export const CheckboxScopedContextProvider = ctx.ScopedContextProvider;

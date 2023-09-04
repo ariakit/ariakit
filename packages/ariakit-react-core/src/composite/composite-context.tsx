@@ -24,15 +24,15 @@ const ctx = createStoreContext<CompositeStore>(
  *   // Use the store...
  * }
  */
-export const useCompositeContext = ctx.useStoreContext;
+export const useCompositeContext = ctx.useContext;
 
-export const useCompositeScopedContext = ctx.useScopedStoreContext;
+export const useCompositeScopedContext = ctx.useScopedContext;
 
-export const useCompositeProviderContext = ctx.useStoreProviderContext;
+export const useCompositeProviderContext = ctx.useProviderContext;
 
-export const CompositeContextProvider = ctx.StoreContextProvider;
+export const CompositeContextProvider = ctx.ContextProvider;
 
-export const CompositeScopedContextProvider = ctx.StoreScopedContextProvider;
+export const CompositeScopedContextProvider = ctx.ScopedContextProvider;
 
 interface ItemContext {
   baseElement?: HTMLElement;

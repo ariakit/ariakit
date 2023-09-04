@@ -23,12 +23,12 @@ const ctx = createStoreContext<HovercardStore>(
  *   // Use the store...
  * }
  */
-export const useHovercardContext = ctx.useStoreContext;
+export const useHovercardContext = ctx.useContext;
 
-export const useHovercardScopedContext = ctx.useScopedStoreContext;
+export const useHovercardScopedContext = ctx.useScopedContext;
 
-export const useHovercardProviderContext = ctx.useStoreProviderContext;
+export const useHovercardProviderContext = ctx.useProviderContext;
 
-export const HovercardContextProvider = ctx.StoreContextProvider;
+export const HovercardContextProvider = ctx.ContextProvider;
 
-export const HovercardScopedContextProvider = ctx.StoreScopedContextProvider;
+export const HovercardScopedContextProvider = ctx.ScopedContextProvider;

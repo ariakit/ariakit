@@ -29,15 +29,15 @@ const menu = createStoreContext<MenuStore>(
  *   // Use the store...
  * }
  */
-export const useMenuContext = menu.useStoreContext;
+export const useMenuContext = menu.useContext;
 
-export const useMenuScopedContext = menu.useScopedStoreContext;
+export const useMenuScopedContext = menu.useScopedContext;
 
-export const useMenuProviderContext = menu.useStoreProviderContext;
+export const useMenuProviderContext = menu.useProviderContext;
 
-export const MenuContextProvider = menu.StoreContextProvider;
+export const MenuContextProvider = menu.ContextProvider;
 
-export const MenuScopedContextProvider = menu.StoreScopedContextProvider;
+export const MenuScopedContextProvider = menu.ScopedContextProvider;
 
 const menubar = createStoreContext<MenuBarStore>(
   [CompositeContextProvider],
@@ -57,15 +57,15 @@ const menubar = createStoreContext<MenuBarStore>(
  *   // Use the store...
  * }
  */
-export const useMenuBarContext = menubar.useStoreContext;
+export const useMenuBarContext = menubar.useContext;
 
-export const useMenuBarScopedContext = menubar.useScopedStoreContext;
+export const useMenuBarScopedContext = menubar.useScopedContext;
 
-export const useMenuBarProviderContext = menubar.useStoreProviderContext;
+export const useMenuBarProviderContext = menubar.useProviderContext;
 
-export const MenuBarContextProvider = menubar.StoreContextProvider;
+export const MenuBarContextProvider = menubar.ContextProvider;
 
-export const MenuBarScopedContextProvider = menubar.StoreScopedContextProvider;
+export const MenuBarScopedContextProvider = menubar.ScopedContextProvider;
 
 export const MenuItemCheckedContext = createContext<boolean | undefined>(
   undefined,

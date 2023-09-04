@@ -23,12 +23,12 @@ const ctx = createStoreContext<ToolbarStore>(
  *   // Use the store...
  * }
  */
-export const useToolbarContext = ctx.useStoreContext;
+export const useToolbarContext = ctx.useContext;
 
-export const useToolbarScopedContext = ctx.useScopedStoreContext;
+export const useToolbarScopedContext = ctx.useScopedContext;
 
-export const useToolbarProviderContext = ctx.useStoreProviderContext;
+export const useToolbarProviderContext = ctx.useProviderContext;
 
-export const ToolbarContextProvider = ctx.StoreContextProvider;
+export const ToolbarContextProvider = ctx.ContextProvider;
 
-export const ToolbarScopedContextProvider = ctx.StoreScopedContextProvider;
+export const ToolbarScopedContextProvider = ctx.ScopedContextProvider;

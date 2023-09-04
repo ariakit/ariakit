@@ -23,12 +23,12 @@ const ctx = createStoreContext<PopoverStore>(
  *   // Use the store...
  * }
  */
-export const usePopoverContext = ctx.useStoreContext;
+export const usePopoverContext = ctx.useContext;
 
-export const usePopoverScopedContext = ctx.useScopedStoreContext;
+export const usePopoverScopedContext = ctx.useScopedContext;
 
-export const usePopoverProviderContext = ctx.useStoreProviderContext;
+export const usePopoverProviderContext = ctx.useProviderContext;
 
-export const PopoverContextProvider = ctx.StoreContextProvider;
+export const PopoverContextProvider = ctx.ContextProvider;
 
-export const PopoverScopedContextProvider = ctx.StoreScopedContextProvider;
+export const PopoverScopedContextProvider = ctx.ScopedContextProvider;

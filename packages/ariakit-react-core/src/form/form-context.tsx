@@ -23,12 +23,12 @@ const ctx = createStoreContext<FormStore>(
  *   // Use the store...
  * }
  */
-export const useFormContext = ctx.useStoreContext;
+export const useFormContext = ctx.useContext;
 
-export const useFormScopedContext = ctx.useScopedStoreContext;
+export const useFormScopedContext = ctx.useScopedContext;
 
-export const useFormProviderContext = ctx.useStoreProviderContext;
+export const useFormProviderContext = ctx.useProviderContext;
 
-export const FormContextProvider = ctx.StoreContextProvider;
+export const FormContextProvider = ctx.ContextProvider;
 
-export const FormScopedContextProvider = ctx.StoreScopedContextProvider;
+export const FormScopedContextProvider = ctx.ScopedContextProvider;

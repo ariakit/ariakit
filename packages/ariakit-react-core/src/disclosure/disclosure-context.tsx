@@ -16,12 +16,12 @@ const ctx = createStoreContext<DisclosureStore>();
  *   // Use the store...
  * }
  */
-export const useDisclosureContext = ctx.useStoreContext;
+export const useDisclosureContext = ctx.useContext;
 
-export const useDisclosureScopedContext = ctx.useScopedStoreContext;
+export const useDisclosureScopedContext = ctx.useScopedContext;
 
-export const useDisclosureProviderContext = ctx.useStoreProviderContext;
+export const useDisclosureProviderContext = ctx.useProviderContext;
 
-export const DisclosureContextProvider = ctx.StoreContextProvider;
+export const DisclosureContextProvider = ctx.ContextProvider;
 
-export const DisclosureScopedContextProvider = ctx.StoreScopedContextProvider;
+export const DisclosureScopedContextProvider = ctx.ScopedContextProvider;

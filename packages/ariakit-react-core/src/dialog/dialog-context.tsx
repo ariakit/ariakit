@@ -25,15 +25,15 @@ const ctx = createStoreContext<DialogStore>(
  *   // Use the store...
  * }
  */
-export const useDialogContext = ctx.useStoreContext;
+export const useDialogContext = ctx.useContext;
 
-export const useDialogScopedContext = ctx.useScopedStoreContext;
+export const useDialogScopedContext = ctx.useScopedContext;
 
-export const useDialogProviderContext = ctx.useStoreProviderContext;
+export const useDialogProviderContext = ctx.useProviderContext;
 
-export const DialogContextProvider = ctx.StoreContextProvider;
+export const DialogContextProvider = ctx.ContextProvider;
 
-export const DialogScopedContextProvider = ctx.StoreScopedContextProvider;
+export const DialogScopedContextProvider = ctx.ScopedContextProvider;
 
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined

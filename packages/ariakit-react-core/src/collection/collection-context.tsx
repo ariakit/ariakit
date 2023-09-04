@@ -16,12 +16,12 @@ const ctx = createStoreContext<CollectionStore>();
  *   // Use the store...
  * }
  */
-export const useCollectionContext = ctx.useStoreContext;
+export const useCollectionContext = ctx.useContext;
 
-export const useCollectionScopedContext = ctx.useScopedStoreContext;
+export const useCollectionScopedContext = ctx.useScopedContext;
 
-export const useCollectionProviderContext = ctx.useStoreProviderContext;
+export const useCollectionProviderContext = ctx.useProviderContext;
 
-export const CollectionContextProvider = ctx.StoreContextProvider;
+export const CollectionContextProvider = ctx.ContextProvider;
 
-export const CollectionScopedContextProvider = ctx.StoreScopedContextProvider;
+export const CollectionScopedContextProvider = ctx.ScopedContextProvider;

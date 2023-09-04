@@ -201,23 +201,23 @@ export function createStoreContext<T extends Store>(
   const context = React.createContext<T | undefined>(undefined);
   const scopedContext = React.createContext<T | undefined>(undefined);
 
-  const useStoreContext = () => React.useContext(context);
+  const useContext = () => React.useContext(context);
 
-  const useScopedStoreContext = (onlyScoped = false) => {
+  const useScopedContext = (onlyScoped = false) => {
     const scoped = React.useContext(scopedContext);
-    const store = useStoreContext();
+    const store = useContext();
     if (onlyScoped) return scoped;
     return scoped || store;
   };
 
-  const useStoreProviderContext = () => {
+  const useProviderContext = () => {
     const scoped = React.useContext(scopedContext);
-    const store = useStoreContext();
+    const store = useContext();
     if (scoped && scoped === store) return;
     return store;
   };
 
-  const StoreContextProvider = (
+  const ContextProvider = (
     props: React.ComponentPropsWithoutRef<typeof context.Provider>,
   ) => {
     return providers.reduceRight(
@@ -226,28 +226,28 @@ export function createStoreContext<T extends Store>(
     );
   };
 
-  const StoreScopedContextProvider = (
+  const ScopedContextProvider = (
     props: React.ComponentPropsWithoutRef<typeof scopedContext.Provider>,
   ) => {
     return (
-      <StoreContextProvider {...props}>
+      <ContextProvider {...props}>
         {scopedProviders.reduceRight(
           (children, Provider) => (
             <Provider {...props}>{children}</Provider>
           ),
           <scopedContext.Provider {...props} />,
         )}
-      </StoreContextProvider>
+      </ContextProvider>
     );
   };
 
   return {
     context,
     scopedContext,
-    useStoreContext,
-    useScopedStoreContext,
-    useStoreProviderContext,
-    StoreContextProvider,
-    StoreScopedContextProvider,
+    useContext,
+    useScopedContext,
+    useProviderContext,
+    ContextProvider,
+    ScopedContextProvider,
   };
 }
