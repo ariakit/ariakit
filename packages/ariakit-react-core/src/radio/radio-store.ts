@@ -8,7 +8,7 @@ import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useRadioStoreProps<T extends RadioStore>(
+export function useRadioStoreProps<T extends Core.RadioStore>(
   store: T,
   update: () => void,
   props: RadioStoreProps,

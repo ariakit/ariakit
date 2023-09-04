@@ -226,11 +226,12 @@ export interface MenuStoreOptions<T extends Values = Values>
    */
   combobox?: ComboboxStore;
   /**
-   * TODO: Comment
+   * A reference to a parent menu store. This should be used on nested menus.
    */
   parent?: MenuStore;
   /**
-   * TODO: Comment
+   * A reference to a menu bar store. This should be used when rendering menus
+   * inside a menu bar.
    */
   menubar?: MenuBarStore;
   /**

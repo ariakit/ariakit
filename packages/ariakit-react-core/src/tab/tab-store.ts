@@ -11,7 +11,7 @@ import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.TabStoreItem;
 
-export function useTabStoreProps<T extends Store<Core.TabStore>>(
+export function useTabStoreProps<T extends Core.TabStore>(
   store: T,
   update: () => void,
   props: TabStoreProps,
