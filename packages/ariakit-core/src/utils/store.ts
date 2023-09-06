@@ -202,7 +202,7 @@ export function createStore<S extends State>(
 }
 
 export function setup<T extends Store>(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreSetup>
 ): T extends Store ? ReturnType<StoreSetup> : void;
 
@@ -215,7 +215,7 @@ export function setup(store?: Store, ...args: Parameters<StoreSetup>) {
 }
 
 export function init<T extends Store>(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreInit>
 ): T extends Store ? ReturnType<StoreInit> : void;
 
@@ -228,7 +228,7 @@ export function init(store?: Store, ...args: Parameters<StoreInit>) {
 }
 
 export function subscribe<T extends Store, K extends keyof StoreState<T>>(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
 ): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
 
@@ -241,7 +241,7 @@ export function subscribe(store?: Store, ...args: Parameters<StoreSubscribe>) {
 }
 
 export function sync<T extends Store, K extends keyof StoreState<T>>(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreSync<StoreState<T>, K>>
 ): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
 
@@ -255,7 +255,7 @@ export function sync(store?: Store, ...args: Parameters<StoreSync>) {
 }
 
 export function batch<T extends Store, K extends keyof StoreState<T>>(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreBatch<StoreState<T>, K>>
 ): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
 
@@ -272,7 +272,7 @@ export function omit<
   T extends Store,
   K extends ReadonlyArray<keyof StoreState<T>>,
 >(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StoreOmit<StoreState<T>, K>>
 ): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
 
@@ -289,7 +289,7 @@ export function pick<
   T extends Store,
   K extends ReadonlyArray<keyof StoreState<T>>,
 >(
-  store?: T,
+  store?: T | null,
   ...args: Parameters<StorePick<StoreState<T>, K>>
 ): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
 

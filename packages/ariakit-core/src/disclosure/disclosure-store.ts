@@ -198,7 +198,7 @@ export interface DisclosureStoreOptions
    * `disclosureElement` won't be synced. For that, use the `store` prop
    * instead.
    */
-  disclosure?: DisclosureStore;
+  disclosure?: DisclosureStore | null;
 }
 
 export type DisclosureStoreProps = DisclosureStoreOptions &

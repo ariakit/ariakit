@@ -267,7 +267,7 @@ export interface SelectStoreOptions<T extends Value = Value>
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
   /**
    * The default value. If not set, the first non-disabled item will be used.
    *
