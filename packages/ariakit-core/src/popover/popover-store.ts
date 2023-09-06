@@ -131,7 +131,7 @@ export interface PopoverStoreOptions
    * A reference to another popover store that's controlling another popover to
    * keep them in sync.
    */
-  popover?: PopoverStore;
+  popover?: PopoverStore | null;
 }
 
 export type PopoverStoreProps = PopoverStoreOptions &

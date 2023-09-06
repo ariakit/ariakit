@@ -224,16 +224,16 @@ export interface MenuStoreOptions<T extends Values = Values>
    * with a menu (e.g., dropdown menu with a search input). The stores will
    * share the same state.
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
   /**
    * A reference to a parent menu store. This should be used on nested menus.
    */
-  parent?: MenuStore;
+  parent?: MenuStore | null;
   /**
    * A reference to a menu bar store. This should be used when rendering menus
    * inside a menu bar.
    */
-  menubar?: MenuBarStore;
+  menubar?: MenuBarStore | null;
   /**
    * The default values for the `values` state.
    * @default {}
