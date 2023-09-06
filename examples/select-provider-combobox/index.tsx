@@ -1,5 +1,5 @@
 import "./style.css";
-import { useDeferredValue, useMemo } from "react";
+import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { ComboboxProvider } from "@ariakit/react-core/combobox/combobox-provider";
 import { SelectProvider } from "@ariakit/react-core/select/select-provider";
@@ -7,20 +7,25 @@ import { matchSorter } from "match-sorter";
 import list from "./list.js";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore();
-  const value = combobox.useState("value");
-  const deferredValue = useDeferredValue(value);
+  const [searchValue, setSearchValue] = useState("");
 
   const matches = useMemo(() => {
-    return matchSorter(list, deferredValue, {
+    return matchSorter(list, searchValue, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
     });
-  }, [deferredValue]);
+  }, [searchValue]);
 
   return (
     <div className="wrapper">
-      <ComboboxProvider store={combobox} resetValueOnHide>
-        <SelectProvider combobox={combobox} defaultValue="Apple">
+      <ComboboxProvider
+        resetValueOnHide
+        setValue={(value) => {
+          startTransition(() => {
+            setSearchValue(value);
+          });
+        }}
+      >
+        <SelectProvider defaultValue="Apple">
           <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
           <Ariakit.Select className="button" />
           <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
