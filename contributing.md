@@ -458,9 +458,9 @@ When adding new features or fixing bugs, we'll need to bump the package versions
 
 > The action of adding a new example doesn't require a version bump. Only changes to the codebase that affect the public API or existing behavior (e.g., bugs) do.
 
-Let's create a new changeset file for our component:
+Let's craft a fresh changeset file for our component. You can use any name for the file, but it should begin with the pull request number, followed by a dash:
 
-`.changeset/my-component.md`
+`.changeset/1271-my-component.md`
 
 ```markdown
 ---
@@ -468,10 +468,8 @@ Let's create a new changeset file for our component:
 "@ariakit/react-core": patch
 ---
 
-Added `MyComponent` component. ([#1271](https://github.com/ariakit/ariakit/pull/1271))
+Added `MyComponent` component.
 ```
-
-> The name of the file doesn't really matter as long as it's unique across changesets. Just try to name it in a way that we can easily remember what the change was when reviewing all the changesets.
 
 Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit-react/CHANGELOG.md) will be updated.
 

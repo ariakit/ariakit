@@ -12,7 +12,13 @@ const changelogFunctions = {
       .split("\n")
       .map((l) => l.trimEnd());
 
-    let returnVal = `\n\n- ${firstLine}`;
+    const match = changeset.id.match(/^(?:\d\-)?(?<number>\d+)/);
+    const number = match?.groups?.number;
+    const prefix = !number || firstLine.startsWith("[`#")
+      ? ""
+      : `[\`#${number}\`](https://github.com/ariakit/ariakit/pull/${number}) `;
+
+    let returnVal = `\n\n- ${prefix}${firstLine}`;
 
     if (nextLines.length > 0) {
       returnVal += `\n${nextLines.map((l) => `  ${l}`).join("\n")}`;
