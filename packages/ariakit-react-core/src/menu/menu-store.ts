@@ -10,7 +10,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
-import { useDialogScopedContext } from "../dialog/dialog-context.js";
+import { useDialogContext } from "../dialog/dialog-context.js";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
@@ -68,7 +68,7 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
   // differ, it implies an intermediate dialog, which is not a menu, exists
   // between the parent menu and this menu, indicating they're not directly
   // nested.
-  const dialog = useDialogScopedContext();
+  const dialog = useDialogContext();
   const parent = useMenuContext();
   const menubar = useMenuBarContext();
   props = {
