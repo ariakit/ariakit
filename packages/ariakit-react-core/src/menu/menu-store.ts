@@ -74,7 +74,7 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
   props = {
     ...props,
     parent:
-      props.parent !== undefined && dialog === parent ? props.parent : parent,
+      props.parent !== undefined || dialog !== parent ? props.parent : parent,
     menubar: props.menubar !== undefined ? props.menubar : menubar,
   };
   const [store, update] = useStore(Core.createMenuStore, props);

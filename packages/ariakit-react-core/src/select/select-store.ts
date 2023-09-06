@@ -3,6 +3,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import { useComboboxProviderContext } from "../combobox/combobox-context.js";
 import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
@@ -10,6 +11,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
+import { useDialogScopedContext } from "../dialog/dialog-context.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -55,6 +57,15 @@ export function useSelectStore<T extends Value = Value>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
+  const dialog = useDialogScopedContext();
+  const combobox = useComboboxProviderContext();
+  props = {
+    ...props,
+    combobox:
+      props.combobox !== undefined || dialog !== combobox
+        ? props.combobox
+        : combobox,
+  };
   const [store, update] = useStore(Core.createSelectStore, props);
   return useSelectStoreProps(store, update, props);
 }
