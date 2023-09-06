@@ -62,7 +62,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * ```
  */
 export const useMenuList = createHook<MenuListOptions>(
-  ({ store, alwaysVisible, composite = true, ...props }) => {
+  ({ store, alwaysVisible, composite, ...props }) => {
     const context = useMenuProviderContext();
     store = store || context;
 
@@ -161,6 +161,9 @@ export const useMenuList = createHook<MenuListOptions>(
       onKeyDown,
     };
 
+    const hasCombobox = !!store.combobox;
+    composite = composite ?? !hasCombobox;
+
     if (composite) {
       props = {
         role: "menu",
@@ -170,7 +173,7 @@ export const useMenuList = createHook<MenuListOptions>(
     }
 
     props = useComposite({ store, composite, ...props });
-    props = useCompositeTypeahead({ store, ...props });
+    props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;
   },

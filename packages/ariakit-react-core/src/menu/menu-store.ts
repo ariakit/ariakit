@@ -3,6 +3,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import { useComboboxProviderContext } from "../combobox/combobox-context.js";
 import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
@@ -10,7 +11,6 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
-import { useDialogContext } from "../dialog/dialog-context.js";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
@@ -64,18 +64,14 @@ export function useMenuStore<T extends Values = Values>(
 export function useMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
-  // Obtain the dialog context and compare it to the parent menu. If they
-  // differ, it implies an intermediate dialog, which is not a menu, exists
-  // between the parent menu and this menu, indicating they're not directly
-  // nested.
-  const dialog = useDialogContext();
   const parent = useMenuContext();
   const menubar = useMenuBarContext();
+  const combobox = useComboboxProviderContext();
   props = {
     ...props,
-    parent:
-      props.parent !== undefined || dialog !== parent ? props.parent : parent,
+    parent: props.parent !== undefined ? props.parent : parent,
     menubar: props.menubar !== undefined ? props.menubar : menubar,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
   const [store, update] = useStore(Core.createMenuStore, props);
   return useMenuStoreProps(store, update, props);

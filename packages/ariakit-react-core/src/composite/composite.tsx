@@ -486,27 +486,7 @@ export interface CompositeOptions<T extends As = "div">
    * Whether the component should behave as a composite widget. This prop should
    * be set to `false` when combining different composite widgets where only one
    * should behave as such.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default true
-   * @example
-   * ```jsx
-   * // Combining two composite widgets (combobox and menu), where only the
-   * // Combobox component should behave as a composite widget.
-   * const combobox = useComboboxStore();
-   * const menu = useMenuStore({ combobox });
-   * <MenuButton store={menu}>Open Menu</MenuButton>
-   * <Menu store={menu} composite={false}>
-   *   <Combobox store={combobox} />
-   *   <ComboboxList store={combobox}>
-   *     <ComboboxItem value="Apple" />
-   *     <ComboboxItem value="Banana" />
-   *     <ComboboxItem value="Orange" />
-   *   </ComboboxList>
-   * </Menu>
-   * ```
    */
   composite?: boolean;
   /**
