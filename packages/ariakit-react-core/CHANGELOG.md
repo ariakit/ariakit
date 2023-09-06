@@ -1,5 +1,117 @@
 # @ariakit/react-core
 
+## 0.3.0
+
+### Minor Changes
+
+- [`#2714`](https://github.com/ariakit/ariakit/pull/2714) Added support for a dynamic `store` prop on component stores.
+
+  This is similar to the `store` prop on components, keeping both stores in sync. Now, component store hooks can support modifying the value of the `store` prop after the initial render. For instance:
+
+  ```js
+  // props.store can change between renders now
+  const checkbox = useCheckboxStore({ store: props.store });
+  ```
+
+  When the `store` prop changes, the object returned from the store hook will update as well. Consequently, effects and hooks that rely on the store will re-run.
+
+  While it's unlikely, this **could represent a breaking change** if you're depending on the `store` prop in component stores to only acknowledge the first value passed to it.
+
+- [`#2714`](https://github.com/ariakit/ariakit/pull/2714) **BREAKING**: The `useStore` function exported by `@ariakit/react-core/utils/store` has been updated.
+
+- [`#2760`](https://github.com/ariakit/ariakit/pull/2760) **BREAKING**: The `useStoreState` function exported by `@ariakit/react-core/utils/store` has been updated so it'll always run the selector callback even when the passed store is `null` or `undefined`.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) **BREAKING** _(This should affect very few people)_: The `combobox` state on `useSelectStore` has been replaced by the `combobox` property on the store object.
+
+  **Before:**
+
+  ```js
+  const combobox = useComboboxStore();
+  const select = useSelectStore({ combobox });
+  const hasCombobox = select.useState("combobox");
+  ```
+
+  **After:**
+
+  ```js
+  const combobox = useComboboxStore();
+  const select = useSelectStore({ combobox });
+  const hasCombobox = Boolean(select.combobox);
+  ```
+
+  In the example above, `select.combobox` is literally the same as the `combobox` store. It will be defined if the `combobox` store is passed to `useSelectStore`.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) **BREAKING** _(This should affect very few people)_: The `select` and `menu` props on `useComboboxStore` have been removed. If you need to compose `Combobox` with `Select` or `Menu`, use the `combobox` prop on `useSelectStore` or `useMenuStore` instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `children` prop as a function has been deprecated on all components. Use the [`render`](https://ariakit.org/guide/composition#explicit-render-function) prop instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `as` prop has been deprecated on all components. Use the [`render`](https://ariakit.org/guide/composition) prop instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `backdropProps` prop has been deprecated on `Dialog` and derived components. Use the [`backdrop`](https://ariakit.org/reference/dialog#backdrop) prop instead.
+
+- [`#2745`](https://github.com/ariakit/ariakit/pull/2745) Component stores will now throw an error if they receive another store prop in conjunction with default prop values.
+
+### Patch Changes
+
+- [`#2737`](https://github.com/ariakit/ariakit/pull/2737) Fixed controlled component stores rendering with a stale state.
+
+- [`#2758`](https://github.com/ariakit/ariakit/pull/2758) Added `CheckboxProvider` component and `useCheckboxContext` hook.
+
+- [`#2759`](https://github.com/ariakit/ariakit/pull/2759) Added `CollectionProvider` component and `useCollectionContext` hook.
+
+- [`#2769`](https://github.com/ariakit/ariakit/pull/2769) Added `DisclosureProvider` component and `useDisclosureContext` hook.
+
+- [`#2770`](https://github.com/ariakit/ariakit/pull/2770) Added `CompositeProvider` component and `useCompositeContext` hook.
+
+- [`#2771`](https://github.com/ariakit/ariakit/pull/2771) Added `DialogProvider` component and `useDialogContext` hook.
+
+- [`#2774`](https://github.com/ariakit/ariakit/pull/2774) Added `PopoverProvider` component and `usePopoverContext` hook.
+
+- [`#2775`](https://github.com/ariakit/ariakit/pull/2775) Added `ComboboxProvider` component and `useComboboxContext` hook.
+
+- [`#2776`](https://github.com/ariakit/ariakit/pull/2776) Added `SelectProvider` component and `useSelectContext` hook.
+
+- [`#2777`](https://github.com/ariakit/ariakit/pull/2777) Added `RadioProvider` component and `useRadioContext` hook.
+
+- [`#2778`](https://github.com/ariakit/ariakit/pull/2778) Added `HovercardProvider` component and `useHovercardContext` hook.
+
+- [`#2779`](https://github.com/ariakit/ariakit/pull/2779) Added `TabProvider` component and `useTabContext` hook.
+
+- [`#2780`](https://github.com/ariakit/ariakit/pull/2780) Added `ToolbarProvider` component and `useToolbarContext` hook.
+
+- [`#2781`](https://github.com/ariakit/ariakit/pull/2781) Added `TooltipProvider` component and `useTooltipContext` hook.
+
+- [`#2782`](https://github.com/ariakit/ariakit/pull/2782) Added `FormProvider` component and `useFormContext` hook.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) Component store objects now contain properties for the composed stores passed to them as props. For instance, `useSelectStore({ combobox })` will return a `combobox` property if the `combobox` prop is specified.
+
+- [`#2785`](https://github.com/ariakit/ariakit/pull/2785) Added `MenuProvider` component and `useMenuContext` hook.
+
+- [`#2785`](https://github.com/ariakit/ariakit/pull/2785) Added `MenuBarProvider` component and `useMenuBarContext` hook.
+
+- [`#2785`](https://github.com/ariakit/ariakit/pull/2785) Added `parent` and `menubar` properties to the menu store. These properties are automatically set when rendering nested menus or menus within a menubar.
+
+  Now, it also supports rendering nested menus that aren't nested in the React tree. In this case, you would have to supply the parent menu store manually to the child menu store.
+
+  These properties are also included in the returned menu store object, allowing you to verify whether the menu is nested. For instance:
+
+  ```jsx
+  const menu = useMenuStore(props);
+  const isNested = Boolean(menu.parent);
+  ```
+
+- [`#2794`](https://github.com/ariakit/ariakit/pull/2794) The `combobox` prop on `useSelectStore` is now automatically set based on the context.
+
+- [`#2795`](https://github.com/ariakit/ariakit/pull/2795) Updated the `Menu` component so the `composite` and `typeahead` props are automatically set to `false` when combining it with a `Combobox` component.
+
+  This means you'll not need to explicitly pass `composite={false}` when building a [Menu with Combobox](https://ariakit.org/examples/menu-combobox) component.
+
+- [`#2795`](https://github.com/ariakit/ariakit/pull/2795) The `combobox` prop on `useMenuStore` is now automatically set based on the context.
+
+- [`#2796`](https://github.com/ariakit/ariakit/pull/2796) Composed store props such as `useSelectStore({ combobox })` now accept `null` as a value.
+
+- Updated dependencies: `@ariakit/core@0.3.0`.
+
 ## 0.2.17
 
 ### Patch Changes
