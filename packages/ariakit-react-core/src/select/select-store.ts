@@ -11,7 +11,6 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
-import { useDialogContext } from "../dialog/dialog-context.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -57,18 +56,10 @@ export function useSelectStore<T extends Value = Value>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
-  // Obtain the dialog context and compare it to the parent menu. If they
-  // differ, it implies an intermediate dialog, which is not a menu, exists
-  // between the parent menu and this menu, indicating they're not directly
-  // nested.
-  const dialog = useDialogContext();
   const combobox = useComboboxProviderContext();
   props = {
     ...props,
-    combobox:
-      props.combobox !== undefined || dialog !== combobox
-        ? props.combobox
-        : combobox,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
   const [store, update] = useStore(Core.createSelectStore, props);
   return useSelectStoreProps(store, update, props);

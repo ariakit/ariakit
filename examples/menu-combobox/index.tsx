@@ -22,7 +22,7 @@ export default function Example() {
         Add block
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
-      <Ariakit.Menu store={menu} composite={false} className="menu">
+      <Ariakit.Menu store={menu} className="menu">
         <Ariakit.MenuArrow />
         <Ariakit.Combobox
           store={combobox}
