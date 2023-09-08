@@ -398,7 +398,7 @@ export const useDialog = createHook<DialogOptions>(
     );
 
     // Auto focus on hide with an always rendered dialog.
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (open) return;
       if (!hasOpened) return;
       if (!mayAutoFocusOnHide) return;

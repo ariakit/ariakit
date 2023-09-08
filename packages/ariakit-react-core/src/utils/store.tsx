@@ -143,10 +143,8 @@ export function useStoreProps<
   SK extends keyof PickByValue<P, SetState<P[K]>>,
 >(store: T, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
-  const propsRef = useLiveRef({
-    value,
-    setValue: setKey ? (props[setKey] as SetState<S[K]>) : undefined,
-  });
+  const setValue = setKey ? (props[setKey] as SetState<S[K]>) : undefined;
+  const propsRef = useLiveRef({ value, setValue });
   const canSyncValue = React.useRef(true);
 
   // Calls setValue when the state value changes.
@@ -166,7 +164,12 @@ export function useStoreProps<
       // Disable controlled value sync until the next render to avoid resetting
       // the value to a previous state before the component has a chance to
       // re-render.
-      canSyncValue.current = false;
+      if (!canFlushSync) {
+        canSyncValue.current = false;
+        queueMicrotask(() => {
+          canSyncValue.current = true;
+        });
+      }
       safeFlushSync(() => setValue(state[key]), canFlushSync);
     });
   }, [store, key]);
@@ -179,7 +182,7 @@ export function useStoreProps<
       if (!canSyncValue.current) return;
       store.setState(key, value);
     });
-  });
+  }, [store, key, value]);
 }
 
 /**
