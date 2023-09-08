@@ -18,15 +18,10 @@ import {
   setup,
   throwOnConflictingProps,
 } from "../utils/store.js";
-import type {
-  AnyObject,
-  PickRequired,
-  SetState,
-  SetStateAction,
-} from "../utils/types.js";
+import type { PickRequired, SetState, SetStateAction } from "../utils/types.js";
 import type { DeepMap, DeepPartial, Names, StringLike } from "./types.js";
 
-type Values = AnyObject;
+type Values = Record<string, unknown>;
 type ErrorMessage = string | undefined | null;
 
 type Item = CollectionStoreItem & {
@@ -40,8 +35,9 @@ function nextFrame() {
 
 export function hasMessages(object: Values): boolean {
   return Object.keys(object).some((key) => {
-    if (isObject(object[key])) {
-      return hasMessages(object[key]);
+    const value = object[key];
+    if (isObject(value)) {
+      return hasMessages(value);
     }
     return !!object[key];
   });
@@ -57,9 +53,9 @@ export function get<T>(
     return defaultValue as T;
   }
   if (!rest.length) {
-    return values[key] ?? defaultValue;
+    return (values[key] ?? defaultValue) as T;
   }
-  return get(values[key], rest, defaultValue);
+  return get(values[key] as Values, rest, defaultValue);
 }
 
 function set<T extends Values | unknown[]>(
@@ -79,7 +75,7 @@ function set<T extends Values | unknown[]>(
       : value;
   if (isIntegerKey) {
     const index = Number(key);
-    if (values) {
+    if (values && Array.isArray(values)) {
       return [
         ...values.slice(0, index),
         result,
