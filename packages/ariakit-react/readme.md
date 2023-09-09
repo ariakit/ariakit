@@ -68,7 +68,7 @@ function App() {
       <Ariakit.Dialog store={dialog}>
         <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
         <Ariakit.DialogDescription>
-          Welcome to Reakit!
+          Welcome to Ariakit!
         </Ariakit.DialogDescription>
       </Ariakit.Dialog>
     </>
