@@ -79,7 +79,7 @@ function set<T extends Values | unknown[]>(
       : value;
   if (isIntegerKey) {
     const index = Number(key);
-    if (values) {
+    if (values && Array.isArray(values)) {
       return [
         ...values.slice(0, index),
         result,
