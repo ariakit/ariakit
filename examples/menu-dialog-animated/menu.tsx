@@ -36,15 +36,12 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
       setValues,
       open,
       setOpen,
+      setMounted(mounted) {
+        if (!mounted) {
+          onUnmount?.();
+        }
+      },
     });
-    const mounted = menu.useState("mounted");
-
-    React.useLayoutEffect(() => {
-      if (!mounted) {
-        onUnmount?.();
-      }
-    }, [mounted]);
-
     return (
       <>
         <Ariakit.MenuButton

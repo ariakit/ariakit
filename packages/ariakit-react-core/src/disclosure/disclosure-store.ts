@@ -12,6 +12,7 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
 ) {
   useUpdateEffect(update, [props.store, props.disclosure, ...deps]);
   useStoreProps(store, props, "open", "setOpen");
+  useStoreProps(store, props, "mounted", "setMounted");
   useStoreProps(store, props, "animated");
   return store;
 }
@@ -46,6 +47,14 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * const disclosure = useDisclosureStore({ open, setOpen });
    */
   setOpen?: (open: DisclosureStoreState["open"]) => void;
+  /**
+   * A callback that gets called when the `mounted` state changes.
+   * @param mounted The new mounted value.
+   * @example
+   * const [mounted, setMounted] = useState(false);
+   * const disclosure = useDisclosureStore({ setMounted });
+   */
+  setMounted?: (mounted: DisclosureStoreState["mounted"]) => void;
 }
 
 export type DisclosureStoreProps = DisclosureStoreOptions &
