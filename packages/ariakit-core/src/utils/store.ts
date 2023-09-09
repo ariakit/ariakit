@@ -378,7 +378,7 @@ export type StoreProps<S extends State = State> = { store?: Store<Partial<S>> };
  * Extracts the state type from a store type.
  * @template T Store type.
  */
-export type StoreState<T> = T extends { getState(): infer S } ? S : never;
+export type StoreState<T> = T extends Store<infer S> ? S : never;
 
 /**
  * Store.

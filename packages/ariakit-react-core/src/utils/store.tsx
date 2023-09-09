@@ -137,13 +137,12 @@ export function useStoreState(
  */
 export function useStoreProps<
   S extends State,
-  T extends CoreStore<S>,
-  P extends S,
-  K extends keyof S & keyof P,
+  P extends Partial<S>,
+  K extends keyof S,
   SK extends keyof PickByValue<P, SetState<P[K]>>,
->(store: T, props: P, key: K, setKey?: SK) {
+>(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
-  const setValue = setKey ? (props[setKey] as SetState<S[K]>) : undefined;
+  const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
   const canSyncValue = React.useRef(true);
 
