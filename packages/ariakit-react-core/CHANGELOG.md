@@ -1,5 +1,29 @@
 # @ariakit/react-core
 
+## 0.3.1
+
+### Patch Changes
+
+- [`#2797`](https://github.com/ariakit/ariakit/pull/2797) Fixed a regression on `Dialog` regarding the timing of its "focus on hide" behavior.
+
+- [`#2801`](https://github.com/ariakit/ariakit/pull/2801) Fixed `values.slice` error that would occur when clicking on `FormCheckbox` that uses an integer-like field name.
+
+- [`#2802`](https://github.com/ariakit/ariakit/pull/2802) Added `setMounted` prop to `useDisclosureStore` and derived component stores. This callback prop can be used to react to changes in the `mounted` state. For example:
+
+  ```js
+  useDialogStore({
+    setMounted(mounted) {
+      if (!mounted) {
+        props.onUnmount?.();
+      }
+    },
+  });
+  ```
+
+- [`#2803`](https://github.com/ariakit/ariakit/pull/2803) The `Toolbar` component can now render without needing an explicit `store` prop or a `ToolbarProvider` component wrap. `Toolbar` now also supports certain store props such as `focusLoop`, `orientation`, `rtl`, and `virtualFocus`.
+
+- Updated dependencies: `@ariakit/core@0.3.1`.
+
 ## 0.3.0
 
 ### Minor Changes
