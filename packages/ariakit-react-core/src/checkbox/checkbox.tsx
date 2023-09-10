@@ -180,12 +180,14 @@ if (process.env.NODE_ENV !== "production") {
 export interface CheckboxOptions<T extends As = "input">
   extends CommandOptions<T> {
   /**
-   * Object returned by the `useCheckboxStore` hook. If not provided, the
-   * internal store will be used.
+   * Object returned by the
+   * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
+   * hook. If not provided, the closest
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) will
+   * be used. Otherwise, the component will fall back to an internal store.
    *
    * Live examples:
    * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   store?: CheckboxStore;
   /**
@@ -195,14 +197,14 @@ export interface CheckboxOptions<T extends As = "input">
    *
    * Live examples:
    * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    * @example
    * ```jsx
-   * const checkbox = useCheckboxStore({
-   *   defaultValue: ["Apple", "Orange"],
-   * });
-   * <Checkbox store={checkbox} value="Apple" />
-   * <Checkbox store={checkbox} value="Orange" />
-   * <Checkbox store={checkbox} value="Watermelon" />
+   * <CheckboxProvider defaultValue={["Apple", "Orange"]}>
+   *   <Checkbox value="Apple" />
+   *   <Checkbox value="Orange" />
+   *   <Checkbox value="Watermelon" />
+   * </CheckboxProvider>
    * ```
    */
   value?: InputHTMLAttributes<HTMLInputElement>["value"];

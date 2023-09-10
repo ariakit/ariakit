@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Rendering multiple <a href="/components/checkbox">Checkbox</a> elements in React to form a group of checkboxes. The selected values are stored in an array provided by the <a href="/reference/use-checkbox-store"><code>useCheckboxStore</code></a> hook.
+Rendering multiple [Checkbox](/components/checkbox) elements in React to form a group of checkboxes. The selected values are stored in an array provided by the [`CheckboxProvider`](/reference/checkbox-provider) component.
 
 </div>
 
