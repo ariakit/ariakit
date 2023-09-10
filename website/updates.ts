@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New guide: Component providers",
+    type: "page",
+    href: "/guide/component-providers",
+    dateTime: "2023-09-10T21:07Z",
+  },
+  {
     title: "Improved docs: Command",
     type: "page",
     href: "/reference/command",

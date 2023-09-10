@@ -1,7 +1,3 @@
----
-unlisted: true
----
-
 # Component providers
 
 <div data-description>
