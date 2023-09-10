@@ -25,22 +25,22 @@ import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
  */
 export const useToolbar = createHook<ToolbarOptions>(
   ({
-    store: _store,
-    focusLoop,
+    store: storeProp,
     orientation: orientationProp,
-    rtl,
     virtualFocus,
+    focusLoop,
+    rtl,
     ...props
   }) => {
     const context = useToolbarProviderContext();
-    _store = _store || context;
+    storeProp = storeProp || context;
 
     const store = useToolbarStore({
-      store: _store,
-      focusLoop,
+      store: storeProp,
       orientation: orientationProp,
-      rtl,
       virtualFocus,
+      focusLoop,
+      rtl,
     });
 
     const orientation = store.useState((state) =>
