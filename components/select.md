@@ -21,23 +21,26 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 ```jsx
 useSelectStore()
+useSelectContext()
 
-<SelectLabel />
-<Select>
-  <SelectArrow />
-</Select>
-<SelectList />
-<SelectPopover>
-  <SelectGroup>
-    <SelectGroupLabel />
-    <SelectRow>
-      <SelectItem>
-        <SelectItemCheck />
-      </SelectItem>
-      <SelectSeparator />
-    </SelectRow>
-  </SelectGroup>
-</SelectPopover>
+<SelectProvider>
+  <SelectLabel />
+  <Select>
+    <SelectArrow />
+  </Select>
+  <SelectList />
+  <SelectPopover>
+    <SelectGroup>
+      <SelectGroupLabel />
+      <SelectRow>
+        <SelectItem>
+          <SelectItemCheck />
+        </SelectItem>
+        <SelectSeparator />
+      </SelectRow>
+    </SelectGroup>
+  </SelectPopover>
+</SelectProvider>
 ```
 
 ## Styling

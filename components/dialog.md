@@ -32,13 +32,16 @@ Open a new window that can be either [`modal`](/reference/dialog#modal) or non-m
 
 ```jsx
 useDialogStore()
+useDialogContext()
 
-<DialogDisclosure />
-<Dialog>
-  <DialogDismiss />
-  <DialogHeading />
-  <DialogDescription />
-</Dialog>
+<DialogProvider>
+  <DialogDisclosure />
+  <Dialog>
+    <DialogDismiss />
+    <DialogHeading />
+    <DialogDescription />
+  </Dialog>
+</DialogProvider>
 ```
 
 ## Styling

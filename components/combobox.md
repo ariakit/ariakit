@@ -34,22 +34,25 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 
 ```jsx
 useComboboxStore()
+useComboboxContext()
 
-<Combobox />
-<ComboboxCancel />
-<ComboboxDisclosure />
-<ComboboxList />
-<ComboboxPopover>
-  <ComboboxGroup>
-    <ComboboxGroupLabel />
-    <ComboboxRow>
-      <ComboboxItem>
-        <ComboboxItemValue />
-      </ComboboxItem>
-      <ComboboxSeparator>
-    </ComboboxRow>
-  </ComboboxGroup>
-</ComboboxPopover>
+<ComboboxProvider>
+  <Combobox />
+  <ComboboxCancel />
+  <ComboboxDisclosure />
+  <ComboboxList />
+  <ComboboxPopover>
+    <ComboboxGroup>
+      <ComboboxGroupLabel />
+      <ComboboxRow>
+        <ComboboxItem>
+          <ComboboxItemValue />
+        </ComboboxItem>
+        <ComboboxSeparator>
+      </ComboboxRow>
+    </ComboboxGroup>
+  </ComboboxPopover>
+</ComboboxProvider>
 ```
 
 ## Styling

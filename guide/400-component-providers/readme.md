@@ -14,7 +14,7 @@ Provide state to Ariakit components using a simple wrapper that supports control
 
 Component providers are optional components that act as a higher-level API on top of [component stores](/guide/component-stores). They wrap Ariakit components and automatically provide a store to them.
 
-For instance, when you wrap [`Combobox`](/reference/combobox) and [`ComboboxPopover`](/reference/combobox-popover) with [`ComboboxProvider`](/apis/combobox-provider), both components will be connected to the same store automatically:
+For instance, when you wrap [`Combobox`](/reference/combobox) and [`ComboboxPopover`](/reference/combobox-popover) with [`ComboboxProvider`](/reference/combobox-provider), both components will be connected to the same store automatically:
 
 ```jsx "ComboboxProvider"
 <ComboboxProvider>

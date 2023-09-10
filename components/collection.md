@@ -19,8 +19,11 @@ Track a collection of DOM elements in the exact order they're rendered in the DO
 
 ```jsx
 useCollectionStore()
+useCollectionContext()
 
-<Collection>
-  <CollectionItem />
-</Collection>
+<CollectionProvider>
+  <Collection>
+    <CollectionItem />
+  </Collection>
+</CollectionProvider>
 ```

@@ -20,13 +20,16 @@ Show a popup dialog positioned relative to an anchor element. This component can
 
 ```jsx
 usePopoverStore()
+usePopoverContext()
 
-<PopoverAnchor />
-<PopoverDisclosure />
-<Popover>
-  <PopoverArrow />
-  <PopoverHeading />
-  <PopoverDescription />
-  <PopoverDismiss />
-</Popover>
+<PopoverProvider>
+  <PopoverAnchor />
+  <PopoverDisclosure />
+  <Popover>
+    <PopoverArrow />
+    <PopoverHeading />
+    <PopoverDescription />
+    <PopoverDismiss />
+  </Popover>
+</PopoverProvider>
 ```

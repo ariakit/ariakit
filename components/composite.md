@@ -17,17 +17,19 @@ Provide a single tab stop on the page and navigate through the focusable descend
 
 ```jsx
 useCompositeStore()
+useCompositeContext()
 
-<Composite>
-  <CompositeGroup>
-    <CompositeGroupLabel />
-    <CompositeRow>
-      <CompositeHover />
-      <CompositeItem />
-      <CompositeSeparator />
-    </CompositeRow>
-  </CompositeGroup>
-</Composite>
-
-<CompositeTypeahead />
+<CompositeProvider>
+  <Composite>
+    <CompositeGroup>
+      <CompositeGroupLabel />
+      <CompositeRow>
+        <CompositeHover />
+        <CompositeItem />
+        <CompositeSeparator />
+      </CompositeRow>
+    </CompositeGroup>
+  </Composite>
+  <CompositeTypeahead />
+</CompositeProvider>
 ```

@@ -30,27 +30,31 @@ Access a set of commands within a menu bar or dropdown menu. This component is b
 
 ```jsx
 useMenuStore()
+useMenuContext()
 
-<MenuButton />
-<MenuButtonArrow />
-<MenuList />
-<Menu>
-  <MenuArrow />
-  <MenuHeading />
-  <MenuDescription />
-  <MenuDismiss />
-  <MenuGroup>
-    <MenuGroupLabel />
-    <MenuItem />
-    <MenuItemCheckbox>
-      <MenuItemCheck />
-    </MenuItemCheckbox>
-    <MenuItemRadio>
-      <MenuItemCheck />
-    </MenuItemRadio>
-    <MenuSeparator />
-  </MenuGroup>
-</Menu>
+<MenuProvider>
+  <MenuButton>
+    <MenuButtonArrow />
+  </MenuButton>
+  <MenuList />
+  <Menu>
+    <MenuArrow />
+    <MenuHeading />
+    <MenuDescription />
+    <MenuDismiss />
+    <MenuGroup>
+      <MenuGroupLabel />
+      <MenuItem />
+      <MenuItemCheckbox>
+        <MenuItemCheck />
+      </MenuItemCheckbox>
+      <MenuItemRadio>
+        <MenuItemCheck />
+      </MenuItemRadio>
+      <MenuSeparator />
+    </MenuGroup>
+  </Menu>
+</MenuProvider>
 ```
 
 ## Styling

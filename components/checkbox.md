@@ -30,10 +30,13 @@ Select one or more options in a list or toggle a single option using a native or
 
 ```jsx
 useCheckboxStore()
+useCheckboxContext()
 
-<Checkbox>
-  <CheckboxCheck />
-</Checkbox>
+<CheckboxProvider>
+  <Checkbox>
+    <CheckboxCheck />
+  </Checkbox>
+</CheckboxProvider>
 ```
 
 ## Styling
