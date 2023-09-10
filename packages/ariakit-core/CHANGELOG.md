@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.3.1
+
+### Patch Changes
+
+- [`#2801`](https://github.com/ariakit/ariakit/pull/2801) Fixed `values.slice` error that would occur when clicking on `FormCheckbox` that uses an integer-like field name.
+
 ## 0.3.0
 
 ### Minor Changes
