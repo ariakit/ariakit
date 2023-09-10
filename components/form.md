@@ -20,25 +20,28 @@ Submit information with accessible interactive controls in React. Take advantage
 
 ```jsx
 useFormStore()
+useFormContext()
 
-<Form>
-  <FormGroup>
-    <FormGroupLabel />
-    <FormLabel />
-    <FormField />
-    <FormInput />
-    <FormCheckbox />
-    <FormDescription />
-    <FormError />
-    <FormPush />
-    <FormRemove />
-  </FormGroup>
-  <FormRadioGroup>
-    <FormRadio />
-  </FormRadioGroup>
-  <FormReset />
-  <FormSubmit />
-</Form>
+<FormProvider>
+  <Form>
+    <FormGroup>
+      <FormGroupLabel />
+      <FormLabel />
+      <FormField />
+      <FormInput />
+      <FormCheckbox />
+      <FormDescription />
+      <FormError />
+      <FormPush />
+      <FormRemove />
+    </FormGroup>
+    <FormRadioGroup>
+      <FormRadio />
+    </FormRadioGroup>
+    <FormReset />
+    <FormSubmit />
+  </Form>
+</FormProvider>
 ```
 
 ## Submitting the form

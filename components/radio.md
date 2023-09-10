@@ -20,8 +20,11 @@ Choose one option from a list of choices presented as radio buttons. This compon
 
 ```jsx
 useRadioStore()
+useRadioContext()
 
-<RadioGroup>
-  <Radio />
-</RadioGroup>
+<RadioProvider>
+  <RadioGroup>
+    <Radio />
+  </RadioGroup>
+</RadioProvider>
 ```

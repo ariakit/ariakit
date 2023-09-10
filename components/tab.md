@@ -28,11 +28,14 @@ Display one panel of content at a time with a tabbed interface. This component i
 
 ```jsx
 useTabStore()
+useTabContext()
 
-<TabList>
-  <Tab />
-</TabList>
-<TabPanel />
+<TabProvider>
+  <TabList>
+    <Tab />
+  </TabList>
+  <TabPanel />
+</TabProvider>
 ```
 
 ## Related components

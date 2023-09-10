@@ -19,11 +19,14 @@ Group a set of related controls, reducing the number of tab stops in the keyboar
 
 ```jsx
 useToolbarStore()
+useToolbarContext()
 
-<Toolbar>
-  <ToolbarContainer />
-  <ToolbarInput />
-  <ToolbarItem />
-  <ToolbarSeparator />
-</Toolbar>
+<ToolbarProvider>
+  <Toolbar>
+    <ToolbarContainer />
+    <ToolbarInput />
+    <ToolbarItem />
+    <ToolbarSeparator />
+  </Toolbar>
+</ToolbarProvider>
 ```

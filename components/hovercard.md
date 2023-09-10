@@ -19,13 +19,16 @@ Show a <a href="/components/popover">Popover</a> with additional information whe
 
 ```jsx
 useHovercardStore()
+useHovercardContext()
 
-<HovercardAnchor />
-<HovercardDisclosure />
-<Hovercard>
-  <HovercardArrow />
-  <HovercardHeading />
-  <HovercardDescription />
-  <HovercardDismiss />
-</Hovercard>
+<HovercardProvider>
+  <HovercardAnchor />
+  <HovercardDisclosure />
+  <Hovercard>
+    <HovercardArrow />
+    <HovercardHeading />
+    <HovercardDescription />
+    <HovercardDismiss />
+  </Hovercard>
+</HovercardProvider>
 ```

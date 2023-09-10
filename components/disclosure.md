@@ -19,9 +19,12 @@ Click a button to either [`show`](/reference/use-disclosure-store#show) (expand,
 
 ```jsx
 useDisclosureStore()
+useDisclosureContext()
 
-<Disclosure />
-<DisclosureContent />
+<DisclosureProvider>
+  <Disclosure />
+  <DisclosureContent />
+</DisclosureProvider>
 ```
 
 ## Styling

@@ -27,11 +27,14 @@ Display information related to an anchor element when the element receives keybo
 
 ```jsx
 useTooltipStore()
+useTooltipContext()
 
-<TooltipAnchor />
-<Tooltip>
-  <TooltipArrow />
-</Tooltip>
+<TooltipProvider>
+  <TooltipAnchor />
+  <Tooltip>
+    <TooltipArrow />
+  </Tooltip>
+</TooltipProvider>
 ```
 
 ## Tooltips are descriptions
