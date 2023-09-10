@@ -22,7 +22,8 @@ export function getPageIndexDetail(filename, getGroup, tree) {
       content = toString(node).trim();
     }
   });
-  const group = getGroup?.(filename) || null;
+  const dataGroup = tree.data?.group ? `${tree.data?.group}` : null;
+  const group = getGroup?.(filename) || dataGroup;
   return {
     group,
     slug,

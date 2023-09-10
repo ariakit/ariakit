@@ -1,3 +1,7 @@
+---
+group: Advanced
+---
+
 # Component stores
 
 <div data-description>
@@ -56,7 +60,7 @@ const form = useFormStore({
 
 Component stores may also accept callbacks for state changes. These functions conventionally bear the name of the state property they modify, prefixed with the word `set`. They are invoked with the new state whenever an update occurs.
 
-These state setters serve various purposes, such as updating another state, executing side effects, or implementing features like `onChange`, `onValuesChange`, `onToggle`, `onOpenChange`, `onClose`, and so on.
+These state setters serve various purposes, such as updating another state, executing side effects, or implementing features like `onChange`, `onValuesChange`, `onToggle`, `onOpenChange`, and so on.
 
 ```js {3-5} "setValues"
 const form = useFormStore({

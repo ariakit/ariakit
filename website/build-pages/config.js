@@ -1,5 +1,5 @@
 import { readdirSync } from "fs";
-import { basename, dirname, join, resolve } from "path";
+import { basename, join, resolve } from "path";
 import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
 import { getPageTitle } from "./get-page-title.js";
@@ -19,14 +19,6 @@ const pages = [
     slug: "guide",
     title: getPageTitle("guide"),
     sourceContext: join(root, "guide"),
-    getGroup(filename) {
-      if (typeof filename !== "string") return null;
-      const match = basename(dirname(filename)).match(/^\d+/);
-      if (!match) return null;
-      const number = parseInt(match[0]);
-      if (number >= 900) return "Other";
-      return null;
-    },
   },
   {
     slug: "components",
