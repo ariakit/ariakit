@@ -126,18 +126,21 @@ export const useComboboxList = createHook<ComboboxListOptions>(
 /**
  * Renders a combobox list. The `role` prop is set to `listbox` by default, but
  * can be overriden by any other valid combobox popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the
- * combobox input element's `id` by default.
+ * `tree`, `grid` or `dialog`).
+ *
+ * The `aria-labelledby` prop is set to the combobox input element's `id` by
+ * default.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxList store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxList>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxList>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxList>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxList = createComponent<ComboboxListOptions>((props) => {
@@ -153,7 +156,11 @@ export interface ComboboxListOptions<T extends As = "div">
   extends FocusableOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
-   * Object returned by the `useComboboxStore` hook.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
   store?: ComboboxStore;
 }
