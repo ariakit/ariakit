@@ -98,13 +98,14 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(

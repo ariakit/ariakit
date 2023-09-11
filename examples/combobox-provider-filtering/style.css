@@ -1,8 +1,0 @@
-@import url("../combobox/style.css");
-
-.no-results {
-  @apply
-    gap-2
-    p-2
-  ;
-}

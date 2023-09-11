@@ -29,19 +29,19 @@ Listing suggestions in a [Combobox](/components/combobox) component based on the
 
 ## Setting the search value
 
-In this example, we're using the [`setValue`](/reference/use-combobox-store#setvalue) prop from the [`useComboboxStore`](/reference/use-combobox-store) hook to set the search value when the user types. The state is updated in a [`React.startTransition`](https://react.dev/reference/react/startTransition) callback to ensure the UI remains responsive during typing.
+In this example, we're using the [`setValue`](/reference/combobox-provider#setvalue) prop from the [`ComboboxProvider`](/reference/combobox-provider) component to set the search value when the user types. The state is updated in a [`React.startTransition`](https://react.dev/reference/react/startTransition) callback to ensure the UI remains responsive during typing.
 
 ```js {4-6}
 const [searchValue, setSearchValue] = useState("");
 
-useComboboxStore({
-  setValue(value) {
+<ComboboxProvider
+  setValue={(value) => {
     startTransition(() => setSearchValue(value));
-  },
-});
+  }}
+>
 ```
 
-You can learn more about controlling state on the [Component stores](/guide/component-stores) guide.
+You can learn more about controlling state on the [Component providers](/guide/component-providers) guide.
 
 ## Filtering items
 

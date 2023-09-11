@@ -102,14 +102,15 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxDisclosure store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxDisclosure />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxDisclosure = createComponent<ComboboxDisclosureOptions>(
@@ -126,7 +127,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface ComboboxDisclosureOptions<T extends As = "button">
   extends DialogDisclosureOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
   store?: ComboboxStore;
 }

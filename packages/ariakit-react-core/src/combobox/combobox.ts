@@ -489,13 +489,14 @@ export const useCombobox = createHook<ComboboxOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Apple" />
- *   <ComboboxItem value="Banana" />
- *   <ComboboxItem value="Orange" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const Combobox = createComponent<ComboboxOptions>((props) => {
@@ -511,19 +512,25 @@ export interface ComboboxOptions<T extends As = "input">
   extends CompositeOptions<T>,
     PopoverAnchorOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
   store?: ComboboxStore;
   /**
    * Whether the first item will be automatically selected when the combobox
    * input value changes. When it's set to `true`, the exact behavior will
-   * depend on the value of `autoComplete` prop:
-   * - If `autoComplete` is `both` or `inline`, the first item is automatically
-   *   focused when the popup opens, and the input value changes to reflect
-   *   this. The inline completion string will be highlighted and will have a
-   *   selected state.
-   * - If `autoComplete` is `list` or `none`, the first item is automatically
-   *   focused when the popup opens, but the input value doesn't change.
+   * depend on the value of
+   * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop:
+   * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
+   *   is `both` or `inline`, the first item is automatically focused when the
+   *   popup opens, and the input value changes to reflect this. The inline
+   *   completion string will be highlighted and will have a selected state.
+   * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
+   *   is `list` or `none`, the first item is automatically focused when the
+   *   popup opens, but the input value doesn't change.
    *
    * Live examples:
    * - [ComboboxCancel](https://ariakit.org/examples/combobox-cancel)
@@ -531,26 +538,39 @@ export interface ComboboxOptions<T extends As = "input">
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * @default false
    */
   autoSelect?: boolean;
   /**
-   * Whether the items will be filtered based on `value` and whether the input
-   * value will temporarily change based on the active item. If `defaultList` or
-   * `list` are provided, this will be set to `list` by default, otherwise it'll
-   * default to `none`.
-   * - `both`: the items will be filtered based on `value` and the input value
-   *   will temporarily change based on the active item.
-   * - `list`: the items will be filtered based on `value` and the input value
-   *   will NOT change based on the active item.
-   * - `inline`: the items are static, that is, they won't be filtered based on
-   *   `value`, but the input value will temporarily change based on the active
-   *   item.
+   * Whether the items will be filtered based on
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) and
+   * whether the input value will temporarily change based on the active item.
+   *
+   * This prop is based on the standard
+   * [`aria-autocomplete`](https://w3c.github.io/aria/#aria-autocomplete)
+   * attribute, accepting the same values:
+   * - `both`: indicates that the items will be filtered based on
+   *   [`value`](https://ariakit.org/reference/combobox-provider#value) and the
+   *   input value will temporarily change based on the active item. The
+   *   filtering logic must be implemented by the consumer of this component,
+   *   whereas Ariakit will automatically provide the inline autocompletion
+   *   behavior.
+   * - `list` (default): indicates that the items will be filtered based on
+   *   [`value`](https://ariakit.org/reference/combobox-provider#value) and the
+   *   input value will NOT change based on the active item. The filtering logic
+   *   must be implemented by the consumer of this component.
+   * - `inline`: indicates that the items are static, that is, they won't be
+   *   filtered, but the input value will temporarily change based on the active
+   *   item. Ariakit will automatically provide the inline autocompletion
+   *   behavior
    * - `none`: the items are static and the input value will NOT change based on
    *   the active item.
    *
    * Live examples:
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * @default "list"
    */
   autoComplete?: StringWithValue<Required<AriaAttributes>["aria-autocomplete"]>;
   /**
@@ -579,8 +599,9 @@ export interface ComboboxOptions<T extends As = "input">
    */
   setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
   /**
-   * Whether the combobox list/popover should be shown when the input is
-   * clicked.
+   * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
+   * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components should be shown when the input is clicked.
    *
    * Live examples:
    * - [Textarea with inline
@@ -588,15 +609,15 @@ export interface ComboboxOptions<T extends As = "input">
    * @default true
    * @example
    * ```jsx
-   * const combobox = useComboboxStore();
-   * const canShow = combobox.useState((state) => state.value.length > 1);
-   * <Combobox store={combobox} showOnMouseDown={canShow} />
+   * <Combobox showOnMouseDown={value.length > 1} />
    * ```
    */
   showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether the combobox list/popover should be shown when the user presses
-   * the arrow up or down keys while focusing on the combobox input element.
+   * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
+   * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components should be shown when the user presses the arrow up or down keys
+   * while focusing on the combobox input element.
    *
    * Live examples:
    * - [Textarea with inline
@@ -604,9 +625,7 @@ export interface ComboboxOptions<T extends As = "input">
    * @default true
    * @example
    * ```jsx
-   * const combobox = useComboboxStore();
-   * const canShow = combobox.useState((state) => state.value.length > 1);
-   * <Combobox store={combobox} showOnKeyDown={canShow} />
+   * <Combobox showOnKeyDown={value.length > 1} />
    * ```
    */
   showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;

@@ -5,6 +5,7 @@ tags:
   - Search
   - Dropdowns
   - Form controls
+  - Abstracted examples
 ---
 
 # Multi-selectable Combobox
@@ -34,7 +35,7 @@ In this example, we're combining both [Combobox](/components/combobox) and [Sele
 
 ```jsx
 <ComboboxPopover render={<SelectList />} />
-<ComboboxItem render={<SelectItem />}>
+<SelectItem render={<ComboboxItem />}>
 ```
 
 For more information about this pattern, refer to the [Composition](/guide/composition) guide.

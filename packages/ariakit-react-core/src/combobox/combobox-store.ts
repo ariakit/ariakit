@@ -65,11 +65,16 @@ export interface ComboboxStoreOptions
     PopoverStoreOptions {
   /**
    * A callback that gets called when the `value` state changes.
+   *
+   * Live examples:
+   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
+   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * @param value The new value.
-   * @example
-   * function MyCombobox({ value, onChange }) {
-   *   const combobox = useComboboxStore({ value, setValue: onChange });
-   * }
    */
   setValue?: (value: ComboboxStoreState["value"]) => void;
 }

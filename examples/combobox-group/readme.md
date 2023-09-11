@@ -5,6 +5,7 @@ tags:
   - Search
   - Dropdowns
   - Form controls
+  - Abstracted examples
 ---
 
 # ComboboxGroup

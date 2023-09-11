@@ -67,7 +67,11 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface CollectionOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `useCollectionStore` hook.
+   * Object returned by the
+   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * hook. If not provided, the closest
+   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
+   * component's context will be used.
    */
   store?: CollectionStore;
 }
