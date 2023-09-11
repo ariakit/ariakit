@@ -4,6 +4,7 @@ tags:
   - Select
   - Dropdowns
   - Form controls
+  - Abstracted examples
 ---
 
 # Form with Select
