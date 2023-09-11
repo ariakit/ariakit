@@ -10,7 +10,7 @@ const updates: UpdateItem[] = [
     title: "Improved example: ComboboxGroup",
     type: "page",
     href: "/examples/combobox-group",
-    dateTime: "2023-09-11T02:42Z",
+    dateTime: "2023-09-11T02:58Z",
   },
   {
     title: "New guide: Component providers",
