@@ -167,9 +167,10 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
- * const disclosure = useDisclosureStore();
- * <Disclosure store={disclosure}>Disclosure</Disclosure>
- * <DisclosureContent store={disclosure}>Content</DisclosureContent>
+ * <DisclosureProvider>
+ *   <Disclosure>Disclosure</Disclosure>
+ *   <DisclosureContent>Content</DisclosureContent>
+ * </DisclosureProvider>
  * ```
  */
 export const DisclosureContent = createComponent<DisclosureContentOptions>(
@@ -186,7 +187,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface DisclosureContentOptions<T extends As = "div">
   extends Options<T> {
   /**
-   * Object returned by the `useDisclosureStore` hook.
+   * Object returned by the
+   * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
+   * hook. If not provided, the closest
+   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * component's context will be used.
    */
   store?: DisclosureStore;
   /**

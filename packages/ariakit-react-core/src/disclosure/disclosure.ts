@@ -94,9 +94,10 @@ export const useDisclosure = createHook<DisclosureOptions>(
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
- * const disclosure = useDisclosureStore();
- * <Disclosure store={disclosure}>Disclosure</Disclosure>
- * <DisclosureContent store={disclosure}>Content</DisclosureContent>
+ * <DisclosureProvider>
+ *   <Disclosure>Disclosure</Disclosure>
+ *   <DisclosureContent>Content</DisclosureContent>
+ * </DisclosureProvider>
  * ```
  */
 export const Disclosure = createComponent<DisclosureOptions>((props) => {
@@ -111,12 +112,18 @@ if (process.env.NODE_ENV !== "production") {
 export interface DisclosureOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**
-   * Object returned by the `useDisclosureStore` hook.
+   * Object returned by the
+   * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
+   * hook. If not provided, the closest
+   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * component's context will be used.
    */
   store?: DisclosureStore;
   /**
-   * Determines whether `store.toggle()` will be called on click. This is useful
-   * if you want to handle the toggle logic yourself.
+   * Determines whether
+   * [`toggle`](https://ariakit.org/reference/use-disclosure-store#toggle) will
+   * be called on click. This is useful if you want to handle the toggle logic
+   * yourself.
    * @default true
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
