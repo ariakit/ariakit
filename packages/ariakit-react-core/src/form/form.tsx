@@ -177,7 +177,11 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface FormOptions<T extends As = "form"> extends Options<T> {
   /**
-   * Object returned by the `useFormStore` hook.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component's
+   * context will be used.
    */
   store?: FormStore;
   /**

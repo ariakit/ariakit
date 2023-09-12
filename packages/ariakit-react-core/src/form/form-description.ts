@@ -75,7 +75,11 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { password: "" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     password: "",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormLabel name={form.names.password}>Password</FormLabel>
  *   <FormInput name={form.names.password} type="password" />
@@ -99,8 +103,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormDescriptionOptions<T extends As = "div">
   extends CollectionItemOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
   /**

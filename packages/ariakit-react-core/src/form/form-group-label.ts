@@ -25,8 +25,8 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
 
 /**
  * Renders a label in a form group. This component must be wrapped with
- * `FormGroup` so the `aria-labelledby` prop is properly set on the form group
- * element.
+ * [`FormGroup`](https://ariakit.org/reference/form-group) so the
+ * `aria-labelledby` prop is properly set on the form group element.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
@@ -61,8 +61,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormGroupLabelOptions<T extends As = "div">
   extends GroupLabelOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
 }
