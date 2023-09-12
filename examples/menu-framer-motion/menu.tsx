@@ -1,14 +1,14 @@
-import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import type { HTMLMotionProps, MotionProps } from "framer-motion";
+import clsx from "clsx";
+import type { MotionProps } from "framer-motion";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
-export interface MenuProps extends ComponentPropsWithoutRef<"div"> {
+export interface MenuProps extends Ariakit.MenuButtonProps {
   open?: boolean;
   setOpen?: (open: boolean) => void;
-  label: ReactNode;
-  disabled?: boolean;
+  label: React.ReactNode;
+  children?: React.ReactNode;
   animate?: MotionProps["animate"];
   transition?: MotionProps["transition"];
   variants?: MotionProps["variants"];
@@ -16,7 +16,7 @@ export interface MenuProps extends ComponentPropsWithoutRef<"div"> {
   exit?: MotionProps["exit"];
 }
 
-export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   {
     open,
     setOpen,
@@ -36,7 +36,12 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const mounted = menu.useState("mounted");
   return (
     <MotionConfig reducedMotion="user">
-      <Ariakit.MenuButton store={menu} ref={ref} className="button" {...props}>
+      <Ariakit.MenuButton
+        store={menu}
+        ref={ref}
+        {...props}
+        className={clsx("button", props.className)}
+      >
         {label}
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
@@ -68,13 +73,21 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export const MenuItem = forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(
+export interface MenuItemProps
+  extends React.ComponentPropsWithoutRef<typeof MotionMenuItem> {}
+
+// Instead of using the Ariakit `render` prop, we give control to Framer Motion
+// so it can process the props before we pass the remainder to
+// `Ariakit.MenuItem`.
+const MotionMenuItem = motion(Ariakit.MenuItem);
+
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   function MenuItem(props, ref) {
     return (
-      <Ariakit.MenuItem
+      <MotionMenuItem
         ref={ref}
-        className="menu-item"
-        render={<motion.div {...props} />}
+        {...props}
+        className={clsx("menu-item", props.className)}
       />
     );
   },

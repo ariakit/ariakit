@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Rendering nested <a href="/components/menu">Menu</a> components to create a dropdown menu with submenus that open when hovering over the parent menu item.
+Rendering nested [Menu](/components/menu) components to create a dropdown menu with submenus that open when hovering over the parent menu item.
 
 </div>
 

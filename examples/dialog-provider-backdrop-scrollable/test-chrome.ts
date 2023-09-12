@@ -21,7 +21,7 @@ const waitForBackdropScrollTop = async (page: Page, value: number) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-backdrop-scrollable", {
+  await page.goto("/previews/dialog-provider-backdrop-scrollable", {
     waitUntil: "networkidle",
   });
 });

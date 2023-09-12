@@ -4,13 +4,14 @@ tags:
   - Animated
   - Framer Motion
   - Dropdowns
+  - Abstracted examples
 ---
 
 # Menu with Framer Motion
 
 <div data-description>
 
-Abstracting <a href="/components/menu">Menu</a> into a reusable dropdown menu component that uses <a href="https://www.framer.com/motion/">Framer Motion</a> to create smooth initial and exit animations.
+Abstracting [Menu](/components/menu) into a reusable dropdown menu component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
 
 </div>
 

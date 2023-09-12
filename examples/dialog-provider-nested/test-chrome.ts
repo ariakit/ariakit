@@ -8,7 +8,9 @@ const getDialog = (page: Page | Locator, name: string) =>
   page.getByRole("dialog", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-nested", { waitUntil: "networkidle" });
+  await page.goto("/previews/dialog-provider-nested", {
+    waitUntil: "networkidle",
+  });
 });
 
 test("remove product", async ({ page }) => {

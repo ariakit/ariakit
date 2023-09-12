@@ -1,40 +1,44 @@
 import { forwardRef } from "react";
 import type { ReactNode } from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 
-interface MenuProps extends Omit<Ariakit.MenuButtonProps, "store"> {
+interface MenuProps extends Ariakit.MenuButtonProps {
   label: ReactNode;
   children?: ReactNode;
-  defaultValues?: Ariakit.MenuStoreProps["defaultValues"];
   values?: Ariakit.MenuStoreProps["values"];
   onValuesChange?: Ariakit.MenuStoreProps["setValues"];
+  defaultValues?: Ariakit.MenuStoreProps["defaultValues"];
 }
 
 export const Menu = forwardRef<HTMLButtonElement, MenuProps>(function Menu(
-  { label, defaultValues, values, onValuesChange, ...props },
+  { label, values, onValuesChange, defaultValues, ...props },
   ref,
 ) {
-  const menu = Ariakit.useMenuStore({
-    defaultValues,
-    values,
-    setValues: onValuesChange,
-  });
   return (
-    <>
-      <Ariakit.MenuButton ref={ref} className="button" {...props} store={menu}>
+    <Ariakit.MenuProvider
+      values={values}
+      setValues={onValuesChange}
+      defaultValues={defaultValues}
+    >
+      <Ariakit.MenuButton
+        ref={ref}
+        {...props}
+        className={clsx("button", props.className)}
+      >
         {label}
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
-      <Ariakit.Menu store={menu} className="menu">
+      <Ariakit.Menu className="menu">
         <Ariakit.MenuArrow />
         {props.children}
       </Ariakit.Menu>
-    </>
+    </Ariakit.MenuProvider>
   );
 });
 
 interface MenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const MenuItemCheckbox = forwardRef<
@@ -42,7 +46,11 @@ export const MenuItemCheckbox = forwardRef<
   MenuItemCheckboxProps
 >(function MenuItemCheckbox(props, ref) {
   return (
-    <Ariakit.MenuItemCheckbox ref={ref} className="menu-item" {...props}>
+    <Ariakit.MenuItemCheckbox
+      ref={ref}
+      {...props}
+      className={clsx("menu-item", props.className)}
+    >
       <Ariakit.MenuItemCheck /> {props.children}
     </Ariakit.MenuItemCheckbox>
   );

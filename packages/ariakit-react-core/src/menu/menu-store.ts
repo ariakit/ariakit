@@ -110,18 +110,18 @@ export interface MenuStoreOptions<T extends Values = Values>
    * Live examples:
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
   /**
    * A reference to a parent menu store. It's automatically set when nesting
    * menus in the React tree. You should manually set this if menus aren't nested
    * in the React tree.
    */
-  parent?: MenuStore;
+  parent?: MenuStore | null;
   /**
    * A reference to a menu bar store. It's automatically set when rendering
    * menus inside a menu bar in the React tree.
    */
-  menubar?: MenuBarStore;
+  menubar?: MenuBarStore | null;
 }
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &

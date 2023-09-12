@@ -5,7 +5,9 @@ import type { Page } from "@playwright/test";
 const getCombobox = (page: Page) => page.getByRole("combobox");
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-multiple", { waitUntil: "networkidle" });
+  await page.goto("/previews/combobox-multiple-store", {
+    waitUntil: "networkidle",
+  });
 });
 
 test("navigate to listbox and select an item", async ({

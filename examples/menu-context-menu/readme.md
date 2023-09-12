@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Showing <a href="/components/menu">Menu</a> when right-clicking on an element using the <a href="/reference/menu#getanchorrect"><code>getAnchorRect</code></a> prop to determine the position of the popover.
+Showing [Menu](/components/menu) when right-clicking on an element using the [`getAnchorRect`](/reference/menu#getanchorrect) prop to determine the position of the popover.
 
 </div>
 
