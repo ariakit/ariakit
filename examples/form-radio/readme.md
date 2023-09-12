@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Using the <a href="/reference/form-radio-group"><code>FormRadioGroup</code></a> and <a href="/reference/form-radio"><code>FormRadio</code></a> components to create a <a href="/components/form">Form</a> with custom validation that requires a user to select an option from a list of radio buttons.
+Using the [`FormRadioGroup`](/reference/form-radio-group) and [`FormRadio`](/reference/form-radio) components to create a [Form](/components/form) with custom validation that requires a user to select an option from a list of radio buttons.
 
 </div>
 
