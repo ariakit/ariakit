@@ -32,12 +32,13 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>(
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
- * <Hovercard store={hovercard}>
- *   <HovercardArrow />
- *   Details
- * </Hovercard>
+ * <HovercardProvider>
+ *   <HovercardAnchor>@username</HovercardAnchor>
+ *   <Hovercard>
+ *     <HovercardArrow />
+ *     Details
+ *   </Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardArrow = createComponent<HovercardArrowOptions>(
@@ -54,8 +55,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook. If not provided, the
-   * parent `Hovercard` component's context will be used.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * components' context will be used.
    */
   store?: HovercardStore;
 }

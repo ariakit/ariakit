@@ -24,16 +24,17 @@ export const useHovercardHeading = createHook<HovercardHeadingOptions>(
 );
 
 /**
- * Renders a heading in a hovercard. This component must be wrapped with
- * `Hovercard` so the `aria-labelledby` prop is properly set on the hovercard
- * element.
+ * Renders a heading in a hovercard. This component must be wrapped within
+ * [`Hovercard`](https://ariakit.org/reference/hovercard) so the
+ * `aria-labelledby` prop is properly set on the hovercard element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <Hovercard store={hovercard}>
- *   <HovercardHeading>Heading</HovercardHeading>
- * </Hovercard>
+ * <HovercardProvider>
+ *   <Hovercard>
+ *     <HovercardHeading>Heading</HovercardHeading>
+ *   </Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardHeading = createComponent<HovercardHeadingOptions>(
@@ -50,8 +51,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardHeadingOptions<T extends As = "h1">
   extends PopoverHeadingOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook. If not provided, the
-   * parent `Hovercard` component's context will be used.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * components' context will be used.
    */
   store?: HovercardStore;
 }

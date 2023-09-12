@@ -144,16 +144,18 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
 );
 
 /**
- * Renders a hidden disclosure button that will be visible when the hovercard
- * anchor element (`HovercardAnchor`) receives keyboard focus. The user can then
- * navigate to the button to open the hovercard when using the keyboard.
+ * Renders a hidden disclosure button that will be visible when the
+ * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor) receives
+ * keyboard focus. The user can then navigate to the button to open the
+ * hovercard when using the keyboard.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
- * <HovercardDisclosure store={hovercard} />
- * <Hovercard store={hovercard}>Details</Hovercard>
+ * <HovercardProvider>
+ *   <HovercardAnchor>@username</HovercardAnchor>
+ *   <HovercardDisclosure />
+ *   <Hovercard>Details</Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardDisclosure = createComponent<HovercardDisclosureOptions>(
@@ -170,7 +172,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardDisclosureOptions<T extends As = "button">
   extends DialogDisclosureOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
   store?: HovercardStore;
 }

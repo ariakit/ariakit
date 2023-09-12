@@ -24,16 +24,17 @@ export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
 );
 
 /**
- * Renders a description in a hovercard. This component must be wrapped with
- * `Hovercard` so the `aria-describedby` prop is properly set on the hovercard
- * element.
+ * Renders a description in a hovercard. This component must be wrapped within
+ * [`Hovercard`](https://ariakit.org/reference/hovercard) so the
+ * `aria-describedby` prop is properly set on the hovercard element.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <Hovercard store={hovercard}>
- *   <HovercardDescription>Description</HovercardDescription>
- * </Hovercard>
+ * <HovercardProvider>
+ *   <Hovercard>
+ *     <HovercardDescription>Description</HovercardDescription>
+ *   </Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardDescription =
@@ -49,8 +50,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardDescriptionOptions<T extends As = "p">
   extends PopoverDescriptionOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook. If not provided, the
-   * parent `Hovercard` component's context will be used.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * components' context will be used.
    */
   store?: HovercardStore;
 }

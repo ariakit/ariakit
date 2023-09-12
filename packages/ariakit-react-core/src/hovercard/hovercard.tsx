@@ -368,13 +368,15 @@ export const useHovercard = createHook<HovercardOptions>(
 
 /**
  * Renders a hovercard element, which is a popover that's usually made visible
- * by hovering the mouse cursor over an anchor element (`HovercardAnchor`).
+ * by hovering the mouse cursor over a
+ * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor).
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
- * <Hovercard store={hovercard}>Details</Hovercard>
+ * <HovercardProvider>
+ *   <HovercardAnchor>@username</HovercardAnchor>
+ *   <Hovercard>Details</Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const Hovercard = createComponent<HovercardOptions>((props) => {
@@ -389,7 +391,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardOptions<T extends As = "div">
   extends PopoverOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
   store?: HovercardStore;
   /**

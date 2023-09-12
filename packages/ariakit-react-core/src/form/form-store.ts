@@ -66,7 +66,11 @@ export function useFormStoreProps<
  * Creates a form store.
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { email: "" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     email: "",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormLabel name={form.names.email}>Email</FormLabel>
  *   <FormInput name={form.names.email} />

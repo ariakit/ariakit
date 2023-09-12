@@ -7,7 +7,7 @@ tags:
 
 <div data-description>
 
-Using the <a href="/reference/hovercard-disclosure"><code>HovercardDisclosure</code></a> component to render a <a href="/components/hovercard">Hovercard</a> that can be opened with the keyboard.
+Using the [`HovercardDisclosure`](/reference/hovercard-disclosure) component to render a [Hovercard](/components/hovercard) that can be opened with the keyboard.
 
 </div>
 

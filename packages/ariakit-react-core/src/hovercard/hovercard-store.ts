@@ -26,6 +26,7 @@ export function useHovercardStoreProps<T extends Core.HovercardStore>(
  * @example
  * ```jsx
  * const hovercard = useHovercardStore({ placement: "top" });
+ *
  * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
  * <Hovercard store={hovercard}>Details</Hovercard>
  * ```
