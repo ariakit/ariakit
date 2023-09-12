@@ -47,6 +47,7 @@ export const useFormReset = createHook<FormResetOptions>(
  * @example
  * ```jsx
  * const form = useFormStore();
+ *
  * <Form store={form}>
  *   <FormReset>Reset</FormReset>
  * </Form>
@@ -64,8 +65,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormResetOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
 }

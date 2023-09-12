@@ -33,7 +33,11 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { color: "red" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     color: "red",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormRadioGroup>
  *     <FormGroupLabel>Favorite color</FormGroupLabel>

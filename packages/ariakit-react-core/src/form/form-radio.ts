@@ -81,7 +81,11 @@ export const useFormRadio = createHook<FormRadioOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { char: "a" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     char: "a",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormRadioGroup>
  *     <FormGroupLabel>Favorite character</FormGroupLabel>

@@ -123,7 +123,11 @@ export const useFormLabel = createHook<FormLabelOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { email: "" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     email: "",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormLabel name={form.names.email}>Email</Role>
  *   <FormInput name={form.names.email} />
@@ -142,8 +146,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormLabelOptions<T extends As = "label">
   extends CollectionItemOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
   /**

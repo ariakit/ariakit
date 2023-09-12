@@ -63,7 +63,11 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { acceptTerms: false } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     acceptTerms: false,
+ *   },
+ * });
  * <Form store={form}>
  *   <label>
  *     <FormCheckbox name={form.names.acceptTerms} />
