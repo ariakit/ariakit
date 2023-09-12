@@ -81,11 +81,6 @@ export function createStore<S extends State>(
     if (!stores.length) return noop;
     initialized = true;
 
-    const teardowns: Array<void | (() => void)> = [];
-    setups.forEach((setup) => teardowns.push(setup()));
-
-    const cleanups = stores.map(init);
-
     const desyncs = getKeys(state).map((key) =>
       chain(
         ...stores.map((store) => {
@@ -97,7 +92,12 @@ export function createStore<S extends State>(
       ),
     );
 
-    return chain(...desyncs, ...cleanups, ...teardowns, () => {
+    const teardowns: Array<void | (() => void)> = [];
+    setups.forEach((setup) => teardowns.push(setup()));
+
+    const cleanups = stores.map(init);
+
+    return chain(...desyncs, ...teardowns, ...cleanups, () => {
       initialized = false;
     });
   };
