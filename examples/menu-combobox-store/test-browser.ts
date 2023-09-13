@@ -13,7 +13,9 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-combobox", { waitUntil: "networkidle" });
+  await page.goto("/previews/menu-combobox-store", {
+    waitUntil: "networkidle",
+  });
 });
 
 test("auto select first option", async ({ page }) => {

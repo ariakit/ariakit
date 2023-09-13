@@ -32,7 +32,7 @@ async function canScrollBody(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-nested-multiple", {
+  await page.goto("/previews/dialog-provider-nested-multiple", {
     waitUntil: "networkidle",
   });
 });

@@ -15,7 +15,9 @@ const createTransition = (duration = 100) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-animated", { waitUntil: "networkidle" });
+  await page.goto("/previews/dialog-provider-animated", {
+    waitUntil: "networkidle",
+  });
 });
 
 test("show/hide", async ({ page }) => {

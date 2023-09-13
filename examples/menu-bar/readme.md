@@ -2,6 +2,7 @@
 tags:
   - Menu
   - Dropdowns
+  - Abstracted examples
 ---
 
 # MenuBar

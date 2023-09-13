@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Rendering <a href="/components/menu">Menu</a> using <a href="/reference/menu-item-radio"><code>MenuItemRadio</code></a> as children and the <a href="/reference/use-menu-store#values"><code>values</code></a> prop from <a href="/reference/use-menu-store"><code>useMenuStore</code></a> to control the checked item.
+Rendering [Menu](/components/menu) using [`MenuItemRadio`](/reference/menu-item-radio) as children and the [`values`](/reference/menu-provider#values) prop from [`MenuProvider`](/reference/menu-provider) to control the checked item.
 
 </div>
 

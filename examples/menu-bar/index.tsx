@@ -1,79 +1,109 @@
-import { Menu, MenuBar, MenuItem, MenuSeparator } from "./menu.jsx";
 import "./style.css";
+import {
+  Menu,
+  MenuBar,
+  MenuButton,
+  MenuItem,
+  MenuProvider,
+  MenuSeparator,
+} from "./menu.jsx";
 
 export default function Example() {
   return (
     <MenuBar>
-      <Menu label="File">
-        <MenuItem label="New Tab" />
-        <MenuItem label="New Window" />
-        <MenuItem label="Open File" />
-        <MenuItem label="Open Location" />
-        <MenuSeparator />
-        <MenuItem label="Close Window" />
-        <MenuItem label="Close Tab" />
-        <MenuItem label="Save Page As" />
-        <MenuSeparator />
-        <Menu label="Share">
-          <MenuItem label="Email Link" />
-          <MenuItem label="Messages" />
-          <MenuItem label="Notes" />
-          <MenuItem label="Reminders" />
-          <MenuItem label="More..." />
-        </Menu>
-        <MenuSeparator />
-        <MenuItem label="Print" />
-      </Menu>
-      <Menu label="Edit">
-        <MenuItem label="Undo" />
-        <MenuItem label="Redo" />
-        <MenuSeparator />
-        <MenuItem label="Cut" />
-        <MenuItem label="Copy" />
-        <MenuItem label="Paste" />
-        <MenuItem label="Paste and Match Style" />
-        <MenuItem label="Delete" />
-        <MenuItem label="Select All" />
-        <MenuSeparator />
-        <Menu label="Find">
-          <MenuItem label="Search the Web" />
+      <MenuProvider>
+        <MenuItem render={<MenuButton />}>File</MenuItem>
+        <Menu>
+          <MenuItem>New Tab</MenuItem>
+          <MenuItem>New Window</MenuItem>
+          <MenuItem>Open File</MenuItem>
+          <MenuItem>Open Location</MenuItem>
           <MenuSeparator />
-          <MenuItem label="Find" />
-          <MenuItem label="Find Next" />
-          <MenuItem label="Find Previous" />
-          <MenuItem label="Use Selection for Find" />
-          <MenuItem disabled label="Jump to Selection" />
+          <MenuItem>Close Window</MenuItem>
+          <MenuItem>Close Tab</MenuItem>
+          <MenuItem>Save Page As</MenuItem>
+          <MenuSeparator />
+          <MenuProvider>
+            <MenuItem render={<MenuButton />}>Share</MenuItem>
+            <Menu>
+              <MenuItem>Email Link</MenuItem>
+              <MenuItem>Messages</MenuItem>
+              <MenuItem>Notes</MenuItem>
+              <MenuItem>Reminders</MenuItem>
+              <MenuItem>More...</MenuItem>
+            </Menu>
+          </MenuProvider>
+          <MenuItem>Print</MenuItem>
         </Menu>
-        <Menu label="Spelling and Grammar">
-          <MenuItem label="Show Spelling and Grammar" />
-          <MenuItem label="Check Document Now" />
+      </MenuProvider>
+      <MenuProvider>
+        <MenuItem render={<MenuButton />}>Edit</MenuItem>
+        <Menu>
+          <MenuItem>Undo</MenuItem>
+          <MenuItem>Redo</MenuItem>
+          <MenuSeparator />
+          <MenuItem>Cut</MenuItem>
+          <MenuItem>Copy</MenuItem>
+          <MenuItem>Paste</MenuItem>
+          <MenuItem>Paste and Match Style</MenuItem>
+          <MenuItem>Delete</MenuItem>
+          <MenuItem>Select All</MenuItem>
+          <MenuSeparator />
+          <MenuProvider>
+            <MenuItem render={<MenuButton />}>Find</MenuItem>
+            <Menu>
+              <MenuItem>Search the Web</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Find</MenuItem>
+              <MenuItem>Find Next</MenuItem>
+              <MenuItem>Find Previous</MenuItem>
+              <MenuItem>Use Selection for Find</MenuItem>
+              <MenuItem disabled>Jump to Selection</MenuItem>
+            </Menu>
+          </MenuProvider>
+          <MenuProvider>
+            <MenuItem render={<MenuButton />}>Spelling and Grammar</MenuItem>
+            <Menu>
+              <MenuItem>Show Spelling and Grammar</MenuItem>
+              <MenuItem>Check Document Now</MenuItem>
+            </Menu>
+          </MenuProvider>
+          <MenuProvider>
+            <MenuItem render={<MenuButton />}>Substitutions</MenuItem>
+            <Menu>
+              <MenuItem>Show Substitutions</MenuItem>
+            </Menu>
+          </MenuProvider>
+          <MenuSeparator />
+          <MenuItem disabled>Start Dictation</MenuItem>
+          <MenuItem>Emoji &amp; Symbols</MenuItem>
         </Menu>
-        <Menu label="Substitutions">
-          <MenuItem label="Show Substitutions" />
+      </MenuProvider>
+      <MenuProvider>
+        <MenuItem render={<MenuButton />}>View</MenuItem>
+        <Menu>
+          <MenuItem disabled>Stop</MenuItem>
+          <MenuItem>Force Reload This Page</MenuItem>
+          <MenuSeparator />
+          <MenuItem>Enter Full Screen</MenuItem>
+          <MenuItem disabled>Actual Size</MenuItem>
+          <MenuItem>Zoom In</MenuItem>
+          <MenuItem>Zoom Out</MenuItem>
+          <MenuSeparator />
+          <MenuItem>Cast</MenuItem>
+          <MenuSeparator />
+          <MenuProvider>
+            <MenuItem render={<MenuButton />}>Developer</MenuItem>
+            <Menu>
+              <MenuItem>View Source</MenuItem>
+              <MenuItem>Developer Tools</MenuItem>
+              <MenuItem>Inspect Elements</MenuItem>
+              <MenuItem>JavaScript Console</MenuItem>
+              <MenuItem>Allow JavaScript from Apple Events</MenuItem>
+            </Menu>
+          </MenuProvider>
         </Menu>
-        <MenuSeparator />
-        <MenuItem disabled label="Start Dictation" />
-        <MenuItem label="Emoji &amp; Symbols" />
-      </Menu>
-      <Menu label="View">
-        <MenuItem disabled label="Stop" />
-        <MenuItem label="Force Reload This Page" />
-        <MenuSeparator />
-        <MenuItem label="Enter Full Screen" />
-        <MenuItem disabled label="Actual Size" />
-        <MenuItem label="Zoom In" />
-        <MenuItem label="Zoom Out" />
-        <MenuSeparator />
-        <MenuItem label="Cast" />
-        <MenuSeparator />
-        <Menu label="Developer">
-          <MenuItem label="View Source" />
-          <MenuItem label="Developer Tools" />
-          <MenuItem label="Inspect Elements" />
-          <MenuItem label="JavaScript Console" />
-          <MenuItem label="Allow JavaScript from Apple Events" />
-        </Menu>
-      </Menu>
+      </MenuProvider>
     </MenuBar>
   );
 }
