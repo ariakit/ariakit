@@ -1,5 +1,5 @@
-import { Menu, MenuItem } from "./menu.jsx";
 import "./style.css";
+import { Menu, MenuItem } from "./menu.jsx";
 
 export default function Example() {
   return (

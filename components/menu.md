@@ -20,6 +20,7 @@ Access a set of commands within a menu bar or dropdown menu. This component is b
 
 <div data-cards="examples">
 
+- [](/examples/menu-nested)
 - [](/examples/menu-item-checkbox)
 - [](/examples/menu-framer-motion)
 - [](/examples/menu-tooltip)
