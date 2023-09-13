@@ -1,4 +1,3 @@
-import type { DependencyList } from "react";
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
@@ -8,9 +7,8 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   store: T,
   update: () => void,
   props: DisclosureStoreProps,
-  deps: DependencyList = [],
 ) {
-  useUpdateEffect(update, [props.store, props.disclosure, ...deps]);
+  useUpdateEffect(update, [props.store, props.disclosure]);
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "mounted", "setMounted");
   useStoreProps(store, props, "animated");
