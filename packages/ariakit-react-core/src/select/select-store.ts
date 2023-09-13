@@ -102,7 +102,7 @@ export interface SelectStoreOptions<T extends Value = Value>
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
 }
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
