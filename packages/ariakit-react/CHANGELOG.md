@@ -1,5 +1,17 @@
 # @ariakit/react
 
+## 0.3.2
+
+### Patch Changes
+
+- [`#2811`](https://github.com/ariakit/ariakit/pull/2811) **TypeScript**: Fixed missing `null` type on props from [`useMenuStore`](https://ariakit.org/reference/use-menu-store) ([`combobox`](https://ariakit.org/reference/use-menu-store#combobox), [`parent`](https://ariakit.org/reference/use-menu-store#parent), [`menubar`](https://ariakit.org/reference/use-menu-store#menubar)), and [`useSelectStore`](https://ariakit.org/reference/use-select-store) ([`combobox`](https://ariakit.org/reference/use-select-store#combobox)).
+
+- [`#2812`](https://github.com/ariakit/ariakit/pull/2812) Fixed an infinite loop issue when using [`MenuButton`](https://ariakit.org/reference/menu-buton) with a [`store`](https://ariakit.org/reference/menu-button#store) that is synchronized with another store.
+
+- Improved JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.3.2`.
+
 ## 0.3.1
 
 ### Patch Changes
