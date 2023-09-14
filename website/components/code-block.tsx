@@ -39,15 +39,14 @@ function parseFontStyle(fontStyle?: FontStyle) {
   );
 }
 
-function getLinkableType(token: IThemedToken, line: IThemedToken[]) {
+function getLinkableType(token: IThemedToken) {
   if (!token.explanation) return null;
 
   for (const { scopes } of token.explanation) {
     const s = scopes.map((s) => s.scopeName.replace(/\.[tj]sx?/g, ""));
     if (
       s.includes("variable.other.readwrite.alias") &&
-      (s.includes("meta.import") || s.includes("meta.export")) &&
-      line.some((token) => token.content.startsWith('"@ariakit/react'))
+      (s.includes("meta.import") || s.includes("meta.export"))
     ) {
       if (/^[A-Z]/.test(token.content)) return "component-import";
       return "function-import";
@@ -115,7 +114,7 @@ function getTokenHref(
     }
     return;
   }
-  const type = getLinkableType(token, line);
+  const type = getLinkableType(token);
   if (!type) return;
   const word = token.content.replace("Ariakit.", "").replace(/\:$/, "");
   const id = type === "prop" ? word.toLowerCase() : kebabCase(word);

@@ -5,12 +5,10 @@ import {
   MenuButton,
   MenuItem,
   MenuProvider,
-} from "../menu-tooltip/menu.jsx";
-import {
   Tooltip,
   TooltipAnchor,
   TooltipProvider,
-} from "../menu-tooltip/tooltip.jsx";
+} from "@ariakit/react";
 
 export default function Example() {
   const [unmountPortal, setUnmountPortal] = useState(false);

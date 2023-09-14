@@ -1,7 +1,14 @@
 import "./style.css";
-import { VisuallyHidden } from "@ariakit/react";
-import { Menu, MenuButton, MenuItem, MenuProvider } from "./menu.jsx";
-import { Tooltip, TooltipAnchor, TooltipProvider } from "./tooltip.jsx";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuProvider,
+  Tooltip,
+  TooltipAnchor,
+  TooltipProvider,
+  VisuallyHidden,
+} from "@ariakit/react";
 
 export default function Example() {
   return (

@@ -105,6 +105,8 @@ import { Checkbox } from "@ariakit/react";
 
 This also simplifies the creation of abstractions for Ariakit components. For instance, when developing a custom `Combobox` component, there's no need to rename the Ariakit `Combobox` to a different name.
 
+However, this isn't a strict rule for documentation. If it results in cleaner code overall, it makes more sense to import components individually, even if the import statement spans multiple lines.
+
 <aside data-type="note" title="What about tree shaking?">
 
 No need to worry. The namespace import syntax does not increase the bundle size. Modern bundlers analyze the code statically and include only the components that are actually used. Unused components are removed from the bundle, unless you access their properties with a runtime variable:
