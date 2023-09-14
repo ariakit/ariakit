@@ -148,15 +148,15 @@ Another use case for the `render` function is to render elements between an inte
 
 When a function is passed to the `render` prop, the HTML props will **not** be automatically merged into the returned React element. It's your responsibility to merge them within the function itself, following the same approach described in [Custom components must be open for extension](#custom-components-must-be-open-for-extension).
 
-Considering this, it's generally recommended to pass all the HTML props you intend to merge to the original component, as it can handle the merging process for you:
+With this in mind, it's generally recommended to pass all the HTML props you intend to merge to a transitional [Role](/components/role) element passed directly to the `render` prop, as it can handle the merging process for you in a type-safe manner:
 
 <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-x-2 gap-y-4 !max-w-[832px] [&_pre]:h-full">
 
 ```jsx "ref" "onClick"
 // ❌ Manually merging props
-<Button
+<Tab
   render={(props) => (
-    <summary
+    <Link
       {...props}
       ref={mergeRefs(props.ref, myRef)}
       onClick={(event) => {
@@ -170,10 +170,14 @@ Considering this, it's generally recommended to pass all the HTML props you inte
 
 ```jsx "ref" "onClick"
 // ✅ Better
-<Button
-  ref={myRef}
-  onClick={handleClick}
-  render={(props) => <summary {...props} />}
+<Tab
+  render={
+    <Role.a
+      ref={myRef}
+      onClick={handleClick}
+      render={(props) => <Link {...props} />}
+    />
+  }
 />
 ```
 
