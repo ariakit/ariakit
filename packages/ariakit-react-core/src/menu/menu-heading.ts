@@ -27,10 +27,11 @@ export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <Menu store={menu}>
- *   <MenuHeading>Heading</MenuHeading>
- * </Menu>
+ * <MenuProvider>
+ *   <Menu>
+ *     <MenuHeading>Heading</MenuHeading>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuHeading = createComponent<MenuHeadingOptions>((props) => {
@@ -45,8 +46,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuHeadingOptions<T extends As = "h1">
   extends HovercardHeadingOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

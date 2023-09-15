@@ -24,15 +24,17 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
 );
 
 /**
- * Renders a description in a menu. This component must be wrapped with `Menu`
- * so the `aria-describedby` prop is properly set on the menu element.
+ * Renders a description in a menu. This component must be wrapped with
+ * [`Menu`](https://ariakit.org/reference/menu) component so the
+ * `aria-describedby` prop is properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <Menu store={menu}>
- *   <MenuDescription>Description</MenuDescription>
- * </Menu>
+ * <MenuProvider>
+ *   <Menu>
+ *     <MenuDescription>Description</MenuDescription>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuDescription = createComponent<MenuDescriptionOptions>(
@@ -49,8 +51,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuDescriptionOptions<T extends As = "p">
   extends HovercardDescriptionOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

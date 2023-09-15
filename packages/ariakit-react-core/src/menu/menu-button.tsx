@@ -226,18 +226,20 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 );
 
 /**
- * Renders a menu button that triggers a dropdown menu. Usually, this is
+ * Renders a menu button that triggers a
+ * [`Menu`](https://ariakit.org/reference/menu) component. Usually, this is
  * rendered as a native `button` element, but if it's a submenu button rendered
  * as a menu item inside another menu, it'll be rendered as a `div`.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuButton = createComponent<MenuButtonOptions>((props) => {
@@ -254,14 +256,20 @@ export interface MenuButtonOptions<T extends As = "button" | "div">
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * context will be used.
    */
   store?: MenuStore;
   /**
    * Determines whether pressing a character key while focusing on the
-   * `MenuButton` should move focus to the `MenuItem` starting with that
-   * character. By default, it's `true` for menu buttons in a `MenuBar`, but
-   * `false` for other menu buttons.
+   * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
+   * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
+   * that character. By default, it's `true` for menu buttons in a
+   * [`MenuBar`](https://ariakit.org/reference/menu-bar), but `false` for other
+   * menu buttons.
    */
   typeahead?: boolean;
 }

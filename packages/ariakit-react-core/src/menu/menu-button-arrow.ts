@@ -37,15 +37,16 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>
- *   Edit
- *   <MenuButtonArrow />
- * </MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>
+ *     Edit
+ *     <MenuButtonArrow />
+ *   </MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuButtonArrow = createComponent<MenuButtonArrowOptions>(
@@ -62,8 +63,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuButtonArrowOptions<T extends As = "span">
   extends PopoverDisclosureArrowOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `MenuButton` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest
+   * [`MenuButton`](https://ariakit.org/reference/menu-button) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

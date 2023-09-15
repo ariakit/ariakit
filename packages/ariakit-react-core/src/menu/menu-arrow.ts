@@ -31,11 +31,12 @@ export const useMenuArrow = createHook<MenuArrowOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Menu</MenuButton>
- * <Menu store={menu}>
- *   <MenuArrow />
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Menu</MenuButton>
+ *   <Menu>
+ *     <MenuArrow />
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuArrow = createComponent<MenuArrowOptions>((props) => {
@@ -50,8 +51,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

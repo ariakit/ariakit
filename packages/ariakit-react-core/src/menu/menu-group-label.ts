@@ -28,15 +28,16 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Recent Items</MenuButton>
- * <Menu store={menu}>
- *   <MenuGroup>
- *     <MenuGroupLabel>Applications</MenuGroupLabel>
- *     <MenuItem>Google Chrome.app</MenuItem>
- *     <MenuItem>Safari.app</MenuItem>
- *   </MenuGroup>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Recent Items</MenuButton>
+ *   <Menu>
+ *     <MenuGroup>
+ *       <MenuGroupLabel>Applications</MenuGroupLabel>
+ *       <MenuItem>Google Chrome.app</MenuItem>
+ *       <MenuItem>Safari.app</MenuItem>
+ *     </MenuGroup>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuGroupLabel = createComponent<MenuGroupLabelOptions>(
@@ -53,7 +54,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuGroupLabelOptions<T extends As = "div">
   extends CompositeGroupLabelOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

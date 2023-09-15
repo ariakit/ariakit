@@ -59,11 +59,12 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore({ defaultValues: { apple: false } });
- * <MenuButton store={menu}>Fruits</MenuButton>
- * <Menu store={menu}>
- *   <MenuItemCheckbox name="apple">Apple</MenuItemCheckbox>
- * </Menu>
+ * <MenuProvider defaultValues={{ apple: false }}>
+ *   <MenuButton>Fruits</MenuButton>
+ *   <Menu>
+ *     <MenuItemCheckbox name="apple">Apple</MenuItemCheckbox>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
@@ -81,12 +82,16 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
   extends MenuItemOptions<T>,
     Omit<CheckboxOptions<T>, "store"> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
   /**
-   * MenuItemCheckbox's name as in `menu.values`.
+   * MenuItemCheckbox's name as specified in the
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
    */
   name: string;
   /**

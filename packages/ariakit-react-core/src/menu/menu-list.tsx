@@ -184,12 +184,13 @@ export const useMenuList = createHook<MenuListOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <MenuList store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </MenuList>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <MenuList>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </MenuList>
+ * </MenuProvider>
  * ```
  */
 export const MenuList = createComponent<MenuListOptions>((props) => {
@@ -206,7 +207,11 @@ export interface MenuListOptions<T extends As = "div">
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * context will be used.
    */
   store?: MenuStore;
 }

@@ -127,12 +127,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItem = createMemoComponent<MenuItemOptions>((props) => {
@@ -148,9 +149,15 @@ export interface MenuItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
-   * Object returned by the `useMenuBarStore` or `useMenuStore` hooks. If not
-   * provided, the parent `Menu` or `MenuBar` components' context will be
-   * used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
+   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store)
+   * hooks. If not provided, the closest
+   * [`Menu`](https://ariakit.org/reference/menu),
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
+   * [`MenuBar`](https://ariakit.org/reference/menu-bar), or
+   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
+   * components' context will be used.
    */
   store?: MenuBarStore | MenuStore;
   /**
