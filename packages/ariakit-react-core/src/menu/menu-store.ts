@@ -96,25 +96,26 @@ export interface MenuStoreOptions<T extends Values = Values>
     HovercardStoreOptions {
   /**
    * A callback that gets called when the `values` state changes.
+   *
+   * Live examples:
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    * @param values The new values.
-   * @example
-   * const [values, setValues] = useState({});
-   * const menu = useMenuStore({ values, setValues });
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a menu (e.g., dropdown menu with a search input). The stores will
    * share the same state.
-   *
-   * Live examples:
-   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
   combobox?: ComboboxStore | null;
   /**
    * A reference to a parent menu store. It's automatically set when nesting
-   * menus in the React tree. You should manually set this if menus aren't nested
-   * in the React tree.
+   * menus in the React tree. You should manually set this if menus aren't
+   * nested in the React tree.
+   *
+   * Live examples:
+   * - [MenuBar](https://ariakit.org/examples/menu-bar)
+   * - [Submenu](https://ariakit.org/examples/menu-nested)
    */
   parent?: MenuStore | null;
   /**

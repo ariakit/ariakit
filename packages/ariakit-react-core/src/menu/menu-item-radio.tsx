@@ -92,16 +92,17 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore({ defaultValues: { fruit: "apple" } });
- * <MenuButton store={menu}>Fruit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItemRadio name="fruit" value="apple">
- *     Apple
- *   </MenuItemRadio>
- *   <MenuItemRadio name="fruit" value="orange">
- *     Orange
- *   </MenuItemRadio>
- * </Menu>
+ * <MenuProvider defaultValues={{ fruit: "apple" }}>
+ *   <MenuButton>Fruit</MenuButton>
+ *   <Menu>
+ *     <MenuItemRadio name="fruit" value="apple">
+ *       Apple
+ *     </MenuItemRadio>
+ *     <MenuItemRadio name="fruit" value="orange">
+ *       Orange
+ *     </MenuItemRadio>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
@@ -119,12 +120,16 @@ export interface MenuItemRadioOptions<T extends As = "div">
   extends MenuItemOptions<T>,
     Omit<RadioOptions<T>, "store"> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
   /**
-   * MenuItemRadio's name as in `menu.values`.
+   * MenuItemRadio's name as specified in the
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
    */
   name: string;
   /**

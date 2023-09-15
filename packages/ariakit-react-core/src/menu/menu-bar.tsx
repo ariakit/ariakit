@@ -77,27 +77,24 @@ export const useMenuBar = createHook<MenuBarOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const store = useMenuBarStore();
- * const fileProps = useMenuItem({ store });
- * const editProps = useMenuItem({ store });
- * const fileMenu = useMenuStore();
- * const editMenu = useMenuStore();
- * <MenuBar store={store}>
- *   <MenuButton {...fileProps} store={fileMenu}>
- *     File
- *   </MenuButton>
- *   <Menu store={fileMenu}>
- *     <MenuItem>New File</MenuItem>
- *     <MenuItem>New Window</MenuItem>
- *   </Menu>
- *   <MenuButton {...editProps} store={editMenu}>
- *     Edit
- *   </MenuButton>
- *   <Menu store={editMenu}>
- *     <MenuItem>Undo</MenuItem>
- *     <MenuItem>Redo</MenuItem>
- *   </Menu>
- * </MenuBar>
+ * <MenuBarProvider>
+ *   <MenuBar>
+ *     <MenuProvider>
+ *       <MenuItem render={<MenuButton />}>File</MenuItem>
+ *       <Menu>
+ *         <MenuItem>New File</MenuItem>
+ *         <MenuItem>New Window</MenuItem>
+ *       </Menu>
+ *     </MenuProvider>
+ *     <MenuProvider>
+ *       <MenuItem render={<MenuButton />}>Edit</MenuItem>
+ *       <Menu>
+ *         <MenuItem>Undo</MenuItem>
+ *         <MenuItem>Redo</MenuItem>
+ *       </Menu>
+ *     </MenuProvider>
+ *   </MenuBar>
+ * </MenuBarProvider>
  * ```
  */
 export const MenuBar = createComponent<MenuBarOptions>((props) => {
@@ -112,7 +109,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuBarOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**
-   * Object returned by the `useMenuBarStore` hook.
+   * Object returned by the
+   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store) hook.
+   * If not provided, the closest
+   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
+   * component's context will be used.
    */
   store?: MenuBarStore;
 }

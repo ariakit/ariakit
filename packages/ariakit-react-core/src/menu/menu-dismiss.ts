@@ -31,10 +31,11 @@ export const useMenuDismiss = createHook<MenuDismissOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <Menu store={menu}>
- *   <MenuDismiss />
- * </Menu>
+ * <MenuProvider>
+ *   <Menu>
+ *     <MenuDismiss />
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuDismiss = createComponent<MenuDismissOptions>((props) => {
@@ -49,8 +50,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuDismissOptions<T extends As = "button">
   extends HovercardDismissOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }
