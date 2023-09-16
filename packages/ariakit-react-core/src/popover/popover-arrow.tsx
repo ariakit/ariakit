@@ -103,15 +103,17 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
 );
 
 /**
- * Renders an arrow inside a `Popover` component.
+ * Renders an arrow inside a [`Popover`](https://ariakit.org/reference/popover)
+ * component.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <Popover store={popover}>
- *   <PopoverArrow />
- *   Popover
- * </Popover>
+ * <PopoverProvider>
+ *   <Popover>
+ *     <PopoverArrow />
+ *     Popover
+ *   </Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverArrow = createComponent<PopoverArrowOptions>((props) => {
@@ -125,8 +127,12 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `usePopoverStore` hook. If not provided, the parent
-   * `Popover` component's context will be used.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * components' context will be used.
    */
   store?: PopoverStore;
   /**

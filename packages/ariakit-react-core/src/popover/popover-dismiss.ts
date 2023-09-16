@@ -27,14 +27,16 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>(
 );
 
 /**
- * Renders a button that hides a popover.
+ * Renders a button that hides a
+ * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <Popover store={popover}>
- *   <PopoverDismiss />
- * </Popover>
+ * <PopoverProvider>
+ *   <Popover>
+ *     <PopoverDismiss />
+ *   </Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverDismiss = createComponent<PopoverDismissOptions>(
@@ -51,8 +53,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface PopoverDismissOptions<T extends As = "button">
   extends DialogDismissOptions<T> {
   /**
-   * Object returned by the `usePopoverStore` hook. If not provided, the parent
-   * `Popover` component's context will be used.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * components' context will be used.
    */
   store?: PopoverStore;
 }

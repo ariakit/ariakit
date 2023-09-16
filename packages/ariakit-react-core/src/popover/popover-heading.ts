@@ -22,15 +22,17 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
 });
 
 /**
- * Renders a heading in a popover. This component must be wrapped with `Popover`
- * so the `aria-labelledby` prop is properly set on the popover element.
+ * Renders a heading in a popover. This component must be wrapped with
+ * [`Popover`](https://ariakit.org/reference/popover) so the `aria-labelledby`
+ * prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <Popover store={popover}>
- *   <PopoverHeading>Heading</PopoverHeading>
- * </Popover>
+ * <PopoverProvider>
+ *   <Popover>
+ *     <PopoverHeading>Heading</PopoverHeading>
+ *   </Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverHeading = createComponent<PopoverHeadingOptions>(
@@ -47,8 +49,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface PopoverHeadingOptions<T extends As = "h1">
   extends DialogHeadingOptions<T> {
   /**
-   * Object returned by the `usePopoverStore` hook. If not provided, the parent
-   * `Popover` component's context will be used.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * components' context will be used.
    */
   store?: PopoverStore;
 }

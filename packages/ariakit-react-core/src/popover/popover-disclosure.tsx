@@ -68,9 +68,10 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <PopoverDisclosure store={popover}>Disclosure</PopoverDisclosure>
- * <Popover store={popover}>Popover</Popover>
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Disclosure</PopoverDisclosure>
+ *   <Popover>Popover</Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverDisclosure = createComponent<PopoverDisclosureOptions>(

@@ -33,9 +33,10 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <PopoverAnchor store={popover}>Anchor</PopoverAnchor>
- * <Popover store={popover}>Popover</Popover>
+ * <PopoverProvider>
+ *   <PopoverAnchor>Anchor</PopoverAnchor>
+ *   <Popover>Popover</Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverAnchor = createComponent<PopoverAnchorOptions>((props) => {
@@ -49,7 +50,11 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `usePopoverStore` hook.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
   store?: PopoverStore;
 }
