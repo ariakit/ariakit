@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Showing an inline <a href="/components/popover">Popover</a> when a text is selected. This example uses the <a href="/reference/popover#getanchorrect"><code>getAnchorRect</code></a> prop to position the flyout relative to the selected text.
+Showing an inline [Popover](/components/popover) when a text is selected. This example uses the [`getAnchorRect`](/reference/popover#getanchorrect) prop to position the flyout relative to the selected text.
 
 </div>
 

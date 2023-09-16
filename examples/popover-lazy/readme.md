@@ -9,7 +9,8 @@ tags:
 
 <div data-description>
 
-Lazy loading <a href="/components/popover">Popover</a> using <a href="https://react.dev/reference/react/lazy"><code>React.lazy</code></a> and <a href="https://react.dev/reference/react/useTransition"><code>React.useTransition</code></a> to avoid downloading additional code until the user interacts with the button.
+Lazy loading [Popover](/components/popover) using [`React.lazy`](https://react.dev/reference/react/lazy) and [`React.useTransition`](https://react.dev/reference/react/useTransition) to avoid downloading additional code until the user interacts with the button.
+
 
 </div>
 
@@ -19,11 +20,12 @@ Lazy loading <a href="/components/popover">Popover</a> using <a href="https://re
 
 ## Controlling the popover state
 
-You can control the open state of the popover by passing the [`open`](/reference/use-popover-store#open) and [`setOpen`](/reference/use-popover-store#setopen) props to the [`usePopoverStore`](/reference/use-popover-store) hook:
+You can control the open state of the popover by passing the [`open`](/reference/popover-provider#open) and [`setOpen`](/reference/popover-provider#setopen) props to the [`PopoverProvider`](/reference/popover-provider) component:
 
-```js
+```jsx
 const [open, setOpen] = React.useState(false);
-const popover = Ariakit.usePopoverStore({ open, setOpen });
+
+<PopoverProvider open={open} setOpen={setOpen}>
 ```
 
 Learn more on the [Component stores](/guide/component-stores#controlled-state) guide.

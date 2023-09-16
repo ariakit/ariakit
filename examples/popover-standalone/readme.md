@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Abstracting the <a href="/components/popover">Popover</a> component so that it can be used without <a href="/reference/popover-disclosure"><code>PopoverDisclosure</code></a> or <a href="/reference/popover-anchor"><code>PopoverAnchor</code></a>. This example uses the <a href="/reference/popover#getanchorrect"><code>getAnchorRect</code></a> prop to determine the position of the popup.
+Abstracting the [Popover](/components/popover) component so that it can be used without [`PopoverDisclosure`](/reference/popover-disclosure) or [`PopoverAnchor`](/reference/popover-anchor). This example uses the [`getAnchorRect`](/reference/popover#getanchorrect) prop to determine the position of the popup.
 
 </div>
 

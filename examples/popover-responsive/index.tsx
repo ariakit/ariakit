@@ -19,12 +19,11 @@ export default function Example() {
   };
 
   return (
-    <>
-      <Ariakit.PopoverDisclosure store={popover} className="button">
+    <Ariakit.PopoverProvider store={popover}>
+      <Ariakit.PopoverDisclosure className="button">
         Accept invite
       </Ariakit.PopoverDisclosure>
       <Ariakit.Popover
-        store={popover}
         modal={!isLarge}
         backdrop={isLarge ? false : <div className="backdrop" />}
         updatePosition={isLarge ? undefined : updatePosition}
@@ -43,6 +42,6 @@ export default function Example() {
         </div>
         <Ariakit.Button className="button">Accept</Ariakit.Button>
       </Ariakit.Popover>
-    </>
+    </Ariakit.PopoverProvider>
   );
 }

@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Show a popup dialog positioned relative to an anchor element. This component can be either <a href="/reference/popover#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/reference/popover#portal"><code>portal</code></a>.
+Show a popup dialog positioned relative to an anchor element. This component can be either [`modal`](/reference/popover#modal) or non-modal and optionally rendered in a React [`portal`](/reference/popover#portal).
 
 </div>
 
