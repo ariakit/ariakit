@@ -29,7 +29,7 @@ export default function Example() {
         {loading ? <Spinner /> : <Ariakit.PopoverDisclosureArrow />}
       </Ariakit.PopoverDisclosure>
       {open && (
-        <Popover className="popover">
+        <Popover className="popover" hidden={loading}>
           <Ariakit.PopoverArrow className="arrow" />
           <Ariakit.PopoverHeading className="heading">
             Team meeting
