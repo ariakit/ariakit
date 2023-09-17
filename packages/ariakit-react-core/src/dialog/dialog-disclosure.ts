@@ -1,3 +1,5 @@
+import { getPopupRole } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -20,7 +22,22 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
   ({ store, ...props }) => {
     const context = useDialogProviderContext();
     store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
+    );
+
+    const contentElement = store.useState("contentElement");
+
+    props = {
+      "aria-haspopup": getPopupRole(contentElement, "dialog"),
+      ...props,
+    };
+
     props = useDisclosure({ store, ...props });
+
     return props;
   },
 );
