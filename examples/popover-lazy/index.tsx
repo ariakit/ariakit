@@ -12,7 +12,9 @@ export default function Example() {
 
   // Wait for 150ms before showing the spinner. Once the spinner is shown, it
   // should be visible for enough time to avoid flickering.
-  const loading = usePerceptibleValue(isPending, { delay: 150 });
+  const loading = usePerceptibleValue(isPending, {
+    delay: isPending ? 150 : 0,
+  });
 
   return (
     <Ariakit.PopoverProvider
@@ -29,7 +31,7 @@ export default function Example() {
         {loading ? <Spinner /> : <Ariakit.PopoverDisclosureArrow />}
       </Ariakit.PopoverDisclosure>
       {open && (
-        <Popover className="popover" hidden={loading}>
+        <Popover className="popover">
           <Ariakit.PopoverArrow className="arrow" />
           <Ariakit.PopoverHeading className="heading">
             Team meeting
