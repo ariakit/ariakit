@@ -79,7 +79,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface RadioGroupOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**
-   * Object returned by the `useRadioStore` hook.
+   * Object returned by the
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * not provided, the closest
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) component's
+   * context will be used.
    */
   store?: RadioStore;
 }

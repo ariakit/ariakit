@@ -152,8 +152,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface RadioOptions<T extends As = "input">
   extends CompositeItemOptions<T> {
   /**
-   * Object returned by the `useRadioStore` hook. If not provided, the parent
-   * `RadioGroup` component's context will be used.
+   * Object returned by the
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * not provided, the closest
+   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
+   * context will be used.
    */
   store?: RadioStore;
   /**

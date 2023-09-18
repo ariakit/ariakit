@@ -1,22 +1,23 @@
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
-  const radio = Ariakit.useRadioStore({ defaultValue: "orange" });
   return (
-    <Ariakit.RadioGroup store={radio}>
-      <label className="label">
-        <Ariakit.Radio className="radio" value="apple" />
-        apple
-      </label>
-      <label className="label">
-        <Ariakit.Radio className="radio" value="orange" />
-        orange
-      </label>
-      <label className="label">
-        <Ariakit.Radio className="radio" value="watermelon" />
-        watermelon
-      </label>
-    </Ariakit.RadioGroup>
+    <Ariakit.RadioProvider defaultValue="orange">
+      <Ariakit.RadioGroup>
+        <label className="label">
+          <Ariakit.Radio className="radio" value="apple" />
+          apple
+        </label>
+        <label className="label">
+          <Ariakit.Radio className="radio" value="orange" />
+          orange
+        </label>
+        <label className="label">
+          <Ariakit.Radio className="radio" value="watermelon" />
+          watermelon
+        </label>
+      </Ariakit.RadioGroup>
+    </Ariakit.RadioProvider>
   );
 }

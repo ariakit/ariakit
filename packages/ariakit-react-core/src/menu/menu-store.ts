@@ -99,7 +99,6 @@ export interface MenuStoreOptions<T extends Values = Values>
    *
    * Live examples:
    * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
-   * @param values The new values.
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
   /**

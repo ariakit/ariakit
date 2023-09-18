@@ -1,6 +1,6 @@
+import "./style.css";
 import { Suspense, lazy } from "react";
 import { Portal } from "@ariakit/react";
-import "./style.css";
 
 const Button = lazy(() =>
   import("@ariakit/react/button").then((mod) => ({ default: mod.Button })),

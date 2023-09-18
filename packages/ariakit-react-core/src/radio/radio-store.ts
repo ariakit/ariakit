@@ -48,11 +48,6 @@ export interface RadioStoreOptions
     CompositeStoreOptions {
   /**
    * Function that will be called when the `value` state changes.
-   * @param value The new value.
-   * @example
-   * function RadioGroup({ value, onChange }) {
-   *   const radio = useRadioStore({ value, setValue: onChange });
-   * }
    */
   setValue?: (value: RadioStoreState["value"]) => void;
 }
