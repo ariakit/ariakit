@@ -73,7 +73,7 @@
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.37.1",
     "@stackblitz/sdk": "1.9.0",
-    "@testing-library/dom": "9.3.1",
+    "@testing-library/dom": "9.3.3",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.0.0",
     "@types/babel__core": "7.20.1",
