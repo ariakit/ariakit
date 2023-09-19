@@ -82,7 +82,7 @@
     "@types/lodash": "4.14.198",
     "@types/lodash-es": "4.17.9",
     "@types/marked": "5.0.1",
-    "@types/node": "18.17.14",
+    "@types/node": "18.17.17",
     "@types/postcss-import": "14.0.0",
     "@types/prettier": "2.7.3",
     "@types/react": "18.2.21",
