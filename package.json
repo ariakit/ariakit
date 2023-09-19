@@ -167,7 +167,7 @@
     "ts-morph": "19.0.0",
     "tsup": "7.2.0",
     "typescript": "5.2.2",
-    "unified": "10.1.2",
+    "unified": "11.0.3",
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.0.4",
     "vitest": "0.34.3",
