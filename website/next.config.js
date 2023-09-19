@@ -7,7 +7,6 @@ import { redirects } from "./redirects.js";
 const nextConfig = {
   redirects,
   experimental: {
-    appDir: true,
     serverActions: true,
     serverComponentsExternalPackages: [
       "@babel/core",
