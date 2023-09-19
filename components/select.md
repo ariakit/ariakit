@@ -17,6 +17,14 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 <a href="../examples/select/index.tsx" data-playground>Example</a>
 
+## Examples
+
+<div data-cards="examples">
+
+- [](/examples/select-animated)
+
+</div>
+
 ## API
 
 ```jsx
@@ -57,3 +65,16 @@ When browsing the list with a keyboard (or hovering over items with the mouse wh
 ```
 
 Learn more on the [Styling](/guide/styling) guide.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/combobox)
+- [](/components/form)
+- [](/components/menu)
+- [](/components/popover)
+- [](/components/composite)
+
+</div>

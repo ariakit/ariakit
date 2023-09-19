@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Animated Select",
+    type: "page",
+    href: "/examples/select-animated",
+    dateTime: "2023-09-19T16:00Z",
+  },
+  {
     title: "Improved docs: Submenu",
     type: "page",
     href: "/examples/menu-nested",
