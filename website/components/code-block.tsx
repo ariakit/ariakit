@@ -136,6 +136,8 @@ function getTokenHref(
 }
 
 let highlighter: Highlighter | undefined;
+const lightCache = new Map<string, IThemedToken[][]>();
+const darkCache = new Map<string, IThemedToken[][]>();
 
 export async function CodeBlock({
   code,
@@ -174,8 +176,18 @@ export async function CodeBlock({
   }
 
   try {
-    lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
-    darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+    if (lightCache.has(code)) {
+      lightTokens = lightCache.get(code)!;
+    } else {
+      lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
+      lightCache.set(code, lightTokens);
+    }
+    if (darkCache.has(code)) {
+      darkTokens = darkCache.get(code)!;
+    } else {
+      darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+      darkCache.set(code, darkTokens);
+    }
   } catch (error) {
     console.error(error);
   }
