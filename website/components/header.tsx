@@ -6,7 +6,7 @@ import { HeaderThemeSwitch } from "./header-theme-switch.js";
 import { HeaderUpdates } from "./header-updates.jsx";
 import { HeaderVersionSelect } from "./header-version-select.js";
 
-let cache: Record<string, Record<string, string>> | null = null;
+let versionsCache: Record<string, Record<string, string>> | null = null;
 
 function fetchPackage(name: string) {
   const buildId = process.env.NEXT_BUILD_ID;
@@ -17,8 +17,8 @@ function fetchPackage(name: string) {
 }
 
 async function fetchVersions() {
-  if (cache) {
-    return cache;
+  if (versionsCache) {
+    return versionsCache;
   }
   const [react] = await Promise.all([
     fetchPackage("@ariakit/react"),
@@ -37,7 +37,7 @@ async function fetchVersions() {
     // "@ariakit/dom": domTags,
   };
 
-  cache = versions;
+  versionsCache = versions;
 
   return versions;
 }

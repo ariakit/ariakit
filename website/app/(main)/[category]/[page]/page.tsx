@@ -253,16 +253,24 @@ export async function generateMetadata({ params }: PageProps) {
   });
 }
 
+const entryFilesCache = new WeakMap<Page, string[]>();
+
+function getEntryFiles(page: Page) {
+  if (entryFilesCache.has(page)) {
+    return entryFilesCache.get(page)!;
+  }
+  const files = getPageEntryFiles(page.sourceContext, page.pageFileRegex);
+  entryFilesCache.set(page, files);
+  return files;
+}
+
 export default async function Page({ params }: PageProps) {
   const { category, page } = params;
 
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
 
-  const entryFiles = getPageEntryFiles(
-    config.sourceContext,
-    config.pageFileRegex,
-  );
+  const entryFiles = getEntryFiles(config);
 
   const file = config.reference
     ? entryFiles.find((file) =>
