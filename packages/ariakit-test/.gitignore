@@ -7,9 +7,9 @@
 /fire-event
 /focus
 /hover
-/mock-get-client-rects
 /mouse-down
 /mouse-up
+/polyfills
 /press
 /render
 /screen
