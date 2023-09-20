@@ -125,7 +125,7 @@
     "match-sorter": "6.3.1",
     "monaco-editor": "0.38.0",
     "monaco-editor-textmate": "4.0.0",
-    "monaco-editor-webpack-plugin": "7.0.1",
+    "monaco-editor-webpack-plugin": "7.1.0",
     "monaco-textmate": "3.0.1",
     "monaco-vscode-textmate-theme-converter": "0.1.7",
     "next": "13.5.1",
