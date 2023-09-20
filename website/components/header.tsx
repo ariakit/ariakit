@@ -17,7 +17,7 @@ function fetchPackage(name: string) {
 }
 
 async function fetchVersions() {
-  if (process.env.NODE_ENV !== "production" && cache) {
+  if (cache) {
     return cache;
   }
   const [react] = await Promise.all([
