@@ -65,8 +65,8 @@ if (version.startsWith("17")) {
   });
 }
 
-beforeEach(async ({ meta }) => {
-  const filename = meta.file?.name;
+beforeEach(async ({ task }) => {
+  const filename = task.file?.name;
   if (!filename) return;
   const match = filename.match(/examples\/(.*)\/test.ts$/);
   if (!match) return;
