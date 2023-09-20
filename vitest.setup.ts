@@ -8,9 +8,6 @@ if (!version.startsWith("17")) {
   failOnConsole();
 }
 
-// @ts-expect-error https://github.com/testing-library/jest-dom/issues/537
-expect.extend(matchers);
-
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
     const toHaveFocus = matchers.toHaveFocus.bind(this) as any;
