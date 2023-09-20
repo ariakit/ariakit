@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
-import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTitle } from "build-pages/get-page-title.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
@@ -202,8 +202,8 @@ function findCardLinks(children: ReactNode & ReactNode[]): string[] {
   );
 }
 
-function getPageNames({ sourceContext, pageFileRegex }: Page) {
-  return getPageEntryFiles(sourceContext, pageFileRegex).map(getPageName);
+function getPageNames(page: Page) {
+  return getPageEntryFilesCached(page).map(getPageName);
 }
 
 export function generateStaticParams() {
@@ -216,10 +216,7 @@ export function generateStaticParams() {
   });
 
   referencePages.forEach((page) => {
-    const entryFiles = getPageEntryFiles(
-      page.sourceContext,
-      page.pageFileRegex,
-    );
+    const entryFiles = getPageEntryFilesCached(page);
     const category = page.slug;
     const references = entryFiles.flatMap((file) => getReferences(file));
     references.forEach((reference) => {
@@ -259,10 +256,7 @@ export default async function Page({ params }: PageProps) {
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
 
-  const entryFiles = getPageEntryFiles(
-    config.sourceContext,
-    config.pageFileRegex,
-  );
+  const entryFiles = getPageEntryFilesCached(config);
 
   const file = config.reference
     ? entryFiles.find((file) =>

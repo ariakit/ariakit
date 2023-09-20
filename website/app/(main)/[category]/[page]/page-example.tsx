@@ -5,7 +5,7 @@ import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "build-pages/get-example-deps.js";
-import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import { Playground } from "components/playground.js";
@@ -22,7 +22,7 @@ const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
 const examples = pagesConfig.pages.find((page) => page.slug === "examples");
 const exampleFiles = examples?.sourceContext
-  ? getPageEntryFiles(examples.sourceContext, examples.pageFileRegex)
+  ? getPageEntryFilesCached(examples)
   : [];
 
 function getPreviewLink(path: string) {

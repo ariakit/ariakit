@@ -41,3 +41,21 @@ export function getPageEntryFiles(
   }
   return files;
 }
+
+/** @type {WeakMap<import("./types.js").Page, string[]>} */
+const entryFilesCache = new WeakMap();
+
+/**
+ * Reads a directory recursively and returns a list of files that match the
+ * given pattern.
+ * @param {import("./types.js").Page} page
+ */
+export function getPageEntryFilesCached(page) {
+  if (process.env.NODE_ENV === "production" && entryFilesCache.has(page)) {
+    const files = entryFilesCache.get(page);
+    if (files) return files;
+  }
+  const files = getPageEntryFiles(page.sourceContext, page.pageFileRegex);
+  entryFilesCache.set(page, files);
+  return files;
+}
