@@ -3,6 +3,14 @@
   "semanticCommits": false,
   "packageRules": [
     {
+      "matchPackagePatterns": ["hast", "rehype", "remark", "unified", "unist"],
+      "groupName": "unified"
+    },
+    {
+      "matchPackagePatterns": ["monaco"],
+      "groupName": "monaco"
+    },
+    {
       "matchPackageNames": [
         "cross-env",
         "cross-spawn",
