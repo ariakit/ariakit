@@ -150,7 +150,7 @@
     "recast": "0.23.4",
     "rehype": "13.0.1",
     "rehype-parse": "8.0.5",
-    "rehype-raw": "6.1.1",
+    "rehype-raw": "7.0.0",
     "rehype-slug": "5.1.0",
     "remark-gfm": "3.0.1",
     "resolve-from": "5.0.0",
