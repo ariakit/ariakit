@@ -88,10 +88,6 @@ export interface SelectStoreOptions<T extends Value = Value>
   /**
    * Function that will be called when the `value` state changes.
    * @param value The new value.
-   * @example
-   * function MySelect({ value, onChange }) {
-   *   const select = useSelectStore({ value, setValue: onChange });
-   * }
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**

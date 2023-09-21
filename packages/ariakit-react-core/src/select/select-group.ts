@@ -31,15 +31,16 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectGroup>
- *     <SelectGroupLabel>Fruits</SelectGroupLabel>
- *     <SelectItem value="Apple" />
- *     <SelectItem value="Orange" />
- *   </SelectGroup>
- * </SelectPopover>
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectGroup>
+ *       <SelectGroupLabel>Fruits</SelectGroupLabel>
+ *       <SelectItem value="Apple" />
+ *       <SelectItem value="Orange" />
+ *     </SelectGroup>
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectGroup = createComponent<SelectGroupOptions>((props) => {
@@ -54,8 +55,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectGroupOptions<T extends As = "div">
   extends CompositeGroupOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
 }

@@ -30,20 +30,21 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectGroup>
- *     <SelectGroupLabel>Fruits</SelectGroupLabel>
- *     <SelectItem value="Apple" />
- *     <SelectItem value="Orange" />
- *   </SelectGroup>
- *   <SelectGroup>
- *     <SelectGroupLabel>Meat</SelectGroupLabel>
- *     <SelectItem value="Beef" />
- *     <SelectItem value="Chicken" />
- *   </SelectGroup>
- * </SelectPopover>
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectGroup>
+ *       <SelectGroupLabel>Fruits</SelectGroupLabel>
+ *       <SelectItem value="Apple" />
+ *       <SelectItem value="Orange" />
+ *     </SelectGroup>
+ *     <SelectGroup>
+ *       <SelectGroupLabel>Meat</SelectGroupLabel>
+ *       <SelectItem value="Beef" />
+ *       <SelectItem value="Chicken" />
+ *     </SelectGroup>
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
@@ -60,8 +61,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectGroupLabelOptions<T extends As = "div">
   extends CompositeGroupLabelOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
 }

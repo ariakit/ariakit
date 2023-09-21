@@ -68,20 +68,21 @@ export const useSelectLabel = createHook<SelectLabelOptions>(
 );
 
 /**
- * Renders a label for the `Select` component. Since it's not a native select
- * element, we can't use the native label element. The `SelectLabel` component
- * will move focus and click on the `Select` component when the user clicks on
- * the label.
+ * Renders a label for the [`Select`](https://ariakit.org/reference/select)
+ * component. Since it's not a native select element, we can't use the native
+ * label element. This component will move focus and click on the
+ * [`Select`](https://ariakit.org/reference/select) component when clicked.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore({ defaultValue: "Apple" });
- * <SelectLabel store={select}>Favorite fruit</SelectLabel>
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * ```jsx {2}
+ * <SelectProvider defaultValue="Apple">
+ *   <SelectLabel>Favorite fruit</SelectLabel>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
@@ -95,8 +96,11 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `Select` component's context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
   store?: SelectStore;
 }

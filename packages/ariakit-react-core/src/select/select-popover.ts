@@ -30,18 +30,19 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
 );
 
 /**
- * Renders a select popover. The `role` prop is set to `listbox` by default, but
- * can be overriden by any other valid select popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`).
+ * Renders a select popover. The `role` attribute is set to `listbox` by
+ * default, but can be overriden by any other valid select popup role
+ * (`listbox`, `menu`, `tree`, `grid` or `dialog`).
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * ```jsx {3-6}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectPopover = createComponent<SelectPopoverOptions>((props) => {

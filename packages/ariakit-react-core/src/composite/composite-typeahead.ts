@@ -183,10 +183,6 @@ export interface CompositeTypeaheadOptions<T extends As = "div">
   store?: CompositeStore;
   /**
    * Determines whether the typeahead behavior is enabled.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default true
    */
   typeahead?: boolean;

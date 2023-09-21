@@ -556,14 +556,24 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:
-   * - The `portal` and `preventBodyScroll` props are set to `true`. They can
-   *   still be manually set to `false`.
-   * - A visually hidden dismiss button will be rendered if the `DialogDismiss`
-   *   component hasn't been used. This allows screen reader users to close the
-   *   dialog.
+   * - The [`portal`](https://ariakit.org/reference/dialog#portal) and
+   *   [`preventBodyScroll`](https://ariakit.org/reference/dialog#preventbodyscroll)
+   *   props are set to `true`. They can still be manually set to `false`.
+   * - A visually hidden dismiss button will be rendered if the
+   *   [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss) component
+   *   hasn't been used. This allows screen reader users to close the dialog.
    * - When the dialog is open, element tree outside it will be disabled.
-   * - When using the `Heading` or `DialogHeading` components within the dialog,
-   *   their level will be reset so they start with `h1`.
+   * - When using the [`Heading`](https://ariakit.org/reference/heading) or
+   *   [`DialogHeading`](https://ariakit.org/reference/dialog-heading)
+   *   components within the dialog, their level will be reset so they start
+   *   with `h1`.
+   *
+   * Live examples:
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Context menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    * @default true
    */
   modal?: boolean;
@@ -651,10 +661,14 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Specifies the element that will receive focus when the dialog is first
    * opened. It can be an `HTMLElement` or a `React.RefObject` with an
-   * `HTMLElement`. However, if `autoFocusOnShow` is set to `false`, this prop
-   * will have no effect. If left unset, the dialog will attempt to determine
-   * the initial focus element in the following order:
-   * 1. An element with an `autoFocus` prop.
+   * `HTMLElement`.
+   *
+   * If
+   * [`autoFocusOnShow`](https://ariakit.org/reference/dialog#autofocusonshow)
+   * is set to `false`, this prop will have no effect. If left unset, the dialog
+   * will attempt to determine the initial focus element in the following order:
+   * 1. A [Focusable](https://ariakit.org/components/focusable) element with an
+   *    [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
    * 2. The first tabbable element inside the dialog.
    * 3. The first focusable element inside the dialog.
    * 4. The dialog element itself.

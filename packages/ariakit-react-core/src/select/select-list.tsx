@@ -140,19 +140,22 @@ export const useSelectList = createHook<SelectListOptions>(
 );
 
 /**
- * Renders a select list. The `role` prop is set to `listbox` by default, but
- * can be overriden by any other valid select popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the select
- * input element's `id` by default.
+ * Renders a select list. The `role` attribute is set to `listbox` by default,
+ * but can be overriden by any other valid select popup role (`listbox`, `menu`,
+ * `tree`, `grid` or `dialog`).
+ *
+ * The `aria-labelledby` attribute is set to the
+ * [`Select`](https://ariakit.org/reference/select) element's `id` by default.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectList store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectList>
+ * ```jsx {3-6}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectList>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectList>
+ * </SelectProvider>
  * ```
  */
 export const SelectList = createComponent<SelectListOptions>((props) => {
@@ -169,19 +172,26 @@ export interface SelectListOptions<T extends As = "div">
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
-   * Object returned by the `useSelectStore` hook.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
   store?: SelectStore;
   /**
    * Whether the select value should be reset to the value before the list got
-   * shown when Escape is pressed. This has effect only when `selectOnMove` is
-   * `true` on the select store.
+   * shown when Escape is pressed. This has effect only when
+   * [`setValueOnMove`](https://ariakit.org/reference/select-provider#setvalueonmove)
+   * is `true`.
    * @default true
    */
   resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Whether the select list should be hidden when the user presses Enter or
-   * Space while the list is focused (that is, no item is selected).
+   * Whether the [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * should be hidden when the user presses Enter or Space while the list
+   * element is focused and no item is active.
    * @default true
    */
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
