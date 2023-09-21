@@ -170,7 +170,7 @@
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.1.0",
-    "vitest": "0.34.4",
+    "vitest": "0.34.5",
     "vitest-fail-on-console": "0.5.0",
     "webpack": "5.88.2"
   }
