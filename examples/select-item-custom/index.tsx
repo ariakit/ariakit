@@ -1,6 +1,7 @@
+import "./style.css";
+import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import startCase from "lodash-es/startCase.js";
-import "./style.css";
 
 function renderValue(email: string) {
   const [username = ""] = email.split("@");
@@ -25,30 +26,27 @@ const accounts = [
 ];
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({
-    defaultValue: "john.doe@example.com",
-    setValueOnMove: true,
-  });
-  const value = select.useState("value");
+  const [value, setValue] = useState("john.doe@example.com");
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Account</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="button">
-        {renderValue(value)}
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
-      <Ariakit.SelectPopover
-        store={select}
-        gutter={4}
-        sameWidth
-        className="popover"
-      >
-        {accounts.map((email) => (
-          <Ariakit.SelectItem key={email} value={email} className="select-item">
-            {renderValue(email)}
-          </Ariakit.SelectItem>
-        ))}
-      </Ariakit.SelectPopover>
+      <Ariakit.SelectProvider setValueOnMove value={value} setValue={setValue}>
+        <Ariakit.SelectLabel>Account</Ariakit.SelectLabel>
+        <Ariakit.Select className="button">
+          {renderValue(value)}
+          <Ariakit.SelectArrow />
+        </Ariakit.Select>
+        <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
+          {accounts.map((email) => (
+            <Ariakit.SelectItem
+              key={email}
+              value={email}
+              className="select-item"
+            >
+              {renderValue(email)}
+            </Ariakit.SelectItem>
+          ))}
+        </Ariakit.SelectPopover>
+      </Ariakit.SelectProvider>
     </div>
   );
 }

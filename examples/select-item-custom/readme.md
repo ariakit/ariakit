@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Rendering <a href="/components/select">Select</a> with a custom styled value and <a href="/reference/select-item"><code>SelectItem</code></a>'s children.
+Rendering [Select](/components/select) with a custom styled value and [`SelectItem`](/reference/select-item)'s children.
 
 </div>
 
