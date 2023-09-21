@@ -1,51 +1,52 @@
 import "./style.css";
-import { useDeferredValue, useMemo } from "react";
+import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import list from "./list.js";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
-  const select = Ariakit.useSelectStore({ combobox, defaultValue: "Apple" });
-
-  const value = combobox.useState("value");
-  const deferredValue = useDeferredValue(value);
+  const [searchValue, setSearchValue] = useState("");
 
   const matches = useMemo(() => {
-    return matchSorter(list, deferredValue, {
+    return matchSorter(list, searchValue, {
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
     });
-  }, [deferredValue]);
+  }, [searchValue]);
 
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="button" />
-      <Ariakit.SelectPopover
-        store={select}
-        gutter={4}
-        sameWidth
-        className="popover"
+      <Ariakit.ComboboxProvider
+        resetValueOnHide
+        setValue={(value) => {
+          startTransition(() => {
+            setSearchValue(value);
+          });
+        }}
       >
-        <div className="combobox-wrapper">
-          <Ariakit.Combobox
-            store={combobox}
-            autoSelect
-            placeholder="Search..."
-            className="combobox"
-          />
-        </div>
-        <Ariakit.ComboboxList store={combobox}>
-          {matches.map((value) => (
-            <Ariakit.ComboboxItem
-              key={value}
-              focusOnHover
-              className="select-item"
-              render={<Ariakit.SelectItem value={value} />}
-            />
-          ))}
-        </Ariakit.ComboboxList>
-      </Ariakit.SelectPopover>
+        <Ariakit.SelectProvider defaultValue="Apple">
+          <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
+          <Ariakit.Select className="button" />
+          <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
+            <div className="combobox-wrapper">
+              <Ariakit.Combobox
+                autoSelect
+                placeholder="Search..."
+                className="combobox"
+              />
+            </div>
+            <Ariakit.ComboboxList>
+              {matches.map((value) => (
+                <Ariakit.SelectItem
+                  key={value}
+                  value={value}
+                  className="select-item"
+                  render={<Ariakit.ComboboxItem />}
+                />
+              ))}
+            </Ariakit.ComboboxList>
+          </Ariakit.SelectPopover>
+        </Ariakit.SelectProvider>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

@@ -33,6 +33,7 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
   store = useCompositeStoreProps(store, update, props);
   store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
+  useStoreProps(store, props, "setValueOnMove");
   return Object.assign(store, { combobox: props.combobox });
 }
 
