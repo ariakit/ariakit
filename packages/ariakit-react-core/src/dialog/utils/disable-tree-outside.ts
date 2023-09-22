@@ -26,7 +26,7 @@ function disableElement(element: Element | HTMLElement) {
   );
 }
 
-export function disableTreeOutside(...elements: Elements) {
+export function disableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
@@ -36,11 +36,12 @@ export function disableTreeOutside(...elements: Elements) {
     getAllTabbable().forEach((element) => {
       // Ignore tabbable elements inside the dialog
       if (elements.some((el) => el && contains(el, element))) return;
+      // TODO: Take snapshot into account.
       cleanups.unshift(setAttribute(element, "tabindex", "-1"));
     });
   }
 
-  walkTreeOutside(elements, (element) => {
+  walkTreeOutside(id, elements, (element) => {
     if (isBackdrop(element, ...ids)) return;
     cleanups.unshift(disableElement(element));
   });

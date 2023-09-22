@@ -63,6 +63,7 @@ import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
+import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
 
 const isSafariBrowser = isSafari();
 
@@ -232,6 +233,15 @@ export const useDialog = createHook<DialogOptions>(
 
     const getPersistentElementsProp = useEvent(getPersistentElements);
 
+    useSafeLayoutEffect(() => {
+      if (!domReady) return;
+      if (!id) return;
+      if (!open) return;
+      const dialog = ref.current;
+      // TODO: Comment
+      return createWalkTreeSnapshot(id, [dialog]);
+    }, [domReady, id, open]);
+
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       if (!store) return;
@@ -251,17 +261,17 @@ export const useDialog = createHook<DialogOptions>(
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(id, disclosureElement, ...allElements);
+        return markTreeOutside(id, [disclosureElement, ...allElements]);
       }
       if (modal) {
         return chain(
-          markTreeOutside(id, ...allElements),
-          disableTreeOutside(...allElements),
+          markTreeOutside(id, allElements),
+          disableTreeOutside(id, allElements),
         );
       }
       return chain(
-        markTreeOutside(id, disclosureElement, ...allElements),
-        disableAccessibilityTreeOutside(...allElements),
+        markTreeOutside(id, [disclosureElement, ...allElements]),
+        disableAccessibilityTreeOutside(id, allElements),
       );
     }, [
       store,

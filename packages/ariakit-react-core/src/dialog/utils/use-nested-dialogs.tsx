@@ -43,7 +43,7 @@ export function useNestedDialogs(store: DialogStore) {
   useSafeLayoutEffect(() => {
     return sync(context.store, ["open"], (state) => {
       if (state.open) return;
-      store.hide();
+      // store.hide();
     });
   }, [context, store]);
 

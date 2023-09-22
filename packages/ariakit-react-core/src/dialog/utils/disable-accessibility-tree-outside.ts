@@ -8,11 +8,14 @@ export function hideElementFromAccessibilityTree(element: Element) {
   return setAttribute(element, "aria-hidden", "true");
 }
 
-export function disableAccessibilityTreeOutside(...elements: Elements) {
+export function disableAccessibilityTreeOutside(
+  id: string,
+  elements: Elements,
+) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
-  walkTreeOutside(elements, (element) => {
+  walkTreeOutside(id, elements, (element) => {
     if (isBackdrop(element, ...ids)) return;
     cleanups.unshift(hideElementFromAccessibilityTree(element));
   });
