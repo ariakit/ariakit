@@ -1,7 +1,6 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 import { ConfirmDialog } from "./confirm-dialog.jsx";
 
 export default function Example() {
@@ -20,7 +19,7 @@ export default function Example() {
         View Cart
       </Ariakit.Button>
 
-      <DialogProvider open={open} setOpen={setOpen}>
+      <Ariakit.DialogProvider open={open} setOpen={setOpen}>
         <Ariakit.Dialog
           backdrop={<div className="backdrop" />}
           className="dialog"
@@ -72,7 +71,7 @@ export default function Example() {
             onClose={() => setRemoving("")}
           />
         </Ariakit.Dialog>
-      </DialogProvider>
+      </Ariakit.DialogProvider>
     </>
   );
 }

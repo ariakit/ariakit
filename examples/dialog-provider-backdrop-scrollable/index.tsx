@@ -1,7 +1,6 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
@@ -10,7 +9,7 @@ export default function Example() {
       <Ariakit.Button onClick={() => setOpen(true)} className="button">
         View recipe
       </Ariakit.Button>
-      <DialogProvider open={open} setOpen={setOpen}>
+      <Ariakit.DialogProvider open={open} setOpen={setOpen}>
         <Ariakit.Dialog
           backdrop={false}
           className="dialog"
@@ -89,7 +88,7 @@ export default function Example() {
             semper non vel quam.
           </p>
         </Ariakit.Dialog>
-      </DialogProvider>
+      </Ariakit.DialogProvider>
     </>
   );
 }

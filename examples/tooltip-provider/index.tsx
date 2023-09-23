@@ -1,10 +1,9 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import { TooltipProvider } from "@ariakit/react-core/tooltip/tooltip-provider";
 
 export default function Example() {
   return (
-    <TooltipProvider>
+    <Ariakit.TooltipProvider>
       <Ariakit.TooltipAnchor
         className="link"
         render={<a href="https://ariakit.org/components/tooltip" />}
@@ -14,6 +13,6 @@ export default function Example() {
       <Ariakit.Tooltip className="tooltip">
         https://ariakit.org/components/tooltip
       </Ariakit.Tooltip>
-    </TooltipProvider>
+    </Ariakit.TooltipProvider>
   );
 }

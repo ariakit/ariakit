@@ -1,6 +1,5 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 import {
   Link,
   MemoryRouter,
@@ -14,7 +13,7 @@ function Tweet() {
   const navigate = useNavigate();
   const hide = () => navigate("/");
   return (
-    <DialogProvider
+    <Ariakit.DialogProvider
       open
       setOpen={(open) => {
         if (!open) {
@@ -45,7 +44,7 @@ function Tweet() {
           </Ariakit.Button>
         </form>
       </Ariakit.Dialog>
-    </DialogProvider>
+    </Ariakit.DialogProvider>
   );
 }
 
