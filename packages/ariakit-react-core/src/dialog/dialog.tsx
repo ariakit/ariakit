@@ -59,6 +59,7 @@ import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disableTreeOutside } from "./utils/disable-tree-outside.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
+import { setProperty } from "./utils/orchestrate.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
@@ -232,6 +233,16 @@ export const useDialog = createHook<DialogOptions>(
     }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
 
     const getPersistentElementsProp = useEvent(getPersistentElements);
+
+    useEffect(() => {
+      if (open) return;
+      if (!mounted) return;
+      if (!domReady) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      // TODO: Refactor this.
+      return setProperty(dialog, "inert", true);
+    }, [open, mounted, domReady]);
 
     useSafeLayoutEffect(() => {
       if (!domReady) return;
@@ -459,9 +470,7 @@ export const useDialog = createHook<DialogOptions>(
         };
         if (!isValidTarget()) return;
         if (!hideOnEscapeProp(event)) return;
-        // We need to defer the hide call to the next frame so the
-        // select-animated example works.
-        requestAnimationFrame(store.hide);
+        store.hide();
       };
       // We're attatching the listener to the document instead of the dialog
       // element so we can listen to the Escape key anywhere in the document,
