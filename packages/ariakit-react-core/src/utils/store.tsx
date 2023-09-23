@@ -67,8 +67,9 @@ function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
       if (
         typeof data[0] === "string" &&
         data[0].startsWith("Warning: flushSync")
-      )
+      ) {
         return;
+      }
       originalError(data);
     };
   }
