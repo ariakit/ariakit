@@ -238,7 +238,13 @@ export const useDialog = createHook<DialogOptions>(
       if (!id) return;
       if (!open) return;
       const dialog = ref.current;
-      // TODO: Comment
+      // When the dialog opens, we capture a snapshot of the document. This
+      // snapshot is then used to disable elements outside the dialog in the
+      // subsequent effect. However, the issue arises as this next effect also
+      // relies on nested dialogs. Meaning, each time a nested dialog is
+      // rendered, we capture a new document snapshot, which might disable
+      // third-party dialogs. Hence, we take the snapshot here, independent of
+      // any nested dialogs.
       return createWalkTreeSnapshot(id, [dialog]);
     }, [domReady, id, open]);
 
@@ -453,14 +459,16 @@ export const useDialog = createHook<DialogOptions>(
         };
         if (!isValidTarget()) return;
         if (!hideOnEscapeProp(event)) return;
-        store.hide();
+        // We need to defer the hide call to the next frame so the
+        // select-animated example works.
+        requestAnimationFrame(store.hide);
       };
       // We're attatching the listener to the document instead of the dialog
-      // element so we can also listen to keystrokes on the disclosure element.
-      // We can't do this on a onKeyDown prop on the disclosure element because
-      // we don't have access to the hideOnEscape prop there.
-      return addGlobalEventListener("keydown", onKeyDown);
-    }, [store, mounted, domReady, hideOnEscapeProp]);
+      // element so we can listen to the Escape key anywhere in the document,
+      // even when the dialog is not focused. By using the capture phase, users
+      // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
+      return addGlobalEventListener("keydown", onKeyDown, true);
+    }, [store, domReady, mounted, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(

@@ -11,7 +11,6 @@ function getSnapshotPropertyName(id: string) {
   return `__ariakit-dialog-snapshot-${id}` as keyof Element;
 }
 
-// TODO: Comment
 function inSnapshot(id: string, element: Element) {
   const doc = getDocument(element);
   const propertyName = getSnapshotPropertyName(id);

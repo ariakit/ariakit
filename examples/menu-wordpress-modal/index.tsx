@@ -1,13 +1,9 @@
 import "./style.css";
-import { useCallback, useRef, useState } from "react";
-import * as Ariakit from "@ariakit/react";
-import { Modal, SlotFillProvider } from "@wordpress/components";
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  MenuSlotContext,
-  createMenuSlot,
-} from "./dropdown-menu.jsx";
+import { useState } from "react";
+import { SlotFillProvider } from "@wordpress/components";
+import { Menu, MenuItem, createMenuSlot } from "./menu.jsx";
+import { Modal } from "./modal.jsx";
+import { Tooltip } from "./tooltip.jsx";
 
 const OptionsMenu = createMenuSlot("OptionsMenu");
 const OptionsMenuBubblesVirtually = createMenuSlot(
@@ -16,119 +12,156 @@ const OptionsMenuBubblesVirtually = createMenuSlot(
 );
 
 export default function Example() {
+  const [nested, setNested] = useState(false);
   const [sibling, setSibling] = useState(false);
+  const [submenu, setSubmenu] = useState(false);
+  const [slot, setSlot] = useState(false);
+  const [slotSubmenu, setSlotSubmenu] = useState(false);
+  const [slotBubblesVirtually, setSlotBubblesVirtually] = useState(false);
+  const [slotBubblesVirtuallySubmenu, setSlotBubblesVirtuallySubmenu] =
+    useState(false);
 
-  const renderModal = (open: boolean, setOpen: (open: boolean) => void) => {
+  const renderModal = (open = nested, setOpen = setNested) => {
     if (!open) return null;
     return (
-      <Modal
-        title="Modal"
-        bodyOpenClassName="examples-menu-wordpress-modal"
-        overlayClassName="backdrop"
-        className="dialog"
-        onRequestClose={() => setOpen(false)}
-      >
-        <MenuSlotContext.Provider value={null}>
-          <Ariakit.TooltipProvider>
-            <Ariakit.TooltipAnchor
-              render={
-                <DropdownMenu
-                  label="Options"
-                  modal={false}
-                  menu={<div style={{ zIndex: 100 }} />}
-                />
-              }
-            >
-              <DropdownMenuItem>Item</DropdownMenuItem>
-              <DropdownMenuItem>Item</DropdownMenuItem>
-              <DropdownMenuItem>Item</DropdownMenuItem>
-            </Ariakit.TooltipAnchor>
-            <Ariakit.Tooltip className="tooltip" style={{ zIndex: 100 }}>
-              Options
-            </Ariakit.Tooltip>
-          </Ariakit.TooltipProvider>
-        </MenuSlotContext.Provider>
+      <Modal title="Modal" onRequestClose={() => setOpen(false)}>
+        <Tooltip text="Options">
+          <Menu label="Options">
+            <MenuItem>Item</MenuItem>
+            <MenuItem>Item</MenuItem>
+            <MenuItem>Item</MenuItem>
+          </Menu>
+        </Tooltip>
       </Modal>
     );
   };
 
   return (
     <SlotFillProvider>
-      <DropdownMenu label="Options">
-        <DropdownMenuItem>Modal</DropdownMenuItem>
-        <DropdownMenuItem hideOnClick={false} onClick={() => setSibling(true)}>
-          Modal (sibling)
-        </DropdownMenuItem>
-        <DropdownMenuItem>Create pattern</DropdownMenuItem>
+      <Menu label="Options">
+        <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+          Nested
+        </MenuItem>
+        <MenuItem onClick={() => setNested(true)}>
+          Nested (hideOnClick)
+        </MenuItem>
+        <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+          Sibling
+        </MenuItem>
+        <MenuItem onClick={() => setSibling(true)}>
+          Sibling (hideOnClick)
+        </MenuItem>
+        <Menu label="Submenu">
+          <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+            Nested
+          </MenuItem>
+          <MenuItem onClick={() => setNested(true)}>
+            Nested (hideOnClick)
+          </MenuItem>
+          <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+            Sibling
+          </MenuItem>
+          <MenuItem onClick={() => setSibling(true)}>
+            Sibling (hideOnClick)
+          </MenuItem>
+          <MenuItem hideOnClick={false} onClick={() => setSubmenu(true)}>
+            Submenu
+          </MenuItem>
+          {renderModal(submenu, setSubmenu)}
+        </Menu>
         <OptionsMenu.Slot />
         <OptionsMenuBubblesVirtually.Slot />
-        <DropdownMenu label="Submenu">
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-        </DropdownMenu>
-        {renderModal(sibling, setSibling)}
-      </DropdownMenu>
+        {renderModal(nested, setNested)}
+      </Menu>
+
+      {renderModal(sibling, setSibling)}
+
       <OptionsMenu.Fill>
-        <DropdownMenuItem>Fill 1</DropdownMenuItem>
-        <DropdownMenu label="Submenu">
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-        </DropdownMenu>
+        <MenuItem hideOnClick={false} onClick={() => setSlot(true)}>
+          Slot
+        </MenuItem>
+        <MenuItem onClick={() => setSlot(true)}>Slot (hideOnClick)</MenuItem>
+        <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+          Slot - Nested
+        </MenuItem>
+        <MenuItem onClick={() => setNested(true)}>
+          Slot - Nested (hideOnClick)
+        </MenuItem>
+        <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+          Slot - Sibling
+        </MenuItem>
+        <MenuItem onClick={() => setSibling(true)}>
+          Slot - Sibling (hideOnClick)
+        </MenuItem>
+        <Menu label="Slot - Submenu">
+          <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+            Slot - Nested
+          </MenuItem>
+          <MenuItem onClick={() => setNested(true)}>
+            Slot - Nested (hideOnClick)
+          </MenuItem>
+          <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+            Slot - Sibling
+          </MenuItem>
+          <MenuItem onClick={() => setSibling(true)}>
+            Slot - Sibling (hideOnClick)
+          </MenuItem>
+          <MenuItem hideOnClick={false} onClick={() => setSlotSubmenu(true)}>
+            Slot - Submenu
+          </MenuItem>
+          {renderModal(slotSubmenu, setSlotSubmenu)}
+        </Menu>
+        {renderModal(slot, setSlot)}
       </OptionsMenu.Fill>
+
       <OptionsMenuBubblesVirtually.Fill>
-        <DropdownMenuItem>Fill 2</DropdownMenuItem>
-        <DropdownMenu label="Submenu">
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-          <DropdownMenuItem>Item</DropdownMenuItem>
-        </DropdownMenu>
+        <MenuItem
+          hideOnClick={false}
+          onClick={() => setSlotBubblesVirtually(true)}
+        >
+          Slot (bubblesVirtually)
+        </MenuItem>
+        <MenuItem onClick={() => setSlotBubblesVirtually(true)}>
+          Slot (bubblesVirtually) (hideOnClick)
+        </MenuItem>
+        <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+          Slot (bubblesVirtually) - Nested
+        </MenuItem>
+        <MenuItem onClick={() => setNested(true)}>
+          Slot (bubblesVirtually) - Nested (hideOnClick)
+        </MenuItem>
+        <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+          Slot (bubblesVirtually) - Sibling
+        </MenuItem>
+        <MenuItem onClick={() => setSibling(true)}>
+          Slot (bubblesVirtually) - Sibling (hideOnClick)
+        </MenuItem>
+        <Menu label="Slot (bubblesVirtually) - Submenu">
+          <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
+            Slot (bubblesVirtually) - Nested
+          </MenuItem>
+          <MenuItem onClick={() => setNested(true)}>
+            Slot (bubblesVirtually) - Nested (hideOnClick)
+          </MenuItem>
+          <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
+            Slot (bubblesVirtually) - Sibling
+          </MenuItem>
+          <MenuItem onClick={() => setSibling(true)}>
+            Slot (bubblesVirtually) - Sibling (hideOnClick)
+          </MenuItem>
+          <MenuItem
+            hideOnClick={false}
+            onClick={() => setSlotBubblesVirtuallySubmenu(true)}
+          >
+            Slot (bubblesVirtually) - Submenu
+          </MenuItem>
+          {renderModal(
+            slotBubblesVirtuallySubmenu,
+            setSlotBubblesVirtuallySubmenu,
+          )}
+        </Menu>
+        {renderModal(slotBubblesVirtually, setSlotBubblesVirtually)}
       </OptionsMenuBubblesVirtually.Fill>
     </SlotFillProvider>
   );
-  // return (
-  //   <Ariakit.MenuProvider>
-  //     <Ariakit.MenuButton className="button">Menu</Ariakit.MenuButton>
-  //     <Ariakit.Menu
-  //       className="menu"
-  //       modal
-  //     >
-  //       <Ariakit.MenuItem
-  //         className="menu-item"
-  //         onClick={(event) => {
-  //           dialog.show();
-  //           // event.preventDefault();
-  //         }}
-  //         hideOnClick={false}
-  //       >
-  //         Item
-  //       </Ariakit.MenuItem>
-  //       {dialog.useState("open") && (
-  //         <Modal
-  //           onRequestClose={(event) => {
-  //             dialog.hide();
-  //             console.log(event);
-  //           }}
-  //         >
-  //           dsadsa
-  //           <Ariakit.TooltipProvider store={tooltip}>
-  //             <Ariakit.TooltipAnchor className="button">
-  //               Close
-  //             </Ariakit.TooltipAnchor>
-  //             {tooltipOpen && (
-  //               <Ariakit.Tooltip
-  //                 // portalElement={portalElement}
-  //                 style={{ zIndex: 999999 }}
-  //                 className="tooltip"
-  //               >
-  //                 Test
-  //               </Ariakit.Tooltip>
-  //             )}
-  //           </Ariakit.TooltipProvider>
-  //         </Modal>
-  //       )}
-  //     </Ariakit.Menu>
-  //   </Ariakit.MenuProvider>
-  // );
 }
