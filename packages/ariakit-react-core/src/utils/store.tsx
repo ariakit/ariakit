@@ -70,7 +70,7 @@ function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
       ) {
         return;
       }
-      originalError(data);
+      originalError(...data);
     };
   }
   try {
