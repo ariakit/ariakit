@@ -1,0 +1,11 @@
+@import url("../dialog/style.css");
+@import url("../menu-nested/style.css");
+@import url("../tooltip/style.css");
+
+.backdrop {
+  @apply
+    fixed
+    inset-0
+    z-50
+  ;
+}

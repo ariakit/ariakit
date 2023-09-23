@@ -28,6 +28,8 @@ import { useMenuList } from "./menu-list.js";
 export const useMenu = createHook<MenuOptions>(
   ({
     store,
+    modal: modalProp = false,
+    portal = !!modalProp,
     hideOnEscape = true,
     autoFocusOnShow = true,
     hideOnHoverOutside,
@@ -108,6 +110,9 @@ export const useMenu = createHook<MenuOptions>(
       };
     }, [store, autoFocusOnShowState, initialFocus, items, baseElement]);
 
+    // If it's a submenu, it shouldn't behave like a modal dialog.
+    const modal = hasParentMenu ? false : modalProp;
+
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
     // move focus to the menu when there's an initialFocusRef set or the menu is
@@ -116,7 +121,7 @@ export const useMenu = createHook<MenuOptions>(
     // This differs from the usual dialog behavior that would automatically
     // focus on the dialog container when no initialFocusRef is set.
     const canAutoFocusOnShow =
-      !!initialFocusRef || !!props.initialFocus || !!props.modal;
+      !!initialFocusRef || !!props.initialFocus || !!modal;
 
     props = useHovercard({
       store,
@@ -124,7 +129,7 @@ export const useMenu = createHook<MenuOptions>(
       initialFocus: initialFocusRef,
       autoFocusOnShow: mayAutoFocusOnShow
         ? canAutoFocusOnShow && autoFocusOnShow
-        : autoFocusOnShowState || !!props.modal,
+        : autoFocusOnShowState || !!modal,
       ...props,
       hideOnEscape: (event) => {
         if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
@@ -146,9 +151,8 @@ export const useMenu = createHook<MenuOptions>(
         if (hasFocusWithin(disclosure)) return false;
         return true;
       },
-      // If it's a submenu, it shouldn't behave like a modal dialog, nor display
-      // a backdrop.
-      modal: hasParentMenu ? false : props.modal,
+      modal,
+      portal,
       backdrop: hasParentMenu ? false : props.backdrop,
     });
 
