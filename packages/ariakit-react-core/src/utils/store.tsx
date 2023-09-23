@@ -63,9 +63,14 @@ function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
   inFlushSyncContext = true;
   const originalError = console.error;
   if (process.env.NODE_ENV !== "production") {
-    console.error = (msg: string) => {
-      if (msg.startsWith("Warning: flushSync")) return;
-      originalError(msg);
+    console.error = (...data: any[]) => {
+      if (
+        typeof data[0] === "string" &&
+        data[0].startsWith("Warning: flushSync")
+      ) {
+        return;
+      }
+      originalError(...data);
     };
   }
   try {
