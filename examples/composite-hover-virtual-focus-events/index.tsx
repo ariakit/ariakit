@@ -1,7 +1,6 @@
 import "./style.css";
 import type { SyntheticEvent } from "react";
 import * as Ariakit from "@ariakit/react";
-import { CompositeProvider } from "@ariakit/react-core/composite/composite-provider";
 
 export default function Example() {
   const onEvent = (event: SyntheticEvent) => {
@@ -28,7 +27,7 @@ export default function Example() {
   };
 
   return (
-    <CompositeProvider virtualFocus>
+    <Ariakit.CompositeProvider virtualFocus>
       <Ariakit.Composite id="toolbar" role="toolbar" {...props}>
         <Ariakit.CompositeHover
           id="item-1"
@@ -52,6 +51,6 @@ export default function Example() {
           item-3
         </Ariakit.CompositeHover>
       </Ariakit.Composite>
-    </CompositeProvider>
+    </Ariakit.CompositeProvider>
   );
 }

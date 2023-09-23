@@ -1,12 +1,11 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import { TabProvider } from "@ariakit/react-core/tab/tab-provider";
 
 export default function Example() {
   const defaultSelectedId = "default-selected-tab";
   return (
     <div className="wrapper">
-      <TabProvider defaultSelectedId={defaultSelectedId}>
+      <Ariakit.TabProvider defaultSelectedId={defaultSelectedId}>
         <Ariakit.TabList className="tab-list" aria-label="Groceries">
           <Ariakit.Tab className="tab">Fruits</Ariakit.Tab>
           <Ariakit.Tab className="tab" id={defaultSelectedId}>
@@ -37,7 +36,7 @@ export default function Example() {
             </ul>
           </Ariakit.TabPanel>
         </div>
-      </TabProvider>
+      </Ariakit.TabProvider>
     </div>
   );
 }

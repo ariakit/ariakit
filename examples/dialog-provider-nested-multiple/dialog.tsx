@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 
 export interface DialogProps extends Ariakit.DialogProps {
   open?: boolean;
@@ -20,7 +19,7 @@ export function Dialog({
   const mounted = dialog.useState((state) => (unmount ? state.mounted : true));
   const dataAnimated = animated ? "" : undefined;
   return (
-    <DialogProvider
+    <Ariakit.DialogProvider
       store={dialog}
       animated={animated}
       open={open}
@@ -39,7 +38,7 @@ export function Dialog({
           store={dialog}
         />
       )}
-    </DialogProvider>
+    </Ariakit.DialogProvider>
   );
 }
 

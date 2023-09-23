@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 
 export interface ConfirmDialogProps {
   title?: ReactNode;
@@ -26,7 +25,7 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   return (
-    <DialogProvider
+    <Ariakit.DialogProvider
       open={open}
       setOpen={(open) => {
         if (!open) {
@@ -68,6 +67,6 @@ export function ConfirmDialog({
           )}
         </div>
       </Ariakit.Dialog>
-    </DialogProvider>
+    </Ariakit.DialogProvider>
   );
 }

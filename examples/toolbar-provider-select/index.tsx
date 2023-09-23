@@ -1,7 +1,6 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { SelectProvider } from "@ariakit/react-core/select/select-provider";
 import * as icons from "./icons.js";
 
 const options = [
@@ -25,7 +24,7 @@ export default function Example() {
         {icons.underline} Underline
       </Ariakit.ToolbarItem>
       <Ariakit.ToolbarSeparator className="separator" />
-      <SelectProvider value={value} setValue={setValue}>
+      <Ariakit.SelectProvider value={value} setValue={setValue}>
         <Ariakit.Select
           aria-label="Text alignment"
           className="button secondary"
@@ -44,7 +43,7 @@ export default function Example() {
             </Ariakit.SelectItem>
           ))}
         </Ariakit.SelectPopover>
-      </SelectProvider>
+      </Ariakit.SelectProvider>
     </Ariakit.Toolbar>
   );
 }

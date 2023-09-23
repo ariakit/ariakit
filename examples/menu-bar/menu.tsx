@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import { useMenuContext } from "@ariakit/react-core/menu/menu-context";
 import clsx from "clsx";
 
 export { MenuProvider } from "@ariakit/react";
@@ -21,7 +20,7 @@ export const MenuBar = React.forwardRef<HTMLDivElement, Ariakit.MenuBarProps>(
 
 export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
   function Menu(props, ref) {
-    const menu = useMenuContext();
+    const menu = Ariakit.useMenuContext();
 
     if (!menu) {
       throw new Error("Menu must be used within a MenuProvider");
@@ -51,7 +50,7 @@ interface MenuButtonProps extends Ariakit.MenuButtonProps {
 
 export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
   function MenuButton(props, ref) {
-    const menu = useMenuContext();
+    const menu = Ariakit.useMenuContext();
     return (
       <Ariakit.MenuButton ref={ref} {...props}>
         <span className="label">{props.children}</span>

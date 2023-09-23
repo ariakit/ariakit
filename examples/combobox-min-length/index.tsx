@@ -1,7 +1,6 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { ComboboxProvider } from "@ariakit/react-core/combobox/combobox-provider";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
@@ -13,7 +12,7 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <ComboboxProvider
+      <Ariakit.ComboboxProvider
         open={open}
         setOpen={setOpen}
         value={value}
@@ -40,7 +39,7 @@ export default function Example() {
             🍉 Watermelon
           </Ariakit.ComboboxItem>
         </Ariakit.ComboboxPopover>
-      </ComboboxProvider>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Example() {
@@ -11,7 +10,7 @@ export default function Example() {
       <Ariakit.Button onClick={() => setOpen(true)} className="button">
         Show modal
       </Ariakit.Button>
-      <DialogProvider open={open} setOpen={setOpen}>
+      <Ariakit.DialogProvider open={open} setOpen={setOpen}>
         <AnimatePresence>
           {open && (
             <Ariakit.Dialog
@@ -46,7 +45,7 @@ export default function Example() {
             </Ariakit.Dialog>
           )}
         </AnimatePresence>
-      </DialogProvider>
+      </Ariakit.DialogProvider>
     </>
   );
 }

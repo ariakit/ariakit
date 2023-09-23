@@ -1,7 +1,6 @@
 import "./style.css";
 import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { ComboboxProvider } from "@ariakit/react-core/combobox/combobox-provider";
 import { matchSorter } from "match-sorter";
 import { NewWindow } from "./icons.jsx";
 
@@ -37,7 +36,7 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <ComboboxProvider
+      <Ariakit.ComboboxProvider
         open={open}
         setOpen={setOpen}
         setValue={(value) => startTransition(() => setSearchValue(value))}
@@ -72,7 +71,7 @@ export default function Example() {
             )}
           </Ariakit.ComboboxPopover>
         )}
-      </ComboboxProvider>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

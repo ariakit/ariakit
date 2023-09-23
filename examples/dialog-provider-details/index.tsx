@@ -1,7 +1,6 @@
 import "./style.css";
 import { useEffect, useRef, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import { DialogProvider } from "@ariakit/react-core/dialog/dialog-provider";
 
 function useLoaded() {
   const [loaded, setLoaded] = useState(false);
@@ -27,7 +26,7 @@ export default function Example() {
       <Ariakit.Button className="button" render={<summary />}>
         Show modal
       </Ariakit.Button>
-      <DialogProvider open={open} setOpen={setOpen}>
+      <Ariakit.DialogProvider open={open} setOpen={setOpen}>
         <Ariakit.Dialog
           // We're setting the modal prop to true only when JavaScript is enabled.
           // This means that the dialog will initially have a non-modal state with
@@ -50,7 +49,7 @@ export default function Example() {
             <Ariakit.DialogDismiss className="button">OK</Ariakit.DialogDismiss>
           </div>
         </Ariakit.Dialog>
-      </DialogProvider>
+      </Ariakit.DialogProvider>
     </details>
   );
 }
