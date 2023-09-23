@@ -28,7 +28,7 @@ export default function Example() {
             dialog.show();
             // event.preventDefault();
           }}
-          // hideOnClick={false}
+          hideOnClick={false}
         >
           Item
         </Ariakit.MenuItem>

@@ -239,7 +239,7 @@ export const useDialog = createHook<DialogOptions>(
       if (!open) return;
       const dialog = ref.current;
       // TODO: Comment
-      return createWalkTreeSnapshot(id, [dialog]);
+      // return createWalkTreeSnapshot(id, [dialog]);
     }, [domReady, id, open]);
 
     // Disables/enables the element tree around the modal dialog element.
