@@ -15,6 +15,7 @@ const getPopup = (page: Page, role: PopupRole, name?: string) => {
 
 const getAccessiblePopup = (page: Page, role: PopupRole, name?: string) => {
   const isSafari = page.context().browser()?.browserType().name() === "webkit";
+  console.log(page.context().browser()?.browserType().name(), isSafari);
   if (isSafari) {
     return page.getByRole(role);
   }

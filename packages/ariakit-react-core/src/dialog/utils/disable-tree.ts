@@ -19,7 +19,7 @@ export function disableTree(
     return setProperty(element, "inert", true);
   }
 
-  const tabbableElements = getAllTabbableIn(element);
+  const tabbableElements = getAllTabbableIn(element, true);
   const enableElements = tabbableElements.map((element) => {
     if (ignoredElements?.some((el) => el && contains(el, element))) return noop;
     return setAttribute(element, "tabindex", "-1");
