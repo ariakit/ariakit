@@ -9,18 +9,11 @@ const getButton = (page: Page, name: string) =>
 const getMenuItem = (page: Page | Locator, name: string) =>
   page.getByRole("menuitem", { name, exact: true });
 
-const getPopup = (page: Page, role: PopupRole, name?: string) => {
-  return page.getByRole(role, { includeHidden: true, name, exact: !!name });
-};
+const getPopup = (page: Page, role: PopupRole, name?: string) =>
+  page.getByRole(role, { includeHidden: true, name, exact: !!name });
 
-const getAccessiblePopup = (page: Page, role: PopupRole, name?: string) => {
-  const isSafari = page.context().browser()?.browserType().name() === "webkit";
-  console.log(page.context().browser()?.browserType().name(), isSafari);
-  if (isSafari) {
-    return page.getByRole(role);
-  }
-  return page.getByRole(role, { name });
-};
+const getAccessiblePopup = (page: Page, role: PopupRole, name?: string) =>
+  page.getByRole(role, { name, exact: true });
 
 const getModal = (page: Page) => getPopup(page, "dialog", "Modal");
 const getAccessibleModal = (page: Page) =>
