@@ -297,15 +297,15 @@ export const useFocusable = createHook<FocusableOptions>(
       if (currentTarget) {
         event.currentTarget = currentTarget;
       }
-      onFocusVisible?.(event);
-      if (event.defaultPrevented) return;
       if (!focusable) return;
       const element = event.currentTarget;
       if (!element) return;
+      if (!hasFocus(element)) return;
+      onFocusVisible?.(event);
+      if (event.defaultPrevented) return;
       // Some extensions like 1password dispatches some keydown events on
       // autofill and immediately moves focus to the next field. That's why we
       // need to check if the current element is still focused.
-      if (!hasFocus(element)) return;
       setFocusVisible(true);
     };
 

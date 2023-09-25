@@ -57,9 +57,8 @@ import {
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
-import { disableTreeOutside } from "./utils/disable-tree-outside.js";
+import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
-import { setProperty } from "./utils/orchestrate.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
@@ -232,22 +231,24 @@ export const useDialog = createHook<DialogOptions>(
       return prependHiddenDismiss(dialog, store.hide);
     }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
 
-    const getPersistentElementsProp = useEvent(getPersistentElements);
-
-    useEffect(() => {
+    // When the dialog is animated, the open state will be false and the mounted
+    // state will be true. The dialog will still be visible until the animation
+    // is complete. We need to disable the dialog tree completely in this case.
+    // TODO: We should probably do this in a more generic way in the
+    // DisclosureContent component.
+    useSafeLayoutEffect(() => {
       if (open) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
       if (!dialog) return;
-      // TODO: Refactor this.
-      return setProperty(dialog, "inert", true);
+      return disableTree(dialog);
     }, [open, mounted, domReady]);
 
     useSafeLayoutEffect(() => {
-      if (!domReady) return;
       if (!id) return;
       if (!open) return;
+      if (!domReady) return;
       const dialog = ref.current;
       // When the dialog opens, we capture a snapshot of the document. This
       // snapshot is then used to disable elements outside the dialog in the
@@ -257,13 +258,15 @@ export const useDialog = createHook<DialogOptions>(
       // third-party dialogs. Hence, we take the snapshot here, independent of
       // any nested dialogs.
       return createWalkTreeSnapshot(id, [dialog]);
-    }, [domReady, id, open]);
+    }, [id, open, domReady]);
+
+    const getPersistentElementsProp = useEvent(getPersistentElements);
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
+      if (!id) return;
       if (!store) return;
       if (!domReady) return;
-      if (!id) return;
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element. That's why we use open instead of
@@ -291,9 +294,9 @@ export const useDialog = createHook<DialogOptions>(
         disableAccessibilityTreeOutside(id, allElements),
       );
     }, [
+      id,
       store,
       domReady,
-      id,
       open,
       getPersistentElementsProp,
       nestedDialogs,
@@ -464,7 +467,7 @@ export const useDialog = createHook<DialogOptions>(
         const isValidTarget = () => {
           if (target.tagName === "BODY") return true;
           if (contains(dialog, target)) return true;
-          if (!disclosureElement) return false;
+          if (!disclosureElement) return true;
           if (contains(disclosureElement, target)) return true;
           return false;
         };

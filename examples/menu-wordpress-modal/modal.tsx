@@ -2,7 +2,7 @@ import { createContext, forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Modal as WPModal } from "@wordpress/components";
 import clsx from "clsx";
-import { MenuSlotContext } from "./menu.jsx";
+import { MenuContext } from "./menu.jsx";
 
 export const ModalContext = createContext(false);
 
@@ -12,23 +12,23 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
   function Modal(props, ref) {
     return (
       <WPModal
-        ref={ref}
         {...props}
+        ref={ref}
         className={clsx("dialog", props.className)}
         overlayClassName={clsx("backdrop", props.overlayClassName)}
-        bodyOpenClassName={clsx(
-          "examples-menu-wordpress-modal",
-          props.bodyOpenClassName,
-        )}
       >
         <ModalContext.Provider value={true}>
-          <MenuSlotContext.Provider
-            // Disable the menu context so menus outside the modal won't be
-            //considered parent menus.
+          <MenuContext.Provider
+            // By default, Ariakit treats menus nested within the React trees as
+            // submenus. This applies even when we nest Menu/Modal/Menu in that
+            // sequence. To prevent the nested menu from being recognized as a
+            // submenu, we can assign null to the `parent` prop of the menu
+            // store. Since this MenuContext value will be passed to the
+            // `parent` prop, we can assign null here.
             value={null}
           >
             {props.children}
-          </MenuSlotContext.Provider>
+          </MenuContext.Provider>
         </ModalContext.Provider>
       </WPModal>
     );

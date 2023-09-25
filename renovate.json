@@ -12,6 +12,7 @@
     },
     {
       "matchPackageNames": [
+        "@wordpress/components",
         "cross-env",
         "cross-spawn",
         "framer-motion",

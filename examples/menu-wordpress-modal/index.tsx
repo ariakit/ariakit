@@ -25,11 +25,15 @@ export default function Example() {
     if (!open) return null;
     return (
       <Modal title="Modal" onRequestClose={() => setOpen(false)}>
-        <Tooltip text="Options">
-          <Menu label="Options">
-            <MenuItem>Item</MenuItem>
-            <MenuItem>Item</MenuItem>
-            <MenuItem>Item</MenuItem>
+        <Tooltip text="Menu">
+          <Menu label="Menu">
+            <MenuItem>Item 1</MenuItem>
+            <MenuItem>Item 2</MenuItem>
+            <Menu label="Item 3">
+              <MenuItem>Item 3.1</MenuItem>
+              <MenuItem>Item 3.2</MenuItem>
+              <MenuItem>Item 3.3</MenuItem>
+            </Menu>
           </Menu>
         </Tooltip>
       </Modal>
@@ -42,9 +46,6 @@ export default function Example() {
         <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
           Nested
         </MenuItem>
-        <MenuItem onClick={() => setNested(true)}>
-          Nested (hideOnClick)
-        </MenuItem>
         <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
           Sibling
         </MenuItem>
@@ -54,9 +55,6 @@ export default function Example() {
         <Menu label="Submenu">
           <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
             Nested
-          </MenuItem>
-          <MenuItem onClick={() => setNested(true)}>
-            Nested (hideOnClick)
           </MenuItem>
           <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
             Sibling
@@ -80,12 +78,8 @@ export default function Example() {
         <MenuItem hideOnClick={false} onClick={() => setSlot(true)}>
           Slot
         </MenuItem>
-        <MenuItem onClick={() => setSlot(true)}>Slot (hideOnClick)</MenuItem>
         <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
           Slot - Nested
-        </MenuItem>
-        <MenuItem onClick={() => setNested(true)}>
-          Slot - Nested (hideOnClick)
         </MenuItem>
         <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
           Slot - Sibling
@@ -96,9 +90,6 @@ export default function Example() {
         <Menu label="Slot - Submenu">
           <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
             Slot - Nested
-          </MenuItem>
-          <MenuItem onClick={() => setNested(true)}>
-            Slot - Nested (hideOnClick)
           </MenuItem>
           <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
             Slot - Sibling
@@ -121,14 +112,8 @@ export default function Example() {
         >
           Slot (bubblesVirtually)
         </MenuItem>
-        <MenuItem onClick={() => setSlotBubblesVirtually(true)}>
-          Slot (bubblesVirtually) (hideOnClick)
-        </MenuItem>
         <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
           Slot (bubblesVirtually) - Nested
-        </MenuItem>
-        <MenuItem onClick={() => setNested(true)}>
-          Slot (bubblesVirtually) - Nested (hideOnClick)
         </MenuItem>
         <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
           Slot (bubblesVirtually) - Sibling
@@ -139,9 +124,6 @@ export default function Example() {
         <Menu label="Slot (bubblesVirtually) - Submenu">
           <MenuItem hideOnClick={false} onClick={() => setNested(true)}>
             Slot (bubblesVirtually) - Nested
-          </MenuItem>
-          <MenuItem onClick={() => setNested(true)}>
-            Slot (bubblesVirtually) - Nested (hideOnClick)
           </MenuItem>
           <MenuItem hideOnClick={false} onClick={() => setSibling(true)}>
             Slot (bubblesVirtually) - Sibling

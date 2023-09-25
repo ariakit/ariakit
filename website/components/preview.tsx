@@ -5,6 +5,8 @@ import { Suspense, useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
 import examples from "build-pages/examples.js";
 
+const ignoredExampleIds = ["examples-menu-wordpress-modal"];
+
 interface PortalProviderProps {
   children: ReactNode;
   id: string;
@@ -14,6 +16,12 @@ function PortalProvider({ children, id }: PortalProviderProps) {
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (ignoredExampleIds.includes(id)) {
+      document.body.classList.add(id);
+      return () => {
+        document.body.classList.remove(id);
+      };
+    }
     const root = document.createElement("div");
     root.className = id;
     document.body.appendChild(root);
