@@ -1,6 +1,6 @@
 import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { init, subscribe, sync } from "@ariakit/core/utils/store";
+import { init, setProperty, subscribe, sync2 } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -149,7 +149,13 @@ export function useStoreProps<
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
-  const canSyncValue = React.useRef(true);
+
+  useSafeLayoutEffect(() => {
+    setProperty(store, key, value);
+    return sync2(store, [key], () => {
+      setProperty(store, key, value);
+    });
+  }, [store, key, value]);
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
@@ -160,33 +166,14 @@ export function useStoreProps<
     queueMicrotask(() => {
       canFlushSync = true;
     });
-    return sync(store, [key], (state, prev) => {
+    return sync2(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
       if (state[key] === prev[key]) return;
       if (state[key] === value) return;
-      // Disable controlled value sync until the next render to avoid resetting
-      // the value to a previous state before the component has a chance to
-      // re-render.
-      if (!canFlushSync) {
-        canSyncValue.current = false;
-        queueMicrotask(() => {
-          canSyncValue.current = true;
-        });
-      }
       safeFlushSync(() => setValue(state[key]), canFlushSync);
     });
   }, [store, key]);
-
-  // If the value prop is provided, we'll always reset the store state to it.
-  useSafeLayoutEffect(() => {
-    if (value === undefined) return;
-    canSyncValue.current = true;
-    return sync(store, [key], () => {
-      if (!canSyncValue.current) return;
-      store.setState(key, value);
-    });
-  }, [store, key, value]);
 }
 
 /**

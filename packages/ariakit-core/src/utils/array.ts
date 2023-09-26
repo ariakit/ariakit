@@ -16,7 +16,6 @@ export function toArray<T>(arg: T) {
  * Immutably adds an index to an array.
  * @example
  * addItemToArray(["a", "b", "d"], "c", 2); // ["a", "b", "c", "d"]
- * @returns {Array} A new array with the item in the passed array index.
  */
 export function addItemToArray<T extends any[]>(
   array: T,
@@ -33,8 +32,6 @@ export function addItemToArray<T extends any[]>(
  * Flattens a 2D array into a one-dimensional array.
  * @example
  * flatten2DArray([["a"], ["b"], ["c"]]); // ["a", "b", "c"]
- *
- * @returns {Array} A one-dimensional array.
  */
 export function flatten2DArray<T>(array: T[][]) {
   const flattened: T[] = [];
@@ -48,7 +45,6 @@ export function flatten2DArray<T>(array: T[][]) {
  * Immutably reverses an array.
  * @example
  * reverseArray(["a", "b", "c"]); // ["c", "b", "a"]
- * @returns {Array} Reversed array.
  */
 export function reverseArray<T>(array: T[]): T[] {
   return array.slice().reverse();
