@@ -33,6 +33,7 @@ test("scroll into view on open", async ({ page }) => {
   await expect(getOption(page, "Chips")).toBeInViewport();
   await getPopover(page).evaluate((el) => el.scrollTo({ top: 0 }));
   await page.keyboard.press("Escape");
+  await expect(getOption(page, "Chips")).not.toBeInViewport();
   await page.keyboard.press("Enter");
   await expect(getOption(page, "Chips")).toBeInViewport();
   expect(await getPopover(page).screenshot()).toMatchSnapshot();

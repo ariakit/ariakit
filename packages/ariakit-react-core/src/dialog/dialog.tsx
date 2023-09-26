@@ -57,12 +57,13 @@ import {
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
-import { disableTreeOutside } from "./utils/disable-tree-outside.js";
+import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
+import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
 
 const isSafariBrowser = isSafari();
 
@@ -230,13 +231,42 @@ export const useDialog = createHook<DialogOptions>(
       return prependHiddenDismiss(dialog, store.hide);
     }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
 
+    // When the dialog is animated, the open state will be false and the mounted
+    // state will be true. The dialog will still be visible until the animation
+    // is complete. We need to disable the dialog tree completely in this case.
+    // TODO: We should probably do this in a more generic way in the
+    // DisclosureContent component.
+    useSafeLayoutEffect(() => {
+      if (open) return;
+      if (!mounted) return;
+      if (!domReady) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      return disableTree(dialog);
+    }, [open, mounted, domReady]);
+
+    useSafeLayoutEffect(() => {
+      if (!id) return;
+      if (!open) return;
+      if (!domReady) return;
+      const dialog = ref.current;
+      // When the dialog opens, we capture a snapshot of the document. This
+      // snapshot is then used to disable elements outside the dialog in the
+      // subsequent effect. However, the issue arises as this next effect also
+      // relies on nested dialogs. Meaning, each time a nested dialog is
+      // rendered, we capture a new document snapshot, which might disable
+      // third-party dialogs. Hence, we take the snapshot here, independent of
+      // any nested dialogs.
+      return createWalkTreeSnapshot(id, [dialog]);
+    }, [id, open, domReady]);
+
     const getPersistentElementsProp = useEvent(getPersistentElements);
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
+      if (!id) return;
       if (!store) return;
       if (!domReady) return;
-      if (!id) return;
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element. That's why we use open instead of
@@ -251,22 +281,22 @@ export const useDialog = createHook<DialogOptions>(
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(id, disclosureElement, ...allElements);
+        return markTreeOutside(id, [disclosureElement, ...allElements]);
       }
       if (modal) {
         return chain(
-          markTreeOutside(id, ...allElements),
-          disableTreeOutside(...allElements),
+          markTreeOutside(id, allElements),
+          disableTreeOutside(id, allElements),
         );
       }
       return chain(
-        markTreeOutside(id, disclosureElement, ...allElements),
-        disableAccessibilityTreeOutside(...allElements),
+        markTreeOutside(id, [disclosureElement, ...allElements]),
+        disableAccessibilityTreeOutside(id, allElements),
       );
     }, [
+      id,
       store,
       domReady,
-      id,
       open,
       getPersistentElementsProp,
       nestedDialogs,
@@ -437,7 +467,7 @@ export const useDialog = createHook<DialogOptions>(
         const isValidTarget = () => {
           if (target.tagName === "BODY") return true;
           if (contains(dialog, target)) return true;
-          if (!disclosureElement) return false;
+          if (!disclosureElement) return true;
           if (contains(disclosureElement, target)) return true;
           return false;
         };
@@ -446,11 +476,11 @@ export const useDialog = createHook<DialogOptions>(
         store.hide();
       };
       // We're attatching the listener to the document instead of the dialog
-      // element so we can also listen to keystrokes on the disclosure element.
-      // We can't do this on a onKeyDown prop on the disclosure element because
-      // we don't have access to the hideOnEscape prop there.
-      return addGlobalEventListener("keydown", onKeyDown);
-    }, [store, mounted, domReady, hideOnEscapeProp]);
+      // element so we can listen to the Escape key anywhere in the document,
+      // even when the dialog is not focused. By using the capture phase, users
+      // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
+      return addGlobalEventListener("keydown", onKeyDown, true);
+    }, [store, domReady, mounted, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(

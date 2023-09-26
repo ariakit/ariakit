@@ -46,6 +46,7 @@ export function setAttribute(element: Element, attr: string, value: string) {
       }
     };
   };
+
   return orchestrate(element, attr, setup);
 }
 
@@ -66,6 +67,14 @@ export function setProperty<T extends Element, K extends keyof T & string>(
       }
     };
   };
+
+  // Debug
+  // const unsetProperty = orchestrate(element, property, setup);
+  // const unsetAttribute = setAttribute(element, property, `${value}`);
+  // return () => {
+  //   unsetProperty();
+  //   unsetAttribute();
+  // };
 
   return orchestrate(element, property, setup);
 }

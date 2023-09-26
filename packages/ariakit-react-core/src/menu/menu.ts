@@ -1,10 +1,10 @@
-import type { KeyboardEvent, MutableRefObject, RefObject } from "react";
+import type { MutableRefObject, RefObject } from "react";
 import { createRef, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useHovercard } from "../hovercard/hovercard.js";
-import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
+import { useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useMenuProviderContext } from "./menu-context.js";
@@ -28,6 +28,8 @@ import { useMenuList } from "./menu-list.js";
 export const useMenu = createHook<MenuOptions>(
   ({
     store,
+    modal: modalProp = false,
+    portal = !!modalProp,
     hideOnEscape = true,
     autoFocusOnShow = true,
     hideOnHoverOutside,
@@ -50,27 +52,9 @@ export const useMenu = createHook<MenuOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
 
-    const onKeyDownProp = props.onKeyDown;
-    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
-      onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (event.key === "Escape") {
-        if (!hideOnEscapeProp(event)) return;
-        if (!hasParentMenu) {
-          // On Esc, only stop propagation if there's no parent menu. Otherwise,
-          // pressing Esc should close all menus
-          event.stopPropagation();
-        }
-        return store?.hide();
-      }
-    });
-
     props = {
       ...props,
       ref: useMergeRefs(ref, props.ref),
-      onKeyDown,
     };
 
     // The aria-labelledby prop on MenuList defaults to the MenuButton's id. On
@@ -126,6 +110,9 @@ export const useMenu = createHook<MenuOptions>(
       };
     }, [store, autoFocusOnShowState, initialFocus, items, baseElement]);
 
+    // If it's a submenu, it shouldn't behave like a modal dialog.
+    const modal = hasParentMenu ? false : modalProp;
+
     const mayAutoFocusOnShow = !!autoFocusOnShow;
     // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
     // move focus to the menu when there's an initialFocusRef set or the menu is
@@ -134,7 +121,7 @@ export const useMenu = createHook<MenuOptions>(
     // This differs from the usual dialog behavior that would automatically
     // focus on the dialog container when no initialFocusRef is set.
     const canAutoFocusOnShow =
-      !!initialFocusRef || !!props.initialFocus || !!props.modal;
+      !!initialFocusRef || !!props.initialFocus || !!modal;
 
     props = useHovercard({
       store,
@@ -142,8 +129,13 @@ export const useMenu = createHook<MenuOptions>(
       initialFocus: initialFocusRef,
       autoFocusOnShow: mayAutoFocusOnShow
         ? canAutoFocusOnShow && autoFocusOnShow
-        : autoFocusOnShowState || !!props.modal,
+        : autoFocusOnShowState || !!modal,
       ...props,
+      hideOnEscape: (event) => {
+        if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
+        store?.hideAll();
+        return true;
+      },
       hideOnHoverOutside: (event) => {
         if (typeof hideOnHoverOutside === "function") {
           return hideOnHoverOutside(event);
@@ -159,14 +151,9 @@ export const useMenu = createHook<MenuOptions>(
         if (hasFocusWithin(disclosure)) return false;
         return true;
       },
-      // If it's a submenu, it shouldn't behave like a modal dialog, nor display
-      // a backdrop.
-      modal: hasParentMenu ? false : props.modal,
+      modal,
+      portal,
       backdrop: hasParentMenu ? false : props.backdrop,
-      // If it's a submenu, hide on esc will be handled differently. That is,
-      // event.stopPropagation() won't be called, so the parent menus will also
-      // be closed.
-      hideOnEscape: hasParentMenu ? false : hideOnEscape,
     });
 
     props = {
