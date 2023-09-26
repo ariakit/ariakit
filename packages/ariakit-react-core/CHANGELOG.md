@@ -1,5 +1,57 @@
 # @ariakit/react-core
 
+## 0.3.3
+
+### Patch Changes
+
+- [`#2820`](https://github.com/ariakit/ariakit/pull/2820) Added missing `aria-haspopup` attribute to [`DialogDisclosure`](https://ariakit.org/reference/dialog-disclosure) and [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure).
+
+- [`#2858`](https://github.com/ariakit/ariakit/pull/2858) Fixed the [`setValueOnMove`](https://ariakit.org/reference/use-select-store#setvalueonmove) state on the [Select](https://ariakit.org/components/select) module not syncing between multiple stores.
+
+  The following now works as expected:
+
+  ```js
+  const store1 = useSelectStore();
+  const store2 = useSelectStore({ store: store1, setValueOnMove: true });
+
+  store1.useState("setValueOnMove") === store2.useState("setValueOnMove"); // true
+  ```
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Renamed `@ariakit/react-core/dialog/utils/disable-tree-outside` module to `@ariakit/react-core/dialog/utils/disable-tree`.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Elements inside [Dialog](https://ariakit.org/components/dialog) and derived components are now properly disabled when the dialog is animating out.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed a bug that occurred when rendering nested [Dialog](https://ariakit.org/components/dialog) elements with a third-party dialog interspersed.
+
+  Previously, Ariakit didn't recognize the third-party dialog as a nested dialog when the lowest dialog opened.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) The [`hideOnEscape`](https://ariakit.org/reference/dialog#hideonescape) prop is now triggered during the capture phase.
+
+  Essentially, this means that you can now prevent the propagation of the <kbd>Escape</kbd> keydown event to other elements in the DOM when it's used to close an Ariakit [Dialog](https://ariakit.org/components/dialog):
+
+  ```jsx
+  <Dialog
+    hideOnEscape={(event) => {
+      event.stopPropagation();
+      return true;
+    }}
+  />
+  ```
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed an issue where the [Dialog](https://ariakit.org/components/dialog) component would automatically hide when parent dialogs closed.
+
+  You can now render nested dialogs in the React tree and keep them open independently, provided they're not unmounted.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed the [Focusable](https://ariakit.org/components/focusable) and its derived components that were incorrectly calling the [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) callback prop when the element had lost focus.
+
+  This didn't align with the behavior of the [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute. The behavior now mirrors the attribute, which will only be omitted from the element if `event.preventDefault()` is invoked from within the [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) callback.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) The [`modal`](https://ariakit.org/reference/menu#modal) prop is now automatically disabled on nested [`Menu`](https://ariakit.org/reference/menu) components.
+
+- [`#2869`](https://github.com/ariakit/ariakit/pull/2869) Fixed uncaught `msg.startsWith` error.
+
+- Improved JSDocs.
+
 ## 0.3.2
 
 ### Patch Changes
