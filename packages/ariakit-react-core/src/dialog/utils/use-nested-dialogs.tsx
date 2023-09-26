@@ -39,14 +39,6 @@ export function useNestedDialogs(store: DialogStore) {
     });
   }, [store, context]);
 
-  // Close all nested dialogs when the parent dialog closes
-  useSafeLayoutEffect(() => {
-    return sync(context.store, ["open"], (state) => {
-      if (state.open) return;
-      // store.hide();
-    });
-  }, [context, store]);
-
   // Provider
   const providerValue = useMemo(() => ({ store, add }), [store, add]);
 
