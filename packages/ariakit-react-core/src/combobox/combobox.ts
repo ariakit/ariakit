@@ -326,7 +326,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { value, selectionStart } = event.target;
+      const { value, selectionStart, selectionEnd } = event.target;
       const nativeEvent = event.nativeEvent;
       canAutoSelectRef.current = true;
       if (isInputEvent(nativeEvent)) {
@@ -345,6 +345,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
         store.setValue(value);
+        // If the value is controlled, we need to restore the selection range
+        event.currentTarget.setSelectionRange(selectionStart, selectionEnd);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The

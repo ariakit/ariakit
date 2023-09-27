@@ -99,6 +99,7 @@
     "@typescript-eslint/parser": "6.7.3",
     "@vercel/analytics": "1.0.2",
     "@vitest/coverage-c8": "0.33.0",
+    "@vitest/ui": "0.34.5",
     "@wordpress/components": "25.8.0",
     "autoprefixer": "10.4.16",
     "babylon": "6.18.0",

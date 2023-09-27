@@ -10,18 +10,19 @@ export default function Example() {
     setOpen(open) {
       if (!open && !confirm.getState().open) {
         return confirm.show();
-        return;
       }
       setOpen(open);
     },
   });
 
-  const lol = dialog.useState("mounted");
+  const internalOpen = dialog.useState("mounted");
   const confirmOpen = confirm.useState("open");
 
   useEffect(() => {
-    console.log(lol, open);
-  }, [lol]);
+    console.log(internalOpen, open);
+  }, [internalOpen, open]);
+
+  const mounted = open;
 
   return (
     <>
@@ -29,18 +30,21 @@ export default function Example() {
         View Cart
       </Ariakit.Button>
 
-      <Ariakit.Dialog
-        store={dialog}
-        backdrop={<div className="backdrop" />}
-        className="dialog"
-      >
-        <div className="header">
-          <Ariakit.DialogHeading className="heading">
-            Your Shopping Cart
-          </Ariakit.DialogHeading>
-          <Ariakit.DialogDismiss className="button secondary dismiss" />
-        </div>
-      </Ariakit.Dialog>
+      {mounted && (
+        <Ariakit.Dialog
+          store={dialog}
+          backdrop={<div className="backdrop" />}
+          // backdrop={false}
+          className="dialog"
+        >
+          <div className="header">
+            <Ariakit.DialogHeading className="heading">
+              Your Shopping Cart
+            </Ariakit.DialogHeading>
+            <Ariakit.DialogDismiss className="button secondary dismiss" />
+          </div>
+        </Ariakit.Dialog>
+      )}
       {confirmOpen && (
         <Ariakit.Dialog
           backdrop={<div className="backdrop" />}

@@ -1,6 +1,12 @@
 import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { init, setProperty, subscribe, sync2 } from "@ariakit/core/utils/store";
+import {
+  getProperty,
+  init,
+  internalSync,
+  setProperty,
+  subscribe,
+} from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -18,7 +24,12 @@ import { flushSync } from "react-dom";
 // The following is a workaround until ESM is supported.
 import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
 const { useSyncExternalStore } = useSyncExternalStoreExports;
-import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
+import {
+  useEvent,
+  useForceUpdate,
+  useLiveRef,
+  useSafeLayoutEffect,
+} from "./hooks.js";
 
 type UseState<S> = {
   /**
@@ -127,6 +138,8 @@ export function useStoreState(
     if (!state) return;
     if (!key) return;
     if (!hasOwnProperty(state, key)) return;
+    // const prop = getProperty(store, key);
+    // if (prop !== undefined) return prop;
     return state[key];
   };
 
@@ -149,11 +162,39 @@ export function useStoreProps<
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
+  const [, forceUpdate] = useForceUpdate();
+
+  if (value !== undefined && value !== store.getState()[key]) {
+    setProperty(
+      store,
+      key,
+      value,
+      // @ts-expect-error
+      false,
+    );
+    forceUpdate();
+  }
+
+  // useStoreState(store, (state) => {
+  //   if (value === undefined) return;
+  //   if (value === state[key]) return;
+  //   setProperty(store, key, value, false);
+  //   return;
+  // });
 
   useSafeLayoutEffect(() => {
+    if (value === undefined) return;
+    let canFlushSync = false;
+    // flushSync throws a warning if called from inside a lifecycle method.
+    // Since the store.sync callback can be called immediately, we'll make it
+    // use the flushSync function only in subsequent calls.
+    queueMicrotask(() => {
+      canFlushSync = true;
+    });
     setProperty(store, key, value);
-    return sync2(store, [key], () => {
+    return internalSync(store, [key], () => {
       setProperty(store, key, value);
+      // safeFlushSync(() => setProperty(store, key, value), canFlushSync);
     });
   }, [store, key, value]);
 
@@ -166,7 +207,7 @@ export function useStoreProps<
     queueMicrotask(() => {
       canFlushSync = true;
     });
-    return sync2(store, [key], (state, prev) => {
+    return internalSync(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
       if (state[key] === prev[key]) return;

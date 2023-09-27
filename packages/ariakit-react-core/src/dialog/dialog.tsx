@@ -326,26 +326,30 @@ export const useDialog = createHook<DialogOptions>(
       // ref.current value. This ensures this effect will re-run when the dialog
       // element reference changes.
       if (!contentElement?.isConnected) return;
-      const element =
-        getElementFromProp(initialFocus, true) ||
-        // If no initial focus is specified, we try to focus the first element
-        // with the autofocus attribute. If it's an Ariakit component, the
-        // Focusable component will consume the autoFocus prop and add the
-        // data-autofocus attribute to the element instead.
-        contentElement.querySelector<HTMLElement>(
-          "[data-autofocus=true],[autofocus]",
-        ) ||
-        // We have to fallback to the first focusable element otherwise portaled
-        // dialogs with preserveTabOrder set to true will not receive focus
-        // properly because the elements aren't tabbable until the dialog
-        // receives focus.
-        getFirstTabbableIn(contentElement, true, portal && preserveTabOrder) ||
-        // Finally, we fallback to the dialog element itself.
-        contentElement;
-      const isElementFocusable = isFocusable(element);
-      if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
-      setAutoFocusEnabled(true);
       queueMicrotask(() => {
+        const element =
+          getElementFromProp(initialFocus, true) ||
+          // If no initial focus is specified, we try to focus the first element
+          // with the autofocus attribute. If it's an Ariakit component, the
+          // Focusable component will consume the autoFocus prop and add the
+          // data-autofocus attribute to the element instead.
+          contentElement.querySelector<HTMLElement>(
+            "[data-autofocus=true],[autofocus]",
+          ) ||
+          // We have to fallback to the first focusable element otherwise portaled
+          // dialogs with preserveTabOrder set to true will not receive focus
+          // properly because the elements aren't tabbable until the dialog
+          // receives focus.
+          getFirstTabbableIn(
+            contentElement,
+            true,
+            portal && preserveTabOrder,
+          ) ||
+          // Finally, we fallback to the dialog element itself.
+          contentElement;
+        const isElementFocusable = isFocusable(element);
+        if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
+        setAutoFocusEnabled(true);
         element.focus();
         // Safari doesn't scroll to the element on focus, so we have to do it
         // manually here.
