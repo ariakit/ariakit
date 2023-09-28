@@ -2,6 +2,7 @@ import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
@@ -16,7 +17,10 @@ import {
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { SelectArrow } from "./select-arrow.js";
-import { SelectContext } from "./select-context.js";
+import {
+  SelectScopedContextProvider,
+  useSelectProviderContext,
+} from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -67,6 +71,15 @@ export const useSelect = createHook<SelectOptions>(
     toggleOnPress = !toggleOnClick,
     ...props
   }) => {
+    const context = useSelectProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Select must receive a `store` prop or be wrapped in a SelectProvider component.",
+    );
+
     toggleOnPress = toggleOnClick ? false : toggleOnPress;
 
     const onKeyDownProp = props.onKeyDown;
@@ -81,6 +94,7 @@ export const useSelect = createHook<SelectOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const { orientation, items, activeId } = store.getState();
       // toggleOnPress
       if (event.key === " " || event.key === "Enter") {
@@ -136,15 +150,17 @@ export const useSelect = createHook<SelectOptions>(
       if (!toggleOnPressProp(event)) return;
       const element = event.currentTarget;
       queueBeforeEvent(element, "focusin", () => {
-        store.setDisclosureElement(element);
-        store.toggle();
+        store?.setDisclosureElement(element);
+        store?.toggle();
       });
     });
 
     props = useWrapElement(
       props,
       (element) => (
-        <SelectContext.Provider value={store}>{element}</SelectContext.Provider>
+        <SelectScopedContextProvider value={store}>
+          {element}
+        </SelectScopedContextProvider>
       ),
       [store],
     );
@@ -207,11 +223,11 @@ export const useSelect = createHook<SelectOptions>(
               // 1password will move focus to the next form element on autofill.
               // In this case, we want to move focus to our custom select
               // element.
-              onFocus={() => store.getState().selectElement?.focus()}
+              onFocus={() => store?.getState().selectElement?.focus()}
               onChange={(event) => {
                 nativeSelectChangedRef.current = true;
                 setAutofill(true);
-                store.setValue(
+                store?.setValue(
                   multiSelectable
                     ? getSelectedValues(event.target)
                     : event.target.value,
@@ -275,13 +291,14 @@ export const useSelect = createHook<SelectOptions>(
  * Renders a select button.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * ```jsx {2}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const Select = createComponent<SelectOptions>((props) => {
@@ -301,32 +318,53 @@ export interface SelectOptions<T extends As = "button">
       "name" | "form" | "required"
     > {
   /**
-   * Object returned by the `useSelectStore` hook.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store: SelectStore;
+  store?: SelectStore;
   /**
-   * Determines whether the select list will be shown when the user presses
-   * arrow keys while the select element is focused.
+   * Determines whether the
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * will be shown when the user presses arrow keys while the select element is
+   * focused.
+   *
+   * Live examples:
+   * - [Select grid](https://ariakit.org/examples/select-grid)
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Determines whether pressing arrow keys will move the active item even
-   * when the select list is hidden.
+   * Determines whether pressing arrow keys will move the active item even when
+   * the [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * is hidden.
    * @default false
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Determines whether `store.toggle()` will be called on click. By default,
-   * the select list will be shown on press (on mouse down and on key down).
-   * If this prop is set to `true`, the select list will be shown on click
-   * instead.
+   * Determines whether
+   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) will be
+   * called on click. By default, the
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * will be shown on press (on mouse down and on key down). If this prop is set
+   * to `true`, the [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * will be shown on click instead.
    * @default false
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Determines whether pressing space, enter or mouse down will toggle the
-   * select list. This will be ignored if `toggleOnClick` is set to `true`.
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components.
+   * This prop will be ignored if
+   * [`toggleOnClick`](https://ariakit.org/reference/select#toggleonclick) is
+   * set to `true`.
    * @default true
    */
   toggleOnPress?: BooleanOrCallback<

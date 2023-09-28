@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { getScrollingElement } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
 import { Popup } from "components/popup.js";
 import { List } from "icons/list.js";
@@ -62,7 +63,10 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
-        anchor.scrollIntoView({ block: "nearest" });
+        const scroller = getScrollingElement(anchor);
+        if (scroller?.tagName !== "HTML") {
+          anchor.scrollIntoView({ block: "nearest" });
+        }
       }
     });
   }, [activeId, mounted, isLarge, children, popoverContents]);

@@ -14,6 +14,7 @@ import {
   isSelfTarget,
 } from "@ariakit/core/utils/events";
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -26,7 +27,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { CompositeContext } from "./composite-context.js";
+import {
+  CompositeContextProvider,
+  useCompositeProviderContext,
+} from "./composite-context.js";
 import type {
   CompositeStore,
   CompositeStoreItem,
@@ -159,12 +163,22 @@ export const useComposite = createHook<CompositeOptions>(
     moveOnKeyPress = true,
     ...props
   }) => {
+    const context = useCompositeProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Composite must receive a `store` prop or be wrapped in a CompositeProvider component.",
+    );
+
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
     const moves = store.useState("moves");
 
     // Focus on the active item element.
     useEffect(() => {
+      if (!store) return;
       if (!moves) return;
       if (!composite) return;
       if (!focusOnMove) return;
@@ -172,13 +186,14 @@ export const useComposite = createHook<CompositeOptions>(
       const itemElement = getEnabledItem(store, activeId)?.element;
       if (!itemElement) return;
       focusIntoView(itemElement);
-    }, [moves, composite, focusOnMove]);
+    }, [store, moves, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
     // element) should receive focus.
     useSafeLayoutEffect(() => {
-      if (!composite) return;
+      if (!store) return;
       if (!moves) return;
+      if (!composite) return;
       const { baseElement, activeId } = store.getState();
       const isSelfAcive = activeId === null;
       if (!isSelfAcive) return;
@@ -201,7 +216,7 @@ export const useComposite = createHook<CompositeOptions>(
       } else {
         baseElement.focus();
       }
-    }, [moves, composite]);
+    }, [store, moves, composite]);
 
     // TODO: Refactor
     const activeId = store.useState("activeId");
@@ -212,6 +227,7 @@ export const useComposite = createHook<CompositeOptions>(
     // so we do it here. This will be the scenario when moving through items, in
     // which case the onFocusCapture below event will stop propgation.
     useSafeLayoutEffect(() => {
+      if (!store) return;
       if (!composite) return;
       if (!virtualFocus) return;
       const previousElement = previousElementRef.current;
@@ -220,7 +236,7 @@ export const useComposite = createHook<CompositeOptions>(
       const activeElement = getEnabledItem(store, activeId)?.element;
       const relatedTarget = activeElement || getActiveElement(previousElement);
       fireBlurEvent(previousElement, { relatedTarget });
-    }, [activeId, virtualFocus, composite]);
+    }, [store, activeId, virtualFocus, composite]);
 
     const onKeyDownCapture = useKeyboardEventProxy(
       store,
@@ -239,6 +255,7 @@ export const useComposite = createHook<CompositeOptions>(
     const onFocusCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const { virtualFocus } = store.getState();
       if (!virtualFocus) return;
       const previousActiveElement = event.relatedTarget as HTMLElement | null;
@@ -262,6 +279,7 @@ export const useComposite = createHook<CompositeOptions>(
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
       if (!composite) return;
+      if (!store) return;
       const { relatedTarget } = event;
       const { virtualFocus } = store.getState();
       if (virtualFocus) {
@@ -293,6 +311,7 @@ export const useComposite = createHook<CompositeOptions>(
     const onBlurCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
       onBlurCaptureProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const { virtualFocus, activeId } = store.getState();
       if (!virtualFocus) return;
       // When virtualFocus is set to true, we move focus from the composite
@@ -361,6 +380,7 @@ export const useComposite = createHook<CompositeOptions>(
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLDivElement>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       if (!isSelfTarget(event)) return;
       const { orientation, items, renderedItems, activeId } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
@@ -373,7 +393,7 @@ export const useComposite = createHook<CompositeOptions>(
           const item = items && findFirstEnabledItemInTheLastRow(items);
           return item?.id;
         }
-        return store.last();
+        return store?.last();
       };
       const keyMap = {
         ArrowUp: (grid || isVertical) && up,
@@ -399,18 +419,19 @@ export const useComposite = createHook<CompositeOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <CompositeContext.Provider value={store}>
+        <CompositeContextProvider value={store}>
           {element}
-        </CompositeContext.Provider>
+        </CompositeContextProvider>
       ),
       [store],
     );
 
-    const activeDescendant = store.useState((state) =>
-      composite && state.virtualFocus
-        ? getEnabledItem(store, state.activeId)?.id
-        : undefined,
-    );
+    const activeDescendant = store.useState((state) => {
+      if (!store) return;
+      if (!composite) return;
+      if (!state.virtualFocus) return;
+      return getEnabledItem(store, state.activeId)?.id;
+    });
 
     props = {
       "aria-activedescendant": activeDescendant,
@@ -460,32 +481,12 @@ export interface CompositeOptions<T extends As = "div">
   /**
    * Object returned by the `useCompositeStore` hook.
    */
-  store: CompositeStore;
+  store?: CompositeStore;
   /**
    * Whether the component should behave as a composite widget. This prop should
    * be set to `false` when combining different composite widgets where only one
    * should behave as such.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default true
-   * @example
-   * ```jsx
-   * // Combining two composite widgets (combobox and menu), where only the
-   * // Combobox component should behave as a composite widget.
-   * const combobox = useComboboxStore();
-   * const menu = useMenuStore({ combobox });
-   * <MenuButton store={menu}>Open Menu</MenuButton>
-   * <Menu store={menu} composite={false}>
-   *   <Combobox store={combobox} />
-   *   <ComboboxList store={combobox}>
-   *     <ComboboxItem value="Apple" />
-   *     <ComboboxItem value="Banana" />
-   *     <ComboboxItem value="Orange" />
-   *   </ComboboxList>
-   * </Menu>
-   * ```
    */
   composite?: boolean;
   /**

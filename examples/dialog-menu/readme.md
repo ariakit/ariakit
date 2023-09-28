@@ -1,8 +1,20 @@
+---
+tags:
+  - Dialog
+  - Menu
+  - Button
+  - Dropdowns
+---
+
 # Dialog with Menu
 
-<p data-description>
-  Showing a nested dropdown <a href="/components/menu">Menu</a> component inside a modal <a href="/components/dialog">Dialog</a> with a simple custom API using React.
-</p>
+<div data-description>
+
+Showing a nested dropdown <a href="/components/menu">Menu</a> component inside a modal <a href="/components/dialog">Dialog</a> with a simple custom API using React.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 

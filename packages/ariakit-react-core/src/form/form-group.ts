@@ -59,8 +59,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormGroupOptions<T extends As = "div">
   extends GroupOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
 }

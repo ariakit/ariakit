@@ -5,27 +5,21 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.TabStoreItem;
 
-export function useTabStoreOptions(props: TabStoreProps) {
-  return useCompositeStoreOptions(props);
-}
-
-export function useTabStoreProps<T extends Store<Core.TabStore>>(
+export function useTabStoreProps<T extends Core.TabStore>(
   store: T,
+  update: () => void,
   props: TabStoreProps,
 ) {
-  store = useCompositeStoreProps(store, props);
+  store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "selectedId", "setSelectedId");
   useStoreProps(store, props, "selectOnMove");
-  const panels = useStore(() => store.panels);
+  const [panels] = useStore(() => store.panels, {});
   return useMemo(() => ({ ...store, panels }), []);
 }
 
@@ -44,9 +38,8 @@ export function useTabStoreProps<T extends Store<Core.TabStore>>(
  * ```
  */
 export function useTabStore(props: TabStoreProps = {}): TabStore {
-  const options = useTabStoreOptions(props);
-  const store = useStore(() => Core.createTabStore({ ...props, ...options }));
-  return useTabStoreProps(store, props);
+  const [store, update] = useStore(Core.createTabStore, props);
+  return useTabStoreProps(store, update, props);
 }
 
 export type TabStoreItem = Item;

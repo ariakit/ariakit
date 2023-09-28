@@ -13,13 +13,22 @@ import type {
 import { createHovercardStore } from "../hovercard/hovercard-store.js";
 import { applyState, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  pick,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type {
   BivariantCallback,
   PickRequired,
   SetState,
   SetStateAction,
 } from "../utils/types.js";
+import type { MenuBarStore } from "./menu-bar-store.js";
 
 type Values = Record<
   string,
@@ -34,18 +43,26 @@ export function createMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function createMenuStore({
   combobox,
+  parent,
+  menubar,
   ...props
 }: MenuStoreProps = {}): MenuStore {
+  const parentIsMenubar = !!menubar && !parent;
+
   const store = mergeStore(
     props.store,
-    combobox?.omit(
+    pick(parent, ["values"]),
+    omit(combobox, [
       "arrowElement",
       "anchorElement",
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
+
+  throwOnConflictingProps(props, store);
+
   const syncState = store.getState();
 
   const composite = createCompositeStore({
@@ -66,6 +83,11 @@ export function createMenuStore({
       syncState.placement,
       "bottom-start" as const,
     ),
+    timeout: defaultValue(
+      props.timeout,
+      syncState.timeout,
+      parentIsMenubar ? 0 : 150,
+    ),
     hideTimeout: defaultValue(props.hideTimeout, syncState.hideTimeout, 0),
   });
 
@@ -83,20 +105,33 @@ export function createMenuStore({
 
   const menu = createStore(initialState, composite, hovercard, store);
 
-  menu.setup(() =>
-    menu.sync(
-      (state) => {
-        if (state.mounted) return;
-        menu.setState("activeId", null);
-      },
-      ["mounted"],
-    ),
+  setup(menu, () =>
+    sync(menu, ["mounted"], (state) => {
+      if (state.mounted) return;
+      menu.setState("activeId", null);
+    }),
+  );
+
+  setup(menu, () =>
+    sync(parent, ["orientation"], (state) => {
+      menu.setState(
+        "placement",
+        state.orientation === "vertical" ? "right-start" : "bottom-start",
+      );
+    }),
   );
 
   return {
     ...composite,
     ...hovercard,
     ...menu,
+    combobox,
+    parent,
+    menubar,
+    hideAll: () => {
+      hovercard.hide();
+      parent?.hideAll();
+    },
     setInitialFocus: (value) => menu.setState("initialFocus", value),
     setValues: (values) => menu.setState("values", values),
     setValue: (name, value) => {
@@ -143,8 +178,13 @@ export interface MenuStoreState<T extends Values = Values>
 }
 
 export interface MenuStoreFunctions<T extends Values = Values>
-  extends CompositeStoreFunctions,
+  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
+    CompositeStoreFunctions,
     HovercardStoreFunctions {
+  /**
+   * Hides the menu and all its parent menus.
+   */
+  hideAll: () => void;
   /**
    * Sets the `initialFocus` state.
    */
@@ -184,7 +224,16 @@ export interface MenuStoreOptions<T extends Values = Values>
    * with a menu (e.g., dropdown menu with a search input). The stores will
    * share the same state.
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
+  /**
+   * A reference to a parent menu store. This should be used on nested menus.
+   */
+  parent?: MenuStore | null;
+  /**
+   * A reference to a menu bar store. This should be used when rendering menus
+   * inside a menu bar.
+   */
+  menubar?: MenuBarStore | null;
   /**
    * The default values for the `values` state.
    * @default {}

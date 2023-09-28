@@ -4,22 +4,16 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
-export function useMenuBarStoreOptions(props: MenuBarStoreProps) {
-  return useCompositeStoreOptions(props);
-}
-
-export function useMenuBarStoreProps<T extends MenuBarStore>(
+export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
   store: T,
+  update: () => void,
   props: MenuBarStoreProps,
 ) {
-  return useCompositeStoreProps(store, props);
+  return useCompositeStoreProps(store, update, props);
 }
 
 /**
@@ -32,11 +26,8 @@ export function useMenuBarStoreProps<T extends MenuBarStore>(
  * ```
  */
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
-  const options = useMenuBarStoreOptions(props);
-  const store = useStore(() =>
-    Core.createMenuBarStore({ ...props, ...options }),
-  );
-  return useMenuBarStoreProps(store, props);
+  const [store, update] = useStore(Core.createMenuBarStore, props);
+  return useMenuBarStoreProps(store, update, props);
 }
 
 export interface MenuBarStoreState

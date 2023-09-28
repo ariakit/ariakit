@@ -5,12 +5,7 @@
     opacity-0
     [transform:translateY(-16px)]
     transition-[opacity,transform]
-  ;
-}
-
-.popover[data-enter] {
-  @apply
-    opacity-100
-    [transform:translateY(0)]
+    data-[enter]:opacity-100
+    data-[enter]:[transform:translateY(0)]
   ;
 }

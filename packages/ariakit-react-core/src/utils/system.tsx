@@ -3,6 +3,7 @@ import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { useMergeRefs } from "./hooks.js";
 import { getRefProperty, mergeProps } from "./misc.js";
+import type { Store } from "./store.js";
 import type {
   Component,
   HTMLProps,
@@ -109,6 +110,16 @@ export function createElement(
   let element: React.ReactElement;
   const mergedRef = useMergeRefs(props.ref, getRefProperty(render));
 
+  if (process.env.NODE_ENV !== "production") {
+    React.useEffect(() => {
+      if (!As) return;
+      console.warn(
+        "The `as` prop is deprecated. Use the `render` prop instead.",
+        "See https://ariakit.org/guide/composition",
+      );
+    }, [As]);
+  }
+
   if (As && typeof As !== "string") {
     element = <As {...rest} render={render} />;
   } else if (React.isValidElement<AnyObject>(render)) {
@@ -118,6 +129,14 @@ export function createElement(
     // @ts-expect-error
     element = render(rest) as React.ReactElement;
   } else if (isRenderProp(props.children)) {
+    if (process.env.NODE_ENV !== "production") {
+      React.useEffect(() => {
+        console.warn(
+          "The `children` prop as a function is deprecated. Use the `render` prop instead.",
+          "See https://ariakit.org/guide/composition",
+        );
+      }, []);
+    }
     const { children, ...otherProps } = rest;
     element = props.children(otherProps) as React.ReactElement;
   } else if (As) {
@@ -165,4 +184,70 @@ export function createHook<O extends Options>(
     return copy;
   };
   return useRole as Hook<O>;
+}
+
+type StoreProvider<T extends Store> = React.ComponentType<{
+  value: T | undefined;
+  children?: React.ReactNode;
+}>;
+
+/**
+ * Creates an Ariakit store context with hooks and provider components.
+ */
+export function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+) {
+  const context = React.createContext<T | undefined>(undefined);
+  const scopedContext = React.createContext<T | undefined>(undefined);
+
+  const useContext = () => React.useContext(context);
+
+  const useScopedContext = (onlyScoped = false) => {
+    const scoped = React.useContext(scopedContext);
+    const store = useContext();
+    if (onlyScoped) return scoped;
+    return scoped || store;
+  };
+
+  const useProviderContext = () => {
+    const scoped = React.useContext(scopedContext);
+    const store = useContext();
+    if (scoped && scoped === store) return;
+    return store;
+  };
+
+  const ContextProvider = (
+    props: React.ComponentPropsWithoutRef<typeof context.Provider>,
+  ) => {
+    return providers.reduceRight(
+      (children, Provider) => <Provider {...props}>{children}</Provider>,
+      <context.Provider {...props} />,
+    );
+  };
+
+  const ScopedContextProvider = (
+    props: React.ComponentPropsWithoutRef<typeof scopedContext.Provider>,
+  ) => {
+    return (
+      <ContextProvider {...props}>
+        {scopedProviders.reduceRight(
+          (children, Provider) => (
+            <Provider {...props}>{children}</Provider>
+          ),
+          <scopedContext.Provider {...props} />,
+        )}
+      </ContextProvider>
+    );
+  };
+
+  return {
+    context,
+    scopedContext,
+    useContext,
+    useScopedContext,
+    useProviderContext,
+    ContextProvider,
+    ScopedContextProvider,
+  };
 }

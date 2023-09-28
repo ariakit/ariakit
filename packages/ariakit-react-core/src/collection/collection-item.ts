@@ -1,11 +1,10 @@
-import type { RefCallback } from "react";
-import { useCallback, useContext, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity } from "@ariakit/core/utils/misc";
 import { useId, useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CollectionContext } from "./collection-context.js";
+import { useCollectionContext } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
 /**
@@ -30,22 +29,20 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     element,
     ...props
   }) => {
-    const context = useContext(CollectionContext);
+    const context = useCollectionContext();
     store = store || context;
 
     const id = useId(props.id);
-    const unrenderItem = useRef<() => void>();
+    const ref = useRef<HTMLDivElement>(element);
 
-    const ref = useCallback<RefCallback<HTMLElement>>(
-      (element) => {
-        if (!element || !id || !shouldRegisterItem) {
-          return unrenderItem.current?.();
-        }
-        const item = getItem({ id, element });
-        unrenderItem.current = store?.renderItem(item);
-      },
-      [id, shouldRegisterItem, getItem, store],
-    );
+    useEffect(() => {
+      const element = ref.current;
+      if (!id) return;
+      if (!element) return;
+      if (!shouldRegisterItem) return;
+      const item = getItem({ id, element });
+      return store?.renderItem(item);
+    }, [id, shouldRegisterItem, getItem, store]);
 
     props = {
       ...props,

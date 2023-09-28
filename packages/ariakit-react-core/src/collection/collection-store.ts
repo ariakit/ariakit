@@ -3,21 +3,18 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.CollectionStoreItem;
 
-export function useCollectionStoreOptions<T extends Item = Item>(
-  _props: CollectionStoreProps<T>,
-): Partial<CollectionStoreOptions<T>> {
-  return {};
-}
-
-export function useCollectionStoreProps<T extends CollectionStore>(
+export function useCollectionStoreProps<T extends Core.CollectionStore>(
   store: T,
+  update: () => void,
   props: CollectionStoreProps,
 ) {
+  useUpdateEffect(update, [props.store]);
   useStoreProps(store, props, "items", "setItems");
   return store;
 }
@@ -35,6 +32,7 @@ export function useCollectionStoreProps<T extends CollectionStore>(
  * </Collection>
  * ```
  */
+
 export function useCollectionStore<T extends Item = Item>(
   props: PickRequired<CollectionStoreProps<T>, "items" | "defaultItems">,
 ): CollectionStore<T>;
@@ -46,11 +44,8 @@ export function useCollectionStore(
 export function useCollectionStore(
   props: CollectionStoreProps = {},
 ): CollectionStore {
-  const options = useCollectionStoreOptions(props);
-  const store = useStore(() =>
-    Core.createCollectionStore({ ...props, ...options }),
-  );
-  return useCollectionStoreProps(store, props);
+  const [store, update] = useStore(Core.createCollectionStore, props);
+  return useCollectionStoreProps(store, update, props);
 }
 
 export type CollectionStoreItem = Core.CollectionStoreItem;

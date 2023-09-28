@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
@@ -9,7 +8,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormFieldOptions } from "./form-field.js";
 import { useFormField } from "./form-field.js";
 
@@ -30,13 +29,13 @@ import { useFormField } from "./form-field.js";
  */
 export const useFormCheckbox = createHook<FormCheckboxOptions>(
   ({ store, name: nameProp, value, checked, defaultChecked, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormCheckbox must be wrapped in a Form component",
+        "FormCheckbox must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;
@@ -64,7 +63,11 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { acceptTerms: false } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     acceptTerms: false,
+ *   },
+ * });
  * <Form store={form}>
  *   <label>
  *     <FormCheckbox name={form.names.acceptTerms} />

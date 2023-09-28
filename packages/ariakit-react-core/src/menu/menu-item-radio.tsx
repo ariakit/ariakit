@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
@@ -10,7 +9,10 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuContext, MenuItemCheckedContext } from "./menu-context.js";
+import {
+  MenuItemCheckedContext,
+  useMenuScopedContext,
+} from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
@@ -40,7 +42,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     hideOnClick = false,
     ...props
   }) => {
-    const context = useContext(MenuContext);
+    const context = useMenuScopedContext();
     store = store || context;
 
     invariant(
@@ -90,16 +92,17 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore({ defaultValues: { fruit: "apple" } });
- * <MenuButton store={menu}>Fruit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItemRadio name="fruit" value="apple">
- *     Apple
- *   </MenuItemRadio>
- *   <MenuItemRadio name="fruit" value="orange">
- *     Orange
- *   </MenuItemRadio>
- * </Menu>
+ * <MenuProvider defaultValues={{ fruit: "apple" }}>
+ *   <MenuButton>Fruit</MenuButton>
+ *   <Menu>
+ *     <MenuItemRadio name="fruit" value="apple">
+ *       Apple
+ *     </MenuItemRadio>
+ *     <MenuItemRadio name="fruit" value="orange">
+ *       Orange
+ *     </MenuItemRadio>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
@@ -117,12 +120,16 @@ export interface MenuItemRadioOptions<T extends As = "div">
   extends MenuItemOptions<T>,
     Omit<RadioOptions<T>, "store"> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
   /**
-   * MenuItemRadio's name as in `menu.values`.
+   * MenuItemRadio's name as specified in the
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
    */
   name: string;
   /**

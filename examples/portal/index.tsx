@@ -1,5 +1,5 @@
-import { Portal } from "@ariakit/react";
 import "./style.css";
+import { Portal } from "@ariakit/react";
 
 export default function Example() {
   return (

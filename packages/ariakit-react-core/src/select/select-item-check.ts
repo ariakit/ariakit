@@ -33,18 +33,19 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple">
- *     <SelectItemCheck />
- *     Apple
- *   </SelectItem>
- *   <SelectItem value="Orange">
- *     <SelectItemCheck />
- *     Orange
- *   </SelectItem>
- * </SelectPopover>
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple">
+ *       <SelectItemCheck />
+ *       Apple
+ *     </SelectItem>
+ *     <SelectItem value="Orange">
+ *       <SelectItemCheck />
+ *       Orange
+ *     </SelectItem>
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
@@ -61,14 +62,19 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectItemCheckOptions<T extends As = "span">
   extends CheckboxCheckOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
   /**
    * Whether the check mark should be shown. This value is automatically
-   * inferred from the parent `SelectItem` component. Manually setting this prop
-   * will override the inferred value.
+   * inferred from the parent
+   * [`SelectItem`](https://ariakit.org/reference/select-item) component.
+   * Manually setting this prop will override the inferred value.
    */
   checked?: boolean;
 }

@@ -1,6 +1,13 @@
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
 /**
@@ -11,8 +18,10 @@ export function createDisclosureStore(
 ): DisclosureStore {
   const store = mergeStore(
     props.store,
-    props.disclosure?.omit("contentElement", "disclosureElement"),
+    omit(props.disclosure, ["contentElement", "disclosureElement"]),
   );
+
+  throwOnConflictingProps(props, store);
 
   const syncState = store?.getState();
 
@@ -36,36 +45,27 @@ export function createDisclosureStore(
 
   const disclosure = createStore(initialState, store);
 
-  disclosure.setup(() =>
-    disclosure.sync(
-      (state) => {
-        if (state.animated) return;
-        // Reset animating to false when animation is disabled.
-        disclosure.setState("animating", false);
-      },
-      ["animated", "animating"],
-    ),
+  setup(disclosure, () =>
+    sync(disclosure, ["animated", "animating"], (state) => {
+      if (state.animated) return;
+      // Reset animating to false when animation is disabled.
+      disclosure.setState("animating", false);
+    }),
   );
 
-  disclosure.setup(() =>
-    disclosure.sync(
-      (state, prev) => {
-        if (!state.animated) return;
-        const mounting = state === prev;
-        const animating = mounting ? state.open : state.open !== prev.open;
-        disclosure.setState("animating", animating);
-      },
-      ["open", "animated"],
-    ),
+  setup(disclosure, () =>
+    sync(disclosure, ["open", "animated"], (state, prev) => {
+      if (!state.animated) return;
+      const mounting = state === prev;
+      const animating = mounting ? state.open : state.open !== prev.open;
+      disclosure.setState("animating", animating);
+    }),
   );
 
-  disclosure.setup(() =>
-    disclosure.sync(
-      (state) => {
-        disclosure.setState("mounted", state.open || state.animating);
-      },
-      ["open", "animating"],
-    ),
+  setup(disclosure, () =>
+    sync(disclosure, ["open", "animating"], (state) => {
+      disclosure.setState("mounted", state.open || state.animating);
+    }),
   );
 
   return {
@@ -198,7 +198,7 @@ export interface DisclosureStoreOptions
    * `disclosureElement` won't be synced. For that, use the `store` prop
    * instead.
    */
-  disclosure?: DisclosureStore;
+  disclosure?: DisclosureStore | null;
 }
 
 export type DisclosureStoreProps = DisclosureStoreOptions &

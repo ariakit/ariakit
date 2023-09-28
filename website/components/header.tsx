@@ -6,7 +6,7 @@ import { HeaderThemeSwitch } from "./header-theme-switch.js";
 import { HeaderUpdates } from "./header-updates.jsx";
 import { HeaderVersionSelect } from "./header-version-select.js";
 
-let cache: Record<string, Record<string, string>> | null = null;
+let versionsCache: Record<string, Record<string, string>> | null = null;
 
 function fetchPackage(name: string) {
   const buildId = process.env.NEXT_BUILD_ID;
@@ -17,8 +17,8 @@ function fetchPackage(name: string) {
 }
 
 async function fetchVersions() {
-  if (process.env.NODE_ENV !== "production" && cache) {
-    return cache;
+  if (versionsCache) {
+    return versionsCache;
   }
   const [react] = await Promise.all([
     fetchPackage("@ariakit/react"),
@@ -37,14 +37,14 @@ async function fetchVersions() {
     // "@ariakit/dom": domTags,
   };
 
-  cache = versions;
+  versionsCache = versions;
 
   return versions;
 }
 
 export async function Header() {
   const versions = await fetchVersions();
-  const updates = getUpdates();
+  const updates = await getUpdates();
   return (
     <div className="sticky left-0 top-0 z-40 flex w-full justify-center bg-gray-50 dark:bg-gray-800 md:backdrop-blur md:supports-backdrop-blur:bg-gray-50/80 md:dark:supports-backdrop-blur:bg-gray-800/80">
       <div className="flex w-full max-w-[1440px] items-center gap-4 px-3 py-2 md:px-4 md:py-4">
@@ -60,7 +60,7 @@ export async function Header() {
           <HeaderNav />
         </div>
         <div className="flex-1" />
-        <HeaderUpdates updates={updates.slice(0, 9)} />
+        <HeaderUpdates updates={updates.slice(0, 15)} />
         <HeaderThemeSwitch />
       </div>
     </div>

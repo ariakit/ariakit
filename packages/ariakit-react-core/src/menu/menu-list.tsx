@@ -1,5 +1,6 @@
 import type { KeyboardEvent } from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { CompositeOptions } from "../composite/composite.js";
@@ -15,7 +16,10 @@ import {
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import {
+  MenuScopedContextProvider,
+  useMenuProviderContext,
+} from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -24,8 +28,8 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
   const [id, setId] = useState<string | undefined>(undefined);
   const label = props["aria-label"];
 
-  const disclosureElement = store.useState("disclosureElement");
-  const contentElement = store.useState("contentElement");
+  const disclosureElement = useStoreState(store, "disclosureElement");
+  const contentElement = useStoreState(store, "contentElement");
 
   useEffect(() => {
     const disclosure = disclosureElement;
@@ -58,9 +62,18 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * ```
  */
 export const useMenuList = createHook<MenuListOptions>(
-  ({ store, alwaysVisible, composite = true, ...props }) => {
-    const parentMenu = useContext(MenuContext);
-    const parentMenuBar = useContext(MenuBarContext);
+  ({ store, alwaysVisible, composite, ...props }) => {
+    const context = useMenuProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "MenuList must receive a `store` prop or be wrapped in a MenuProvider component.",
+    );
+
+    const parentMenu = store.parent;
+    const parentMenuBar = store.menubar;
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
@@ -72,9 +85,9 @@ export const useMenuList = createHook<MenuListOptions>(
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
-    const isMenuBarHorizontal = !!useStoreState(
+    const isMenuBarHorizontal = useStoreState(
       parentMenuBar,
-      (state) => state.orientation !== "vertical",
+      (state) => !!state && state.orientation !== "vertical",
     );
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
@@ -91,7 +104,7 @@ export const useMenuList = createHook<MenuListOptions>(
         if (action?.()) {
           event.stopPropagation();
           event.preventDefault();
-          return store.hide();
+          return store?.hide();
         }
       }
       if (parentMenuBar) {
@@ -126,7 +139,9 @@ export const useMenuList = createHook<MenuListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <MenuContext.Provider value={store}>{element}</MenuContext.Provider>
+        <MenuScopedContextProvider value={store}>
+          {element}
+        </MenuScopedContextProvider>
       ),
       [store],
     );
@@ -146,6 +161,9 @@ export const useMenuList = createHook<MenuListOptions>(
       onKeyDown,
     };
 
+    const hasCombobox = !!store.combobox;
+    composite = composite ?? !hasCombobox;
+
     if (composite) {
       props = {
         role: "menu",
@@ -155,7 +173,7 @@ export const useMenuList = createHook<MenuListOptions>(
     }
 
     props = useComposite({ store, composite, ...props });
-    props = useCompositeTypeahead({ store, ...props });
+    props = useCompositeTypeahead({ store, typeahead: !hasCombobox, ...props });
 
     return props;
   },
@@ -166,12 +184,13 @@ export const useMenuList = createHook<MenuListOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <MenuList store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </MenuList>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <MenuList>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </MenuList>
+ * </MenuProvider>
  * ```
  */
 export const MenuList = createComponent<MenuListOptions>((props) => {
@@ -188,9 +207,13 @@ export interface MenuListOptions<T extends As = "div">
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * context will be used.
    */
-  store: MenuStore;
+  store?: MenuStore;
 }
 
 export type MenuListProps<T extends As = "div"> = Props<MenuListOptions<T>>;

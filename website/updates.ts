@@ -1,11 +1,107 @@
 export interface UpdateItem {
   title: string;
-  type: "page" | "release";
+  type: "page" | "release" | "newsletter";
   href: string;
   dateTime: string;
 }
 
 const updates: UpdateItem[] = [
+  {
+    title: "Improved docs: Animated Select",
+    type: "page",
+    href: "/examples/select-animated",
+    dateTime: "2023-09-19T16:00Z",
+  },
+  {
+    title: "Improved docs: Submenu",
+    type: "page",
+    href: "/examples/menu-nested",
+    dateTime: "2023-09-14T17:11Z",
+  },
+  {
+    title: "Improved example: ComboboxGroup",
+    type: "page",
+    href: "/examples/combobox-group",
+    dateTime: "2023-09-11T02:58Z",
+  },
+  {
+    title: "New guide: Component providers",
+    type: "page",
+    href: "/guide/component-providers",
+    dateTime: "2023-09-10T21:07Z",
+  },
+  {
+    title: "Improved docs: Command",
+    type: "page",
+    href: "/reference/command",
+    dateTime: "2023-08-20T17:17Z",
+  },
+  {
+    title: "Improved docs: Focusable",
+    type: "page",
+    href: "/reference/focusable",
+    dateTime: "2023-08-12T02:27Z",
+  },
+  {
+    title: "Improved docs: Multi-selectable Combobox",
+    type: "page",
+    href: "/examples/combobox-multiple",
+    dateTime: "2023-08-09T23:27Z",
+  },
+  {
+    title: "New guide: Coding guidelines",
+    type: "page",
+    href: "/guide/coding-guidelines",
+    dateTime: "2023-08-07T11:46Z",
+  },
+  {
+    title: "New example: Combobox filtering",
+    type: "page",
+    href: "/examples/combobox-filtering",
+    dateTime: "2023-08-06T11:45Z",
+  },
+  {
+    title: "Improved docs: Combobox with links",
+    type: "page",
+    href: "/examples/combobox-links",
+    dateTime: "2023-08-05T10:40Z",
+  },
+  {
+    title: "New example: Menu with Tooltip",
+    type: "page",
+    href: "/examples/menu-tooltip",
+    dateTime: "2023-08-04T12:33Z",
+  },
+  {
+    title: "Improved docs: ComboboxGroup",
+    type: "page",
+    href: "/examples/combobox-group",
+    dateTime: "2023-07-30T02:09Z",
+  },
+  {
+    title: "Improved docs: ComboboxDisclosure",
+    type: "page",
+    href: "/examples/combobox-disclosure",
+    dateTime: "2023-07-28T19:24Z",
+  },
+  {
+    title: "Improved docs: ComboboxCancel",
+    type: "page",
+    href: "/examples/combobox-cancel",
+    dateTime: "2023-07-28T18:57Z",
+  },
+  {
+    title: "Improved docs: Animated Combobox",
+    type: "page",
+    href: "/examples/combobox-animated",
+    dateTime: "2023-07-27T18:40Z",
+  },
+  {
+    title: "Improved docs: Getting started",
+    type: "page",
+    href: "/guide/getting-started",
+    dateTime: "2023-07-25T20:16Z",
+  },
   {
     title: "Improved docs: Checkbox",
     type: "page",

@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 
 test("scroll into view", async ({ page }) => {
   test.info().snapshotSuffix = "";
-  await getButton(page).click();
+  await getButton(page).click({ delay: 50 });
   await expect(getPopover(page)).toBeFocused();
   for (let i = 0; i < 7; i++) {
     await page.keyboard.press("ArrowDown");
@@ -33,6 +33,7 @@ test("scroll into view on open", async ({ page }) => {
   await expect(getOption(page, "Chips")).toBeInViewport();
   await getPopover(page).evaluate((el) => el.scrollTo({ top: 0 }));
   await page.keyboard.press("Escape");
+  await expect(getOption(page, "Chips")).not.toBeInViewport();
   await page.keyboard.press("Enter");
   await expect(getOption(page, "Chips")).toBeInViewport();
   expect(await getPopover(page).screenshot()).toMatchSnapshot();

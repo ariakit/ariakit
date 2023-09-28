@@ -36,17 +36,24 @@ export function isElementMarked(element: Element, id?: string) {
   } while (true);
 }
 
-export function markTreeOutside(dialogId: string, ...elements: Elements) {
+export function markTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(
+    id,
     elements,
     (element) => {
       if (isBackdrop(element, ...ids)) return;
-      cleanups.unshift(markElement(element, dialogId));
+      cleanups.unshift(markElement(element, id));
     },
-    (ancestor) => cleanups.unshift(markAncestor(ancestor, dialogId)),
+    (ancestor, element) => {
+      // See https://github.com/ariakit/ariakit/issues/2687
+      const isAnotherDialogAncestor =
+        element.hasAttribute("data-dialog") && element.id !== id;
+      if (isAnotherDialogAncestor) return;
+      cleanups.unshift(markAncestor(ancestor, id));
+    },
   );
 
   const restoreAccessibilityTree = () => {

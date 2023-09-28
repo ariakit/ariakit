@@ -10,7 +10,12 @@ import {
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { chain, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import {
+  chain,
+  invariant,
+  isFalsyBooleanCallback,
+} from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
@@ -25,6 +30,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import {
+  HovercardScopedContextProvider,
+  useHovercardProviderContext,
+} from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 import type { Point } from "./utils/polygon.js";
 import {
@@ -56,7 +65,10 @@ function isMovingOnHovercard(
 // The autoFocusOnShow state will be set to true when the hovercard disclosure
 // element is clicked. We have to reset it to false when the hovercard element
 // gets hidden or is unmounted.
-function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
+function useAutoFocusOnShow({
+  store,
+  ...props
+}: HovercardProps & { store: HovercardStore }) {
   const open = store.useState("open");
   const openRef = useLiveRef(open);
 
@@ -88,7 +100,10 @@ function useAutoFocusOnShow({ store, ...props }: HovercardProps) {
 
 // When the hovercard element has focus, we should move focus back to the anchor
 // element when the hovercard gets hidden (or unmounted).
-function useAutoFocusOnHide({ store, ...props }: HovercardProps) {
+function useAutoFocusOnHide({
+  store,
+  ...props
+}: HovercardProps & { store: HovercardStore }) {
   const [autoFocusOnHide, setAutoFocusOnHide] = useState(false);
   const mounted = store.useState("mounted");
 
@@ -111,12 +126,9 @@ function useAutoFocusOnHide({ store, ...props }: HovercardProps) {
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    return store.sync(
-      (state) => {
-        finalFocusRef.current = state.anchorElement;
-      },
-      ["anchorElement"],
-    );
+    return sync(store, ["anchorElement"], (state) => {
+      finalFocusRef.current = state.anchorElement;
+    });
   }, []);
 
   props = {
@@ -154,6 +166,15 @@ export const useHovercard = createHook<HovercardOptions>(
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
   }) => {
+    const context = useHovercardProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Hovercard must receive a `store` prop or be wrapped in a HovercardProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
     const hideTimeoutRef = useRef(0);
@@ -178,6 +199,7 @@ export const useHovercard = createHook<HovercardOptions>(
       const element = ref.current;
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
+        if (!store) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
         const target = event.target as Node | null;
@@ -221,7 +243,7 @@ export const useHovercard = createHook<HovercardOptions>(
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
         hideTimeoutRef.current = window.setTimeout(() => {
           hideTimeoutRef.current = 0;
-          store.hide();
+          store?.hide();
         }, hideTimeout ?? timeout);
       };
       return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
@@ -303,11 +325,13 @@ export const useHovercard = createHook<HovercardOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <NestedHovercardContext.Provider value={registerNestedHovercard}>
-          {element}
-        </NestedHovercardContext.Provider>
+        <HovercardScopedContextProvider value={store}>
+          <NestedHovercardContext.Provider value={registerNestedHovercard}>
+            {element}
+          </NestedHovercardContext.Provider>
+        </HovercardScopedContextProvider>
       ),
-      [registerNestedHovercard],
+      [store, registerNestedHovercard],
     );
 
     props = {
@@ -329,7 +353,11 @@ export const useHovercard = createHook<HovercardOptions>(
         // Hide again on the next frame to avoid the popover being shown again
         // when the user presses the escape key and trigger focusVisible on the
         // anchor element (which is the case of tooltip anchor).
-        requestAnimationFrame(() => requestAnimationFrame(store.hide));
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            store?.hide();
+          });
+        });
         return true;
       },
     });
@@ -340,13 +368,15 @@ export const useHovercard = createHook<HovercardOptions>(
 
 /**
  * Renders a hovercard element, which is a popover that's usually made visible
- * by hovering the mouse cursor over an anchor element (`HovercardAnchor`).
+ * by hovering the mouse cursor over a
+ * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor).
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
- * <Hovercard store={hovercard}>Details</Hovercard>
+ * <HovercardProvider>
+ *   <HovercardAnchor>@username</HovercardAnchor>
+ *   <Hovercard>Details</Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const Hovercard = createComponent<HovercardOptions>((props) => {
@@ -361,9 +391,13 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardOptions<T extends As = "div">
   extends PopoverOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
-  store: HovercardStore;
+  store?: HovercardStore;
   /**
    * Whether to hide the popover when the mouse cursor leaves any hovercard
    * element, including the hovercard popover itself, but also the anchor

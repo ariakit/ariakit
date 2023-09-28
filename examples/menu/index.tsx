@@ -1,15 +1,14 @@
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
-  const menu = Ariakit.useMenuStore();
   return (
-    <>
-      <Ariakit.MenuButton store={menu} className="button">
+    <Ariakit.MenuProvider>
+      <Ariakit.MenuButton className="button">
         Actions
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
-      <Ariakit.Menu store={menu} gutter={8} className="menu">
+      <Ariakit.Menu gutter={8} className="menu">
         <Ariakit.MenuItem className="menu-item" onClick={() => alert("Edit")}>
           Edit
         </Ariakit.MenuItem>
@@ -20,6 +19,6 @@ export default function Example() {
         <Ariakit.MenuSeparator className="separator" />
         <Ariakit.MenuItem className="menu-item">Report</Ariakit.MenuItem>
       </Ariakit.Menu>
-    </>
+    </Ariakit.MenuProvider>
   );
 }

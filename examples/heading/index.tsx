@@ -1,5 +1,5 @@
-import { Heading, HeadingLevel } from "@ariakit/react";
 import "./style.css";
+import { Heading, HeadingLevel } from "@ariakit/react";
 
 export default function Example() {
   return (

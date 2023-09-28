@@ -158,7 +158,7 @@ module.exports = {
             };
             return acc;
           },
-          {}
+          {},
         );
 
         addUtilities(dropShadowUtils);
@@ -171,7 +171,7 @@ module.exports = {
             };
             return acc;
           },
-          {}
+          {},
         );
 
         addUtilities(boxShadowUtils);
@@ -183,12 +183,13 @@ module.exports = {
           },
           ".ariakit-outline-input": {
             outline: `2px solid ${theme("colors.blue.600")}`,
+            outlineOffset: "0px",
           },
         });
 
         addVariant(
           "supports-backdrop-blur",
-          "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))"
+          "@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0))",
         );
 
         addVariant("enter", "&[data-enter]");

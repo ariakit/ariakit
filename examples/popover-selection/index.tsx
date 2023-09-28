@@ -1,6 +1,6 @@
+import "./style.css";
 import { useEffect, useRef } from "react";
 import * as Ariakit from "@ariakit/react";
-import "./style.css";
 
 function hasSelectionWithin(element?: Element | null) {
   const selection = element?.ownerDocument.getSelection();
@@ -14,7 +14,7 @@ export default function Example() {
   const popoverRef = useRef<HTMLDivElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
 
-  const popover = Ariakit.usePopoverStore({ placement: "top" });
+  const popover = Ariakit.usePopoverStore();
 
   useEffect(() => {
     const popoverContainer = popoverRef.current;
@@ -44,24 +44,28 @@ export default function Example() {
 
   return (
     <div>
-      <Ariakit.Popover
-        store={popover}
-        autoFocusOnShow={false}
-        hideOnInteractOutside={() => !hasSelectionWithin(paragraphRef.current)}
-        ref={popoverRef}
-        className="popover"
-        getAnchorRect={() => {
-          const selection = paragraphRef.current?.ownerDocument.getSelection();
-          if (!selection?.rangeCount) return null;
-          const range = selection.getRangeAt(0);
-          return range.getBoundingClientRect();
-        }}
-      >
-        <Ariakit.PopoverArrow size={24} className="arrow" />
-        <Ariakit.Button className="button secondary">Bookmark</Ariakit.Button>
-        <Ariakit.Button className="button secondary">Edit</Ariakit.Button>
-        <Ariakit.Button className="button secondary">Share</Ariakit.Button>
-      </Ariakit.Popover>
+      <Ariakit.PopoverProvider store={popover} placement="top">
+        <Ariakit.Popover
+          autoFocusOnShow={false}
+          hideOnInteractOutside={() =>
+            !hasSelectionWithin(paragraphRef.current)
+          }
+          ref={popoverRef}
+          className="popover"
+          getAnchorRect={() => {
+            const selection =
+              paragraphRef.current?.ownerDocument.getSelection();
+            if (!selection?.rangeCount) return null;
+            const range = selection.getRangeAt(0);
+            return range.getBoundingClientRect();
+          }}
+        >
+          <Ariakit.PopoverArrow size={24} className="arrow" />
+          <Ariakit.Button className="button secondary">Bookmark</Ariakit.Button>
+          <Ariakit.Button className="button secondary">Edit</Ariakit.Button>
+          <Ariakit.Button className="button secondary">Share</Ariakit.Button>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
       <p ref={paragraphRef}>
         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odio, sed fuga
         necessitatibus aliquid expedita atque? Doloremque ea sequi totam

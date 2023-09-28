@@ -3,10 +3,10 @@ import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "build-pages/get-example-deps.js";
-import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
-import pagesIndex from "build-pages/index.js";
+import pageIndex from "build-pages/index.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import type { Page } from "build-pages/types.js";
 import { Preview } from "components/preview.jsx";
@@ -26,8 +26,8 @@ export function generateStaticParams() {
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
 
-function getPageNames({ sourceContext, pageFileRegex }: Page) {
-  return getPageEntryFiles(sourceContext, pageFileRegex)
+function getPageNames(page: Page) {
+  return getPageEntryFilesCached(page)
     .filter((path) => !path.startsWith(process.cwd()))
     .map(getPageName);
 }
@@ -41,7 +41,7 @@ async function parseStyles(cssFiles: string[]) {
 
 export async function generateMetadata({ params }: Props) {
   const { page } = params;
-  const data = pagesIndex.examples?.find((item) => item.slug === page);
+  const data = pageIndex.examples?.find((item) => item.slug === page);
 
   return getNextPageMetadata({
     title: `Preview ${data?.title ?? page} - Ariakit`,
@@ -56,9 +56,7 @@ export default async function Page({ params }: Props) {
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();
 
-  const { sourceContext, pageFileRegex } = config;
-
-  const entryFiles = getPageEntryFiles(sourceContext, pageFileRegex);
+  const entryFiles = getPageEntryFilesCached(config);
   const file = entryFiles.find((file) => getPageName(file) === page);
   if (!file) return notFound();
 

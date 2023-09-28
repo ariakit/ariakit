@@ -1,19 +1,20 @@
+---
+tags:
+  - Role
+---
+
 # Role
 
-<p data-description>
-  Provide the basic Ariakit features to any component. This abstract component is based on the <a href="https://w3c.github.io/aria/#roletype">WAI-ARIA RoleType Role</a>.
-</p>
+<div data-description>
 
-## Installation
+Provide the basic Ariakit features to any component. This abstract component is based on the <a href="https://w3c.github.io/aria/#roletype">WAI-ARIA RoleType Role</a>.
 
-```sh
-npm i @ariakit/react
-```
+</div>
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+<div data-tags></div>
 
 ## API
 
-<pre data-api>
-&lt;<a href="/apis/role">Role</a> /&gt;
-</pre>
+```jsx
+<Role />
+```

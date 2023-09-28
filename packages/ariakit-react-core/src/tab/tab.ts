@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -10,7 +10,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TabContext } from "./tab-context.js";
+import { useTabScopedContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -33,13 +33,13 @@ export const useTab = createHook<TabOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const context = useContext(TabContext);
+    const context = useTabScopedContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "Tab must be wrapped in a TabList component",
+        "Tab must be wrapped in a TabList component.",
     );
 
     // Keep a reference to the default id so we can wait before all tabs have

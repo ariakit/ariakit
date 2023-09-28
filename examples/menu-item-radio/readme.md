@@ -1,7 +1,17 @@
+---
+tags:
+  - Menu
+  - Dropdowns
+---
+
 # MenuItemRadio
 
-<p data-description>
-  Rendering <a href="/components/menu">Menu</a> using <a href="/apis/menu-item-radio"><code>MenuItemRadio</code></a> as children and the <a href="/apis/menu-store#values"><code>values</code></a> prop from <a href="/apis/menu-store"><code>useMenuStore</code></a> to control the checked item.
-</p>
+<div data-description>
+
+Rendering [Menu](/components/menu) using [`MenuItemRadio`](/reference/menu-item-radio) as children and the [`values`](/reference/menu-provider#values) prop from [`MenuProvider`](/reference/menu-provider) to control the checked item.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>

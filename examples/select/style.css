@@ -1,40 +1,24 @@
+@import url("../button/style.css");
+
 .wrapper {
   @apply
     flex
     flex-col
     p-4
     gap-2
-    rounded-lg
-    bg-white
-    dark:bg-gray-700
-    shadow
-    dark:shadow-dark
   ;
 }
 
-.select {
+.label {
   @apply
-    flex
+    pl-4
+  ;
+}
+
+.button {
+  @apply
     w-[200px]
-    h-10
-    cursor-default
-    items-center
     justify-between
-    gap-1
-    rounded-md
-    px-4
-    text-base
-    whitespace-nowrap
-    bg-black/[7.5%]
-    hover:bg-black/[11.25%]
-    aria-expanded:bg-black/[11.25%]
-    dark:bg-white/[7.5%]
-    dark:hover:bg-white/[11.25%]
-    dark:aria-expanded:bg-white/[11.25%]
-    shadow-button
-    dark:shadow-button-dark
-    focus-visible:ariakit-outline-input
-    aria-disabled:opacity-50
   ;
 }
 

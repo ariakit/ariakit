@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -12,7 +12,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
 function supportsNativeLabel(tagName?: string) {
@@ -44,13 +44,13 @@ function supportsNativeLabel(tagName?: string) {
  */
 export const useFormLabel = createHook<FormLabelOptions>(
   ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormLabel must be wrapped in a Form component",
+        "FormLabel must be wrapped in a Form component.",
     );
 
     const id = useId(props.id);
@@ -123,7 +123,11 @@ export const useFormLabel = createHook<FormLabelOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { email: "" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     email: "",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormLabel name={form.names.email}>Email</Role>
  *   <FormInput name={form.names.email} />
@@ -142,8 +146,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormLabelOptions<T extends As = "label">
   extends CollectionItemOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
   /**

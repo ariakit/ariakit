@@ -1,45 +1,65 @@
+---
+tags:
+  - Combobox
+  - Dropdowns
+  - Form controls
+---
+
 # Combobox
 
-<p data-description>
-  Fill in a React input field with autocomplete &amp; autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">WAI-ARIA Combobox Pattern</a>.
-</p>
+<div data-description>
+
+Fill in a React input field with autocomplete &amp; autosuggest functionalities. Choose from a list of suggested values with full keyboard support. This component is based on the [WAI-ARIA Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/combobox/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/combobox-filtering)
+- [](/examples/combobox-animated)
+- [](/examples/combobox-group)
+- [](/examples/combobox-disclosure)
+- [](/examples/combobox-links)
+- [](/examples/combobox-multiple)
+
+</div>
 
 ## API
 
-<pre data-api>
-<a href="/apis/combobox-store">useComboboxStore</a>()
+```jsx
+useComboboxStore()
+useComboboxContext()
 
-&lt;<a href="/apis/combobox">Combobox</a> /&gt;
-&lt;<a href="/apis/combobox-cancel">ComboboxCancel</a> /&gt;
-&lt;<a href="/apis/combobox-disclosure">ComboboxDisclosure</a> /&gt;
-&lt;<a href="/apis/combobox-list">ComboboxList</a>|<a href="/apis/combobox-popover">ComboboxPopover</a>&gt;
-  &lt;<a href="/apis/combobox-group">ComboboxGroup</a>&gt;
-    &lt;<a href="/apis/combobox-group-label">ComboboxGroupLabel</a> /&gt;
-    &lt;<a href="/apis/combobox-row">ComboboxRow</a>&gt;
-      &lt;<a href="/apis/combobox-item">ComboboxItem</a>&gt;
-        &lt;<a href="/apis/combobox-item-value">ComboboxItemValue</a> /&gt;
-      &lt;/ComboboxItem&gt;
-      &lt;<a href="/apis/combobox-separator">ComboboxSeparator</a> /&gt;
-    &lt;/ComboboxRow&gt;
-  &lt;/ComboboxGroup&gt;
-&lt;/ComboboxList|ComboboxPopover&gt;
-</pre>
+<ComboboxProvider>
+  <Combobox />
+  <ComboboxCancel />
+  <ComboboxDisclosure />
+  <ComboboxList />
+  <ComboboxPopover>
+    <ComboboxGroup>
+      <ComboboxGroupLabel />
+      <ComboboxRow>
+        <ComboboxItem>
+          <ComboboxItemValue />
+        </ComboboxItem>
+        <ComboboxSeparator>
+      </ComboboxRow>
+    </ComboboxGroup>
+  </ComboboxPopover>
+</ComboboxProvider>
+```
 
 ## Styling
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/apis/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/reference/combobox-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .combobox-item[data-active-item] {
@@ -49,3 +69,16 @@ When browsing the list with a keyboard (or hovering over items with the mouse wh
 ```
 
 Learn more on the [Styling](/guide/styling) guide.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/dialog)
+- [](/components/form)
+- [](/components/menu)
+- [](/components/select)
+- [](/components/composite)
+
+</div>

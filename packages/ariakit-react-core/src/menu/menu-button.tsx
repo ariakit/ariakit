@@ -1,17 +1,25 @@
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
+import { Role } from "../role/role.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
@@ -43,9 +51,18 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
  */
 export const useMenuButton = createHook<MenuButtonOptions>(
   ({ store, focusable, accessibleWhenDisabled, showOnHover, ...props }) => {
+    const context = useMenuProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "MenuButton must receive a `store` prop or be wrapped in a MenuProvider component.",
+    );
+
     const ref = useRef<HTMLElement>(null);
-    const parentMenu = useContext(MenuContext);
-    const parentMenuBar = useContext(MenuBarContext);
+    const parentMenu = store.parent;
+    const parentMenuBar = store.menubar;
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled =
@@ -57,8 +74,11 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // Makes sure that the menu button is assigned as the menu disclosure
       // element. This is needed to support screen reader focusing on sibling
       // menu items.
-      store.setDisclosureElement(ref.current);
-    });
+      return sync(store, ["disclosureElement"], (state) => {
+        if (!state.disclosureElement) return;
+        store?.setState("disclosureElement", ref.current);
+      });
+    }, [store]);
 
     const onFocusProp = props.onFocus;
 
@@ -68,10 +88,10 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       if (event.defaultPrevented) return;
       // Reset the autoFocusOnShow state so we can focus the menu button while
       // the menu is open and press arrow keys to move focus to the menu items.
-      store.setAutoFocusOnShow(false);
+      store?.setAutoFocusOnShow(false);
       // We need to unset the active menu item so no menu item appears active
       // while the menu button is focused.
-      store.setActiveId(null);
+      store?.setActiveId(null);
       // When the menu button is focused, we'll only show its menu if it's in a
       // menu bar
       if (!parentMenuBar) return;
@@ -79,7 +99,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const { items } = parentMenuBar.getState();
       // and there's already another expanded menu button.
       if (hasExpandedMenuButton(items, event.currentTarget)) {
-        store.show();
+        store?.show();
       }
     });
 
@@ -96,9 +116,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
         event.preventDefault();
-        store.show();
-        store.setAutoFocusOnShow(true);
-        store.setInitialFocus(initialFocus);
+        store?.show();
+        store?.setAutoFocusOnShow(true);
+        store?.setInitialFocus(initialFocus);
       }
     });
 
@@ -107,6 +127,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onClickProp?.(event as any);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const isKeyboardClick = !event.detail;
       const { open } = store.getState();
       // When the menu button is clicked, if the menu is hidden or if it's a
@@ -126,12 +147,23 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       }
     });
 
+    props = useWrapElement(
+      props,
+      (element) => (
+        <MenuContextProvider value={store}>{element}</MenuContextProvider>
+      ),
+      [store],
+    );
+
     if (hasParentMenu) {
       // On Safari, VO+Space triggers a click twice on native button elements
       // with role menuitem (https://bugs.webkit.org/show_bug.cgi?id=228318).
       // So, if the menu button is rendered within a menu, we need to render it
       // as another element.
-      props = { render: <div />, ...props };
+      props = {
+        ...props,
+        render: <Role.div render={props.render} />,
+      };
     }
 
     // We'll use this id to render the aria-labelledby attribute on the menu.
@@ -194,18 +226,20 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 );
 
 /**
- * Renders a menu button that triggers a dropdown menu. Usually, this is
+ * Renders a menu button that triggers a
+ * [`Menu`](https://ariakit.org/reference/menu) component. Usually, this is
  * rendered as a native `button` element, but if it's a submenu button rendered
  * as a menu item inside another menu, it'll be rendered as a `div`.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuButton = createComponent<MenuButtonOptions>((props) => {
@@ -222,14 +256,20 @@ export interface MenuButtonOptions<T extends As = "button" | "div">
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * context will be used.
    */
-  store: MenuStore;
+  store?: MenuStore;
   /**
    * Determines whether pressing a character key while focusing on the
-   * `MenuButton` should move focus to the `MenuItem` starting with that
-   * character. By default, it's `true` for menu buttons in a `MenuBar`, but
-   * `false` for other menu buttons.
+   * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
+   * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
+   * that character. By default, it's `true` for menu buttons in a
+   * [`MenuBar`](https://ariakit.org/reference/menu-bar), but `false` for other
+   * menu buttons.
    */
   typeahead?: boolean;
 }

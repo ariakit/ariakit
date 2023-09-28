@@ -1,8 +1,10 @@
 import { matches } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxListOptions } from "./combobox-list.js";
 import { useComboboxList } from "./combobox-list.js";
 
@@ -44,6 +46,15 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
     hideOnInteractOutside = true,
     ...props
   }) => {
+    const context = useComboboxProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const baseElement = store.useState("baseElement");
 
     props = useComboboxList({ store, alwaysVisible, ...props });
@@ -63,9 +74,9 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       // aria-controls attribute pointing to either the combobox input or the
       // combobox popover elements.
       hideOnInteractOutside: (event: Event) => {
-        const { contentElement, baseElement } = store.getState();
-        const contentId = contentElement?.id;
-        const baseId = baseElement?.id;
+        const state = store?.getState();
+        const contentId = state?.contentElement?.id;
+        const baseId = state?.baseElement?.id;
         if (isController(event.target, contentId, baseId)) return false;
         const result =
           typeof hideOnInteractOutside === "function"
@@ -87,13 +98,14 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(

@@ -32,9 +32,9 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  CompositeContext,
   CompositeItemContext,
   CompositeRowContext,
+  useCompositeContext,
 } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 import { focusSilently, getEnabledItem, isItem } from "./utils.js";
@@ -169,7 +169,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     "aria-posinset": ariaPosInSetProp,
     ...props
   }) => {
-    const context = useContext(CompositeContext);
+    const context = useCompositeContext();
     store = store || context;
 
     const id = useId(props.id);
@@ -177,6 +177,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const row = useContext(CompositeRowContext);
     const rowId = useStoreState(store, (state) => {
       if (rowIdProp) return rowIdProp;
+      if (!state) return;
       if (!row?.baseElement) return;
       if (row.baseElement !== state.baseElement) return;
       return row.id;
@@ -314,7 +315,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const baseElement = useStoreState(
       store,
-      (state) => state.baseElement || undefined,
+      (state) => state?.baseElement || undefined,
     );
 
     const providerValue = useMemo(
@@ -332,7 +333,10 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       [providerValue],
     );
 
-    const isActiveItem = useStoreState(store, (state) => state.activeId === id);
+    const isActiveItem = useStoreState(
+      store,
+      (state) => !!state && state.activeId === id,
+    );
     const virtualFocus = useStoreState(store, "virtualFocus");
     const role = useRole(ref, props);
     let ariaSelected: boolean | undefined;
@@ -353,6 +357,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const ariaSetSize = useStoreState(store, (state) => {
       if (ariaSetSizeProp != null) return ariaSetSizeProp;
+      if (!state) return;
       if (!row?.ariaSetSize) return;
       if (row.baseElement !== state.baseElement) return;
       return row.ariaSetSize;
@@ -360,6 +365,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const ariaPosInSet = useStoreState(store, (state) => {
       if (ariaPosInSetProp != null) return ariaPosInSetProp;
+      if (!state) return;
       if (!row?.ariaPosInSet) return;
       if (row.baseElement !== state.baseElement) return;
       const itemsInRow = state.renderedItems.filter(
@@ -368,11 +374,10 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
     });
 
-    const isTabbable =
-      useStoreState(store, (state) => {
-        if (!state.renderedItems.length) return true;
-        return !state.virtualFocus && state.activeId === id;
-      }) ?? true;
+    const isTabbable = useStoreState(store, (state) => {
+      if (!state?.renderedItems.length) return true;
+      return !state.virtualFocus && state.activeId === id;
+    });
 
     props = {
       id,

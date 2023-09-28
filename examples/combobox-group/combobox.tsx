@@ -1,25 +1,22 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 
-export interface ComboboxProps
-  extends Omit<Ariakit.ComboboxProps, "store" | "onChange"> {
+export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
   value?: string;
   onChange?: (value: string) => void;
 }
 
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox({ value, onChange, children, ...props }, ref) {
-    const combobox = Ariakit.useComboboxStore({ value, setValue: onChange });
     return (
-      <>
+      <Ariakit.ComboboxProvider value={value} setValue={onChange}>
         <Ariakit.Combobox
           ref={ref}
-          store={combobox}
-          className="combobox"
           {...props}
+          className={clsx("combobox", props.className)}
         />
         <Ariakit.ComboboxPopover
-          store={combobox}
           portal
           sameWidth
           gutter={4}
@@ -27,7 +24,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         >
           {children}
         </Ariakit.ComboboxPopover>
-      </>
+      </Ariakit.ComboboxProvider>
     );
   },
 );
@@ -42,7 +39,11 @@ export const ComboboxGroup = React.forwardRef<
   ComboboxGroupProps
 >(function ComboboxGroup({ label, children, ...props }, ref) {
   return (
-    <Ariakit.ComboboxGroup ref={ref} className="group" {...props}>
+    <Ariakit.ComboboxGroup
+      ref={ref}
+      {...props}
+      className={clsx("group", props.className)}
+    >
       {label && (
         <Ariakit.ComboboxGroupLabel className="group-label">
           {label}
@@ -53,7 +54,7 @@ export const ComboboxGroup = React.forwardRef<
   );
 });
 
-export type ComboboxItemProps = Ariakit.ComboboxItemProps;
+export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {}
 
 export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {
@@ -61,20 +62,25 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
       <Ariakit.ComboboxItem
         ref={ref}
         focusOnHover
-        className="combobox-item"
         {...props}
+        className={clsx("combobox-item", props.className)}
       />
     );
   },
 );
 
-export type ComboboxSeparatorProps = Ariakit.ComboboxSeparatorProps;
+export interface ComboboxSeparatorProps
+  extends Ariakit.ComboboxSeparatorProps {}
 
 export const ComboboxSeparator = React.forwardRef<
   HTMLHRElement,
   ComboboxSeparatorProps
 >(function ComboboxSeparator(props, ref) {
   return (
-    <Ariakit.ComboboxSeparator ref={ref} className="separator" {...props} />
+    <Ariakit.ComboboxSeparator
+      ref={ref}
+      {...props}
+      className={clsx("separator", props.className)}
+    />
   );
 });

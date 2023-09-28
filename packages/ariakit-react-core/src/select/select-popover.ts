@@ -2,6 +2,7 @@ import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
 import { useSelectList } from "./select-list.js";
 
@@ -20,26 +21,28 @@ import { useSelectList } from "./select-list.js";
  */
 export const useSelectPopover = createHook<SelectPopoverOptions>(
   ({ store, alwaysVisible, ...props }) => {
+    const context = useSelectProviderContext();
+    store = store || context;
     props = useSelectList({ store, alwaysVisible, ...props });
     props = usePopover({ store, alwaysVisible, ...props });
-
     return props;
   },
 );
 
 /**
- * Renders a select popover. The `role` prop is set to `listbox` by default, but
- * can be overriden by any other valid select popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`).
+ * Renders a select popover. The `role` attribute is set to `listbox` by
+ * default, but can be overriden by any other valid select popup role
+ * (`listbox`, `menu`, `tree`, `grid` or `dialog`).
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * ```jsx {3-6}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectPopover = createComponent<SelectPopoverOptions>((props) => {

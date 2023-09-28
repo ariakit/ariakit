@@ -5,7 +5,10 @@ import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
 import invariant from "tiny-invariant";
 import { nonNullable } from "../utils/non-nullable.js";
-import { getPageEntryFiles } from "./get-page-entry-files.js";
+import {
+  getPageEntryFiles,
+  getPageEntryFilesCached,
+} from "./get-page-entry-files.js";
 import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageName } from "./get-page-name.js";
 import { getPageSections } from "./get-page-sections.js";
@@ -44,7 +47,7 @@ function writeFiles(buildDir, pages) {
   const otherPages = pages.filter((page) => !page.reference);
 
   const entryFiles = otherPages.flatMap((page) =>
-    getPageEntryFiles(page.sourceContext, page.pageFileRegex),
+    getPageEntryFilesCached(page),
   );
 
   const sourceFiles = entryFiles.reduce(
@@ -58,9 +61,10 @@ function writeFiles(buildDir, pages) {
   const referencePages = pages.filter((page) => page.reference);
 
   const references = referencePages.flatMap((page) =>
-    getPageEntryFiles(page.sourceContext, page.pageFileRegex).flatMap(
-      (file) => ({ page, references: getReferences(file) }),
-    ),
+    getPageEntryFilesCached(page).flatMap((file) => ({
+      page,
+      references: getReferences(file),
+    })),
   );
 
   // deps.ts

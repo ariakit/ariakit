@@ -1,18 +1,16 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useDisclosureStoreOptions(
-  _props: DisclosureStoreProps,
-): Partial<DisclosureStoreOptions> {
-  return {};
-}
-
-export function useDisclosureStoreProps<T extends DisclosureStore>(
+export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   store: T,
+  update: () => void,
   props: DisclosureStoreProps,
 ) {
+  useUpdateEffect(update, [props.store, props.disclosure]);
   useStoreProps(store, props, "open", "setOpen");
+  useStoreProps(store, props, "mounted", "setMounted");
   useStoreProps(store, props, "animated");
   return store;
 }
@@ -30,11 +28,8 @@ export function useDisclosureStoreProps<T extends DisclosureStore>(
 export function useDisclosureStore(
   props: DisclosureStoreProps = {},
 ): DisclosureStore {
-  const options = useDisclosureStoreOptions(props);
-  const store = useStore(() =>
-    Core.createDisclosureStore({ ...props, ...options }),
-  );
-  return useDisclosureStoreProps(store, props);
+  const [store, update] = useStore(Core.createDisclosureStore, props);
+  return useDisclosureStoreProps(store, update, props);
 }
 
 export type DisclosureStoreState = Core.DisclosureStoreState;
@@ -50,6 +45,14 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * const disclosure = useDisclosureStore({ open, setOpen });
    */
   setOpen?: (open: DisclosureStoreState["open"]) => void;
+  /**
+   * A callback that gets called when the `mounted` state changes.
+   * @param mounted The new mounted value.
+   * @example
+   * const [mounted, setMounted] = useState(false);
+   * const disclosure = useDisclosureStore({ setMounted });
+   */
+  setMounted?: (mounted: DisclosureStoreState["mounted"]) => void;
 }
 
 export type DisclosureStoreProps = DisclosureStoreOptions &

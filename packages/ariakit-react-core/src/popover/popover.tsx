@@ -20,7 +20,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { PopoverContext } from "./popover-context.js";
+import {
+  PopoverScopedContextProvider,
+  usePopoverProviderContext,
+} from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
@@ -95,7 +98,7 @@ function getOffsetMiddleware(
   props: Pick<PopoverOptions, "gutter" | "shift">,
 ) {
   // https://floating-ui.com/docs/offset
-  return offset(({ placement }) => {
+  return offset(({ placement }: { placement: Placement }) => {
     const arrowOffset = (arrowElement?.clientHeight || 0) / 2;
     const finalGutter =
       typeof props.gutter === "number"
@@ -227,6 +230,15 @@ export const usePopover = createHook<PopoverOptions>(
     updatePosition,
     ...props
   }) => {
+    const context = usePopoverProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Popover must receive a `store` prop or be wrapped in a PopoverProvider component.",
+    );
+
     const arrowElement = store.useState("arrowElement");
     const anchorElement = store.useState("anchorElement");
     const popoverElement = store.useState("popoverElement");
@@ -278,7 +290,7 @@ export const usePopover = createHook<PopoverOptions>(
           middleware,
         });
 
-        store.setState("currentPlacement", pos.placement);
+        store?.setState("currentPlacement", pos.placement);
         setPositioned(true);
 
         const x = roundByDPR(pos.x);
@@ -388,7 +400,7 @@ export const usePopover = createHook<PopoverOptions>(
             width: "max-content",
             ...wrapperProps?.style,
           }}
-          ref={store.setPopoverElement}
+          ref={store?.setPopoverElement}
         >
           {element}
         </div>
@@ -399,9 +411,9 @@ export const usePopover = createHook<PopoverOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverContext.Provider value={store}>
+        <PopoverScopedContextProvider value={store}>
           {element}
-        </PopoverContext.Provider>
+        </PopoverScopedContextProvider>
       ),
       [store],
     );
@@ -438,9 +450,10 @@ export const usePopover = createHook<PopoverOptions>(
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <PopoverDisclosure store={popover}>Disclosure</PopoverDisclosure>
- * <Popover store={popover}>Popover</Popover>
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Disclosure</PopoverDisclosure>
+ *   <Popover>Popover</Popover>
+ * </PopoverProvider>
  * ```
  */
 export const Popover = createComponent<PopoverOptions>((props) => {
@@ -454,10 +467,13 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   /**
-   * Object returned by the `usePopoverStore` hook.
-   * @see https://ariakit.org/guide/component-stores
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
-  store: PopoverStore;
+  store?: PopoverStore;
   /**
    * Props that will be passed to the popover wrapper element. This element will
    * be used to position the popover.
@@ -481,10 +497,10 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   shift?: number;
   /**
    * Controls the behavior of the popover when it overflows the viewport:
-   *   - If a `boolean`, specifies whether the popover should flip to the
-   *     opposite side when it overflows.
-   *   - If a `string`, indicates the preferred fallback placements when it
-   *     overflows. The placements must be spaced-delimited, e.g. "top left".
+   * - If a `boolean`, specifies whether the popover should flip to the opposite
+   *   side when it overflows.
+   * - If a `string`, indicates the preferred fallback placements when it
+   *   overflows. The placements must be spaced-delimited, e.g. "top left".
    * @default true
    */
   flip?: boolean | string;

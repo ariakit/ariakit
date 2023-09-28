@@ -66,7 +66,7 @@ export const SelectCombobox = React.forwardRef<
         <Ariakit.Select
           ref={ref}
           store={select}
-          className="select"
+          className="button"
           {...props}
         />
         {mounted && (

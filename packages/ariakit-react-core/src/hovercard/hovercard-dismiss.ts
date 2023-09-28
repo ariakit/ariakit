@@ -2,6 +2,7 @@ import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useHovercardScopedContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -17,8 +18,10 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```
  */
 export const useHovercardDismiss = createHook<HovercardDismissOptions>(
-  (props) => {
-    props = usePopoverDismiss(props);
+  ({ store, ...props }) => {
+    const context = useHovercardScopedContext();
+    store = store || context;
+    props = usePopoverDismiss({ store, ...props });
     return props;
   },
 );
@@ -28,10 +31,11 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <Hovercard store={hovercard}>
- *   <HovercardDismiss />
- * </Hovercard>
+ * <HovercardProvider>
+ *   <Hovercard>
+ *     <HovercardDismiss />
+ *   </Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardDismiss = createComponent<HovercardDismissOptions>(
@@ -48,8 +52,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardDismissOptions<T extends As = "button">
   extends PopoverDismissOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook. If not provided, the
-   * parent `Hovercard` component's context will be used.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * components' context will be used.
    */
   store?: HovercardStore;
 }

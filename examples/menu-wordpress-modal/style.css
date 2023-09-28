@@ -1,0 +1,51 @@
+@import url("../dialog/style.css");
+@import url("../menu-nested/style.css");
+@import url("../tooltip/style.css");
+
+.backdrop {
+  @apply
+    fixed
+    inset-0
+    z-50
+  ;
+}
+
+.menu {
+  @apply
+    overflow-auto
+  ;
+}
+
+.tooltip {
+  @apply
+    z-[100]
+  ;
+}
+
+/* purgecss start ignore */
+
+.components-modal__header {
+  @apply
+    flex
+    items-center
+    justify-between
+  ;
+}
+
+.components-button {
+  @apply
+    button
+    dismiss
+    secondary
+    fill-black
+    dark:fill-white
+  ;
+}
+
+.components-tooltip {
+  @apply
+    tooltip
+  ;
+}
+
+/* purgecss end ignore */

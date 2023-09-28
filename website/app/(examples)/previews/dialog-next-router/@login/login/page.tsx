@@ -42,7 +42,7 @@ export default function Page() {
         <label>
           Password <input type="password" className="input" />
         </label>
-        <button type="submit" className="button">
+        <button type="submit" className="button primary">
           Log in
         </button>
       </form>

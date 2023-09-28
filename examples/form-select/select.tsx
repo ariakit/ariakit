@@ -1,58 +1,50 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 
-export type SelectProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  name?: string;
+export interface SelectProps extends Ariakit.SelectProps {
   value?: string;
   setValue?: (value: string) => void;
   defaultValue?: string;
-  required?: boolean;
-  onTouch?: () => void;
-};
+  onBlur?: React.FocusEventHandler<HTMLElement>;
+}
 
 export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
-  ({ children, value, setValue, defaultValue, onTouch, ...props }, ref) => {
+  function Select({ children, value, setValue, defaultValue, ...props }, ref) {
+    const select = Ariakit.useSelectStore({ value, setValue, defaultValue });
     const portalRef = React.useRef<HTMLDivElement>(null);
-    const select = Ariakit.useSelectStore({
-      value,
-      setValue,
-      defaultValue,
-    });
-    const selectValue = select.useState(
-      (state) => state.value || "Select an item",
-    );
+    const selectValue = select.useState("value");
+
+    // Only call onBlur if the focus is leaving the whole widget.
+    const onBlur = (event: React.FocusEvent<HTMLElement>) => {
+      const portal = portalRef.current;
+      const { selectElement, popoverElement } = select.getState();
+      if (portal?.contains(event.relatedTarget)) return;
+      if (selectElement?.contains(event.relatedTarget)) return;
+      if (popoverElement?.contains(event.relatedTarget)) return;
+      props.onBlur?.(event);
+    };
+
     return (
       <>
         <Ariakit.Select
-          store={select}
           ref={ref}
-          className="select"
           {...props}
-          onBlur={(event) => {
-            props.onBlur?.(event);
-            if (event.defaultPrevented) return;
-            const popover = select.getState().popoverElement;
-            if (popover?.contains(event.relatedTarget)) return;
-            onTouch?.();
-          }}
+          store={select}
+          onBlur={onBlur}
+          className={clsx("button", props.className)}
         >
-          {selectValue}
+          {selectValue || "Select an item"}
           <Ariakit.SelectArrow />
         </Ariakit.Select>
         <Ariakit.SelectPopover
           store={select}
           modal
-          gutter={4}
           sameWidth
+          gutter={4}
+          onBlur={onBlur}
           portalRef={portalRef}
           className="popover"
-          onBlur={(event) => {
-            const portal = portalRef.current;
-            const disclosure = select.getState().disclosureElement;
-            if (portal?.contains(event.relatedTarget)) return;
-            if (disclosure?.contains(event.relatedTarget)) return;
-            onTouch?.();
-          }}
         >
           {children}
         </Ariakit.SelectPopover>
@@ -61,12 +53,16 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   },
 );
 
-export type SelectItemProps = React.HTMLAttributes<HTMLDivElement> & {
-  value?: string;
-};
+export interface SelectItemProps extends Ariakit.SelectItemProps {}
 
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  (props, ref) => {
-    return <Ariakit.SelectItem ref={ref} className="select-item" {...props} />;
+  function SelectItem(props, ref) {
+    return (
+      <Ariakit.SelectItem
+        ref={ref}
+        {...props}
+        className={clsx("select-item", props.className)}
+      />
+    );
   },
 );

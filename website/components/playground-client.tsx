@@ -6,9 +6,9 @@ import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
+import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
-import { useLocalStorageState } from "utils/use-local-storage-state.js";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
 import { PlaygroundBrowser } from "./playground-browser.jsx";
@@ -62,7 +62,7 @@ const style = {
     pointer-events-none absolute left-0 top-full h-[3px] w-full
     translate-y-[5px] bg-transparent
     group-hover:bg-gray-250 dark:group-hover:bg-gray-650
-    group-aria-selected:bg-blue-600
+    group-aria-selected:bg-blue-600 dark:group-aria-selected:bg-blue-600
   `,
   tabPanel: tw`
     relative overflow-hidden

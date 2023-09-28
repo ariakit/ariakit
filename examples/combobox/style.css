@@ -38,7 +38,9 @@
     dark:hover:bg-gray-900
     shadow-input
     dark:shadow-input-dark
-    focus-visible:ariakit-outline-input
+    outline-2
+    outline-blue-600
+    data-[focus-visible]:outline
   ;
 }
 

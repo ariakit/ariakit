@@ -68,7 +68,7 @@ function App() {
       <Ariakit.Dialog store={dialog}>
         <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
         <Ariakit.DialogDescription>
-          Welcome to Reakit!
+          Welcome to Ariakit!
         </Ariakit.DialogDescription>
       </Ariakit.Dialog>
     </>
@@ -77,6 +77,11 @@ function App() {
 
 createRoot(document.getElementById("root")).render(<App />);
 ```
+
+## Attribution
+
+Browser testing provided by
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" height="80" align="center"></a>
 
 ## Contributing
 

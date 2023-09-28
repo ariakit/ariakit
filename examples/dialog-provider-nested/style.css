@@ -1,0 +1,30 @@
+@import url("../dialog/style.css");
+
+.header {
+  @apply
+    flex
+    justify-between
+    items-center
+  ;
+}
+
+.table {
+  @apply
+    rounded-lg
+  ;
+}
+
+.table-cell {
+  @apply
+    py-4
+    first-of-type:w-full
+  ;
+}
+
+.table-body {
+  @apply
+    divide-y
+    divide-black/20
+    dark:divide-white/20
+  ;
+}

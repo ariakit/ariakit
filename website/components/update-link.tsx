@@ -5,6 +5,7 @@ import pageIndex from "build-pages/index.js";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { NewWindow } from "icons/new-window.jsx";
 import { Npm } from "icons/npm.jsx";
+import { Substack } from "icons/substack.jsx";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
@@ -43,7 +44,7 @@ function renderPaths(id: string, url: URL) {
     <span aria-hidden id={`${id}/path`} className="flex items-center text-sm">
       <span className="sr-only">In </span>
       <span className="truncate text-blue-700 dark:text-blue-400 ">
-        {getPageTitle(category)}
+        {getPageTitle(category, true)}
       </span>
       {pageTitle && (
         <>
@@ -100,7 +101,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         <div
           aria-hidden
           className={twJoin(
-            "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+            "flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-sm",
             "bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
             "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
             layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
@@ -110,6 +111,8 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
             getPageIcon(category, page)
           ) : type === "release" ? (
             <Npm />
+          ) : type === "newsletter" ? (
+            <Substack />
           ) : null}
         </div>
         <div className="flex min-w-0 flex-col">

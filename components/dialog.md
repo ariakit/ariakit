@@ -1,8 +1,17 @@
+---
+tags:
+  - Dialog
+---
+
 # Dialog
 
-<p data-description>
-  Open a new window that can be either <a href="/apis/dialog#modal"><code>modal</code></a> or non-modal and optionally rendered in a React <a href="/apis/dialog#portal"><code>portal</code></a>. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/">WAI-ARIA Dialog Pattern</a>.
-</p>
+<div data-description>
+
+Open a new window that can be either [`modal`](/reference/dialog#modal) or non-modal and optionally rendered in a React [`portal`](/reference/dialog#portal). This component is based on the [WAI-ARIA Dialog Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/).
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/dialog/index.tsx" data-playground>Example</a>
 
@@ -21,16 +30,19 @@
 
 ## API
 
-<pre data-api>
-<a href="/apis/dialog-store">useDialogStore</a>()
+```jsx
+useDialogStore()
+useDialogContext()
 
-&lt;<a href="/apis/dialog-disclosure">DialogDisclosure</a> /&gt;
-&lt;<a href="/apis/dialog">Dialog</a>&gt;
-  &lt;<a href="/apis/dialog-dismiss">DialogDismiss</a> /&gt;
-  &lt;<a href="/apis/dialog-heading">DialogHeading</a> /&gt;
-  &lt;<a href="/apis/dialog-description">DialogDescription</a> /&gt;
-&lt;/Dialog&gt;
-</pre>
+<DialogProvider>
+  <DialogDisclosure />
+  <Dialog>
+    <DialogDismiss />
+    <DialogHeading />
+    <DialogDescription />
+  </Dialog>
+</DialogProvider>
+```
 
 ## Styling
 
@@ -44,7 +56,7 @@ You can style all the backdrop elements using the `[data-backdrop]` selector:
 }
 ```
 
-To style the backdrop of a specific dialog, use the [`backdrop`](/apis/dialog#backdrop) prop:
+To style the backdrop of a specific dialog, use the [`backdrop`](/reference/dialog#backdrop) prop:
 
 ```jsx
 <Dialog backdrop={<div className="backdrop" />} />
@@ -52,7 +64,7 @@ To style the backdrop of a specific dialog, use the [`backdrop`](/apis/dialog#ba
 
 ### Scrollbar width
 
-When the [`preventBodyScroll`](/apis/dialog#preventbodyscroll) prop is set to `true` (default for [`modal`](/apis/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. If your page contains `position:fixed` elements, you might need to modify their padding to compensate for the missing scrollbar width.
+When the [`preventBodyScroll`](/reference/dialog#preventbodyscroll) prop is set to `true` (default for [`modal`](/reference/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. If your page contains `position:fixed` elements, you might need to modify their padding to compensate for the missing scrollbar width.
 
 Ariakit automatically defines a `--scrollbar-width` CSS variable. You can apply this variable to adjust the `padding-right` of your fixed elements:
 
@@ -66,7 +78,7 @@ Ariakit automatically defines a `--scrollbar-width` CSS variable. You can apply 
 
 Modal dialogs are rendered at the end of the document using [React Portal](https://react.dev/reference/react-dom/createPortal), which means they will be rendered on top of all other elements by default.
 
-However, if you set the [`portal`](/apis/dialog#portal) prop to `false` or use the `z-index` property on other elements, you might need to adjust the `z-index` of the dialog:
+However, if you set the [`portal`](/reference/dialog#portal) prop to `false` or use the `z-index` property on other elements, you might need to adjust the `z-index` of the dialog:
 
 ```css
 .dialog {

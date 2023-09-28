@@ -1,5 +1,6 @@
-import { useCallback, useMemo } from "react";
+import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
+import { init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -7,11 +8,17 @@ import type {
 } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
+  AnyObject,
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
-import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
-import { useLazyValue, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
+import { flushSync } from "react-dom";
+// import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
+// This doesn't work in ESM, because use-sync-external-store only exposes CJS.
+// The following is a workaround until ESM is supported.
+import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
+const { useSyncExternalStore } = useSyncExternalStoreExports;
+import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
 
 type UseState<S> = {
   /**
@@ -43,64 +50,87 @@ type UseState<S> = {
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
-type StateSelector<T = CoreStore, V = any> = (state: StoreState<T>) => V;
 
 const noopSubscribe = () => () => {};
 
-/**
- * Subscribes to and returns the entire state of a store.
- * @param store The store to subscribe to.
- * @example
- * useStoreState(store)
- */
-export function useStoreState<T extends StateStore>(
-  store: T,
-): T extends CoreStore ? StoreState<T> : undefined;
+let inFlushSyncContext = false;
 
-/**
- * Subscribes to and returns a specific key of a store.
- * @param store The store to subscribe to.
- * @param key The key to subscribe to.
- * @example
- * useStoreState(store, "key")
- */
-export function useStoreState<T extends StateStore, K extends StateKey<T>>(
+function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
+  if (inFlushSyncContext || !canFlushSync) {
+    fn();
+    return;
+  }
+  inFlushSyncContext = true;
+  const originalError = console.error;
+  if (process.env.NODE_ENV !== "production") {
+    console.error = (...data: any[]) => {
+      if (
+        typeof data[0] === "string" &&
+        data[0].startsWith("Warning: flushSync")
+      ) {
+        return;
+      }
+      originalError(...data);
+    };
+  }
+  try {
+    flushSync(fn);
+  } finally {
+    console.error = originalError;
+    inFlushSyncContext = false;
+  }
+}
+
+export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
+
+export function useStoreState<T extends CoreStore>(
+  store: T | null | undefined,
+): StoreState<T> | undefined;
+
+export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
   store: T,
   key: K,
-): T extends CoreStore ? StoreState<T>[K] : undefined;
+): StoreState<T>[K];
 
-/**
- * Subscribes to and returns a computed value of a store based on the selector
- * function.
- * @param store The store to subscribe to.
- * @param selector The selector function that computes the observed value.
- * @example
- * useStoreState(store, (state) => state.key)
- */
-export function useStoreState<T extends StateStore, V>(
+export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
+  store: T | null | undefined,
+  key: K,
+): StoreState<T>[K] | undefined;
+
+export function useStoreState<T extends CoreStore, V>(
   store: T,
-  selector: StateSelector<T, V>,
-): T extends CoreStore ? V : undefined;
+  selector: (state: StoreState<T>) => V,
+): V;
+
+export function useStoreState<T extends CoreStore, V>(
+  store: T | null | undefined,
+  selector: (state?: StoreState<T>) => V,
+): V;
 
 export function useStoreState(
   store: StateStore,
-  keyOrSelector: StateKey | StateSelector = identity,
+  keyOrSelector: StateKey | ((state?: AnyObject) => any) = identity,
 ) {
+  const storeSubscribe = React.useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store, null, callback);
+    },
+    [store],
+  );
+
   const getSnapshot = () => {
-    if (!store) return;
-    const state = store.getState();
-    const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
     const key = typeof keyOrSelector === "string" ? keyOrSelector : null;
+    const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
+    const state = store?.getState();
     if (selector) return selector(state);
+    if (!state) return;
     if (!key) return;
     if (!hasOwnProperty(state, key)) return;
     return state[key];
   };
-  return useSyncExternalStore(
-    store?.subscribe || noopSubscribe,
-    getSnapshot,
-    getSnapshot,
-  );
+
+  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
 }
 
 /**
@@ -112,57 +142,86 @@ export function useStoreState(
  */
 export function useStoreProps<
   S extends State,
-  T extends CoreStore<S>,
-  P extends S,
-  K extends keyof S & keyof P,
+  P extends Partial<S>,
+  K extends keyof S,
   SK extends keyof PickByValue<P, SetState<P[K]>>,
->(store: T, props: P, key: K, setKey?: SK) {
+>(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
-  const propsRef = useLiveRef({
-    value,
-    setValue: setKey ? (props[setKey] as SetState<S[K]>) : undefined,
-  });
+  const setValue = setKey ? props[setKey] : undefined;
+  const propsRef = useLiveRef({ value, setValue });
+  const canSyncValue = React.useRef(true);
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    return store.sync(
-      (state, prev) => {
-        const { value, setValue } = propsRef.current;
-        if (!setValue) return;
-        if (state[key] === prev[key]) return;
-        if (state[key] === value) return;
-        setValue(state[key]);
-      },
-      [key],
-    );
+    let canFlushSync = false;
+    // flushSync throws a warning if called from inside a lifecycle method.
+    // Since the store.sync callback can be called immediately, we'll make it
+    // use the flushSync function only in subsequent calls.
+    queueMicrotask(() => {
+      canFlushSync = true;
+    });
+    return sync(store, [key], (state, prev) => {
+      const { value, setValue } = propsRef.current;
+      if (!setValue) return;
+      if (state[key] === prev[key]) return;
+      if (state[key] === value) return;
+      // Disable controlled value sync until the next render to avoid resetting
+      // the value to a previous state before the component has a chance to
+      // re-render.
+      if (!canFlushSync) {
+        canSyncValue.current = false;
+        queueMicrotask(() => {
+          canSyncValue.current = true;
+        });
+      }
+      safeFlushSync(() => setValue(state[key]), canFlushSync);
+    });
   }, [store, key]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
-    return store.sync(() => {
-      if (value === undefined) return;
+    if (value === undefined) return;
+    canSyncValue.current = true;
+    return sync(store, [key], () => {
+      if (!canSyncValue.current) return;
       store.setState(key, value);
-    }, [key]);
+    });
   }, [store, key, value]);
 }
+
 /**
- * Creates a React store from a core store object.
- * @param createStore The function that creates the core store object.
+ * Creates a React store from a core store object and returns a tuple with the
+ * store and a function to update the store.
+ * @param createStore A function that receives the props and returns a core
+ * store object.
+ * @param props The props to pass to the createStore function.
  */
-export function useStore<T extends CoreStore>(createStore: () => T): Store<T> {
-  const store = useLazyValue(createStore);
+export function useStore<T extends CoreStore, P>(
+  createStore: (props: P) => T,
+  props: P,
+) {
+  const [store, setStore] = React.useState(() => createStore(props));
 
-  useSafeLayoutEffect(() => store.init(), [store]);
+  useSafeLayoutEffect(() => init(store), [store]);
 
-  const useState: UseState<StoreState<T>> = useCallback<AnyFunction>(
+  const useState: UseState<StoreState<T>> = React.useCallback<AnyFunction>(
     (keyOrSelector) => useStoreState(store, keyOrSelector),
     [store],
   );
 
-  return useMemo(() => ({ ...store, useState }), [store, useState]);
+  const memoizedStore = React.useMemo(
+    () => ({ ...store, useState }),
+    [store, useState],
+  );
+
+  const updateStore = useEvent(() => {
+    setStore((store) => createStore({ ...props, ...store.getState() }));
+  });
+
+  return [memoizedStore, updateStore] as const;
 }
 
-export type Store<T extends CoreStore> = T & {
+export type Store<T extends CoreStore = CoreStore> = T & {
   /**
    * Re-renders the component when the state changes and returns the current
    * state.

@@ -1,20 +1,12 @@
+import "@testing-library/jest-dom/vitest";
 import { Suspense, createElement, version } from "react";
 import { render } from "@ariakit/test";
-import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers.js";
-import _matchers from "@testing-library/jest-dom/matchers.js";
+import * as matchers from "@testing-library/jest-dom/matchers";
 import failOnConsole from "vitest-fail-on-console";
 
-const matchers = _matchers as unknown as typeof _matchers.default;
-
-declare module "vitest" {
-  interface JestAssertion<T = any>
-    extends jest.Matchers<void, T>,
-      TestingLibraryMatchers<T, void> {}
+if (!version.startsWith("17")) {
+  failOnConsole();
 }
-
-failOnConsole();
-
-expect.extend(matchers);
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
@@ -54,6 +46,7 @@ if (version.startsWith("17")) {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
     const mocks = {
+      startTransition: (v: () => any) => v(),
       useDeferredValue: <T>(v: T) => v,
       useTransition: () => [false, (v: () => any) => v()],
       useId: () => {
@@ -69,8 +62,8 @@ if (version.startsWith("17")) {
   });
 }
 
-beforeEach(async ({ meta }) => {
-  const filename = meta.file?.name;
+beforeEach(async ({ task }) => {
+  const filename = task.file?.name;
   if (!filename) return;
   const match = filename.match(/examples\/(.*)\/test.ts$/);
   if (!match) return;

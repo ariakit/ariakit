@@ -1,7 +1,10 @@
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { CollectionContext } from "./collection-context.js";
+import {
+  CollectionScopedContextProvider,
+  useCollectionProviderContext,
+} from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
 /**
@@ -22,12 +25,15 @@ import type { CollectionStore } from "./collection-store.js";
  */
 export const useCollection = createHook<CollectionOptions>(
   ({ store, ...props }) => {
+    const context = useCollectionProviderContext();
+    store = store || context;
+
     props = useWrapElement(
       props,
       (element) => (
-        <CollectionContext.Provider value={store}>
+        <CollectionScopedContextProvider value={store}>
           {element}
-        </CollectionContext.Provider>
+        </CollectionScopedContextProvider>
       ),
       [store],
     );
@@ -61,9 +67,13 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface CollectionOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `useCollectionStore` hook.
+   * Object returned by the
+   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * hook. If not provided, the closest
+   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
+   * component's context will be used.
    */
-  store: CollectionStore;
+  store?: CollectionStore;
 }
 
 export type CollectionProps<T extends As = "div"> = Props<CollectionOptions<T>>;

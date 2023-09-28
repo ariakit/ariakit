@@ -30,15 +30,16 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxGroup>
- *     <ComboboxGroupLabel>Label</ComboboxGroupLabel>
- *     <ComboboxItem value="Item 1" />
- *     <ComboboxItem value="Item 2" />
- *   </ComboboxGroup>
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxGroup>
+ *       <ComboboxGroupLabel>Fruits</ComboboxGroupLabel>
+ *       <ComboboxItem value="Apple" />
+ *       <ComboboxItem value="Banana" />
+ *     </ComboboxGroup>
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxGroupLabel = createComponent<ComboboxGroupLabelOptions>(
@@ -55,8 +56,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface ComboboxGroupLabelOptions<T extends As = "div">
   extends CompositeGroupLabelOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook. If not provided, the parent
-   * `ComboboxList` or `ComboboxPopover` components' context will be used.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the parent
+   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components' context will be used.
    */
   store?: ComboboxStore;
 }

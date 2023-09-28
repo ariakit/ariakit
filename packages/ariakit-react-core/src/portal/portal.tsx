@@ -291,8 +291,9 @@ if (process.env.NODE_ENV !== "production") {
 export interface PortalOptions<T extends As = "div"> extends Options<T> {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
-   * same as the order in which the `Portal` component was mounted in the React
-   * tree.
+   * same as the order in which the underlying
+   * [`Portal`](https://ariakit.org/reference/portal) component was mounted in
+   * the React tree.
    * @default false
    */
   preserveTabOrder?: boolean;
@@ -301,8 +302,11 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * useful when you need to be informed when the portal element is appended to
    * the DOM or removed from the DOM.
    * @example
+   * ```jsx
    * const [portalElement, setPortalElement] = useState(null);
-   * <Portal portalRef={setPortalElement} />;
+   *
+   * <Portal portalRef={setPortalElement} />
+   * ```
    */
   portalRef?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>;
   /**
@@ -316,17 +320,24 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * will be a `div` element appended to the `document.body`.
    * @default HTMLDivElement
    * @example
+   * ```jsx
    * const [portal, setPortal] = useState(null);
-   * <Portal portalElement={portal} />;
-   * <div ref={setPortal} />;
+   * <>
+   *   <Portal portalElement={portal} />
+   *   <div ref={setPortal} />
+   * </>
+   * ```
    * @example
+   * ```jsx
    * const getPortalElement = useCallback(() => {
    *   const div = document.createElement("div");
    *   const portalRoot = document.getElementById("portal-root");
    *   portalRoot.appendChild(div);
    *   return div;
    * }, []);
-   * <Portal portalElement={getPortalElement} />;
+   *
+   * <Portal portalElement={getPortalElement} />
+   * ```
    */
   portalElement?:
     | ((element: HTMLElement) => HTMLElement | null)

@@ -15,7 +15,15 @@ import { createPopoverStore } from "../popover/popover-store.js";
 import { toArray } from "../utils/array.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, mergeStore } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
 type Value = string | string[];
@@ -37,7 +45,7 @@ export function createSelectStore({
 }: SelectStoreProps = {}): SelectStore {
   const store = mergeStore(
     props.store,
-    combobox?.omit(
+    omit(combobox, [
       "value",
       "items",
       "renderedItems",
@@ -47,8 +55,11 @@ export function createSelectStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
-    ),
+    ]),
   );
+
+  throwOnConflictingProps(props, store);
+
   const syncState = store.getState();
 
   const composite = createCompositeStore({
@@ -92,7 +103,6 @@ export function createSelectStore({
   const initialState: SelectStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    combobox: defaultValue(syncState.combobox, !!combobox),
     value: defaultValue(
       props.value,
       syncState.value,
@@ -111,65 +121,57 @@ export function createSelectStore({
   const select = createStore(initialState, composite, popover, store);
 
   // Automatically sets the default value if it's not set.
-  select.setup(() =>
-    select.sync(
-      (state) => {
-        if (state.value !== initialValue) return;
-        if (!state.items.length) return;
-        const item = state.items.find(
-          (item) => !item.disabled && item.value != null,
-        );
-        if (item?.value == null) return;
-        select.setState("value", item.value);
-      },
-      ["value", "items"],
-    ),
+  setup(select, () =>
+    sync(select, ["value", "items"], (state) => {
+      if (state.value !== initialValue) return;
+      if (!state.items.length) return;
+      const item = state.items.find(
+        (item) => !item.disabled && item.value != null,
+      );
+      if (item?.value == null) return;
+      select.setState("value", item.value);
+    }),
   );
 
   // Sets the active id when the value changes and the popover is hidden.
-  select.setup(() =>
-    select.sync(
-      (state) => {
-        // TODO: Revisit this. See test "open with keyboard, then try to open
-        // again"
-        if (combobox) return;
-        if (state.mounted) return;
-        const values = toArray(state.value);
-        const lastValue = values[values.length - 1];
-        if (lastValue == null) return;
-        const item = state.items.find(
-          (item) => !item.disabled && item.value === lastValue,
-        );
-        if (!item) return;
-        // TODO: This may be problematic.
-        select.setState("activeId", item.id);
-      },
-      ["mounted", "items", "value"],
-    ),
+  setup(select, () =>
+    sync(select, ["mounted", "items", "value"], (state) => {
+      // TODO: Revisit this. See test "open with keyboard, then try to open
+      // again"
+      if (combobox) return;
+      if (state.mounted) return;
+      const values = toArray(state.value);
+      const lastValue = values[values.length - 1];
+      if (lastValue == null) return;
+      const item = state.items.find(
+        (item) => !item.disabled && item.value === lastValue,
+      );
+      if (!item) return;
+      // TODO: This may be problematic.
+      select.setState("activeId", item.id);
+    }),
   );
 
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
-  select.setup(() =>
-    select.syncBatch(
-      (state) => {
-        const { mounted, value, activeId } = select.getState();
-        if (!state.setValueOnMove && mounted) return;
-        if (Array.isArray(value)) return;
-        if (!state.moves) return;
-        if (!activeId) return;
-        const item = composite.item(activeId);
-        if (!item || item.disabled || item.value == null) return;
-        select.setState("value", item.value);
-      },
-      ["setValueOnMove", "moves"],
-    ),
+  setup(select, () =>
+    batch(select, ["setValueOnMove", "moves"], (state) => {
+      const { mounted, value, activeId } = select.getState();
+      if (!state.setValueOnMove && mounted) return;
+      if (Array.isArray(value)) return;
+      if (!state.moves) return;
+      if (!activeId) return;
+      const item = composite.item(activeId);
+      if (!item || item.disabled || item.value == null) return;
+      select.setState("value", item.value);
+    }),
   );
 
   return {
     ...composite,
     ...popover,
     ...select,
+    combobox,
     setValue: (value) => select.setState("value", value),
     setSelectElement: (element) => select.setState("selectElement", element),
     setLabelElement: (element) => select.setState("labelElement", element),
@@ -193,10 +195,6 @@ export interface SelectStoreState<T extends Value = Value>
   orientation: CompositeStoreState<Item>["orientation"];
   /** @default "bottom-start" */
   placement: PopoverStoreState["placement"];
-  /**
-   * Whether the select store has received a combobox prop.
-   */
-  combobox: boolean;
   /**
    * The select value.
    *
@@ -222,7 +220,8 @@ export interface SelectStoreState<T extends Value = Value>
 }
 
 export interface SelectStoreFunctions<T extends Value = Value>
-  extends CompositeStoreFunctions<Item>,
+  extends Pick<SelectStoreOptions<T>, "combobox">,
+    CompositeStoreFunctions<Item>,
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
@@ -268,7 +267,7 @@ export interface SelectStoreOptions<T extends Value = Value>
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
-  combobox?: ComboboxStore;
+  combobox?: ComboboxStore | null;
   /**
    * The default value. If not set, the first non-disabled item will be used.
    *

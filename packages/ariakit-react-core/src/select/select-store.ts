@@ -3,47 +3,38 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+import { useComboboxProviderContext } from "../combobox/combobox-context.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.js";
-import {
-  useCompositeStoreOptions,
-  useCompositeStoreProps,
-} from "../composite/composite-store.js";
+import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.js";
-import {
-  usePopoverStoreOptions,
-  usePopoverStoreProps,
-} from "../popover/popover-store.js";
+import { usePopoverStoreProps } from "../popover/popover-store.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Item = Core.SelectStoreItem;
 type Value = Core.SelectStoreValue;
 
-export function useSelectStoreOptions<T extends Value = Value>(
-  props: SelectStoreProps<T>,
-) {
-  return {
-    ...useCompositeStoreOptions(props),
-    ...usePopoverStoreOptions(props),
-  };
-}
-
-export function useSelectStoreProps<T extends SelectStore>(
+export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
+  update: () => void,
   props: SelectStoreProps,
 ) {
-  store = useCompositeStoreProps(store, props);
-  store = usePopoverStoreProps(store, props);
+  useUpdateEffect(update, [props.combobox]);
+  store = useCompositeStoreProps(store, update, props);
+  store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
-  return store;
+  useStoreProps(store, props, "setValueOnMove");
+  return Object.assign(store, { combobox: props.combobox });
 }
 
 /**
@@ -51,9 +42,9 @@ export function useSelectStoreProps<T extends SelectStore>(
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectState({ defaultValue: "Apple" });
- * <Select state={select} />
- * <SelectPopover state={select}>
+ * const select = useSelectStore({ defaultValue: "Apple" });
+ * <Select store={select} />
+ * <SelectPopover store={select}>
  *   <SelectItem value="Apple" />
  *   <SelectItem value="Orange" />
  * </SelectPopover>
@@ -66,11 +57,13 @@ export function useSelectStore<T extends Value = Value>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
-  const options = useSelectStoreOptions(props);
-  const store = useStore(() =>
-    Core.createSelectStore({ ...props, ...options }),
-  );
-  return useSelectStoreProps(store, props);
+  const combobox = useComboboxProviderContext();
+  props = {
+    ...props,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
+  };
+  const [store, update] = useStore(Core.createSelectStore, props);
+  return useSelectStoreProps(store, update, props);
 }
 
 export type SelectStoreItem = Item;
@@ -83,7 +76,8 @@ export interface SelectStoreState<T extends Value = Value>
     PopoverStoreState {}
 
 export interface SelectStoreFunctions<T extends Value = Value>
-  extends Core.SelectStoreFunctions<T>,
+  extends Pick<SelectStoreOptions<T>, "combobox">,
+    Omit<Core.SelectStoreFunctions<T>, "combobox">,
     CompositeStoreFunctions<Item>,
     PopoverStoreFunctions {}
 
@@ -94,12 +88,18 @@ export interface SelectStoreOptions<T extends Value = Value>
   /**
    * Function that will be called when the `value` state changes.
    * @param value The new value.
-   * @example
-   * function MySelect({ value, onChange }) {
-   *   const select = useSelectStore({ value, setValue: onChange });
-   * }
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
+  /**
+   * A reference to a combobox store. This is used when combining the combobox
+   * with a select (e.g., select with a search input). The stores will share the
+   * same state.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   */
+  combobox?: ComboboxStore | null;
 }
 
 export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &

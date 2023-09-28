@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
@@ -9,7 +9,7 @@ import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
 function getFirstFieldsByName(
@@ -64,13 +64,13 @@ export const useFormPush = createHook<FormPushOptions>(
     autoFocusOnClick = true,
     ...props
   }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormPush must be wrapped in a Form component",
+        "FormPush must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;
@@ -154,8 +154,11 @@ export interface FormPushOptions<T extends As = "button">
   extends ButtonOptions<T>,
     CollectionItemOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
   /**

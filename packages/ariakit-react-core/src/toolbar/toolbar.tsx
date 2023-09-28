@@ -3,8 +3,12 @@ import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ToolbarContext } from "./toolbar-context.js";
-import type { ToolbarStore } from "./toolbar-store.js";
+import {
+  ToolbarScopedContextProvider,
+  useToolbarProviderContext,
+} from "./toolbar-context.js";
+import { useToolbarStore } from "./toolbar-store.js";
+import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
 
 /**
  * Returns props to create a `Toolbar` component.
@@ -19,29 +23,51 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * </Role>
  * ```
  */
-export const useToolbar = createHook<ToolbarOptions>(({ store, ...props }) => {
-  const orientation = store.useState((state) =>
-    state.orientation === "both" ? undefined : state.orientation,
-  );
+export const useToolbar = createHook<ToolbarOptions>(
+  ({
+    store: storeProp,
+    orientation: orientationProp,
+    virtualFocus,
+    focusLoop,
+    rtl,
+    ...props
+  }) => {
+    const context = useToolbarProviderContext();
+    storeProp = storeProp || context;
 
-  props = useWrapElement(
-    props,
-    (element) => (
-      <ToolbarContext.Provider value={store}>{element}</ToolbarContext.Provider>
-    ),
-    [store],
-  );
+    const store = useToolbarStore({
+      store: storeProp,
+      orientation: orientationProp,
+      virtualFocus,
+      focusLoop,
+      rtl,
+    });
 
-  props = {
-    role: "toolbar",
-    "aria-orientation": orientation,
-    ...props,
-  };
+    const orientation = store.useState((state) =>
+      state.orientation === "both" ? undefined : state.orientation,
+    );
 
-  props = useComposite({ store, ...props });
+    props = useWrapElement(
+      props,
+      (element) => (
+        <ToolbarScopedContextProvider value={store}>
+          {element}
+        </ToolbarScopedContextProvider>
+      ),
+      [store],
+    );
 
-  return props;
-});
+    props = {
+      role: "toolbar",
+      "aria-orientation": orientation,
+      ...props,
+    };
+
+    props = useComposite({ store, ...props });
+
+    return props;
+  },
+);
 
 /**
  * Renders a toolbar element that groups interactive elements together.
@@ -65,11 +91,15 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface ToolbarOptions<T extends As = "div">
-  extends CompositeOptions<T> {
+  extends CompositeOptions<T>,
+    Pick<
+      ToolbarStoreProps,
+      "focusLoop" | "orientation" | "rtl" | "virtualFocus"
+    > {
   /**
    * Object returned by the `useToolbarStore` hook.
    */
-  store: ToolbarStore;
+  store?: ToolbarStore;
 }
 
 export type ToolbarProps<T extends As = "div"> = Props<ToolbarOptions<T>>;

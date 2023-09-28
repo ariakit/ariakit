@@ -6,7 +6,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   closest,
   contains,
@@ -23,7 +23,7 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { chain } from "@ariakit/core/utils/misc";
+import { chain, invariant } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -50,18 +50,20 @@ import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
-  DialogContext,
   DialogDescriptionContext,
   DialogHeadingContext,
+  DialogScopedContextProvider,
+  useDialogProviderContext,
 } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
-import { disableTreeOutside } from "./utils/disable-tree-outside.js";
+import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
+import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
 
 const isSafariBrowser = isSafari();
 
@@ -112,6 +114,15 @@ export const useDialog = createHook<DialogOptions>(
     finalFocus,
     ...props
   }) => {
+    const context = useDialogProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Dialog must receive a `store` prop or be wrapped in a DialogProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
@@ -130,15 +141,26 @@ export const useDialog = createHook<DialogOptions>(
     const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
     usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
-    useHideOnInteractOutside(store, hideOnInteractOutside);
+    useHideOnInteractOutside(store, hideOnInteractOutside, domReady);
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
     props = useWrapElement(props, wrapElement, [wrapElement]);
+
+    if (process.env.NODE_ENV !== "production") {
+      useEffect(() => {
+        if (!backdropProps) return;
+        console.warn(
+          "The `backdropProps` prop is deprecated. Use the `backdrop` prop instead.",
+          "See https://ariakit.org/reference/dialog#backdrop",
+        );
+      }, [backdropProps]);
+    }
 
     // Sets disclosure element using the current active element right after the
     // dialog is opened.
     useSafeLayoutEffect(() => {
       if (!open) return;
+      if (!store) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -146,7 +168,7 @@ export const useDialog = createHook<DialogOptions>(
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, activeElement)) return;
       store.setDisclosureElement(activeElement);
-    }, [open]);
+    }, [store, open]);
 
     // Safari does not focus on native buttons on mousedown. The
     // DialogDisclosure component normalizes this behavior using the
@@ -155,6 +177,7 @@ export const useDialog = createHook<DialogOptions>(
     // disclosure button gets focused here.
     if (isSafariBrowser) {
       useEffect(() => {
+        if (!store) return;
         if (!mounted) return;
         const { disclosureElement } = store.getState();
         if (!disclosureElement) return;
@@ -176,7 +199,7 @@ export const useDialog = createHook<DialogOptions>(
         return () => {
           disclosureElement.removeEventListener("mousedown", onMouseDown);
         };
-      }, [mounted]);
+      }, [store, mounted]);
     }
 
     const shouldDisableAccessibilityTree =
@@ -192,6 +215,7 @@ export const useDialog = createHook<DialogOptions>(
     // So that screen reader users aren't trapped in the dialog when there's no
     // visible dismiss button.
     useEffect(() => {
+      if (!store) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
@@ -205,14 +229,44 @@ export const useDialog = createHook<DialogOptions>(
       const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
       if (existingDismiss) return;
       return prependHiddenDismiss(dialog, store.hide);
-    }, [mounted, domReady, shouldDisableAccessibilityTree]);
+    }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
+
+    // When the dialog is animated, the open state will be false and the mounted
+    // state will be true. The dialog will still be visible until the animation
+    // is complete. We need to disable the dialog tree completely in this case.
+    // TODO: We should probably do this in a more generic way in the
+    // DisclosureContent component.
+    useSafeLayoutEffect(() => {
+      if (open) return;
+      if (!mounted) return;
+      if (!domReady) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      return disableTree(dialog);
+    }, [open, mounted, domReady]);
+
+    useSafeLayoutEffect(() => {
+      if (!id) return;
+      if (!open) return;
+      if (!domReady) return;
+      const dialog = ref.current;
+      // When the dialog opens, we capture a snapshot of the document. This
+      // snapshot is then used to disable elements outside the dialog in the
+      // subsequent effect. However, the issue arises as this next effect also
+      // relies on nested dialogs. Meaning, each time a nested dialog is
+      // rendered, we capture a new document snapshot, which might disable
+      // third-party dialogs. Hence, we take the snapshot here, independent of
+      // any nested dialogs.
+      return createWalkTreeSnapshot(id, [dialog]);
+    }, [id, open, domReady]);
 
     const getPersistentElementsProp = useEvent(getPersistentElements);
 
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
-      if (!domReady) return;
       if (!id) return;
+      if (!store) return;
+      if (!domReady) return;
       // When the dialog is animating, we immediately restore the element tree
       // outside. This means the element tree will be enabled when the focus is
       // moved back to the disclosure element. That's why we use open instead of
@@ -227,23 +281,23 @@ export const useDialog = createHook<DialogOptions>(
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
       if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(id, disclosureElement, ...allElements);
+        return markTreeOutside(id, [disclosureElement, ...allElements]);
       }
       if (modal) {
         return chain(
-          markTreeOutside(id, ...allElements),
-          disableTreeOutside(...allElements),
+          markTreeOutside(id, allElements),
+          disableTreeOutside(id, allElements),
         );
       }
       return chain(
-        markTreeOutside(id, disclosureElement, ...allElements),
-        disableAccessibilityTreeOutside(...allElements),
+        markTreeOutside(id, [disclosureElement, ...allElements]),
+        disableAccessibilityTreeOutside(id, allElements),
       );
     }, [
-      domReady,
       id,
-      open,
       store,
+      domReady,
+      open,
       getPersistentElementsProp,
       nestedDialogs,
       shouldDisableAccessibilityTree,
@@ -322,19 +376,14 @@ export const useDialog = createHook<DialogOptions>(
       return () => setHasOpened(false);
     }, [open]);
 
-    // Auto focus on hide. This must be a layout effect because we need to move
-    // focus synchronously before another dialog is shown in parallel.
-    useSafeLayoutEffect(() => {
-      // We only want to auto focus on hide if the dialog was open before.
-      if (!hasOpened) return;
-      if (!mayAutoFocusOnHide) return;
-      const dialog = ref.current;
-      // A function so we can use it on the effect setup and cleanup phases.
-      const focusOnHide = (retry = true) => {
+    const focusOnHide = useCallback(
+      (dialog: HTMLElement | null, retry = true) => {
+        if (!store) return;
+        const { open, disclosureElement } = store.getState();
+        if (open) return;
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog)) return;
-        const { disclosureElement } = store.getState();
         let element = getElementFromProp(finalFocus) || disclosureElement;
         if (element?.id) {
           const doc = getDocument(element);
@@ -368,24 +417,32 @@ export const useDialog = createHook<DialogOptions>(
           // again on the next frame. This is sometimes necessary because there
           // may be nested dialogs that still need a tick to remove the inert
           // attribute from elements outside.
-          requestAnimationFrame(() => focusOnHide(false));
+          requestAnimationFrame(() => focusOnHide(dialog, false));
           return;
         }
         if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
         if (!isElementFocusable) return;
         element?.focus();
-      };
-      if (!open) {
-        // If this effect is running while the open state is false, this means
-        // that the Dialog component doesn't get unmounted when it's not open,
-        // so we can immediatelly move focus.
-        return focusOnHide();
-      }
-      // Otherwise, we just return the focusOnHide function so it's going to be
-      // executed when the Dialog component gets unmounted. This is useful so we
-      // can support both mounting and unmounting Dialog components.
-      return focusOnHide;
-    }, [hasOpened, open, mayAutoFocusOnHide, finalFocus, autoFocusOnHideProp]);
+      },
+      [store, finalFocus, autoFocusOnHideProp],
+    );
+
+    // Auto focus on hide with an always rendered dialog.
+    useSafeLayoutEffect(() => {
+      if (open) return;
+      if (!hasOpened) return;
+      if (!mayAutoFocusOnHide) return;
+      const dialog = ref.current;
+      focusOnHide(dialog);
+    }, [open, hasOpened, mayAutoFocusOnHide, focusOnHide]);
+
+    // Auto focus on hide with a dialog that gets unmounted when hidden.
+    useEffect(() => {
+      if (!hasOpened) return;
+      if (!mayAutoFocusOnHide) return;
+      const dialog = ref.current;
+      return () => focusOnHide(dialog);
+    }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
@@ -396,6 +453,7 @@ export const useDialog = createHook<DialogOptions>(
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key !== "Escape") return;
         if (event.defaultPrevented) return;
+        if (!store) return;
         const dialog = ref.current;
         if (!dialog) return;
         // Ignore the event if the current dialog is marked by another dialog.
@@ -409,7 +467,7 @@ export const useDialog = createHook<DialogOptions>(
         const isValidTarget = () => {
           if (target.tagName === "BODY") return true;
           if (contains(dialog, target)) return true;
-          if (!disclosureElement) return false;
+          if (!disclosureElement) return true;
           if (contains(disclosureElement, target)) return true;
           return false;
         };
@@ -418,11 +476,11 @@ export const useDialog = createHook<DialogOptions>(
         store.hide();
       };
       // We're attatching the listener to the document instead of the dialog
-      // element so we can also listen to keystrokes on the disclosure element.
-      // We can't do this on a onKeyDown prop on the disclosure element because
-      // we don't have access to the hideOnEscape prop there.
-      return addGlobalEventListener("keydown", onKeyDown);
-    }, [mounted, domReady, hideOnEscapeProp]);
+      // element so we can listen to the Escape key anywhere in the document,
+      // even when the dialog is not focused. By using the capture phase, users
+      // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
+      return addGlobalEventListener("keydown", onKeyDown, true);
+    }, [store, domReady, mounted, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(
@@ -440,6 +498,7 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
+        if (!store) return element;
         if (!backdrop) return element;
         return (
           <>
@@ -463,13 +522,13 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <DialogContext.Provider value={store}>
+        <DialogScopedContextProvider value={store}>
           <DialogHeadingContext.Provider value={setHeadingId}>
             <DialogDescriptionContext.Provider value={setDescriptionId}>
               {element}
             </DialogDescriptionContext.Provider>
           </DialogHeadingContext.Provider>
-        </DialogContext.Provider>
+        </DialogScopedContextProvider>
       ),
       [store],
     );
@@ -523,18 +582,28 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Object returned by the `useDialogStore` hook.
    */
-  store: DialogStore;
+  store?: DialogStore;
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:
-   * - The `portal` and `preventBodyScroll` props are set to `true`. They can
-   *   still be manually set to `false`.
-   * - A visually hidden dismiss button will be rendered if the `DialogDismiss`
-   *   component hasn't been used. This allows screen reader users to close the
-   *   dialog.
+   * - The [`portal`](https://ariakit.org/reference/dialog#portal) and
+   *   [`preventBodyScroll`](https://ariakit.org/reference/dialog#preventbodyscroll)
+   *   props are set to `true`. They can still be manually set to `false`.
+   * - A visually hidden dismiss button will be rendered if the
+   *   [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss) component
+   *   hasn't been used. This allows screen reader users to close the dialog.
    * - When the dialog is open, element tree outside it will be disabled.
-   * - When using the `Heading` or `DialogHeading` components within the dialog,
-   *   their level will be reset so they start with `h1`.
+   * - When using the [`Heading`](https://ariakit.org/reference/heading) or
+   *   [`DialogHeading`](https://ariakit.org/reference/dialog-heading)
+   *   components within the dialog, their level will be reset so they start
+   *   with `h1`.
+   *
+   * Live examples:
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Context menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    * @default true
    */
   modal?: boolean;
@@ -622,10 +691,14 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Specifies the element that will receive focus when the dialog is first
    * opened. It can be an `HTMLElement` or a `React.RefObject` with an
-   * `HTMLElement`. However, if `autoFocusOnShow` is set to `false`, this prop
-   * will have no effect. If left unset, the dialog will attempt to determine
-   * the initial focus element in the following order:
-   * 1. An element with an `autoFocus` prop.
+   * `HTMLElement`.
+   *
+   * If
+   * [`autoFocusOnShow`](https://ariakit.org/reference/dialog#autofocusonshow)
+   * is set to `false`, this prop will have no effect. If left unset, the dialog
+   * will attempt to determine the initial focus element in the following order:
+   * 1. A [Focusable](https://ariakit.org/components/focusable) element with an
+   *    [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
    * 2. The first tabbable element inside the dialog.
    * 3. The first focusable element inside the dialog.
    * 4. The dialog element itself.

@@ -216,7 +216,9 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         }}
         hideOnEscape={(event) => {
           if (!onEscapeKeyDown) return true;
-          onEscapeKeyDown("nativeEvent" in event ? event.nativeEvent : event);
+          const nativeEvent =
+            event instanceof KeyboardEvent ? event : event.nativeEvent;
+          onEscapeKeyDown(nativeEvent);
           return !event.defaultPrevented;
         }}
         hideOnInteractOutside={(originalEvent) => {

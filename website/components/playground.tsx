@@ -17,8 +17,9 @@ export type PlaygroundProps = Omit<
 export async function Playground(props: PlaygroundProps) {
   const codeBlocks: Record<string, any> = {};
   const javascript: Record<string, { code: string; codeBlock: any }> = {};
+  const entries = Object.entries(props.files);
 
-  Object.entries(props.files).forEach(async ([filename, code]) => {
+  for (const [filename, code] of entries) {
     if (/\.tsx?$/.test(filename)) {
       const jsFilename = tsToJsFilename(filename);
       const jsCode = await tsToJs(code);
@@ -32,7 +33,7 @@ export async function Playground(props: PlaygroundProps) {
     codeBlocks[filename] = (
       <CodeBlock type="editor" filename={filename} code={code} />
     );
-  });
+  }
 
   return (
     <PlaygroundClient

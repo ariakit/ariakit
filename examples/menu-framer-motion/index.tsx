@@ -1,7 +1,7 @@
+import "./style.css";
 import { useState } from "react";
 import type { MotionProps, Variants } from "framer-motion";
-import { Menu, MenuItem } from "./menu.js";
-import "./style.css";
+import { Menu, MenuItem } from "./menu.jsx";
 
 const menu = {
   closed: {

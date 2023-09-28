@@ -1,5 +1,5 @@
 import type { FocusEvent, RefObject } from "react";
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { cx, invariant } from "@ariakit/core/utils/misc";
@@ -18,7 +18,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
 type ItemType = "label" | "error" | "description";
@@ -72,13 +72,13 @@ export const useFormField = createHook<FormFieldOptions>(
     touchOnBlur = true,
     ...props
   }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormField must be wrapped in a Form component",
+        "FormField must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;
@@ -146,21 +146,26 @@ export const useFormField = createHook<FormFieldOptions>(
 );
 
 /**
- * Renders a form field. Unlike `FormInput`, this component doesn't
- * automatically pass the `value` and `onChange` props down to the underlying
- * element. This is so we can use it not only for native form elements but also
- * for custom components whose value is not controlled by the native `value` and
- * `onChange` props.
+ * Renders a form field. Unlike
+ * [`FormInput`](https://ariakit.org/reference/form-input), this component
+ * doesn't automatically pass the `value` and `onChange` props down to the
+ * underlying element. This is so we can use it not only for native form
+ * elements but also for custom components whose value is not controlled by the
+ * native `value` and `onChange` props.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { content: "" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     content: "",
+ *   },
+ * });
+ *
  * const value = form.useValue(form.names.content);
  *
  * <Form store={form}>
  *   <FormLabel name={form.names.content}>Content</FormLabel>
  *   <FormField
- *     {...props}
  *     value={value}
  *     onChange={(value) => form.setValue(form.names.content, value)}
  *     render={<Editor />}
@@ -180,8 +185,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface FormFieldOptions<T extends As = "input">
   extends CollectionItemOptions<T> {
   /**
-   * Object returned by the `useFormStore` hook. If not provided, the parent
-   * `Form` component's context will be used.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * context will be used.
    */
   store?: FormStore;
   /**

@@ -1,5 +1,5 @@
 import type { KeyboardEvent, MouseEvent } from "react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
@@ -17,8 +17,8 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
-  ComboboxContext,
   ComboboxItemValueContext,
+  useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -43,13 +43,13 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) => {
-    const context = useContext(ComboboxContext);
+    const context = useComboboxScopedContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component",
+        "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -155,22 +155,27 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 );
 
 /**
- * Renders a combobox item inside a combobox list or popover. The `role` prop
- * will be automatically set based on the `ComboboxList` or `ComboboxPopover`
- * own `role` prop. For example, if the `ComboboxPopover` component's `role`
- * prop is set to `listbox` (default), the `ComboboxItem` `role` will be set to
- * `option`. By default, the `value` prop will be rendered as the children, but
- * this can be overriden.
+ * Renders a combobox item inside a
+ * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+ * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+ * components. The `role` prop will be automatically set based on the list's own
+ * `role` prop. For example, if the list `role` is set to `listbox` (default),
+ * the `ComboboxItem` `role` will be set to `option`.
+ *
+ * By default, the
+ * [`value`](https://ariakit.org/reference/combobox-item#value) prop will be
+ * rendered as the children, but this can be overriden.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxItem = createMemoComponent<ComboboxItemOptions>(
@@ -188,21 +193,41 @@ export interface ComboboxItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook. If not provided, the parent
-   * `ComboboxList` or `ComboboxPopover` components' context will be used.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the parent
+   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components' context will be used.
    */
   store?: ComboboxStore;
   /**
    * The value of the item. This will be rendered as the children by default.
-   *   - If `setValueOnClick` is set to `true`, this will be the value of the
-   *     combobox input when the user clicks on this item.
-   *   - If the `autoComplete` prop on the `Combobox` component is set to `both`
-   *     or `inline`, this will be the value of the combobox input when the
-   *     combobox loses focus.
+   *   - If
+   *     [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
+   *     is set to `true`, this will be the value of the combobox input when the
+   *     user clicks on this item.
+   *   - If the
+   *     [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
+   *     prop on the [`Combobox`](https://ariakit.org/reference/combobox)
+   *     component is set to `both` or `inline`, this will be the value of the
+   *     combobox input when the combobox loses focus.
+   *
+   * Live examples:
+   * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
+   * - [ComboboxCancel](https://ariakit.org/examples/combobox-cancel)
+   * - [ComboboxDisclosure](https://ariakit.org/examples/combobox-disclosure)
+   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
+   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
    */
   value?: string;
   /**
    * Whether to hide the combobox when this item is clicked.
+   *
+   * Live examples:
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

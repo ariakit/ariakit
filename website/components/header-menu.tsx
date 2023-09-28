@@ -16,6 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { batch, sync } from "@ariakit/core/utils/store";
 import * as Ariakit from "@ariakit/react";
 import {
   useEvent,
@@ -108,26 +109,20 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     });
 
     useEffect(() => {
-      return menu.syncBatch(
-        (state) => {
-          if (parent) return;
-          if (!state.open) return;
-          menu.setAutoFocusOnShow(true);
-        },
-        ["open", "autoFocusOnShow"],
-      );
+      return batch(menu, ["open", "autoFocusOnShow"], (state) => {
+        if (parent) return;
+        if (!state.open) return;
+        menu.setAutoFocusOnShow(true);
+      });
     }, [parent, menu]);
 
     useEffect(() => {
-      return select.sync(
-        (state) => {
-          if (parent) return;
-          menu.setDisclosureElement(state.selectElement);
-          select.setDisclosureElement(state.selectElement);
-          combobox.setDisclosureElement(state.selectElement);
-        },
-        ["selectElement", "disclosureElement"],
-      );
+      return sync(select, ["selectElement", "disclosureElement"], (state) => {
+        if (parent) return;
+        menu.setDisclosureElement(state.selectElement);
+        select.setDisclosureElement(state.selectElement);
+        combobox.setDisclosureElement(state.selectElement);
+      });
     }, [parent, menu, select, combobox]);
 
     const selectable = value != null || !!onChange;
@@ -464,7 +459,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
             <div
               aria-hidden
               className={twJoin(
-                "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+                "flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-sm",
                 "bg-gray-150 dark:bg-gray-800",
                 "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
                 "group-active:bg-black/[7.5%] dark:group-active:bg-black/70",

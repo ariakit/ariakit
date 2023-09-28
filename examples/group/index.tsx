@@ -1,5 +1,5 @@
-import { Button, Group } from "@ariakit/react";
 import "./style.css";
+import { Button, Group } from "@ariakit/react";
 
 export default function Example() {
   return (

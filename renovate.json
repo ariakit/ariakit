@@ -3,7 +3,23 @@
   "semanticCommits": false,
   "packageRules": [
     {
+      "matchPackagePatterns": [
+        "hast",
+        "rehype",
+        "remark",
+        "unified",
+        "unist",
+        "react-markdown"
+      ],
+      "groupName": "unified"
+    },
+    {
+      "matchPackagePatterns": ["monaco"],
+      "groupName": "monaco"
+    },
+    {
       "matchPackageNames": [
+        "@wordpress/components",
         "cross-env",
         "cross-spawn",
         "framer-motion",

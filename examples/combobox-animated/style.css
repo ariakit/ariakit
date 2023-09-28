@@ -6,7 +6,7 @@
     duration-200
     opacity-0
     [transform:translateY(-5%)]
-    enter:opacity-100
-    enter:[transform:translateY(0%)]
+    data-[enter]:opacity-100
+    data-[enter]:[transform:translateY(0%)]
   ;
 }

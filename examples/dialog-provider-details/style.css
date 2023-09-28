@@ -1,0 +1,9 @@
+@import url("../dialog/style.css");
+
+.button {
+  @apply
+    appearance-none
+    [&::marker]:hidden
+    [&::-webkit-details-marker]:hidden
+  ;
+}

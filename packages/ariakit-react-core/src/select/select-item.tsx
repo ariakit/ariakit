@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -20,7 +20,10 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContext, SelectItemCheckedContext } from "./select-context.js";
+import {
+  SelectItemCheckedContext,
+  useSelectScopedContext,
+} from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
@@ -53,13 +56,13 @@ export const useSelectItem = createHook<SelectItemOptions>(
     focusOnHover = true,
     ...props
   }) => {
-    const context = useContext(SelectContext);
+    const context = useSelectScopedContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "SelectItem must be wrapped in a SelectList or SelectPopover component",
+        "SelectItem must be wrapped in a SelectList or SelectPopover component.",
     );
 
     const id = useId(props.id);
@@ -170,21 +173,29 @@ export const useSelectItem = createHook<SelectItemOptions>(
 );
 
 /**
- * Renders a select item inside a select list or select popover. The `role` prop
- * will be automatically set based on the `SelectList` or `SelectPopover` own
- * `role` prop. For example, if the `SelectPopover` component's `role` prop is
- * set to `listbox` (default), the `SelectItem` `role` will be set to `option`.
- * By default, the `value` prop will be rendered as the children, but this can
- * be overriden.
+ * Renders a select item inside a
+ * [`SelectList`](https://ariakit.org/reference/select-list) or
+ * [`SelectPopover`](https://ariakit.org/reference/select-popover).
+ *
+ * The `role` attribute will be automatically set on the item based on the
+ * list's own `role` attribute. For example, if the
+ * [`SelectPopover`](https://ariakit.org/reference/select-popover) component's
+ * `role` attribute is set to `listbox` (which is the default), the item `role`
+ * will be set to `option`.
+ *
+ * By default, the [`value`](https://ariakit.org/reference/select-item#value)
+ * prop will be rendered as the children, but this can be overriden if a custom
+ * children is provided.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * ```jsx {4-5}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectItem = createMemoComponent<SelectItemOptions>((props) => {
@@ -200,19 +211,36 @@ export interface SelectItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
   /**
    * The value of the item. This will be rendered as the children by default.
-   *   - If `setValueOnClick` is set to `true` on this component, the
-   *     `select.value` state will be set to this value when the user clicks on
-   *     it.
-   *   - If `select.setValueOnMove` is set to `true` on the select store, the
-   *     `select.value` state will be set to this value when the user moves to
-   *     it (which is usually the case when moving through the items using the
-   *     keyboard).
+   * - If
+   *   [`setValueOnClick`](https://ariakit.org/reference/select-item#setvalueonclick)
+   *   is set to `true`, the
+   *   [`value`](https://ariakit.org/reference/select-provider#value) state will
+   *   be set to this value when the user clicks on it.
+   * - If
+   *   [`setValueOnMove`](https://ariakit.org/reference/select-provider#setvalueonmove)
+   *   is set to `true`, the
+   *   [`value`](https://ariakit.org/reference/select-provider#value) state will
+   *   be set to this value when the user moves to it (which is usually the case
+   *   when moving through the items using the keyboard).
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   * - [Select grid](https://ariakit.org/examples/select-grid)
+   * - [SelectGroup](https://ariakit.org/examples/select-group)
+   * - [Select with custom
+   *   item](https://ariakit.org/examples/select-item-custom)
    * @example
    * ```jsx
    * <SelectItem value="Apple" />
@@ -221,12 +249,14 @@ export interface SelectItemOptions<T extends As = "div">
   value?: string;
   /**
    * Whether to hide the select when this item is clicked. By default, it's
-   * `true` when the `value` prop is also provided.
+   * `true` when the [`value`](https://ariakit.org/reference/select-item#value)
+   * prop is also provided.
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the select value with this item's value, if any, when this
-   * item is clicked. By default, it's `true` when the `value` prop is also
+   * item is clicked. By default, it's `true` when the
+   * [`value`](https://ariakit.org/reference/select-item#value) prop is also
    * provided.
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

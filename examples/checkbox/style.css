@@ -9,6 +9,6 @@
 
 .checkbox {
   @apply
-    data-[focus-visible]:outline-blue-600
+    outline-blue-600
   ;
 }

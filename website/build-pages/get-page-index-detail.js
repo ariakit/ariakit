@@ -22,6 +22,14 @@ export function getPageIndexDetail(filename, getGroup, tree) {
       content = toString(node).trim();
     }
   });
-  const group = getGroup?.(filename) || null;
-  return { group, slug, title, content, unlisted: !!tree.data?.unlisted };
+  const dataGroup = tree.data?.group ? `${tree.data?.group}` : null;
+  const group = getGroup?.(filename) || dataGroup;
+  return {
+    group,
+    slug,
+    title,
+    content,
+    unlisted: !!tree.data?.unlisted,
+    tags: Array.isArray(tree.data?.tags) ? tree.data?.tags || [] : [],
+  };
 }

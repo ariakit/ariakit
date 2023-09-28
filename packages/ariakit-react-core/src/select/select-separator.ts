@@ -2,6 +2,7 @@ import type { CompositeSeparatorOptions } from "../composite/composite-separator
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -20,8 +21,10 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectSeparator = createHook<SelectSeparatorOptions>(
-  (props) => {
-    props = useCompositeSeparator(props);
+  ({ store, ...props }) => {
+    const context = useSelectContext();
+    store = store || context;
+    props = useCompositeSeparator({ store, ...props });
     return props;
   },
 );
@@ -30,15 +33,16 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
  * Renders a separator element for select items.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectItem value="Item 1" />
- *   <SelectSeparator />
- *   <SelectItem value="Item 2" />
- *   <SelectItem value="Item 3" />
- * </SelectPopover>
+ * ```jsx {5}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectItem value="Item 1" />
+ *     <SelectSeparator />
+ *     <SelectItem value="Item 2" />
+ *     <SelectItem value="Item 3" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectSeparator = createComponent<SelectSeparatorOptions>(
@@ -55,8 +59,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
 }

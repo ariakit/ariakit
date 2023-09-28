@@ -1,46 +1,61 @@
+---
+tags:
+  - Select
+  - Dropdowns
+  - Form controls
+---
+
 # Select
 
-<p data-description>
-  Select a value from a list of options presented in a dropdown menu, similar to the native HTML select element. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">WAI-ARIA Combobox Pattern</a>.
-</p>
+<div data-description>
+
+Select a value from a list of options presented in a dropdown menu, similar to the native HTML select element. This component is based on the [WAI-ARIA Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
+
+</div>
+
+<div data-tags></div>
 
 <a href="../examples/select/index.tsx" data-playground>Example</a>
 
-## Installation
+## Examples
 
-```sh
-npm i @ariakit/react
-```
+<div data-cards="examples">
 
-Learn more on the [Getting started](/guide/getting-started) guide.
+- [](/examples/select-animated)
+
+</div>
 
 ## API
 
-<pre data-api>
-<a href="/apis/select-store">useSelectStore</a>()
+```jsx
+useSelectStore()
+useSelectContext()
 
-&lt;<a href="/apis/select-label">SelectLabel</a> /&gt;
-&lt;<a href="/apis/select">Select</a>&gt;
-  &lt;<a href="/apis/select-arrow">SelectArrow</a> /&gt;
-&lt;/Select&gt;
-&lt;<a href="/apis/select-list">SelectList</a>|<a href="/apis/select-popover">SelectPopover</a>&gt;
-  &lt;<a href="/apis/select-group">SelectGroup</a>&gt;
-    &lt;<a href="/apis/select-group-label">SelectGroupLabel</a> /&gt;
-    &lt;<a href="/apis/select-row">SelectRow</a>&gt;
-      &lt;<a href="/apis/select-item">SelectItem</a>&gt;
-        &lt;<a href="/apis/select-item-check">SelectItemCheck</a> /&gt;
-      &lt;/SelectItem&gt;
-      &lt;<a href="/apis/select-separator">SelectSeparator</a> /&gt;
-    &lt;/SelectRow&gt;
-  &lt;/SelectGroup&gt;
-&lt;/SelectList|SelectPopover&gt;
-</pre>
+<SelectProvider>
+  <SelectLabel />
+  <Select>
+    <SelectArrow />
+  </Select>
+  <SelectList />
+  <SelectPopover>
+    <SelectGroup>
+      <SelectGroupLabel />
+      <SelectRow>
+        <SelectItem>
+          <SelectItemCheck />
+        </SelectItem>
+        <SelectSeparator />
+      </SelectRow>
+    </SelectGroup>
+  </SelectPopover>
+</SelectProvider>
+```
 
 ## Styling
 
 ### Styling the active item
 
-When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/apis/select-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
+When browsing the list with a keyboard (or hovering over items with the mouse when the [`focusOnHover`](/reference/select-item#focusonhover) prop is `true`), the active item element will have a `data-active-item` attribute. You can use this attribute to style the active item:
 
 ```css
 .select-item[data-active-item] {
@@ -50,3 +65,16 @@ When browsing the list with a keyboard (or hovering over items with the mouse wh
 ```
 
 Learn more on the [Styling](/guide/styling) guide.
+
+## Related components
+
+<div data-cards="components">
+
+- [](/components/button)
+- [](/components/combobox)
+- [](/components/form)
+- [](/components/menu)
+- [](/components/popover)
+- [](/components/composite)
+
+</div>

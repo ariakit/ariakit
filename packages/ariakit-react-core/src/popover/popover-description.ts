@@ -25,15 +25,16 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
 
 /**
  * Renders a description in a popover. This component must be wrapped with
- * `Popover` so the `aria-describedby` prop is properly set on the popover
- * element.
+ * [`Popover`](https://ariakit.org/reference/popover) so the `aria-describedby`
+ * prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <Popover store={popover}>
- *   <PopoverDescription>Description</PopoverDescription>
- * </Popover>
+ * <PopoverProvider>
+ *   <Popover>
+ *     <PopoverDescription>Description</PopoverDescription>
+ *   </Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverDescription = createComponent<PopoverDescriptionOptions>(
@@ -50,8 +51,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface PopoverDescriptionOptions<T extends As = "p">
   extends DialogDescriptionOptions<T> {
   /**
-   * Object returned by the `usePopoverStore` hook. If not provided, the parent
-   * `Popover` component's context will be used.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * components' context will be used.
    */
   store?: PopoverStore;
 }

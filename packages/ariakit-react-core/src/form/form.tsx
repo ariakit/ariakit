@@ -1,6 +1,7 @@
 import type { FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import {
   useEvent,
   useInitialValue,
@@ -11,7 +12,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
@@ -48,6 +49,15 @@ export const useForm = createHook<FormOptions>(
     autoFocusOnSubmit = true,
     ...props
   }) => {
+    const context = useFormContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "Form must receive a `store` prop or be wrapped in a FormProvider component.",
+    );
+
     const ref = useRef<HTMLFormElement>(null);
     const values = store.useState("values");
     const submitSucceed = store.useState("submitSucceed");
@@ -56,20 +66,20 @@ export const useForm = createHook<FormOptions>(
     const defaultValues = useInitialValue(values);
 
     useEffect(
-      () => (resetOnUnmount ? store.reset : undefined),
-      [resetOnUnmount, store.reset],
+      () => (resetOnUnmount ? store?.reset : undefined),
+      [resetOnUnmount, store],
     );
 
     useUpdateEffect(() => {
       if (!validateOnChange) return;
       if (values === defaultValues) return;
-      store.validate();
+      store?.validate();
     }, [validateOnChange, values, defaultValues, store]);
 
     useEffect(() => {
       if (!resetOnSubmit) return;
       if (!submitSucceed) return;
-      store.reset();
+      store?.reset();
     }, [resetOnSubmit, submitSucceed, store]);
 
     const [shouldFocusOnSubmit, setShouldFocusOnSubmit] = useState(false);
@@ -93,7 +103,7 @@ export const useForm = createHook<FormOptions>(
       onSubmitProp?.(event);
       if (event.defaultPrevented) return;
       event.preventDefault();
-      store.submit();
+      store?.submit();
       if (!autoFocusOnSubmit) return;
       setShouldFocusOnSubmit(true);
     });
@@ -104,6 +114,7 @@ export const useForm = createHook<FormOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!validateOnBlur) return;
+      if (!store) return;
       if (!isField(event.target, store.getState().items)) return;
       store.validate();
     });
@@ -114,13 +125,15 @@ export const useForm = createHook<FormOptions>(
       onResetProp?.(event);
       if (event.defaultPrevented) return;
       event.preventDefault();
-      store.reset();
+      store?.reset();
     });
 
     props = useWrapElement(
       props,
       (element) => (
-        <FormContext.Provider value={store}>{element}</FormContext.Provider>
+        <FormScopedContextProvider value={store}>
+          {element}
+        </FormScopedContextProvider>
       ),
       [store],
     );
@@ -164,9 +177,13 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface FormOptions<T extends As = "form"> extends Options<T> {
   /**
-   * Object returned by the `useFormStore` hook.
+   * Object returned by the
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component's
+   * context will be used.
    */
-  store: FormStore;
+  store?: FormStore;
   /**
    * Whether the form should trigger the validation callbacks when values
    * change.

@@ -4,9 +4,11 @@ unlisted: true
 
 # Radix UI Dialog
 
-<p data-description>
-  Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
-</p>
+<div data-description>
+
+Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
+
+</div>
 
 <aside data-type="note" title="Note">
 
@@ -40,7 +42,7 @@ In a real application, you may want to provide a simpler API to streamline usage
 
 The Ariakit [Dialog](/components/dialog) component seamlessly integrates with browser extensions that open popups, such as 1Password, Grammarly, Google Translate, and many others. This ensures that users can interact with the extension while keeping the modal dialog open, using both keyboard and mouse inputs. The same is true for third-party libraries that open dialogs.
 
-For elements that are already in the DOM, the [`getPersisentElements`](/apis/dialog#getpersistentelements) prop can be used to specify which elements should remain accessible when the modal dialog is open. This is useful to integrate with chat widgets like Intercom, toast libraries like `react-toastify` and `react-hot-toast`, and more. See the [Dialog with React-Toastify](/examples/dialog-react-toastify) example for a practical use case.
+For elements that are already in the DOM, the [`getPersisentElements`](/reference/dialog#getpersistentelements) prop can be used to specify which elements should remain accessible when the modal dialog is open. This is useful to integrate with chat widgets like Intercom, toast libraries like `react-toastify` and `react-hot-toast`, and more. See the [Dialog with React-Toastify](/examples/dialog-react-toastify) example for a practical use case.
 
 ## Focus trap elements
 
@@ -50,7 +52,7 @@ Most component libraries render visually hidden elements around the modal dialog
 
 The modal context refers to the state created by Ariakit when a modal `Dialog` is opened. It involves taking a snapshot of the entire document internally to determine which elements should render as `inert`.
 
-In addition to the dialog itself, the modal context may include other elements, such as nested and third-party dialogs, persistent elements specified by the [`getPersistentElements`](/apis/dialog#getpersistentelements) prop, as well as browser extensions.
+In addition to the dialog itself, the modal context may include other elements, such as nested and third-party dialogs, persistent elements specified by the [`getPersistentElements`](/reference/dialog#getpersistentelements) prop, as well as browser extensions.
 
 </aside>
 
@@ -60,7 +62,7 @@ This approach results in a behavior that is more consistent with the native [`di
 
 ## Scrollable backdrop
 
-The Ariakit [Dialog](/components/dialog) component automatically closes when users click outside the dialog. This behavior is controlled by the [`hideOnInteractOutside`](/apis/dialog#hideoninteractoutside) prop, which is enabled by default.
+The Ariakit [Dialog](/components/dialog) component automatically closes when users click outside the dialog. This behavior is controlled by the [`hideOnInteractOutside`](/reference/dialog#hideoninteractoutside) prop, which is enabled by default.
 
 However, Ariakit will make sure the dialog is not closed when users interact with the scrollbar on a backdrop container. See the [Dialog with scrollable backdrop](/examples/dialog-backdrop-scrollable) example for a practical use case.
 

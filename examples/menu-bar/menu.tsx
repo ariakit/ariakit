@@ -1,93 +1,86 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 
-// Use React Context so we can determine if the menu is a submenu or a top-level
-// menu inside a menu bar.
-const MenuContext = React.createContext(false);
+export { MenuProvider } from "@ariakit/react";
 
-export type MenuItemProps = React.HTMLAttributes<HTMLDivElement> & {
-  label: React.ReactNode;
-  disabled?: boolean;
-};
-
-/**
- * MenuItem
- */
-export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({ label, ...props }, ref) => {
+export const MenuBar = React.forwardRef<HTMLDivElement, Ariakit.MenuBarProps>(
+  function MenuBar(props, ref) {
     return (
-      <Ariakit.MenuItem className="menu-item" ref={ref} {...props}>
-        <span className="label">{label}</span>
-      </Ariakit.MenuItem>
+      <Ariakit.MenuBarProvider>
+        <Ariakit.MenuBar
+          ref={ref}
+          {...props}
+          className={clsx("menu-bar", props.className)}
+        />
+      </Ariakit.MenuBarProvider>
     );
   },
 );
 
-export type MenuSeparatorProps = React.HTMLAttributes<HTMLHRElement>;
+export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
+  function Menu(props, ref) {
+    const menu = Ariakit.useMenuContext();
 
-/**
- * MenuSeparator
- */
+    if (!menu) {
+      throw new Error("Menu must be used within a MenuProvider");
+    }
+
+    const mounted = menu.useState("mounted");
+    if (!mounted) return null;
+
+    return (
+      <Ariakit.Menu
+        ref={ref}
+        portal
+        overlap={!!menu.parent}
+        gutter={menu.parent ? 12 : 4}
+        shift={menu.parent ? -9 : -2}
+        fitViewport
+        {...props}
+        className={clsx("menu", props.className)}
+      />
+    );
+  },
+);
+
+interface MenuButtonProps extends Ariakit.MenuButtonProps {
+  children?: React.ReactNode;
+}
+
+export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
+  function MenuButton(props, ref) {
+    const menu = Ariakit.useMenuContext();
+    return (
+      <Ariakit.MenuButton ref={ref} {...props}>
+        <span className="label">{props.children}</span>
+        {!!menu?.parent && <Ariakit.MenuButtonArrow />}
+      </Ariakit.MenuButton>
+    );
+  },
+);
+
+export const MenuItem = React.forwardRef<HTMLDivElement, Ariakit.MenuItemProps>(
+  function MenuItem(props, ref) {
+    return (
+      <Ariakit.MenuItem
+        ref={ref}
+        {...props}
+        className={clsx("menu-item", props.className)}
+      />
+    );
+  },
+);
+
 export const MenuSeparator = React.forwardRef<
   HTMLHRElement,
-  MenuSeparatorProps
->((props, ref) => {
-  return <Ariakit.MenuSeparator className="separator" ref={ref} {...props} />;
+  Ariakit.MenuSeparatorProps
+>(function MenuSeparator(props, ref) {
+  return (
+    <Ariakit.MenuSeparator
+      ref={ref}
+      {...props}
+      className={clsx("separator", props.className)}
+    />
+  );
 });
-
-export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
-  label: React.ReactNode;
-  disabled?: boolean;
-};
-
-/**
- * Menu
- */
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
-  ({ label, children, ...props }, ref) => {
-    const inSubmenu = React.useContext(MenuContext);
-    const menu = Ariakit.useMenuStore();
-    const mounted = menu.useState("mounted");
-    return (
-      <>
-        <Ariakit.MenuButton
-          store={menu}
-          ref={ref}
-          className="menu-item"
-          render={<Ariakit.MenuItem />}
-          {...props}
-        >
-          <span className="label">{label}</span>
-          {inSubmenu && <Ariakit.MenuButtonArrow />}
-        </Ariakit.MenuButton>
-        {mounted && (
-          <Ariakit.Menu
-            store={menu}
-            portal
-            gutter={inSubmenu ? 12 : 4}
-            overlap={inSubmenu}
-            fitViewport={true}
-            shift={inSubmenu ? -9 : -2}
-            className="menu"
-          >
-            <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
-          </Ariakit.Menu>
-        )}
-      </>
-    );
-  },
-);
-
-export type MenuBarProps = React.HTMLAttributes<HTMLDivElement>;
-
-/**
- * MenuBar
- */
-export const MenuBar = React.forwardRef<HTMLDivElement, MenuBarProps>(
-  (props, ref) => {
-    const menu = Ariakit.useMenuBarStore();
-    return (
-      <Ariakit.MenuBar store={menu} className="menu-bar" ref={ref} {...props} />
-    );
-  },
-);

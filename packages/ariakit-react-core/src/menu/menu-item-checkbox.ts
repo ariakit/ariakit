@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
@@ -9,7 +8,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { MenuContext } from "./menu-context.js";
+import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
@@ -29,7 +28,7 @@ import type { MenuStore } from "./menu-store.js";
  */
 export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
   ({ store, name, checked, defaultChecked, hideOnClick = false, ...props }) => {
-    const context = useContext(MenuContext);
+    const context = useMenuScopedContext();
     store = store || context;
 
     invariant(
@@ -60,11 +59,12 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore({ defaultValues: { apple: false } });
- * <MenuButton store={menu}>Fruits</MenuButton>
- * <Menu store={menu}>
- *   <MenuItemCheckbox name="apple">Apple</MenuItemCheckbox>
- * </Menu>
+ * <MenuProvider defaultValues={{ apple: false }}>
+ *   <MenuButton>Fruits</MenuButton>
+ *   <Menu>
+ *     <MenuItemCheckbox name="apple">Apple</MenuItemCheckbox>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
@@ -82,12 +82,16 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
   extends MenuItemOptions<T>,
     Omit<CheckboxOptions<T>, "store"> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
   /**
-   * MenuItemCheckbox's name as in `menu.values`.
+   * MenuItemCheckbox's name as specified in the
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
    */
   name: string;
   /**

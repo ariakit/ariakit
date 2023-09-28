@@ -1,9 +1,11 @@
 import type { MouseEvent } from "react";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 const children = (
@@ -43,6 +45,15 @@ const children = (
  */
 export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
   ({ store, ...props }) => {
+    const context = useComboboxProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxDisclosure must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const onMouseDownProp = props.onMouseDown;
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
@@ -50,7 +61,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
       // We have to prevent the element from getting focused on mousedown.
       event.preventDefault();
       // This will immediately move focus to the combobox input.
-      store.move(null);
+      store?.move(null);
     });
 
     const onClickProp = props.onClick;
@@ -58,6 +69,7 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      if (!store) return;
       const { baseElement } = store.getState();
       store.setDisclosureElement(baseElement);
     });
@@ -90,14 +102,15 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxDisclosure store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxDisclosure />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxDisclosure = createComponent<ComboboxDisclosureOptions>(
@@ -114,9 +127,13 @@ if (process.env.NODE_ENV !== "production") {
 export interface ComboboxDisclosureOptions<T extends As = "button">
   extends DialogDisclosureOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
-  store: ComboboxStore;
+  store?: ComboboxStore;
 }
 
 export type ComboboxDisclosureProps<T extends As = "button"> = Props<

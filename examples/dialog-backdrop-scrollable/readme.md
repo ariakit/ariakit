@@ -1,8 +1,19 @@
+---
+tags:
+  - Dialog
+  - Button
+---
+
 # Dialog with scrollable backdrop
 
-<p data-description>
-  Rendering a modal <a href="/components/dialog">Dialog</a> component inside a scrollable backdrop container for dialogs that are taller than the viewport.
-</p>
+<div data-description>
+
+Rendering a modal <a href="/components/dialog">Dialog</a> component inside a scrollable backdrop container for dialogs that are
+taller than the viewport.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 
@@ -17,7 +28,7 @@
 
 ## Rendering a custom backdrop
 
-In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/apis/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/apis/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
+In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/reference/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/apis/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
 
 ```jsx {4-6} "dialogProps"
 <Dialog
@@ -34,7 +45,7 @@ This method allows us to render the backdrop as a parent of the dialog, but stil
 
 ## Clicking outside
 
-The Ariakit [Dialog](/components/dialog) component automatically closes when users click outside the dialog. This behavior is controlled by the [`hideOnInteractOutside`](/apis/dialog#hideoninteractoutside) prop, which is enabled by default.
+The Ariakit [Dialog](/components/dialog) component automatically closes when users click outside the dialog. This behavior is controlled by the [`hideOnInteractOutside`](/reference/dialog#hideoninteractoutside) prop, which is enabled by default.
 
 However, Ariakit will make sure the dialog is not closed when users interact with the scrollbar on a container element.
 

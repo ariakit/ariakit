@@ -1,5 +1,4 @@
 import type { MouseEvent } from "react";
-import { useContext } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -17,7 +16,10 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
-import { MenuBarContext, MenuContext } from "./menu-context.js";
+import {
+  useMenuBarScopedContext,
+  useMenuScopedContext,
+} from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 import { hasExpandedMenuButton } from "./utils.js";
 
@@ -44,8 +46,8 @@ export const useMenuItem = createHook<MenuItemOptions>(
     focusOnHover,
     ...props
   }) => {
-    const menuContext = useContext(MenuContext);
-    const menuBarContext = useContext(MenuBarContext);
+    const menuContext = useMenuScopedContext(true);
+    const menuBarContext = useMenuBarScopedContext();
     store = store || menuContext || (menuBarContext as any);
 
     invariant(
@@ -125,12 +127,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItem = createMemoComponent<MenuItemOptions>((props) => {
@@ -146,9 +149,15 @@ export interface MenuItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
-   * Object returned by the `useMenuBarStore` or `useMenuStore` hooks. If not
-   * provided, the parent `Menu` or `MenuBar` components' context will be
-   * used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
+   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store)
+   * hooks. If not provided, the closest
+   * [`Menu`](https://ariakit.org/reference/menu),
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
+   * [`MenuBar`](https://ariakit.org/reference/menu-bar), or
+   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
+   * components' context will be used.
    */
   store?: MenuBarStore | MenuStore;
   /**

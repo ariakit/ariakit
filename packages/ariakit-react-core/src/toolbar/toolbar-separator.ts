@@ -2,6 +2,7 @@ import type { CompositeSeparatorOptions } from "../composite/composite-separator
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
 
 /**
@@ -19,8 +20,10 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * ```
  */
 export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
-  (props) => {
-    props = useCompositeSeparator(props);
+  ({ store, ...props }) => {
+    const context = useToolbarContext();
+    store = store || context;
+    props = useCompositeSeparator({ store, ...props });
     return props;
   },
 );

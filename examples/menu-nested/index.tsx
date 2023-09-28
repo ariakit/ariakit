@@ -1,20 +1,20 @@
-import { Menu, MenuItem } from "./menu.jsx";
 import "./style.css";
+import { Menu, MenuItem } from "./menu.jsx";
 
 export default function Example() {
   return (
     <Menu label="Edit">
-      <MenuItem label="Undo" />
-      <MenuItem label="Redo" />
+      <MenuItem>Undo</MenuItem>
+      <MenuItem>Redo</MenuItem>
       <Menu label="Find">
-        <MenuItem label="Search the Web..." />
-        <MenuItem label="Find..." />
-        <MenuItem label="Find Next" />
-        <MenuItem label="Find Previous" />
+        <MenuItem>Search the Web...</MenuItem>
+        <MenuItem>Find...</MenuItem>
+        <MenuItem>Find Next</MenuItem>
+        <MenuItem>Find Previous</MenuItem>
       </Menu>
       <Menu label="Speech">
-        <MenuItem label="Start Speaking" />
-        <MenuItem disabled label="Stop Speaking" />
+        <MenuItem>Start Speaking</MenuItem>
+        <MenuItem disabled>Stop Speaking</MenuItem>
       </Menu>
     </Menu>
   );

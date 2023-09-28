@@ -24,11 +24,11 @@ export default function Example() {
       <label className="label">
         Your favorite food
         <Combobox
-          value={value}
-          onChange={setValue}
           autoSelect
           autoComplete="both"
           placeholder="e.g., Apple"
+          value={value}
+          onChange={setValue}
         >
           {matches.length ? (
             matches.map(([type, items], i) => (

@@ -12,7 +12,12 @@ import {
   isObject,
 } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import {
+  createStore,
+  init,
+  setup,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type {
   AnyObject,
   PickRequired,
@@ -74,7 +79,7 @@ function set<T extends Values | unknown[]>(
       : value;
   if (isIntegerKey) {
     const index = Number(key);
-    if (values) {
+    if (values && Array.isArray(values)) {
       return [
         ...values.slice(0, index),
         result,
@@ -128,6 +133,17 @@ function getNameHandler(cache: Values, prevKeys: Array<string | symbol> = []) {
   return handler;
 }
 
+function getStoreCallbacks(
+  store?: Store & {
+    __unstableCallbacks?: Store<{
+      validate: FormStoreCallback[];
+      submit: FormStoreCallback[];
+    }>;
+  },
+) {
+  return store?.__unstableCallbacks;
+}
+
 function createNames() {
   const cache = Object.create(null);
   return new Proxy(Object.create(null), getNameHandler(cache));
@@ -151,6 +167,8 @@ export function createFormStore<T extends Values = Values>(
 export function createFormStore(props: FormStoreProps): FormStore;
 
 export function createFormStore(props: FormStoreProps = {}): FormStore {
+  throwOnConflictingProps(props, props.store);
+
   const syncState = props.store?.getState();
   const collection = createCollectionStore(props);
 
@@ -188,12 +206,22 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
   };
   const form = createStore(initialState, collection, props.store);
 
-  const validateCallbacks = new Set<FormStoreCallback>();
-  const submitCallbacks = new Set<FormStoreCallback>();
+  const syncCallbacks = getStoreCallbacks(props.store);
+  const syncCallbacksState = syncCallbacks?.getState();
+
+  const callbacksInitialState = {
+    validate: syncCallbacksState?.validate || [],
+    submit: syncCallbacksState?.submit || [],
+  };
+
+  const callbacks = createStore(callbacksInitialState, syncCallbacks);
+
+  setup(form, () => init(callbacks));
 
   const validate = async () => {
     form.setState("validating", true);
     form.setState("errors", {});
+    const validateCallbacks = callbacks.getState().validate;
     try {
       // Run all the validation callbacks sequentially so they run in a
       // predictable order. See https://github.com/ariakit/ariakit/issues/2282
@@ -258,20 +286,29 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       }),
 
     onValidate: (callback) => {
-      validateCallbacks.add(callback);
-      return () => validateCallbacks.delete(callback);
+      callbacks.setState("validate", (callbacks) => [...callbacks, callback]);
+      return () => {
+        callbacks.setState("validate", (callbacks) =>
+          callbacks.filter((c) => c !== callback),
+        );
+      };
     },
     validate,
 
     onSubmit: (callback) => {
-      submitCallbacks.add(callback);
-      return () => submitCallbacks.delete(callback);
+      callbacks.setState("submit", (callbacks) => [...callbacks, callback]);
+      return () => {
+        callbacks.setState("submit", (callbacks) =>
+          callbacks.filter((c) => c !== callback),
+        );
+      };
     },
     submit: async () => {
       form.setState("submitting", true);
       form.setState("touched", setAll(form.getState().values, true));
       try {
         if (await validate()) {
+          const submitCallbacks = callbacks.getState().submit;
           // Run all the submit callbacks sequentially so they run in a
           // predictable order. See
           // https://github.com/ariakit/ariakit/issues/2282
@@ -304,6 +341,9 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       form.setState("submitSucceed", 0);
       form.setState("submitFailed", 0);
     },
+
+    // @ts-expect-error Internal
+    __unstableCallbacks: callbacks,
   };
 }
 

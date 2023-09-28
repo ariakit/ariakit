@@ -4,22 +4,18 @@ import type {
   DialogStoreOptions,
   DialogStoreState,
 } from "../dialog/dialog-store.js";
-import {
-  useDialogStoreOptions,
-  useDialogStoreProps,
-} from "../dialog/dialog-store.js";
+import { useDialogStoreProps } from "../dialog/dialog-store.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function usePopoverStoreOptions(props: PopoverStoreProps) {
-  return useDialogStoreOptions(props);
-}
-
-export function usePopoverStoreProps<T extends PopoverStore>(
+export function usePopoverStoreProps<T extends Core.PopoverStore>(
   store: T,
+  update: () => void,
   props: PopoverStoreProps,
 ) {
-  store = useDialogStoreProps(store, props);
+  useUpdateEffect(update, [props.popover]);
+  store = useDialogStoreProps(store, update, props);
   useStoreProps(store, props, "placement");
   return store;
 }
@@ -35,11 +31,8 @@ export function usePopoverStoreProps<T extends PopoverStore>(
  * ```
  */
 export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
-  const options = usePopoverStoreOptions(props);
-  const store = useStore(() =>
-    Core.createPopoverStore({ ...props, ...options }),
-  );
-  return usePopoverStoreProps(store, props);
+  const [store, update] = useStore(Core.createPopoverStore, props);
+  return usePopoverStoreProps(store, update, props);
 }
 
 export interface PopoverStoreState

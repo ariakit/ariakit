@@ -12,6 +12,7 @@ import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
+import { useCheckboxContext } from "./checkbox-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
 
 function setMixed(element: HTMLInputElement, mixed?: boolean) {
@@ -52,9 +53,14 @@ export const useCheckbox = createHook<CheckboxOptions>(
     defaultChecked,
     ...props
   }) => {
-    const storeChecked = useStoreState(store, (state) => {
+    const context = useCheckboxContext();
+    store = store || context;
+
+    const [_checked, setChecked] = useState(defaultChecked ?? false);
+
+    const checked = useStoreState(store, (state) => {
       if (checkedProp !== undefined) return checkedProp;
-      if (state.value === undefined) return;
+      if (state?.value === undefined) return _checked;
       if (valueProp != null) {
         if (Array.isArray(state.value)) {
           const nonArrayValue = getNonArrayValue(valueProp);
@@ -66,9 +72,6 @@ export const useCheckbox = createHook<CheckboxOptions>(
       if (typeof state.value === "boolean") return state.value;
       return false;
     });
-
-    const [_checked, setChecked] = useState(defaultChecked ?? false);
-    const checked = checkedProp ?? storeChecked ?? _checked;
 
     const ref = useRef<HTMLInputElement>(null);
     const tagName = useTagName(ref, props.as || "input");
@@ -177,12 +180,15 @@ if (process.env.NODE_ENV !== "production") {
 export interface CheckboxOptions<T extends As = "input">
   extends CommandOptions<T> {
   /**
-   * Object returned by the `useCheckboxStore` hook. If not provided, the
-   * internal store will be used.
+   * Object returned by the
+   * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
+   * hook. If not provided, the closest
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component's context will be used. Otherwise, the component will fall back
+   * to an internal store.
    *
    * Live examples:
    * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
    */
   store?: CheckboxStore;
   /**
@@ -192,14 +198,14 @@ export interface CheckboxOptions<T extends As = "input">
    *
    * Live examples:
    * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    * @example
    * ```jsx
-   * const checkbox = useCheckboxStore({
-   *   defaultValue: ["Apple", "Orange"],
-   * });
-   * <Checkbox store={checkbox} value="Apple" />
-   * <Checkbox store={checkbox} value="Orange" />
-   * <Checkbox store={checkbox} value="Watermelon" />
+   * <CheckboxProvider defaultValue={["Apple", "Orange"]}>
+   *   <Checkbox value="Apple" />
+   *   <Checkbox value="Orange" />
+   *   <Checkbox value="Watermelon" />
+   * </CheckboxProvider>
    * ```
    */
   value?: InputHTMLAttributes<HTMLInputElement>["value"];

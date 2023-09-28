@@ -1,14 +1,11 @@
+import "./style.css";
+import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import Square from "./square.jsx";
-import "./style.css";
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({
-    defaultValue: "Center",
-    placement: "bottom",
-    setValueOnMove: true,
-  });
-  const value = select.useState("value");
+  const [value, setValue] = useState("Center");
+  const select = Ariakit.useSelectStore({ value, setValue });
 
   const renderItem = (value: string) => (
     <Ariakit.SelectItem
@@ -31,30 +28,32 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Position</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} showOnKeyDown={false} className="select">
-        <Square value={value} />
-        {value}
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
-      <Ariakit.SelectPopover store={select} role="grid" className="popover">
-        <Ariakit.PopoverArrow className="arrow" />
-        <Ariakit.SelectRow className="row">
-          {renderItem("Top Left")}
-          {renderItem("Top Center")}
-          {renderItem("Top Right")}
-        </Ariakit.SelectRow>
-        <Ariakit.SelectRow className="row">
-          {renderItem("Center Left")}
-          {renderItem("Center")}
-          {renderItem("Center Right")}
-        </Ariakit.SelectRow>
-        <Ariakit.SelectRow className="row">
-          {renderItem("Bottom Left")}
-          {renderItem("Bottom Center")}
-          {renderItem("Bottom Right")}
-        </Ariakit.SelectRow>
-      </Ariakit.SelectPopover>
+      <Ariakit.SelectProvider store={select} placement="bottom" setValueOnMove>
+        <Ariakit.SelectLabel>Position</Ariakit.SelectLabel>
+        <Ariakit.Select showOnKeyDown={false} className="button">
+          <Square value={value} />
+          {value}
+          <Ariakit.SelectArrow />
+        </Ariakit.Select>
+        <Ariakit.SelectPopover role="grid" className="popover">
+          <Ariakit.PopoverArrow className="arrow" />
+          <Ariakit.SelectRow className="row">
+            {renderItem("Top Left")}
+            {renderItem("Top Center")}
+            {renderItem("Top Right")}
+          </Ariakit.SelectRow>
+          <Ariakit.SelectRow className="row">
+            {renderItem("Center Left")}
+            {renderItem("Center")}
+            {renderItem("Center Right")}
+          </Ariakit.SelectRow>
+          <Ariakit.SelectRow className="row">
+            {renderItem("Bottom Left")}
+            {renderItem("Bottom Center")}
+            {renderItem("Bottom Right")}
+          </Ariakit.SelectRow>
+        </Ariakit.SelectPopover>
+      </Ariakit.SelectProvider>
     </div>
   );
 }

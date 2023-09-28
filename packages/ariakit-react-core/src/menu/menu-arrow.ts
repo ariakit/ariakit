@@ -2,6 +2,7 @@ import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
 /**
@@ -17,20 +18,25 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuArrow = createHook<MenuArrowOptions>((props) => {
-  return usePopoverArrow(props);
-});
+export const useMenuArrow = createHook<MenuArrowOptions>(
+  ({ store, ...props }) => {
+    const context = useMenuContext();
+    store = store || context;
+    return usePopoverArrow({ store, ...props });
+  },
+);
 
 /**
  * Renders an arrow inside the menu element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Menu</MenuButton>
- * <Menu store={menu}>
- *   <MenuArrow />
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Menu</MenuButton>
+ *   <Menu>
+ *     <MenuArrow />
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuArrow = createComponent<MenuArrowOptions>((props) => {
@@ -45,8 +51,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

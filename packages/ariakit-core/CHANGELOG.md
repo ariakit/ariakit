@@ -1,5 +1,58 @@
 # @ariakit/core
 
+## 0.3.2
+
+### Patch Changes
+
+- Improved JSDocs.
+
+## 0.3.1
+
+### Patch Changes
+
+- [`#2801`](https://github.com/ariakit/ariakit/pull/2801) Fixed `values.slice` error that would occur when clicking on `FormCheckbox` that uses an integer-like field name.
+
+## 0.3.0
+
+### Minor Changes
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) **BREAKING** _(This should affect very few people)_: The `select` and `menu` props on `useComboboxStore` have been removed. If you need to compose `Combobox` with `Select` or `Menu`, use the `combobox` prop on `useSelectStore` or `useMenuStore` instead.
+
+- [`#2745`](https://github.com/ariakit/ariakit/pull/2745) Component stores will now throw an error if they receive another store prop in conjunction with default prop values.
+
+### Patch Changes
+
+- [`#2782`](https://github.com/ariakit/ariakit/pull/2782) Fixed form store not synchrozining validate and submit callbacks with another form store through the `store` property.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) Component store objects now contain properties for the composed stores passed to them as props. For instance, `useSelectStore({ combobox })` will return a `combobox` property if the `combobox` prop is specified.
+
+- [`#2785`](https://github.com/ariakit/ariakit/pull/2785) Added `parent` and `menubar` properties to the menu store. These properties are automatically set when rendering nested menus or menus within a menubar.
+
+  Now, it also supports rendering nested menus that aren't nested in the React tree. In this case, you would have to supply the parent menu store manually to the child menu store.
+
+  These properties are also included in the returned menu store object, allowing you to verify whether the menu is nested. For instance:
+
+  ```jsx
+  const menu = useMenuStore(props);
+  const isNested = Boolean(menu.parent);
+  ```
+
+- [`#2796`](https://github.com/ariakit/ariakit/pull/2796) Composed store props such as `useSelectStore({ combobox })` now accept `null` as a value.
+
+## 0.2.9
+
+### Patch Changes
+
+- [`#2709`](https://github.com/ariakit/ariakit/pull/2709) Fixed `addGlobalEventListener` function when used in a document with sandbox iframes.
+
+## 0.2.8
+
+### Patch Changes
+
+- Removed private properties from the store object. ([#2706](https://github.com/ariakit/ariakit/pull/2706))
+
+  Instead of accessing `store.setup`, `store.sync`, `store.subscribe`, etc. directly, use the equivalent functions exported by the `@ariakit/core/utils/store` module.
+
 ## 0.2.7
 
 ### Patch Changes

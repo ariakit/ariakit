@@ -31,20 +31,19 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore({
- *   defaultValues: { apple: true, orange: false },
- * });
- * <MenuButton store={menu}>Fruits</MenuButton>
- * <Menu store={menu}>
- *   <MenuItemCheckbox name="apple">
- *     <MenuItemCheck />
- *     Apple
- *   </MenuItemCheckbox>
- *   <MenuItemCheckbox name="orange">
- *     <MenuItemCheck />
- *     Orange
- *   </MenuItemCheckbox>
- * </Menu>
+ * <MenuProvider defaultValues={{ apple: true, orange: false }}>
+ *   <MenuButton>Fruits</MenuButton>
+ *   <Menu>
+ *     <MenuItemCheckbox name="apple">
+ *       <MenuItemCheck />
+ *       Apple
+ *     </MenuItemCheckbox>
+ *     <MenuItemCheckbox name="orange">
+ *       <MenuItemCheck />
+ *       Orange
+ *     </MenuItemCheckbox>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuItemCheck = createComponent<MenuItemCheckOptions>((props) => {
@@ -59,7 +58,8 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuItemCheckOptions<T extends As = "span">
   extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
-   * Object returned by the `useMenuStore` hook.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
    */
   store?: MenuStore;
 }

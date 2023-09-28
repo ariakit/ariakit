@@ -3,12 +3,12 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
-import { getPageEntryFiles } from "build-pages/get-page-entry-files.js";
+import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTitle } from "build-pages/get-page-title.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
-import pagesIndex from "build-pages/index.js";
-import links from "build-pages/links.js";
+import pageIndex from "build-pages/index.js";
+import pageLinks from "build-pages/links.js";
 import { getReferences } from "build-pages/reference-utils.js";
 import type {
   Page,
@@ -21,6 +21,7 @@ import { PageVideo } from "components/page-video.jsx";
 import matter from "gray-matter";
 import type { Element, ElementContent } from "hast";
 import { ArrowRight } from "icons/arrow-right.jsx";
+import { ChevronRight } from "icons/chevron-right.jsx";
 import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
 import { Hashtag } from "icons/hashtag.js";
@@ -40,6 +41,7 @@ import { getPageIcon } from "utils/get-page-icon.jsx";
 import { isValidHref } from "utils/is-valid-href.js";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
+import { getTagSlug } from "utils/tag.js";
 import { tw } from "utils/tw.js";
 import { PageExample } from "./page-example.js";
 import { TableOfContents } from "./table-of-contents.js";
@@ -62,49 +64,6 @@ const stickyHeading = tw`
 `;
 
 const style = {
-  main: tw`
-    relative flex w-full min-w-[1px] max-w-5xl
-    flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8
-  `,
-  sidebar: tw`
-    hidden md:flex sticky top-32 m-4 flex-col gap-8 flex-none
-    w-60 max-h-[calc(100vh-theme(spacing.36))]
-    border-l border-black/10 dark:border-white/10
-  `,
-  nav: tw`
-    flex-col gap-4 overflow-auto p-3 pr-1 w-full
-  `,
-  navSublist: tw`
-    flex flex-col
-  `,
-  navItem: tw`
-    flex flex-col
-  `,
-  navLink: tw`
-    group flex items-start gap-2 md:gap-1 py-1.5 pr-4 rounded
-    aria-[current]:bg-blue-200/40 dark:aria-[current]:bg-blue-600/25
-    underline-offset-[0.2em] hover:text-black dark:hover:text-white
-    focus-visible:ariakit-outline-input
-
-    scroll-my-2
-    data-[depth="0"]:scroll-mt-96
-    data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-16 data-[depth="3"]:pl-24
-    md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-9 md:data-[depth="3"]:pl-12
-  `,
-  navLinkText: tw`
-    [@media(any-hover:hover)]:group-hover:underline
-    group-aria-[current]:text-black dark:group-aria-[current]:text-white
-  `,
-  navIcon: tw`
-    w-5 h-5 md:w-4 md:h-4 flex-none opacity-60 translate-y-px
-    group-aria-[current]:opacity-100
-  `,
-  wrapper: tw`
-    flex flex-col items-center justify-center gap-8 w-full
-    [&>*]:max-w-3xl [&>*]:w-full scroll-mt-16 md:scroll-mt-24
-
-    data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2
-  `,
   link: tw`
     pb-1.5 pt-1 -mb-1.5 -mt-1 relative
     rounded-sm focus-visible:no-underline focus-visible:ariakit-outline-input
@@ -243,8 +202,8 @@ function findCardLinks(children: ReactNode & ReactNode[]): string[] {
   );
 }
 
-function getPageNames({ sourceContext, pageFileRegex }: Page) {
-  return getPageEntryFiles(sourceContext, pageFileRegex).map(getPageName);
+function getPageNames(page: Page) {
+  return getPageEntryFilesCached(page).map(getPageName);
 }
 
 export function generateStaticParams() {
@@ -257,10 +216,7 @@ export function generateStaticParams() {
   });
 
   referencePages.forEach((page) => {
-    const entryFiles = getPageEntryFiles(
-      page.sourceContext,
-      page.pageFileRegex,
-    );
+    const entryFiles = getPageEntryFilesCached(page);
     const category = page.slug;
     const references = entryFiles.flatMap((file) => getReferences(file));
     references.forEach((reference) => {
@@ -278,7 +234,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { category, page } = params;
-  const data = pagesIndex[category]?.find((item) => item.slug === page);
+  const data = pageIndex[category]?.find((item) => item.slug === page);
 
   if (!data) {
     // Pages without a readme.md file
@@ -300,10 +256,7 @@ export default async function Page({ params }: PageProps) {
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
 
-  const entryFiles = getPageEntryFiles(
-    config.sourceContext,
-    config.pageFileRegex,
-  );
+  const entryFiles = getPageEntryFilesCached(config);
 
   const file = config.reference
     ? entryFiles.find((file) =>
@@ -322,7 +275,7 @@ export default async function Page({ params }: PageProps) {
   const content = getPageContent(reference || file);
   const { content: contentWithoutMatter } = matter(content);
   const tree = getPageTreeFromContent(content);
-  const pageDetail = pagesIndex[category]?.find((item) => item.slug === page);
+  const pageDetail = pageIndex[category]?.find((item) => item.slug === page);
   const categoryDetail = pagesConfig.pages.find(
     (item) => item.slug === category,
   );
@@ -360,24 +313,37 @@ export default async function Page({ params }: PageProps) {
       const isFolder = !item.id && item.href.split("/").length === 2;
       const Component = item.id || !isFolder ? "a" : Link;
       const isPage = !isFolder && !item.id;
-      const icon = isFolder ? (
-        <FolderOpen className={style.navIcon} />
-      ) : isPage ? (
-        <Document className={style.navIcon} />
+      const Icon = isFolder ? FolderOpen : isPage ? Document : null;
+      const icon = Icon ? (
+        <Icon className="h-5 w-5 flex-none translate-y-px opacity-60 group-aria-[current]:opacity-100 md:h-4 md:w-4" />
       ) : null;
       return (
-        <li key={item.href} className={style.navItem}>
+        <li key={item.href} className="flex flex-col">
           <Component
             href={item.href}
             data-depth={depth}
-            className={style.navLink}
             aria-current={isPage ? "true" : undefined}
+            className={twJoin(
+              "group relative flex items-start gap-2 rounded py-1.5 pr-4 md:gap-1",
+              "aria-[current]:bg-blue-200/40 dark:aria-[current]:bg-blue-600/25",
+              "underline-offset-[0.2em] hover:text-black dark:hover:text-white",
+              "scroll-my-2 focus-visible:ariakit-outline-input",
+              `data-[depth="0"]:scroll-mt-96`,
+              `data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-9 data-[depth="3"]:pl-24`,
+              `md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-6 md:data-[depth="3"]:pl-12`,
+            )}
           >
+            <span className="absolute -left-4 top-0 hidden h-full w-2 rounded-r bg-blue-600 group-aria-[current]:block" />
             {icon}
-            <span className={style.navLinkText}>{item.text}</span>
+            <span className="flex gap-[2px] group-aria-[current]:text-black dark:group-aria-[current]:text-white [@media(any-hover:hover)]:group-hover:underline">
+              {depth > 1 && (
+                <ChevronRight className="h-3.5 w-3.5 flex-none -translate-x-[2px] translate-y-[4.5px] opacity-60 md:translate-y-[3px]" />
+              )}
+              {item.text}
+            </span>
           </Component>
           {item.children && (
-            <ul className={style.navSublist}>
+            <ul className="flex flex-col">
               {renderTableOfContents(item.children, depth + 1)}
             </ul>
           )}
@@ -385,7 +351,7 @@ export default async function Page({ params }: PageProps) {
       );
     });
 
-  const sortedIndex = Object.values(pagesIndex).flatMap((item) =>
+  const sortedIndex = Object.values(pageIndex).flatMap((item) =>
     [...item].sort((a, b) => {
       if (a.group === b.group) return 0;
       if (!a.group && b.group) return -1;
@@ -395,10 +361,13 @@ export default async function Page({ params }: PageProps) {
     }),
   );
 
-  const pageIndex =
-    pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
-  let nextPage = pageIndex !== -1 ? sortedIndex?.[pageIndex + 1] : undefined;
-  nextPage = nextPage?.unlisted ? sortedIndex?.[pageIndex + 2] : nextPage;
+  let index = pageDetail && sortedIndex ? sortedIndex.indexOf(pageDetail) : -1;
+  let nextPage = index !== -1 ? sortedIndex?.[index + 1] : undefined;
+
+  while (nextPage?.unlisted || nextPage?.group === "Other") {
+    index += 1;
+    nextPage = sortedIndex?.[index + 1];
+  }
 
   const nextPageLink = nextPage && (
     <Link
@@ -432,12 +401,14 @@ export default async function Page({ params }: PageProps) {
           </div>
         }
       >
-        <div className={style.sidebar}>
-          <nav className={style.nav}>{navList}</nav>
+        <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
+          <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
+            {navList}
+          </nav>
           {nextPageLink}
         </div>
       </TableOfContents>
-      <main className={style.main}>
+      <main className="relative flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[
@@ -452,7 +423,12 @@ export default async function Page({ params }: PageProps) {
                 return (
                   <div
                     {...props}
-                    className={cx(style.wrapper, props.className)}
+                    className={twJoin(
+                      "flex w-full flex-col items-center justify-center gap-8",
+                      "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
+                      `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
+                      props.className,
+                    )}
                   />
                 );
               }
@@ -462,9 +438,38 @@ export default async function Page({ params }: PageProps) {
                   isValidElement<ComponentPropsWithoutRef<"p">>(paragraph),
                   "Expected paragraph",
                 );
+                const { children, ...otherProps } = props;
                 return cloneElement(paragraph, {
-                  className: cx(paragraph.props.className, style.description),
+                  ...otherProps,
+                  className: twJoin(
+                    props.className,
+                    paragraph.props.className,
+                    style.description,
+                  ),
                 });
+              }
+              if (node.properties?.dataTags != null) {
+                const tags = pageDetail?.tags ?? [];
+                if (!tags.length) return null;
+                return (
+                  <div
+                    {...props}
+                    className={twJoin(
+                      "flex flex-wrap gap-2 [[data-description]+&]:-translate-y-2",
+                      props.className,
+                    )}
+                  >
+                    {tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/tags/${getTagSlug(tag)}`}
+                        className="rounded-full border-black/[15%] bg-black/[7.5%] p-2 px-4 text-sm font-medium text-black/90 hover:bg-black/[15%] focus-visible:ariakit-outline-input dark:border dark:border-gray-650 dark:bg-gray-850 dark:text-white/90 hover:dark:bg-gray-750"
+                      >
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
+                );
               }
               if (node.properties?.dataCards != null) {
                 const links = findCardLinks(props.children);
@@ -473,7 +478,7 @@ export default async function Page({ params }: PageProps) {
                     .replace("https://ariakit.org", "")
                     .split("/");
                   if (!category || !slug) return [];
-                  const page = pagesIndex[category]?.find(
+                  const page = pageIndex[category]?.find(
                     (item) => item.slug === slug,
                   );
                   return page || [];
@@ -486,10 +491,10 @@ export default async function Page({ params }: PageProps) {
                   <>
                     <div
                       {...props}
-                      className={cx(
+                      className={twJoin(
                         style.cards,
                         props.className,
-                        (isExamples || isComponents) && "!max-w-[832px]",
+                        "!max-w-[792px]",
                       )}
                     >
                       {pages.map((page) => (
@@ -653,11 +658,7 @@ export default async function Page({ params }: PageProps) {
               const paragraph = (
                 <p
                   {...props}
-                  className={cx(
-                    style.paragraph,
-                    "data-description" in props && style.description,
-                    props.className,
-                  )}
+                  className={twJoin(style.paragraph, props.className)}
                 />
               );
               if (Array.isArray(props.children) && props.children.length > 1) {
@@ -676,7 +677,7 @@ export default async function Page({ params }: PageProps) {
               <kbd
                 {...props}
                 className={twJoin(
-                  "font-monospace rounded-[0.25em] border border-black/[15%] bg-black/[6.5%] p-[0.15em] px-[0.3em] text-[0.9375em] [box-shadow:0_0.15em_0_rgba(0,0,0,0.15)] dark:border-white/[15%] dark:bg-white/10 dark:[box-shadow:0_0.15em_0_rgba(255,255,255,0.15)]",
+                  "font-monospace rounded-[0.2667em] rounded-b-[0.3334em] border-b-[0.1334em] border-t-[0.0667em] border-b-black/[7.5%] border-t-white bg-gradient-to-b from-black/[15%] to-black/5 p-[0.1334em] px-[0.2667em] text-[0.9375em] [box-shadow:0_0_0_max(1px,0.033333em)_rgba(0,0,0,0.25)] dark:rounded-b-[0.4em] dark:border-b-[0.2em] dark:border-t-0 dark:border-b-black/40 dark:from-white/10 dark:to-white/[15%] dark:[box-shadow:0_min(-1px,-0.0666em)_rgba(255,255,255,0.1),0_0_0_max(1px,0.0666em)_rgba(255,255,255,0.15)]",
                   props.className,
                 )}
               />
@@ -726,7 +727,7 @@ export default async function Page({ params }: PageProps) {
                 );
               }
               if (href) {
-                if (!isValidHref(href, links)) {
+                if (!isValidHref(href, pageLinks)) {
                   throw new Error(`Invalid link: ${href}`);
                 }
                 const url = new URL(href, "https://ariakit.org");
@@ -771,9 +772,20 @@ export default async function Page({ params }: PageProps) {
               Join 1,000+ subscribers and receive monthly updates with the
               latest improvements on{" "}
               <strong className="font-semibold text-black dark:text-white">
-                {getPageTitle(category)}
+                {getPageTitle(category, true)}
               </strong>
               .
+            </p>
+            <p>
+              <a
+                href="https://newsletter.ariakit.org/latest"
+                target="_blank"
+                className="relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium text-blue-700 underline decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:decoration-[3px] focus-visible:no-underline focus-visible:ariakit-outline-input dark:font-normal dark:text-blue-400 [&>code]:text-blue-900 [&>code]:dark:text-blue-300"
+                rel="noreferrer"
+              >
+                Read latest issue
+                <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+              </a>
             </p>
           </div>
           <NewsletterForm location="page" className="mt-4 flex flex-col gap-3">

@@ -1,53 +1,38 @@
-import * as Ariakit from "@ariakit/react";
-import { Select, SelectItem } from "./select.js";
 import "./style.css";
+import {
+  Form,
+  FormField,
+  FormInput,
+  FormSelect,
+  FormSubmit,
+  useFormStore,
+} from "./form.jsx";
+import { SelectItem } from "./select.js";
 
 export default function Example() {
-  const form = Ariakit.useFormStore({ defaultValues: { name: "", fruit: "" } });
-  const fruitValue = form.useValue(form.names.fruit);
+  const form = useFormStore({ defaultValues: { name: "", fruit: "" } });
+  const $ = form.names;
 
   form.useSubmit(() => {
     alert(JSON.stringify(form.getState().values));
   });
 
   return (
-    <Ariakit.Form store={form} className="wrapper">
-      <div className="field">
-        <Ariakit.FormLabel name={form.names.name}>Name</Ariakit.FormLabel>
-        <Ariakit.FormInput
-          name={form.names.name}
-          required
-          placeholder="John Doe"
-          className="input"
-        />
-        <Ariakit.FormError name={form.names.name} className="error" />
-      </div>
-      <div className="field">
-        <Ariakit.FormLabel name={form.names.fruit}>
-          Favorite fruit
-        </Ariakit.FormLabel>
-        <Ariakit.FormField
-          name={form.names.fruit}
-          value={fruitValue}
-          touchOnBlur={false}
-          required
-          render={
-            <Select
-              setValue={(value) => form.setValue(form.names.fruit, value)}
-              onTouch={() => form.setFieldTouched(form.names.fruit, true)}
-            />
-          }
-        >
+    <Form store={form}>
+      <FormField name={$.name} label="Name">
+        <FormInput name={$.name} required placeholder="John Doe" />
+      </FormField>
+      <FormField name={$.fruit} label="Favorite fruit">
+        <FormSelect name={$.fruit} required>
           <SelectItem value="">Select an item</SelectItem>
           <SelectItem value="Apple" />
           <SelectItem value="Banana" />
           <SelectItem value="Orange" />
-        </Ariakit.FormField>
-        <Ariakit.FormError name={form.names.fruit} className="error" />
-      </div>
+        </FormSelect>
+      </FormField>
       <div className="buttons">
-        <Ariakit.FormSubmit className="button">Submit</Ariakit.FormSubmit>
+        <FormSubmit>Submit</FormSubmit>
       </div>
-    </Ariakit.Form>
+    </Form>
   );
 }

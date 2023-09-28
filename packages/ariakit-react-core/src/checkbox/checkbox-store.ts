@@ -1,20 +1,17 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
 type Value = Core.CheckboxStoreValue;
 
-export function useCheckboxStoreOptions(
-  _props: CheckboxStoreProps,
-): Partial<CheckboxStoreOptions> {
-  return {};
-}
-
-export function useCheckboxStoreProps<T extends CheckboxStore>(
+export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   store: T,
+  update: () => void,
   props: CheckboxStoreProps,
 ) {
+  useUpdateEffect(update, [props.store]);
   useStoreProps(store, props, "value", "setValue");
   return store;
 }
@@ -28,6 +25,7 @@ export function useCheckboxStoreProps<T extends CheckboxStore>(
  * <Checkbox store={checkbox} />
  * ```
  */
+
 export function useCheckboxStore<T extends Value = Value>(
   props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">,
 ): CheckboxStore<T>;
@@ -37,8 +35,8 @@ export function useCheckboxStore(props?: CheckboxStoreProps): CheckboxStore;
 export function useCheckboxStore(
   props: CheckboxStoreProps = {},
 ): CheckboxStore {
-  const store = useStore(() => Core.createCheckboxStore(props));
-  return useCheckboxStoreProps(store, props);
+  const [store, update] = useStore(Core.createCheckboxStore, props);
+  return useCheckboxStoreProps(store, update, props);
 }
 
 export type CheckboxStoreValue = Core.CheckboxStoreValue;

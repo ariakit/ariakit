@@ -1,9 +1,13 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { TabContext } from "./tab-context.js";
+import {
+  TabScopedContextProvider,
+  useTabProviderContext,
+} from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
 /**
@@ -22,6 +26,15 @@ import type { TabStore } from "./tab-store.js";
  * ```
  */
 export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
+  const context = useTabProviderContext();
+  store = store || context;
+
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "TabList must receive a `store` prop or be wrapped in a TabProvider component.",
+  );
+
   const orientation = store.useState((state) =>
     state.orientation === "both" ? undefined : state.orientation,
   );
@@ -29,7 +42,9 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
   props = useWrapElement(
     props,
     (element) => (
-      <TabContext.Provider value={store}>{element}</TabContext.Provider>
+      <TabScopedContextProvider value={store}>
+        {element}
+      </TabScopedContextProvider>
     ),
     [store],
   );
@@ -73,7 +88,7 @@ export interface TabListOptions<T extends As = "div">
   /**
    * Object returned by the `useTabStore` hook.
    */
-  store: TabStore;
+  store?: TabStore;
 }
 
 export type TabListProps<T extends As = "div"> = Props<TabListOptions<T>>;

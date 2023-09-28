@@ -1,6 +1,7 @@
 import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -13,7 +14,10 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ComboboxContext } from "./combobox-context.js";
+import {
+  ComboboxScopedContextProvider,
+  useComboboxProviderContext,
+} from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -32,6 +36,15 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxList = createHook<ComboboxListOptions>(
   ({ store, focusable = true, alwaysVisible, ...props }) => {
+    const context = useComboboxProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
     const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
 
@@ -41,7 +54,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape") {
-        store.move(null);
+        store?.move(null);
       }
     });
 
@@ -57,6 +70,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
       if (event.type !== "focus") return;
+      if (!store) return;
       const { virtualFocus } = store.getState();
       if (!virtualFocus) return;
       const { relatedTarget, currentTarget } = event;
@@ -73,15 +87,15 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       if (!restoreVirtualFocus.current) return;
       if (!isFocusEventOutside(event)) return;
       restoreVirtualFocus.current = false;
-      store.setState("virtualFocus", true);
+      store?.setState("virtualFocus", true);
     });
 
     props = useWrapElement(
       props,
       (element) => (
-        <ComboboxContext.Provider value={store}>
+        <ComboboxScopedContextProvider value={store}>
           {element}
-        </ComboboxContext.Provider>
+        </ComboboxScopedContextProvider>
       ),
       [store],
     );
@@ -112,18 +126,21 @@ export const useComboboxList = createHook<ComboboxListOptions>(
 /**
  * Renders a combobox list. The `role` prop is set to `listbox` by default, but
  * can be overriden by any other valid combobox popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the
- * combobox input element's `id` by default.
+ * `tree`, `grid` or `dialog`).
+ *
+ * The `aria-labelledby` prop is set to the combobox input element's `id` by
+ * default.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxList store={combobox}>
- *   <ComboboxItem value="Item 1" />
- *   <ComboboxItem value="Item 2" />
- *   <ComboboxItem value="Item 3" />
- * </ComboboxList>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxList>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxList>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxList = createComponent<ComboboxListOptions>((props) => {
@@ -139,9 +156,13 @@ export interface ComboboxListOptions<T extends As = "div">
   extends FocusableOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
-   * Object returned by the `useComboboxStore` hook.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
-  store: ComboboxStore;
+  store?: ComboboxStore;
 }
 
 export type ComboboxListProps<T extends As = "div"> = Props<

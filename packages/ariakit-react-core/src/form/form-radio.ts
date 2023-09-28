@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import { useContext } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
@@ -10,7 +9,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { FormContext } from "./form-context.js";
+import { useFormContext } from "./form-context.js";
 import type { FormFieldOptions } from "./form-field.js";
 import { useFormField } from "./form-field.js";
 
@@ -35,13 +34,13 @@ import { useFormField } from "./form-field.js";
  */
 export const useFormRadio = createHook<FormRadioOptions>(
   ({ store, name: nameProp, value, ...props }) => {
-    const context = useContext(FormContext);
+    const context = useFormContext();
     store = store || context;
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "FormRadio must be wrapped in a Form component",
+        "FormRadio must be wrapped in a Form component.",
     );
 
     const name = `${nameProp}`;
@@ -82,7 +81,11 @@ export const useFormRadio = createHook<FormRadioOptions>(
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx
- * const form = useFormStore({ defaultValues: { char: "a" } });
+ * const form = useFormStore({
+ *   defaultValues: {
+ *     char: "a",
+ *   },
+ * });
  * <Form store={form}>
  *   <FormRadioGroup>
  *     <FormGroupLabel>Favorite character</FormGroupLabel>

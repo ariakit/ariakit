@@ -24,7 +24,7 @@ const pages = [
     slug: "components",
     title: getPageTitle("components"),
     sourceContext: componentsContext,
-    getGroup: (filename) => {
+    getGroup(filename) {
       const component = getPageName(filename);
       const abstract = [
         "collection",
@@ -50,7 +50,7 @@ const pages = [
       join(root, "examples"),
       join(process.cwd(), "app/(examples)/previews"),
     ],
-    getGroup: (filename) => {
+    getGroup(filename) {
       const page = getPageName(filename);
       const component = [...components]
         .reverse()
@@ -65,7 +65,7 @@ const pages = [
     reference: true,
     sourceContext: join(root, "packages/ariakit-react/src"),
     pageFileRegex: /^((?!index).)*\.tsx?$/,
-    getGroup: (reference) => {
+    getGroup(reference) {
       if (typeof reference === "string") return null;
       return upperFirst(camelCase(getPageName(reference.filename)));
     },

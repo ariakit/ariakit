@@ -61,7 +61,7 @@ export default function Example() {
     <>
       <div className="wrapper">
         <Ariakit.SelectLabel store={select}>Country</Ariakit.SelectLabel>
-        <Ariakit.Select store={select} className="select">
+        <Ariakit.Select store={select} className="button">
           <span className="select-value">
             {selectValue || "Select a country"}
           </span>

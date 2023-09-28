@@ -8,16 +8,16 @@ export {
   PopoverHeading,
 } from "@ariakit/react";
 
-export type PopoverProps = React.HTMLAttributes<HTMLDivElement> & {
-  placement?: Ariakit.PopoverStoreProps["placement"];
+export interface PopoverProps extends Ariakit.PopoverProps {
   isOpen?: boolean;
+  placement?: Ariakit.PopoverStoreProps["placement"];
   anchorRef?: React.RefObject<HTMLElement>;
   getAnchorRect?: () => DOMRect | null;
   onClose?: () => void;
-};
+}
 
 export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
-  (props, ref) => {
+  function Popover(props, ref) {
     const {
       placement,
       anchorRef,
@@ -27,20 +27,18 @@ export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
       ...rest
     } = props;
     const fallbackRef = React.useRef<HTMLSpanElement>(null);
-    const popover = Ariakit.usePopoverStore({
-      placement,
-      open: isOpen,
-      setOpen(open) {
-        if (!open) {
-          onClose?.();
-        }
-      },
-    });
     return (
-      <>
+      <Ariakit.PopoverProvider
+        placement={placement}
+        open={isOpen}
+        setOpen={(open) => {
+          if (!open) {
+            onClose?.();
+          }
+        }}
+      >
         <span ref={fallbackRef} style={{ position: "fixed" }} />
         <Ariakit.Popover
-          store={popover}
           ref={ref}
           portal
           getAnchorRect={() => {
@@ -58,7 +56,7 @@ export const Popover = React.forwardRef<HTMLDivElement, PopoverProps>(
           }}
           {...rest}
         />
-      </>
+      </Ariakit.PopoverProvider>
     );
   },
 );

@@ -1,8 +1,18 @@
+---
+tags:
+  - Checkbox
+  - Form controls
+---
+
 # Checkbox as button
 
-<p data-description>
-  Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
-</p>
+<div data-description>
+
+Rendering a custom <a href="/components/checkbox">Checkbox</a> as a <code>button</code> element in React, while keeping it accessible to screen reader and keyboard users.
+
+</div>
+
+<div data-tags></div>
 
 <aside data-type="note" title="Need to render a native checkbox element?">
 
@@ -17,17 +27,16 @@ This example demonstrates the rendering of a button element. However, if you int
 <div data-cards="components">
 
 - [](/components/checkbox)
-- [](/components/button)
 
 </div>
 
 ## Activating on <kbd>Enter</kbd>
 
-By default, native checkbox elements are activated on <kbd>Space</kbd>, but not on <kbd>Enter</kbd>. The Ariakit `Checkbox` component allows you to control this behavior using the [`clickOnEnter`](/apis/checkbox#clickonenter) and [`clickOnSpace`](/apis/checkbox#clickonspace) props. However, when rendering the `Checkbox` as any non-native input element, the `clickOnEnter` prop will be automatically set to `true`.
+By default, native checkbox elements are activated on <kbd>Space</kbd>, but not on <kbd>Enter</kbd>. The Ariakit [Checkbox](/components/checkbox) component allows you to control this behavior using the [`clickOnEnter`](/reference/checkbox#clickonenter) and [`clickOnSpace`](/reference/checkbox#clickonspace) props. However, when rendering the `Checkbox` as any non-native input element, the `clickOnEnter` prop will be automatically set to `true`.
 
 ## Reading the state
 
-In this example, we're reading the [`value`](/apis/checkbox-store#value) state from the checkbox store to render the button's text. This is done by using the selector form of the [`useState`](/apis/checkbox-store#usestate) hook:
+In this example, we're reading the [`value`](/reference/use-checkbox-store#value) state from the checkbox store to render the button's text. This is done by using the selector form of the [`useState`](/reference/use-checkbox-store#usestate) hook:
 
 ```jsx
 const label = checkbox.useState((state) =>
@@ -39,7 +48,7 @@ Learn more about reading the state on the [Component stores](/guide/component-st
 
 ## Styling
 
-When rendering the `Checkbox` component as a non-native `input` element, the `:checked` pseudo-class is not supported. To style the checked state, use the `aria-checked` attribute selector:
+When rendering the [Checkbox](/components/checkbox) component as a non-native `input` element, the `:checked` pseudo-class is not supported. To style the checked state, use the `aria-checked` attribute selector:
 
 ```css
 .button[aria-checked="true"] {

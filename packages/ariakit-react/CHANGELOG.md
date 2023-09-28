@@ -1,5 +1,229 @@
 # @ariakit/react
 
+## 0.3.3
+
+### Patch Changes
+
+- [`#2820`](https://github.com/ariakit/ariakit/pull/2820) Added missing `aria-haspopup` attribute to [`DialogDisclosure`](https://ariakit.org/reference/dialog-disclosure) and [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure).
+
+- [`#2858`](https://github.com/ariakit/ariakit/pull/2858) Fixed the [`setValueOnMove`](https://ariakit.org/reference/use-select-store#setvalueonmove) state on the [Select](https://ariakit.org/components/select) module not syncing between multiple stores.
+
+  The following now works as expected:
+
+  ```js
+  const store1 = useSelectStore();
+  const store2 = useSelectStore({ store: store1, setValueOnMove: true });
+
+  store1.useState("setValueOnMove") === store2.useState("setValueOnMove"); // true
+  ```
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Elements inside [Dialog](https://ariakit.org/components/dialog) and derived components are now properly disabled when the dialog is animating out.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed a bug that occurred when rendering nested [Dialog](https://ariakit.org/components/dialog) elements with a third-party dialog interspersed.
+
+  Previously, Ariakit didn't recognize the third-party dialog as a nested dialog when the lowest dialog opened.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) The [`hideOnEscape`](https://ariakit.org/reference/dialog#hideonescape) prop is now triggered during the capture phase.
+
+  Essentially, this means that you can now prevent the propagation of the <kbd>Escape</kbd> keydown event to other elements in the DOM when it's used to close an Ariakit [Dialog](https://ariakit.org/components/dialog):
+
+  ```jsx
+  <Dialog
+    hideOnEscape={(event) => {
+      event.stopPropagation();
+      return true;
+    }}
+  />
+  ```
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed an issue where the [Dialog](https://ariakit.org/components/dialog) component would automatically hide when parent dialogs closed.
+
+  You can now render nested dialogs in the React tree and keep them open independently, provided they're not unmounted.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) Fixed the [Focusable](https://ariakit.org/components/focusable) and its derived components that were incorrectly calling the [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) callback prop when the element had lost focus.
+
+  This didn't align with the behavior of the [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute. The behavior now mirrors the attribute, which will only be omitted from the element if `event.preventDefault()` is invoked from within the [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) callback.
+
+- [`#2862`](https://github.com/ariakit/ariakit/pull/2862) The [`modal`](https://ariakit.org/reference/menu#modal) prop is now automatically disabled on nested [`Menu`](https://ariakit.org/reference/menu) components.
+
+- [`#2869`](https://github.com/ariakit/ariakit/pull/2869) Fixed uncaught `msg.startsWith` error.
+
+- Improved JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.3.3`.
+
+## 0.3.2
+
+### Patch Changes
+
+- [`#2811`](https://github.com/ariakit/ariakit/pull/2811) **TypeScript**: Fixed missing `null` type on props from [`useMenuStore`](https://ariakit.org/reference/use-menu-store) ([`combobox`](https://ariakit.org/reference/use-menu-store#combobox), [`parent`](https://ariakit.org/reference/use-menu-store#parent), [`menubar`](https://ariakit.org/reference/use-menu-store#menubar)), and [`useSelectStore`](https://ariakit.org/reference/use-select-store) ([`combobox`](https://ariakit.org/reference/use-select-store#combobox)).
+
+- [`#2812`](https://github.com/ariakit/ariakit/pull/2812) Fixed an infinite loop issue when using [`MenuButton`](https://ariakit.org/reference/menu-buton) with a [`store`](https://ariakit.org/reference/menu-button#store) that is synchronized with another store.
+
+- Improved JSDocs.
+
+- Updated dependencies: `@ariakit/react-core@0.3.2`.
+
+## 0.3.1
+
+### Patch Changes
+
+- [`#2804`](https://github.com/ariakit/ariakit/pull/2804) New in this version: [**Component providers**](https://ariakit.org/guide/component-providers)
+
+  Component providers are optional components that act as a higher-level API on top of [component stores](https://ariakit.org/guide/component-stores). They wrap Ariakit components and automatically provide a store to them.
+
+- [`#2797`](https://github.com/ariakit/ariakit/pull/2797) Fixed a regression on `Dialog` regarding the timing of its "focus on hide" behavior.
+
+- [`#2801`](https://github.com/ariakit/ariakit/pull/2801) Fixed `values.slice` error that would occur when clicking on `FormCheckbox` that uses an integer-like field name.
+
+- [`#2802`](https://github.com/ariakit/ariakit/pull/2802) Added `setMounted` prop to `useDisclosureStore` and derived component stores. This callback prop can be used to react to changes in the `mounted` state. For example:
+
+  ```js
+  useDialogStore({
+    setMounted(mounted) {
+      if (!mounted) {
+        props.onUnmount?.();
+      }
+    },
+  });
+  ```
+
+- [`#2803`](https://github.com/ariakit/ariakit/pull/2803) The `Toolbar` component can now render without needing an explicit `store` prop or a `ToolbarProvider` component wrap. `Toolbar` now also supports certain store props such as `focusLoop`, `orientation`, `rtl`, and `virtualFocus`.
+
+- Updated dependencies: `@ariakit/react-core@0.3.1`.
+
+## 0.3.0
+
+### Minor Changes
+
+- [`#2714`](https://github.com/ariakit/ariakit/pull/2714) Added support for a dynamic `store` prop on component stores.
+
+  This is similar to the `store` prop on components, keeping both stores in sync. Now, component store hooks can support modifying the value of the `store` prop after the initial render. For instance:
+
+  ```js
+  // props.store can change between renders now
+  const checkbox = useCheckboxStore({ store: props.store });
+  ```
+
+  When the `store` prop changes, the object returned from the store hook will update as well. Consequently, effects and hooks that rely on the store will re-run.
+
+  While it's unlikely, this **could represent a breaking change** if you're depending on the `store` prop in component stores to only acknowledge the first value passed to it.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) **BREAKING** _(This should affect very few people)_: The `combobox` state on `useSelectStore` has been replaced by the `combobox` property on the store object.
+
+  **Before:**
+
+  ```js
+  const combobox = useComboboxStore();
+  const select = useSelectStore({ combobox });
+  const hasCombobox = select.useState("combobox");
+  ```
+
+  **After:**
+
+  ```js
+  const combobox = useComboboxStore();
+  const select = useSelectStore({ combobox });
+  const hasCombobox = Boolean(select.combobox);
+  ```
+
+  In the example above, `select.combobox` is literally the same as the `combobox` store. It will be defined if the `combobox` store is passed to `useSelectStore`.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) **BREAKING** _(This should affect very few people)_: The `select` and `menu` props on `useComboboxStore` have been removed. If you need to compose `Combobox` with `Select` or `Menu`, use the `combobox` prop on `useSelectStore` or `useMenuStore` instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `children` prop as a function has been deprecated on all components. Use the [`render`](https://ariakit.org/guide/composition#explicit-render-function) prop instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `as` prop has been deprecated on all components. Use the [`render`](https://ariakit.org/guide/composition) prop instead.
+
+- [`#2717`](https://github.com/ariakit/ariakit/pull/2717) The `backdropProps` prop has been deprecated on `Dialog` and derived components. Use the [`backdrop`](https://ariakit.org/reference/dialog#backdrop) prop instead.
+
+- [`#2745`](https://github.com/ariakit/ariakit/pull/2745) Component stores will now throw an error if they receive another store prop in conjunction with default prop values.
+
+### Patch Changes
+
+- [`#2737`](https://github.com/ariakit/ariakit/pull/2737) Fixed controlled component stores rendering with a stale state.
+
+- [`#2783`](https://github.com/ariakit/ariakit/pull/2783) Component store objects now contain properties for the composed stores passed to them as props. For instance, `useSelectStore({ combobox })` will return a `combobox` property if the `combobox` prop is specified.
+
+- [`#2785`](https://github.com/ariakit/ariakit/pull/2785) Added `parent` and `menubar` properties to the menu store. These properties are automatically set when rendering nested menus or menus within a menubar.
+
+  Now, it also supports rendering nested menus that aren't nested in the React tree. In this case, you would have to supply the parent menu store manually to the child menu store.
+
+  These properties are also included in the returned menu store object, allowing you to verify whether the menu is nested. For instance:
+
+  ```jsx
+  const menu = useMenuStore(props);
+  const isNested = Boolean(menu.parent);
+  ```
+
+- [`#2795`](https://github.com/ariakit/ariakit/pull/2795) Updated the `Menu` component so the `composite` and `typeahead` props are automatically set to `false` when combining it with a `Combobox` component.
+
+  This means you'll not need to explicitly pass `composite={false}` when building a [Menu with Combobox](https://ariakit.org/examples/menu-combobox) component.
+
+- [`#2796`](https://github.com/ariakit/ariakit/pull/2796) Composed store props such as `useSelectStore({ combobox })` now accept `null` as a value.
+
+- Updated dependencies: `@ariakit/react-core@0.3.0`.
+
+## 0.2.17
+
+### Patch Changes
+
+- [`#2718`](https://github.com/ariakit/ariakit/pull/2718) Fixed import of `use-sync-external-store` package for ESM builds.
+
+- Updated dependencies: `@ariakit/react-core@0.2.17`.
+
+## 0.2.16
+
+### Patch Changes
+
+- Fixed `Collection` not populating the `items` state when passing `items` and `setItems` to `useCollectionStore`. ([#2704](https://github.com/ariakit/ariakit/pull/2704))
+
+- Fixed `Combobox` controlled derived state. ([#2705](https://github.com/ariakit/ariakit/pull/2705))
+
+- The `Menu`'s `disclosureElement` state is now guaranteed to be defined as the `MenuButton` element. Before, it could be overridden by a different element that received focus right before the menu opened, which could cause some weird issues. ([#2695](https://github.com/ariakit/ariakit/pull/2695))
+
+- Fixed `Tooltip` not closing when it's open while another popover is still visible. ([#2692](https://github.com/ariakit/ariakit/pull/2692))
+
+- Updated dependencies: `@ariakit/react-core@0.2.16`.
+
+## 0.2.15
+
+### Patch Changes
+
+- Fixed clicking on a custom dialog backdrop hiding all parent dialogs. ([#2688](https://github.com/ariakit/ariakit/pull/2688))
+
+- Fixed `ReactDOM.flushSync` warning on low-end devices. ([#2677](https://github.com/ariakit/ariakit/pull/2677))
+
+- Fixed `Tooltip` not hiding when opening a dialog that was previously unmounted. ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Fixed `Focusable` not triggering `onFocusVisible` (and thus not rendering the `data-focus-visible` attribute) when an element is focused after closing a dialog. ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Fixed `Tooltip` showing on mouse move right after it was dismissed (by pressing Esc or opening a popover, for example). ([#2691](https://github.com/ariakit/ariakit/pull/2691))
+
+- Updated dependencies: `@ariakit/react-core@0.2.15`.
+
+## 0.2.14
+
+### Patch Changes
+
+- Fixed `flushSync` warning. ([#2672](https://github.com/ariakit/ariakit/pull/2672))
+
+- Updated dependencies: `@ariakit/react-core@0.2.14`.
+
+## 0.2.13
+
+### Patch Changes
+
+- The `as` prop has been soft deprecated. Use the [`render`](https://ariakit.org/guide/composition) prop instead. ([#2621](https://github.com/ariakit/ariakit/pull/2621))
+
+- The `Combobox` component now properly disables the `autoSelect` behavior when the user is scrolling through the list of options. This should prevent issues when scrolling virtualized or infinite lists. ([#2617](https://github.com/ariakit/ariakit/pull/2617))
+
+- Fixed `Combobox` with `autoSelect` always focusing on the first item when a virtualized list is scrolled using arrow keys. ([#2636](https://github.com/ariakit/ariakit/pull/2636))
+
+- Controlled store updates are now flushed synchronously. This should prevent issues when controlling a `Combobox` by passing `value` and `setValue` to the combobox store, for example. ([#2671](https://github.com/ariakit/ariakit/pull/2671))
+
+- Updated dependencies: `@ariakit/react-core@0.2.13`.
+
 ## 0.2.12
 
 ### Patch Changes

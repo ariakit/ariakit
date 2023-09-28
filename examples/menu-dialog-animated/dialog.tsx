@@ -23,16 +23,12 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
           onClose?.();
         }
       },
+      setMounted(mounted) {
+        if (!mounted) {
+          onUnmount?.();
+        }
+      },
     });
-
-    const mounted = dialog.useState("mounted");
-
-    React.useLayoutEffect(() => {
-      if (!mounted) {
-        onUnmount?.();
-      }
-    }, [mounted]);
-
     return (
       <Ariakit.Dialog
         store={dialog}

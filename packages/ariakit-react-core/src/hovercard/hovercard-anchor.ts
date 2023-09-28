@@ -1,6 +1,7 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -12,6 +13,7 @@ import {
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**
@@ -27,6 +29,16 @@ import type { HovercardStore } from "./hovercard-store.js";
  */
 export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
+    const context = useHovercardProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "HovercardAnchor must receive a `store` prop or be wrapped in a HovercardProvider component.",
+    );
+
+    const mounted = store.useState("mounted");
     const disabled =
       props.disabled ||
       props["aria-disabled"] === true ||
@@ -43,6 +55,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     // for when the mouse is moving toward the Hovercard.
     useEffect(() => {
       const onMouseLeave = (event: MouseEvent) => {
+        if (!store) return;
         const { anchorElement } = store.getState();
         if (!anchorElement) return;
         if (event.target !== anchorElement) return;
@@ -58,12 +71,13 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     const onMouseMove = useEvent(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
-        store.setAnchorElement(event.currentTarget);
+        store?.setAnchorElement(event.currentTarget);
         onMouseMoveProp?.(event);
         if (disabled) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
         if (!isMouseMoving()) return;
+        if (!store) return;
         if (!showOnHoverProp(event)) return;
         const { showTimeout, timeout } = store.getState();
         showTimeoutRef.current = window.setTimeout(() => {
@@ -71,14 +85,21 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
           // Let's check again if the mouse is moving. This is to avoid showing
           // the hovercard on mobile clicks or after clicking on the anchor.
           if (!isMouseMoving()) return;
-          store.show();
+          store?.show();
         }, showTimeout ?? timeout);
       },
     );
 
     props = {
       ...props,
-      ref: useMergeRefs(store.setAnchorElement, props.ref),
+      ref: useMergeRefs(
+        store.setAnchorElement,
+        // We need to set the anchor element as the hovercard disclosure
+        // disclosure element only when the hovercard is shown so it doesn't get
+        // assigned an arbitrary element by the dialog component.
+        mounted ? store.setDisclosureElement : undefined,
+        props.ref,
+      ),
       onMouseMove,
     };
 
@@ -89,13 +110,15 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 );
 
 /**
- * Renders an anchor element that will open a popover (`Hovercard`) on hover.
+ * Renders an anchor element that will open a
+ * [`Hovercard`](https://ariakit.org/reference/hovercard) popup on hover.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx
- * const hovercard = useHovercardStore();
- * <HovercardAnchor store={hovercard}>@username</HovercardAnchor>
- * <Hovercard store={hovercard}>Details</Hovercard>
+ * <HovercardProvider>
+ *   <HovercardAnchor>@username</HovercardAnchor>
+ *   <Hovercard>Details</Hovercard>
+ * </HovercardProvider>
  * ```
  */
 export const HovercardAnchor = createComponent<HovercardAnchorOptions>(
@@ -112,9 +135,13 @@ if (process.env.NODE_ENV !== "production") {
 export interface HovercardAnchorOptions<T extends As = "a">
   extends FocusableOptions<T> {
   /**
-   * Object returned by the `useHovercardStore` hook.
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * hook. If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
-  store: HovercardStore;
+  store?: HovercardStore;
   /**
    * Whether to show the hovercard on mouse move.
    * @default true

@@ -1,8 +1,21 @@
+---
+tags:
+  - Menu
+  - Animated
+  - Framer Motion
+  - Dropdowns
+  - Abstracted examples
+---
+
 # Menu with Framer Motion
 
-<p data-description>
-  Abstracting <a href="/components/menu">Menu</a> into a reusable dropdown menu component that uses <a href="https://www.framer.com/motion/">Framer Motion</a> to create smooth initial and exit animations.
-</p>
+<div data-description>
+
+Abstracting [Menu](/components/menu) into a reusable dropdown menu component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
+
+</div>
+
+<div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
 
@@ -16,7 +29,7 @@
 
 ## Controlling the Menu state
 
-The [`useMenuStore`](/apis/menu-store) hook allows for the use of controlled props, such as [`open`](/apis/menu-store#open) and [`setOpen`](/apis/menu-store#setopen), which can be used to manage the state of the menu from outside the component. These props are compatible with React state and can be easily passed via props.
+The [`useMenuStore`](/reference/use-menu-store) hook allows for the use of controlled props, such as [`open`](/reference/use-menu-store#open) and [`setOpen`](/reference/use-menu-store#setopen), which can be used to manage the state of the menu from outside the component. These props are compatible with React state and can be easily passed via props.
 
 In this example, we use this method to expose a simpler API:
 
@@ -42,7 +55,7 @@ We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) co
 </AnimatePresence>
 ```
 
-To dynamically render the menu component, you can use the [`mounted`](/apis/menu-store#mounted) state that can be retrieved from the store:
+To dynamically render the menu component, you can use the [`mounted`](/apis/use-menu-store#mounted) state that can be retrieved from the store:
 
 ```jsx
 const menu = Ariakit.useMenuStore({ open, setOpen });
@@ -57,5 +70,7 @@ You can learn more about reading state from the store on the [Component stores](
 
 - [](/examples/dialog-framer-motion)
 - [](/examples/tooltip-framer-motion)
+- [](/examples/menu-nested)
+- [](/examples/menu-item-checkbox)
 
 </div>

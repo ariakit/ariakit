@@ -1,7 +1,12 @@
 import { getDocument } from "../utils/dom.js";
 import { chain, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  setup,
+  throwOnConflictingProps,
+} from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
 type Item = {
@@ -62,6 +67,8 @@ function getCommonParent(items: Item[]) {
 export function createCollectionStore<T extends Item = Item>(
   props: CollectionStoreProps<T> = {},
 ): CollectionStore<T> {
+  throwOnConflictingProps(props, props.store);
+
   const syncState = props.store?.getState();
 
   const items = defaultValue(
@@ -90,33 +97,30 @@ export function createCollectionStore<T extends Item = Item>(
     collection.setState("renderedItems", renderedItems);
   };
 
-  collection.setup(() => {
-    return privateStore.syncBatch(
-      (state) => {
-        let firstRun = true;
-        let raf = requestAnimationFrame(sortItems);
-        if (typeof IntersectionObserver !== "function") return;
-        const callback = () => {
-          if (firstRun) {
-            firstRun = false;
-            return;
-          }
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(sortItems);
-        };
-        const root = getCommonParent(state.renderedItems);
-        const observer = new IntersectionObserver(callback, { root });
-        state.renderedItems.forEach((item) => {
-          if (!item.element) return;
-          observer.observe(item.element);
-        });
-        return () => {
-          cancelAnimationFrame(raf);
-          observer.disconnect();
-        };
-      },
-      ["renderedItems"],
-    );
+  setup(collection, () => {
+    return batch(privateStore, ["renderedItems"], (state) => {
+      let firstRun = true;
+      let raf = requestAnimationFrame(sortItems);
+      if (typeof IntersectionObserver !== "function") return;
+      const callback = () => {
+        if (firstRun) {
+          firstRun = false;
+          return;
+        }
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sortItems);
+      };
+      const root = getCommonParent(state.renderedItems);
+      const observer = new IntersectionObserver(callback, { root });
+      state.renderedItems.forEach((item) => {
+        if (!item.element) return;
+        observer.observe(item.element);
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+        observer.disconnect();
+      };
+    });
   });
 
   const mergeItem = (

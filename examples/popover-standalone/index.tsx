@@ -1,3 +1,4 @@
+import "./style.css";
 import { useState } from "react";
 import { Button } from "@ariakit/react";
 import {
@@ -6,7 +7,6 @@ import {
   PopoverDescription,
   PopoverHeading,
 } from "./popover.jsx";
-import "./style.css";
 
 export default function Example() {
   const [isOpen, setIsOpen] = useState(false);

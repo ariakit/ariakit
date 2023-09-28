@@ -1,10 +1,14 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
-import { MenuBarContext } from "./menu-context.js";
+import {
+  MenuBarScopedContextProvider,
+  useMenuBarProviderContext,
+} from "./menu-context.js";
 
 /**
  * Returns props to create a `MenuBar` component.
@@ -28,6 +32,15 @@ import { MenuBarContext } from "./menu-context.js";
  */
 export const useMenuBar = createHook<MenuBarOptions>(
   ({ store, composite = true, ...props }) => {
+    const context = useMenuBarProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "MenuBar must receive a `store` prop or be wrapped in a MenuBarProvider component.",
+    );
+
     const orientation = store.useState((state) =>
       !composite || state.orientation === "both"
         ? undefined
@@ -37,9 +50,9 @@ export const useMenuBar = createHook<MenuBarOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <MenuBarContext.Provider value={store}>
+        <MenuBarScopedContextProvider value={store}>
           {element}
-        </MenuBarContext.Provider>
+        </MenuBarScopedContextProvider>
       ),
       [store],
     );
@@ -64,27 +77,24 @@ export const useMenuBar = createHook<MenuBarOptions>(
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const store = useMenuBarStore();
- * const fileProps = useMenuItem({ store });
- * const editProps = useMenuItem({ store });
- * const fileMenu = useMenuStore();
- * const editMenu = useMenuStore();
- * <MenuBar store={store}>
- *   <MenuButton {...fileProps} store={fileMenu}>
- *     File
- *   </MenuButton>
- *   <Menu store={fileMenu}>
- *     <MenuItem>New File</MenuItem>
- *     <MenuItem>New Window</MenuItem>
- *   </Menu>
- *   <MenuButton {...editProps} store={editMenu}>
- *     Edit
- *   </MenuButton>
- *   <Menu store={editMenu}>
- *     <MenuItem>Undo</MenuItem>
- *     <MenuItem>Redo</MenuItem>
- *   </Menu>
- * </MenuBar>
+ * <MenuBarProvider>
+ *   <MenuBar>
+ *     <MenuProvider>
+ *       <MenuItem render={<MenuButton />}>File</MenuItem>
+ *       <Menu>
+ *         <MenuItem>New File</MenuItem>
+ *         <MenuItem>New Window</MenuItem>
+ *       </Menu>
+ *     </MenuProvider>
+ *     <MenuProvider>
+ *       <MenuItem render={<MenuButton />}>Edit</MenuItem>
+ *       <Menu>
+ *         <MenuItem>Undo</MenuItem>
+ *         <MenuItem>Redo</MenuItem>
+ *       </Menu>
+ *     </MenuProvider>
+ *   </MenuBar>
+ * </MenuBarProvider>
  * ```
  */
 export const MenuBar = createComponent<MenuBarOptions>((props) => {
@@ -99,9 +109,13 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuBarOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**
-   * Object returned by the `useMenuBarStore` hook.
+   * Object returned by the
+   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store) hook.
+   * If not provided, the closest
+   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
+   * component's context will be used.
    */
-  store: MenuBarStore;
+  store?: MenuBarStore;
 }
 
 export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;

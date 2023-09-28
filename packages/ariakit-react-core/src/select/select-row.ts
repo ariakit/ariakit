@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { SelectContext } from "./select-context.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -25,7 +24,7 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectRow = createHook<SelectRowOptions>(
   ({ store, ...props }) => {
-    const context = useContext(SelectContext);
+    const context = useSelectContext();
     store = store || context;
 
     invariant(
@@ -50,19 +49,20 @@ export const useSelectRow = createHook<SelectRowOptions>(
  * Renders a select row.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
- * const select = useSelectStore();
- * <Select store={select} />
- * <SelectPopover store={select}>
- *   <SelectRow>
- *     <SelectItem value="Apple" />
- *     <SelectItem value="Orange" />
- *   </SelectRow>
- *   <SelectRow>
- *     <SelectItem value="Banana" />
- *     <SelectItem value="Grape" />
- *   </SelectRow>
- * </SelectPopover>
+ * ```jsx {4-11}
+ * <SelectProvider>
+ *   <Select />
+ *   <SelectPopover>
+ *     <SelectRow>
+ *       <SelectItem value="Apple" />
+ *       <SelectItem value="Orange" />
+ *     </SelectRow>
+ *     <SelectRow>
+ *       <SelectItem value="Banana" />
+ *       <SelectItem value="Grape" />
+ *     </SelectRow>
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectRow = createComponent<SelectRowOptions>((props) => {
@@ -77,8 +77,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectRowOptions<T extends As = "div">
   extends CompositeRowOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `SelectList` or `SelectPopover` components' context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
    */
   store?: SelectStore;
 }

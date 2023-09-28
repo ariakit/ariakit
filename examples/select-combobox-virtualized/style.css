@@ -1,6 +1,6 @@
 @import url("../select-combobox/style.css");
 
-.select {
+.button {
   @apply
     w-[260px]
   ;

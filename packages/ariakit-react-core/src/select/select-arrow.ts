@@ -2,6 +2,7 @@ import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosur
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -23,6 +24,8 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectArrow = createHook<SelectArrowOptions>(
   ({ store, ...props }) => {
+    const context = useSelectContext();
+    store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },
@@ -30,19 +33,21 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
 
 /**
  * Renders an arrow pointing to the select popover position. It's usually
- * rendered inside the `Select` component.
+ * rendered inside the [`Select`](https://ariakit.org/reference/select)
+ * component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
- * const select = useSelectStore();
- * <Select store={select}>
- *   {select.value}
- *   <SelectArrow />
- * </Select>
- * <SelectPopover store={select}>
- *   <SelectItem value="Apple" />
- *   <SelectItem value="Orange" />
- * </SelectPopover>
+ * <SelectProvider>
+ *   <Select>
+ *     {select.value}
+ *     <SelectArrow />
+ *   </Select>
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
  * ```
  */
 export const SelectArrow = createComponent<SelectArrowOptions>((props) => {
@@ -57,8 +62,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface SelectArrowOptions<T extends As = "span">
   extends PopoverDisclosureArrowOptions<T> {
   /**
-   * Object returned by the `useSelectStore` hook. If not provided, the parent
-   * `Select` component's context will be used.
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the closest [`Select`](https://ariakit.org/reference/select)
+   * or [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * components' context will be used.
    */
   store?: SelectStore;
 }

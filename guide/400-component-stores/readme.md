@@ -1,12 +1,24 @@
+---
+group: Advanced
+---
+
 # Component stores
 
-<p data-description>
-  Access and manipulate the state of Ariakit components in a performant way through component stores.
-</p>
+<div data-description>
+
+Access and manipulate the state of Ariakit components in a performant way through component stores.
+
+</div>
+
+<aside data-type="note" title="Component providers">
+
+Most of the time, you won't need to use component stores directly. Instead, you can use [component providers](/guide/component-providers) to wrap Ariakit components and automatically provide a store to them.
+
+</aside>
 
 ## Overview
 
-Component stores are created using custom React hooks exported by the `@ariakit/react` package. They allow you to read and write the state of Ariakit components. With them, you can control the value of a [Combobox](/components/combobox), the active item of a [Menu](/components/menu), the open state of a [Dialog](/components/dialog), or the values in a [Form](/components/form), for example.
+Component stores are lower-level React hooks exported by the `@ariakit/react` package. They allow you to read and write the state of Ariakit components. With them, you can control the value of a [Combobox](/components/combobox), the active item of a [Menu](/components/menu), the open state of a [Dialog](/components/dialog), or the values in a [Form](/components/form), for example.
 
 You instantiate the store by calling the component store hook within a React component:
 
@@ -54,7 +66,7 @@ const form = useFormStore({
 
 Component stores may also accept callbacks for state changes. These functions conventionally bear the name of the state property they modify, prefixed with the word `set`. They are invoked with the new state whenever an update occurs.
 
-These state setters serve various purposes, such as updating another state, executing side effects, or implementing features like `onChange`, `onValuesChange`, `onToggle`, `onOpenChange`, `onClose`, and so on.
+These state setters serve various purposes, such as updating another state, executing side effects, or implementing features like `onChange`, `onValuesChange`, `onToggle`, `onOpenChange`, and so on.
 
 ```js {3-5} "setValues"
 const form = useFormStore({
@@ -76,10 +88,11 @@ const form = useFormStore({ values, setValues });
 
 You can also receive controlled props, such as `value` and `onChange`, from a parent component and pass them directly to the store:
 
-```js "value" "onChange"
+```js "value" "onChange" "defaultValue"
 const select = useSelectStore({
   value: props.value,
   setValue: props.onChange,
+  defaultValue: props.defaultValue,
 });
 ```
 
@@ -185,4 +198,22 @@ dialog.toggle(); // dialog.setOpen((open) => !open)
 
 When you need to access the store in child components, passing it as a prop is usually the most straightforward approach. However, if the component is deeply nested within the component tree or if you're unable to pass the store as a prop for some reason, you can leverage React Context instead:
 
-<a href="./form-react-context.tsx" data-playground type="code">Example</a>
+```jsx "useFormContext"
+import { useFormContext, FormInput } from "@ariakit/react";
+
+function RequiredInput(props) {
+  const form = useFormContext();
+
+  if (!form) {
+    throw new Error("RequiredInput must be used within a Form component");
+  }
+
+  form.useValidate(() => {
+    if (!form.getValue(props.name)) {
+      form.setError(props.name, "This field is required");
+    }
+  });
+
+  return <FormInput {...props} />;
+}
+```

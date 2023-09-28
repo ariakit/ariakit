@@ -1,9 +1,13 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { RadioContext } from "./radio-context.js";
+import {
+  RadioScopedContextProvider,
+  useRadioProviderContext,
+} from "./radio-context.js";
 import type { RadioStore } from "./radio-store.js";
 
 /**
@@ -21,10 +25,21 @@ import type { RadioStore } from "./radio-store.js";
  */
 export const useRadioGroup = createHook<RadioGroupOptions>(
   ({ store, ...props }) => {
+    const context = useRadioProviderContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "RadioGroup must receive a `store` prop or be wrapped in a RadioProvider component.",
+    );
+
     props = useWrapElement(
       props,
       (element) => (
-        <RadioContext.Provider value={store}>{element}</RadioContext.Provider>
+        <RadioScopedContextProvider value={store}>
+          {element}
+        </RadioScopedContextProvider>
       ),
       [store],
     );
@@ -64,9 +79,13 @@ if (process.env.NODE_ENV !== "production") {
 export interface RadioGroupOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**
-   * Object returned by the `useRadioStore` hook.
+   * Object returned by the
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * not provided, the closest
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) component's
+   * context will be used.
    */
-  store: RadioStore;
+  store?: RadioStore;
 }
 
 export type RadioGroupProps<T extends As = "div"> = Props<RadioGroupOptions<T>>;

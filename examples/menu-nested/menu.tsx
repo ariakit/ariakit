@@ -1,66 +1,44 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 
-// Use React Context so we can determine if the menu is a submenu or not.
-const MenuContext = React.createContext(false);
-
-export type MenuItemProps = React.HTMLAttributes<HTMLDivElement> & {
-  label: React.ReactNode;
-  disabled?: boolean;
-};
+export interface MenuItemProps extends Ariakit.MenuItemProps {}
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({ label, ...props }, ref) => {
+  function MenuItem(props, ref) {
     return (
-      <Ariakit.MenuItem className="menu-item" ref={ref} {...props}>
-        {label}
-      </Ariakit.MenuItem>
+      <Ariakit.MenuItem
+        ref={ref}
+        {...props}
+        className={clsx("menu-item", props.className)}
+      />
     );
   },
 );
 
-export type MenuProps = React.HTMLAttributes<HTMLDivElement> & {
+export interface MenuProps extends Ariakit.MenuButtonProps {
   label: React.ReactNode;
-  disabled?: boolean;
-};
+}
 
-type MenuButtonProps = React.HTMLAttributes<HTMLDivElement> &
-  React.RefAttributes<HTMLDivElement>;
-
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
-  ({ label, children, ...props }, ref) => {
-    const nested = React.useContext(MenuContext);
-    const menu = Ariakit.useMenuStore();
-
-    const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
-      <Ariakit.MenuButton store={menu} className="button" {...menuButtonProps}>
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
+  { label, children, ...props },
+  ref,
+) {
+  const menu = Ariakit.useMenuStore();
+  return (
+    <Ariakit.MenuProvider store={menu}>
+      <Ariakit.MenuButton
+        ref={ref}
+        {...props}
+        className={clsx(!menu.parent && "button", props.className)}
+        render={menu.parent ? <MenuItem render={props.render} /> : undefined}
+      >
         <span className="label">{label}</span>
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
-    );
-
-    return (
-      <>
-        {nested ? (
-          // If it's a submenu, we have to combine the MenuButton and the
-          // MenuItem components into a single component, so it works as a
-          // submenu button.
-          <Ariakit.MenuItem className="menu-item" ref={ref} {...props}>
-            {renderMenuButton}
-          </Ariakit.MenuItem>
-        ) : (
-          // Otherwise, we just render the menu button.
-          renderMenuButton({ ref, ...props })
-        )}
-        <Ariakit.Menu
-          store={menu}
-          gutter={8}
-          shift={nested ? -9 : 0}
-          className="menu"
-        >
-          <MenuContext.Provider value={true}>{children}</MenuContext.Provider>
-        </Ariakit.Menu>
-      </>
-    );
-  },
-);
+      <Ariakit.Menu gutter={8} shift={menu.parent ? -9 : 0} className="menu">
+        {children}
+      </Ariakit.Menu>
+    </Ariakit.MenuProvider>
+  );
+});

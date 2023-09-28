@@ -1,6 +1,7 @@
 import { useMergeRefs } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
+import { usePopoverProviderContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
 /**
@@ -16,9 +17,11 @@ import type { PopoverStore } from "./popover-store.js";
  */
 export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
   ({ store, ...props }) => {
+    const context = usePopoverProviderContext();
+    store = store || context;
     props = {
       ...props,
-      ref: useMergeRefs(store.setAnchorElement, props.ref),
+      ref: useMergeRefs(store?.setAnchorElement, props.ref),
     };
     return props;
   },
@@ -30,9 +33,10 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
- * const popover = usePopoverStore();
- * <PopoverAnchor store={popover}>Anchor</PopoverAnchor>
- * <Popover store={popover}>Popover</Popover>
+ * <PopoverProvider>
+ *   <PopoverAnchor>Anchor</PopoverAnchor>
+ *   <Popover>Popover</Popover>
+ * </PopoverProvider>
  * ```
  */
 export const PopoverAnchor = createComponent<PopoverAnchorOptions>((props) => {
@@ -46,9 +50,13 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `usePopoverStore` hook.
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
-  store: PopoverStore;
+  store?: PopoverStore;
 }
 
 export type PopoverAnchorProps<T extends As = "div"> = Props<

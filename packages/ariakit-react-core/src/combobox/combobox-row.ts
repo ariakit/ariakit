@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { ComboboxContext } from "./combobox-context.js";
+import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -26,7 +25,7 @@ import type { ComboboxStore } from "./combobox-store.js";
  */
 export const useComboboxRow = createHook<ComboboxRowOptions>(
   ({ store, ...props }) => {
-    const context = useContext(ComboboxContext);
+    const context = useComboboxScopedContext();
     store = store || context;
 
     invariant(
@@ -52,20 +51,21 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
- * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxRow>
- *     <ComboboxItem value="Item 1.1" />
- *     <ComboboxItem value="Item 1.2" />
- *     <ComboboxItem value="Item 1.3" />
- *   </ComboboxRow>
- *   <ComboboxRow>
- *     <ComboboxItem value="Item 2.1" />
- *     <ComboboxItem value="Item 2.2" />
- *     <ComboboxItem value="Item 2.3" />
- *   </ComboboxRow>
- * </ComboboxPopover>
+ * <ComboboxProvider>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxRow>
+ *       <ComboboxItem value="Item 1.1" />
+ *       <ComboboxItem value="Item 1.2" />
+ *       <ComboboxItem value="Item 1.3" />
+ *     </ComboboxRow>
+ *     <ComboboxRow>
+ *       <ComboboxItem value="Item 2.1" />
+ *       <ComboboxItem value="Item 2.2" />
+ *       <ComboboxItem value="Item 2.3" />
+ *     </ComboboxRow>
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export const ComboboxRow = createComponent<ComboboxRowOptions>((props) => {
@@ -80,8 +80,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface ComboboxRowOptions<T extends As = "div">
   extends CompositeRowOptions<T> {
   /**
-   * Object returned by the `useComboboxStore` hook. If not provided, the parent
-   * `ComboboxList` or `ComboboxPopover` components' context will be used.
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * hook. If not provided, the parent
+   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components' context will be used.
    */
   store?: ComboboxStore;
 }

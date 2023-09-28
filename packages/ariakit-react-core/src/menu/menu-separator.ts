@@ -2,6 +2,7 @@ import type { CompositeSeparatorOptions } from "../composite/composite-separator
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
 /**
@@ -20,24 +21,29 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuSeparator = createHook<MenuSeparatorOptions>((props) => {
-  props = useCompositeSeparator(props);
-  return props;
-});
+export const useMenuSeparator = createHook<MenuSeparatorOptions>(
+  ({ store, ...props }) => {
+    const context = useMenuContext();
+    store = store || context;
+    props = useCompositeSeparator({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a separator for menu items.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx
- * const menu = useMenuStore();
- * <MenuButton store={menu}>Edit</MenuButton>
- * <Menu store={menu}>
- *   <MenuItem>Undo</MenuItem>
- *   <MenuItem>Redo</MenuItem>
- *   <MenuSeparator />
- *   <MenuItem>Cut</MenuItem>
- * </Menu>
+ * <MenuProvider>
+ *   <MenuButton>Edit</MenuButton>
+ *   <Menu>
+ *     <MenuItem>Undo</MenuItem>
+ *     <MenuItem>Redo</MenuItem>
+ *     <MenuSeparator />
+ *     <MenuItem>Cut</MenuItem>
+ *   </Menu>
+ * </MenuProvider>
  * ```
  */
 export const MenuSeparator = createComponent<MenuSeparatorOptions>((props) => {
@@ -52,8 +58,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface MenuSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {
   /**
-   * Object returned by the `useMenuStore` hook. If not provided, the parent
-   * `Menu` component's context will be used.
+   * Object returned by the
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * context will be used.
    */
   store?: MenuStore;
 }

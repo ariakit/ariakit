@@ -1,4 +1,4 @@
-import links from "build-pages/links.js";
+import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
 import { FontStyle, getHighlighter } from "shiki";
@@ -39,15 +39,14 @@ function parseFontStyle(fontStyle?: FontStyle) {
   );
 }
 
-function getLinkableType(token: IThemedToken, line: IThemedToken[]) {
+function getLinkableType(token: IThemedToken) {
   if (!token.explanation) return null;
 
   for (const { scopes } of token.explanation) {
     const s = scopes.map((s) => s.scopeName.replace(/\.[tj]sx?/g, ""));
     if (
       s.includes("variable.other.readwrite.alias") &&
-      (s.includes("meta.import") || s.includes("meta.export")) &&
-      line.some((token) => token.content.startsWith('"@ariakit/react'))
+      (s.includes("meta.import") || s.includes("meta.export"))
     ) {
       if (/^[A-Z]/.test(token.content)) return "component-import";
       return "function-import";
@@ -115,7 +114,7 @@ function getTokenHref(
     }
     return;
   }
-  const type = getLinkableType(token, line);
+  const type = getLinkableType(token);
   if (!type) return;
   const word = token.content.replace("Ariakit.", "").replace(/\:$/, "");
   const id = type === "prop" ? word.toLowerCase() : kebabCase(word);
@@ -125,7 +124,7 @@ function getTokenHref(
       ? `/reference/${context.contextId}#${id}`
       : `/reference/${id}`;
 
-  if (!isValidHref(href, links)) return;
+  if (!isValidHref(href, pageLinks)) return;
 
   if (type === "component" || type === "function") {
     context.contextId = id;
@@ -137,6 +136,8 @@ function getTokenHref(
 }
 
 let highlighter: Highlighter | undefined;
+const lightCache = new Map<string, IThemedToken[][]>();
+const darkCache = new Map<string, IThemedToken[][]>();
 
 export async function CodeBlock({
   code,
@@ -175,8 +176,18 @@ export async function CodeBlock({
   }
 
   try {
-    lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
-    darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+    if (lightCache.has(code)) {
+      lightTokens = lightCache.get(code)!;
+    } else {
+      lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
+      lightCache.set(code, lightTokens);
+    }
+    if (darkCache.has(code)) {
+      darkTokens = darkCache.get(code)!;
+    } else {
+      darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+      darkCache.set(code, darkTokens);
+    }
   } catch (error) {
     console.error(error);
   }

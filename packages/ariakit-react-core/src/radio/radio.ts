@@ -1,5 +1,5 @@
 import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -11,7 +11,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import { RadioContext } from "./radio-context.js";
+import { useRadioContext } from "./radio-context.js";
 import type { RadioStore, RadioStoreState } from "./radio-store.js";
 
 function getIsChecked(
@@ -44,17 +44,16 @@ function isNativeRadio(tagName?: string, type?: string) {
  */
 export const useRadio = createHook<RadioOptions>(
   ({ store, value, checked, ...props }) => {
-    const context = useContext(RadioContext);
+    const context = useRadioContext();
     store = store || context;
 
     const id = useId(props.id);
 
     const ref = useRef<HTMLInputElement>(null);
-    const isChecked =
-      useStoreState(
-        store,
-        (state) => checked ?? getIsChecked(value, state.value),
-      ) ?? checked;
+    const isChecked = useStoreState(
+      store,
+      (state) => checked ?? getIsChecked(value, state?.value),
+    );
 
     // When the radio store has a default value, we need to update the active id
     // to point to the checked element, otherwise it'll be the first item in the
@@ -153,8 +152,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface RadioOptions<T extends As = "input">
   extends CompositeItemOptions<T> {
   /**
-   * Object returned by the `useRadioStore` hook. If not provided, the parent
-   * `RadioGroup` component's context will be used.
+   * Object returned by the
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * not provided, the closest
+   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
+   * context will be used.
    */
   store?: RadioStore;
   /**
