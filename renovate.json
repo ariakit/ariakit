@@ -3,7 +3,14 @@
   "semanticCommits": false,
   "packageRules": [
     {
-      "matchPackagePatterns": ["hast", "rehype", "remark", "unified", "unist"],
+      "matchPackagePatterns": [
+        "hast",
+        "rehype",
+        "remark",
+        "unified",
+        "unist",
+        "react-markdown"
+      ],
       "groupName": "unified"
     },
     {
