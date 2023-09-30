@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Warning on Dialog hide",
+    type: "page",
+    href: "/examples/dialog-hide-warning",
+    dateTime: "2023-09-30T11:12Z",
+  },
+  {
     title: "Improved docs: Animated Select",
     type: "page",
     href: "/examples/select-animated",
