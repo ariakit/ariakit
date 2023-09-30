@@ -74,5 +74,6 @@ const pathname = usePathname();
 - [](/examples/dialog-react-router/)
 - [](/examples/dialog-menu/)
 - [](/examples/dialog-nested/)
+- [](/examples/dialog-hide-warning/)
 
 </div>
