@@ -639,12 +639,21 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Determines whether the dialog will be hidden when the user presses the
    * Escape key.
+   *
+   * Live examples:
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * @default true
    */
   hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
   /**
    * Determines whether the dialog will be hidden when the user clicks or focus
    * on an element outside of the dialog.
+   *
+   * Live examples:
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @default true
    */
   hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
@@ -670,6 +679,12 @@ export interface DialogOptions<T extends As = "div">
    * dialog is shown. By default, this is usually the first tabbable element in
    * the dialog or the dialog itself. The `initialFocus` prop can be used to set
    * a different element to receive focus.
+   *
+   * Live examples:
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @default true
    */
   autoFocusOnShow?: BooleanOrCallback<HTMLElement | null>;

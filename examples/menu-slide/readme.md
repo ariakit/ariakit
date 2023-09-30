@@ -5,11 +5,11 @@ tags:
   - Advanced
 ---
 
-# Sliding menu
+# Sliding Menu
 
 <div data-description>
 
-Rendering nested <a href="/components/menu">Menu</a> components to create submenus that slide in and out using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Scroll_Snap">CSS Scroll Snap</a>.
+Rendering nested [Menu](/components/menu) components to create submenus that slide in and out using [CSS Scroll Snap](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Scroll_Snap).
 
 </div>
 

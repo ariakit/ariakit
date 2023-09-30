@@ -479,6 +479,8 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * initial focus as the dialog opens.
    *
    * Live examples:
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * - [Dialog with React
    *   Router](https://ariakit.org/examples/dialog-react-router)
    * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
