@@ -1,5 +1,6 @@
 import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import { fireEvent } from "./fire-event.js";
 import { hover } from "./hover.js";
 import { mouseDown } from "./mouse-down.js";
@@ -8,9 +9,11 @@ import { sleep } from "./sleep.js";
 
 export async function select(
   text: string,
-  element: Element = document.body,
+  element: Element | null = document.body,
   options?: MouseEventInit,
 ) {
+  invariant(element, "Unable to select text on null element");
+
   if (!isVisible(element)) return;
 
   const document = element.ownerDocument;

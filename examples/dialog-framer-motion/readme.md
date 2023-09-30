@@ -74,5 +74,6 @@ You can learn more about reading state from the store on the [Component stores](
 - [](/examples/dialog-animated)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
+- [](/examples/dialog-hide-warning)
 
 </div>

@@ -1,11 +1,14 @@
 import "./polyfills.js";
 import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
 import { blur } from "./blur.js";
 import { fireEvent } from "./fire-event.js";
 import { focus } from "./focus.js";
 
-export function mouseDown(element: Element, options?: MouseEventInit) {
+export function mouseDown(element: Element | null, options?: MouseEventInit) {
+  invariant(element, "Unable to mouseDown on null element");
+
   if (!isVisible(element)) return;
 
   const { disabled } = element as HTMLButtonElement;
