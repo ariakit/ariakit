@@ -54,5 +54,6 @@ You can learn more about controlled state on the [Component stores](/guide/compo
 - [](/examples/dialog-next-router)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
+- [](/examples/dialog-hide-warning)
 
 </div>

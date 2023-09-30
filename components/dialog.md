@@ -22,7 +22,7 @@ Open a new window that can be either [`modal`](/reference/dialog#modal) or non-m
 - [](/examples/dialog-animated)
 - [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
-- [](/examples/dialog-nested)
+- [](/examples/dialog-hide-warning)
 - [](/examples/dialog-react-router)
 - [](/examples/dialog-next-router)
 

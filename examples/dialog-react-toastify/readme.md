@@ -41,5 +41,6 @@ Note that the elements returned by this function **must be present in the DOM** 
 
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
+- [](/examples/dialog-hide-warning)
 
 </div>

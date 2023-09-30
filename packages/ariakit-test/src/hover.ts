@@ -1,5 +1,6 @@
 import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
 import { sleep } from "./sleep.js";
@@ -12,7 +13,9 @@ function isPointerEventsEnabled(element: Element) {
   return getComputedStyle(element).pointerEvents !== "none";
 }
 
-export async function hover(element: Element, options?: MouseEventInit) {
+export async function hover(element: Element | null, options?: MouseEventInit) {
+  invariant(element, "Unable to hover on null element");
+
   if (!isVisible(element)) return;
 
   const document = element.ownerDocument as DocumentWithLastHovered;

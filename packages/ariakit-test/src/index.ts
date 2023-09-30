@@ -7,6 +7,7 @@ export * from "./hover.js";
 export * from "./mouse-down.js";
 export * from "./mouse-up.js";
 export * from "./press.js";
+export * from "./query.js";
 export * from "./render.js";
 export * from "./screen.js";
 export * from "./select.js";

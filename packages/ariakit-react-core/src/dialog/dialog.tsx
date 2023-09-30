@@ -245,10 +245,11 @@ export const useDialog = createHook<DialogOptions>(
       return disableTree(dialog);
     }, [open, mounted, domReady]);
 
+    const canTakeTreeSnapshot = open && domReady;
+
     useSafeLayoutEffect(() => {
       if (!id) return;
-      if (!open) return;
-      if (!domReady) return;
+      if (!canTakeTreeSnapshot) return;
       const dialog = ref.current;
       // When the dialog opens, we capture a snapshot of the document. This
       // snapshot is then used to disable elements outside the dialog in the
@@ -258,7 +259,7 @@ export const useDialog = createHook<DialogOptions>(
       // third-party dialogs. Hence, we take the snapshot here, independent of
       // any nested dialogs.
       return createWalkTreeSnapshot(id, [dialog]);
-    }, [id, open, domReady]);
+    }, [id, canTakeTreeSnapshot]);
 
     const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -266,12 +267,7 @@ export const useDialog = createHook<DialogOptions>(
     useSafeLayoutEffect(() => {
       if (!id) return;
       if (!store) return;
-      if (!domReady) return;
-      // When the dialog is animating, we immediately restore the element tree
-      // outside. This means the element tree will be enabled when the focus is
-      // moved back to the disclosure element. That's why we use open instead of
-      // mounted here.
-      if (!open) return;
+      if (!canTakeTreeSnapshot) return;
       const { disclosureElement } = store.getState();
       const dialog = ref.current;
       const persistentElements = getPersistentElementsProp() || [];
@@ -296,8 +292,7 @@ export const useDialog = createHook<DialogOptions>(
     }, [
       id,
       store,
-      domReady,
-      open,
+      canTakeTreeSnapshot,
       getPersistentElementsProp,
       nestedDialogs,
       shouldDisableAccessibilityTree,
@@ -434,7 +429,7 @@ export const useDialog = createHook<DialogOptions>(
       if (!mayAutoFocusOnHide) return;
       const dialog = ref.current;
       focusOnHide(dialog);
-    }, [open, hasOpened, mayAutoFocusOnHide, focusOnHide]);
+    }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
 
     // Auto focus on hide with a dialog that gets unmounted when hidden.
     useEffect(() => {

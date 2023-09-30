@@ -2,6 +2,7 @@ import "./polyfills.js";
 
 import { closest, isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
 import { queuedMicrotasks } from "./__utils.js";
 import { fireEvent } from "./fire-event.js";
 import { focus } from "./focus.js";
@@ -126,10 +127,12 @@ function clickOption(
 }
 
 export async function click(
-  element: Element,
+  element: Element | null,
   options?: MouseEventInit,
   tap = false,
 ) {
+  invariant(element, "Unable to click on null element");
+
   if (!isVisible(element)) return;
 
   await hover(element, options);
