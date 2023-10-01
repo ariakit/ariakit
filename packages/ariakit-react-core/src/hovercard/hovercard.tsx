@@ -75,7 +75,7 @@ function useAutoFocusOnShow({
   // Resets autoFocusOnShow
   useEffect(() => {
     if (!open) {
-      store.setAutoFocusOnShow(false);
+      // store.setAutoFocusOnShow(false);
     }
   }, [open, store]);
 
@@ -83,7 +83,7 @@ function useAutoFocusOnShow({
   useEffect(
     () => () => {
       if (!openRef.current) {
-        store.setAutoFocusOnShow(false);
+        // store.setAutoFocusOnShow(false);
       }
     },
     [store],
