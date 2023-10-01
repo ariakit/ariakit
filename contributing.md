@@ -245,10 +245,10 @@ Let's create a test for our example:
 `examples/my-component/test.ts`
 
 ```tsx
-import { getByText } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("my component", () => {
-  expect(getByText("My component")).toBeInTheDocument();
+  expect(q.text("My component")).toBeInTheDocument();
 });
 ```
 
@@ -379,7 +379,7 @@ We can create a markdown file in the components folder and render an anchor elem
 
 `components/my-component.md`
 
-````markdown
+```markdown
 # My component
 
 <div data-description>
@@ -389,7 +389,7 @@ This is my component.
 </div>
 
 <a href="../examples/my-component/index.tsx" data-playground>Example</a>
-````
+```
 
 Now open http://localhost:3000/components/my-component to see the component documentation.
 

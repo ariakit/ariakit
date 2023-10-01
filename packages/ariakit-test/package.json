@@ -52,10 +52,9 @@
     "./mouse-down": "./src/mouse-down.ts",
     "./hover": "./src/hover.ts",
     "./focus": "./src/focus.ts",
-    "./fire-event": "./src/fire-event.ts",
+    "./dispatch": "./src/dispatch.ts",
     "./click": "./src/click.ts",
     "./blur": "./src/blur.ts",
-    "./act": "./src/act.ts",
     "./package.json": "./package.json"
   }
 }

@@ -1,54 +1,33 @@
-import {
-  act,
-  click,
-  fireEvent,
-  getByRole,
-  getByText,
-  press,
-} from "@ariakit/test";
-
-function nextFrame(): Promise<void> {
-  return act<void>(
-    () => new Promise((resolve) => requestAnimationFrame(() => resolve())),
-  );
-}
-
-const getContextMenuArea = () => getByText("Right click here");
-const getMenu = () => getByRole("menu", { hidden: true });
-const getMenuItem = (name: string) => getByRole("menuitem", { name });
+import { click, dispatch, press, q, waitFor } from "@ariakit/test";
 
 test("show context menu and hide it with escape", async () => {
-  expect(getMenu()).not.toBeVisible();
-  fireEvent.contextMenu(getContextMenuArea());
-  await nextFrame();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
-  fireEvent.contextMenu(getContextMenuArea());
-  await nextFrame();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  await dispatch.contextMenu(q.text("Right click here"));
+  await waitFor(() => expect(q.menu()).toBeVisible());
+  expect(q.menu()).toHaveFocus();
+  await dispatch.contextMenu(q.text("Right click here"));
+  await waitFor(() => expect(q.menu()).toBeVisible());
+  expect(q.menu()).toHaveFocus();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
 });
 
 test("show context menu and hide it by clicking outside", async () => {
-  fireEvent.contextMenu(getContextMenuArea());
-  await nextFrame();
-  expect(getMenu()).toBeVisible();
+  await dispatch.contextMenu(q.text("Right click here"));
+  await waitFor(() => expect(q.menu()).toBeVisible());
   await click(document.body);
-  expect(getMenu()).not.toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
 });
 
 test("navigate through context menu with keyboard", async () => {
-  fireEvent.contextMenu(getContextMenuArea());
-  await nextFrame();
-  expect(getMenu()).toBeVisible();
+  await dispatch.contextMenu(q.text("Right click here"));
+  await waitFor(() => expect(q.menu()).toBeVisible());
   await press.ArrowDown();
-  expect(getMenuItem("Back")).toHaveFocus();
+  expect(q.menuitem("Back")).toHaveFocus();
   await press.ArrowDown();
-  expect(getMenuItem("Reload")).toHaveFocus();
+  expect(q.menuitem("Reload")).toHaveFocus();
   await press.Home();
-  expect(getMenuItem("Back")).toHaveFocus();
+  expect(q.menuitem("Back")).toHaveFocus();
   await press.End();
-  expect(getMenuItem("Inspect")).toHaveFocus();
+  expect(q.menuitem("Inspect")).toHaveFocus();
 });

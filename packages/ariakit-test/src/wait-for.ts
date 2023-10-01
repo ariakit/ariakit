@@ -1,1 +1,1 @@
-export { waitFor } from "@testing-library/react";
+export { waitFor } from "@testing-library/dom";
