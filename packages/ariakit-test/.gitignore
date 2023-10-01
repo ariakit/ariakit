@@ -1,10 +1,9 @@
 # Automatically generated
-/act
 /blur
 /cjs
 /click
+/dispatch
 /esm
-/fire-event
 /focus
 /hover
 /mouse-down

@@ -3,7 +3,11 @@ import {
   queryByRole,
   queryByText,
 } from "@testing-library/dom";
-import type { ByRoleOptions, Matcher } from "@testing-library/dom";
+import type {
+  ByRoleOptions,
+  Matcher,
+  SelectorMatcherOptions,
+} from "@testing-library/dom";
 
 const roles = [
   "alert",
@@ -132,8 +136,10 @@ const roleQueries = roles.reduce((acc, role) => {
 
 export const query = {
   ...roleQueries,
-  text: (text: Matcher) => queryByText(document.body, text),
-  labeled: (label: Matcher) => queryByLabelText(document.body, label),
+  text: (text: Matcher, options?: SelectorMatcherOptions) =>
+    queryByText(document.body, text, options),
+  labeled: (label: Matcher, options?: SelectorMatcherOptions) =>
+    queryByLabelText(document.body, label, options),
 };
 
 export const q = query;

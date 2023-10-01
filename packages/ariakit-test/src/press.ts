@@ -5,16 +5,16 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { queuedMicrotasks } from "./__utils.js";
+import { wrapAsync } from "./__utils.js";
 import { blur } from "./blur.js";
-import { fireEvent } from "./fire-event.js";
+import { dispatch } from "./dispatch.js";
 import { focus } from "./focus.js";
 import { sleep } from "./sleep.js";
 import { type } from "./type.js";
 
 type KeyActionMap = Record<
   string,
-  (element: Element, options: KeyboardEventInit) => void
+  (element: Element, options: KeyboardEventInit) => Promise<void>
 >;
 
 const clickableInputTypes = [
@@ -26,7 +26,7 @@ const clickableInputTypes = [
   "submit",
 ];
 
-function submitFormByPressingEnterOn(
+async function submitFormByPressingEnterOn(
   element: HTMLInputElement,
   options: KeyboardEventInit,
 ) {
@@ -42,7 +42,7 @@ function submitFormByPressingEnterOn(
       el.type === "submit",
   );
   if (validInputs.length === 1 || submitButton) {
-    fireEvent.submit(form, options);
+    await dispatch.submit(form, options);
   }
 }
 
@@ -50,25 +50,25 @@ function isNumberInput(element: Element): element is HTMLInputElement {
   return element instanceof HTMLInputElement && element.type === "number";
 }
 
-function incrementNumberInput(element: HTMLInputElement, by = 1) {
+async function incrementNumberInput(element: HTMLInputElement, by = 1) {
   const value = +element.value + by;
   const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
   const min = element.min ? +element.min : Number.MIN_SAFE_INTEGER;
   if (value > max || value < min) return;
   element.value = value.toString();
-  fireEvent.input(element);
-  fireEvent.change(element);
+  await dispatch.input(element);
+  await dispatch.change(element);
 }
 
 const keyDownMap: KeyActionMap = {
-  Tab(_, { shiftKey }) {
+  async Tab(_, { shiftKey }) {
     const nextElement = shiftKey ? getPreviousTabbable() : getNextTabbable();
     if (nextElement) {
-      focus(nextElement);
+      await focus(nextElement);
     }
   },
 
-  Enter(element, options) {
+  async Enter(element, options) {
     const nonSubmittableTypes = [...clickableInputTypes, "hidden"];
 
     const isClickable =
@@ -81,13 +81,13 @@ const keyDownMap: KeyActionMap = {
       !nonSubmittableTypes.includes(element.type);
 
     if (isClickable) {
-      fireEvent.click(element, options);
+      await dispatch.click(element, options);
     } else if (isSubmittable) {
-      submitFormByPressingEnterOn(element as HTMLInputElement, options);
+      await submitFormByPressingEnterOn(element as HTMLInputElement, options);
     }
   },
 
-  ArrowLeft(element, { shiftKey }) {
+  async ArrowLeft(element, { shiftKey }) {
     if (isTextField(element)) {
       const { value, selectionStart, selectionEnd, selectionDirection } =
         element;
@@ -103,7 +103,7 @@ const keyDownMap: KeyActionMap = {
     }
   },
 
-  ArrowRight(element, { shiftKey }) {
+  async ArrowRight(element, { shiftKey }) {
     if (isTextField(element)) {
       const { value, selectionStart, selectionEnd, selectionDirection } =
         element;
@@ -119,7 +119,7 @@ const keyDownMap: KeyActionMap = {
     }
   },
 
-  ArrowUp(element, { shiftKey }) {
+  async ArrowUp(element, { shiftKey }) {
     if (isTextField(element)) {
       if (!shiftKey) {
         return element.setSelectionRange(0, 0);
@@ -133,11 +133,11 @@ const keyDownMap: KeyActionMap = {
         }
       }
     } else if (isNumberInput(element)) {
-      incrementNumberInput(element);
+      await incrementNumberInput(element);
     }
   },
 
-  ArrowDown(element, { shiftKey }) {
+  async ArrowDown(element, { shiftKey }) {
     if (isTextField(element)) {
       const length = element.value.length;
       if (!shiftKey) {
@@ -152,14 +152,14 @@ const keyDownMap: KeyActionMap = {
         }
       }
     } else if (isNumberInput(element)) {
-      incrementNumberInput(element, -1);
+      await incrementNumberInput(element, -1);
     }
   },
 };
 
 const keyUpMap: KeyActionMap = {
   // Space
-  " ": (element, options) => {
+  " ": async (element, options) => {
     const spaceableTypes = [...clickableInputTypes, "checkbox", "radio"];
 
     const isSpaceable =
@@ -168,77 +168,75 @@ const keyUpMap: KeyActionMap = {
         spaceableTypes.includes(element.type));
 
     if (isSpaceable) {
-      fireEvent.click(element, options);
+      await dispatch.click(element, options);
     }
   },
 };
 
-export async function press(
+export function press(
   key: string,
   element?: Element | null,
   options: KeyboardEventInit = {},
 ) {
-  if (element == null) {
-    element = document.activeElement || document.body;
-  }
-
-  if (!element) return;
-
-  // We can't press on elements that aren't focusable
-  if (!isFocusable(element) && element.tagName !== "BODY") return;
-
-  // If it's a printable character, we type it
-  if (isTextField(element)) {
-    if (key.length === 1) {
-      return type(key, element, options);
-    } else if (key === "Delete") {
-      return type("\x7f", element, options);
-    } else if (key === "Backspace") {
-      return type("\b", element, options);
-    } else if (key === "Enter" && element.tagName === "TEXTAREA") {
-      return type("\n", element, options);
+  return wrapAsync(async () => {
+    if (element == null) {
+      element = document.activeElement || document.body;
     }
-  }
 
-  // If element is not focused, we should focus it
-  if (element.ownerDocument?.activeElement !== element) {
-    if (element.tagName === "BODY") {
-      blur();
-    } else {
-      focus(element);
+    if (!element) return;
+
+    // We can't press on elements that aren't focusable
+    if (!isFocusable(element) && element.tagName !== "BODY") return;
+
+    // If it's a printable character, we type it
+    if (isTextField(element)) {
+      if (key.length === 1) {
+        return type(key, element, options);
+      } else if (key === "Delete") {
+        return type("\x7f", element, options);
+      } else if (key === "Backspace") {
+        return type("\b", element, options);
+      } else if (key === "Enter" && element.tagName === "TEXTAREA") {
+        return type("\n", element, options);
+      }
     }
-  }
 
-  // This allows the DOM to be updated before we fire the event
-  await sleep();
+    // If element is not focused, we should focus it
+    if (element.ownerDocument?.activeElement !== element) {
+      if (element.tagName === "BODY") {
+        await blur();
+      } else {
+        await focus(element);
+      }
+    }
 
-  let defaultAllowed = fireEvent.keyDown(element, { key, ...options });
+    // This allows the DOM to be updated before we fire the event
+    await sleep();
 
-  await queuedMicrotasks();
+    let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
 
-  if (defaultAllowed && key in keyDownMap && !options.metaKey) {
-    keyDownMap[key]?.(element, options);
-  }
+    if (defaultAllowed && key in keyDownMap && !options.metaKey) {
+      await keyDownMap[key]?.(element, options);
+    }
 
-  await sleep();
+    await sleep();
 
-  // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
-  // next element.
-  if (element.ownerDocument?.activeElement !== element) {
-    element = element.ownerDocument!.activeElement!;
-  }
+    // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
+    // next element.
+    if (element.ownerDocument?.activeElement !== element) {
+      element = element.ownerDocument!.activeElement!;
+    }
 
-  if (!fireEvent.keyUp(element, { key, ...options })) {
-    defaultAllowed = false;
-  }
+    if (!(await dispatch.keyUp(element, { key, ...options }))) {
+      defaultAllowed = false;
+    }
 
-  await queuedMicrotasks();
+    if (defaultAllowed && key in keyUpMap && !options.metaKey) {
+      await keyUpMap[key]?.(element, options);
+    }
 
-  if (defaultAllowed && key in keyUpMap && !options.metaKey) {
-    keyUpMap[key]?.(element, options);
-  }
-
-  await sleep();
+    await sleep();
+  });
 }
 
 function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {

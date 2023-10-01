@@ -18,7 +18,7 @@ test("blur", async () => {
   const button = getByText("button");
 
   expect(button).toHaveFocus();
-  blur(button);
+  await blur(button);
   expect(document.body).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`

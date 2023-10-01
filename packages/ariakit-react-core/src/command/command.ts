@@ -130,6 +130,7 @@ export const useCommand = createHook<CommandOptions>(
       if (activeRef.current && isSpace) {
         activeRef.current = false;
         if (!isNativeClick(event)) {
+          event.preventDefault();
           setActive(false);
           const element = event.currentTarget;
           const { view, ...eventInit } = event;

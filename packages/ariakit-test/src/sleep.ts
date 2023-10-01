@@ -1,9 +1,11 @@
-import { isBrowser, nextFrame } from "./__utils.js";
-import { act } from "./act.js";
+import { isBrowser, nextFrame, wrapAsync } from "./__utils.js";
 
 const defaultMs = isBrowser ? 150 : 10;
 
-export async function sleep(ms = defaultMs): Promise<void> {
-  await nextFrame();
-  await act(() => new Promise((resolve) => setTimeout(resolve, ms)));
+export function sleep(ms = defaultMs) {
+  return wrapAsync(async () => {
+    await nextFrame();
+    await new Promise((resolve) => setTimeout(resolve, ms));
+    await nextFrame();
+  });
 }
