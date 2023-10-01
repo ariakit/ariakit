@@ -118,7 +118,7 @@ export function HeaderVersionSelect({ versions }: Props) {
         key={value}
         value={value}
         className={style.item}
-        render={(props) => <Link href={pathname} {...props} />}
+        render={<Link href={pathname} />}
       >
         <SelectItemCheck />
         <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
@@ -144,10 +144,9 @@ export function HeaderVersionSelect({ versions }: Props) {
       {selectMounted && (
         <SelectPopover
           store={select}
-          as={Popup}
           gutter={4}
           shift={-1}
-          size="small"
+          render={<Popup size="small" />}
         >
           {Object.entries(versions).map(([name, tags]) => (
             <Fragment key={name}>
@@ -164,11 +163,15 @@ export function HeaderVersionSelect({ versions }: Props) {
             </Fragment>
           ))}
           <SelectItem
-            as="a"
-            href={getChangeLogUrl(selectedPkg)}
-            target="_blank"
             hideOnClick
             className={cx(style.item, "justify-between pl-[26px] font-normal")}
+            render={
+              <a
+                href={getChangeLogUrl(selectedPkg)}
+                target="_blank"
+                rel="noreferrer"
+              />
+            }
           >
             Changelog
             <NewWindow className={style.itemIcon} />

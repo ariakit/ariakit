@@ -2,6 +2,7 @@
 
 import type { ElementType, ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
+import { Role } from "@ariakit/react";
 import { Button } from "@ariakit/react/button";
 import type {
   TooltipAnchorOptions,
@@ -15,22 +16,31 @@ import {
 import { createComponent } from "@ariakit/react-core/utils/system";
 
 export interface TooltipButtonOptions<T extends ElementType = "button">
-  extends Omit<TooltipAnchorOptions<T>, "store"> {
+  extends TooltipAnchorOptions<T> {
   title: ReactNode;
-  tooltipProps?: Omit<TooltipProps, "store">;
+  tooltipProps?: TooltipProps;
   fixed?: boolean;
   isLabel?: boolean;
 }
 
 export const TooltipButton = createComponent<TooltipButtonOptions>(
-  ({ title, tooltipProps, fixed, isLabel, ...props }) => {
+  ({ title, tooltipProps, fixed, isLabel, store, ...props }) => {
     const tooltip = useTooltipStore({
+      store,
       type: isLabel ? "label" : "description",
     });
     const mounted = tooltip.useState("mounted");
     return (
       <>
-        <TooltipAnchor as={Button} {...props} store={tooltip} />
+        <Role.button
+          {...props}
+          render={
+            <TooltipAnchor
+              store={tooltip}
+              render={<Button render={props.render} />}
+            />
+          }
+        />
         {mounted && (
           <Tooltip
             {...tooltipProps}
