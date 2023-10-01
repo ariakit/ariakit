@@ -586,6 +586,7 @@ export default function Example() {
         unmount
         open={siblingDismissUnmount}
         onClose={() => setSiblingDismissUnmount(false)}
+        finalFocus={buttonRef}
       >
         <DialogHeading>sibling dismiss unmount</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
@@ -599,6 +600,7 @@ export default function Example() {
         unmount
         open={siblingDismissUnmountSibling}
         onClose={() => setSiblingDismissUnmountSibling(false)}
+        finalFocus={buttonRef}
       >
         <DialogHeading>sibling dismiss unmount sibling</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
@@ -635,6 +637,7 @@ export default function Example() {
         animated
         open={siblingDismissAnimatedUnmount}
         onClose={() => setSiblingDismissAnimatedUnmount(false)}
+        finalFocus={buttonRef}
       >
         <DialogHeading>sibling dismiss animated unmount</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
@@ -651,6 +654,7 @@ export default function Example() {
         animated
         open={siblingDismissAnimatedUnmountSibling}
         onClose={() => setSiblingDismissAnimatedUnmountSibling(false)}
+        finalFocus={buttonRef}
       >
         <DialogHeading>sibling dismiss animated unmount sibling</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
