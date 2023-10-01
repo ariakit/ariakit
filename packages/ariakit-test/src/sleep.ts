@@ -1,6 +1,6 @@
 import { isBrowser, nextFrame, wrapAsync } from "./__utils.js";
 
-const defaultMs = isBrowser ? 150 : 0;
+const defaultMs = isBrowser ? 150 : 10;
 
 export function sleep(ms = defaultMs) {
   return wrapAsync(async () => {
