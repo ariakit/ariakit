@@ -70,7 +70,7 @@ beforeEach(async ({ task }) => {
   const [, example] = match;
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
   const { unmount } = render(
-    createElement(Suspense, { children: createElement(comp) }),
+    createElement(Suspense, { fallback: null, children: createElement(comp) }),
   );
   return unmount;
 });
