@@ -1,32 +1,29 @@
-import { click, getByRole, press, type } from "@ariakit/test";
-
-const getCombobox = () => getByRole("combobox");
-const getPopover = () => getByRole("listbox", { hidden: true });
+import { click, press, q, type } from "@ariakit/test";
 
 test("autocomplete on arrow down key", async () => {
   await press.Tab();
-  expect(getPopover()).not.toBeVisible();
-  expect(getCombobox()).toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox()).toHaveFocus();
   await type("a");
-  expect(getPopover()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   await press.ArrowDown();
-  expect(getCombobox()).toHaveValue("Apple");
+  expect(q.combobox()).toHaveValue("Apple");
 });
 
 test("autocomplete on arrow up key", async () => {
   await press.Tab();
-  expect(getPopover()).not.toBeVisible();
-  expect(getCombobox()).toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox()).toHaveFocus();
   await type("w");
-  expect(getPopover()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   await press.ArrowUp();
-  expect(getCombobox()).toHaveValue("Watermelon");
+  expect(q.combobox()).toHaveValue("Watermelon");
 });
 
 test("clicking on combobox input makes the inline autocomplete the value", async () => {
   await press.Tab();
   await type("w");
   await press.ArrowUp();
-  await click(getCombobox());
-  expect(getCombobox()).toHaveValue("Watermelon");
+  await click(q.combobox());
+  expect(q.combobox()).toHaveValue("Watermelon");
 });

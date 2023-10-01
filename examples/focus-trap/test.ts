@@ -1,10 +1,4 @@
-import {
-  click,
-  getByLabelText,
-  getByRole,
-  getByText,
-  press,
-} from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 
 function setup() {
   const before = document.createElement("div");
@@ -23,36 +17,36 @@ function setup() {
 test("correctly traps focus", async () => {
   const cleanup = setup();
   await press.Tab();
-  expect(getByText("Before")).toHaveFocus();
+  expect(q.text("Before")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
+  expect(q.checkbox()).toHaveFocus();
   await press.Tab();
-  expect(getByRole("button")).toHaveFocus();
+  expect(q.button()).toHaveFocus();
   await press.Tab();
-  expect(getByText("After")).not.toHaveFocus();
+  expect(q.text("After")).not.toHaveFocus();
   await press.Tab();
-  expect(getByRole("button")).toHaveFocus();
+  expect(q.button()).toHaveFocus();
   await press.ShiftTab();
-  expect(getByRole("checkbox")).toHaveFocus();
+  expect(q.checkbox()).toHaveFocus();
   await press.ShiftTab();
-  expect(getByText("Before")).not.toHaveFocus();
+  expect(q.text("Before")).not.toHaveFocus();
   cleanup();
 });
 
 test("correctly releases focus", async () => {
   const cleanup = setup();
   // First, disabling focus trap
-  await click(getByLabelText("Trap focus"));
-  expect(getByRole("checkbox")).toHaveFocus();
+  await click(q.labeled("Trap focus"));
+  expect(q.checkbox()).toHaveFocus();
   await press.Tab();
-  expect(getByRole("button")).toHaveFocus();
+  expect(q.button()).toHaveFocus();
   await press.Tab();
-  expect(getByText("After")).toHaveFocus();
+  expect(q.text("After")).toHaveFocus();
   await press.ShiftTab();
-  expect(getByRole("button")).toHaveFocus();
+  expect(q.button()).toHaveFocus();
   await press.ShiftTab();
-  expect(getByRole("checkbox")).toHaveFocus();
+  expect(q.checkbox()).toHaveFocus();
   await press.ShiftTab();
-  expect(getByText("Before")).toHaveFocus();
+  expect(q.text("Before")).toHaveFocus();
   cleanup();
 });

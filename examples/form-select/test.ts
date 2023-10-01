@@ -1,19 +1,6 @@
-import {
-  click,
-  getByRole,
-  getByText,
-  press,
-  queryAllByText,
-  type,
-} from "@ariakit/test";
+import { click, press, q, type } from "@ariakit/test";
 
-const getSubmit = () => getByRole("button", { name: "Submit" });
-const getLabel = () => getByText("Favorite fruit");
-const getSelect = () => getByRole("combobox", { name: "Favorite fruit" });
-const getList = () => getByRole("listbox", { hidden: true });
-const getOption = (name: string) => getByRole("option", { name });
-const getErrors = () => queryAllByText("Constraints not satisfied");
-
+const errors = () => q.text.all("Constraints not satisfied");
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 let alert = spyOnAlert();
@@ -24,55 +11,55 @@ beforeEach(() => {
 });
 
 test("click on label", async () => {
-  await click(getLabel());
-  expect(getSelect()).toHaveFocus();
-  expect(getSelect()).toHaveAttribute("data-focus-visible");
-  expect(getList()).not.toBeVisible();
+  await click(q.text("Favorite fruit"));
+  expect(q.combobox()).toHaveFocus();
+  expect(q.combobox()).toHaveAttribute("data-focus-visible");
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("show error on tabbing through select button", async () => {
   await press.ShiftTab();
   await press.ShiftTab();
-  expect(getSelect()).toHaveFocus();
-  expect(getErrors()).toHaveLength(0);
+  expect(q.combobox()).toHaveFocus();
+  expect(errors()).toHaveLength(0);
   await press.Tab();
-  expect(getErrors()).toHaveLength(1);
+  expect(errors()).toHaveLength(1);
 });
 
 test("show error only on blur both the select button and the popover", async () => {
-  await click(getSelect());
-  expect(getErrors()).toHaveLength(0);
+  await click(q.combobox());
+  expect(errors()).toHaveLength(0);
   await press.Escape();
-  expect(getErrors()).toHaveLength(0);
+  expect(errors()).toHaveLength(0);
   await press.Space();
   await press.ArrowDown();
   await press.Enter();
-  expect(getErrors()).toHaveLength(0);
+  expect(errors()).toHaveLength(0);
   await press.Enter();
-  await click(getOption("Select an item"));
-  expect(getErrors()).toHaveLength(0);
+  await click(q.option("Select an item"));
+  expect(errors()).toHaveLength(0);
   await press.Tab();
-  expect(getErrors()).toHaveLength(1);
+  expect(errors()).toHaveLength(1);
 });
 
 test("submit failed", async () => {
-  expect(getErrors()).toHaveLength(0);
+  expect(errors()).toHaveLength(0);
   await press.Tab();
   await type("John");
-  await click(getSubmit());
-  expect(getErrors()).toHaveLength(1);
-  expect(getSelect()).toHaveFocus();
-  expect(getList()).not.toBeVisible();
+  await click(q.button("Submit"));
+  expect(errors()).toHaveLength(1);
+  expect(q.combobox()).toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("submit succeed", async () => {
   await press.Tab();
   await type("John");
-  await click(getSelect());
-  await click(getOption("Banana"));
+  await click(q.combobox());
+  await click(q.option("Banana"));
   expect(alert).not.toHaveBeenCalled();
   await press.Enter();
-  expect(getList()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   expect(alert).not.toHaveBeenCalled();
   await press.Escape();
   await press.Tab();
@@ -84,5 +71,5 @@ test("submit succeed", async () => {
     }),
   );
   // Reset on submit
-  expect(getSelect()).toHaveTextContent("Select an item");
+  expect(q.combobox()).toHaveTextContent("Select an item");
 });

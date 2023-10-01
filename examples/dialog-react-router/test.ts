@@ -1,32 +1,28 @@
-import { click, getByRole, press, queryByRole } from "@ariakit/test";
-
-const getDisclosure = () => getByRole("link", { name: "Tweet" });
-const getDialog = () => queryByRole("dialog", { name: "Tweet" });
-const getInput = () => queryByRole("textbox", { name: "Tweet text" });
+import { click, press, q } from "@ariakit/test";
 
 test("show/hide on disclosure click", async () => {
-  expect(getDialog()).not.toBeInTheDocument();
-  await click(getDisclosure());
-  expect(getDialog()).toBeVisible();
-  expect(getInput()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  await click(q.link());
+  expect(q.dialog()).toBeVisible();
+  expect(q.textbox()).toHaveFocus();
   await press.ShiftTab();
   await press.Enter();
-  expect(getDialog()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link()).toHaveFocus();
 });
 
 test("hide on escape", async () => {
-  await click(getDisclosure());
-  expect(getDialog()).toBeVisible();
+  await click(q.link());
+  expect(q.dialog()).toBeVisible();
   await press.Escape();
-  expect(getDialog()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link()).toHaveFocus();
 });
 
 test("hide on click outside", async () => {
-  await click(getDisclosure());
-  expect(getDialog()).toBeVisible();
+  await click(q.link());
+  expect(q.dialog()).toBeVisible();
   await click(document.body);
-  expect(getDialog()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link()).toHaveFocus();
 });
