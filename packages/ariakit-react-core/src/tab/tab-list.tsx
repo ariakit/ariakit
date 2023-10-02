@@ -65,13 +65,14 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
- * const tab = useTabStore();
- * <TabList store={tab}>
- *   <Tab>Tab 1</Tab>
- *   <Tab>Tab 2</Tab>
- * </TabList>
- * <TabPanel store={tab}>Panel 1</TabPanel>
- * <TabPanel store={tab}>Panel 2</TabPanel>
+ * <TabProvider>
+ *   <TabList>
+ *     <Tab>Tab 1</Tab>
+ *     <Tab>Tab 2</Tab>
+ *   </TabList>
+ *   <TabPanel>Panel 1</TabPanel>
+ *   <TabPanel>Panel 2</TabPanel>
+ * </TabProvider>
  * ```
  */
 export const TabList = createComponent<TabListOptions>((props) => {
@@ -86,7 +87,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface TabListOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**
-   * Object returned by the `useTabStore` hook.
+   * Object returned by the
+   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * provided, the closest
+   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * context will be used.
    */
   store?: TabStore;
 }

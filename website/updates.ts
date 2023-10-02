@@ -7,6 +7,18 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved example: Tab with Next.js App Router",
+    type: "page",
+    href: "/examples/tab-next-router",
+    dateTime: "2023-10-02T17:49Z",
+  },
+  {
+    title: "Improved example: Tab with React Router",
+    type: "page",
+    href: "/examples/tab-react-router",
+    dateTime: "2023-10-02T17:48Z",
+  },
+  {
     title: "New example: Warning on Dialog hide",
     type: "page",
     href: "/examples/dialog-hide-warning",

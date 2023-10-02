@@ -3,13 +3,14 @@ tags:
   - Tab
   - Routing
   - React Router
+  - Abstracted examples
 ---
 
 # Tab with React Router
 
 <div data-description>
 
-Using <a href="https://reactrouter.com/">React Router</a> to create <a href="/components/tab">Tab</a> links and tab panels controlled by the browser history, while maintaining keyboard navigation.
+Using [React Router](https://reactrouter.com/) to create [Tab](/components/tab) links and tab panels controlled by the browser history, while maintaining keyboard navigation.
 
 </div>
 
@@ -27,17 +28,15 @@ Using <a href="https://reactrouter.com/">React Router</a> to create <a href="/co
 
 ## Controlling the Tab state
 
-To control the selected tab state, you can pass the [`selectedId`](/reference/use-tab-store#selectedid) prop to [`useTabStore`](/reference/use-tab-store). This prop allows you to synchronize the tab state with other state sources, such as the browser history.
+To control the selected tab state, you can pass the [`selectedId`](/reference/tab-provider#selectedid) prop to [`TabProvider`](/reference/tab-provider). This prop allows you to synchronize the tab state with other state sources, such as the browser history.
 
-```jsx {4}
+```jsx "selectedId"
 const location = useLocation();
 
-const tab = Ariakit.useTabStore({
-  selectedId: location.pathname,
-});
+<TabProvider selectedId={location.pathname}>
 ```
 
-You can learn more about controlled state on the [Component stores](/guide/component-stores#controlled-state) guide.
+You can learn more about controlled state on the [Component providers](/guide/component-providers#controlled-state) guide.
 
 ## Rendering a single TabPanel
 

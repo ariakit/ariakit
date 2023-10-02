@@ -60,13 +60,6 @@ export interface TabStoreOptions
   /**
    * Function that will be called when the `selectedId` state changes.
    * @param selectedId The new selected id.
-   * @example
-   * function Tabs({ visibleTab, onTabChange }) {
-   *   const tab = useTabStore({
-   *     selectedId: visibleTab,
-   *     setSelectedId: onTabChange,
-   *   });
-   * }
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
 }

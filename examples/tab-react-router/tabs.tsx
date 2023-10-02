@@ -1,50 +1,60 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import clsx from "clsx";
 import { Link, useHref, useLocation } from "react-router-dom";
 import type { LinkProps } from "react-router-dom";
 
-const TabsContext = React.createContext<Ariakit.TabStore | null>(null);
-
-interface TabsProps extends Ariakit.TabStoreProps {
-  children: React.ReactNode;
+export function Tabs(props: Ariakit.TabProviderProps) {
+  const { pathname } = useLocation();
+  return (
+    <Ariakit.TabProvider
+      selectOnMove={false}
+      selectedId={pathname}
+      {...props}
+    />
+  );
 }
 
-export function Tabs({ children, ...props }: TabsProps) {
-  const { pathname: selectedId } = useLocation();
+export const TabList = React.forwardRef<HTMLDivElement, Ariakit.TabListProps>(
+  function TabList(props, ref) {
+    return (
+      <Ariakit.TabList
+        ref={ref}
+        {...props}
+        className={clsx("tab-list", props.className)}
+      />
+    );
+  },
+);
 
-  const store = Ariakit.useTabStore({
-    selectOnMove: false,
-    selectedId,
-    ...props,
-  });
+export const Tab = React.forwardRef<HTMLButtonElement, LinkProps>(
+  function Tab(props, ref) {
+    const id = useHref(props.to);
+    return (
+      <Ariakit.Tab
+        id={id}
+        ref={ref}
+        className="tab"
+        render={<Link {...props} />}
+      />
+    );
+  },
+);
 
-  return <TabsContext.Provider value={store}>{children}</TabsContext.Provider>;
-}
+export const TabPanel = React.forwardRef<HTMLDivElement, Ariakit.TabPanelProps>(
+  function TabPanel(props, ref) {
+    const tab = Ariakit.useTabContext();
+    if (!tab) throw new Error("TabPanel must be wrapped in a Tabs component");
 
-type TabListProps = Omit<Ariakit.TabListProps, "store">;
+    const tabId = tab.useState("selectedId");
 
-export function TabList(props: TabListProps) {
-  const tab = React.useContext(TabsContext);
-  if (!tab) throw new Error("TabList must be wrapped in a Tabs component");
-
-  return <Ariakit.TabList className="tab-list" {...props} store={tab} />;
-}
-
-type TabProps = LinkProps;
-
-export function Tab(props: TabProps) {
-  const id = useHref(props.to);
-
-  return <Ariakit.Tab id={id} className="tab" render={<Link {...props} />} />;
-}
-
-type TabPanelProps = Omit<Ariakit.TabPanelProps, "store">;
-
-export function TabPanel(props: TabPanelProps) {
-  const tab = React.useContext(TabsContext);
-  if (!tab) throw new Error("TabPanel must be wrapped in a Tabs component");
-
-  const tabId = tab.useState("selectedId");
-
-  return <Ariakit.TabPanel tabId={tabId} {...props} store={tab} />;
-}
+    return (
+      <Ariakit.TabPanel
+        ref={ref}
+        tabId={tabId}
+        {...props}
+        className={clsx("tab-panel", props.className)}
+      />
+    );
+  },
+);

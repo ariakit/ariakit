@@ -7,7 +7,7 @@ tags:
 
 <div data-description>
 
-Display one panel of content at a time with a tabbed interface. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/">WAI-ARIA Tabs Pattern</a>.
+Display one panel of content at a time with a tabbed interface. This component is based on the [WAI-ARIA Tabs Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabpanel/).
 
 </div>
 
