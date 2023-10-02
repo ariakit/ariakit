@@ -1,15 +1,4 @@
-import {
-  click,
-  getByRole,
-  getByText,
-  press,
-  queryByRole,
-  select,
-} from "@ariakit/test";
-
-const getPopover = () => queryByRole("dialog", { hidden: true });
-const getParagraph = () => getByText(/^Lorem ipsum dolor/);
-const getButton = (name: string) => getByRole("button", { name });
+import { click, press, q, select } from "@ariakit/test";
 
 Range.prototype.getBoundingClientRect = () => ({
   bottom: 0,
@@ -24,25 +13,25 @@ Range.prototype.getBoundingClientRect = () => ({
 });
 
 test("show/hide popover on text selection", async () => {
-  expect(getPopover()).not.toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
   await select("dolor, sit");
-  expect(getPopover()).toBeVisible();
-  await click(getParagraph());
-  expect(getPopover()).not.toBeVisible();
+  expect(q.dialog()).toBeVisible();
+  await click(q.text(/^Lorem ipsum/));
+  expect(q.dialog()).not.toBeInTheDocument();
 });
 
 test("tab to popover", async () => {
   await select("amet");
-  expect(getPopover()).toBeVisible();
+  expect(q.dialog()).toBeVisible();
   await press.ShiftTab();
-  expect(getPopover()).toBeVisible();
-  expect(getButton("Share")).toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.button("Share")).toHaveFocus();
 });
 
 test("click on popover button", async () => {
   await select("maxime.");
-  expect(getPopover()).toBeVisible();
-  await click(getButton("Bookmark"));
-  expect(getPopover()).toBeVisible();
-  expect(getButton("Bookmark")).toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  await click(q.button("Bookmark"));
+  expect(q.dialog()).toBeVisible();
+  expect(q.button("Bookmark")).toHaveFocus();
 });

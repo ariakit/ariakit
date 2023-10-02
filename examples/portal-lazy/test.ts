@@ -1,6 +1,6 @@
-import { getByRole, getByText, waitFor } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("loading button", async () => {
-  expect(getByText("Loading")).toBeInTheDocument();
-  await waitFor(() => getByRole("button", { name: "Button" }));
+  expect(q.text("Loading")).toBeInTheDocument();
+  expect(await q.button.wait("Button")).toBeInTheDocument();
 });

@@ -100,12 +100,16 @@ function matchName(name: string | RegExp, accessibleName: string | null) {
 }
 
 function getNameOption(name: string | RegExp) {
-  return (accessibleName: string, element: Element) => {
+  return (accessibleName: string, element: Element | HTMLInputElement) => {
     if (matchName(name, accessibleName)) return true;
     if (element.getAttribute("aria-label")) return false;
     const labeledBy = element.getAttribute("aria-labelledby");
     if (!labeledBy) {
-      return matchName(name, element.textContent);
+      const content =
+        "placeholder" in element && element.placeholder != null
+          ? element.placeholder
+          : element.textContent;
+      return matchName(name, content);
     }
     const label = document.getElementById(labeledBy);
     if (!label?.textContent) return false;

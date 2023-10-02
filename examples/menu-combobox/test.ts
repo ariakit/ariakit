@@ -1,136 +1,131 @@
-import { click, getByRole, hover, press, type } from "@ariakit/test";
-
-const getMenuButton = () => getByRole("button", { name: "Add block" });
-const getMenu = () => getByRole("dialog", { hidden: true });
-const getCombobox = () => getByRole("combobox");
-const getOption = (name: string) => getByRole("option", { name });
+import { click, hover, press, q, type } from "@ariakit/test";
 
 test("show/hide on click", async () => {
-  expect(getMenu()).not.toBeVisible();
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).not.toHaveFocus();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Paragraph")).not.toHaveFocus();
-  await click(getMenuButton());
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  await click(q.button("Add block"));
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).not.toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Paragraph")).not.toHaveFocus();
+  await click(q.button("Add block"));
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show/hide on enter", async () => {
   await press.Tab();
-  expect(getMenu()).not.toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
   await press.Enter();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).not.toHaveFocus();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).not.toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
   await press.ShiftTab();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.button("Add block")).toHaveFocus();
   await press.Enter();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).not.toHaveFocus();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).not.toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
   await press.ShiftTab();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.button("Add block")).toHaveFocus();
   await press.Space();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show on arrow down", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).not.toHaveFocus();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).not.toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
 });
 
 test("show on arrow up", async () => {
   await press.Tab();
   await press.ArrowUp();
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).not.toHaveFocus();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Tag Cloud")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).not.toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Tag Cloud")).toHaveFocus();
 });
 
 test("type on combobox", async () => {
-  await click(getMenuButton());
+  await click(q.button("Add block"));
   await type("c");
-  expect(getOption("Classic")).toHaveFocus();
+  expect(q.option("Classic")).toHaveFocus();
   await type("o");
-  expect(() => getOption("Classic")).toThrow();
-  expect(getOption("Code")).toHaveFocus();
+  expect(() => q.option("Classic")).toThrow();
+  expect(q.option("Code")).toHaveFocus();
   await type("ver");
-  expect(getCombobox()).toHaveValue("cover");
-  expect(() => getOption("Code")).toThrow();
-  expect(getOption("Cover")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("cover");
+  expect(() => q.option("Code")).toThrow();
+  expect(q.option("Cover")).toHaveFocus();
   await press.Escape();
-  expect(getMenuButton()).toHaveFocus();
-  await click(getMenuButton());
-  expect(getCombobox()).toHaveValue("");
+  expect(q.button("Add block")).toHaveFocus();
+  await click(q.button("Add block"));
+  expect(q.combobox()).toHaveValue("");
 });
 
 test("backspace on combobox", async () => {
   await press.Tab();
   await press.Enter();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
   await type("g");
-  expect(getOption("Gallery")).toHaveFocus();
+  expect(q.option("Gallery")).toHaveFocus();
   await type("r");
-  expect(getOption("Group")).toHaveFocus();
+  expect(q.option("Group")).toHaveFocus();
   await type("\b");
-  expect(getCombobox()).toHaveValue("g");
-  expect(getOption("Gallery")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("g");
+  expect(q.option("Gallery")).toHaveFocus();
   await type("\b");
-  expect(getCombobox()).toHaveValue("");
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("");
+  expect(q.option("Paragraph")).toHaveFocus();
 });
 
 test("move through items with keyboard", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
   await press.ArrowDown();
-  expect(getOption("Heading")).toHaveFocus();
+  expect(q.option("Heading")).toHaveFocus();
   await press.ArrowDown();
-  expect(getOption("List")).toHaveFocus();
+  expect(q.option("List")).toHaveFocus();
   await type("se");
-  expect(getOption("Separator")).toHaveFocus();
+  expect(q.option("Separator")).toHaveFocus();
   await press.ArrowDown();
-  expect(getOption("Search")).toHaveFocus();
+  expect(q.option("Search")).toHaveFocus();
   await press.ArrowDown();
-  expect(getOption("Verse")).toHaveFocus();
+  expect(q.option("Verse")).toHaveFocus();
   await press.Escape();
   await press.ArrowDown();
-  expect(getOption("Paragraph")).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveFocus();
 });
 
 test("move through items with mouse and keyboard", async () => {
-  await click(getMenuButton());
+  await click(q.button("Add block"));
   await press.ArrowDown();
-  expect(getOption("Paragraph")).toHaveFocus();
-  expect(getOption("Paragraph")).toHaveAttribute("data-focus-visible");
-  await hover(getOption("List"));
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("List")).toHaveFocus();
-  expect(getOption("List")).not.toHaveAttribute("data-focus-visible");
-  await hover(getOption("Classic"));
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Classic")).toHaveFocus();
-  expect(getOption("Classic")).not.toHaveAttribute("data-focus-visible");
+  expect(q.option("Paragraph")).toHaveFocus();
+  expect(q.option("Paragraph")).toHaveAttribute("data-focus-visible");
+  await hover(q.option("List"));
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("List")).toHaveFocus();
+  expect(q.option("List")).not.toHaveAttribute("data-focus-visible");
+  await hover(q.option("Classic"));
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Classic")).toHaveFocus();
+  expect(q.option("Classic")).not.toHaveAttribute("data-focus-visible");
   await press.ArrowUp();
-  expect(getCombobox()).toHaveFocus();
-  expect(getOption("Quote")).toHaveFocus();
-  expect(getOption("Quote")).toHaveAttribute("data-focus-visible");
+  expect(q.combobox()).toHaveFocus();
+  expect(q.option("Quote")).toHaveFocus();
+  expect(q.option("Quote")).toHaveAttribute("data-focus-visible");
 });

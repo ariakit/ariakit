@@ -1,7 +1,7 @@
-import { getByRole } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("render horizontal separator", () => {
-  expect(getByRole("separator")).toMatchInlineSnapshot(`
+  expect(q.separator()).toMatchInlineSnapshot(`
     <hr
       aria-orientation="horizontal"
       class="separator"

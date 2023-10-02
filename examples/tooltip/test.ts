@@ -1,7 +1,4 @@
-import { click, getByRole, hover, press, waitFor } from "@ariakit/test";
-
-const getAnchor = () => getByRole("link");
-const getTooltip = () => getByRole("tooltip", { hidden: true });
+import { click, hover, press, q } from "@ariakit/test";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -14,51 +11,51 @@ afterEach(async () => {
 });
 
 test("show tooltip on hover", async () => {
-  expect(getTooltip()).not.toBeVisible();
-  await hover(getAnchor());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  expect(q.tooltip()).not.toBeInTheDocument();
+  await hover(q.link());
+  expect(await q.tooltip.wait()).toBeVisible();
   await hoverOutside();
-  expect(getTooltip()).not.toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
 });
 
 test("do not wait to show the tooltip if it was just hidden", async () => {
-  await hover(getAnchor());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hover(q.link());
+  expect(await q.tooltip.wait()).toBeVisible();
   await hoverOutside();
-  expect(getTooltip()).not.toBeVisible();
-  await hover(getAnchor());
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
+  await hover(q.link());
+  expect(q.tooltip()).toBeVisible();
 });
 
 test("if tooltip was shown on hover, then the anchor received keyboard focus, do not hide on mouseleave", async () => {
-  await hover(getAnchor());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hover(q.link());
+  expect(await q.tooltip.wait()).toBeVisible();
   await press.Tab();
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).toBeVisible();
   await hoverOutside();
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).toBeVisible();
 });
 
 test("if tooltip was shown on focus visible, do not hide on mouseleave", async () => {
   await press.Tab();
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  expect(await q.tooltip.wait()).toBeVisible();
   await hoverOutside();
-  expect(getTooltip()).toBeVisible();
-  await hover(getAnchor());
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).toBeVisible();
+  await hover(q.link());
+  expect(q.tooltip()).toBeVisible();
   await hoverOutside();
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).toBeVisible();
 });
 
 test("click on tooltip and press esc", async () => {
-  expect(getTooltip()).not.toBeVisible();
-  await hover(getAnchor());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
-  await click(getTooltip()!);
-  expect(getTooltip()).toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
+  await hover(q.link());
+  expect(await q.tooltip.wait()).toBeVisible();
+  await click(q.tooltip()!);
+  expect(q.tooltip()).toBeVisible();
   await press.Escape();
-  expect(getAnchor()).toHaveFocus();
-  await waitFor(() => expect(getTooltip()).not.toBeVisible());
+  expect(q.link()).toHaveFocus();
+  expect(q.tooltip()).not.toBeInTheDocument();
 });
 
 test("show tooltip on focus", async () => {
@@ -66,11 +63,11 @@ test("show tooltip on focus", async () => {
   div.tabIndex = 0;
   document.body.append(div);
 
-  expect(getTooltip()).not.toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
   await press.Tab();
-  expect(getByRole("tooltip")).toBeVisible();
+  expect(q.tooltip()).toBeVisible();
   await press.Tab();
-  expect(getTooltip()).not.toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
 
   div.remove();
 });
@@ -80,15 +77,15 @@ test("do not show tooltip immediately if focus was lost", async () => {
   div.tabIndex = 0;
   document.body.append(div);
 
-  await hover(getAnchor());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hover(q.link());
+  expect(await q.tooltip.wait()).toBeVisible();
   await press.Tab();
   await press.Tab();
-  expect(getTooltip()).not.toBeVisible();
+  expect(q.tooltip()).not.toBeInTheDocument();
   await hoverOutside();
-  await hover(getAnchor());
-  expect(getTooltip()).not.toBeVisible();
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hover(q.link());
+  expect(q.tooltip()).not.toBeInTheDocument();
+  expect(await q.tooltip.wait()).toBeVisible();
 
   div.remove();
 });

@@ -1,17 +1,4 @@
-import {
-  click,
-  getByText,
-  hover,
-  press,
-  queryByRole,
-  queryByText,
-  waitFor,
-} from "@ariakit/test";
-
-const getMenuButton = (name: string) => getByText(name, { selector: "button" });
-const getTooltip = (name: string) =>
-  queryByText(name, { exact: true, selector: "[role=tooltip]" });
-const getMenu = (name: string) => queryByRole("menu", { name });
+import { click, hover, press, q } from "@ariakit/test";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -34,70 +21,70 @@ afterEach(async () => {
 
 describe.each(labels)("%s", (label) => {
   test("show/hide tooltip on hover", async () => {
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
     await hoverOutside();
-    await waitFor(() => expect(getTooltip(label)).not.toBeVisible());
+    expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 
   test("hide tooltip by clicking on menu button", async () => {
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
-    expect(getMenu(label)).toHaveFocus();
-    expect(getTooltip(label)).not.toBeVisible();
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
+    expect(q.menu(label)).toHaveFocus();
+    expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 
   test("do not show tooltip on hover after clicking on menu button", async () => {
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
-    expect(getTooltip(label)).not.toBeVisible();
-    await hover(getMenuButton(label));
-    await hover(getMenuButton(label));
-    expect(getTooltip(label)).not.toBeVisible();
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
+    expect(q.tooltip(label)).not.toBeInTheDocument();
+    await hover(q.button.includesHidden(label));
+    await hover(q.button.includesHidden(label));
+    expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 
   test("but show tooltip on hover after clicking on menu button and then hovering outside unless it's modal", async () => {
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
-    expect(getTooltip(label)).not.toBeVisible();
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
+    expect(q.tooltip(label)).not.toBeInTheDocument();
     await hoverOutside();
-    await hover(getMenuButton(label));
-    await hover(getMenuButton(label));
+    await hover(q.button.includesHidden(label));
+    await hover(q.button.includesHidden(label));
     if (label.includes("modal")) {
-      expect(getTooltip(label)).not.toBeVisible();
+      expect(q.tooltip(label)).not.toBeInTheDocument();
     } else {
-      await waitFor(() => expect(getTooltip(label)).toBeVisible());
+      expect(await q.tooltip.wait(label)).toBeVisible();
     }
   });
 
   test("show tooltip again after closing menu with esc", async () => {
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
     await press.Escape();
-    expect(getMenu(label)).not.toBeInTheDocument();
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
+    expect(q.menu(label)).not.toBeInTheDocument();
+    expect(await q.tooltip.wait(label)).toBeVisible();
   });
 });
 
 describe.each(nonModalLabels)("%s", (label) => {
   test("tooltip closes when re-opening the menu", async () => {
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
-    expect(getTooltip(label)).not.toBeVisible();
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
+    expect(q.tooltip(label)).not.toBeInTheDocument();
     await hoverOutside();
-    await hover(getMenuButton(label));
-    await waitFor(() => expect(getTooltip(label)).toBeVisible());
-    await click(getMenuButton(label));
-    await click(getMenuButton(label));
-    expect(getMenu(label)).toBeInTheDocument();
-    expect(getTooltip(label)).not.toBeVisible();
+    await hover(q.button(label));
+    expect(await q.tooltip.wait(label)).toBeVisible();
+    await click(q.button(label));
+    await click(q.button(label));
+    expect(q.menu(label)).toBeVisible();
+    expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 });

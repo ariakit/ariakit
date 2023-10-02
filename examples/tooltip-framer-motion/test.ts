@@ -1,15 +1,5 @@
 import { version } from "react";
-import {
-  click,
-  getByRole,
-  hover,
-  press,
-  queryByRole,
-  waitFor,
-} from "@ariakit/test";
-
-const getAnchor = () => getByRole("link");
-const getTooltip = () => queryByRole("tooltip", { hidden: true });
+import { click, hover, press, q, waitFor } from "@ariakit/test";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -21,31 +11,31 @@ const is17 = version.startsWith("17");
 
 describe.skipIf(is17)("tooltip-framer-motion", () => {
   test("show tooltip on hover", async () => {
-    expect(getTooltip()).not.toBeInTheDocument();
-    await hover(getAnchor());
-    await waitFor(() => expect(getTooltip()).toBeVisible());
+    expect(q.tooltip()).not.toBeInTheDocument();
+    await hover(q.link());
+    await waitFor(() => expect(q.tooltip()).toBeVisible());
     await hoverOutside();
-    expect(getTooltip()).toBeVisible();
-    await waitFor(() => expect(getTooltip()).not.toBeInTheDocument());
+    expect(q.tooltip()).toBeVisible();
+    await waitFor(() => expect(q.tooltip()).not.toBeInTheDocument());
   });
 
   test("show tooltip on focus", async () => {
-    expect(getTooltip()).not.toBeInTheDocument();
+    expect(q.tooltip()).not.toBeInTheDocument();
     await press.Tab();
-    expect(getTooltip()).toBeVisible();
+    expect(q.tooltip()).toBeVisible();
     await click(document.body);
-    expect(getTooltip()).toBeVisible();
-    await waitFor(() => expect(getTooltip()).not.toBeInTheDocument());
+    expect(q.tooltip()).toBeVisible();
+    await waitFor(() => expect(q.tooltip()).not.toBeInTheDocument());
   });
 
   test("click on tooltip and press esc", async () => {
-    expect(getTooltip()).not.toBeInTheDocument();
-    await hover(getAnchor());
-    await waitFor(() => expect(getTooltip()).toBeVisible());
-    await click(getTooltip()!);
-    expect(getTooltip()).toBeVisible();
+    expect(q.tooltip()).not.toBeInTheDocument();
+    await hover(q.link());
+    await waitFor(() => expect(q.tooltip()).toBeVisible());
+    await click(q.tooltip()!);
+    expect(q.tooltip()).toBeVisible();
     await press.Escape();
-    expect(getAnchor()).toHaveFocus();
-    await waitFor(() => expect(getTooltip()).not.toBeInTheDocument());
+    expect(q.link()).toHaveFocus();
+    await waitFor(() => expect(q.tooltip()).not.toBeInTheDocument());
   });
 });
