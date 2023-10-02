@@ -1,51 +1,51 @@
 import { click, hover, press, q, type } from "@ariakit/test";
 
 test("show/hide on click", async () => {
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).not.toBeInTheDocument();
   await click(q.button("Add block"));
-  expect(q.menu()).toBeVisible();
-  expect(q.menu()).not.toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.dialog()).not.toHaveFocus();
   expect(q.combobox()).toHaveFocus();
   expect(q.option("Paragraph")).not.toHaveFocus();
   await click(q.button("Add block"));
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).not.toBeInTheDocument();
   expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show/hide on enter", async () => {
   await press.Tab();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).not.toBeInTheDocument();
   await press.Enter();
-  expect(q.menu()).toBeVisible();
-  expect(q.menu()).not.toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.dialog()).not.toHaveFocus();
   expect(q.combobox()).toHaveFocus();
   expect(q.option("Paragraph")).toHaveFocus();
   await press.ShiftTab();
   expect(q.button("Add block")).toHaveFocus();
   await press.Enter();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).not.toBeInTheDocument();
   expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
-  expect(q.menu()).toBeVisible();
-  expect(q.menu()).not.toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.dialog()).not.toHaveFocus();
   expect(q.combobox()).toHaveFocus();
   expect(q.option("Paragraph")).toHaveFocus();
   await press.ShiftTab();
   expect(q.button("Add block")).toHaveFocus();
   await press.Space();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).not.toBeInTheDocument();
   expect(q.button("Add block")).toHaveFocus();
 });
 
 test("show on arrow down", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(q.menu()).toBeVisible();
-  expect(q.menu()).not.toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.dialog()).not.toHaveFocus();
   expect(q.combobox()).toHaveFocus();
   expect(q.option("Paragraph")).toHaveFocus();
 });
@@ -53,8 +53,8 @@ test("show on arrow down", async () => {
 test("show on arrow up", async () => {
   await press.Tab();
   await press.ArrowUp();
-  expect(q.menu()).toBeVisible();
-  expect(q.menu()).not.toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.dialog()).not.toHaveFocus();
   expect(q.combobox()).toHaveFocus();
   expect(q.option("Tag Cloud")).toHaveFocus();
 });
@@ -64,11 +64,11 @@ test("type on combobox", async () => {
   await type("c");
   expect(q.option("Classic")).toHaveFocus();
   await type("o");
-  expect(() => q.option("Classic")).toThrow();
+  expect(q.option("Classic")).not.toBeInTheDocument();
   expect(q.option("Code")).toHaveFocus();
   await type("ver");
   expect(q.combobox()).toHaveValue("cover");
-  expect(() => q.option("Code")).toThrow();
+  expect(q.option("Code")).not.toBeInTheDocument();
   expect(q.option("Cover")).toHaveFocus();
   await press.Escape();
   expect(q.button("Add block")).toHaveFocus();

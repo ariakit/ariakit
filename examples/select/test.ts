@@ -8,11 +8,11 @@ test("click on label", async () => {
   expect(q.combobox()).not.toHaveFocus();
   await click(q.text("Favorite fruit"));
   expect(q.combobox()).toHaveFocus();
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("show/hide on click", async () => {
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   expect(q.listbox()).toHaveFocus();
@@ -20,7 +20,7 @@ test("show/hide on click", async () => {
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveTextContent("Apple");
   await click(q.combobox());
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveTextContent("Apple");
 });
@@ -34,7 +34,7 @@ test("show/hide on enter", async () => {
   expect(q.combobox()).toHaveTextContent("Apple");
   await press.ShiftTab();
   await press.Enter();
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveTextContent("Apple");
 });
 
@@ -47,7 +47,7 @@ test("show/hide on space", async () => {
   expect(q.combobox()).toHaveTextContent("Apple");
   await press.ShiftTab();
   await press.Space();
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveTextContent("Apple");
 });
 
@@ -70,14 +70,14 @@ test("hide on escape", async () => {
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   await press.Escape();
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("hide on click outside", async () => {
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   await click(document.body);
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("hide on click on label", async () => {
@@ -85,7 +85,7 @@ test("hide on click on label", async () => {
   expect(q.listbox()).toBeVisible();
   await click(q.text("Favorite fruit"));
   expect(q.combobox()).toHaveFocus();
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("navigate through items with keyboard", async () => {
@@ -135,11 +135,11 @@ test("typeahead hidden", async () => {
   await press.Tab();
   await type("g");
   expect(q.combobox()).toHaveTextContent("Apple");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await sleep(600);
   await type("ora");
   expect(q.combobox()).toHaveTextContent("Orange");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("select with enter", async () => {
@@ -148,7 +148,7 @@ test("select with enter", async () => {
   await press.ArrowDown();
   await press.Enter();
   expect(q.combobox()).toHaveTextContent("Banana");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.Enter();
   expect(q.listbox()).toBeVisible();
   expect(q.option("Banana")).toHaveFocus();
@@ -163,7 +163,7 @@ test("select with space", async () => {
   await press.ArrowDown();
   await press.Space();
   expect(q.combobox()).toHaveTextContent("Orange");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.Space();
   expect(q.listbox()).toBeVisible();
   expect(q.option("Orange")).toHaveFocus();
@@ -175,7 +175,7 @@ test("select with click", async () => {
   await click(q.combobox());
   await click(q.option("Banana"));
   expect(q.combobox()).toHaveTextContent("Banana");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await click(q.combobox());
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "false");
   expect(q.option("Banana")).toHaveAttribute("aria-selected", "true");
@@ -184,7 +184,7 @@ test("select with click", async () => {
   expect(q.listbox()).toBeVisible();
   await click(q.option("Orange"));
   expect(q.combobox()).toHaveTextContent("Orange");
-  expect(q.listbox()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("hover on item", async () => {
