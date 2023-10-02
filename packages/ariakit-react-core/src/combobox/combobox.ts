@@ -346,7 +346,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
         flushSync(() => store?.setValue(value));
-        // TODO: Comment
+        // Even setting the value synchronously above, for some reason, we still
+        // need to fix the selection range. See combobox-group "keep caret
+        // position when typing" test.
         event.currentTarget.setSelectionRange(selectionStart, selectionEnd);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a

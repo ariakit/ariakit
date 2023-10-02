@@ -37,13 +37,11 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./within": "./src/within.ts",
     "./wait-for": "./src/wait-for.ts",
     "./type": "./src/type.ts",
     "./tap": "./src/tap.ts",
     "./sleep": "./src/sleep.ts",
     "./select": "./src/select.ts",
-    "./screen": "./src/screen.ts",
     "./render": "./src/render.ts",
     "./query": "./src/query.ts",
     "./press": "./src/press.ts",
