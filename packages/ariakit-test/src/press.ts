@@ -1,4 +1,3 @@
-import "./polyfills.js";
 import { isTextField } from "@ariakit/core/utils/dom";
 import {
   getNextTabbable,

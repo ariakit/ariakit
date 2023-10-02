@@ -8,14 +8,11 @@
 /hover
 /mouse-down
 /mouse-up
-/polyfills
 /press
 /query
-/render
-/screen
+/react
 /select
 /sleep
 /tap
 /type
 /wait-for
-/within

@@ -1,4 +1,3 @@
-import "./polyfills.js";
 import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
