@@ -1,4 +1,3 @@
-import "./polyfills.js";
 import { getKeys, invariant } from "@ariakit/core/utils/misc";
 import { createEvent, fireEvent } from "@testing-library/dom";
 import type { EventType } from "@testing-library/dom";

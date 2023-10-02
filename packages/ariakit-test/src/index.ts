@@ -7,7 +7,6 @@ export * from "./mouse-down.js";
 export * from "./mouse-up.js";
 export * from "./press.js";
 export * from "./query.js";
-export * from "./render.js";
 export * from "./select.js";
 export * from "./sleep.js";
 export * from "./tap.js";
