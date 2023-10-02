@@ -1,44 +1,36 @@
-import { click, focus, getByRole, press } from "@ariakit/test";
-
-function getTab(name: string) {
-  return getByRole("tab", { name });
-}
-
-function getPanel(name: string) {
-  return getByRole("tabpanel", { name });
-}
+import { click, focus, press, q } from "@ariakit/test";
 
 test("default selected tab", () => {
-  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
-  expect(getPanel("Vegetables")).toBeVisible();
+  expect(q.tab("Vegetables")).toHaveAttribute("aria-selected", "true");
+  expect(q.tabpanel("Vegetables")).toBeVisible();
 });
 
 test("select with keyboard", async () => {
   await press.Tab();
   await press.ArrowRight();
-  expect(getTab("Meat")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Meat")).toHaveFocus();
-  expect(getPanel("Meat")).toBeVisible();
+  expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
+  expect(q.tab("Meat")).toHaveFocus();
+  expect(q.tabpanel("Meat")).toBeVisible();
   await press.ArrowRight();
-  expect(getTab("Fruits")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Fruits")).toHaveFocus();
-  expect(getPanel("Fruits")).toBeVisible();
+  expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");
+  expect(q.tab("Fruits")).toHaveFocus();
+  expect(q.tabpanel("Fruits")).toBeVisible();
   await press.ArrowLeft();
-  expect(getTab("Meat")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Meat")).toHaveFocus();
-  expect(getPanel("Meat")).toBeVisible();
+  expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
+  expect(q.tab("Meat")).toHaveFocus();
+  expect(q.tabpanel("Meat")).toBeVisible();
 });
 
 test("select with mouse", async () => {
-  await click(getTab("Meat"));
-  expect(getTab("Meat")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Meat")).toHaveFocus();
-  expect(getPanel("Meat")).toBeVisible();
+  await click(q.tab("Meat"));
+  expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
+  expect(q.tab("Meat")).toHaveFocus();
+  expect(q.tabpanel("Meat")).toBeVisible();
 });
 
 test("do not select with focus (e.g., screen reader focus)", async () => {
-  await focus(getTab("Fruits"));
-  expect(getTab("Vegetables")).toHaveAttribute("aria-selected", "true");
-  expect(getTab("Fruits")).toHaveFocus();
-  expect(getPanel("Vegetables")).toBeVisible();
+  await focus(q.tab("Fruits"));
+  expect(q.tab("Vegetables")).toHaveAttribute("aria-selected", "true");
+  expect(q.tab("Fruits")).toHaveFocus();
+  expect(q.tabpanel("Vegetables")).toBeVisible();
 });

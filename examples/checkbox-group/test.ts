@@ -1,31 +1,31 @@
-import { click, getByLabelText, press } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 
 test("check/uncheck on click", async () => {
-  expect(getByLabelText("Apple")).toHaveAttribute("aria-checked", "false");
-  expect(getByLabelText("Orange")).toHaveAttribute("aria-checked", "false");
-  expect(getByLabelText("Mango")).toHaveAttribute("aria-checked", "false");
-  await click(getByLabelText("Apple"));
-  expect(getByLabelText("Apple")).toHaveAttribute("aria-checked", "true");
-  expect(getByLabelText("Orange")).toHaveAttribute("aria-checked", "false");
-  expect(getByLabelText("Mango")).toHaveAttribute("aria-checked", "false");
-  await click(getByLabelText("Apple"));
-  await click(getByLabelText("Mango"));
-  expect(getByLabelText("Apple")).toHaveAttribute("aria-checked", "false");
-  expect(getByLabelText("Orange")).toHaveAttribute("aria-checked", "false");
-  expect(getByLabelText("Mango")).toHaveAttribute("aria-checked", "true");
+  expect(q.labeled("Apple")).toHaveAttribute("aria-checked", "false");
+  expect(q.labeled("Orange")).toHaveAttribute("aria-checked", "false");
+  expect(q.labeled("Mango")).toHaveAttribute("aria-checked", "false");
+  await click(q.labeled("Apple"));
+  expect(q.labeled("Apple")).toHaveAttribute("aria-checked", "true");
+  expect(q.labeled("Orange")).toHaveAttribute("aria-checked", "false");
+  expect(q.labeled("Mango")).toHaveAttribute("aria-checked", "false");
+  await click(q.labeled("Apple"));
+  await click(q.labeled("Mango"));
+  expect(q.labeled("Apple")).toHaveAttribute("aria-checked", "false");
+  expect(q.labeled("Orange")).toHaveAttribute("aria-checked", "false");
+  expect(q.labeled("Mango")).toHaveAttribute("aria-checked", "true");
 });
 
 test("space", async () => {
   await press.Tab();
-  expect(getByLabelText("Apple")).toHaveFocus();
-  expect(getByLabelText("Apple")).not.toBeChecked();
+  expect(q.labeled("Apple")).toHaveFocus();
+  expect(q.labeled("Apple")).not.toBeChecked();
   await press.Space();
-  expect(getByLabelText("Apple")).toHaveFocus();
-  expect(getByLabelText("Apple")).toBeChecked();
+  expect(q.labeled("Apple")).toHaveFocus();
+  expect(q.labeled("Apple")).toBeChecked();
   await press.Tab();
   await press.Space();
-  expect(getByLabelText("Apple")).not.toHaveFocus();
-  expect(getByLabelText("Orange")).toHaveFocus();
-  expect(getByLabelText("Apple")).toBeChecked();
-  expect(getByLabelText("Orange")).toBeChecked();
+  expect(q.labeled("Apple")).not.toHaveFocus();
+  expect(q.labeled("Orange")).toHaveFocus();
+  expect(q.labeled("Apple")).toBeChecked();
+  expect(q.labeled("Orange")).toBeChecked();
 });

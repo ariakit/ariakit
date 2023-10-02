@@ -1,4 +1,4 @@
-import { getByRole, getByText, press } from "@ariakit/test";
+import { press, q } from "@ariakit/test";
 
 function setup() {
   const before = document.createElement("div");
@@ -17,41 +17,41 @@ function setup() {
 test("correctly traps focus in region", async () => {
   const cleanup = setup();
   await press.Tab();
-  expect(getByText("Before")).toHaveFocus();
+  expect(q.text("Before")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-  await press.Space(getByRole("checkbox"));
+  expect(q.checkbox()).toHaveFocus();
+  await press.Space(q.checkbox());
   await press.Tab();
-  expect(getByRole("button", { name: "Button 1" })).toHaveFocus();
+  expect(q.button("Button 1")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("button", { name: "Button 2" })).toHaveFocus();
+  expect(q.button("Button 2")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("textbox", { name: "one" })).toHaveFocus();
+  expect(q.textbox("one")).toHaveFocus();
   await press.Tab();
   // looped
-  expect(getByRole("checkbox")).toHaveFocus();
+  expect(q.checkbox()).toHaveFocus();
   cleanup();
 });
 
 test("correctly releases focus from region", async () => {
   const cleanup = setup();
   await press.Tab();
-  expect(getByText("Before")).toHaveFocus();
+  expect(q.text("Before")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-  await press.Space(getByRole("checkbox"));
+  expect(q.checkbox()).toHaveFocus();
+  await press.Space(q.checkbox());
   await press.Tab();
-  expect(getByRole("button", { name: "Button 1" })).toHaveFocus();
+  expect(q.button("Button 1")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("button", { name: "Button 2" })).toHaveFocus();
+  expect(q.button("Button 2")).toHaveFocus();
   await press.Tab();
-  expect(getByRole("textbox", { name: "one" })).toHaveFocus();
+  expect(q.textbox("one")).toHaveFocus();
   await press.Tab();
-  await press.Space(getByRole("checkbox"));
-  await press.Tab();
-  await press.Tab();
+  await press.Space(q.checkbox());
   await press.Tab();
   await press.Tab();
-  expect(getByText("After")).toHaveFocus();
+  await press.Tab();
+  await press.Tab();
+  expect(q.text("After")).toHaveFocus();
   cleanup();
 });

@@ -1,5 +1,5 @@
-import { findByText } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("render correctly", async () => {
-  expect(await findByText("Items count: 3")).toBeInTheDocument();
+  expect(await q.text.wait("Items count: 3")).toBeInTheDocument();
 });

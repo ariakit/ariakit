@@ -1,7 +1,4 @@
-import { click, getByRole, press, queryAllByText, type } from "@ariakit/test";
-
-const getInput = (name: string) => getByRole("textbox", { name });
-const getErrors = () => queryAllByText("Constraints not satisfied");
+import { click, press, q, type } from "@ariakit/test";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
@@ -13,39 +10,39 @@ beforeEach(() => {
 });
 
 test("focus on the first input by tabbing", async () => {
-  expect(getInput("Name")).not.toHaveFocus();
+  expect(q.textbox("Name")).not.toHaveFocus();
   await press.Tab();
-  expect(getInput("Name")).toHaveFocus();
+  expect(q.textbox("Name")).toHaveFocus();
 });
 
 test("show error on blur", async () => {
-  expect(getErrors()).toHaveLength(0);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(0);
   await press.Tab();
   await press.Tab();
-  expect(getErrors()).toHaveLength(1);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(1);
   await press.Tab();
-  expect(getErrors()).toHaveLength(2);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
 });
 
 test("show error on submit", async () => {
   await press.Tab();
-  expect(getErrors()).toHaveLength(0);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(0);
   await press.Enter();
-  expect(getErrors()).toHaveLength(2);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
 });
 
 test("focus on input with error on submit", async () => {
-  await click(getByRole("button", { name: "Add" }));
-  expect(getInput("Name")).toHaveFocus();
+  await click(q.button("Add"));
+  expect(q.textbox("Name")).toHaveFocus();
 });
 
 test("fix error on change", async () => {
   await press.Tab();
   await press.Tab();
   await press.ShiftTab();
-  expect(getErrors()).toHaveLength(2);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
   await type("John");
-  expect(getErrors()).toHaveLength(1);
+  expect(q.text.all("Constraints not satisfied")).toHaveLength(1);
 });
 
 test("reset form on reset", async () => {
@@ -53,9 +50,9 @@ test("reset form on reset", async () => {
   await type("John");
   await press.Tab();
   await press.Tab();
-  expect(getByRole("button", { name: "Reset" })).toHaveFocus();
+  expect(q.button("Reset")).toHaveFocus();
   await press.Enter();
-  expect(getInput("Name")).toHaveValue("");
+  expect(q.textbox("Name")).toHaveValue("");
 });
 
 test("submit form", async () => {
@@ -75,6 +72,6 @@ test("reset form on submit", async () => {
   await press.Tab();
   await type("john@example.com");
   await press.Enter();
-  expect(getInput("Name")).toHaveValue("");
-  expect(getInput("Email")).toHaveValue("");
+  expect(q.textbox("Name")).toHaveValue("");
+  expect(q.textbox("Email")).toHaveValue("");
 });

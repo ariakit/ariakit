@@ -1,39 +1,35 @@
-import { click, getByRole, hover, press, type } from "@ariakit/test";
-
-const getSelect = () => getByRole("combobox", { name: "Account" });
-const getList = () => getByRole("listbox", { hidden: true });
-const getOption = (name: string | RegExp) => getByRole("option", { name });
+import { click, hover, press, q, type } from "@ariakit/test";
 
 test("default value", () => {
-  expect(getSelect()).toHaveTextContent(/John Doe/);
+  expect(q.combobox("Account")).toHaveTextContent(/John Doe/);
 });
 
 test("set value on move", async () => {
-  await click(getSelect());
-  expect(getOption(/John Doe/)).toHaveFocus();
+  await click(q.combobox("Account"));
+  expect(q.option(/John Doe/)).toHaveFocus();
   await press.ArrowUp();
-  expect(getOption(/Jane Doe/)).toHaveFocus();
-  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  expect(q.option(/Jane Doe/)).toHaveFocus();
+  expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
   await press.Enter();
-  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
   await press.Enter();
-  await hover(getOption(/Harry Poe/));
-  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  await hover(q.option(/Harry Poe/));
+  expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
   await press.End();
-  expect(getOption(/Sonia Poe/)).toHaveFocus();
-  expect(getSelect()).toHaveTextContent(/Sonia Poe/);
+  expect(q.option(/Sonia Poe/)).toHaveFocus();
+  expect(q.combobox("Account")).toHaveTextContent(/Sonia Poe/);
   await press.Escape();
-  expect(getList()).not.toBeVisible();
-  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
 });
 
 test("typeahead", async () => {
-  expect(getSelect()).toHaveTextContent(/John Doe/);
+  expect(q.combobox("Account")).toHaveTextContent(/John Doe/);
   await press.Tab();
   await type("jjj");
-  expect(getSelect()).toHaveTextContent(/Jane Doe/);
+  expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
   await press.Enter();
-  expect(getOption(/Jane Doe/)).toHaveFocus();
+  expect(q.option(/Jane Doe/)).toHaveFocus();
   await type("harry");
-  expect(getSelect()).toHaveTextContent(/Harry Poe/);
+  expect(q.combobox("Account")).toHaveTextContent(/Harry Poe/);
 });

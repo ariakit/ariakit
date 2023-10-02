@@ -1,8 +1,5 @@
-import { getByRole, hover, press } from "@ariakit/test";
+import { hover, press, q } from "@ariakit/test";
 import type { SpyInstance } from "vitest";
-
-const getToolbar = () => getByRole("toolbar");
-const getButton = (name: string) => getByRole("button", { name });
 
 function expectCalls(mock: SpyInstance) {
   const calls = mock.mock.calls.flat();
@@ -35,7 +32,7 @@ test("events", async () => {
     ]
   `);
 
-  await hover(getButton("item-3"));
+  await hover(q.button("item-3"));
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
@@ -47,9 +44,9 @@ test("events", async () => {
     ]
   `);
 
-  expect(getToolbar()).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-3")).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-3")).toHaveAttribute("data-active-item");
+  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-3")).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-3")).toHaveAttribute("data-active-item");
 
   await press.ArrowLeft();
 
@@ -66,13 +63,13 @@ test("events", async () => {
     ]
   `);
 
-  expect(getToolbar()).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-3")).not.toHaveAttribute("data-focus-visible");
-  expect(getButton("item-3")).not.toHaveAttribute("data-active-item");
-  expect(getButton("item-2")).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-2")).toHaveAttribute("data-active-item");
+  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-3")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-3")).not.toHaveAttribute("data-active-item");
+  expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-2")).toHaveAttribute("data-active-item");
 
-  await hover(getButton("item-1"));
+  await hover(q.button("item-1"));
 
   expectCalls(log).toMatchInlineSnapshot(`
     [
@@ -82,11 +79,11 @@ test("events", async () => {
     ]
   `);
 
-  expect(getToolbar()).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-2")).not.toHaveAttribute("data-focus-visible");
-  expect(getButton("item-2")).not.toHaveAttribute("data-active-item");
-  expect(getButton("item-1")).not.toHaveAttribute("data-focus-visible");
-  expect(getButton("item-1")).toHaveAttribute("data-active-item");
+  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
+  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-1")).toHaveAttribute("data-active-item");
 
   await press.ArrowRight();
 
@@ -105,11 +102,11 @@ test("events", async () => {
     ]
   `);
 
-  expect(getToolbar()).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-1")).not.toHaveAttribute("data-focus-visible");
-  expect(getButton("item-1")).not.toHaveAttribute("data-active-item");
-  expect(getButton("item-2")).toHaveAttribute("data-focus-visible");
-  expect(getButton("item-2")).toHaveAttribute("data-active-item");
+  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-1")).not.toHaveAttribute("data-active-item");
+  expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
+  expect(q.button("item-2")).toHaveAttribute("data-active-item");
 
   log.mockReset();
 

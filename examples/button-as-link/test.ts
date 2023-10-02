@@ -1,7 +1,7 @@
-import { getByRole } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("markup", () => {
-  expect(getByRole("link")).toMatchInlineSnapshot(`
+  expect(q.link()).toMatchInlineSnapshot(`
     <a
       class="button"
       data-command=""

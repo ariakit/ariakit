@@ -1,90 +1,86 @@
-import { click, getByRole, press, queryByRole, type } from "@ariakit/test";
-
-const getSelect = () => getByRole("combobox", { name: "Favorite food" });
-const getList = () => queryByRole("listbox");
-const getOption = (name: string) => getByRole("option", { name });
+import { click, press, q, type } from "@ariakit/test";
 
 test("default value", () => {
-  expect(getSelect()).toHaveTextContent("2 food selected");
+  expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");
 });
 
 test("show/hide on click", async () => {
-  expect(getList()).not.toBeInTheDocument();
-  await click(getSelect());
-  expect(getList()).toBeVisible();
-  expect(getList()).toHaveFocus();
-  expect(getOption("Cake")).toHaveFocus();
-  expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Cake")).toHaveAttribute("aria-selected", "true");
-  await click(getSelect());
-  expect(getList()).not.toBeInTheDocument();
-  expect(getSelect()).toHaveFocus();
-  expect(getSelect()).toHaveTextContent("2 food selected");
+  expect(q.listbox()).not.toBeInTheDocument();
+  await click(q.combobox("Favorite food"));
+  expect(q.listbox()).toBeVisible();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Cake")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
+  await click(q.combobox("Favorite food"));
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox("Favorite food")).toHaveFocus();
+  expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");
 });
 
 test("show/hide on enter", async () => {
-  expect(getList()).not.toBeInTheDocument();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.Tab();
   await press.Enter();
-  expect(getList()).toBeVisible();
-  expect(getList()).toHaveFocus();
-  expect(getOption("Cake")).toHaveFocus();
-  expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Cake")).toHaveAttribute("aria-selected", "true");
+  expect(q.listbox()).toBeVisible();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Cake")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
   await press.ShiftTab();
-  expect(getList()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   await press.Enter();
-  expect(getList()).not.toBeInTheDocument();
-  expect(getSelect()).toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox("Favorite food")).toHaveFocus();
 });
 
 test("show/hide on space", async () => {
-  expect(getList()).not.toBeInTheDocument();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.Tab();
   await press.Space();
-  expect(getList()).toBeVisible();
-  expect(getList()).toHaveFocus();
-  expect(getOption("Cake")).toHaveFocus();
-  expect(getOption("Apple")).toHaveAttribute("aria-selected", "true");
-  expect(getOption("Cake")).toHaveAttribute("aria-selected", "true");
+  expect(q.listbox()).toBeVisible();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Cake")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
   await press.ShiftTab();
-  expect(getList()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   await press.Space();
-  expect(getList()).not.toBeInTheDocument();
-  expect(getSelect()).toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox("Favorite food")).toHaveFocus();
 });
 
 test("select with keyboard", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(getOption("Cake")).toHaveFocus();
+  expect(q.option("Cake")).toHaveFocus();
   await type("cccc");
-  expect(getOption("Chocolate")).toHaveFocus();
+  expect(q.option("Chocolate")).toHaveFocus();
   await press.Enter();
-  expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "true");
-  expect(getSelect()).toHaveTextContent("3 food selected");
+  expect(q.option("Chocolate")).toHaveAttribute("aria-selected", "true");
+  expect(q.combobox("Favorite food")).toHaveTextContent("3 food selected");
   await press.ArrowDown();
   await press.Escape();
-  expect(getList()).not.toBeInTheDocument();
-  expect(getSelect()).toHaveFocus();
-  expect(getSelect()).toHaveTextContent("3 food selected");
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.combobox("Favorite food")).toHaveFocus();
+  expect(q.combobox("Favorite food")).toHaveTextContent("3 food selected");
   await press.ArrowUp();
-  expect(getOption("Chocolate")).toHaveFocus();
+  expect(q.option("Chocolate")).toHaveFocus();
   await press.Space();
-  expect(getSelect()).toHaveTextContent("2 food selected");
+  expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");
   await type("br");
-  expect(getOption("Broccoli")).toHaveFocus();
+  expect(q.option("Broccoli")).toHaveFocus();
 });
 
 test("select on click", async () => {
-  await click(getSelect());
-  await click(getOption("Chocolate"));
-  expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "true");
-  expect(getSelect()).toHaveTextContent("3 food selected");
-  await click(getOption("Chocolate"));
-  expect(getOption("Chocolate")).toHaveAttribute("aria-selected", "false");
-  expect(getSelect()).toHaveTextContent("2 food selected");
-  await click(getOption("Cake"));
-  expect(getOption("Cake")).toHaveAttribute("aria-selected", "false");
-  expect(getSelect()).toHaveTextContent("Apple");
+  await click(q.combobox("Favorite food"));
+  await click(q.option("Chocolate"));
+  expect(q.option("Chocolate")).toHaveAttribute("aria-selected", "true");
+  expect(q.combobox("Favorite food")).toHaveTextContent("3 food selected");
+  await click(q.option("Chocolate"));
+  expect(q.option("Chocolate")).toHaveAttribute("aria-selected", "false");
+  expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");
+  await click(q.option("Cake"));
+  expect(q.option("Cake")).toHaveAttribute("aria-selected", "false");
+  expect(q.combobox("Favorite food")).toHaveTextContent("Apple");
 });

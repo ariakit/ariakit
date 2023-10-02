@@ -1,8 +1,4 @@
-import { click, getByRole, press, queryByText } from "@ariakit/test";
-
-const getSubmit = () => getByRole("button", { name: "Submit" });
-const getRadio = (name: string) => getByRole("radio", { name });
-const getError = () => queryByText("Please select a color.");
+import { click, press, q } from "@ariakit/test";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
@@ -14,47 +10,47 @@ beforeEach(() => {
 });
 
 test("focus on the first radio button by tabbing", async () => {
-  expect(getRadio("Red")).not.toHaveFocus();
-  expect(getRadio("Green")).not.toHaveFocus();
-  expect(getRadio("Blue")).not.toHaveFocus();
+  expect(q.radio("Red")).not.toHaveFocus();
+  expect(q.radio("Green")).not.toHaveFocus();
+  expect(q.radio("Blue")).not.toHaveFocus();
   await press.Tab();
-  expect(getRadio("Red")).toHaveFocus();
+  expect(q.radio("Red")).toHaveFocus();
 });
 
 test("show error on blur", async () => {
   await press.Tab();
-  expect(getError()).not.toBeInTheDocument();
+  expect(q.text("Please select a color.")).not.toBeInTheDocument();
   await press.Tab();
-  expect(getSubmit()).toHaveFocus();
-  expect(getError()).toBeInTheDocument();
+  expect(q.button("Submit")).toHaveFocus();
+  expect(q.text("Please select a color.")).toBeInTheDocument();
 });
 
 test("show error on submit", async () => {
-  expect(getError()).not.toBeInTheDocument();
-  await click(getSubmit());
-  expect(getError()).toBeInTheDocument();
+  expect(q.text("Please select a color.")).not.toBeInTheDocument();
+  await click(q.button("Submit"));
+  expect(q.text("Please select a color.")).toBeInTheDocument();
 });
 
 test("focus on radio with error on submit", async () => {
-  await click(getSubmit());
-  expect(getRadio("Red")).toHaveFocus();
+  await click(q.button("Submit"));
+  expect(q.radio("Red")).toHaveFocus();
 });
 
 test("fix error on change", async () => {
   await press.Tab();
-  expect(getRadio("Red")).toHaveFocus();
+  expect(q.radio("Red")).toHaveFocus();
   await press.Tab();
-  expect(getSubmit()).toHaveFocus();
+  expect(q.button("Submit")).toHaveFocus();
   await press.ShiftTab();
-  expect(getRadio("Blue")).toHaveFocus();
-  expect(getError()).toBeInTheDocument();
+  expect(q.radio("Blue")).toHaveFocus();
+  expect(q.text("Please select a color.")).toBeInTheDocument();
   await press.Space();
-  expect(getError()).not.toBeInTheDocument();
+  expect(q.text("Please select a color.")).not.toBeInTheDocument();
 });
 
 test("submit form", async () => {
-  await click(getRadio("Green"));
-  await click(getSubmit());
+  await click(q.radio("Green"));
+  await click(q.button("Submit"));
   expect(alert).toHaveBeenCalledWith(JSON.stringify({ color: "green" }));
 });
 
@@ -63,7 +59,7 @@ test("reset form on submit", async () => {
   await press.Space();
   await press.Tab();
   await press.Enter();
-  expect(getRadio("Red")).not.toBeChecked();
-  expect(getRadio("Green")).not.toBeChecked();
-  expect(getRadio("Blue")).not.toBeChecked();
+  expect(q.radio("Red")).not.toBeChecked();
+  expect(q.radio("Green")).not.toBeChecked();
+  expect(q.radio("Blue")).not.toBeChecked();
 });

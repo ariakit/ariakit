@@ -1,38 +1,34 @@
-import { getByRole, press, queryByRole, type } from "@ariakit/test";
-
-const getTextarea = () => getByRole("combobox");
-const getPopover = () => queryByRole("listbox", { hidden: true });
-const getOption = (name: string | RegExp) => getByRole("option", { name });
+import { press, q, type } from "@ariakit/test";
 
 test("@ at the beginning", async () => {
   await press.Tab();
-  expect(getPopover()).not.toBeInTheDocument();
+  expect(q.listbox()).not.toBeInTheDocument();
   await type("@");
-  expect(getTextarea()).toHaveValue("@");
-  expect(getTextarea()).toHaveFocus();
-  expect(getPopover()).toBeVisible();
-  expect(getOption("diegohaz")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("@");
+  expect(q.combobox()).toHaveFocus();
+  expect(q.listbox()).toBeVisible();
+  expect(q.option("diegohaz")).toHaveFocus();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("@diegohaz ");
+  expect(q.combobox()).toHaveValue("@diegohaz ");
 });
 
 test("# at the beginning", async () => {
   await press.Tab();
   await type("#");
-  expect(getOption(/Critical dependency/)).toHaveFocus();
+  expect(q.option(/Critical dependency/)).toHaveFocus();
   await press.ArrowDown();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("#1247 ");
+  expect(q.combobox()).toHaveValue("#1247 ");
 });
 
 test(": at the beginning", async () => {
   await press.Tab();
   await type(":");
-  expect(getOption(/smile$/)).toHaveFocus();
+  expect(q.option(/smile$/)).toHaveFocus();
   await press.ArrowUp();
   await press.ArrowUp();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("😌 ");
+  expect(q.combobox()).toHaveValue("😌 ");
 });
 
 test("typing on the textarea", async () => {
@@ -40,17 +36,17 @@ test("typing on the textarea", async () => {
   await type("Hi @");
   await press.ArrowDown();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("Hi @tcodes0 ");
+  expect(q.combobox()).toHaveValue("Hi @tcodes0 ");
   await type("@ma");
   await press.Enter();
-  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva ");
+  expect(q.combobox()).toHaveValue("Hi @tcodes0 @matheus1lva ");
   await type("\b\n\n#lat");
   await press.ArrowLeft();
-  await expect(getPopover()).not.toBeInTheDocument();
+  await expect(q.listbox()).not.toBeInTheDocument();
   await type("\b");
-  await expect(getPopover()).not.toBeInTheDocument();
+  await expect(q.listbox()).not.toBeInTheDocument();
   await type("\b");
-  await expect(getPopover()).toBeVisible();
+  await expect(q.listbox()).toBeVisible();
   await press.Enter();
-  expect(getTextarea()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1253 t");
+  expect(q.combobox()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1253 t");
 });

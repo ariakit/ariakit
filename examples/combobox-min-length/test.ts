@@ -1,44 +1,40 @@
-import { click, getByRole, press, type } from "@ariakit/test";
-
-const getCombobox = () => getByRole("combobox");
-const getPopover = () => getByRole("listbox", { hidden: true });
-const getOption = (name: string) => getByRole("option", { name });
+import { click, press, q, type } from "@ariakit/test";
 
 test("popover is not shown on click when combobox is pristine", async () => {
-  expect(getPopover()).not.toBeVisible();
-  await click(getCombobox());
-  expect(getPopover()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
+  await click(q.combobox());
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("popover is not shown on arrow down key when combobox is pristine", async () => {
   await press.Tab();
-  expect(getPopover()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.ArrowDown();
-  expect(getPopover()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("show popover after typing", async () => {
   await press.Tab();
   await type("a");
-  expect(getPopover()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
 });
 
 test("popover is shown on click when combobox is dirty", async () => {
   await press.Tab();
   await type("a");
   await press.Escape();
-  expect(getPopover()).not.toBeVisible();
-  await click(getCombobox());
-  expect(getPopover()).toBeVisible();
-  expect(getOption("🍎 Apple")).not.toHaveFocus();
+  expect(q.listbox()).not.toBeInTheDocument();
+  await click(q.combobox());
+  expect(q.listbox()).toBeVisible();
+  expect(q.option(/Apple/)).not.toHaveFocus();
 });
 
 test("popover is shown on arrow down key when combobox is dirty", async () => {
   await press.Tab();
   await type("a");
   await press.Escape();
-  expect(getPopover()).not.toBeVisible();
+  expect(q.listbox()).not.toBeInTheDocument();
   await press.ArrowDown();
-  expect(getPopover()).toBeVisible();
-  expect(getOption("🍎 Apple")).not.toHaveFocus();
+  expect(q.listbox()).toBeVisible();
+  expect(q.option(/Apple/)).not.toHaveFocus();
 });
