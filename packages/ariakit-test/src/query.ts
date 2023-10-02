@@ -1,13 +1,5 @@
-import {
-  queryByLabelText,
-  queryByRole,
-  queryByText,
-} from "@testing-library/dom";
-import type {
-  ByRoleOptions,
-  Matcher,
-  SelectorMatcherOptions,
-} from "@testing-library/dom";
+import { getQueriesForElement } from "@testing-library/dom";
+import type { ByRoleMatcher, ByRoleOptions } from "@testing-library/dom";
 
 const roles = [
   "alert",
@@ -97,36 +89,122 @@ const roles = [
 type AriaRole = (typeof roles)[number];
 type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
 
-function createRoleQuery(role: AriaRole) {
-  const fn = (name?: string | RegExp, options?: ByRoleOptions) => {
-    if (!name) {
-      return queryByRole(document.body, role, options);
+const queries = getQueriesForElement(document.body);
+
+function matchName(name: string | RegExp, accessibleName: string | null) {
+  if (accessibleName == null) return false;
+  if (typeof name === "string") {
+    return accessibleName === name;
+  }
+  return name.test(accessibleName);
+}
+
+function getNameOption(name: string | RegExp) {
+  return (accessibleName: string, element: Element | HTMLInputElement) => {
+    if (matchName(name, accessibleName)) return true;
+    if (element.getAttribute("aria-label")) return false;
+    const labeledBy = element.getAttribute("aria-labelledby");
+    if (!labeledBy) {
+      const content =
+        "placeholder" in element && element.placeholder != null
+          ? element.placeholder
+          : element.textContent;
+      return matchName(name, content);
     }
+    const label = document.getElementById(labeledBy);
+    if (!label?.textContent) return false;
+    return matchName(name, label.textContent);
+  };
+}
 
-    const matchName = (accessibleName: string) => {
-      if (typeof name === "string") {
-        return accessibleName === name;
+function createRoleQuery(role: AriaRole) {
+  type GenericQuery = (role: ByRoleMatcher, options?: ByRoleOptions) => any;
+
+  const createQuery = <T extends GenericQuery>(query: T) => {
+    return (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> => {
+      if (!name) {
+        return query(role, options);
       }
-      return name.test(accessibleName);
+      return query(role, { name: getNameOption(name), ...options });
     };
-
-    return queryByRole(document.body, role, {
-      name(accessibleName, element) {
-        if (matchName(accessibleName)) return true;
-        const labeledBy = element.getAttribute("aria-labelledby");
-        if (!labeledBy) return false;
-        const label = document.getElementById(labeledBy);
-        if (!label?.textContent) return false;
-        return matchName(label.textContent);
-      },
-      ...options,
-    });
   };
 
-  const includesHidden = (name?: string | RegExp, options?: ByRoleOptions) =>
-    fn(name, { hidden: true, ...options });
+  const createIncludesHidden =
+    <T extends ReturnType<typeof createQuery>>(query: T) =>
+    (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> =>
+      query(name, { hidden: true, ...options });
 
-  return Object.assign(fn, { includesHidden });
+  const query = createQuery(queries.queryByRole);
+  const allQuery = createQuery(queries.queryAllByRole);
+  const waitQuery = createQuery(queries.findByRole);
+  const waitAllQuery = createQuery(queries.findAllByRole);
+  const ensureQuery = createQuery(queries.getByRole);
+  const ensureAllQuery = createQuery(queries.getAllByRole);
+
+  const all = Object.assign(allQuery, {
+    includesHidden: createIncludesHidden(allQuery),
+    wait: Object.assign(waitAllQuery, {
+      includesHidden: createIncludesHidden(waitAllQuery),
+    }),
+    ensure: Object.assign(ensureAllQuery, {
+      includesHidden: createIncludesHidden(ensureAllQuery),
+    }),
+  });
+
+  const wait = Object.assign(waitQuery, {
+    includesHidden: createIncludesHidden(waitQuery),
+    all: Object.assign(waitAllQuery, {
+      includesHidden: createIncludesHidden(waitAllQuery),
+    }),
+  });
+
+  const ensure = Object.assign(ensureQuery, {
+    includesHidden: createIncludesHidden(ensureQuery),
+    all: Object.assign(ensureAllQuery, {
+      includesHidden: createIncludesHidden(ensureAllQuery),
+    }),
+  });
+
+  return Object.assign(query, {
+    includesHidden: createIncludesHidden(query),
+    all,
+    wait,
+    ensure,
+  });
+}
+
+function createTextQuery() {
+  const all = Object.assign(queries.queryAllByText, {
+    wait: queries.findAllByText,
+    ensure: queries.getAllByText,
+  });
+
+  const wait = Object.assign(queries.findByText, {
+    all: queries.findAllByText,
+  });
+
+  const ensure = Object.assign(queries.getByText, {
+    all: queries.getAllByText,
+  });
+
+  return Object.assign(queries.queryByText, { all, wait, ensure });
+}
+
+function createLabeledQuery() {
+  const all = Object.assign(queries.queryAllByLabelText, {
+    wait: queries.findAllByLabelText,
+    ensure: queries.getAllByLabelText,
+  });
+
+  const wait = Object.assign(queries.findByLabelText, {
+    all: queries.findAllByLabelText,
+  });
+
+  const ensure = Object.assign(queries.getByLabelText, {
+    all: queries.getAllByLabelText,
+  });
+
+  return Object.assign(queries.queryByLabelText, { all, wait, ensure });
 }
 
 const roleQueries = roles.reduce((acc, role) => {
@@ -136,10 +214,8 @@ const roleQueries = roles.reduce((acc, role) => {
 
 export const query = {
   ...roleQueries,
-  text: (text: Matcher, options?: SelectorMatcherOptions) =>
-    queryByText(document.body, text, options),
-  labeled: (label: Matcher, options?: SelectorMatcherOptions) =>
-    queryByLabelText(document.body, label, options),
+  text: createTextQuery(),
+  labeled: createLabeledQuery(),
 };
 
 export const q = query;

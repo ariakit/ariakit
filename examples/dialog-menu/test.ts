@@ -1,73 +1,64 @@
-import { click, getByRole, press, queryByRole } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 
-const getDisclosure = () => getByRole("button", { name: "View recipe" });
-
-const getDialog = () =>
-  queryByRole("dialog", { hidden: true, name: "Homemade Cake" });
-
-const getDialogBackdrop = () => {
-  const dialog = getDialog();
+const backdrop = () => {
+  const dialog = q.dialog();
   const id = dialog?.id;
   const backdrop = document.querySelector(`[data-backdrop="${id}"]`);
   expect(backdrop).toBeInTheDocument();
   return backdrop!;
 };
 
-const getMenuButton = () => getByRole("button", { name: "Share" });
-
-const getMenu = () => queryByRole("menu", { hidden: true, name: "Share" });
-
 test("show dialog", async () => {
-  expect(getDialog()).not.toBeInTheDocument();
-  await click(getDisclosure());
-  expect(getDialog()).toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
+  await click(q.button("View recipe"));
+  expect(q.dialog()).toBeVisible();
 });
 
 test("show/hide menu", async () => {
-  expect(getMenu()).not.toBeInTheDocument();
-  await click(getDisclosure());
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
-  await click(getMenuButton());
-  expect(getMenu()).not.toBeInTheDocument();
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).toHaveFocus();
+  await click(q.button("Share"));
+  expect(q.menu()).not.toBeInTheDocument();
+  await click(q.button("Share"));
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).toHaveFocus();
 });
 
 test("hide menu and dialog with esc", async () => {
-  await click(getDisclosure());
-  await click(getMenuButton());
-  expect(getDialog()).toBeVisible();
-  expect(getMenu()).toBeVisible();
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.dialog()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getDialog()).toBeVisible();
-  expect(getMenu()).not.toBeInTheDocument();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Share")).toHaveFocus();
   await press.Escape();
-  expect(getDialog()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button("View recipe")).toHaveFocus();
 });
 
 test("hide menu by clicking on dialog", async () => {
-  await click(getDisclosure());
-  await click(getMenuButton());
-  expect(getDialog()).toBeVisible();
-  expect(getMenu()).toBeVisible();
-  await click(getDialog()!);
-  expect(getDialog()).toBeVisible();
-  expect(getMenu()).not.toBeInTheDocument();
-  expect(getDialog()).toHaveFocus();
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.dialog()).toBeVisible();
+  expect(q.menu()).toBeVisible();
+  await click(q.dialog()!);
+  expect(q.dialog()).toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.dialog()).toHaveFocus();
 });
 
 test("hide both menu and dialog by clicking outside dialog", async () => {
-  await click(getDisclosure());
-  await click(getMenuButton());
-  expect(getDialog()).toBeVisible();
-  expect(getMenu()).toBeVisible();
-  await click(getDialogBackdrop());
-  expect(getDialog()).not.toBeInTheDocument();
-  expect(getMenu()).not.toBeInTheDocument();
-  expect(getDisclosure()).toHaveFocus();
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.dialog()).toBeVisible();
+  expect(q.menu()).toBeVisible();
+  await click(backdrop());
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("View recipe")).toHaveFocus();
 });

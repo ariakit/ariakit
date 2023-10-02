@@ -1,7 +1,7 @@
-import { getByRole } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("markup", () => {
-  expect(getByRole("group")).toMatchInlineSnapshot(`
+  expect(q.group()).toMatchInlineSnapshot(`
    <div
      class="group"
      role="group"

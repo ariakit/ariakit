@@ -1,7 +1,5 @@
-import { getByText } from "@ariakit/test";
+import { q } from "@ariakit/test";
 
 test("render correctly", async () => {
-  expect(
-    getByText("I am portal and I am detached at the bottom of the page."),
-  ).toBeInTheDocument();
+  expect(q.text(/I am portal/)).toBeInTheDocument();
 });

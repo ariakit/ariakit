@@ -1,8 +1,4 @@
-import { click, getByRole, getByText, hover, press, type } from "@ariakit/test";
-
-const getMenuButton = () => getByRole("button", { name: "Actions" });
-const getMenu = () => getByRole("menu", { hidden: true });
-const getMenuItem = (name: string) => getByRole("menuitem", { name });
+import { click, hover, press, q, type } from "@ariakit/test";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
@@ -14,93 +10,93 @@ beforeEach(() => {
 });
 
 test("show/hide on click", async () => {
-  expect(getMenu()).not.toBeVisible();
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
-  expect(getMenuItem("Edit")).not.toHaveFocus();
-  await click(getMenuButton());
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).toHaveFocus();
+  expect(q.menuitem("Edit")).not.toHaveFocus();
+  await click(q.button("Actions"));
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("show/hide on enter", async () => {
   await press.Tab();
   await press.Enter();
-  expect(getMenu()).toBeVisible();
-  expect(getMenuItem("Edit")).toHaveFocus();
-  expect(getMenuItem("Edit")).toHaveAttribute("data-focus-visible");
+  expect(q.menu()).toBeVisible();
+  expect(q.menuitem("Edit")).toHaveFocus();
+  expect(q.menuitem("Edit")).toHaveAttribute("data-focus-visible");
   await press.ShiftTab();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Enter();
-  expect(getMenu()).not.toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
 });
 
 test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
-  expect(getMenu()).toBeVisible();
-  expect(getMenuItem("Edit")).toHaveFocus();
-  expect(getMenuItem("Edit")).toHaveAttribute("data-focus-visible");
+  expect(q.menu()).toBeVisible();
+  expect(q.menuitem("Edit")).toHaveFocus();
+  expect(q.menuitem("Edit")).toHaveAttribute("data-focus-visible");
   await press.ShiftTab();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Space();
-  expect(getMenu()).not.toBeVisible();
+  expect(q.menu()).not.toBeInTheDocument();
 });
 
 test("show on arrow down", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(getMenu()).toBeVisible();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menuitem("Edit")).toHaveFocus();
 });
 
 test("show on arrow up", async () => {
   await press.Tab();
   await press.ArrowUp();
-  expect(getMenu()).toBeVisible();
-  expect(getMenuItem("Report")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
+  expect(q.menuitem("Report")).toHaveFocus();
 });
 
 test("hide on escape", async () => {
   // Click
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
   // Enter
   await press.Enter();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
   // Space
   await press.Space();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
   // ArrowDown
   await press.ArrowDown();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
   // ArrowUp
   await press.ArrowUp();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("hide on click outside", async () => {
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
   await click(document.body);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("hide on click on outside element", async () => {
@@ -108,11 +104,11 @@ test("hide on click on outside element", async () => {
   buttonOutside.textContent = "Outside";
   document.body.append(buttonOutside);
 
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  await click(getByText("Outside"));
-  expect(getMenu()).not.toBeVisible();
-  expect(getByText("Outside")).toHaveFocus();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
+  await click(q.text("Outside"));
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.text("Outside")).toHaveFocus();
 
   buttonOutside.remove();
 });
@@ -122,71 +118,71 @@ test("hide on tab", async () => {
   buttonOutside.textContent = "Outside";
   document.body.append(buttonOutside);
 
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
   await press.Tab();
-  expect(getMenu()).not.toBeVisible();
-  expect(getByText("Outside")).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.text("Outside")).toHaveFocus();
 
   buttonOutside.remove();
 });
 
 test("tab back to menu button", async () => {
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
   await press.ShiftTab();
-  expect(getMenuButton()).toHaveFocus();
-  expect(getMenu()).toBeVisible();
+  expect(q.button("Actions")).toHaveFocus();
+  expect(q.menu()).toBeVisible();
   await press.Tab();
-  expect(getMenu()).toHaveFocus();
-  expect(getMenu()).toBeVisible();
+  expect(q.menu()).toHaveFocus();
+  expect(q.menu()).toBeVisible();
   // Close and open with enter
   await press.ShiftTab();
   await press.Enter();
   await press.Enter();
   await press.ShiftTab();
   await press.Tab();
-  expect(getMenuItem("Edit")).not.toHaveFocus();
-  expect(getMenu()).toBeVisible();
+  expect(q.menuitem("Edit")).not.toHaveFocus();
+  expect(q.menu()).toBeVisible();
 });
 
 test("navigate through items with keyboard", async () => {
-  await click(getMenuButton());
+  await click(q.button("Actions"));
   await press.ArrowDown();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(q.menuitem("Edit")).toHaveFocus();
   await press.ArrowDown();
-  expect(getMenuItem("Share")).toHaveFocus();
+  expect(q.menuitem("Share")).toHaveFocus();
   await press.ArrowDown();
-  expect(getMenuItem("Report")).toHaveFocus();
+  expect(q.menuitem("Report")).toHaveFocus();
   await press.ArrowLeft();
-  expect(getMenuItem("Report")).toHaveFocus();
+  expect(q.menuitem("Report")).toHaveFocus();
   await press.Home();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(q.menuitem("Edit")).toHaveFocus();
   await press.ArrowRight();
-  expect(getMenuItem("Edit")).toHaveFocus();
+  expect(q.menuitem("Edit")).toHaveFocus();
   await press.End();
-  expect(getMenuItem("Report")).toHaveFocus();
+  expect(q.menuitem("Report")).toHaveFocus();
 });
 
 test("navigate through items with mouse", async () => {
   await press.Tab();
   await press.Enter();
-  await hover(getMenuItem("Share"));
-  expect(getMenuItem("Share")).toHaveAttribute("data-active-item");
-  expect(getMenu()).toHaveFocus();
-  await hover(getMenuItem("Delete"));
-  expect(getMenuItem("Share")).not.toHaveAttribute("data-active-item");
-  expect(getMenuItem("Delete")).not.toHaveAttribute("data-active-item");
-  expect(getMenu()).toHaveFocus();
+  await hover(q.menuitem("Share"));
+  expect(q.menuitem("Share")).toHaveAttribute("data-active-item");
+  expect(q.menu()).toHaveFocus();
+  await hover(q.menuitem("Delete"));
+  expect(q.menuitem("Share")).not.toHaveAttribute("data-active-item");
+  expect(q.menuitem("Delete")).not.toHaveAttribute("data-active-item");
+  expect(q.menu()).toHaveFocus();
 });
 
 test("menu item click", async () => {
-  await click(getMenuButton());
+  await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
-  await click(getMenuItem("Edit"));
+  await click(q.menuitem("Edit"));
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("menu item enter", async () => {
@@ -195,8 +191,8 @@ test("menu item enter", async () => {
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("menu item space", async () => {
@@ -205,39 +201,39 @@ test("menu item space", async () => {
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("menu item hover enter", async () => {
-  await click(getMenuButton());
+  await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(0);
-  await hover(getMenuItem("Edit"));
+  await hover(q.menuitem("Edit"));
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("menu item hover space", async () => {
-  await click(getMenuButton());
+  await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(0);
-  await hover(getMenuItem("Edit"));
+  await hover(q.menuitem("Edit"));
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(getMenu()).not.toBeVisible();
-  expect(getMenuButton()).toHaveFocus();
+  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.button("Actions")).toHaveFocus();
 });
 
 test("typeahead", async () => {
-  await click(getMenuButton());
-  expect(getMenuItem("Edit")).not.toHaveFocus();
+  await click(q.button("Actions"));
+  expect(q.menuitem("Edit")).not.toHaveFocus();
   await type("d");
-  expect(getMenu()).toHaveFocus();
+  expect(q.menu()).toHaveFocus();
   await type("re");
-  expect(getMenuItem("Report")).toHaveFocus();
+  expect(q.menuitem("Report")).toHaveFocus();
 });

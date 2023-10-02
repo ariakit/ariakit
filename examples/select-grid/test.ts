@@ -1,80 +1,76 @@
-import { click, getByRole, hover, press, sleep, type } from "@ariakit/test";
-
-const getSelect = () => getByRole("combobox", { name: "Position" });
-const getGrid = () => getByRole("grid", { hidden: true });
-const getCell = (name: string) => getByRole("gridcell", { name });
+import { click, hover, press, q, sleep, type } from "@ariakit/test";
 
 test("default value", async () => {
-  expect(getSelect()).toHaveTextContent("Center");
-  await click(getSelect());
-  expect(getGrid()).toBeVisible();
-  expect(getCell("Center")).toHaveFocus();
+  expect(q.combobox("Position")).toHaveTextContent("Center");
+  await click(q.combobox("Position"));
+  expect(q.grid()).toBeVisible();
+  expect(q.gridcell("Center")).toHaveFocus();
 });
 
 test("change expanded select value with keyboard", async () => {
   await press.Tab();
   await press.Enter();
   await press.ArrowUp();
-  expect(getCell("Top Center")).toHaveFocus();
+  expect(q.gridcell("Top Center")).toHaveFocus();
   await press.ArrowLeft();
   await press.ArrowLeft();
-  expect(getCell("Top Left")).toHaveFocus();
+  expect(q.gridcell("Top Left")).toHaveFocus();
   await press.End();
-  expect(getCell("Top Right")).toHaveFocus();
+  expect(q.gridcell("Top Right")).toHaveFocus();
   await press.End(null, { ctrlKey: true });
-  expect(getCell("Bottom Right")).toHaveFocus();
+  expect(q.gridcell("Bottom Right")).toHaveFocus();
   await press.Home();
-  expect(getCell("Bottom Left")).toHaveFocus();
+  expect(q.gridcell("Bottom Left")).toHaveFocus();
   await press.Home(null, { ctrlKey: true });
-  expect(getCell("Top Left")).toHaveFocus();
+  expect(q.gridcell("Top Left")).toHaveFocus();
   await type("tt");
-  expect(getCell("Top Right")).toHaveFocus();
+  expect(q.gridcell("Top Right")).toHaveFocus();
   await press.Escape();
-  expect(getGrid()).not.toBeVisible();
-  expect(getSelect()).toHaveTextContent("Center");
+  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.combobox("Position")).toHaveTextContent("Center");
   await press.Space();
   await type("top right");
   await press.Enter();
-  expect(getSelect()).toHaveTextContent("Top Right");
+  expect(q.combobox("Position")).toHaveTextContent("Top Right");
 });
 
 test("change collapsed select value with keyboard", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(getGrid()).not.toBeVisible();
-  expect(getSelect()).toHaveTextContent("Bottom Center");
+  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.combobox("Position")).toHaveTextContent("Bottom Center");
   await press.ArrowLeft();
   await press.ArrowLeft();
-  expect(getSelect()).toHaveTextContent("Bottom Left");
+  expect(q.combobox("Position")).toHaveTextContent("Bottom Left");
   await press.ArrowUp();
-  expect(getSelect()).toHaveTextContent("Center Left");
+  expect(q.combobox("Position")).toHaveTextContent("Center Left");
   await press.ArrowUp();
   await press.ArrowUp();
-  expect(getSelect()).toHaveTextContent("Top Left");
+  expect(q.combobox("Position")).toHaveTextContent("Top Left");
   await type("cc");
-  expect(getSelect()).toHaveTextContent("Center");
+  expect(q.combobox("Position")).toHaveTextContent("Center");
   await sleep(600);
   await type("bbb");
-  expect(getSelect()).toHaveTextContent("Bottom Right");
+  expect(q.combobox("Position")).toHaveTextContent("Bottom Right");
   await press.Enter();
-  expect(getGrid()).toBeVisible();
-  expect(getCell("Bottom Right")).toHaveFocus();
+  expect(q.grid()).toBeVisible();
+  expect(q.gridcell("Bottom Right")).toHaveFocus();
 });
 
 test("change value on hover", async () => {
-  await click(getSelect());
-  await hover(getCell("Top Left"));
-  expect(getCell("Top Left")).toHaveFocus();
-  expect(getSelect()).toHaveTextContent("Top Left");
-  await hover(getCell("Top Center"));
-  expect(getCell("Top Center")).toHaveFocus();
-  expect(getSelect()).toHaveTextContent("Top Center");
+  await click(q.combobox("Position"));
+  await hover(q.gridcell("Top Left"));
+  expect(q.gridcell("Top Left")).toHaveFocus();
+  expect(q.combobox("Position")).toHaveTextContent("Top Left");
+  await hover(q.gridcell("Top Center"));
+  expect(q.gridcell("Top Center")).toHaveFocus();
+  expect(q.combobox("Position")).toHaveTextContent("Top Center");
   await hover(document.body);
-  expect(getCell("Top Center")).toHaveFocus();
-  expect(getSelect()).toHaveTextContent("Top Center");
+  expect(q.gridcell("Top Center")).toHaveFocus();
+  expect(q.combobox("Position")).toHaveTextContent("Top Center");
   await click(document.body);
-  expect(getGrid()).not.toBeVisible();
-  expect(getSelect()).toHaveTextContent("Top Center");
+  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.combobox("Position")).toHaveTextContent("Top Center");
 });
 
 test("keep value on tab", async () => {
@@ -82,12 +78,12 @@ test("keep value on tab", async () => {
   div.tabIndex = 0;
   document.body.append(div);
 
-  await click(getSelect());
-  expect(getGrid()).toBeVisible();
+  await click(q.combobox("Position"));
+  expect(q.grid()).toBeVisible();
   await press.ArrowDown();
   await press.Tab();
-  expect(getGrid()).not.toBeVisible();
-  expect(getSelect()).toHaveTextContent("Bottom Center");
+  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.combobox("Position")).toHaveTextContent("Bottom Center");
 
   div.remove();
 });

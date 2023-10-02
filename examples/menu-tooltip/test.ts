@@ -1,13 +1,4 @@
-import { click, getByRole, getByText, hover, waitFor } from "@ariakit/test";
-
-const getMenu = () => getByRole("menu", { name: "Accessibility Shortcuts" });
-const getMenuButton = () =>
-  getByRole("button", { name: "Accessibility Shortcuts" });
-const getTooltip = () =>
-  getByText("Accessibility Shortcuts", {
-    exact: true,
-    selector: "[role=tooltip]",
-  });
+import { click, hover, q } from "@ariakit/test";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -19,17 +10,17 @@ afterEach(async () => {
 });
 
 test("show/hide tooltip on hover", async () => {
-  await hover(getMenuButton());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
+  await hover(q.button("Accessibility Shortcuts"));
+  expect(await q.tooltip.wait()).toBeVisible();
   await hoverOutside();
-  await waitFor(() => expect(getTooltip()).not.toBeVisible());
+  expect(q.tooltip()).not.toBeInTheDocument();
 });
 
 test("hide tooltip by clicking on menu button", async () => {
-  await hover(getMenuButton());
-  await waitFor(() => expect(getTooltip()).toBeVisible());
-  await click(getMenuButton());
-  expect(getMenu()).toBeVisible();
-  expect(getMenu()).toHaveFocus();
-  expect(getTooltip()).not.toBeVisible();
+  await hover(q.button("Accessibility Shortcuts"));
+  expect(await q.tooltip.wait()).toBeVisible();
+  await click(q.button("Accessibility Shortcuts"));
+  expect(q.menu()).toBeVisible();
+  expect(q.menu()).toHaveFocus();
+  expect(q.tooltip()).not.toBeInTheDocument();
 });

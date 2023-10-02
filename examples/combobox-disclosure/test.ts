@@ -1,20 +1,16 @@
-import { click, getByRole, type } from "@ariakit/test";
-
-const getCombobox = () => getByRole("combobox");
-const getPopover = () => getByRole("listbox", { hidden: true });
-const getDisclosure = (name: string) => getByRole("button", { name });
+import { click, q, type } from "@ariakit/test";
 
 test("show and hide popup with disclosure button", async () => {
-  await click(getDisclosure("Show popup"));
-  expect(getPopover()).toBeVisible();
-  await click(getDisclosure("Hide popup"));
-  expect(getPopover()).not.toBeVisible();
+  await click(q.button("Show popup"));
+  expect(q.listbox()).toBeVisible();
+  await click(q.button("Hide popup"));
+  expect(q.listbox()).not.toBeInTheDocument();
 });
 
 test("keep focus on combobox if disclosure button pressed", async () => {
-  await click(getDisclosure("Show popup"));
+  await click(q.button("Show popup"));
   await type("abc");
-  expect(getCombobox()).toHaveFocus();
-  await click(getDisclosure("Hide popup"));
-  expect(getCombobox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
+  await click(q.button("Hide popup"));
+  expect(q.combobox()).toHaveFocus();
 });
