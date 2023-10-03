@@ -32,7 +32,7 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
  * the component.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
+ * ```jsx {5,9}
  * <SelectProvider>
  *   <Select />
  *   <SelectPopover>

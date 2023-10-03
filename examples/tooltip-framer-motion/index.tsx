@@ -1,13 +1,13 @@
-import { TooltipAnchor } from "./tooltip-anchor.jsx";
 import "./style.css";
+import { TooltipAnchor } from "./tooltip-anchor.jsx";
 
 export default function Example() {
   const href = "https://ariakit.org/examples/tooltip-framer-motion";
   return (
     <TooltipAnchor
-      description={href}
       className="link"
-      render={(props) => <a href={href} {...props} />}
+      description={href}
+      render={<a href={href} />}
     >
       Tooltip with Framer Motion
     </TooltipAnchor>

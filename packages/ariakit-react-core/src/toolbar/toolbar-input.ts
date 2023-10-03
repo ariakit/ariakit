@@ -36,7 +36,7 @@ export const useToolbarInput = createHook<ToolbarInputOptions>(
  * Renders an input as a toolbar item.
  * @see https://ariakit.org/components/toolbar
  * @example
- * ```jsx
+ * ```jsx {2}
  * <Toolbar>
  *   <ToolbarInput />
  * </Toolbar>

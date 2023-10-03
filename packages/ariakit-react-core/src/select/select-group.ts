@@ -30,7 +30,7 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
  * Renders a select group.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
+ * ```jsx {4-8}
  * <SelectProvider>
  *   <Select />
  *   <SelectPopover>

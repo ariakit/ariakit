@@ -107,7 +107,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
  * Renders a tab panel element.
  * @see https://ariakit.org/components/tab
  * @example
- * ```jsx
+ * ```jsx {6,7}
  * <TabProvider>
  *   <TabList>
  *     <Tab>Tab 1</Tab>

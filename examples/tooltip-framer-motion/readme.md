@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Abstracting <a href="/components/tooltip">Tooltip</a> into a reusable custom component that uses <a href="https://www.framer.com/motion/">Framer Motion</a> to create smooth initial and exit animations.
+Abstracting [Tooltip](/components/tooltip) into a reusable custom component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
 
 </div>
 
@@ -30,7 +30,7 @@ Abstracting <a href="/components/tooltip">Tooltip</a> into a reusable custom com
 In the custom `TooltipAnchor` component we've created in this example, we're exposing the [`render`](/apis/tooltip-anchor#render) prop to allow the user to render the anchor element however they want.
 
 ```jsx
-<TooltipAnchor render={(props) => <a {...props} />} />
+<TooltipAnchor render={<a />} />
 ```
 
 You can learn more about this pattern on the [Composition](/guide/composition) guide.

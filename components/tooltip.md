@@ -7,7 +7,7 @@ tags:
 
 <div data-description>
 
-Display information related to an anchor element when the element receives keyboard focus or the mouse hovers over it. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/">WAI-ARIA Tooltip Pattern</a>.
+Display information related to an anchor element when the element receives keyboard focus or the mouse hovers over it. This component is based on the [WAI-ARIA Tooltip Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/).
 
 </div>
 
@@ -46,10 +46,10 @@ You should make sure the anchor element has an accessible name, either by:
 - Rendering a visible label or a [VisuallyHidden](/components/visually-hidden) text inside the anchor element.
 - Using the [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label) or [`aria-labelledby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby) attributes on the anchor element.
 
-Alternatively, if you want to use the tooltip as a label, you must set the [`type`](/reference/use-tooltip-store#type) prop on the [`useTooltipStore`](/reference/use-tooltip-store) hook to `label`:
+Alternatively, if you want to use the tooltip as a label, you must set the [`type`](/reference/tooltip-provider#type) prop to `label`:
 
-```js
-const tooltip = useTooltipStore({ type: "label" });
+```jsx
+<TooltipProvider type="label">
 ```
 
 This will make the tooltip behave like a label and will use the `aria-labelledby` attribute on the anchor element. Additionally, the tooltip's `role` attribute will be set to `none`.

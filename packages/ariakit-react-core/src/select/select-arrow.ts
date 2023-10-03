@@ -37,7 +37,7 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
  * component.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
+ * ```jsx {4}
  * <SelectProvider>
  *   <Select>
  *     {select.value}

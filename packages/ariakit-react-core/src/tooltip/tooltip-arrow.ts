@@ -39,16 +39,18 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
 );
 
 /**
- * Renders an arrow inside a `Tooltip` component.
+ * Renders an arrow inside a [`Tooltip`](https://ariakit.org/reference/tooltip)
+ * component.
  * @see https://ariakit.org/components/tooltip
  * @example
- * ```jsx
- * const tooltip = useTooltipStore();
- * <TooltipAnchor store={tooltip}>Anchor</TooltipAnchor>
- * <Tooltip store={tooltip}>
- *   <TooltipArrow />
- *   Tooltip
- * </Tooltip>
+ * ```jsx {4}
+ * <TooltipProvider>
+ *   <TooltipAnchor>Anchor</TooltipAnchor>
+ *   <Tooltip>
+ *     <TooltipArrow />
+ *     Tooltip
+ *   </Tooltip>
+ * </TooltipProvider>
  * ```
  */
 export const TooltipArrow = createComponent<TooltipArrowOptions>((props) => {
@@ -63,8 +65,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface TooltipArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**
-   * Object returned by the `useTooltipStore` hook. If not provided, the parent
-   * `Tooltip` component's context will be used.
+   * Object returned by the
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * If not provided, the closest
+   * [`Tooltip`](https://ariakit.org/reference/tooltip) or
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * components' context will be used.
    */
   store?: TooltipStore;
 }

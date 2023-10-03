@@ -99,7 +99,7 @@ export const useTab = createHook<TabOptions>(
  * component.
  * @see https://ariakit.org/components/tab
  * @example
- * ```jsx
+ * ```jsx {3,4}
  * <TabProvider>
  *   <TabList>
  *     <Tab>Tab 1</Tab>
