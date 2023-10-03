@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved example: Toolbar with Select",
+    type: "page",
+    href: "/examples/toolbar-select",
+    dateTime: "2023-10-03T11:34Z",
+  },
+  {
     title: "Improved example: Tab with Next.js App Router",
     type: "page",
     href: "/examples/tab-next-router",

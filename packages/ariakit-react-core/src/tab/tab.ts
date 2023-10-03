@@ -125,7 +125,7 @@ export interface TabOptions<T extends As = "button">
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
    * provided, the closest [`TabList`](https://ariakit.org/reference/tab-list)
-   * component context will be used.
+   * component's context will be used.
    */
   store?: TabStore;
   /**
