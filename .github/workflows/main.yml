@@ -238,13 +238,24 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        run: npm run build-website
+        run: npm run build-website-lite
 
   test-chrome:
-    name: Test Chrome
+    name: Test ${{ matrix.name }}
     needs: website
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        include:
+          - name: Chrome
+            engine: chromium
+            project: chrome
+          - name: Android
+            engine: chromium
+            project: android
+          - name: Firefox
+            engine: firefox
+            project: firefox
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -274,12 +285,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-chromium-
+          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-${{ matrix.engine }}-
 
       - name: Install playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps ${{ matrix.engine }}
 
       - name: Restore website
         uses: actions/cache/restore@v3
@@ -289,7 +300,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run npm run playwright -- --project chrome --project android
+        run: xvfb-run npm run playwright -- --project ${{ matrix.project }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -339,7 +350,7 @@ jobs:
           restore-keys: playwright-macos-
 
       - name: Install playwright
-        run: npx playwright install --with-deps firefox webkit
+        run: npx playwright install --with-deps webkit
 
       - name: Restore website
         uses: actions/cache/restore@v3
@@ -349,7 +360,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run playwright -- --project firefox --project safari --project ios
+        run: npm run playwright -- --project safari --project ios
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

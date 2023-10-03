@@ -1,16 +1,21 @@
-import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
-import { fireEvent } from "./fire-event.js";
+import { invariant } from "@ariakit/core/utils/misc";
+import { wrapAsync } from "./__utils.js";
+import { dispatch } from "./dispatch.js";
 
-export function mouseUp(element: Element, options?: MouseEventInit) {
-  if (!isVisible(element)) return;
+export function mouseUp(element: Element | null, options?: MouseEventInit) {
+  return wrapAsync(async () => {
+    invariant(element, "Unable to mouseUp on null element");
 
-  const { disabled } = element as HTMLButtonElement;
+    if (!isVisible(element)) return;
 
-  fireEvent.pointerUp(element, options);
+    const { disabled } = element as HTMLButtonElement;
 
-  // mouseup is not called on disabled elements
-  if (disabled) return;
+    await dispatch.pointerUp(element, options);
 
-  fireEvent.mouseUp(element, { detail: 1, ...options });
+    // mouseup is not called on disabled elements
+    if (disabled) return;
+
+    await dispatch.mouseUp(element, { detail: 1, ...options });
+  });
 }

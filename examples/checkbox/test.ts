@@ -1,4 +1,4 @@
-import { click, getByLabelText, getByRole, press } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 
 test("markup", () => {
   expect(document.body).toMatchInlineSnapshot(`
@@ -21,25 +21,23 @@ test("markup", () => {
 });
 
 test("check checkbox on click", async () => {
-  expect(getByRole("checkbox")).not.toBeChecked();
-  await click(
-    getByLabelText("I have read and agree to the terms and conditions"),
-  );
-  expect(getByRole("checkbox")).toBeChecked();
+  expect(q.checkbox()).not.toBeChecked();
+  await click(q.labeled("I have read and agree to the terms and conditions"));
+  expect(q.checkbox()).toBeChecked();
 });
 
 test("tab", async () => {
-  expect(getByRole("checkbox")).not.toHaveFocus();
+  expect(q.checkbox()).not.toHaveFocus();
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
+  expect(q.checkbox()).toHaveFocus();
 });
 
 test("space", async () => {
   await press.Tab();
-  expect(getByRole("checkbox")).toHaveFocus();
-  expect(getByRole("checkbox")).not.toBeChecked();
+  expect(q.checkbox()).toHaveFocus();
+  expect(q.checkbox()).not.toBeChecked();
   await press.Space();
-  expect(getByRole("checkbox")).toBeChecked();
+  expect(q.checkbox()).toBeChecked();
   await press.Space();
-  expect(getByRole("checkbox")).not.toBeChecked();
+  expect(q.checkbox()).not.toBeChecked();
 });

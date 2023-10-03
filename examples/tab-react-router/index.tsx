@@ -1,11 +1,11 @@
+import "./style.css";
 import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Tab, TabList, TabPanel, Tabs } from "./tabs.jsx";
-import "./style.css";
 
 function GroceriesTabs() {
   return (
-    <Tabs>
-      <div className="wrapper">
+    <div className="wrapper">
+      <Tabs>
         <TabList aria-label="Groceries">
           <Tab to="/">Fruits</Tab>
           <Tab to="/vegetables">Vegetables</Tab>
@@ -16,8 +16,8 @@ function GroceriesTabs() {
             <Outlet />
           </TabPanel>
         </div>
-      </div>
-    </Tabs>
+      </Tabs>
+    </div>
   );
 }
 

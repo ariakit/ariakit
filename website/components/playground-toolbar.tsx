@@ -123,12 +123,10 @@ export function PlaygroundToolbar({
         className={style.toolbarItem}
         render={(props) => (
           <Select
-            as={TooltipButton}
             store={select}
-            title="Select language"
             aria-label="Select language"
-            isLabel
             {...props}
+            render={<TooltipButton title="Select language" isLabel />}
           />
         )}
       >
@@ -141,11 +139,10 @@ export function PlaygroundToolbar({
       </ToolbarItem>
 
       <SelectPopover
-        as={Popup}
         store={select}
         portal
         shift={-6}
-        size="responsive"
+        render={<Popup size="responsive" />}
       >
         <PopoverHeading className={style.popupLabel}>Language</PopoverHeading>
         <SelectItem value="ts" className={style.popupItem}>
@@ -158,26 +155,22 @@ export function PlaygroundToolbar({
 
       <ToolbarItem
         className={style.toolbarItem}
-        render={(props) => (
+        render={
           <MenuButton
-            as={TooltipButton}
             store={menu}
-            title="Open example in a new tab"
-            {...props}
+            render={<TooltipButton title="Open example in a new tab" />}
           />
-        )}
+        }
       >
         <span className="sr-only">Open example in a new tab</span>
         <NewWindow strokeWidth={1.5} className="h-5 w-5" />
       </ToolbarItem>
 
-      <Menu as={Popup} store={menu} portal shift={-6} size="responsive">
+      <Menu store={menu} portal shift={-6} render={<Popup size="responsive" />}>
         {previewLink && (
           <MenuItem
-            as={Link}
-            target="__blank"
-            href={previewLink}
             className={style.popupItem}
+            render={<Link target="__blank" href={previewLink} />}
           >
             <NewWindow strokeWidth={1.5} className="h-5 w-5 opacity-70" /> Open
             preview
@@ -185,10 +178,8 @@ export function PlaygroundToolbar({
         )}
         {githubLink && (
           <MenuItem
-            as={Link}
-            target="__blank"
-            href={githubLink}
             className={style.popupItem}
+            render={<Link target="__blank" href={githubLink} />}
           >
             <Github className="h-5 w-5 p-0.5" /> View on GitHub
           </MenuItem>
@@ -219,9 +210,8 @@ export function PlaygroundToolbar({
 
       {code != null && (
         <ToolbarItem
-          as={CopyToClipboard}
-          text={code}
           className={style.toolbarItem}
+          render={<CopyToClipboard text={code} />}
         />
       )}
     </Toolbar>

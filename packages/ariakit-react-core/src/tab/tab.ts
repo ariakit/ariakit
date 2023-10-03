@@ -100,13 +100,14 @@ export const useTab = createHook<TabOptions>(
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
- * const tab = useTabStore();
- * <TabList store={tab}>
- *   <Tab>Tab 1</Tab>
- *   <Tab>Tab 2</Tab>
- * </TabList>
- * <TabPanel store={tab}>Panel 1</TabPanel>
- * <TabPanel store={tab}>Panel 2</TabPanel>
+ * <TabProvider>
+ *   <TabList>
+ *     <Tab>Tab 1</Tab>
+ *     <Tab>Tab 2</Tab>
+ *   </TabList>
+ *   <TabPanel>Panel 1</TabPanel>
+ *   <TabPanel>Panel 2</TabPanel>
+ * </TabProvider>
  * ```
  */
 export const Tab = createMemoComponent<TabOptions>((props) => {
@@ -121,8 +122,10 @@ if (process.env.NODE_ENV !== "production") {
 export interface TabOptions<T extends As = "button">
   extends CompositeItemOptions<T> {
   /**
-   * Object returned by the `useTabStore` hook. If not provided, the parent
-   * `TabList` component's context will be used.
+   * Object returned by the
+   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * provided, the closest [`TabList`](https://ariakit.org/reference/tab-list)
+   * component's context will be used.
    */
   store?: TabStore;
   /**

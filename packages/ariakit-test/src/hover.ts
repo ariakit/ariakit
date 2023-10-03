@@ -1,7 +1,7 @@
-import "./polyfills.js";
 import { isVisible } from "@ariakit/core/utils/dom";
-import { queuedMicrotasks } from "./__utils.js";
-import { fireEvent } from "./fire-event.js";
+import { invariant } from "@ariakit/core/utils/misc";
+import { wrapAsync } from "./__utils.js";
+import { dispatch } from "./dispatch.js";
 import { sleep } from "./sleep.js";
 
 type DocumentWithLastHovered = Document & {
@@ -12,58 +12,62 @@ function isPointerEventsEnabled(element: Element) {
   return getComputedStyle(element).pointerEvents !== "none";
 }
 
-export async function hover(element: Element, options?: MouseEventInit) {
-  if (!isVisible(element)) return;
+export function hover(element: Element | null, options?: MouseEventInit) {
+  return wrapAsync(async () => {
+    invariant(element, "Unable to hover on null element");
 
-  const document = element.ownerDocument as DocumentWithLastHovered;
-  const { lastHovered } = document;
-  const { disabled } = element as HTMLButtonElement;
-  const pointerEventsEnabled = isPointerEventsEnabled(element);
+    if (!isVisible(element)) return;
 
-  if (lastHovered && lastHovered !== element && isVisible(lastHovered)) {
-    fireEvent.pointerMove(lastHovered, options);
-    fireEvent.mouseMove(lastHovered, options);
+    const document = element.ownerDocument as DocumentWithLastHovered;
+    const { lastHovered } = document;
+    const { disabled } = element as HTMLButtonElement;
+    const pointerEventsEnabled = isPointerEventsEnabled(element);
 
-    if (isPointerEventsEnabled(lastHovered)) {
-      const isElementWithinLastHovered = lastHovered.contains(element);
-      const relatedTarget = pointerEventsEnabled ? element : null;
-      const leaveOptions = { ...options, relatedTarget };
+    if (lastHovered && lastHovered !== element && isVisible(lastHovered)) {
+      await dispatch.pointerMove(lastHovered, options);
+      await dispatch.mouseMove(lastHovered, options);
 
-      fireEvent.pointerOut(lastHovered, leaveOptions);
+      if (isPointerEventsEnabled(lastHovered)) {
+        const isElementWithinLastHovered = lastHovered.contains(element);
+        const relatedTarget = pointerEventsEnabled ? element : null;
+        const leaveOptions = { ...options, relatedTarget };
 
-      if (!isElementWithinLastHovered) {
-        fireEvent.pointerLeave(lastHovered, leaveOptions);
-      }
+        await dispatch.pointerOut(lastHovered, leaveOptions);
 
-      fireEvent.mouseOut(lastHovered, leaveOptions);
+        if (!isElementWithinLastHovered) {
+          await dispatch.pointerLeave(lastHovered, leaveOptions);
+        }
 
-      if (!isElementWithinLastHovered) {
-        fireEvent.mouseLeave(lastHovered, leaveOptions);
+        await dispatch.mouseOut(lastHovered, leaveOptions);
+
+        if (!isElementWithinLastHovered) {
+          await dispatch.mouseLeave(lastHovered, leaveOptions);
+        }
       }
     }
-  }
 
-  await sleep();
+    await sleep();
 
-  if (pointerEventsEnabled) {
-    const enterOptions = lastHovered
-      ? { relatedTarget: lastHovered, ...options }
-      : options;
+    if (pointerEventsEnabled) {
+      const enterOptions = lastHovered
+        ? { relatedTarget: lastHovered, ...options }
+        : options;
 
-    fireEvent.pointerOver(element, enterOptions);
-    fireEvent.pointerEnter(element, enterOptions);
+      await dispatch.pointerOver(element, enterOptions);
+      await dispatch.pointerEnter(element, enterOptions);
+      if (!disabled) {
+        await dispatch.mouseOver(element, enterOptions);
+        await dispatch.mouseEnter(element, enterOptions);
+      }
+    }
+
+    await dispatch.pointerMove(element, options);
     if (!disabled) {
-      fireEvent.mouseOver(element, enterOptions);
-      fireEvent.mouseEnter(element, enterOptions);
+      await dispatch.mouseMove(element, options);
     }
-  }
 
-  fireEvent.pointerMove(element, options);
-  if (!disabled) {
-    fireEvent.mouseMove(element, options);
-  }
+    document.lastHovered = element;
 
-  document.lastHovered = element;
-
-  await queuedMicrotasks();
+    await sleep();
+  });
 }

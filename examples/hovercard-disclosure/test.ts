@@ -1,30 +1,24 @@
-import { click, focus, getByRole, hover, press, waitFor } from "@ariakit/test";
-
-const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
-const getHovercard = () => getByRole("dialog", { hidden: true });
-const getDisclosure = () =>
-  getByRole("button", { name: "More details about @ariakitjs" });
-const getFollowLink = () => getByRole("link", { name: "Follow" });
+import { click, focus, hover, press, q, waitFor } from "@ariakit/test";
 
 const waitForHovercardToShow = (timeout = 600) =>
-  waitFor(() => expect(getHovercard()).toBeVisible(), { timeout });
+  waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });
 
 const expectDisclosureToBeHidden = () =>
-  expect(getDisclosure()).toHaveStyle({ height: "1px" });
+  expect(q.button(/^More details/)).toHaveStyle({ height: "1px" });
 
 const expectDisclosureToBeVisible = () =>
-  expect(getDisclosure()).not.toHaveStyle({ height: "1px" });
+  expect(q.button(/^More details/)).not.toHaveStyle({ height: "1px" });
 
 test("show hovercard on hover after timeout", async () => {
-  expect(getHovercard()).not.toBeVisible();
-  await hover(getAnchor());
-  expect(getHovercard()).not.toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
+  await hover(q.link("@ariakitjs"));
+  expect(q.dialog()).not.toBeInTheDocument();
   await waitForHovercardToShow();
 });
 
 test("do not show disclosure when focusing on anchor with mouse", async () => {
   await click(document.body);
-  await focus(getAnchor());
+  await focus(q.link("@ariakitjs"));
   expectDisclosureToBeHidden();
 });
 
@@ -36,55 +30,55 @@ test("show disclosure when focusing on anchor with keyboard", async () => {
 
 test("tab to disclosure", async () => {
   await press.ShiftTab();
-  expect(getDisclosure()).toHaveFocus();
-  expect(getDisclosure()).not.toHaveStyle({ height: "1px" });
+  expect(q.button(/^More details/)).toHaveFocus();
+  expect(q.button(/^More details/)).not.toHaveStyle({ height: "1px" });
 });
 
 test("show/hide hovercard on disclosure click", async () => {
   await press.Tab();
-  expect(getHovercard()).not.toBeVisible();
-  await click(getDisclosure());
-  expect(getHovercard()).toBeVisible();
-  expect(getFollowLink()).toHaveFocus();
-  await click(getDisclosure());
-  expect(getHovercard()).not.toBeVisible();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  await click(q.button(/^More details/));
+  expect(q.dialog()).toBeVisible();
+  expect(q.link("Follow")).toHaveFocus();
+  await click(q.button(/^More details/));
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button(/^More details/)).toHaveFocus();
 });
 
 test("show/hide hovercard on disclosure enter", async () => {
   await press.Tab();
   await press.Tab();
-  expect(getHovercard()).not.toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
   await press.Enter();
-  expect(getHovercard()).toBeVisible();
-  expect(getFollowLink()).toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.link("Follow")).toHaveFocus();
   await press.ShiftTab();
   await press.Enter();
-  expect(getHovercard()).not.toBeVisible();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button(/^More details/)).toHaveFocus();
 });
 
 test("show/hide hovercard on disclosure space", async () => {
   await press.Tab();
   await press.Tab();
-  expect(getHovercard()).not.toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
   await press.Space();
-  expect(getHovercard()).toBeVisible();
-  expect(getFollowLink()).toHaveFocus();
+  expect(q.dialog()).toBeVisible();
+  expect(q.link("Follow")).toHaveFocus();
   await press.ShiftTab();
   await press.Space();
-  expect(getHovercard()).not.toBeVisible();
-  expect(getDisclosure()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button(/^More details/)).toHaveFocus();
 });
 
 test("hide hovercard on escape", async () => {
   await press.Tab();
   await press.Tab();
   await press.Enter();
-  expect(getHovercard()).toBeVisible();
+  expect(q.dialog()).toBeVisible();
   await press.Escape();
-  expect(getHovercard()).not.toBeVisible();
-  expect(getAnchor()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link("@ariakitjs")).toHaveFocus();
 });
 
 test("hide hovercard on blur", async () => {

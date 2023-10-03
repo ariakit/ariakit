@@ -1,9 +1,8 @@
-import "./polyfills.js";
-
 import { closest, isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
-import { queuedMicrotasks } from "./__utils.js";
-import { fireEvent } from "./fire-event.js";
+import { invariant } from "@ariakit/core/utils/misc";
+import { wrapAsync } from "./__utils.js";
+import { dispatch } from "./dispatch.js";
 import { focus } from "./focus.js";
 import { hover } from "./hover.js";
 import { mouseDown } from "./mouse-down.js";
@@ -30,7 +29,7 @@ function getInputFromLabel(element: HTMLLabelElement) {
     | undefined;
 }
 
-function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
+async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
   const input = getInputFromLabel(element);
   const isInputDisabled = Boolean(input?.disabled);
 
@@ -41,17 +40,17 @@ function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
     input.disabled = true;
   }
 
-  const defaultAllowed = fireEvent.click(element, options);
+  const defaultAllowed = await dispatch.click(element, options);
 
   if (input) {
     // Now we can revert input disabled state and fire events on it in the
     // right order.
     input.disabled = isInputDisabled;
     if (defaultAllowed && isFocusable(input)) {
-      focus(input);
+      await focus(input);
       // Only "click" is fired! Browsers don't go over the whole event stack in
       // this case (mousedown, mouseup etc.).
-      fireEvent.click(input);
+      await dispatch.click(input);
     }
   }
 }
@@ -61,7 +60,7 @@ function setSelected(element: HTMLOptionElement, selected: boolean) {
   element.selected = selected;
 }
 
-function clickOption(
+async function clickOption(
   element: HTMLOptionElement,
   eventOptions?: MouseEventInit,
 ) {
@@ -71,7 +70,7 @@ function clickOption(
   };
 
   if (!select) {
-    fireEvent.click(element, eventOptions);
+    await dispatch.click(element, eventOptions);
     return;
   }
 
@@ -120,49 +119,50 @@ function clickOption(
     setSelected(element, true);
   }
 
-  fireEvent.input(select);
-  fireEvent.change(select);
-  fireEvent.click(element, eventOptions);
+  await dispatch.input(select);
+  await dispatch.change(select);
+  await dispatch.click(element, eventOptions);
 }
 
-export async function click(
-  element: Element,
+export function click(
+  element: Element | null,
   options?: MouseEventInit,
   tap = false,
 ) {
-  if (!isVisible(element)) return;
+  return wrapAsync(async () => {
+    invariant(element, "Unable to click on null element");
+    if (!isVisible(element)) return;
 
-  await hover(element, options);
-  mouseDown(element, options);
+    await hover(element, options);
+    await mouseDown(element, options);
 
-  await queuedMicrotasks();
+    // The element may be hidden after hover/mouseDown, so we need to check again
+    // and find the first visible parent.
+    while (!isVisible(element)) {
+      if (!element.parentElement) return;
+      element = element.parentElement;
+    }
 
-  // The element may be hidden after hover/mouseDown, so we need to check again
-  // and find the first visible parent.
-  while (!isVisible(element)) {
-    if (!element.parentElement) return;
-    element = element.parentElement;
-  }
+    if (!tap) {
+      await sleep();
+    }
 
-  if (!tap) {
+    await mouseUp(element, options);
+
+    // click is not called on disabled elements
+    const { disabled } = element as HTMLButtonElement;
+    if (disabled) return;
+
+    const label = getClosestLabel(element);
+
+    if (label) {
+      await clickLabel(label, { detail: 1, ...options });
+    } else if (element instanceof HTMLOptionElement) {
+      await clickOption(element, { detail: 1, ...options });
+    } else {
+      await dispatch.click(element, { detail: 1, ...options });
+    }
+
     await sleep();
-  }
-
-  mouseUp(element, options);
-
-  // click is not called on disabled elements
-  const { disabled } = element as HTMLButtonElement;
-  if (disabled) return;
-
-  const label = getClosestLabel(element);
-
-  if (label) {
-    clickLabel(label, { detail: 1, ...options });
-  } else if (element instanceof HTMLOptionElement) {
-    clickOption(element, { detail: 1, ...options });
-  } else {
-    fireEvent.click(element, { detail: 1, ...options });
-  }
-
-  await sleep();
+  });
 }

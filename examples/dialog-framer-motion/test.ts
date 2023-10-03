@@ -1,20 +1,17 @@
 import { version } from "react";
-import { click, getByRole, press, queryByRole, waitFor } from "@ariakit/test";
-
-const getButton = (name: string) => getByRole("button", { name });
-const getDialog = () => queryByRole("dialog");
+import { click, press, q, waitFor } from "@ariakit/test";
 
 const is17 = version.startsWith("17");
 
 describe.skipIf(is17)("dialog-framer-motion", () => {
   test("show/hide on click", async () => {
-    expect(getDialog()).not.toBeInTheDocument();
-    await click(getButton("Show modal"));
-    await waitFor(() => expect(getDialog()).toBeVisible());
-    expect(getButton("OK")).toHaveFocus();
-    await click(getButton("OK"));
-    expect(getDialog()).toBeVisible();
-    await waitFor(() => expect(getDialog()).not.toBeInTheDocument());
+    expect(q.dialog()).not.toBeInTheDocument();
+    await click(q.button("Show modal"));
+    expect(q.dialog()).toBeVisible();
+    expect(q.button("OK")).toHaveFocus();
+    await click(q.button("OK"));
+    expect(q.dialog()).toBeVisible();
+    await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
   });
 
   test("prevent body scroll", async () => {
@@ -22,12 +19,12 @@ describe.skipIf(is17)("dialog-framer-motion", () => {
     await press.Tab();
     await press.Enter();
     expect(document.body).toHaveStyle({ overflow: "hidden" });
-    await waitFor(() => expect(getDialog()).toBeVisible());
+    expect(q.dialog()).toBeVisible();
     expect(document.body).toHaveStyle({ overflow: "hidden" });
     await press.Enter();
-    expect(getDialog()).toBeVisible();
+    expect(q.dialog()).toBeVisible();
     expect(document.body).toHaveStyle({ overflow: "hidden" });
-    await waitFor(() => expect(getDialog()).not.toBeInTheDocument());
+    await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
     expect(document.body).not.toHaveStyle({ overflow: "hidden" });
   });
 });

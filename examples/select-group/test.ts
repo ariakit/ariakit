@@ -1,18 +1,13 @@
-import { click, getByRole, getByText, hover } from "@ariakit/test";
-
-const getSelect = () => getByRole("combobox", { name: "Favorite food" });
-const getList = () => getByRole("listbox", { hidden: true });
-const getOption = (name: string) =>
-  getByText(name, { selector: "[role=option]" });
+import { click, hover, q } from "@ariakit/test";
 
 test("hover on item", async () => {
-  await click(getSelect());
-  await hover(getOption("Banana"));
-  expect(getOption("Banana")).toHaveFocus();
-  await hover(getByText("Dairy"));
-  expect(getOption("Banana")).not.toHaveFocus();
-  expect(getList()).toHaveFocus();
-  expect(getList()).not.toHaveAttribute("aria-activedescendant");
-  await hover(getOption("Banana"));
-  expect(getOption("Banana")).toHaveFocus();
+  await click(q.combobox("Favorite food"));
+  await hover(q.option("Banana"));
+  expect(q.option("Banana")).toHaveFocus();
+  await hover(q.text("Dairy"));
+  expect(q.option("Banana")).not.toHaveFocus();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.listbox()).not.toHaveAttribute("aria-activedescendant");
+  await hover(q.option("Banana"));
+  expect(q.option("Banana")).toHaveFocus();
 });

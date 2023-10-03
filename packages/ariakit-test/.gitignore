@@ -1,21 +1,18 @@
 # Automatically generated
-/act
 /blur
 /cjs
 /click
+/dispatch
 /esm
-/fire-event
 /focus
 /hover
 /mouse-down
 /mouse-up
-/polyfills
 /press
-/render
-/screen
+/query
+/react
 /select
 /sleep
 /tap
 /type
 /wait-for
-/within

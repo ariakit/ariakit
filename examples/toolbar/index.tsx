@@ -1,11 +1,10 @@
-import * as Ariakit from "@ariakit/react";
-import { bold, italic, redo, underline, undo } from "./icons.js";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
+import { bold, italic, redo, underline, undo } from "./icons.jsx";
 
 export default function Example() {
-  const toolbar = Ariakit.useToolbarStore();
   return (
-    <Ariakit.Toolbar store={toolbar} className="toolbar">
+    <Ariakit.Toolbar className="toolbar">
       <Ariakit.ToolbarItem className="button secondary">
         {undo}
         Undo

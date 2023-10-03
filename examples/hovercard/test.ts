@@ -1,13 +1,10 @@
-import { click, getByRole, hover, press, sleep, waitFor } from "@ariakit/test";
-
-const getAnchor = () => getByRole("link", { name: "@ariakitjs" });
-const getHovercard = () => getByRole("dialog", { hidden: true });
+import { click, hover, press, q, sleep, waitFor } from "@ariakit/test";
 
 const waitForHovercardToShow = (timeout = 600) =>
-  waitFor(() => expect(getHovercard()).toBeVisible(), { timeout });
+  waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });
 
 const waitForHovercardToHide = (timeout = 600) =>
-  waitFor(() => expect(getHovercard()).not.toBeVisible(), { timeout });
+  waitFor(() => expect(q.dialog()).not.toBeInTheDocument(), { timeout });
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -15,57 +12,57 @@ const hoverOutside = async () => {
 };
 
 test("show hovercard on hover after timeout", async () => {
-  expect(getHovercard()).not.toBeVisible();
-  await hover(getAnchor());
-  expect(getHovercard()).not.toBeVisible();
+  expect(q.dialog()).not.toBeInTheDocument();
+  await hover(q.link("@ariakitjs"));
+  expect(q.dialog()).not.toBeInTheDocument();
   await waitForHovercardToShow();
 });
 
 test("hide hovercard on hover outside after timeout", async () => {
-  await hover(getAnchor());
+  await hover(q.link("@ariakitjs"));
   await waitForHovercardToShow();
   await hoverOutside();
-  expect(getHovercard()).toBeVisible();
+  expect(q.dialog()).toBeVisible();
   await waitForHovercardToHide();
 });
 
 test("keep hovercard open when it has focus", async () => {
-  await hover(getAnchor());
+  await hover(q.link("@ariakitjs"));
   await waitForHovercardToShow();
-  await click(getHovercard());
+  await click(q.dialog());
   await hoverOutside();
   await sleep(600);
-  await expect(getHovercard()).toBeVisible();
+  expect(q.dialog()).toBeVisible();
 });
 
 test("keep hovercard open when hovering out and in quickly", async () => {
-  await hover(getAnchor());
+  await hover(q.link("@ariakitjs"));
   await waitForHovercardToShow();
   await hoverOutside();
   await sleep(200);
-  await hover(getAnchor());
-  await expect(getHovercard()).toBeVisible();
+  await hover(q.link("@ariakitjs"));
+  expect(q.dialog()).toBeVisible();
   await hoverOutside();
   await sleep(200);
-  await hover(getHovercard());
+  await hover(q.dialog());
   await sleep(600);
-  await expect(getHovercard()).toBeVisible();
+  expect(q.dialog()).toBeVisible();
 });
 
 test("hide unfocused hovercard on escape", async () => {
-  await hover(getAnchor());
+  await hover(q.link("@ariakitjs"));
   await waitForHovercardToShow();
   await sleep();
   await press.Escape();
-  expect(getHovercard()).not.toBeVisible();
-  expect(getAnchor()).not.toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link("@ariakitjs")).not.toHaveFocus();
 });
 
 test("hide focused hovercard on escape", async () => {
-  await hover(getAnchor());
+  await hover(q.link("@ariakitjs"));
   await waitForHovercardToShow();
-  await click(getHovercard());
+  await click(q.dialog());
   await press.Escape();
-  expect(getHovercard()).not.toBeVisible();
-  expect(getAnchor()).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.link("@ariakitjs")).toHaveFocus();
 });

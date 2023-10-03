@@ -1,21 +1,21 @@
-import { getByLabelText, press } from "@ariakit/test";
+import { press, q } from "@ariakit/test";
 
 test("default value", async () => {
-  expect(getByLabelText("apple")).not.toBeChecked();
-  expect(getByLabelText("orange")).toBeChecked();
-  expect(getByLabelText("watermelon")).not.toBeChecked();
+  expect(q.labeled("apple")).not.toBeChecked();
+  expect(q.labeled("orange")).toBeChecked();
+  expect(q.labeled("watermelon")).not.toBeChecked();
 });
 
 test("default focus", async () => {
   await press.Tab();
-  expect(getByLabelText("apple")).not.toHaveFocus();
-  expect(getByLabelText("orange")).toHaveFocus();
-  expect(getByLabelText("orange")).toBeChecked();
-  expect(getByLabelText("watermelon")).not.toHaveFocus();
+  expect(q.labeled("apple")).not.toHaveFocus();
+  expect(q.labeled("orange")).toHaveFocus();
+  expect(q.labeled("orange")).toBeChecked();
+  expect(q.labeled("watermelon")).not.toHaveFocus();
   await press.ArrowDown();
-  expect(getByLabelText("watermelon")).toHaveFocus();
-  expect(getByLabelText("watermelon")).toBeChecked();
+  expect(q.labeled("watermelon")).toHaveFocus();
+  expect(q.labeled("watermelon")).toBeChecked();
   await press.ArrowDown();
-  expect(getByLabelText("apple")).toHaveFocus();
-  expect(getByLabelText("apple")).toBeChecked();
+  expect(q.labeled("apple")).toHaveFocus();
+  expect(q.labeled("apple")).toBeChecked();
 });

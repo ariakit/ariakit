@@ -1,49 +1,54 @@
-import "./polyfills.js";
 import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
+import { invariant } from "@ariakit/core/utils/misc";
+import { wrapAsync } from "./__utils.js";
 import { blur } from "./blur.js";
-import { fireEvent } from "./fire-event.js";
+import { dispatch } from "./dispatch.js";
 import { focus } from "./focus.js";
 
-export function mouseDown(element: Element, options?: MouseEventInit) {
-  if (!isVisible(element)) return;
+export function mouseDown(element: Element | null, options?: MouseEventInit) {
+  return wrapAsync(async () => {
+    invariant(element, "Unable to mouseDown on null element");
 
-  const { disabled } = element as HTMLButtonElement;
+    if (!isVisible(element)) return;
 
-  let defaultAllowed = fireEvent.pointerDown(element, options);
+    const { disabled } = element as HTMLButtonElement;
 
-  if (!disabled) {
-    // Mouse events are not called on disabled elements
-    if (!fireEvent.mouseDown(element, { detail: 1, ...options })) {
-      defaultAllowed = false;
-    }
-  }
+    let defaultAllowed = await dispatch.pointerDown(element, options);
 
-  // Do not enter this if event.preventDefault() has been called on
-  // pointerdown or mousedown.
-  if (defaultAllowed) {
-    // Remove current selection
-    const selection = getDocument(element).getSelection();
-    if (selection && selection.rangeCount) {
-      const range = selection.getRangeAt(0);
-      if (!range.collapsed) {
-        selection.removeAllRanges();
+    if (!disabled) {
+      // Mouse events are not called on disabled elements
+      if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
+        defaultAllowed = false;
       }
     }
-    if (
-      isFocusable(element) &&
-      getComputedStyle(element).pointerEvents !== "none"
-    ) {
-      focus(element);
-    } else if (element.parentElement) {
-      // If the element is not focusable, focus the closest focusable parent
-      const closestFocusable = getClosestFocusable(element.parentElement);
-      if (closestFocusable) {
-        focus(closestFocusable);
-      } else {
-        // This will automatically set document.body as the activeElement
-        blur();
+
+    // Do not enter this if event.preventDefault() has been called on
+    // pointerdown or mousedown.
+    if (defaultAllowed) {
+      // Remove current selection
+      const selection = getDocument(element).getSelection();
+      if (selection && selection.rangeCount) {
+        const range = selection.getRangeAt(0);
+        if (!range.collapsed) {
+          selection.removeAllRanges();
+        }
+      }
+      if (
+        isFocusable(element) &&
+        getComputedStyle(element).pointerEvents !== "none"
+      ) {
+        await focus(element);
+      } else if (element.parentElement) {
+        // If the element is not focusable, focus the closest focusable parent
+        const closestFocusable = getClosestFocusable(element.parentElement);
+        if (closestFocusable) {
+          await focus(closestFocusable);
+        } else {
+          // This will automatically set document.body as the activeElement
+          await blur();
+        }
       }
     }
-  }
+  });
 }

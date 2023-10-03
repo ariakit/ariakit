@@ -2,6 +2,7 @@
   "name": "@ariakit/test",
   "version": "0.2.5",
   "description": "Ariakit test utils",
+  "sideEffects": false,
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
@@ -28,33 +29,38 @@
     "react"
   ],
   "dependencies": {
-    "@ariakit/core": "0.3.2"
+    "@ariakit/core": "0.3.2",
+    "@testing-library/dom": "^8.0.0 || ^9.0.0"
   },
   "peerDependencies": {
-    "@testing-library/dom": "^8.0.0 || ^9.0.0",
     "@testing-library/react": "^12.0.0 || ^13.0.0 || ^14.0.0",
     "react": "^17.0.0 || ^18.0.0"
   },
+  "peerDependenciesMeta": {
+    "@testing-library/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
   "exports": {
     ".": "./src/index.ts",
-    "./within": "./src/within.ts",
     "./wait-for": "./src/wait-for.ts",
     "./type": "./src/type.ts",
     "./tap": "./src/tap.ts",
     "./sleep": "./src/sleep.ts",
     "./select": "./src/select.ts",
-    "./screen": "./src/screen.ts",
-    "./render": "./src/render.ts",
+    "./react": "./src/react.tsx",
+    "./query": "./src/query.ts",
     "./press": "./src/press.ts",
-    "./polyfills": "./src/polyfills.ts",
     "./mouse-up": "./src/mouse-up.ts",
     "./mouse-down": "./src/mouse-down.ts",
     "./hover": "./src/hover.ts",
     "./focus": "./src/focus.ts",
-    "./fire-event": "./src/fire-event.ts",
+    "./dispatch": "./src/dispatch.ts",
     "./click": "./src/click.ts",
     "./blur": "./src/blur.ts",
-    "./act": "./src/act.ts",
     "./package.json": "./package.json"
   }
 }

@@ -1,10 +1,11 @@
 import { useRef } from "react";
 import { blur } from "../blur.js";
-import { render } from "../render.js";
+import { q, render } from "../react.js";
 import { useAllEvents } from "./use-all-events.js";
 
 test("blur", async () => {
-  const stack = [] as any[];
+  const stack: string[] = [];
+
   const Test = () => {
     const ref = useRef<HTMLButtonElement>(null);
     useAllEvents(ref, stack);
@@ -14,11 +15,11 @@ test("blur", async () => {
       </button>
     );
   };
-  const { getByText } = render(<Test />);
-  const button = getByText("button");
 
-  expect(button).toHaveFocus();
-  blur(button);
+  render(<Test />);
+
+  expect(q.button()).toHaveFocus();
+  await blur(q.button());
   expect(document.body).toHaveFocus();
 
   expect(stack).toMatchInlineSnapshot(`

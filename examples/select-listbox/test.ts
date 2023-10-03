@@ -1,29 +1,26 @@
-import { findByRole, press } from "@ariakit/test";
-
-const getListbox = () => findByRole("listbox");
-const getItem = (name: string) => findByRole("option", { name });
+import { press, q } from "@ariakit/test";
 
 test("tab to listbox", async () => {
-  expect(await getListbox()).not.toHaveFocus();
+  expect(q.listbox()).not.toHaveFocus();
   await press.Tab();
-  expect(await getListbox()).toHaveFocus();
-  expect(await getItem("Apple")).not.toHaveFocus();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Apple")).not.toHaveFocus();
 });
 
 test("move through items with arrow keys", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(await getListbox()).toHaveFocus();
-  expect(await getItem("Apple")).toHaveFocus();
-  expect(await getItem("Apple")).toHaveAttribute("data-active-item", "");
-  expect(await getItem("Apple")).toHaveAttribute("data-focus-visible", "");
-  expect(await getItem("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Apple")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Apple")).toHaveAttribute("data-focus-visible", "");
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
-  expect(await getListbox()).toHaveFocus();
-  expect(await getItem("Banana")).toHaveFocus();
-  expect(await getItem("Banana")).toHaveAttribute("data-active-item", "");
-  expect(await getItem("Banana")).toHaveAttribute("data-focus-visible", "");
-  expect(await getItem("Banana")).toHaveAttribute("aria-selected", "false");
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Banana")).toHaveFocus();
+  expect(q.option("Banana")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Banana")).toHaveAttribute("data-focus-visible", "");
+  expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
 });
 
 test("select item with keyboard", async () => {
@@ -32,16 +29,16 @@ test("select item with keyboard", async () => {
   await press.ArrowDown();
   await press.ArrowDown();
   await press.Enter();
-  expect(await getListbox()).toHaveFocus();
-  expect(await getItem("Orange")).toHaveFocus();
-  expect(await getItem("Orange")).toHaveAttribute("data-active-item", "");
-  expect(await getItem("Orange")).toHaveAttribute("data-focus-visible", "");
-  expect(await getItem("Orange")).toHaveAttribute("aria-selected", "true");
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Orange")).toHaveFocus();
+  expect(q.option("Orange")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Orange")).toHaveAttribute("data-focus-visible", "");
+  expect(q.option("Orange")).toHaveAttribute("aria-selected", "true");
   await press.Home();
   await press.Space();
-  expect(await getListbox()).toHaveFocus();
-  expect(await getItem("Apple")).toHaveFocus();
-  expect(await getItem("Apple")).toHaveAttribute("data-active-item", "");
-  expect(await getItem("Apple")).toHaveAttribute("data-focus-visible", "");
-  expect(await getItem("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Apple")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Apple")).toHaveAttribute("data-focus-visible", "");
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
 });

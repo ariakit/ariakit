@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { Suspense, createElement, version } from "react";
-import { render } from "@ariakit/test";
+import { render } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import failOnConsole from "vitest-fail-on-console";
 
@@ -69,8 +69,10 @@ beforeEach(async ({ task }) => {
   if (!match) return;
   const [, example] = match;
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
-  const { unmount } = render(
-    createElement(Suspense, { fallback: null, children: createElement(comp) }),
-  );
+  const element = createElement(Suspense, {
+    fallback: null,
+    children: createElement(comp),
+  });
+  const unmount = await render(element, { strictMode: true });
   return unmount;
 });
