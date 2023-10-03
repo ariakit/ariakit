@@ -39,8 +39,7 @@ export const useToolbarContainer = createHook<ToolbarContainerOptions>(
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
- * const toolbar = useToolbarStore();
- * <Toolbar store={toolbar}>
+ * <Toolbar>
  *   <ToolbarContainer>
  *     <input type="text" />
  *   </ToolbarContainer>
@@ -60,7 +59,7 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface ToolbarContainerOptions<T extends As = "div">
   extends ToolbarItemOptions<T>,
-    CompositeContainerOptions<T> {}
+    Omit<CompositeContainerOptions<T>, "store"> {}
 
 export type ToolbarContainerProps<T extends As = "div"> = Props<
   ToolbarContainerOptions<T>

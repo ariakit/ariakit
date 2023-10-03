@@ -35,8 +35,7 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
- * const toolbar = useToolbarStore();
- * <Toolbar store={toolbar}>
+ * <Toolbar>
  *   <ToolbarItem>Item</ToolbarItem>
  * </Toolbar>
  * ```
@@ -53,8 +52,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface ToolbarItemOptions<T extends As = "button">
   extends CompositeItemOptions<T> {
   /**
-   * Object returned by the `useToolbarStore` hook. If not provided, the parent
-   * `Toolbar` component's context will be used.
+   * Object returned by the
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * If not provided, the closest
+   * [`Toolbar`](https://ariakit.org/reference/toolbar) component's context will
+   * be used.
    */
   store?: ToolbarStore;
 }

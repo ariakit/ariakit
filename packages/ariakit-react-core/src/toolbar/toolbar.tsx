@@ -74,8 +74,7 @@ export const useToolbar = createHook<ToolbarOptions>(
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx
- * const toolbar = useToolbarStore();
- * <Toolbar store={toolbar}>
+ * <Toolbar>
  *   <ToolbarItem>Item 1</ToolbarItem>
  *   <ToolbarItem>Item 2</ToolbarItem>
  * </Toolbar>
@@ -97,7 +96,13 @@ export interface ToolbarOptions<T extends As = "div">
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"
     > {
   /**
-   * Object returned by the `useToolbarStore` hook.
+   * Object returned by the
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * If not provided, the closest
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component context will be used. If the component is not wrapped in a
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component, an internal store will be used.
    */
   store?: ToolbarStore;
 }

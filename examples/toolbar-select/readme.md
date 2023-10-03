@@ -9,10 +9,37 @@ tags:
 
 <div data-description>
 
-Rendering <a href="/components/select">Select</a> as a <a href="/reference/toolbar-item"><code>ToolbarItem</code></a> inside a <a href="/components/toolbar">Toolbar</a>.
+Rendering [Select](/components/select) as a [`ToolbarItem`](/reference/toolbar-item) inside a [Toolbar](/components/toolbar).
 
 </div>
 
 <div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
+
+## Components
+
+<div data-cards="components">
+
+- [](/components/toolbar)
+- [](/components/select)
+
+</div>
+
+## Composing `Select` and `ToolbarItem`
+
+In this example, we use the [`render`](/apis/select#render) prop to combine [`Select`](/reference/select) and [`ToolbarItem`](/reference/toolbar-item) into a single element:
+
+```jsx
+<Select render={<ToolbarItem />}>
+```
+
+You can learn more about this pattern on the [Composition](/guide/composition) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/select-item-custom)
+
+</div>

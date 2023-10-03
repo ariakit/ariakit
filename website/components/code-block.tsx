@@ -151,6 +151,10 @@ export async function CodeBlock({
 }: Props) {
   code = type === "static" || type === "definition" ? code.trim() : code;
 
+  if (process.env.DISABLE_SHIKI) {
+    return null;
+  }
+
   let lightTokens: IThemedToken[][] = [];
   let darkTokens: IThemedToken[][] = [];
 
