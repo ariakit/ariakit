@@ -1,16 +1,14 @@
 import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef } from "react";
 import * as Ariakit from "@ariakit/react";
 import { AnimatePresence, motion } from "framer-motion";
 
-interface TooltipAnchorProps extends ComponentPropsWithoutRef<"div"> {
+interface TooltipAnchorProps extends Ariakit.TooltipAnchorProps {
   description: string;
-  render?: Ariakit.TooltipAnchorProps["render"];
 }
 
 export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
   function TooltipAnchor({ description, ...props }, ref) {
-    const tooltip = Ariakit.useTooltipStore({ hideTimeout: 250 });
+    const tooltip = Ariakit.useTooltipStore();
     const mounted = tooltip.useState("mounted");
 
     // We move the tooltip up or down depending on the current placement.
@@ -20,12 +18,11 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
     });
 
     return (
-      <>
-        <Ariakit.TooltipAnchor store={tooltip} ref={ref} {...props} />
+      <Ariakit.TooltipProvider store={tooltip} hideTimeout={250}>
+        <Ariakit.TooltipAnchor {...props} ref={ref} />
         <AnimatePresence>
           {mounted && (
             <Ariakit.Tooltip
-              store={tooltip}
               gutter={4}
               alwaysVisible
               className="tooltip"
@@ -42,7 +39,7 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
             </Ariakit.Tooltip>
           )}
         </AnimatePresence>
-      </>
+      </Ariakit.TooltipProvider>
     );
   },
 );

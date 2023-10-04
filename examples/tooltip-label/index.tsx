@@ -1,5 +1,5 @@
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 const icon = (
   <svg
@@ -15,19 +15,12 @@ const icon = (
 );
 
 export default function Example() {
-  const tooltip = Ariakit.useTooltipStore({ type: "label" });
   return (
-    <>
-      <Ariakit.TooltipAnchor
-        store={tooltip}
-        className="button"
-        render={<Ariakit.Button />}
-      >
+    <Ariakit.TooltipProvider type="label">
+      <Ariakit.TooltipAnchor className="button" render={<Ariakit.Button />}>
         {icon}
       </Ariakit.TooltipAnchor>
-      <Ariakit.Tooltip store={tooltip} className="tooltip">
-        Bold
-      </Ariakit.Tooltip>
-    </>
+      <Ariakit.Tooltip className="tooltip">Bold</Ariakit.Tooltip>
+    </Ariakit.TooltipProvider>
   );
 }

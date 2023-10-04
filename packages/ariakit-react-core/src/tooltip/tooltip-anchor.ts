@@ -140,15 +140,16 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 );
 
 /**
- * Renders an element that will be labelled or described by a `Tooltip`
- * component. This component will also be used as the reference to position the
- * tooltip on the screen.
+ * Renders an element that will be described by a
+ * [`Tooltip`](https://ariakit.org/reference/tooltip) component. This component
+ * will also be used as the reference to position the tooltip on the screen.
  * @see https://ariakit.org/components/tooltip
  * @example
- * ```jsx
- * const tooltip = useTooltipStore();
- * <TooltipAnchor store={tooltip}>Anchor</TooltipAnchor>
- * <Tooltip store={tooltip}>Tooltip</Tooltip>
+ * ```jsx {2}
+ * <TooltipProvider>
+ *   <TooltipAnchor>Anchor</TooltipAnchor>
+ *   <Tooltip>Tooltip</Tooltip>
+ * </TooltipProvider>
  * ```
  */
 export const TooltipAnchor = createComponent<TooltipAnchorOptions>((props) => {
@@ -163,7 +164,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface TooltipAnchorOptions<T extends As = "div">
   extends HovercardAnchorOptions<T> {
   /**
-   * Object returned by the `useTooltipStore` hook.
+   * Object returned by the
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * If not provided, the closest
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * component's context will be used.
    */
   store?: TooltipStore;
 }

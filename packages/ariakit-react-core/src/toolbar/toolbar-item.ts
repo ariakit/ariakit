@@ -34,7 +34,7 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
  * Renders an interactive element in a toolbar.
  * @see https://ariakit.org/components/toolbar
  * @example
- * ```jsx
+ * ```jsx {2}
  * <Toolbar>
  *   <ToolbarItem>Item</ToolbarItem>
  * </Toolbar>

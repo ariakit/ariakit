@@ -29,7 +29,7 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
  * group element.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx
+ * ```jsx {5,10}
  * <SelectProvider>
  *   <Select />
  *   <SelectPopover>
