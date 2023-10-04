@@ -22,6 +22,7 @@ import type {
   BooleanOrCallback,
   StringWithValue,
 } from "@ariakit/core/utils/types";
+import { flushSync } from "react-dom";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.js";
@@ -326,7 +327,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { value, selectionStart } = event.target;
+      const { value, selectionStart, selectionEnd } = event.target;
       const nativeEvent = event.nativeEvent;
       canAutoSelectRef.current = true;
       if (isInputEvent(nativeEvent)) {
@@ -344,7 +345,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       }
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
-        store.setValue(value);
+        flushSync(() => store?.setValue(value));
+        // When the value is not set synchronously, the selection range may be
+        // lost. Even setting the value with flushSync above, we still need to
+        // fix the selection range because React's useSyncExternalStore updates
+        // in a microtask. An alternative fix would be removing the flushSync
+        // call above and calling setSelectionRange in a queueMicrotask
+        // callback, but I think flushSync is a safer approach. See
+        // combobox-group "keep caret position when typing" test.
+        event.currentTarget.setSelectionRange(selectionStart, selectionEnd);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The

@@ -12,7 +12,6 @@ import type {
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
-import { flushSync } from "react-dom";
 // import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
 // This doesn't work in ESM, because use-sync-external-store only exposes CJS.
 // The following is a workaround until ESM is supported.
@@ -52,34 +51,6 @@ type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
 
 const noopSubscribe = () => () => {};
-
-let inFlushSyncContext = false;
-
-function safeFlushSync(fn: AnyFunction, canFlushSync = true) {
-  if (inFlushSyncContext || !canFlushSync) {
-    fn();
-    return;
-  }
-  inFlushSyncContext = true;
-  const originalError = console.error;
-  if (process.env.NODE_ENV !== "production") {
-    console.error = (...data: any[]) => {
-      if (
-        typeof data[0] === "string" &&
-        data[0].startsWith("Warning: flushSync")
-      ) {
-        return;
-      }
-      originalError(...data);
-    };
-  }
-  try {
-    flushSync(fn);
-  } finally {
-    console.error = originalError;
-    inFlushSyncContext = false;
-  }
-}
 
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
@@ -153,12 +124,12 @@ export function useStoreProps<
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    let canFlushSync = false;
+    let inEffect = true;
     // flushSync throws a warning if called from inside a lifecycle method.
     // Since the store.sync callback can be called immediately, we'll make it
     // use the flushSync function only in subsequent calls.
     queueMicrotask(() => {
-      canFlushSync = true;
+      inEffect = false;
     });
     return sync(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
@@ -168,13 +139,13 @@ export function useStoreProps<
       // Disable controlled value sync until the next render to avoid resetting
       // the value to a previous state before the component has a chance to
       // re-render.
-      if (!canFlushSync) {
+      if (inEffect) {
         canSyncValue.current = false;
         queueMicrotask(() => {
           canSyncValue.current = true;
         });
       }
-      safeFlushSync(() => setValue(state[key]), canFlushSync);
+      setValue(state[key]);
     });
   }, [store, key]);
 

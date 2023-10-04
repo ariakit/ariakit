@@ -374,8 +374,7 @@ export const useDialog = createHook<DialogOptions>(
     const focusOnHide = useCallback(
       (dialog: HTMLElement | null, retry = true) => {
         if (!store) return;
-        const { open, disclosureElement } = store.getState();
-        if (open) return;
+        const { disclosureElement } = store.getState();
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog)) return;
