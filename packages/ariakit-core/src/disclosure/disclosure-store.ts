@@ -5,6 +5,7 @@ import {
   mergeStore,
   omit,
   setup,
+  subscribe,
   sync,
   throwOnConflictingProps,
 } from "../utils/store.js";
@@ -54,11 +55,9 @@ export function createDisclosureStore(
   );
 
   setup(disclosure, () =>
-    sync(disclosure, ["open", "animated"], (state, prev) => {
-      if (!state.animated) return;
-      const mounting = state === prev;
-      const animating = mounting ? state.open : state.open !== prev.open;
-      disclosure.setState("animating", animating);
+    subscribe(disclosure, ["open"], () => {
+      if (!disclosure.getState().animated) return;
+      disclosure.setState("animating", true);
     }),
   );
 

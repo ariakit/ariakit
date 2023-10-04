@@ -23,7 +23,7 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { chain, invariant } from "@ariakit/core/utils/misc";
+import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -55,6 +55,7 @@ import {
   DialogScopedContextProvider,
   useDialogProviderContext,
 } from "./dialog-context.js";
+import { useDialogStore } from "./dialog-store.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
@@ -98,7 +99,11 @@ function getElementFromProp(
  */
 export const useDialog = createHook<DialogOptions>(
   ({
-    store,
+    store: storeProp,
+    open: openProp,
+    defaultOpen,
+    onCancel,
+    onClose,
     focusable = true,
     modal = true,
     portal = !!modal,
@@ -115,15 +120,24 @@ export const useDialog = createHook<DialogOptions>(
     ...props
   }) => {
     const context = useDialogProviderContext();
-    store = store || context;
-
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "Dialog must receive a `store` prop or be wrapped in a DialogProvider component.",
-    );
-
     const ref = useRef<HTMLDivElement>(null);
+
+    const store = useDialogStore({
+      store: storeProp || context,
+      open: openProp,
+      defaultOpen,
+      setOpen(open) {
+        if (open) return;
+        const dialog = ref.current;
+        if (!dialog) return;
+        const event = new Event("close", { bubbles: false, cancelable: false });
+        if (onClose) {
+          dialog.addEventListener("close", onClose, { once: true });
+        }
+        dialog.dispatchEvent(event);
+      },
+    });
+
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
     // again.
@@ -160,7 +174,6 @@ export const useDialog = createHook<DialogOptions>(
     // dialog is opened.
     useSafeLayoutEffect(() => {
       if (!open) return;
-      if (!store) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -177,7 +190,6 @@ export const useDialog = createHook<DialogOptions>(
     // disclosure button gets focused here.
     if (isSafariBrowser) {
       useEffect(() => {
-        if (!store) return;
         if (!mounted) return;
         const { disclosureElement } = store.getState();
         if (!disclosureElement) return;
@@ -215,7 +227,6 @@ export const useDialog = createHook<DialogOptions>(
     // So that screen reader users aren't trapped in the dialog when there's no
     // visible dismiss button.
     useEffect(() => {
-      if (!store) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
@@ -266,7 +277,6 @@ export const useDialog = createHook<DialogOptions>(
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       if (!id) return;
-      if (!store) return;
       if (!canTakeTreeSnapshot) return;
       const { disclosureElement } = store.getState();
       const dialog = ref.current;
@@ -373,9 +383,7 @@ export const useDialog = createHook<DialogOptions>(
 
     const focusOnHide = useCallback(
       (dialog: HTMLElement | null, retry = true) => {
-        if (!store) return;
-        const { open, disclosureElement } = store.getState();
-        if (open) return;
+        const { disclosureElement } = store.getState();
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
         if (isAlreadyFocusingAnotherElement(dialog)) return;
@@ -440,6 +448,7 @@ export const useDialog = createHook<DialogOptions>(
     }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+    const onCancelProp = useEvent(onCancel);
 
     // Hide on Escape.
     useEffect(() => {
@@ -448,7 +457,6 @@ export const useDialog = createHook<DialogOptions>(
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key !== "Escape") return;
         if (event.defaultPrevented) return;
-        if (!store) return;
         const dialog = ref.current;
         if (!dialog) return;
         // Ignore the event if the current dialog is marked by another dialog.
@@ -468,6 +476,11 @@ export const useDialog = createHook<DialogOptions>(
         };
         if (!isValidTarget()) return;
         if (!hideOnEscapeProp(event)) return;
+        const cancelEventOptions = { cancelable: true, bubbles: false };
+        const cancelEvent = new Event("cancel", cancelEventOptions);
+        dialog.addEventListener("cancel", onCancelProp, { once: true });
+        dialog.dispatchEvent(cancelEvent);
+        if (cancelEvent.defaultPrevented) return;
         store.hide();
       };
       // We're attatching the listener to the document instead of the dialog
@@ -475,7 +488,7 @@ export const useDialog = createHook<DialogOptions>(
       // even when the dialog is not focused. By using the capture phase, users
       // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
       return addGlobalEventListener("keydown", onKeyDown, true);
-    }, [store, domReady, mounted, hideOnEscapeProp]);
+    }, [store, domReady, mounted, hideOnEscapeProp, onCancelProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(
@@ -493,7 +506,6 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
-        if (!store) return element;
         if (!backdrop) return element;
         return (
           <>
@@ -578,6 +590,22 @@ export interface DialogOptions<T extends As = "div">
    * Object returned by the `useDialogStore` hook.
    */
   store?: DialogStore;
+  /**
+   * TODO: Comment
+   */
+  open?: boolean;
+  /**
+   * TODO: Comment
+   */
+  defaultOpen?: boolean;
+  /**
+   * TODO: Comment
+   */
+  onCancel?: (event: Event) => void;
+  /**
+   * TODO: Comment
+   */
+  onClose?: (event: Event) => void;
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:
