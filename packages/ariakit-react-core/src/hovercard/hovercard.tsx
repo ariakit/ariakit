@@ -62,42 +62,6 @@ function isMovingOnHovercard(
   return false;
 }
 
-// The autoFocusOnShow state will be set to true when the hovercard disclosure
-// element is clicked. We have to reset it to false when the hovercard element
-// gets hidden or is unmounted.
-function useAutoFocusOnShow({
-  store,
-  ...props
-}: HovercardProps & { store: HovercardStore }) {
-  const open = store.useState("open");
-  const openRef = useLiveRef(open);
-
-  // Resets autoFocusOnShow
-  useEffect(() => {
-    if (!open) {
-      // store.setAutoFocusOnShow(false);
-    }
-  }, [open, store]);
-
-  // On unmount as well.
-  useEffect(
-    () => () => {
-      if (!openRef.current) {
-        // store.setAutoFocusOnShow(false);
-      }
-    },
-    [store],
-  );
-
-  // If the hovercard is modal, we should always autoFocus on show.
-  const modal = !!props.modal;
-  const autoFocusOnShow = store.useState(
-    (state) => modal || state.autoFocusOnShow,
-  );
-
-  return { autoFocusOnShow, ...props };
-}
-
 // When the hovercard element has focus, we should move focus back to the anchor
 // element when the hovercard gets hidden (or unmounted).
 function useAutoFocusOnHide({
@@ -188,6 +152,7 @@ export const useHovercard = createHook<HovercardOptions>(
       disablePointerEventsOnApproach,
     );
 
+    const open = store.useState("open");
     const mounted = store.useState("mounted");
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
@@ -288,6 +253,26 @@ export const useHovercard = createHook<HovercardOptions>(
       );
     }, [domReady, mounted, mayDisablePointerEvents, disablePointerEventsProp]);
 
+    // The autoFocusOnShow state will be set to true when the hovercard
+    // disclosure element is clicked. We have to reset it to false when the
+    // hovercard element gets hidden.
+    useEffect(() => {
+      if (!domReady) return;
+      if (open) return;
+      store?.setAutoFocusOnShow(false);
+    }, [store, domReady, open]);
+
+    // On unmount as well.
+    const openRef = useLiveRef(open);
+    useEffect(() => {
+      if (!domReady) return;
+      return () => {
+        if (!openRef.current) {
+          store?.setAutoFocusOnShow(false);
+        }
+      };
+    }, [store, domReady]);
+
     const registerOnParent = useContext(NestedHovercardContext);
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
@@ -340,12 +325,17 @@ export const useHovercard = createHook<HovercardOptions>(
     };
 
     props = useAutoFocusOnHide({ store, ...props });
-    props = useAutoFocusOnShow({ store, modal, ...props });
+
+    // If the hovercard is modal, we should always autoFocus on show.
+    const autoFocusOnShow = store.useState(
+      (state) => modal || state.autoFocusOnShow,
+    );
 
     props = usePopover({
       store,
       modal,
       portal,
+      autoFocusOnShow,
       ...props,
       portalRef,
       hideOnEscape(event) {

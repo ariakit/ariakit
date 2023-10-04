@@ -81,6 +81,16 @@ test("hide hovercard on escape", async () => {
   expect(q.link("@ariakitjs")).toHaveFocus();
 });
 
+test("do not autofocus hovercard on anchor hover after showing and hiding it using the disclosure button", async () => {
+  await press.Tab();
+  await press.Tab();
+  await press.Enter();
+  await press.Escape();
+  await hover(q.link("@ariakitjs"));
+  await waitFor(() => expect(q.dialog()).toBeVisible());
+  expect(q.link("@ariakitjs")).toHaveFocus();
+});
+
 test("hide hovercard on blur", async () => {
   const div = document.createElement("div");
   div.tabIndex = 0;

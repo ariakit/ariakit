@@ -346,9 +346,13 @@ export const useCombobox = createHook<ComboboxOptions>(
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
         flushSync(() => store?.setValue(value));
-        // Even setting the value synchronously above, for some reason, we still
-        // need to fix the selection range. See combobox-group "keep caret
-        // position when typing" test.
+        // When the value is not set synchronously, the selection range may be
+        // lost. Even setting the value with flushSync above, we still need to
+        // fix the selection range because React's useSyncExternalStore updates
+        // in a microtask. An alternative fix would be removing the flushSync
+        // call above and calling setSelectionRange in a queueMicrotask
+        // callback, but I think flushSync is a safer approach. See
+        // combobox-group "keep caret position when typing" test.
         event.currentTarget.setSelectionRange(selectionStart, selectionEnd);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
