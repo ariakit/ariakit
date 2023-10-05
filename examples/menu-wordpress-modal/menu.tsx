@@ -119,9 +119,9 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
     if (!bubblesVirtually) return <SlotFill.Fill {...props} />;
     return (
       <SlotFill.Fill>
-        {(menu: Ariakit.MenuStore) => (
+        {(menu) => (
           // Re-create the menu context within the fill tree
-          <MenuContext.Provider value={menu}>
+          <MenuContext.Provider value={menu as Ariakit.MenuStore}>
             {props.children}
           </MenuContext.Provider>
         )}
