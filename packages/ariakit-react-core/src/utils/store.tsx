@@ -120,7 +120,6 @@ export function useStoreProps<
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
-  const canSyncValue = React.useRef(true);
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
@@ -136,10 +135,8 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
-    canSyncValue.current = true;
     store.setState(key, value);
     return batch(store, [key], () => {
-      if (!canSyncValue.current) return;
       store.setState(key, value);
     });
   }, [store, key, value]);
