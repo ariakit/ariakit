@@ -11,7 +11,9 @@ describe.skipIf(is17)("dialog-framer-motion", () => {
     expect(q.button("OK")).toHaveFocus();
     await click(q.button("OK"));
     expect(q.dialog()).toBeVisible();
+    expect(q.button("Show modal")).toHaveFocus();
     await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+    expect(q.button("Show modal")).toHaveFocus();
   });
 
   test("prevent body scroll", async () => {

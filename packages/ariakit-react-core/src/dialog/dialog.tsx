@@ -102,7 +102,6 @@ export const useDialog = createHook<DialogOptions>(
     store: storeProp,
     open: openProp,
     defaultOpen,
-    onCancel,
     onClose,
     focusable = true,
     modal = true,
@@ -130,11 +129,14 @@ export const useDialog = createHook<DialogOptions>(
         if (open) return;
         const dialog = ref.current;
         if (!dialog) return;
-        const event = new Event("close", { bubbles: false, cancelable: false });
+        const event = new Event("close", { bubbles: false, cancelable: true });
         if (onClose) {
           dialog.addEventListener("close", onClose, { once: true });
         }
         dialog.dispatchEvent(event);
+        if (event.defaultPrevented) {
+          store.setOpen(true);
+        }
       },
     });
 
@@ -448,7 +450,6 @@ export const useDialog = createHook<DialogOptions>(
     }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
     const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-    const onCancelProp = useEvent(onCancel);
 
     // Hide on Escape.
     useEffect(() => {
@@ -476,11 +477,6 @@ export const useDialog = createHook<DialogOptions>(
         };
         if (!isValidTarget()) return;
         if (!hideOnEscapeProp(event)) return;
-        const cancelEventOptions = { cancelable: true, bubbles: false };
-        const cancelEvent = new Event("cancel", cancelEventOptions);
-        dialog.addEventListener("cancel", onCancelProp, { once: true });
-        dialog.dispatchEvent(cancelEvent);
-        if (cancelEvent.defaultPrevented) return;
         store.hide();
       };
       // We're attatching the listener to the document instead of the dialog
@@ -488,7 +484,7 @@ export const useDialog = createHook<DialogOptions>(
       // even when the dialog is not focused. By using the capture phase, users
       // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
       return addGlobalEventListener("keydown", onKeyDown, true);
-    }, [store, domReady, mounted, hideOnEscapeProp, onCancelProp]);
+    }, [store, domReady, mounted, hideOnEscapeProp]);
 
     // Resets the heading levels inside the modal dialog so they start with h1.
     props = useWrapElement(
@@ -598,10 +594,6 @@ export interface DialogOptions<T extends As = "div">
    * TODO: Comment
    */
   defaultOpen?: boolean;
-  /**
-   * TODO: Comment
-   */
-  onCancel?: (event: Event) => void;
   /**
    * TODO: Comment
    */

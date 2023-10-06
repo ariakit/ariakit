@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Combining <a href="/components/dialog">Dialog</a> with the native <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details element</a> in React so users can interact with it before JavaScript finishes loading.
+Combining [Dialog](/components/dialog) with the native [details element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) in React so users can interact with it before JavaScript finishes loading.
 
 </div>
 

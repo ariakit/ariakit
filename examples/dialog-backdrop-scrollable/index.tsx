@@ -1,20 +1,21 @@
 import "./style.css";
+import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
-  const dialog = Ariakit.useDialogStore();
-  const mounted = dialog.useState("mounted");
+  const [open, setOpen] = useState(false);
   return (
     <>
-      <Ariakit.Button onClick={dialog.show} className="button">
+      <Ariakit.Button onClick={() => setOpen(true)} className="button">
         View recipe
       </Ariakit.Button>
       <Ariakit.Dialog
-        store={dialog}
         backdrop={false}
+        open={open}
+        onClose={() => setOpen(false)}
         className="dialog"
         render={(props) => (
-          <div className="backdrop" hidden={!mounted}>
+          <div className="backdrop" hidden={!open}>
             <div {...props} />
           </div>
         )}

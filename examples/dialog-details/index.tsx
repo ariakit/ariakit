@@ -1,6 +1,6 @@
+import "./style.css";
 import { useEffect, useRef, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import "./style.css";
 
 function useLoaded() {
   const [loaded, setLoaded] = useState(false);
@@ -11,24 +11,24 @@ function useLoaded() {
 export default function Example() {
   const ref = useRef<HTMLDetailsElement>(null);
   const loaded = useLoaded();
-  const dialog = Ariakit.useDialogStore();
-  const mounted = dialog.useState("mounted");
+  const [open, setOpen] = useState(false);
 
   // Hydrate the dialog state. This is necessary because the user may have
   // opened the dialog before JavaScript has loaded.
-  useEffect(() => dialog.setOpen(!!ref.current?.open), [dialog]);
+  useEffect(() => setOpen(!!ref.current?.open), []);
 
   return (
     <details
       ref={ref}
-      open={mounted}
-      onToggle={(event) => dialog.setOpen(event.currentTarget.open)}
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
     >
       <Ariakit.Button className="button" render={<summary />}>
         Show modal
       </Ariakit.Button>
       <Ariakit.Dialog
-        store={dialog}
+        open={open}
+        onClose={() => setOpen(false)}
         // We're setting the modal prop to true only when JavaScript is enabled.
         // This means that the dialog will initially have a non-modal state with
         // no backdrop element, allowing users to interact with the content

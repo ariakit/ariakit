@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
   const mounted = dialog.useState("mounted");
-
   return (
     <>
       <Ariakit.Button onClick={dialog.show} className="button">

@@ -3,27 +3,15 @@ import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
-  // const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const store = Ariakit.useDialogStore({ open: open2, setOpen: setOpen2 });
-  // const store2 = Ariakit.useDialogStore({
-  //   store,
-  //   open: open,
-  //   setOpen: setOpen,
-  // });
-  // useEffect(() => {
-  //   console.log(open, open2);
-  // }, [open, open2]);
+  const [open, setOpen] = useState(false);
   return (
     <>
-      <Ariakit.Button onClick={() => setOpen2(true)} className="button">
+      <Ariakit.Button onClick={() => setOpen(true)} className="button">
         Show modal
       </Ariakit.Button>
       <Ariakit.Dialog
-        // store={store2}
-        store={store}
-        // open={open}
-        // onClose={() => setOpen(false)}
+        open={open}
+        onClose={() => setOpen(false)}
         className="dialog"
       >
         <Ariakit.DialogHeading className="heading">

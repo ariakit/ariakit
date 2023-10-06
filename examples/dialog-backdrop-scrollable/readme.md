@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Rendering a modal <a href="/components/dialog">Dialog</a> component inside a scrollable backdrop container for dialogs that are
+Rendering a modal [Dialog](/components/dialog) component inside a scrollable backdrop container for dialogs that are
 taller than the viewport.
 
 </div>
