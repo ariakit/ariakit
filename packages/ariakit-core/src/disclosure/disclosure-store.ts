@@ -152,8 +152,6 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    */
   show: () => void;
   /**
@@ -162,8 +160,6 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * - [Dialog with React
    *   Router](https://ariakit.org/examples/dialog-react-router)
    * - [Sliding Menu](https://ariakit.org/examples/menu-slide)

@@ -101,7 +101,6 @@ export const useDialog = createHook<DialogOptions>(
   ({
     store: storeProp,
     open: openProp,
-    defaultOpen,
     onClose,
     focusable = true,
     modal = true,
@@ -124,19 +123,15 @@ export const useDialog = createHook<DialogOptions>(
     const store = useDialogStore({
       store: storeProp || context,
       open: openProp,
-      defaultOpen,
       setOpen(open) {
         if (open) return;
         const dialog = ref.current;
         if (!dialog) return;
-        const event = new Event("close", { bubbles: false, cancelable: true });
+        const event = new Event("close", { bubbles: false, cancelable: false });
         if (onClose) {
           dialog.addEventListener("close", onClose, { once: true });
         }
         dialog.dispatchEvent(event);
-        if (event.defaultPrevented) {
-          store.setOpen(true);
-        }
       },
     });
 
@@ -583,19 +578,51 @@ export interface DialogOptions<T extends As = "div">
     PortalOptions<T>,
     DisclosureContentOptions<T> {
   /**
-   * Object returned by the `useDialogStore` hook.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component's context will be used. Otherwise, an internal store will be
+   * created.
    */
   store?: DialogStore;
   /**
-   * TODO: Comment
+   * Controls the open state of the dialog. This is similar to the
+   * [`open`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open)
+   * attribute on native dialog elements.
+   *
+   * Live examples:
+   * - [Dialog with scrollable
+   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
    */
   open?: boolean;
   /**
-   * TODO: Comment
-   */
-  defaultOpen?: boolean;
-  /**
-   * TODO: Comment
+   * This is an event handler prop triggered when the dialog's `close` event is
+   * dispatched. The `close` event is similar to the native dialog
+   * [`close`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event)
+   * event. This event is not cancelable and does not bubble.
+   *
+   * It's important to note that this event only fires when the dialog store's
+   * [`open`](https://ariakit.org/reference/use-dialog-store#open) state is set
+   * to `false`. If the controlled
+   * [`open`](https://ariakit.org/reference/dialog#open) prop value changes, or
+   * if the dialog's visibility is altered in any other way (such as unmounting
+   * the dialog without adjusting the open state), this event won't be
+   * triggered.
+   *
+   * Live examples:
+   * - [Dialog with scrollable
+   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
    */
   onClose?: (event: Event) => void;
   /**
@@ -659,10 +686,6 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Determines whether the dialog will be hidden when the user presses the
    * Escape key.
-   *
-   * Live examples:
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * @default true
    */
   hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
@@ -671,8 +694,6 @@ export interface DialogOptions<T extends As = "div">
    * on an element outside of the dialog.
    *
    * Live examples:
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @default true
    */
