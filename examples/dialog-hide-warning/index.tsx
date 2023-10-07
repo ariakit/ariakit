@@ -25,12 +25,13 @@ export default function Example() {
         autoFocusOnShow={!warningOpen}
         open={postOpen}
         onClose={() => {
+          // If there's an unsaved post value, open the warning dialog instead
+          // of closing the post dialog.
           if (value) {
-            // If there's an unsaved post value, open the warning dialog instead
-            // of closing the post dialog.
-            return setWarningOpen(true);
+            setWarningOpen(true);
+          } else {
+            setPostOpen(false);
           }
-          setPostOpen(false);
         }}
       >
         <Ariakit.DialogHeading hidden className="heading">
