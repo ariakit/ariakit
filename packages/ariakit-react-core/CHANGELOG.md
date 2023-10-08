@@ -1,5 +1,61 @@
 # @ariakit/react-core
 
+## 0.3.4
+
+### Patch Changes
+
+- [`#2894`](https://github.com/ariakit/ariakit/pull/2894) Fixed [Command](https://ariakit.org/components/command) and related components not preventing the default behavior on <kbd>Space</kbd> keyup on non-native button elements.
+
+- [`#2896`](https://github.com/ariakit/ariakit/pull/2896) Controlled store updates are no longer flushed synchronously.
+
+  Previously, we were wrapping _all_ controlled store updates with [`ReactDOM.flushSync`](https://react.dev/reference/react-dom/flushSync). This approach proved to be quite fragile and led to a few problems. Now, we only apply this to specific updates that require synchronous flushing.
+
+  This change shouldn't impact your application, unless you're already facing problems, which could be fixed by this. If you find any issues stemming from this change, please let us know. Regardless, you can always opt into the previous behavior by wrapping your own updates in `flushSync` when needed:
+
+  ```js
+  const [open, setOpen] = useState(false);
+
+  useDialogStore({
+    open,
+    setOpen(open) {
+      ReactDOM.flushSync(() => setOpen(open));
+    },
+  });
+  ```
+
+- [`#2897`](https://github.com/ariakit/ariakit/pull/2897) Fixed `CompositeRenderer` missing its `items` state when used in a component with a `mounted` state.
+
+- [`#2909`](https://github.com/ariakit/ariakit/pull/2909) Fixed [Disclosure](https://ariakit.org/components/disclosure) and related components not waiting for the exit animation to complete before hiding the content element.
+
+- [`#2909`](https://github.com/ariakit/ariakit/pull/2909) The [Dialog](https://ariakit.org/components/dialog) and related components can now receive controlled [`open`](https://ariakit.org/reference/dialog#open) and [`onClose`](https://ariakit.org/reference/dialog#onclose) props, allowing them to be used without a store:
+
+  ```jsx
+  const [open, setOpen] = useState(false);
+
+  <Dialog
+    open={open}
+    onClose={() => setOpen(false)}
+  >
+  ```
+
+- [`#2922`](https://github.com/ariakit/ariakit/pull/2922) Added [`unmountOnHide`](https://ariakit.org/reference/disclosure-content#unmountonhide) prop to [`DisclosureContent`](https://ariakit.org/reference/disclosure-content), [`Dialog`](https://ariakit.org/reference/dialog) and related components.
+
+  Conditionally rendering the [`Dialog`](https://ariakit.org/reference/dialog) and related components will continue to work as before:
+
+  ```jsx
+  open && <Dialog>
+  ```
+
+  Now, you can do the same thing using the [`unmountOnHide`](https://ariakit.org/reference/dialog#unmountonhide) prop:
+
+  ```jsx
+  <Dialog unmountOnHide>
+  ```
+
+- Improved JSDocs.
+
+- Updated dependencies: `@ariakit/core@0.3.3`.
+
 ## 0.3.3
 
 ### Patch Changes
