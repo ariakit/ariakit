@@ -88,8 +88,8 @@ We can re-trigger the auto focus behavior on the [Dialog](/components/dialog) co
 
 - [](/examples/dialog-nested)
 - [](/examples/dialog-animated)
+- [](/examples/dialog-menu)
 - [](/examples/dialog-backdrop-scrollable)
-- [](/examples/dialog-react-toastify)
 - [](/examples/dialog-next-router)
 - [](/examples/combobox-textarea)
 

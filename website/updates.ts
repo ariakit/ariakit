@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved example: Dialog with Menu",
+    type: "page",
+    href: "/examples/dialog-menu",
+    dateTime: "2023-10-08T22:15Z",
+  },
+  {
     title: "Improved example: Toolbar with Select",
     type: "page",
     href: "/examples/toolbar-select",
