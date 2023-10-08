@@ -1,5 +1,31 @@
 # @ariakit/test
 
+## 0.3.0
+
+### Minor Changes
+
+- [`#2894`](https://github.com/ariakit/ariakit/pull/2894) All `@ariakit/test` functions now disable `global.IS_REACT_ACT_ENVIRONMENT` before running and restore its value at the end.
+
+- [`#2894`](https://github.com/ariakit/ariakit/pull/2894) Replaced the synchronous `fireEvent` functions by asynchronous `dispatch` functions.
+
+- [`#2894`](https://github.com/ariakit/ariakit/pull/2894) The `act` export has been removed.
+
+- [`#2894`](https://github.com/ariakit/ariakit/pull/2894) Exported user event functions that were previously synchronous are now asyncrhonous.
+
+- [`#2899`](https://github.com/ariakit/ariakit/pull/2899) The `screen` module and its queries (`getBy*`, `queryBy*`, etc.) have been removed in favor of the `query` module.
+
+- [`#2899`](https://github.com/ariakit/ariakit/pull/2899) The `within` module has been removed.
+
+- [`#2900`](https://github.com/ariakit/ariakit/pull/2900) The `render` function has been moved to the `@ariakit/test/react` path. It's now asynchronous. The root `@ariakit/test` package does not depend on React or React Testing Library anymore.
+
+### Patch Changes
+
+- [`#2892`](https://github.com/ariakit/ariakit/pull/2892) Updated function argument types to support `null` instead of `Element`, but added a runtime error in case `null` is passed.
+
+- [`#2892`](https://github.com/ariakit/ariakit/pull/2892) Added a new `query` module that exports a `query`/`q` object with functions to query the DOM.
+
+- Updated dependencies: `@ariakit/core@0.3.3`.
+
 ## 0.2.5
 
 ### Patch Changes
