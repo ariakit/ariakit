@@ -1,5 +1,9 @@
-import { getQueriesForElement } from "@testing-library/dom";
-import type { ByRoleMatcher, ByRoleOptions } from "@testing-library/dom";
+import { queries as baseQueries } from "@testing-library/dom";
+import type {
+  ByRoleMatcher,
+  ByRoleOptions,
+  getQueriesForElement,
+} from "@testing-library/dom";
 
 const roles = [
   "alert",
@@ -88,8 +92,15 @@ const roles = [
 
 type AriaRole = (typeof roles)[number];
 type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
+type ElementQueries = ReturnType<
+  typeof getQueriesForElement<typeof baseQueries>
+>;
 
-const queries = getQueriesForElement(document.body);
+const queries = Object.entries(baseQueries).reduce((queries, [key, query]) => {
+  // @ts-expect-error
+  queries[key] = (...args) => query(document.body, ...args);
+  return queries;
+}, {} as ElementQueries);
 
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;

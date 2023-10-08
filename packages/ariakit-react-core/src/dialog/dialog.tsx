@@ -23,7 +23,7 @@ import {
   getFirstTabbableIn,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { chain, invariant } from "@ariakit/core/utils/misc";
+import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -55,6 +55,7 @@ import {
   DialogScopedContextProvider,
   useDialogProviderContext,
 } from "./dialog-context.js";
+import { useDialogStore } from "./dialog-store.js";
 import type { DialogStore } from "./dialog-store.js";
 import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
@@ -98,7 +99,9 @@ function getElementFromProp(
  */
 export const useDialog = createHook<DialogOptions>(
   ({
-    store,
+    store: storeProp,
+    open: openProp,
+    onClose,
     focusable = true,
     modal = true,
     portal = !!modal,
@@ -115,15 +118,25 @@ export const useDialog = createHook<DialogOptions>(
     ...props
   }) => {
     const context = useDialogProviderContext();
-    store = store || context;
-
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "Dialog must receive a `store` prop or be wrapped in a DialogProvider component.",
-    );
-
     const ref = useRef<HTMLDivElement>(null);
+
+    const store = useDialogStore({
+      store: storeProp || context,
+      open: openProp,
+      setOpen(open) {
+        if (open) return;
+        const dialog = ref.current;
+        if (!dialog) return;
+        const event = new Event("close", { bubbles: false, cancelable: true });
+        if (onClose) {
+          dialog.addEventListener("close", onClose, { once: true });
+        }
+        dialog.dispatchEvent(event);
+        if (!event.defaultPrevented) return;
+        store.setOpen(true);
+      },
+    });
+
     // domReady can be also the portal node element so it's updated when the
     // portal node changes (like in between re-renders), triggering effects
     // again.
@@ -160,7 +173,6 @@ export const useDialog = createHook<DialogOptions>(
     // dialog is opened.
     useSafeLayoutEffect(() => {
       if (!open) return;
-      if (!store) return;
       const dialog = ref.current;
       const activeElement = getActiveElement(dialog, true);
       if (!activeElement) return;
@@ -177,7 +189,6 @@ export const useDialog = createHook<DialogOptions>(
     // disclosure button gets focused here.
     if (isSafariBrowser) {
       useEffect(() => {
-        if (!store) return;
         if (!mounted) return;
         const { disclosureElement } = store.getState();
         if (!disclosureElement) return;
@@ -215,7 +226,6 @@ export const useDialog = createHook<DialogOptions>(
     // So that screen reader users aren't trapped in the dialog when there's no
     // visible dismiss button.
     useEffect(() => {
-      if (!store) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
@@ -266,7 +276,6 @@ export const useDialog = createHook<DialogOptions>(
     // Disables/enables the element tree around the modal dialog element.
     useSafeLayoutEffect(() => {
       if (!id) return;
-      if (!store) return;
       if (!canTakeTreeSnapshot) return;
       const { disclosureElement } = store.getState();
       const dialog = ref.current;
@@ -373,7 +382,6 @@ export const useDialog = createHook<DialogOptions>(
 
     const focusOnHide = useCallback(
       (dialog: HTMLElement | null, retry = true) => {
-        if (!store) return;
         const { disclosureElement } = store.getState();
         // Hide was triggered by a click/focus on a tabbable element outside the
         // dialog. We won't change focus then.
@@ -447,7 +455,6 @@ export const useDialog = createHook<DialogOptions>(
       const onKeyDown = (event: KeyboardEvent) => {
         if (event.key !== "Escape") return;
         if (event.defaultPrevented) return;
-        if (!store) return;
         const dialog = ref.current;
         if (!dialog) return;
         // Ignore the event if the current dialog is marked by another dialog.
@@ -492,7 +499,6 @@ export const useDialog = createHook<DialogOptions>(
     props = useWrapElement(
       props,
       (element) => {
-        if (!store) return element;
         if (!backdrop) return element;
         return (
           <>
@@ -574,9 +580,54 @@ export interface DialogOptions<T extends As = "div">
     PortalOptions<T>,
     DisclosureContentOptions<T> {
   /**
-   * Object returned by the `useDialogStore` hook.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component's context will be used. Otherwise, an internal store will be
+   * created.
    */
   store?: DialogStore;
+  /**
+   * Controls the open state of the dialog. This is similar to the
+   * [`open`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open)
+   * attribute on native dialog elements.
+   *
+   * Live examples:
+   * - [Dialog with scrollable
+   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   */
+  open?: boolean;
+  /**
+   * This is an event handler prop triggered when the dialog's `close` event is
+   * dispatched. The `close` event is similar to the native dialog
+   * [`close`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event)
+   * event. The only difference is that this event can be cancelled with
+   * `event.preventDefault()`, which will prevent the dialog from hiding.
+   *
+   * It's important to note that this event only fires when the dialog store's
+   * [`open`](https://ariakit.org/reference/use-dialog-store#open) state is set
+   * to `false`. If the controlled
+   * [`open`](https://ariakit.org/reference/dialog#open) prop value changes, or
+   * if the dialog's visibility is altered in any other way (such as unmounting
+   * the dialog without adjusting the open state), this event won't be
+   * triggered.
+   *
+   * Live examples:
+   * - [Dialog with scrollable
+   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   * - [Dialog with details &
+   *   summary](https://ariakit.org/examples/dialog-details)
+   * - [Warning on Dialog
+   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   */
+  onClose?: (event: Event) => void;
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:
@@ -638,10 +689,6 @@ export interface DialogOptions<T extends As = "div">
   /**
    * Determines whether the dialog will be hidden when the user presses the
    * Escape key.
-   *
-   * Live examples:
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * @default true
    */
   hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
@@ -650,8 +697,6 @@ export interface DialogOptions<T extends As = "div">
    * on an element outside of the dialog.
    *
    * Live examples:
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @default true
    */

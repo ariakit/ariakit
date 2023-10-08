@@ -29,24 +29,39 @@ Preventing users from accidentally closing a [`modal`](/reference/dialog#modal) 
 
 </div>
 
-## Preventing Dialog from hiding
+## Preventing Dialog from closing
 
-The [Dialog](/components/dialog) component provides two callback props that are triggered when the dialog is about to hide: [`hideOnEscape`](/reference/dialog#hideonescape) and [`hideOnInteractOutside`](/reference/dialog#hideoninteractoutside). These props accept a `boolean` value or a function that takes an event object and returns a `boolean` value. If `false` is either passed to these props or returned from the function, the dialog won't close.
+By passing the [`open`](/reference/dialog#open) and [`onClose`](/reference/dialog#onclose) props to the [`Dialog`](/reference/dialog) component, we can control exactly when the dialog is open and closed.
 
-Moreover, we can keep the dialog from hiding by invoking `event.preventDefault()` on the [`DialogDismiss`](/reference/dialog-dismiss) click:
+When there are unsaved changes, instead of setting our `open` state within the [`onClose`](/reference/dialog#onclose) callback, we just open the nested warning dialog and prevent the default close behavior:
 
-```jsx
-function warnOnHide(event) {
-  // OK to hide
-  if (!value) return true;
-  // Show warning and prevent hiding
-  warning.show();
-  event.preventDefault();
-  return false;
-}
+```jsx {7,8,10}
+const [open, setOpen] = useState(false);
 
-<Dialog hideOnEscape={warnOnHide} hideOnInteractOutside={warnOnHide}>
-  <DialogDismiss onClick={warnOnHide}>
+<Dialog
+  open={open}
+  onClose={(event) => {
+    if (hasUnsavedChanges) {
+      event.preventDefault();
+      setWarningOpen(true);
+    } else {
+      setOpen(false);
+    }
+  }}
+>
+```
+
+Within the warning dialog, the parent dialog can be closed when the user clicks on the [`DialogDismiss`](/reference/dialog-dismiss) component. This component will automatically hide its own dialog, namely the warning dialog, but we need to manually set the `open` state of the parent dialog:
+
+```jsx {2-5}
+<DialogDismiss
+  onClick={() => {
+    saveChanges();
+    setOpen(false);
+  }}
+>
+  Save
+</DialogDismiss>
 ```
 
 ## Auto focus

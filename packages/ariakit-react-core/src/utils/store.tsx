@@ -124,13 +124,6 @@ export function useStoreProps<
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    let inEffect = true;
-    // flushSync throws a warning if called from inside a lifecycle method.
-    // Since the store.sync callback can be called immediately, we'll make it
-    // use the flushSync function only in subsequent calls.
-    queueMicrotask(() => {
-      inEffect = false;
-    });
     return sync(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
@@ -139,12 +132,7 @@ export function useStoreProps<
       // Disable controlled value sync until the next render to avoid resetting
       // the value to a previous state before the component has a chance to
       // re-render.
-      if (inEffect) {
-        canSyncValue.current = false;
-        queueMicrotask(() => {
-          canSyncValue.current = true;
-        });
-      }
+      canSyncValue.current = false;
       setValue(state[key]);
     });
   }, [store, key]);
@@ -157,7 +145,7 @@ export function useStoreProps<
       if (!canSyncValue.current) return;
       store.setState(key, value);
     });
-  }, [store, key, value]);
+  });
 }
 
 /**

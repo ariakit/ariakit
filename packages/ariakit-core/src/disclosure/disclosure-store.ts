@@ -5,6 +5,7 @@ import {
   mergeStore,
   omit,
   setup,
+  subscribe,
   sync,
   throwOnConflictingProps,
 } from "../utils/store.js";
@@ -54,11 +55,9 @@ export function createDisclosureStore(
   );
 
   setup(disclosure, () =>
-    sync(disclosure, ["open", "animated"], (state, prev) => {
-      if (!state.animated) return;
-      const mounting = state === prev;
-      const animating = mounting ? state.open : state.open !== prev.open;
-      disclosure.setState("animating", animating);
+    subscribe(disclosure, ["open"], () => {
+      if (!disclosure.getState().animated) return;
+      disclosure.setState("animating", true);
     }),
   );
 
@@ -153,8 +152,6 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    */
   show: () => void;
   /**
@@ -163,8 +160,6 @@ export interface DisclosureStoreFunctions {
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
    * - [Dialog with React
    *   Router](https://ariakit.org/examples/dialog-react-router)
    * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
