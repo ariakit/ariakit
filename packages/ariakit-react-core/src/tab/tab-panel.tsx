@@ -130,7 +130,7 @@ if (process.env.NODE_ENV !== "production") {
 export interface TabPanelOptions<T extends As = "div">
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,
-    Omit<DisclosureContentOptions<T>, "store"> {
+    Omit<DisclosureContentOptions<T>, "store" | "unmountOnHide"> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not

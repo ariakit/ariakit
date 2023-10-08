@@ -20,7 +20,6 @@ export default function Example() {
   const combobox = Ariakit.useComboboxStore();
 
   const searchValue = combobox.useState("value");
-  const mounted = combobox.useState("mounted");
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(() => {
@@ -119,31 +118,30 @@ export default function Example() {
           }
         />
       </label>
-      {mounted && (
-        <Ariakit.ComboboxPopover
-          store={combobox}
-          hidden={!hasMatches}
-          fitViewport
-          getAnchorRect={() => {
-            const textarea = ref.current;
-            if (!textarea) return null;
-            return getAnchorRect(textarea);
-          }}
-          className="popover"
-        >
-          {matches.map((value) => (
-            <Ariakit.ComboboxItem
-              key={value}
-              value={value}
-              focusOnHover
-              onClick={onItemClick(value)}
-              className="combobox-item"
-            >
-              <span>{value}</span>
-            </Ariakit.ComboboxItem>
-          ))}
-        </Ariakit.ComboboxPopover>
-      )}
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        hidden={!hasMatches}
+        unmountOnHide
+        fitViewport
+        getAnchorRect={() => {
+          const textarea = ref.current;
+          if (!textarea) return null;
+          return getAnchorRect(textarea);
+        }}
+        className="popover"
+      >
+        {matches.map((value) => (
+          <Ariakit.ComboboxItem
+            key={value}
+            value={value}
+            focusOnHover
+            onClick={onItemClick(value)}
+            className="combobox-item"
+          >
+            <span>{value}</span>
+          </Ariakit.ComboboxItem>
+        ))}
+      </Ariakit.ComboboxPopover>
     </div>
   );
 }

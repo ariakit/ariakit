@@ -46,8 +46,9 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { As, Component, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogDescriptionContext,
@@ -115,6 +116,7 @@ export const useDialog = createHook<DialogOptions>(
     autoFocusOnHide = true,
     initialFocus,
     finalFocus,
+    unmountOnHide,
     ...props
   }) => {
     const context = useDialogProviderContext();
@@ -556,6 +558,22 @@ export const useDialog = createHook<DialogOptions>(
   },
 );
 
+export function createDialogComponent<T extends DialogOptions>(
+  Component: Component<T>,
+  useProviderContext = useDialogProviderContext,
+) {
+  return createComponent<T>((props) => {
+    const context = useProviderContext();
+    const store = props.store || context;
+    const mounted = useStoreState(
+      store,
+      (state) => !props.unmountOnHide || state?.mounted || !!props.open,
+    );
+    if (!mounted) return null;
+    return <Component {...props} />;
+  });
+}
+
 /**
  * Renders a dialog element.
  * @see https://ariakit.org/components/dialog
@@ -566,10 +584,13 @@ export const useDialog = createHook<DialogOptions>(
  * <Dialog store={dialog}>Dialog</Dialog>
  * ```
  */
-export const Dialog = createComponent<DialogOptions>((props) => {
-  const htmlProps = useDialog(props);
-  return createElement("div", htmlProps);
-});
+export const Dialog = createDialogComponent(
+  createComponent<DialogOptions>((props) => {
+    const htmlProps = useDialog(props);
+    return createElement("div", htmlProps);
+  }),
+  useDialogProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   Dialog.displayName = "Dialog";

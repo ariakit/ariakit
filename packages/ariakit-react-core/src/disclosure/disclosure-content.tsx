@@ -7,6 +7,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.js";
 import {
   createComponent,
   createElement,
@@ -162,6 +163,13 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
   },
 );
 
+const DisclosureContentImpl = createComponent<DisclosureContentOptions>(
+  (props) => {
+    const htmlProps = useDisclosureContent(props);
+    return createElement("div", htmlProps);
+  },
+);
+
 /**
  * Renders an element that can be shown or hidden.
  * @see https://ariakit.org/components/disclosure
@@ -174,9 +182,15 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
  * ```
  */
 export const DisclosureContent = createComponent<DisclosureContentOptions>(
-  (props) => {
-    const htmlProps = useDisclosureContent(props);
-    return createElement("div", htmlProps);
+  ({ unmountOnHide, ...props }) => {
+    const context = useDisclosureProviderContext();
+    const store = props.store || context;
+    const mounted = useStoreState(
+      store,
+      (state) => !unmountOnHide || state?.mounted,
+    );
+    if (mounted === false) return null;
+    return <DisclosureContentImpl {...props} />;
   },
 );
 
@@ -216,6 +230,10 @@ export interface DisclosureContentOptions<T extends As = "div">
    * @default false
    */
   alwaysVisible?: boolean;
+  /**
+   * TODO: Comment
+   */
+  unmountOnHide?: boolean;
 }
 
 export type DisclosureContentProps<T extends As = "div"> = Props<

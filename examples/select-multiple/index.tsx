@@ -1,6 +1,14 @@
 import "./style.css";
 import { useState } from "react";
-import * as Ariakit from "@ariakit/react";
+import {
+  Select,
+  SelectArrow,
+  SelectItem,
+  SelectItemCheck,
+  SelectLabel,
+  SelectPopover,
+  SelectProvider,
+} from "@ariakit/react";
 import list from "./list.js";
 
 function renderValue(value: string[]) {
@@ -11,34 +19,23 @@ function renderValue(value: string[]) {
 
 export default function Example() {
   const [value, setValue] = useState(["Apple", "Cake"]);
-  const [mounted, setMounted] = useState(false);
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider
-        value={value}
-        setValue={setValue}
-        setMounted={setMounted}
-      >
-        <Ariakit.SelectLabel>Favorite food</Ariakit.SelectLabel>
-        <Ariakit.Select className="button">
+      <SelectProvider value={value} setValue={setValue}>
+        <SelectLabel>Favorite food</SelectLabel>
+        <Select className="button">
           {renderValue(value)}
-          <Ariakit.SelectArrow />
-        </Ariakit.Select>
-        {mounted && (
-          <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
-            {list.map((value) => (
-              <Ariakit.SelectItem
-                key={value}
-                value={value}
-                className="select-item"
-              >
-                <Ariakit.SelectItemCheck />
-                {value}
-              </Ariakit.SelectItem>
-            ))}
-          </Ariakit.SelectPopover>
-        )}
-      </Ariakit.SelectProvider>
+          <SelectArrow />
+        </Select>
+        <SelectPopover gutter={4} sameWidth unmountOnHide className="popover">
+          {list.map((value) => (
+            <SelectItem key={value} value={value} className="select-item">
+              <SelectItemCheck />
+              {value}
+            </SelectItem>
+          ))}
+        </SelectPopover>
+      </SelectProvider>
     </div>
   );
 }

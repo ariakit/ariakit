@@ -87,7 +87,15 @@ export function createStore<S extends State>(
           const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return sync(store, [key], (state) => setState(key, state[key]!));
+          return sync(store, [key], (state) =>
+            setState(
+              key,
+              state[key]!,
+              // @ts-expect-error - Not public API. This is just to prevent
+              // infinite loops.
+              true,
+            ),
+          );
         }),
       ),
     );
@@ -138,16 +146,18 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const setState: Store<S>["setState"] = (key, value) => {
+  const setState: Store<S>["setState"] = (key, value, fromStores = false) => {
     if (!hasOwnProperty(state, key)) return;
 
     const nextValue = applyState(value, state[key]);
 
     if (nextValue === state[key]) return;
 
-    stores.forEach((store) => {
-      store?.setState?.(key, nextValue);
-    });
+    if (!fromStores) {
+      stores.forEach((store) => {
+        store?.setState?.(key, nextValue);
+      });
+    }
 
     const prevState = state;
     state = { ...state, [key]: nextValue };

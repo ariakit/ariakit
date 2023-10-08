@@ -2,23 +2,12 @@ import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 
 export interface DialogProps extends Ariakit.DialogProps {
-  open?: boolean;
-  onClose?: () => void;
-  unmount?: boolean;
   animated?: boolean;
 }
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
-  function Dialog({ open, onClose, unmount, animated, ...props }, ref) {
-    const dialog = Ariakit.useDialogStore({
-      open,
-      setOpen: (open) => !open && onClose?.(),
-      animated,
-    });
-    const mounted = dialog.useState((state) =>
-      unmount ? state.mounted : true,
-    );
-    if (!mounted) return null;
+  function Dialog({ animated, ...props }, ref) {
+    const dialog = Ariakit.useDialogStore({ animated });
     const dataAnimated = animated ? "" : undefined;
     return (
       <Ariakit.Dialog

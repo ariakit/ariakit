@@ -17,6 +17,7 @@ import {
 } from "@ariakit/core/utils/misc";
 import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import {
@@ -369,10 +370,13 @@ export const useHovercard = createHook<HovercardOptions>(
  * </HovercardProvider>
  * ```
  */
-export const Hovercard = createComponent<HovercardOptions>((props) => {
-  const htmlProps = useHovercard(props);
-  return createElement("div", htmlProps);
-});
+export const Hovercard = createDialogComponent(
+  createComponent<HovercardOptions>((props) => {
+    const htmlProps = useHovercard(props);
+    return createElement("div", htmlProps);
+  }),
+  useHovercardProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   Hovercard.displayName = "Hovercard";

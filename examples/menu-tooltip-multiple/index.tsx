@@ -58,11 +58,9 @@ export default function Example() {
           </TooltipAnchor>
           <Tooltip className="tooltip">unmount portal</Tooltip>
         </TooltipProvider>
-        {unmountPortal && (
-          <Menu portal className="menu">
-            <MenuItem className="menu-item">unmount portal</MenuItem>
-          </Menu>
-        )}
+        <Menu portal unmountOnHide className="menu">
+          <MenuItem className="menu-item">unmount portal</MenuItem>
+        </Menu>
       </MenuProvider>
 
       <MenuProvider open={unmountModal} setOpen={setUnmountModal}>
@@ -72,11 +70,9 @@ export default function Example() {
           </TooltipAnchor>
           <Tooltip className="tooltip">unmount modal</Tooltip>
         </TooltipProvider>
-        {unmountModal && (
-          <Menu modal className="menu">
-            <MenuItem className="menu-item">unmount modal</MenuItem>
-          </Menu>
-        )}
+        <Menu modal unmountOnHide className="menu">
+          <MenuItem className="menu-item">unmount modal</MenuItem>
+        </Menu>
       </MenuProvider>
     </>
   );
