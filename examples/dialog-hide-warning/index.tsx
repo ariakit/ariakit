@@ -24,10 +24,11 @@ export default function Example() {
         // closed.
         autoFocusOnShow={!warningOpen}
         open={postOpen}
-        onClose={() => {
+        onClose={(event) => {
           // If there's an unsaved post value, open the warning dialog instead
           // of closing the post dialog.
           if (value) {
+            event.preventDefault();
             setWarningOpen(true);
           } else {
             setPostOpen(false);

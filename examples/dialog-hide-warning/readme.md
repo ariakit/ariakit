@@ -33,15 +33,16 @@ Preventing users from accidentally closing a [`modal`](/reference/dialog#modal) 
 
 By passing the [`open`](/reference/dialog#open) and [`onClose`](/reference/dialog#onclose) props to the [`Dialog`](/reference/dialog) component, we can control exactly when the dialog is open and closed.
 
-When there are unsaved changes, instead of setting our `open` state within the [`onClose`](/reference/dialog#onclose) callback, we just open the nested warning dialog:
+When there are unsaved changes, instead of setting our `open` state within the [`onClose`](/reference/dialog#onclose) callback, we just open the nested warning dialog and prevent the default close behavior:
 
-```jsx {7,9}
+```jsx {7,8,10}
 const [open, setOpen] = useState(false);
 
 <Dialog
   open={open}
-  onClose={() => {
+  onClose={(event) => {
     if (hasUnsavedChanges) {
+      event.preventDefault();
       setWarningOpen(true);
     } else {
       setOpen(false);

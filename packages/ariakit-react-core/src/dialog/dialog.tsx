@@ -127,11 +127,13 @@ export const useDialog = createHook<DialogOptions>(
         if (open) return;
         const dialog = ref.current;
         if (!dialog) return;
-        const event = new Event("close", { bubbles: false, cancelable: false });
+        const event = new Event("close", { bubbles: false, cancelable: true });
         if (onClose) {
           dialog.addEventListener("close", onClose, { once: true });
         }
         dialog.dispatchEvent(event);
+        if (!event.defaultPrevented) return;
+        store.setOpen(true);
       },
     });
 
@@ -605,7 +607,8 @@ export interface DialogOptions<T extends As = "div">
    * This is an event handler prop triggered when the dialog's `close` event is
    * dispatched. The `close` event is similar to the native dialog
    * [`close`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event)
-   * event. This event is not cancelable and does not bubble.
+   * event. The only difference is that this event can be cancelled with
+   * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
    * It's important to note that this event only fires when the dialog store's
    * [`open`](https://ariakit.org/reference/use-dialog-store#open) state is set
