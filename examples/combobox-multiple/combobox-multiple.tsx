@@ -72,7 +72,6 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
 );
 
 export interface ComboboxItemProps extends Ariakit.SelectItemProps {
-  value?: string;
   children?: React.ReactNode;
 }
 

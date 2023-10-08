@@ -2,14 +2,19 @@ import type { MutableRefObject, RefObject } from "react";
 import { createRef, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import type { HovercardOptions } from "../hovercard/hovercard.js";
-import { useHovercard } from "../hovercard/hovercard.js";
+import { createDialogComponent } from "../dialog/dialog.js";
+import type { HovercardOptions } from "../hovercard/hovercard.jsx";
+import { useHovercard } from "../hovercard/hovercard.jsx";
 import { useMergeRefs } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+} from "../utils/system.jsx";
 import type { As, Props } from "../utils/types.js";
 import { useMenuProviderContext } from "./menu-context.js";
-import type { MenuListOptions } from "./menu-list.js";
-import { useMenuList } from "./menu-list.js";
+import type { MenuListOptions } from "./menu-list.jsx";
+import { useMenuList } from "./menu-list.jsx";
 
 /**
  * Returns props to create a `Menu` component.
@@ -179,10 +184,13 @@ export const useMenu = createHook<MenuOptions>(
  * </MenuProvider>
  * ```
  */
-export const Menu = createComponent<MenuOptions>((props) => {
-  const htmlProps = useMenu(props);
-  return createElement("div", htmlProps);
-});
+export const Menu = createDialogComponent(
+  createComponent<MenuOptions>((props) => {
+    const htmlProps = useMenu(props);
+    return createElement("div", htmlProps);
+  }),
+  useMenuProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   Menu.displayName = "Menu";

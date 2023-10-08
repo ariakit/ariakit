@@ -9,24 +9,20 @@ import {
 } from "./popover.jsx";
 
 export default function Example() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen((isOpen) => !isOpen);
-  const close = () => setIsOpen(false);
+  const [open, setOpen] = useState(false);
   return (
     <div>
-      <Button onClick={toggle} className="button">
+      <Button onClick={() => setOpen(!open)} className="button">
         Accept invite
       </Button>
-      {isOpen && (
-        <Popover onClose={close} className="popover">
-          <PopoverArrow className="arrow" />
-          <PopoverHeading className="heading">Team meeting</PopoverHeading>
-          <PopoverDescription>
-            We are going to discuss what we have achieved on the project.
-          </PopoverDescription>
-          <Button className="button">Accept</Button>
-        </Popover>
-      )}
+      <Popover open={open} onClose={() => setOpen(false)} className="popover">
+        <PopoverArrow className="arrow" />
+        <PopoverHeading className="heading">Team meeting</PopoverHeading>
+        <PopoverDescription>
+          We are going to discuss what we have achieved on the project.
+        </PopoverDescription>
+        <Button className="button">Accept</Button>
+      </Popover>
     </div>
   );
 }

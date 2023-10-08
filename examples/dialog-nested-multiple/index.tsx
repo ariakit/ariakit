@@ -91,7 +91,7 @@ export default function Example() {
       </Button>
 
       <Dialog
-        unmount={
+        unmountOnHide={
           !nestedDismiss &&
           !nestedDismissNested &&
           !nestedDismissAnimated &&
@@ -237,7 +237,7 @@ export default function Example() {
         <Dialog
           open={nestedUnmount}
           onClose={() => setNestedUnmount(false)}
-          unmount
+          unmountOnHide
         >
           <DialogHeading>nested unmount</DialogHeading>
           <DialogDismiss>Close</DialogDismiss>
@@ -249,7 +249,7 @@ export default function Example() {
           <Dialog
             open={nestedUnmountNested}
             onClose={() => setNestedUnmountNested(false)}
-            unmount
+            unmountOnHide
           >
             <DialogHeading>nested unmount nested</DialogHeading>
             <DialogDismiss>Close</DialogDismiss>
@@ -450,7 +450,7 @@ export default function Example() {
       <Dialog
         open={siblingUnmount}
         onClose={() => setSiblingUnmount(false)}
-        unmount
+        unmountOnHide
       >
         <DialogHeading>sibling unmount</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
@@ -463,7 +463,7 @@ export default function Example() {
       <Dialog
         open={siblingUnmountSibling}
         onClose={() => setSiblingUnmountSibling(false)}
-        unmount
+        unmountOnHide
       >
         <DialogHeading>sibling unmount sibling</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
@@ -583,7 +583,7 @@ export default function Example() {
 
       {/* Sibling dismiss unmount */}
       <Dialog
-        unmount
+        unmountOnHide
         open={siblingDismissUnmount}
         onClose={() => setSiblingDismissUnmount(false)}
         finalFocus={buttonRef}
@@ -597,7 +597,7 @@ export default function Example() {
 
       {/* Sibling dismiss unmount sibling */}
       <Dialog
-        unmount
+        unmountOnHide
         open={siblingDismissUnmountSibling}
         onClose={() => setSiblingDismissUnmountSibling(false)}
         finalFocus={buttonRef}
@@ -633,7 +633,7 @@ export default function Example() {
 
       {/* Sibling dismiss animated unmount */}
       <Dialog
-        unmount
+        unmountOnHide
         animated
         open={siblingDismissAnimatedUnmount}
         onClose={() => setSiblingDismissAnimatedUnmount(false)}
@@ -650,7 +650,7 @@ export default function Example() {
 
       {/* Sibling dismiss animated unmount sibling */}
       <Dialog
-        unmount
+        unmountOnHide
         animated
         open={siblingDismissAnimatedUnmountSibling}
         onClose={() => setSiblingDismissAnimatedUnmountSibling(false)}

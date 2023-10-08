@@ -21,14 +21,9 @@ export const MenuBar = React.forwardRef<HTMLDivElement, Ariakit.MenuBarProps>(
 export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
   function Menu(props, ref) {
     const menu = Ariakit.useMenuContext();
-
     if (!menu) {
       throw new Error("Menu must be used within a MenuProvider");
     }
-
-    const mounted = menu.useState("mounted");
-    if (!mounted) return null;
-
     return (
       <Ariakit.Menu
         ref={ref}
@@ -37,6 +32,7 @@ export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
         gutter={menu.parent ? 12 : 4}
         shift={menu.parent ? -9 : -2}
         fitViewport
+        unmountOnHide
         {...props}
         className={clsx("menu", props.className)}
       />

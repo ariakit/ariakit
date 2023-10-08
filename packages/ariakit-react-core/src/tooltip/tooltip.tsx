@@ -1,5 +1,6 @@
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { createDialogComponent } from "../dialog/dialog.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
@@ -102,10 +103,13 @@ export const useTooltip = createHook<TooltipOptions>(
  * </TooltipProvider>
  * ```
  */
-export const Tooltip = createComponent<TooltipOptions>((props) => {
-  const htmlProps = useTooltip(props);
-  return createElement("div", htmlProps);
-});
+export const Tooltip = createDialogComponent(
+  createComponent<TooltipOptions>((props) => {
+    const htmlProps = useTooltip(props);
+    return createElement("div", htmlProps);
+  }),
+  useTooltipProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   Tooltip.displayName = "Tooltip";

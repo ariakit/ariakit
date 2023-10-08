@@ -29,7 +29,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
     });
 
     const open = menu.useState("open");
-    const mounted = menu.useState("mounted");
     const autoFocusOnShow = menu.useState("autoFocusOnShow");
 
     // By default, submenus don't automatically receive focus when they open.
@@ -130,51 +129,50 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })
         )}
-        {mounted && (
-          <Ariakit.Menu
-            store={menu}
-            className="menu"
-            portal={isSubmenu}
-            portalElement={parent?.getWrapper}
-            wrapperProps={wrapperProps}
-            autoFocusOnShow={autoFocus}
-            autoFocusOnHide={autoFocus}
-            overflowPadding={isSubmenu ? 0 : 8}
-            gutter={isSubmenu ? 0 : 8}
-            flip={!isSubmenu}
-            getAnchorRect={(anchor) => {
-              return (
-                parent?.getMenu()?.getBoundingClientRect() ||
-                anchor?.getBoundingClientRect() ||
-                null
-              );
-            }}
-          >
-            <MenuContext.Provider value={contextValue}>
-              {isSubmenu && (
-                <>
-                  <div className="header">
-                    <Ariakit.MenuItem
-                      hideOnClick={false}
-                      focusOnHover={false}
-                      onClick={menu.hide}
-                      className="menu-item"
-                      aria-label="Back to parent menu"
-                      render={<button />}
-                    >
-                      <Ariakit.MenuButtonArrow placement="left" />
-                    </Ariakit.MenuItem>
-                    <Ariakit.MenuHeading className="heading">
-                      {label}
-                    </Ariakit.MenuHeading>
-                  </div>
-                  <MenuSeparator />
-                </>
-              )}
-              {children}
-            </MenuContext.Provider>
-          </Ariakit.Menu>
-        )}
+        <Ariakit.Menu
+          store={menu}
+          className="menu"
+          unmountOnHide
+          portal={isSubmenu}
+          portalElement={parent?.getWrapper}
+          wrapperProps={wrapperProps}
+          autoFocusOnShow={autoFocus}
+          autoFocusOnHide={autoFocus}
+          overflowPadding={isSubmenu ? 0 : 8}
+          gutter={isSubmenu ? 0 : 8}
+          flip={!isSubmenu}
+          getAnchorRect={(anchor) => {
+            return (
+              parent?.getMenu()?.getBoundingClientRect() ||
+              anchor?.getBoundingClientRect() ||
+              null
+            );
+          }}
+        >
+          <MenuContext.Provider value={contextValue}>
+            {isSubmenu && (
+              <>
+                <div className="header">
+                  <Ariakit.MenuItem
+                    hideOnClick={false}
+                    focusOnHover={false}
+                    onClick={menu.hide}
+                    className="menu-item"
+                    aria-label="Back to parent menu"
+                    render={<button />}
+                  >
+                    <Ariakit.MenuButtonArrow placement="left" />
+                  </Ariakit.MenuItem>
+                  <Ariakit.MenuHeading className="heading">
+                    {label}
+                  </Ariakit.MenuHeading>
+                </div>
+                <MenuSeparator />
+              </>
+            )}
+            {children}
+          </MenuContext.Provider>
+        </Ariakit.Menu>
       </>
     );
   },

@@ -1,3 +1,4 @@
+import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -45,10 +46,13 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectPopover = createComponent<SelectPopoverOptions>((props) => {
-  const htmlProps = useSelectPopover(props);
-  return createElement("div", htmlProps);
-});
+export const SelectPopover = createDialogComponent(
+  createComponent<SelectPopoverOptions>((props) => {
+    const htmlProps = useSelectPopover(props);
+    return createElement("div", htmlProps);
+  }),
+  useSelectProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   SelectPopover.displayName = "SelectPopover";

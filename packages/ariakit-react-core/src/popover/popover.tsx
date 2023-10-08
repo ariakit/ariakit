@@ -11,7 +11,7 @@ import {
   size,
 } from "@floating-ui/dom";
 import type { DialogOptions } from "../dialog/dialog.js";
-import { useDialog } from "../dialog/dialog.js";
+import { createDialogComponent, useDialog } from "../dialog/dialog.js";
 import {
   useEvent,
   usePortalRef,
@@ -456,10 +456,13 @@ export const usePopover = createHook<PopoverOptions>(
  * </PopoverProvider>
  * ```
  */
-export const Popover = createComponent<PopoverOptions>((props) => {
-  const htmlProps = usePopover(props);
-  return createElement("div", htmlProps);
-});
+export const Popover = createDialogComponent(
+  createComponent<PopoverOptions>((props) => {
+    const htmlProps = usePopover(props);
+    return createElement("div", htmlProps);
+  }),
+  usePopoverProviderContext,
+);
 
 if (process.env.NODE_ENV !== "production") {
   Popover.displayName = "Popover";

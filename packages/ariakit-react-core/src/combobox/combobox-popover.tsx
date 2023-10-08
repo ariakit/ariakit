@@ -1,5 +1,6 @@
 import { matches } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
+import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -108,11 +109,12 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxPopover = createComponent<ComboboxPopoverOptions>(
-  (props) => {
+export const ComboboxPopover = createDialogComponent(
+  createComponent<ComboboxPopoverOptions>((props) => {
     const htmlProps = useComboboxPopover(props);
     return createElement("div", htmlProps);
-  },
+  }),
+  useComboboxProviderContext,
 );
 
 if (process.env.NODE_ENV !== "production") {
