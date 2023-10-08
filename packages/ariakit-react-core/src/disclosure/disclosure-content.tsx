@@ -231,7 +231,17 @@ export interface DisclosureContentOptions<T extends As = "div">
    */
   alwaysVisible?: boolean;
   /**
-   * TODO: Comment
+   * When set to `true`, the content element will be unmounted and removed from
+   * the DOM when it's hidden.
+   *
+   * Live examples:
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
+   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   * @default false
    */
   unmountOnHide?: boolean;
 }

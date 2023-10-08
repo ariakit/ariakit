@@ -73,7 +73,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         // instead of nesting newly opened menus (that could be inside the
         // modal) in existing portals that could've been disabled by the
         // WordPress Modal, we always append them to the body element.
-        <Ariakit.PortalContext.Provider value={document.body}>
+        <Ariakit.PortalContext.Provider value={globalThis.document?.body}>
           <Ariakit.Menu
             portal
             // Can't display the menu as a modal when it's nested within a

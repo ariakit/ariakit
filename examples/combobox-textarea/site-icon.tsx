@@ -10,9 +10,9 @@ export default function Icon() {
                 <div className="h-6 w-px bg-black dark:bg-white" />
               </div>
               <div className="ml-4 flex w-full flex-col gap-3 rounded-md border border-black/20 bg-white p-3 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
-                <div className="h-2 w-[60%] bg-blue-600 dark:bg-blue-500" />
-                <div className="h-2 w-[40%] bg-black/50 dark:bg-white/50" />
-                <div className="h-2 w-[75%] bg-black/50 dark:bg-white/50" />
+                <div className="h-2 w-[60%] rounded-sm bg-blue-600 dark:bg-blue-500" />
+                <div className="h-2 w-[40%] rounded-sm bg-black/50 dark:bg-white/50" />
+                <div className="h-2 w-[75%] rounded-sm bg-black/50 dark:bg-white/50" />
               </div>
             </div>
           </div>
