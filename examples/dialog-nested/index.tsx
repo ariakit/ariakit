@@ -1,11 +1,16 @@
-import { useState } from "react";
-import * as Ariakit from "@ariakit/react";
-import { ConfirmDialog } from "./confirm-dialog.js";
 import "./style.css";
+import { useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogDescription,
+  DialogDismiss,
+  DialogHeading,
+  VisuallyHidden,
+} from "@ariakit/react";
 
 export default function Example() {
-  const dialog = Ariakit.useDialogStore();
-
+  const [cartOpen, setCartOpen] = useState(false);
   const [removing, setRemoving] = useState("");
   const [products, setProducts] = useState([
     "Summer T-Shirt",
@@ -13,22 +18,27 @@ export default function Example() {
     "Slim Shorts",
   ]);
 
+  const confirmRemove = () => {
+    setProducts((products) => {
+      return products.filter((product) => product !== removing);
+    });
+  };
+
   return (
     <>
-      <Ariakit.Button onClick={dialog.show} className="button">
+      <Button onClick={() => setCartOpen(true)} className="button">
         View Cart
-      </Ariakit.Button>
+      </Button>
 
-      <Ariakit.Dialog
-        store={dialog}
+      <Dialog
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
         backdrop={<div className="backdrop" />}
         className="dialog"
       >
         <div className="header">
-          <Ariakit.DialogHeading className="heading">
-            Your Shopping Cart
-          </Ariakit.DialogHeading>
-          <Ariakit.DialogDismiss className="button secondary dismiss" />
+          <DialogHeading className="heading">Your Shopping Cart</DialogHeading>
+          <DialogDismiss className="button secondary dismiss" />
         </div>
 
         <table className="table">
@@ -37,37 +47,42 @@ export default function Example() {
               <tr key={product}>
                 <td className="table-cell">{product}</td>
                 <td className="table-cell">
-                  <Ariakit.Button
+                  <Button
                     onClick={() => setRemoving(product)}
                     className="button danger"
                   >
                     Remove
-                    <Ariakit.VisuallyHidden> {product}</Ariakit.VisuallyHidden>
-                  </Ariakit.Button>
+                    <VisuallyHidden> {product}</VisuallyHidden>
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <Ariakit.DialogDismiss className="button primary">
-          Checkout
-        </Ariakit.DialogDismiss>
+        <DialogDismiss className="button primary">Checkout</DialogDismiss>
+      </Dialog>
 
-        <ConfirmDialog
-          title="Remove product"
-          description={`Are you sure you want to remove "${removing}" from your cart?`}
-          confirmLabel="Remove"
-          danger
-          open={!!removing}
-          onConfirm={() =>
-            setProducts((products) =>
-              products.filter((product) => product !== removing),
-            )
-          }
-          onClose={() => setRemoving("")}
-        />
-      </Ariakit.Dialog>
+      <Dialog
+        unmountOnHide
+        open={!!removing}
+        onClose={() => setRemoving("")}
+        backdrop={<div className="backdrop" />}
+        className="dialog"
+      >
+        <DialogHeading className="heading">Remove product</DialogHeading>
+        <DialogDescription className="description">
+          Are you sure you want to remove &quot;{removing}&quot; from your cart?
+        </DialogDescription>
+        <div className="buttons">
+          <DialogDismiss onClick={confirmRemove} className="button danger">
+            Remove
+          </DialogDismiss>
+          <DialogDismiss autoFocus className="button secondary">
+            Cancel
+          </DialogDismiss>
+        </div>
+      </Dialog>
     </>
   );
 }

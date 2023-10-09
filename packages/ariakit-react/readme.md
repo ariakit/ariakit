@@ -57,20 +57,19 @@ yarn add @ariakit/react
 ## Usage
 
 ```jsx
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import * as Ariakit from "@ariakit/react";
+import { Button, Dialog, DialogHeading } from "@ariakit/react";
 
 function App() {
-  const dialog = Ariakit.useDialogStore();
+  const [open, setOpen] = useState(false);
   return (
     <>
-      <Ariakit.Button onClick={dialog.toggle}>Open dialog</Ariakit.Button>
-      <Ariakit.Dialog store={dialog}>
-        <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
-        <Ariakit.DialogDescription>
-          Welcome to Ariakit!
-        </Ariakit.DialogDescription>
-      </Ariakit.Dialog>
+      <Button onClick={() => setOpen(true)}>Open dialog</Button>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogHeading>Ariakit</DialogHeading>
+        <p>Welcome to Ariakit!</p>
+      </Dialog>
     </>
   );
 }

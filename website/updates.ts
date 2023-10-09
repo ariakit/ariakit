@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Nested Dialog",
+    type: "page",
+    href: "/examples/dialog-nested",
+    dateTime: "2023-10-09T18:51Z",
+  },
+  {
     title: "Improved example: Dialog with Menu",
     type: "page",
     href: "/examples/dialog-menu",

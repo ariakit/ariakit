@@ -12,17 +12,17 @@ Ariakit is an open source library that provides lower-level [React](https://reac
 
 2. Then, install Ariakit using your package manager of choice:
 
-    ```sh
-    npm install @ariakit/react
-    ```
+   ```sh
+   npm install @ariakit/react
+   ```
 
-    ```sh
-    yarn add @ariakit/react
-    ```
+   ```sh
+   yarn add @ariakit/react
+   ```
 
-    ```sh
-    pnpm add @ariakit/react
-    ```
+   ```sh
+   pnpm add @ariakit/react
+   ```
 
 ## Usage
 
@@ -35,7 +35,7 @@ Ariakit exports a set of [unstyled](/guide/styling) React components and hooks t
 You can also use Ariakit directly in the browser via a CDN. This method is only for development purposes and is not recommended for production.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -61,7 +61,6 @@ You can also use Ariakit directly in the browser via a CDN. This method is only 
   </body>
 </html>
 ```
-
 
 ## Next steps
 
