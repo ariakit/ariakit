@@ -367,7 +367,7 @@ export const HeaderMenuGroup = forwardRef<HTMLDivElement, HeaderMenuGroupProps>(
           {label && (
             <Ariakit.CompositeGroupLabel
               className={twJoin(
-                "sticky z-[15] bg-inherit p-2 pt-3",
+                "sticky z-[15] bg-inherit px-4 pb-2 pt-3",
                 "text-sm font-medium text-black/60 dark:text-white/50",
                 hasTitle ? "top-[105px]" : "top-12",
               )}

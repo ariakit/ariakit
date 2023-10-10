@@ -38,13 +38,14 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
 
 /**
  * Renders a description in a dialog. This component must be wrapped with
- * `Dialog` so the `aria-describedby` prop is properly set on the dialog
- * element.
+ * [`Dialog`](https://ariakit.org/reference/dialog) so the `aria-describedby`
+ * prop is properly set on the dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
- * ```jsx
- * const dialog = useDialogStore();
- * <Dialog store={dialog}>
+ * ```jsx {4}
+ * const [open, setOpen] = useState(false);
+ *
+ * <Dialog open={open} onClose={() => setOpen(false)}>
  *   <DialogDescription>Description</DialogDescription>
  * </Dialog>
  * ```
@@ -63,8 +64,10 @@ if (process.env.NODE_ENV !== "production") {
 export interface DialogDescriptionOptions<T extends As = "p">
   extends Options<T> {
   /**
-   * Object returned by the `useDialogStore` hook. If not provided, the parent
-   * `Dialog` component's context will be used.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * component's context will be used.
    */
   store?: DialogStore;
 }

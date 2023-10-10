@@ -41,13 +41,15 @@ export const useDialogHeading = createHook<DialogHeadingOptions>(
 );
 
 /**
- * Renders a heading in a dialog. This component must be wrapped with `Dialog`
- * so the `aria-labelledby` prop is properly set on the dialog element.
+ * Renders a heading in a dialog. This component must be wrapped with
+ * [`Dialog`](https://ariakit.org/reference/dialog) so the `aria-labelledby`
+ * prop is properly set on the dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
- * ```jsx
- * const dialog = useDialogStore();
- * <Dialog store={dialog}>
+ * ```jsx {4}
+ * const [open, setOpen] = useState(false);
+ *
+ * <Dialog open={open} onClose={() => setOpen(false)}>
  *   <DialogHeading>Heading</DialogHeading>
  * </Dialog>
  * ```
@@ -64,8 +66,10 @@ if (process.env.NODE_ENV !== "production") {
 export interface DialogHeadingOptions<T extends As = "h1">
   extends HeadingOptions<T> {
   /**
-   * Object returned by the `useDialogStore` hook. If not provided, the parent
-   * `Dialog` component's context will be used.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * component's context will be used.
    */
   store?: DialogStore;
 }

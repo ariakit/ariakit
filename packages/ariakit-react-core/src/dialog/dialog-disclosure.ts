@@ -46,10 +46,11 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
  * Renders a button that shows/hides a dialog.
  * @see https://ariakit.org/components/dialog
  * @example
- * ```jsx
- * const dialog = useDialogStore();
- * <DialogDisclosure store={dialog}>Disclosure</DialogDisclosure>
- * <Dialog store={dialog}>Content</Dialog>
+ * ```jsx {2}
+ * <DialogProvider>
+ *   <DialogDisclosure>Disclosure</DialogDisclosure>
+ *   <Dialog>Content</Dialog>
+ * </DialogProvider>
  * ```
  */
 export const DialogDisclosure = createComponent<DialogDisclosureOptions>(
@@ -66,7 +67,11 @@ if (process.env.NODE_ENV !== "production") {
 export interface DialogDisclosureOptions<T extends As = "button">
   extends DisclosureOptions<T> {
   /**
-   * Object returned by the `useDialogStore` hook.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component's context will be used.
    */
   store?: DialogStore;
 }

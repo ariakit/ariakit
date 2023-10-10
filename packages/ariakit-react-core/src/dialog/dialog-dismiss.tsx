@@ -71,9 +71,10 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
  * Renders a button that hides a dialog.
  * @see https://ariakit.org/components/dialog
  * @example
- * ```jsx
- * const dialog = useDialogStore();
- * <Dialog store={dialog}>
+ * ```jsx {4}
+ * const [open, setOpen] = useState(false);
+ *
+ * <Dialog open={open} onClose={() => setOpen(false)}>
  *   <DialogDismiss />
  * </Dialog>
  * ```
@@ -90,7 +91,10 @@ if (process.env.NODE_ENV !== "production") {
 export interface DialogDismissOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**
-   * Object returned by the `useDialogStore` hook.
+   * Object returned by the
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * component's context will be used.
    */
   store?: DialogStore;
 }

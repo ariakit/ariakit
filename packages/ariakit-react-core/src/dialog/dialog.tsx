@@ -578,10 +578,13 @@ export function createDialogComponent<T extends DialogOptions>(
  * Renders a dialog element.
  * @see https://ariakit.org/components/dialog
  * @example
- * ```jsx
- * const dialog = useDialogStore();
- * <button onClick={dialog.toggle}>Open dialog</button>
- * <Dialog store={dialog}>Dialog</Dialog>
+ * ```jsx {4-6}
+ * const [open, setOpen] = useState(false);
+ *
+ * <button onClick={() => setOpen(true)}>Open dialog</button>
+ * <Dialog open={open} onClose={() => setOpen(false)}>
+ *   Dialog
+ * </Dialog>
  * ```
  */
 export const Dialog = createDialogComponent(
