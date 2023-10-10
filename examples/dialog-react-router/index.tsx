@@ -9,19 +9,13 @@ import {
 } from "react-router-dom";
 import "./style.css";
 
-function Tweet() {
+function Post() {
   const navigate = useNavigate();
-  const dialog = Ariakit.useDialogStore({
-    open: true,
-    setOpen(open) {
-      if (!open) {
-        navigate("/");
-      }
-    },
-  });
+  const close = () => navigate("/");
   return (
     <Ariakit.Dialog
-      store={dialog}
+      open
+      onClose={close}
       backdrop={<div className="backdrop" />}
       className="dialog"
     >
@@ -29,10 +23,10 @@ function Tweet() {
         className="button secondary dismiss"
         render={<Link to="/" />}
       />
-      <Ariakit.DialogHeading hidden>Tweet</Ariakit.DialogHeading>
-      <form className="form" onSubmit={dialog.hide}>
+      <Ariakit.DialogHeading hidden>Post</Ariakit.DialogHeading>
+      <form className="form" onSubmit={close}>
         <label>
-          <Ariakit.VisuallyHidden>Tweet text</Ariakit.VisuallyHidden>
+          <Ariakit.VisuallyHidden>Post</Ariakit.VisuallyHidden>
           <Ariakit.Focusable
             autoFocus
             className="input"
@@ -40,7 +34,7 @@ function Tweet() {
           />
         </label>
         <Ariakit.Button type="submit" className="button primary">
-          Tweet
+          Post
         </Ariakit.Button>
       </form>
     </Ariakit.Dialog>
@@ -50,8 +44,8 @@ function Tweet() {
 function Home() {
   return (
     <>
-      <Link to="/tweet" className="button primary">
-        Tweet
+      <Link to="/post" className="button">
+        Post
       </Link>
       <Outlet />
     </>
@@ -65,7 +59,7 @@ export default function Example() {
     <MemoryRouter>
       <Routes>
         <Route path="/" element={<Home />}>
-          <Route path="/tweet" element={<Tweet />} />
+          <Route path="/post" element={<Post />} />
         </Route>
       </Routes>
     </MemoryRouter>

@@ -42,6 +42,6 @@
     w-10
     h-10
     p-0
-    [transform:translate(-8px,-8px)]
+    ![transform:translate(-8px,-8px)]
   ;
 }

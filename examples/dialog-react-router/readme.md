@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Using <a href="https://reactrouter.com">React Router</a> to create a modal <a href="/components/dialog">Dialog</a> that's controlled by the browser history.
+Using [React Router](https://reactrouter.com) to create a modal [Dialog](/components/dialog) that's controlled by the browser history.
 
 </div>
 
@@ -27,24 +27,15 @@ Using <a href="https://reactrouter.com">React Router</a> to create a modal <a hr
 
 ## Controlling the Dialog state
 
-To control the open state, you can pass the [`open`](/reference/use-dialog-store#open) and [`setOpen`](/reference/use-dialog-store#setopen) props to [`useDialogStore`](/reference/use-dialog-store). These props allow you to synchronize the dialog state with other state sources, such as the browser history.
+To control the open state, you can pass the [`open`](/reference/dialog#open) and [`onClose`](/reference/dialog#onclose) props to the [`Dialog`](/reference/dialog) component. These props allow you to synchronize the dialog state with other state sources, such as the browser history.
 
-In this example, since the dialog is only rendered when the route matches, we can pass `open: true` to the store so that the dialog is always open. Then, we can use [`setOpen`](/reference/use-dialog-store#setopen) to navigate back when the dialog is closed:
+In this example, since the dialog is only rendered when the route matches, we can pass `open={true}` to the [`Dialog`](/reference/dialog) so that the dialog is always open. Then, we can use [`onClose`](/reference/dialog#onclose) to navigate back when the dialog is closed:
 
-```js {4,7}
+```jsx
 const navigate = useNavigate();
 
-const dialog = Ariakit.useDialogStore({
-  open: true,
-  setOpen(open) {
-    if (!open) {
-      navigate("/");
-    }
-  },
-});
+<Dialog open onClose={() => navigate("/")}>
 ```
-
-You can learn more about controlled state on the [Component stores](/guide/component-stores#controlled-state) guide.
 
 ## Related examples
 
