@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Showing notification toasts using libraries like <a href="https://fkhadra.github.io/react-toastify/introduction">react-toastify</a> and <a href="https://react-hot-toast.com/">react-hot-toast</a> while keeping a modal <a href="/components/dialog">Dialog</a> open with the <a href="/reference/dialog#getpersistentelements"><code>getPersistentElements</code></a> prop.
+Showing notification toasts using libraries like [react-toastify](https://fkhadra.github.io/react-toastify/introduction) and [react-hot-toast](https://react-hot-toast.com/) while keeping a modal [Dialog](/components/dialog) open with the [`getPersistentElements`](/reference/dialog#getpersistentelements) prop.
 
 </div>
 
@@ -42,5 +42,6 @@ Note that the elements returned by this function **must be present in the DOM** 
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
+- [](/examples/dialog-backdrop-scrollable)
 
 </div>

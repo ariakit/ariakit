@@ -1,39 +1,37 @@
-import * as Ariakit from "@ariakit/react";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./style.css";
+import { useState } from "react";
+import { Button, Dialog, DialogDismiss, DialogHeading } from "@ariakit/react";
+import { ToastContainer, toast } from "react-toastify";
 
 function Example() {
-  const dialog = Ariakit.useDialogStore();
+  const [open, setOpen] = useState(false);
   return (
     <div className="wrapper">
-      <Ariakit.Button className="button" onClick={() => toast("Hello!")}>
+      <Button className="button" onClick={() => toast("Hello!")}>
         Say Hello
-      </Ariakit.Button>
-      <Ariakit.Button className="button" onClick={dialog.show}>
+      </Button>
+      <Button className="button" onClick={() => setOpen(true)}>
         Show modal
-      </Ariakit.Button>
-      <Ariakit.Dialog
-        store={dialog}
-        backdrop={<div className="backdrop" />}
+      </Button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
         getPersistentElements={() => document.querySelectorAll(".Toastify")}
+        backdrop={<div className="backdrop" />}
         className="dialog"
       >
-        <Ariakit.DialogHeading className="heading">
-          Notification
-        </Ariakit.DialogHeading>
+        <DialogHeading className="heading">Notification</DialogHeading>
         <p className="description">
           Click on the button below to show a toast.
         </p>
         <div className="buttons">
-          <Ariakit.Button className="button" onClick={() => toast("Hello!")}>
+          <Button className="button" onClick={() => toast("Hello!")}>
             Say Hello
-          </Ariakit.Button>
-          <Ariakit.DialogDismiss className="button secondary">
-            Cancel
-          </Ariakit.DialogDismiss>
+          </Button>
+          <DialogDismiss className="button secondary">Cancel</DialogDismiss>
         </div>
-      </Ariakit.Dialog>
+      </Dialog>
     </div>
   );
 }

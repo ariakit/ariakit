@@ -1,6 +1,9 @@
 ---
 tags:
   - Dialog
+  - Button
+  - Focusable
+  - VisuallyHidden
   - Routing
   - React Router
 ---
@@ -22,6 +25,9 @@ Using [React Router](https://reactrouter.com) to create a modal [Dialog](/compon
 <div data-cards="components">
 
 - [](/components/dialog)
+- [](/components/button)
+- [](/components/focusable)
+- [](/components/visually-hidden)
 
 </div>
 
