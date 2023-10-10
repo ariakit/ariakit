@@ -757,9 +757,16 @@ export interface DialogOptions<T extends As = "div">
    * Determines whether an element outside of the dialog will be focused when
    * the dialog is hidden if another element hasn't been focused in the action
    * of hiding the dialog (for example, by clicking or tabbing into another
-   * tabbable element outside of the dialog). By default, this is usually the
-   * disclosure element. The `finalFocus` prop can be used to define a different
-   * element to be focused.
+   * tabbable element outside of the dialog).
+   *
+   * By default, this is usually the disclosure element. The
+   * [`finalFocus`](https://ariakit.org/reference/dialog#finalfocus) prop can be
+   * used to define a different element to be focused.
+   *
+   * Live examples:
+   * - [Dialog with Next.js App
+   *   Router](https://ariakit.org/examples/dialog-next-router)
+   * - [Sliding menu](https://ariakit.org/examples/menu-slide)
    * @default true
    */
   autoFocusOnHide?: BooleanOrCallback<HTMLElement | null>;
@@ -783,9 +790,12 @@ export interface DialogOptions<T extends As = "div">
    * Determines the element that will receive focus once the dialog is closed,
    * provided that no other element has been focused while the dialog was being
    * hidden (e.g., by clicking or tabbing into another tabbable element outside
-   * of the dialog). However, if `autoFocusOnHide` is set to `false`, this prop
-   * will have no effect. If left unset, the element that was focused before the
-   * dialog was opened will be focused again.
+   * of the dialog).
+   * - If
+   *   [`autoFocusOnHide`](https://ariakit.org/reference/dialog#autofocusonhide)
+   *   is set to `false`, this prop will have no effect.
+   * - If left unset, the element that was focused before the dialog was opened
+   *   will be focused again.
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
 }

@@ -10,7 +10,7 @@ tags:
 
 <div data-description>
 
-Using <a href="https://nextjs.org/docs/app/building-your-application/routing/parallel-routes">Next.js Parallel Routes</a> to create an accessible modal <a href="/components/dialog">Dialog</a> that is rendered on the server and controlled by the URL, with built-in focus management.
+Using [Next.js Parallel Routes](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes) to create an accessible modal [Dialog](/components/dialog) that is rendered on the server and controlled by the URL, with built-in focus management.
 
 </div>
 
@@ -28,24 +28,15 @@ Using <a href="https://nextjs.org/docs/app/building-your-application/routing/par
 
 ## Controlling the Dialog state
 
-To control the open state, you can pass the [`open`](/reference/use-dialog-store#open) and [`setOpen`](/reference/use-dialog-store#setopen) props to [`useDialogStore`](/reference/use-dialog-store). These props allow you to synchronize the dialog state with other state sources, such as the browser history.
+To control the open state, you can pass the [`open`](/reference/dialog#open) and [`onClose`](/reference/dialog#onclose) props to the [`Dialog`](/reference/dialog) component. These props allow you to synchronize the dialog state with other state sources, such as the browser history.
 
-In this example, since the dialog is only rendered when the route matches, we can pass `open: true` to the store so that the dialog is always open. Then, we can use [`setOpen`](/reference/use-dialog-store#setopen) to navigate back when the dialog is closed:
+In this example, since the dialog is only rendered when the route matches, we can pass `open={true}` to the [`Dialog`](/reference/dialog) component so that the dialog is always open. Then, we can use [`onClose`](/reference/dialog#onclose) to navigate back when the dialog is closed:
 
-```js
+```jsx
 const router = useRouter();
 
-const dialog = Ariakit.useDialogStore({
-  open: true,
-  setOpen(open) {
-    if (!open) {
-      router.push("/previews/dialog-next-router");
-    }
-  },
-});
+<Dialog open onClose={() => router.push("/previews/dialog-next-router")}>
 ```
-
-You can learn more about controlled state on the [Component stores](/guide/component-stores#controlled-state) guide.
 
 ## Restoring focus on hide
 

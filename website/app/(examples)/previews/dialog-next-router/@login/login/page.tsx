@@ -8,14 +8,10 @@ export default function Page() {
 
   const close = () => router.push("/previews/dialog-next-router");
 
-  const dialog = Ariakit.useDialogStore({
-    open: true,
-    setOpen: (open) => !open && close(),
-  });
-
   return (
     <Ariakit.Dialog
-      store={dialog}
+      open
+      onClose={close}
       // React portal is not rendered on the server, so we disable it.
       portal={false}
       backdrop={<div className="backdrop" />}
@@ -31,10 +27,11 @@ export default function Page() {
     >
       <Ariakit.DialogHeading className="heading">Login</Ariakit.DialogHeading>
       <form
-        // This is using client actions, which is still an experimental feature
-        // on React. You can change it to an onSubmit handler.
-        action={close}
         className="form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          close();
+        }}
       >
         <label>
           Email <input type="email" className="input" />
