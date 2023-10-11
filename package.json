@@ -70,9 +70,9 @@
   },
   "dependencies": {
     "@babel/core": "7.23.0",
-    "@babel/preset-env": "7.22.20",
+    "@babel/preset-env": "7.23.2",
     "@babel/preset-react": "7.22.15",
-    "@babel/preset-typescript": "7.23.0",
+    "@babel/preset-typescript": "7.23.2",
     "@babel/types": "7.23.0",
     "@changesets/cli": "2.26.2",
     "@guidepup/playwright": "0.10.0",
