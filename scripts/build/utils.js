@@ -50,12 +50,12 @@ export function getPackageJson(rootPath, prod = false) {
     if (includeTypes) {
       return {
         import: {
-          default: `./${join(esmDir, path)}.js`,
           types: `./${join(cjsDir, path)}.d.ts`,
+          default: `./${join(esmDir, path)}.js`,
         },
         require: {
-          default: `./${join(cjsDir, path)}.cjs`,
           types: `./${join(cjsDir, path)}.d.cts`,
+          default: `./${join(cjsDir, path)}.cjs`,
         },
       };
     }
