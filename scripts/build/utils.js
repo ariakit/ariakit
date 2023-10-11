@@ -38,12 +38,27 @@ export function getPackageJson(rootPath, prod = false) {
   const cjsDir = getCJSDir();
   const esmDir = getESMDir();
 
-  /** @param {string} path */
-  const getExports = (path) => {
+  /**
+   * @param {string} path
+   * @param {boolean} includeTypes
+   */
+  const getExports = (path, includeTypes) => {
     if (!prod) {
       return path.replace(sourcePath, `./${sourceDir}`);
     }
     path = removeExt(path).replace(sourcePath, "");
+    if (includeTypes) {
+      return {
+        import: {
+          default: `./${join(esmDir, path)}.js`,
+          types: `./${join(cjsDir, path)}.d.ts`,
+        },
+        require: {
+          default: `./${join(cjsDir, path)}.cjs`,
+          types: `./${join(cjsDir, path)}.d.cts`,
+        },
+      };
+    }
     return {
       import: `./${join(esmDir, path)}.js`,
       require: `./${join(cjsDir, path)}.cjs`,
@@ -53,10 +68,10 @@ export function getPackageJson(rootPath, prod = false) {
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
       if (name === "index") {
-        return { ".": getExports(path), ...acc };
+        return { ".": getExports(path, true), ...acc };
       }
       const pathname = `./${name.replace(/\/index$/, "")}`;
-      return { ...acc, [pathname]: getExports(path) };
+      return { ...acc, [pathname]: getExports(path, false) };
     },
     {},
   );

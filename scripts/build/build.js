@@ -1,3 +1,4 @@
+import path from "path";
 import spawn from "cross-spawn";
 import fse from "fs-extra";
 import { build } from "tsup";
@@ -47,6 +48,7 @@ spawn.sync(
 );
 
 fse.copySync(esmDir, cjsDir);
+fse.copySync(path.join(cjsDir, "index.d.ts"), path.join(cjsDir, "index.d.cts"));
 
 const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
