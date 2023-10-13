@@ -107,6 +107,6 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface FormRadioOptions<T extends As = "input">
   extends FormFieldOptions<T>,
-    Omit<RadioOptions<T>, "store"> {}
+    Omit<RadioOptions<T>, "store" | "name"> {}
 
 export type FormRadioProps<T extends As = "input"> = Props<FormRadioOptions<T>>;

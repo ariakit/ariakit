@@ -89,7 +89,7 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface FormCheckboxOptions<T extends As = "input">
   extends FormFieldOptions<T>,
-    Omit<CheckboxOptions<T>, "store"> {}
+    Omit<CheckboxOptions<T>, "store" | "name"> {}
 
 export type FormCheckboxProps<T extends As = "input"> = Props<
   FormCheckboxOptions<T>
