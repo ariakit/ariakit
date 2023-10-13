@@ -18,11 +18,9 @@ export default function Example() {
 
   const onChange =
     (setValue: typeof setControlledValue) => (event: React.SyntheticEvent) => {
-      const element = event.target as HTMLElement | HTMLInputElement;
-      if (!("value" in element)) return;
+      const element = event.target as HTMLInputElement;
       const { value, checked } = element;
       if (!value) return;
-      // Never check Apple
       if (value === "Apple") return;
       setValue((prev) => {
         if (checked) return value;
@@ -32,10 +30,9 @@ export default function Example() {
 
   const onArrayChange =
     (setValue: typeof setControlledValues) => (event: React.SyntheticEvent) => {
-      const element = event.target as HTMLElement | HTMLInputElement;
-      if (!("value" in element)) return;
+      const element = event.target as HTMLInputElement;
       const { value, checked } = element;
-      // Never check Apple
+      if (!value) return;
       if (value === "Apple") return;
       if (checked) {
         return setValue((prev) => [...prev, value]);
