@@ -40,12 +40,8 @@ for (const { format, outDir } of builds) {
     entry,
     format,
     outDir,
+    dts: true,
     splitting: true,
-    dts: {
-      compilerOptions: {
-        incremental: false,
-      },
-    },
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
     },
