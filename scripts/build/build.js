@@ -1,3 +1,6 @@
+import spawn from "cross-spawn";
+import fse from "fs-extra";
+import { glob } from "glob";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -30,6 +33,32 @@ const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 
+spawn.sync(
+  "tsc",
+  [
+    "--emitDeclarationOnly",
+    "--project",
+    "tsconfig.build.json",
+    "--noEmit",
+    "false",
+    "--outDir",
+    esmDir,
+  ],
+  { stdio: "inherit" },
+);
+
+fse.copySync(esmDir, cjsDir);
+
+const declarationFiles = glob.sync("**/*.d.ts", {
+  cwd: cjsDir,
+  absolute: true,
+});
+
+for (const file of declarationFiles) {
+  const ctsFile = file.replace(/\.d\.ts$/, ".d.cts");
+  fse.copySync(file, ctsFile);
+}
+
 const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
@@ -42,11 +71,8 @@ await Promise.all(
       format,
       outDir,
       splitting: true,
-      dts: {
-        compilerOptions: {
-          types: ["node"],
-          typeRoots: ["./node_modules/@types", "../../node_modules/@types"],
-        },
+      esbuildOptions(options) {
+        options.chunkNames = "__chunks/[hash]";
       },
     }),
   ),

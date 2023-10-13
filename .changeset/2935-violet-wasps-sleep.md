@@ -5,4 +5,4 @@
 "@ariakit/test": patch
 ---
 
-Fixed TypeScript declaration files on CommonJS projects using `NodeNext` as the `moduleResolution`.
+Fixed TypeScript declaration files in CommonJS projects using `NodeNext` for `moduleResolution`.

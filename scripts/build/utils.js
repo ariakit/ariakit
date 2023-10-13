@@ -46,7 +46,10 @@ export function getPackageJson(rootPath, prod = false) {
     path = removeExt(path).replace(sourcePath, "");
     return {
       import: `./${join(esmDir, path)}.js`,
-      require: `./${join(cjsDir, path)}.cjs`,
+      require: {
+        types: `./${join(cjsDir, path)}.d.cts`,
+        default: `./${join(cjsDir, path)}.cjs`,
+      },
     };
   };
 
@@ -66,7 +69,7 @@ export function getPackageJson(rootPath, prod = false) {
     ...pkg,
     main: prod ? join(cjsDir, "index.cjs") : join(sourceDir, "index.ts"),
     module: prod ? join(esmDir, "index.js") : join(sourceDir, "index.ts"),
-    types: prod ? join(cjsDir, "index.d.cts") : join(sourceDir, "index.ts"),
+    types: prod ? join(cjsDir, "index.d.ts") : join(sourceDir, "index.ts"),
     exports: {
       ...moduleExports,
       "./package.json": "./package.json",
@@ -266,7 +269,7 @@ function getProxyPackageContents(rootPath, moduleName, path) {
     sideEffects: false,
     main: join(prefix, mainDir, `${path}.cjs`),
     module: join(prefix, moduleDir, `${path}.js`),
-    types: join(prefix, mainDir, `${path}.d.cts`),
+    types: join(prefix, mainDir, `${path}.d.ts`),
   };
   return JSON.stringify(json, null, 2);
 }
