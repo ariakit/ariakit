@@ -265,8 +265,8 @@ function getProxyPackageContents(rootPath, moduleName, path) {
     private: true,
     sideEffects: false,
     main: join(prefix, mainDir, `${path}.cjs`),
-    types: join(prefix, mainDir, `${path}.d.cts`),
     module: join(prefix, moduleDir, `${path}.js`),
+    types: join(prefix, mainDir, `${path}.d.cts`),
   };
   return JSON.stringify(json, null, 2);
 }

@@ -36,13 +36,19 @@ const builds = /** @type {const} */ ([
 ]);
 
 await Promise.all(
-  builds.map(async ({ format, outDir }) => {
-    await build({
+  builds.flatMap(({ format, outDir }) => [
+    build({
       entry,
       format,
       outDir,
-      dts: true,
       splitting: true,
-    });
-  }),
+    }),
+    build({
+      entry,
+      format,
+      outDir,
+      splitting: true,
+      dts: { only: true },
+    }),
+  ]),
 );
