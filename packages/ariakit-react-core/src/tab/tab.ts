@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import { useEvent, useId } from "../utils/hooks.js";
@@ -47,7 +47,7 @@ export const useTab = createHook<TabOptions>(
     // https://github.com/ariakit/ariakit/issues/1721
     const defaultId = useId();
     const id = props.id || defaultId;
-    const dimmed = props.disabled;
+    const dimmed = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {

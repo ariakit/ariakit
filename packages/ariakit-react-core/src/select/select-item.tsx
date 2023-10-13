@@ -2,7 +2,7 @@ import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeHoverOptions } from "../composite/composite-hover.js";
 import { useCompositeHover } from "../composite/composite-hover.js";
@@ -66,7 +66,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     );
 
     const id = useId(props.id);
-    const disabled = props.disabled;
+    const disabled = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {

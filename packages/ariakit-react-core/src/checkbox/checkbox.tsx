@@ -1,9 +1,11 @@
 import type { ChangeEvent, InputHTMLAttributes, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
 import {
   useEvent,
+  useForceUpdate,
   useMergeRefs,
   useTagName,
   useWrapElement,
@@ -27,7 +29,7 @@ function isNativeCheckbox(tagName?: string, type?: string) {
   return tagName === "input" && (!type || type === "checkbox");
 }
 
-function getNonArrayValue<T>(value: T) {
+function getPrimitiveValue<T>(value: T) {
   if (Array.isArray(value)) {
     return value.toString();
   }
@@ -48,6 +50,7 @@ function getNonArrayValue<T>(value: T) {
 export const useCheckbox = createHook<CheckboxOptions>(
   ({
     store,
+    name,
     value: valueProp,
     checked: checkedProp,
     defaultChecked,
@@ -63,8 +66,8 @@ export const useCheckbox = createHook<CheckboxOptions>(
       if (state?.value === undefined) return _checked;
       if (valueProp != null) {
         if (Array.isArray(state.value)) {
-          const nonArrayValue = getNonArrayValue(valueProp);
-          return state.value.includes(nonArrayValue);
+          const primitiveValue = getPrimitiveValue(valueProp);
+          return state.value.includes(primitiveValue);
         }
         return state.value === valueProp;
       }
@@ -78,18 +81,30 @@ export const useCheckbox = createHook<CheckboxOptions>(
     const nativeCheckbox = isNativeCheckbox(tagName, props.type);
     const mixed = checked ? checked === "mixed" : undefined;
     const isChecked = checked === "mixed" ? false : checked;
+    const disabled = disabledFromProps(props);
+    // When the checked property is programmatically set on the change event, we
+    // need to schedule the element's property update, so the controlled
+    // isChecked state can be taken into account.
+    const [propertyUpdated, schedulePropertyUpdate] = useForceUpdate();
 
     useEffect(() => {
       const element = ref.current;
       if (!element) return;
       setMixed(element, mixed);
+      if (nativeCheckbox) return;
       element.checked = isChecked;
-    }, [mixed, isChecked]);
+      if (name !== undefined) {
+        element.name = name;
+      }
+      if (valueProp !== undefined) {
+        element.value = `${valueProp}`;
+      }
+    }, [propertyUpdated, mixed, nativeCheckbox, isChecked, name, valueProp]);
 
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
-      if (props.disabled) {
+      if (disabled) {
         event.stopPropagation();
         event.preventDefault();
         return;
@@ -99,6 +114,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
         // If the element is not a native checkbox, we need to manually update
         // its checked property.
         event.currentTarget.checked = !event.currentTarget.checked;
+        schedulePropertyUpdate();
       }
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
@@ -108,12 +124,17 @@ export const useCheckbox = createHook<CheckboxOptions>(
 
       store?.setValue((prevValue) => {
         if (valueProp == null) return elementChecked;
-        const nonArrayValue = getNonArrayValue(valueProp);
+        const primitiveValue = getPrimitiveValue(valueProp);
         if (!Array.isArray(prevValue)) {
-          return prevValue === nonArrayValue ? false : nonArrayValue;
+          return prevValue === primitiveValue ? false : primitiveValue;
         }
-        if (elementChecked) return [...prevValue, nonArrayValue];
-        return prevValue.filter((v) => v !== nonArrayValue);
+        if (elementChecked) {
+          if (prevValue.includes(primitiveValue)) {
+            return prevValue;
+          }
+          return [...prevValue, primitiveValue];
+        }
+        return prevValue.filter((v) => v !== primitiveValue);
       });
     });
 
@@ -151,6 +172,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
     props = useCommand({ clickOnEnter: !nativeCheckbox, ...props });
 
     return {
+      name: nativeCheckbox ? name : undefined,
       value: nativeCheckbox ? valueProp : undefined,
       checked: isChecked,
       ...props,
@@ -191,6 +213,10 @@ export interface CheckboxOptions<T extends As = "input">
    * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
    */
   store?: CheckboxStore;
+  /**
+   * The native `name` attribute.
+   */
+  name?: string;
   /**
    * The value of the checkbox. This is useful when the same checkbox store is
    * used for multiple `Checkbox` elements, in which case the value will be an

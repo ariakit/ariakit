@@ -1,7 +1,7 @@
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -39,11 +39,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     );
 
     const mounted = store.useState("mounted");
-    const disabled =
-      props.disabled ||
-      props["aria-disabled"] === true ||
-      props["aria-disabled"] === "true";
-
+    const disabled = disabledFromProps(props);
     const showTimeoutRef = useRef(0);
 
     // Clear the show timeout if the anchor is unmounted

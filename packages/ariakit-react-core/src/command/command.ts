@@ -6,6 +6,7 @@ import {
   isSelfTarget,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -63,6 +64,7 @@ export const useCommand = createHook<CommandOptions>(
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
     const isDuplicate = "data-command" in props;
+    const disabled = disabledFromProps(props);
 
     const onKeyDownProp = props.onKeyDown;
 
@@ -72,7 +74,7 @@ export const useCommand = createHook<CommandOptions>(
 
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
-      if (props.disabled) return;
+      if (disabled) return;
       if (!isSelfTarget(event)) return;
       if (isTextField(element)) return;
       if (element.isContentEditable) return;
@@ -122,7 +124,7 @@ export const useCommand = createHook<CommandOptions>(
 
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
-      if (props.disabled) return;
+      if (disabled) return;
       if (event.metaKey) return;
 
       const isSpace = clickOnSpace && event.key === " ";
