@@ -1,5 +1,5 @@
+import { cpSync } from "fs";
 import spawn from "cross-spawn";
-import fse from "fs-extra";
 import { glob } from "glob";
 import { build } from "tsup";
 import {
@@ -47,7 +47,7 @@ spawn.sync(
   { stdio: "inherit" },
 );
 
-fse.copySync(esmDir, cjsDir);
+cpSync(esmDir, cjsDir, { recursive: true });
 
 const declarationFiles = glob.sync("**/*.d.ts", {
   cwd: cjsDir,
@@ -56,7 +56,7 @@ const declarationFiles = glob.sync("**/*.d.ts", {
 
 for (const file of declarationFiles) {
   const ctsFile = file.replace(/\.d\.ts$/, ".d.cts");
-  fse.copySync(file, ctsFile);
+  cpSync(file, ctsFile);
 }
 
 const builds = /** @type {const} */ ([
