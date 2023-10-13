@@ -1,7 +1,7 @@
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import { sync } from "@ariakit/core/utils/store";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
@@ -65,10 +65,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const parentMenuBar = store.menubar;
     const hasParentMenu = !!parentMenu;
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
-    const disabled =
-      props.disabled ||
-      props["aria-disabled"] === true ||
-      props["aria-disabled"] === "true";
+    const disabled = disabledFromProps(props);
 
     useEffect(() => {
       // Makes sure that the menu button is assigned as the menu disclosure

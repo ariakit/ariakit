@@ -252,6 +252,20 @@ export function isFalsyBooleanCallback<T extends unknown[]>(
 }
 
 /**
+ * Checks whether something is disabled or not based on its props.
+ */
+export function disabledFromProps(props: {
+  disabled?: boolean;
+  "aria-disabled"?: boolean | "true" | "false";
+}) {
+  return (
+    props.disabled ||
+    props["aria-disabled"] === true ||
+    props["aria-disabled"] === "true"
+  );
+}
+
+/**
  * Returns the first value that is not `undefined`.
  */
 export function defaultValue<T extends readonly any[]>(...values: T) {

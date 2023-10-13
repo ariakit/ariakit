@@ -1,7 +1,9 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { useEffect } from "react";
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
 import { useCheckbox } from "../checkbox/checkbox.js";
+import { useInitialValue } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -11,7 +13,41 @@ import type { As, Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
-import type { MenuStore } from "./menu-store.js";
+import type { MenuStore, MenuStoreValues } from "./menu-store.js";
+
+type ValueState = MenuStoreValues[string];
+
+function getPrimitiveValue<T>(value: T) {
+  if (Array.isArray(value)) {
+    return value.toString();
+  }
+  return value as Exclude<T, readonly any[]>;
+}
+
+function getValue(
+  storeValue: ValueState,
+  value?: MenuItemCheckboxOptions["value"],
+  checked?: MenuItemCheckboxOptions["checked"],
+) {
+  if (value === undefined) {
+    if (Array.isArray(storeValue)) return storeValue;
+    return !!checked;
+  }
+  const primitiveValue = getPrimitiveValue(value);
+  if (!Array.isArray(storeValue)) {
+    if (checked) {
+      return primitiveValue;
+    }
+    return storeValue === primitiveValue ? false : storeValue;
+  }
+  if (checked) {
+    if (storeValue.includes(primitiveValue)) {
+      return storeValue;
+    }
+    return [...storeValue, primitiveValue];
+  }
+  return storeValue.filter((v) => v !== primitiveValue);
+}
 
 /**
  * Returns props to create a `MenuItemCheckbox` component.
@@ -27,7 +63,15 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
-  ({ store, name, checked, defaultChecked, hideOnClick = false, ...props }) => {
+  ({
+    store,
+    name,
+    value,
+    checked,
+    defaultChecked: defaultCheckedProp,
+    hideOnClick = false,
+    ...props
+  }) => {
     const context = useMenuScopedContext();
     store = store || context;
 
@@ -37,9 +81,36 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
         "MenuItemCheckbox must be wrapped in a MenuList or Menu component",
     );
 
+    const defaultChecked = useInitialValue(defaultCheckedProp);
+
+    // Sets defaultChecked in store
+    useEffect(() => {
+      store?.setValue(name, (prevValue = []) => {
+        if (!defaultChecked) return prevValue;
+        return getValue(prevValue, value, true);
+      });
+    }, [store, name, value, defaultChecked]);
+
+    // Sets checked in store
+    useEffect(() => {
+      if (checked === undefined) return;
+      store?.setValue(name, (prevValue) => {
+        return getValue(prevValue, value, checked);
+      });
+    }, [store, name, value, checked]);
+
     const checkboxStore = useCheckboxStore({
       value: store.useState((state) => state.values[name]),
-      setValue: (value) => store?.setValue(name, value),
+      setValue(internalValue) {
+        store?.setValue(name, () => {
+          if (checked === undefined) return internalValue;
+          const nextValue = getValue(internalValue, value, checked);
+          if (!Array.isArray(nextValue)) return nextValue;
+          if (!Array.isArray(internalValue)) return nextValue;
+          if (shallowEqual(internalValue, nextValue)) return internalValue;
+          return nextValue;
+        });
+      },
     });
 
     props = {
@@ -47,7 +118,13 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
       ...props,
     };
 
-    props = useCheckbox({ store: checkboxStore, checked, ...props });
+    props = useCheckbox({
+      store: checkboxStore,
+      name,
+      value,
+      checked,
+      ...props,
+    });
     props = useMenuItem({ store, hideOnClick, ...props });
 
     return props;

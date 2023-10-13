@@ -19,6 +19,7 @@ import {
   hasFocus,
   isFocusable,
 } from "@ariakit/core/utils/focus";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
@@ -210,7 +211,7 @@ export const useFocusable = createHook<FocusableOptions>(
       }, [focusable]);
     }
 
-    const disabled = focusable && props.disabled;
+    const disabled = focusable && disabledFromProps(props);
     const trulyDisabled = !!disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 

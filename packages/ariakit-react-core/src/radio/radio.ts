@@ -1,9 +1,16 @@
 import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
 import { useEffect, useRef } from "react";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
-import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
+import {
+  useEvent,
+  useForceUpdate,
+  useId,
+  useMergeRefs,
+  useTagName,
+} from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
@@ -43,7 +50,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  * ```
  */
 export const useRadio = createHook<RadioOptions>(
-  ({ store, value, checked, ...props }) => {
+  ({ store, name, value, checked, ...props }) => {
     const context = useRadioContext();
     store = store || context;
 
@@ -69,15 +76,36 @@ export const useRadio = createHook<RadioOptions>(
     const onChangeProp = props.onChange;
     const tagName = useTagName(ref, props.as || "input");
     const nativeRadio = isNativeRadio(tagName, props.type);
+    const disabled = disabledFromProps(props);
+    // When the checked property is programmatically set on the change event, we
+    // need to schedule the element's property update, so the controlled
+    // isChecked state can be taken into account.
+    const [propertyUpdated, schedulePropertyUpdate] = useForceUpdate();
+
+    useEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+      if (nativeRadio) return;
+      if (isChecked !== undefined) {
+        element.checked = isChecked;
+      }
+      if (name !== undefined) {
+        element.name = name;
+      }
+      if (value !== undefined) {
+        element.value = `${value}`;
+      }
+    }, [propertyUpdated, nativeRadio, isChecked, name, value]);
 
     const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
-      if (props.disabled) {
+      if (disabled) {
         event.preventDefault();
         event.stopPropagation();
         return;
       }
       if (!nativeRadio) {
         event.currentTarget.checked = true;
+        schedulePropertyUpdate();
       }
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
@@ -121,6 +149,7 @@ export const useRadio = createHook<RadioOptions>(
     props = useCompositeItem({ store, clickOnEnter: !nativeRadio, ...props });
 
     return {
+      name: nativeRadio ? name : undefined,
       value: nativeRadio ? value : undefined,
       checked: isChecked,
       ...props,
@@ -160,6 +189,10 @@ export interface RadioOptions<T extends As = "input">
    * context will be used.
    */
   store?: RadioStore;
+  /**
+   * The native `name` attribute.
+   */
+  name?: string;
   /**
    * The value of the radio button.
    */

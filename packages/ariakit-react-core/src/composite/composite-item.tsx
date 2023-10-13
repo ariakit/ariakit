@@ -11,6 +11,7 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
@@ -182,7 +183,8 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (row.baseElement !== state.baseElement) return;
       return row.id;
     });
-    const trulyDisabled = props.disabled && !props.accessibleWhenDisabled;
+    const disabled = disabledFromProps(props);
+    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {

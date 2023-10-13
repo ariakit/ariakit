@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import type { ChangeEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
-import { useWrapElement } from "../utils/hooks.js";
+import { useInitialValue, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -16,6 +17,13 @@ import {
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
+
+function getValue<T>(prevValue: T, value: T, checked?: boolean) {
+  if (checked === undefined) return prevValue;
+  if (checked) return value;
+  // if (!checked && prevValue === value) return false;
+  return prevValue;
+}
 
 /**
  * Returns props to create a `MenuItemRadio` component.
@@ -51,9 +59,24 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
         "MenuItemRadio must be wrapped in a MenuList or Menu component",
     );
 
-    const isChecked = store.useState(
-      (state) => checked ?? state.values[name] === value,
-    );
+    const defaultChecked = useInitialValue(props.defaultChecked);
+
+    // Sets defaultChecked in store
+    useEffect(() => {
+      store?.setValue(name, (prevValue = false) => {
+        return getValue(prevValue, value, defaultChecked);
+      });
+    }, [store, name, value, defaultChecked]);
+
+    // Sets checked in store
+    useEffect(() => {
+      if (checked === undefined) return;
+      store?.setValue(name, (prevValue) => {
+        return getValue(prevValue, value, checked);
+      });
+    }, [store, name, value, checked]);
+
+    const isChecked = store.useState((state) => state.values[name] === value);
 
     props = useWrapElement(
       props,
@@ -71,12 +94,16 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     };
 
     props = useRadio({
+      name,
       value,
       checked: isChecked,
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         onChangeProp?.(event);
         if (event.defaultPrevented) return;
-        store?.setValue(name, value);
+        const element = event.currentTarget;
+        store?.setValue(name, (prevValue) => {
+          return getValue(prevValue, value, checked ?? element.checked);
+        });
       },
       ...props,
     });
