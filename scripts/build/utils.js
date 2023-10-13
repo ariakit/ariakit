@@ -46,7 +46,10 @@ export function getPackageJson(rootPath, prod = false) {
     path = removeExt(path).replace(sourcePath, "");
     return {
       import: `./${join(esmDir, path)}.js`,
-      require: `./${join(cjsDir, path)}.cjs`,
+      require: {
+        types: `./${join(cjsDir, path)}.d.cts`,
+        default: `./${join(cjsDir, path)}.cjs`,
+      },
     };
   };
 

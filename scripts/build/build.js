@@ -1,5 +1,6 @@
+import { cpSync } from "fs";
 import spawn from "cross-spawn";
-import fse from "fs-extra";
+import { glob } from "glob";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -46,21 +47,33 @@ spawn.sync(
   { stdio: "inherit" },
 );
 
-fse.copySync(esmDir, cjsDir);
+cpSync(esmDir, cjsDir, { recursive: true });
+
+const declarationFiles = glob.sync("**/*.d.ts", {
+  cwd: cjsDir,
+  absolute: true,
+});
+
+for (const file of declarationFiles) {
+  const ctsFile = file.replace(/\.d\.ts$/, ".d.cts");
+  cpSync(file, ctsFile);
+}
 
 const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
 ]);
 
-for (const { format, outDir } of builds) {
-  await build({
-    entry,
-    format,
-    outDir,
-    splitting: true,
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-    },
-  });
-}
+await Promise.all(
+  builds.map(({ format, outDir }) =>
+    build({
+      entry,
+      format,
+      outDir,
+      splitting: true,
+      esbuildOptions(options) {
+        options.chunkNames = "__chunks/[hash]";
+      },
+    }),
+  ),
+);

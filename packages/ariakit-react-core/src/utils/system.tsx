@@ -57,7 +57,7 @@ export function memo<P, T extends React.FC<P>>(
  * <Component customProp render={<button />} />
  */
 export function createComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactNode,
+  render: (props: Props<O>) => React.ReactElement | null,
 ) {
   const Role = (props: Props<O>, ref: React.Ref<any>) =>
     render({ ref, ...props });
@@ -83,7 +83,7 @@ export function createComponent<O extends Options>(
  * <Component customProp render={<button />} />
  */
 export function createMemoComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactNode,
+  render: (props: Props<O>) => React.ReactElement | null,
 ) {
   const Role = createComponent(render);
   return React.memo(Role) as unknown as typeof Role;

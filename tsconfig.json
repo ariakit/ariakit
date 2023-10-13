@@ -6,7 +6,6 @@
     "jsx": "react-jsx",
     "types": ["node", "vitest/globals"],
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "incremental": true,
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": true,
@@ -22,8 +21,7 @@
     "noUnusedParameters": true,
     "stripInternal": true,
     "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true
+    "verbatimModuleSyntax": true
   },
   "include": [
     "**/*.ts",
