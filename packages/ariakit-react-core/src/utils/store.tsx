@@ -142,6 +142,7 @@ export function useStoreProps<
     if (value === undefined) return;
     canSyncValue.current = true;
     return sync(store, [key], () => {
+      if (value === undefined) return;
       if (!canSyncValue.current) return;
       store.setState(key, value);
     });

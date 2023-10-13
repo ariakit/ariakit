@@ -21,8 +21,7 @@
     "noUnusedParameters": true,
     "stripInternal": true,
     "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true
+    "verbatimModuleSyntax": true
   },
   "include": [
     "**/*.ts",

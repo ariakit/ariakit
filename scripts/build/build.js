@@ -35,15 +35,14 @@ const builds = /** @type {const} */ ([
   { format: "cjs", outDir: cjsDir },
 ]);
 
-for (const { format, outDir } of builds) {
-  await build({
-    entry,
-    format,
-    outDir,
-    dts: true,
-    splitting: true,
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-    },
-  });
-}
+await Promise.all(
+  builds.map(async ({ format, outDir }) => {
+    await build({
+      entry,
+      format,
+      outDir,
+      dts: true,
+      splitting: true,
+    });
+  }),
+);
