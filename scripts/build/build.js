@@ -1,6 +1,3 @@
-import path from "path";
-import spawn from "cross-spawn";
-import fse from "fs-extra";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -33,23 +30,6 @@ const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 
-spawn.sync(
-  "tsc",
-  [
-    "--emitDeclarationOnly",
-    "--project",
-    "tsconfig.build.json",
-    "--noEmit",
-    "false",
-    "--outDir",
-    esmDir,
-  ],
-  { stdio: "inherit" },
-);
-
-fse.copySync(esmDir, cjsDir);
-fse.copySync(path.join(cjsDir, "index.d.ts"), path.join(cjsDir, "index.d.cts"));
-
 const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
@@ -61,6 +41,11 @@ for (const { format, outDir } of builds) {
     format,
     outDir,
     splitting: true,
+    dts: {
+      compilerOptions: {
+        incremental: false,
+      },
+    },
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
     },

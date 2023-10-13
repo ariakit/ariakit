@@ -38,27 +38,12 @@ export function getPackageJson(rootPath, prod = false) {
   const cjsDir = getCJSDir();
   const esmDir = getESMDir();
 
-  /**
-   * @param {string} path
-   * @param {boolean} includeTypes
-   */
-  const getExports = (path, includeTypes) => {
+  /** @param {string} path */
+  const getExports = (path) => {
     if (!prod) {
       return path.replace(sourcePath, `./${sourceDir}`);
     }
     path = removeExt(path).replace(sourcePath, "");
-    if (includeTypes) {
-      return {
-        import: {
-          types: `./${join(cjsDir, path)}.d.ts`,
-          default: `./${join(esmDir, path)}.js`,
-        },
-        require: {
-          types: `./${join(cjsDir, path)}.d.cts`,
-          default: `./${join(cjsDir, path)}.cjs`,
-        },
-      };
-    }
     return {
       import: `./${join(esmDir, path)}.js`,
       require: `./${join(cjsDir, path)}.cjs`,
@@ -68,10 +53,10 @@ export function getPackageJson(rootPath, prod = false) {
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
       if (name === "index") {
-        return { ".": getExports(path, true), ...acc };
+        return { ".": getExports(path), ...acc };
       }
       const pathname = `./${name.replace(/\/index$/, "")}`;
-      return { ...acc, [pathname]: getExports(path, false) };
+      return { ...acc, [pathname]: getExports(path) };
     },
     {},
   );
@@ -81,7 +66,7 @@ export function getPackageJson(rootPath, prod = false) {
     ...pkg,
     main: prod ? join(cjsDir, "index.cjs") : join(sourceDir, "index.ts"),
     module: prod ? join(esmDir, "index.js") : join(sourceDir, "index.ts"),
-    types: prod ? join(cjsDir, "index.d.ts") : join(sourceDir, "index.ts"),
+    types: prod ? join(cjsDir, "index.d.cts") : join(sourceDir, "index.ts"),
     exports: {
       ...moduleExports,
       "./package.json": "./package.json",
@@ -281,7 +266,7 @@ function getProxyPackageContents(rootPath, moduleName, path) {
     sideEffects: false,
     main: join(prefix, mainDir, `${path}.cjs`),
     module: join(prefix, moduleDir, `${path}.js`),
-    types: join(prefix, mainDir, `${path}.d.ts`),
+    types: join(prefix, mainDir, `${path}.d.cts`),
   };
   return JSON.stringify(json, null, 2);
 }
