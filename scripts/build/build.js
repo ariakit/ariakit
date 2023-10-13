@@ -36,19 +36,18 @@ const builds = /** @type {const} */ ([
 ]);
 
 await Promise.all(
-  builds.flatMap(({ format, outDir }) => [
+  builds.map(({ format, outDir }) =>
     build({
       entry,
       format,
       outDir,
       splitting: true,
+      dts: {
+        compilerOptions: {
+          types: ["node"],
+          typeRoots: ["./node_modules/@types", "../../node_modules/@types"],
+        },
+      },
     }),
-    build({
-      entry,
-      format,
-      outDir,
-      splitting: true,
-      dts: { only: true },
-    }),
-  ]),
+  ),
 );
