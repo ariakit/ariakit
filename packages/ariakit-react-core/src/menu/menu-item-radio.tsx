@@ -21,7 +21,6 @@ import type { MenuStore } from "./menu-store.js";
 function getValue<T>(prevValue: T, value: T, checked?: boolean) {
   if (checked === undefined) return prevValue;
   if (checked) return value;
-  // if (!checked && prevValue === value) return false;
   return prevValue;
 }
 
@@ -159,6 +158,18 @@ export interface MenuItemRadioOptions<T extends As = "div">
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.
    */
   name: string;
+  /**
+   * The controlled checked state of the element. It will set the menu
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state if
+   * provided.
+   */
+  checked?: boolean;
+  /**
+   * The default checked state of the element. It will set the default value in
+   * the menu [`values`](https://ariakit.org/reference/menu-provider#values)
+   * state if provided.
+   */
+  defaultChecked?: boolean;
   /**
    * @default false
    */

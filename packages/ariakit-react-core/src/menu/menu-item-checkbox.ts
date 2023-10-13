@@ -172,6 +172,18 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
    */
   name: string;
   /**
+   * The controlled checked state of the element. It will set the menu
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state if
+   * provided.
+   */
+  checked?: boolean;
+  /**
+   * The default checked state of the element. It will set the default value in
+   * the menu [`values`](https://ariakit.org/reference/menu-provider#values)
+   * state if provided.
+   */
+  defaultChecked?: boolean;
+  /**
    * @default false
    */
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
