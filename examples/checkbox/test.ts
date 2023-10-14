@@ -10,7 +10,6 @@ test("markup", () => {
           <input
             aria-checked="false"
             class="checkbox"
-            data-command=""
             type="checkbox"
           />
            I have read and agree to the terms and conditions

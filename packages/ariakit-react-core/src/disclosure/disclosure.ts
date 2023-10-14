@@ -10,6 +10,8 @@ import type { As, Props } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
+function onLoadedMetadataCapture() {}
+
 /**
  * Returns props to create a `Disclosure` component.
  * @see https://ariakit.org/components/disclosure
@@ -59,7 +61,8 @@ export const useDisclosure = createHook<DisclosureOptions>(
 
     const onClickProp = props.onClick;
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
-    const isDuplicate = "data-disclosure" in props;
+    const isDuplicate =
+      onLoadedMetadataCapture === props.onLoadedMetadataCapture;
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       store?.setDisclosureElement(event.currentTarget);
@@ -73,9 +76,9 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const contentElement = store.useState("contentElement");
 
     props = {
-      "data-disclosure": "",
       "aria-expanded": expanded,
       "aria-controls": contentElement?.id,
+      onLoadedMetadataCapture,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       onMouseDown,

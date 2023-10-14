@@ -36,6 +36,8 @@ function isNativeClick(event: KeyboardEvent) {
   return false;
 }
 
+function onLoadedMetadataCapture() {}
+
 /**
  * Returns props to create a `Command` component. If the element is not a native
  * clickable element (like a button), this hook will return additional props to
@@ -63,8 +65,9 @@ export const useCommand = createHook<CommandOptions>(
 
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
-    const isDuplicate = "data-command" in props;
     const disabled = disabledFromProps(props);
+    const isDuplicate =
+      onLoadedMetadataCapture === props.onLoadedMetadataCapture;
 
     const onKeyDownProp = props.onKeyDown;
 
@@ -142,9 +145,9 @@ export const useCommand = createHook<CommandOptions>(
     });
 
     props = {
-      "data-command": "",
       "data-active": active ? "" : undefined,
       type: isNativeButton ? "button" : undefined,
+      onLoadedMetadataCapture,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,

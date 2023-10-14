@@ -4,7 +4,6 @@ test("markup", () => {
   expect(q.button()).toMatchInlineSnapshot(`
     <button
       class="button"
-      data-command=""
       type="button"
     >
       Button
