@@ -1,4 +1,4 @@
-import { click, hover, press, q, sleep, type } from "@ariakit/test";
+import { click, hover, press, q, sleep, type, waitFor } from "@ariakit/test";
 
 test("show/hide on click", async () => {
   expect(q.menu("File")).not.toBeInTheDocument();
@@ -108,7 +108,7 @@ test("hide on escape", async () => {
   expect(q.menuitem("Share")).toHaveFocus();
   await sleep(600);
   await press.Space();
-  expect(q.menuitem("Email Link")).toHaveFocus();
+  await waitFor(() => expect(q.menuitem("Email Link")).toHaveFocus());
   await press.Escape();
   expect(q.menuitem("File")).toHaveFocus();
   expect(q.menu("Share")).not.toBeInTheDocument();
