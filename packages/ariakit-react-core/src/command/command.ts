@@ -10,7 +10,12 @@ import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
+import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+  useTagName,
+} from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 
@@ -36,7 +41,7 @@ function isNativeClick(event: KeyboardEvent) {
   return false;
 }
 
-function onLoadedMetadataCapture() {}
+const symbol = Symbol("command");
 
 /**
  * Returns props to create a `Command` component. If the element is not a native
@@ -66,8 +71,7 @@ export const useCommand = createHook<CommandOptions>(
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
     const disabled = disabledFromProps(props);
-    const isDuplicate =
-      onLoadedMetadataCapture === props.onLoadedMetadataCapture;
+    const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
     const onKeyDownProp = props.onKeyDown;
 
@@ -147,7 +151,7 @@ export const useCommand = createHook<CommandOptions>(
     props = {
       "data-active": active ? "" : undefined,
       type: isNativeButton ? "button" : undefined,
-      onLoadedMetadataCapture,
+      ...metadataProps,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,
