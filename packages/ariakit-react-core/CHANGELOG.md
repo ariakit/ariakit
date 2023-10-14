@@ -1,5 +1,29 @@
 # @ariakit/react-core
 
+## 0.3.5
+
+### Patch Changes
+
+- [`#2935`](https://github.com/ariakit/ariakit/pull/2935) Fixed TypeScript declaration files in CommonJS projects using `NodeNext` for `moduleResolution`.
+
+- [`#2945`](https://github.com/ariakit/ariakit/pull/2945) Added `name` and `value` properties to non-native input elements rendered by [`Checkbox`](https://ariakit.org/reference/checkbox), [`Radio`](https://ariakit.org), [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox), and [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio).
+
+  It's now possible to access the `name` and `value` properties from the `event.target` element in the [`onChange`](https://ariakit.org/reference/checkbox#onchange) event handler.
+
+- [`#2945`](https://github.com/ariakit/ariakit/pull/2945) Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) and associated components not receiving the [`disabled`](https://ariakit.org/reference/composite-item#disabled) prop when it's being used by a higher-level component such as [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) or [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio).
+
+- [`#2945`](https://github.com/ariakit/ariakit/pull/2945) It's now possible to control the menu [`values`](https://ariakit.org/reference/menu-provider#values) state by passing the [`checked`](https://ariakit.org/reference/menu-item-checkbox#checked), [`defaultChecked`](https://ariakit.org/reference/menu-item-checkbox#defaultchecked) and [`onChange`](https://ariakit.org/reference/menu-item-checkbox#onchange) props to [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) and [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio).
+
+- [`#2948`](https://github.com/ariakit/ariakit/pull/2948) Added `"use client"` directive to all modules.
+
+- [`#2949`](https://github.com/ariakit/ariakit/pull/2949) The [Select](https://ariakit.org/components/select) component will now display the selected option(s) on the underlying native select element even when the corresponding [`SelectItem`](https://ariakit.org/reference/select-item) components aren't rendered.
+
+  This comes in handy when the [`SelectPopover`](https://ariakit.org/reference/select-popover) component is rendered dynamically (for instance, using the [`unmountOnHide`](https://ariakit.org/reference/select-popover#unmountonhide) prop) or a [`defaultValue`](https://ariakit.org/reference/select-provider#defaultvalue) is given without a matching [`SelectItem`](https://ariakit.org/reference/select-item) component.
+
+- Improved JSDocs.
+
+- Updated dependencies: `@ariakit/core@0.3.4`.
+
 ## 0.3.4
 
 ### Patch Changes
