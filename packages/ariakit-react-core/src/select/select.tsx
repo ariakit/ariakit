@@ -1,5 +1,6 @@
 import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { toArray } from "@ariakit/core/utils/array";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -234,6 +235,15 @@ export const useSelect = createHook<SelectOptions>(
                 );
               }}
             >
+              {toArray(value).map((value) => {
+                if (value == null) return null;
+                if (values.includes(value)) return null;
+                return (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
               {values.map((value) => (
                 <option key={value} value={value}>
                   {value}
