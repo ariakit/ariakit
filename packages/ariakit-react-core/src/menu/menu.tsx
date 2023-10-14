@@ -1,4 +1,3 @@
-"use client";
 import type { MutableRefObject, RefObject } from "react";
 import { createRef, useEffect, useRef, useState } from "react";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";

@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity } from "@ariakit/core/utils/misc";

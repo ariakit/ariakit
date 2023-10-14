@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";

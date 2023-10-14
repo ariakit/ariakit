@@ -1,4 +1,3 @@
-"use client";
 import { useContext, useMemo } from "react";
 import type { ReactElement } from "react";
 import { invariant, normalizeString } from "@ariakit/core/utils/misc";

@@ -1,4 +1,3 @@
-"use client";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import {

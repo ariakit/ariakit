@@ -1,4 +1,3 @@
-"use client";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Component, Options, Props } from "../utils/types.js";
 

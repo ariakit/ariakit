@@ -1,4 +1,3 @@
-"use client";
 import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
 import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

@@ -1,4 +1,3 @@
-"use client";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

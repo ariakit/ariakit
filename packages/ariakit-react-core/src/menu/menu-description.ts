@@ -1,4 +1,3 @@
-"use client";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

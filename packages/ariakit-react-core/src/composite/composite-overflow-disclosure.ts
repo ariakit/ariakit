@@ -1,4 +1,3 @@
-"use client";
 import type { FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { sync } from "@ariakit/core/utils/store";

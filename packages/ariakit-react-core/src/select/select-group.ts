@@ -1,4 +1,3 @@
-"use client";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

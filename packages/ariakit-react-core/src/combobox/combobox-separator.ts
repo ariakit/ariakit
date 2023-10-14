@@ -1,4 +1,3 @@
-"use client";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";

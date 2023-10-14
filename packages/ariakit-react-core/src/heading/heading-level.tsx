@@ -1,4 +1,3 @@
-"use client";
 import type { ReactNode } from "react";
 import { useContext } from "react";
 import { HeadingContext } from "./heading-context.js";

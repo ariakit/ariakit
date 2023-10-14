@@ -1,4 +1,3 @@
-"use client";
 import type { ReactElement, ReactNode } from "react";
 import type { FormStoreValues } from "@ariakit/core/form/form-store";
 import type { PickRequired } from "@ariakit/core/utils/types";

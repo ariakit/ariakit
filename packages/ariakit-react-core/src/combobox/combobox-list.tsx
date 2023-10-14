@@ -1,4 +1,3 @@
-"use client";
 import type { FocusEvent, KeyboardEvent } from "react";
 import { useRef } from "react";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";

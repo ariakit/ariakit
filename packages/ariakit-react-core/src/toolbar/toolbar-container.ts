@@ -1,4 +1,3 @@
-"use client";
 import type { CompositeContainerOptions } from "../composite/composite-container.js";
 import { useCompositeContainer } from "../composite/composite-container.js";
 import {

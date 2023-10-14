@@ -1,4 +1,3 @@
-"use client";
 import type { FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";

@@ -1,4 +1,3 @@
-"use client";
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

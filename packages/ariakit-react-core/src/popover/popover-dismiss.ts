@@ -1,4 +1,3 @@
-"use client";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

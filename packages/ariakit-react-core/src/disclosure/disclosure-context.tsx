@@ -1,4 +1,3 @@
-"use client";
 import { createStoreContext } from "../utils/system.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 

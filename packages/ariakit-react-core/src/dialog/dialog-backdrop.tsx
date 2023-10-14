@@ -1,4 +1,3 @@
-"use client";
 import { isValidElement, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";

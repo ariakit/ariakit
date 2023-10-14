@@ -1,4 +1,3 @@
-"use client";
 import type { ReactNode } from "react";
 import { ToolbarContextProvider } from "./toolbar-context.js";
 import { useToolbarStore } from "./toolbar-store.js";

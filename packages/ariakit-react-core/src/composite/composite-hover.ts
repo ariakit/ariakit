@@ -1,4 +1,3 @@
-"use client";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { closest, contains } from "@ariakit/core/utils/dom";
 import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";

@@ -1,4 +1,3 @@
-"use client";
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

@@ -1,4 +1,3 @@
-"use client";
 import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
 import { useEffect, useRef } from "react";
 import { disabledFromProps } from "@ariakit/core/utils/misc";

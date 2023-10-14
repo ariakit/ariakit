@@ -1,4 +1,3 @@
-"use client";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { useCallback } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";

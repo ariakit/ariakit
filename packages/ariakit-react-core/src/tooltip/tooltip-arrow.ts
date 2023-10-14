@@ -1,4 +1,3 @@
-"use client";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";

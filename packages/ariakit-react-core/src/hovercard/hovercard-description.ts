@@ -1,4 +1,3 @@
-"use client";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
 import { usePopoverDescription } from "../popover/popover-description.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

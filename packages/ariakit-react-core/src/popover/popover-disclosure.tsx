@@ -1,4 +1,3 @@
-"use client";
 import type { MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";

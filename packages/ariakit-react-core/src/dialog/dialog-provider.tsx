@@ -1,4 +1,3 @@
-"use client";
 import type { ReactNode } from "react";
 import { DialogContextProvider } from "./dialog-context.js";
 import { useDialogStore } from "./dialog-store.js";

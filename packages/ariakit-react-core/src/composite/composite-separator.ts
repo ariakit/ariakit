@@ -1,4 +1,3 @@
-"use client";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { SeparatorOptions } from "../separator/separator.js";
 import { useSeparator } from "../separator/separator.js";

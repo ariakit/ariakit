@@ -1,4 +1,3 @@
-"use client";
 import type { MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";

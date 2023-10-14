@@ -1,4 +1,3 @@
-"use client";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

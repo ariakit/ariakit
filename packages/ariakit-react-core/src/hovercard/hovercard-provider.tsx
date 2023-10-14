@@ -1,4 +1,3 @@
-"use client";
 import type { ReactNode } from "react";
 import { HovercardContextProvider } from "./hovercard-context.js";
 import { useHovercardStore } from "./hovercard-store.js";

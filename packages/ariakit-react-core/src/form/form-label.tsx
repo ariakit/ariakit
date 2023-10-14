@@ -1,4 +1,3 @@
-"use client";
 import type { MouseEvent } from "react";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";

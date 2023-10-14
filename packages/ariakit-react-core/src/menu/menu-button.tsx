@@ -1,4 +1,3 @@
-"use client";
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";

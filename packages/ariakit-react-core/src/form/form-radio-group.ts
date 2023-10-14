@@ -1,4 +1,3 @@
-"use client";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { FormGroupOptions } from "./form-group.js";

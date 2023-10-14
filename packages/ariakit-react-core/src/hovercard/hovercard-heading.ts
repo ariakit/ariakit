@@ -1,4 +1,3 @@
-"use client";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
 import { usePopoverHeading } from "../popover/popover-heading.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

@@ -1,4 +1,3 @@
-"use client";
 import { useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.js";

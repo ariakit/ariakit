@@ -1,4 +1,3 @@
-"use client";
 import type { CSSProperties, FocusEvent } from "react";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
