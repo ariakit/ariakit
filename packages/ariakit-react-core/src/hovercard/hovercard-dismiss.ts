@@ -1,3 +1,4 @@
+"use client";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

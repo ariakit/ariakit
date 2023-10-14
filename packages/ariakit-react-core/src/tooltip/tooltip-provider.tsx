@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { TooltipContextProvider } from "./tooltip-context.js";
 import { useTooltipStore } from "./tooltip-store.js";

@@ -1,3 +1,4 @@
+"use client";
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";

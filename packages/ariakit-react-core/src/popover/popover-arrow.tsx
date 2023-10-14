@@ -1,3 +1,4 @@
+"use client";
 import { useMemo, useState } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";

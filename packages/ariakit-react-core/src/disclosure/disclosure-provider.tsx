@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { DisclosureContextProvider } from "./disclosure-context.js";
 import { useDisclosureStore } from "./disclosure-store.js";

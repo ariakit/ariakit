@@ -1,3 +1,4 @@
+"use client";
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

@@ -1,3 +1,4 @@
+"use client";
 import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";

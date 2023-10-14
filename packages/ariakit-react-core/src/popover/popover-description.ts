@@ -1,3 +1,4 @@
+"use client";
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
 import { useDialogDescription } from "../dialog/dialog-description.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef } from "react";
 import type { FocusEvent, MouseEvent } from "react";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";

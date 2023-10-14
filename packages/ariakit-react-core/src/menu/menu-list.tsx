@@ -1,3 +1,4 @@
+"use client";
 import type { KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";

@@ -1,3 +1,4 @@
+"use client";
 import { createStoreContext } from "../utils/system.js";
 import type { CollectionStore } from "./collection-store.js";
 

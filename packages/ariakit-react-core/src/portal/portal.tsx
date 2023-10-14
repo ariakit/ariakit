@@ -1,3 +1,4 @@
+"use client";
 import type { MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";

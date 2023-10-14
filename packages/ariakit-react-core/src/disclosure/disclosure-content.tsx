@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";

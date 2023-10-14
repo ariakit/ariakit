@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import type { ChangeEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";

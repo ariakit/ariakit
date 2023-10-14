@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";

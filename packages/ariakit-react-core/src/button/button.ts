@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import type { CommandOptions } from "../command/command.js";

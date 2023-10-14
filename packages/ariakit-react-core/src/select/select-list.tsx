@@ -1,3 +1,4 @@
+"use client";
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";

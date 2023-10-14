@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { useMenuBarStore } from "./menu-bar-store.js";
 import type { MenuBarStoreProps } from "./menu-bar-store.js";

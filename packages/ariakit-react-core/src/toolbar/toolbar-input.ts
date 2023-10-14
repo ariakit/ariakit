@@ -1,3 +1,4 @@
+"use client";
 import type { CompositeInputOptions } from "../composite/composite-input.js";
 import { useCompositeInput } from "../composite/composite-input.js";
 import {

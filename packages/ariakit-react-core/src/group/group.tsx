@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { useWrapElement } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

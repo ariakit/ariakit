@@ -1,3 +1,4 @@
+"use client";
 import { useRef } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";

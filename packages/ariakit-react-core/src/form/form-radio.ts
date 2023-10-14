@@ -1,3 +1,4 @@
+"use client";
 import type { ChangeEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";

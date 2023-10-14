@@ -1,3 +1,4 @@
+"use client";
 import type { MouseEvent, FocusEvent as ReactFocusEvent } from "react";
 import { useEffect, useState } from "react";
 import { contains } from "@ariakit/core/utils/dom";

@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { PopoverContextProvider } from "./popover-context.js";
 import { usePopoverStore } from "./popover-store.js";

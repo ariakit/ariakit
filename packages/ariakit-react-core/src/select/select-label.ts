@@ -1,3 +1,4 @@
+"use client";
 import type { MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";

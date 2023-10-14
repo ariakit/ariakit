@@ -1,3 +1,4 @@
+"use client";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";

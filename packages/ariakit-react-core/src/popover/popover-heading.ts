@@ -1,3 +1,4 @@
+"use client";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
 import { useDialogHeading } from "../dialog/dialog-heading.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

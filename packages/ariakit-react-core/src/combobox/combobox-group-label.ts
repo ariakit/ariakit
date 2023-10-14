@@ -1,3 +1,4 @@
+"use client";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";

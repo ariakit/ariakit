@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { RadioContextProvider } from "./radio-context.js";
 import { useRadioStore } from "./radio-store.js";

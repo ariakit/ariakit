@@ -1,3 +1,4 @@
+"use client";
 import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";

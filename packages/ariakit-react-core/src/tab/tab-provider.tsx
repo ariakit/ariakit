@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { TabContextProvider } from "./tab-context.js";
 import { useTabStore } from "./tab-store.js";

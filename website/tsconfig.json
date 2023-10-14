@@ -3,7 +3,9 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "incremental": true,
+    "isolatedModules": true
   },
   "include": [
     "**/*.ts",

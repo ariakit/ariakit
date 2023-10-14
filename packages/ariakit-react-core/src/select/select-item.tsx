@@ -1,3 +1,4 @@
+"use client";
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";

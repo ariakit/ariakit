@@ -1,3 +1,4 @@
+"use client";
 import type { ReactNode } from "react";
 import { ComboboxContextProvider } from "./combobox-context.js";
 import { useComboboxStore } from "./combobox-store.js";

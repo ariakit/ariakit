@@ -1,3 +1,4 @@
+"use client";
 import { matches } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";

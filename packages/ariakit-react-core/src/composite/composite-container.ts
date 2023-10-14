@@ -1,3 +1,4 @@
+"use client";
 // TODO: Add data-attribute to indicate whether it's expanded?
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";

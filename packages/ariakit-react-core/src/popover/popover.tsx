@@ -1,3 +1,4 @@
+"use client";
 import type { HTMLAttributes } from "react";
 import { useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
