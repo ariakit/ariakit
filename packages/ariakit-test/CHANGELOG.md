@@ -1,5 +1,15 @@
 # @ariakit/test
 
+## 0.3.1
+
+### Patch Changes
+
+- [`#2935`](https://github.com/ariakit/ariakit/pull/2935) Fixed TypeScript declaration files in CommonJS projects using `NodeNext` for `moduleResolution`.
+
+- [`#2948`](https://github.com/ariakit/ariakit/pull/2948) Added `"use client"` directive to all modules.
+
+- Updated dependencies: `@ariakit/core@0.3.4`.
+
 ## 0.3.0
 
 ### Minor Changes

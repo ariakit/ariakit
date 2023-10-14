@@ -1,5 +1,17 @@
 # @ariakit/core
 
+## 0.3.4
+
+### Patch Changes
+
+- [`#2935`](https://github.com/ariakit/ariakit/pull/2935) Fixed TypeScript declaration files in CommonJS projects using `NodeNext` for `moduleResolution`.
+
+- [`#2945`](https://github.com/ariakit/ariakit/pull/2945) Added new `disabledFromProps` function to `@ariakit/core/utils/misc`.
+
+- [`#2948`](https://github.com/ariakit/ariakit/pull/2948) Added `"use client"` directive to all modules.
+
+- Improved JSDocs.
+
 ## 0.3.3
 
 ### Patch Changes
