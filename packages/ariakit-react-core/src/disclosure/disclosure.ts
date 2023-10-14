@@ -4,11 +4,18 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
+import {
+  useBooleanEvent,
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+} from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
+
+const symbol = Symbol("disclosure");
 
 /**
  * Returns props to create a `Disclosure` component.
@@ -59,7 +66,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
 
     const onClickProp = props.onClick;
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
-    const isDuplicate = "data-disclosure" in props;
+    const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
       store?.setDisclosureElement(event.currentTarget);
@@ -73,9 +80,9 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const contentElement = store.useState("contentElement");
 
     props = {
-      "data-disclosure": "",
       "aria-expanded": expanded,
       "aria-controls": contentElement?.id,
+      ...metadataProps,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       onMouseDown,

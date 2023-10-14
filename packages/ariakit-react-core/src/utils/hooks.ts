@@ -390,6 +390,22 @@ export function usePortalRef(
 }
 
 /**
+ * A hook that passes metadata props around without leaking them to the DOM.
+ */
+export function useMetadataProps<T, K extends keyof any>(
+  props: { onLoadedMetadataCapture?: AnyFunction & { [key in K]?: T } },
+  key: K,
+  value: T,
+) {
+  const parent = props.onLoadedMetadataCapture;
+  const onLoadedMetadataCapture = useMemo(() => {
+    return Object.assign(() => {}, { ...parent, [key]: value });
+  }, [parent, key, value]);
+
+  return [parent?.[key], { onLoadedMetadataCapture }] as const;
+}
+
+/**
  * Returns a function that checks whether the mouse is moving.
  */
 export function useIsMouseMoving() {

@@ -7,7 +7,6 @@ test("markup", () => {
         <button
           aria-checked="false"
           class="button"
-          data-command=""
           role="checkbox"
         >
           Unchecked
