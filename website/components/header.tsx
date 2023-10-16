@@ -1,5 +1,7 @@
 import Link from "next/link.js";
 import { getUpdates } from "utils/get-updates.js";
+import { AuthEnabled } from "./auth.jsx";
+import { HeaderAriakitPlus } from "./header-ariakit-plus.jsx";
 import { HeaderLogo } from "./header-logo.js";
 import { HeaderNav } from "./header-nav.js";
 import { HeaderThemeSwitch } from "./header-theme-switch.js";
@@ -60,6 +62,9 @@ export async function Header() {
           <HeaderNav />
         </div>
         <div className="flex-1" />
+        <AuthEnabled>
+          <HeaderAriakitPlus />
+        </AuthEnabled>
         <HeaderUpdates updates={updates.slice(0, 15)} />
         <HeaderThemeSwitch />
       </div>

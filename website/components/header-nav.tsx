@@ -22,7 +22,7 @@ import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
 import type { PageIndexDetail } from "build-pages/index.js";
 import pageIndex from "build-pages/index.js";
 import { groupBy } from "lodash-es";
-import { usePathname } from "next/navigation.js";
+import { useSelectedLayoutSegments } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import {
@@ -565,8 +565,7 @@ const HeaderNavMenu = memo(
 );
 
 export function HeaderNav() {
-  const pathname = usePathname() || "/";
-  const [, category, page] = pathname.split("/");
+  const [category, page] = useSelectedLayoutSegments();
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [pageOpen, setPageOpen] = useState(false);
   const [categorySearchValue, setCategorySearchValue] = useState<string>();

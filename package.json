@@ -75,6 +75,8 @@
     "@babel/preset-typescript": "7.23.2",
     "@babel/types": "7.23.0",
     "@changesets/cli": "2.26.2",
+    "@clerk/clerk-react": "4.26.4",
+    "@clerk/themes": "1.7.7",
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.39.0",
     "@stackblitz/sdk": "1.9.0",

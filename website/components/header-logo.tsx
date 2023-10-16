@@ -1,9 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation.js";
+import { useSelectedLayoutSegments } from "next/navigation.js";
 import { Logo } from "./logo.js";
 
 export function HeaderLogo() {
-  const isHome = usePathname() === "/";
+  const isHome = useSelectedLayoutSegments().length === 0;
   return <Logo iconOnly={!isHome} />;
 }
