@@ -93,7 +93,7 @@
     "@types/react": "18.2.29",
     "@types/react-dom": "18.2.14",
     "@types/stylis": "4.2.2",
-    "@types/textarea-caret": "3.0.1",
+    "@types/textarea-caret": "3.0.2",
     "@types/use-sync-external-store": "0.0.5",
     "@typescript-eslint/eslint-plugin": "6.8.0",
     "@typescript-eslint/parser": "6.8.0",
