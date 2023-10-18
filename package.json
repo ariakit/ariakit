@@ -85,7 +85,7 @@
     "@types/cross-spawn": "6.0.4",
     "@types/fs-extra": "11.0.2",
     "@types/lodash": "4.14.200",
-    "@types/lodash-es": "4.17.9",
+    "@types/lodash-es": "4.17.10",
     "@types/marked": "5.0.2",
     "@types/node": "18.18.5",
     "@types/postcss-import": "14.0.1",
