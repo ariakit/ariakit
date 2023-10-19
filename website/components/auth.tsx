@@ -16,8 +16,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
       <ClerkProvider
         publishableKey={key}
         navigate={(to) => router.push(to)}
-        afterSignInUrl={globalThis.location?.href}
-        afterSignUpUrl={globalThis.location?.href}
+        signInUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}
+        signUpUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}
+        afterSignInUrl={process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}
+        afterSignUpUrl={process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}
+        appearance={{
+          variables: {
+            colorPrimary: "#007acc",
+          },
+        }}
       >
         {children}
       </ClerkProvider>

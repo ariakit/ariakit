@@ -234,11 +234,11 @@ export function PlaygroundClient({
                 : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
             )}
           >
-            {codeBlock}
+            <div className="blur-sm">{codeBlock}</div>
             {collapsible && collapsed && (
               <Button
                 ref={expandRef}
-                className={style.expandButton}
+                className={`${style.expandButton} blur-sm`}
                 onClick={() => {
                   setCollapsed(false);
                   requestAnimationFrame(() => {
