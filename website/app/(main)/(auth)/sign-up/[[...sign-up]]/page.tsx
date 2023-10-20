@@ -2,5 +2,5 @@
 import { SignUp } from "@clerk/clerk-react";
 
 export default function Page() {
-  return <SignUp path="/sign-up" routing="path" />;
+  return <SignUp path="/sign-up" routing="hash" />;
 }

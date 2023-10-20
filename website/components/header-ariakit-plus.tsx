@@ -4,11 +4,9 @@ import { Button, Dialog } from "@ariakit/react";
 import {
   SignIn,
   SignOutButton,
-  SignUp,
   SignedIn,
   SignedOut,
   useSignUp,
-  useUser,
 } from "@clerk/clerk-react";
 import type { CheckoutStatus } from "app/api/checkout-status/route.js";
 import { AriakitPlus } from "icons/ariakit-plus.jsx";
@@ -67,7 +65,7 @@ export function HeaderAriakitPlus() {
         <SignOutButton />
         {/* <UserButton afterSignOutUrl={globalThis.location?.href} /> */}
       </SignedIn>
-      {emailAddress && <SignUp initialValues={{ emailAddress }} />}
+      {/* {emailAddress && <SignUp initialValues={{ emailAddress }} />} */}
     </>
   );
 }
