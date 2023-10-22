@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
 function getButton(locator: Pick<Page, "getByRole">, name: string | RegExp) {
