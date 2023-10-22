@@ -1,4 +1,4 @@
-import { getPrices } from "utils/subscription.js";
+import { getPrices } from "utils/stripe.js";
 
 export async function GET() {
   const prices = await getPrices("Ariakit Plus");

@@ -76,6 +76,7 @@
     "@babel/types": "7.23.0",
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.26.6",
+    "@clerk/nextjs": "4.25.6",
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.39.0",
     "@stackblitz/sdk": "1.9.0",
@@ -165,6 +166,7 @@
     "remark-gfm": "3.0.1",
     "resolve-from": "5.0.0",
     "rimraf": "5.0.5",
+    "sharp": "0.32.6",
     "shiki": "0.14.5",
     "stripe": "14.1.0",
     "stylelint": "15.11.0",
@@ -183,6 +185,7 @@
     "use-local-storage-state": "19.1.0",
     "vitest": "0.34.6",
     "vitest-fail-on-console": "0.5.0",
-    "webpack": "5.89.0"
+    "webpack": "5.89.0",
+    "zod": "3.22.4"
   }
 }

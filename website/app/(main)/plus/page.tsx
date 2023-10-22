@@ -1,6 +1,7 @@
 "use client";
 import { Heading, HeadingLevel } from "@ariakit/react";
 import { useQuery } from "@tanstack/react-query";
+import { InlineLink } from "components/inline-link.jsx";
 import {
   PlusCheckoutButton,
   PlusCheckoutFrame,
@@ -12,7 +13,7 @@ import {
 import { Heart } from "icons/heart.jsx";
 import Image from "next/image.js";
 import Link from "next/link.js";
-import type { Price } from "utils/subscription.js";
+import type { Price } from "utils/stripe.js";
 import examplesImage from "./play-with-examples.png";
 
 async function getPrices(): Promise<Price[]> {
@@ -29,13 +30,13 @@ export default function Page() {
   const monthlyPrice = query.data?.find((price) => !price.yearly);
 
   return (
-    <div className="flex flex-col items-center py-8 sm:py-16 md:pt-32">
+    <div className="flex flex-col items-center py-8 sm:py-16">
       <HeadingLevel>
-        <div className="m-3 max-w-[960px]">
+        <div className="m-3 max-w-[952px]">
           <PlusProvider defaultFeature="edit-examples">
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-y-8 md:grid-cols-2">
               <div className="">
-                <div className="top-20 flex flex-col gap-8 rounded-xl bg-gray-700 p-3 py-8 sm:p-8 md:sticky">
+                <div className="top-20 flex flex-col gap-8 rounded-xl bg-gray-100 p-3 py-8 dark:bg-gray-700 sm:p-8 md:sticky">
                   <Heading className="flex items-center gap-2 text-3xl font-semibold">
                     Ariakit Plus
                   </Heading>
@@ -68,15 +69,15 @@ export default function Page() {
                   </div>
                   <p className="mt-4 self-end">
                     Already a member?{" "}
-                    <Link href="/sign-in" className="font-medium text-blue-300">
+                    <InlineLink render={<Link href="/sign-in" />}>
                       Sign In
-                    </Link>
+                    </InlineLink>
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-8 rounded-2xl p-8">
-                <PlusCheckoutFrame className="md:-mx-8 md:-mt-40" />
-                <PlusFeaturePreviewContainer>
+              <div>
+                <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 md:mx-8" />
+                <PlusFeaturePreviewContainer className="p-8">
                   <PlusFeaturePreview
                     feature="edit-examples"
                     heading="Edit examples"
@@ -85,6 +86,7 @@ export default function Page() {
                       <Image
                         src={examplesImage}
                         alt="Interacting with the open example in a new tab dropdown menu"
+                        priority
                       />
                     </div>
                     <p>

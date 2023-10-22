@@ -36,8 +36,8 @@ import { ChevronRight } from "icons/chevron-right.jsx";
 import { Heart } from "icons/heart.jsx";
 import { twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { createCheckoutSession } from "utils/subscription.js";
-import type { Price } from "utils/subscription.js";
+import type { Price } from "utils/stripe.js";
+import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 
 const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -215,57 +215,83 @@ export const PlusCheckoutButton = forwardRef<
     (state) => !!state.priceId && state.priceId === price?.id,
   );
 
-  if (!price) {
+  const subscription = useSubscription();
+
+  if (!price || subscription.isLoading) {
     return (
       <div className="h-24 animate-pulse rounded-lg border-2 border-transparent bg-black/5 dark:bg-white/5" />
     );
   }
 
+  const isCurrentSubscription = subscription.data === price?.id;
+
   return (
-    <Button
-      ref={ref}
-      data-selected={selected || undefined}
-      accessibleWhenDisabled
-      disabled={selected}
-      {...props}
-      render={
-        <Command
-          flat
-          onClick={async () => {
-            store.setState("priceId", price.id);
-            store.setState("feature", "");
-            store.setState("clientSecret", "");
-            const clientSecret = await createCheckoutSession({
-              priceId: price.id,
-              returnUrl: globalThis.window.location.href,
-            });
-            if (!clientSecret) return;
-            store.setState("clientSecret", clientSecret);
-          }}
-          className="group flex h-24 justify-between border-2 border-solid border-black/10 px-8 text-lg hover:cursor-pointer aria-disabled:opacity-100 data-[selected]:border-blue-600 dark:border-white/10 dark:data-[selected]:border-blue-500"
-          render={props.render}
-        />
-      }
+    <form
+      action="/api/customer-portal"
+      method="post"
+      target="_blank"
+      onSubmit={async (event) => {
+        if (subscription.data) return;
+        event.preventDefault();
+        store.setState("priceId", price.id);
+        store.setState("feature", "");
+        store.setState("clientSecret", "");
+        const res = await fetch("/api/checkout", {
+          method: "post",
+          body: JSON.stringify({ priceId: price.id }),
+        });
+        const clientSecret = await res.json();
+        if (!clientSecret) return;
+        const state = store.getState();
+        if (state.priceId !== price.id) return;
+        store.setState("clientSecret", clientSecret);
+      }}
     >
-      {!!price.difference && (
-        <span className="absolute left-1 top-1 rounded bg-blue-600 p-1 text-xs font-semibold text-white">
-          {Math.round(price.difference * 100)}%
+      <Button
+        type="submit"
+        name="priceId"
+        value={price.id}
+        ref={ref}
+        data-selected={selected || isCurrentSubscription || undefined}
+        accessibleWhenDisabled
+        disabled={selected || isCurrentSubscription}
+        {...props}
+        render={
+          <Command
+            flat
+            render={props.render}
+            className="group flex h-24 w-full justify-between border-2 border-solid border-black/10 px-8 text-lg hover:cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-100 data-[selected]:border-blue-600 dark:border-white/10 dark:data-[selected]:border-blue-500"
+          />
+        }
+      >
+        {isCurrentSubscription ? (
+          <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+            <Check strokeWidth={3} className="h-3 w-3" /> Current plan
+          </span>
+        ) : (
+          !!price.difference && (
+            <span className="absolute left-1 top-1 rounded bg-blue-600 p-1 text-xs text-white">
+              {price.difference * 100}%
+            </span>
+          )
+        )}
+        <span className="font-medium">
+          {price.yearly ? "Yearly" : "Monthly"}
         </span>
-      )}
-      <span className="font-medium">{price.yearly ? "Yearly" : "Monthly"}</span>
-      <span className="text-end font-light text-black/70 dark:text-white/70">
-        <span className="text-2xl tracking-wide text-black dark:text-white">
-          $<span className="font-semibold">{price.amountByMonth / 100}</span>
-        </span>{" "}
-        / month
-      </span>
-      {price.yearly && monthlyPrice && (
-        <span className="absolute bottom-3 text-xs font-medium tracking-wider group-active:bottom-[11px]">
-          <del className="opacity-70">${monthlyPrice.amountByYear / 100}</del> $
-          {price.amountByYear / 100} / year
+        <span className="text-end font-light text-black/70 dark:text-white/70">
+          <span className="text-2xl tracking-wide text-black dark:text-white">
+            $<span className="font-semibold">{price.amountByMonth / 100}</span>
+          </span>{" "}
+          / month
         </span>
-      )}
-    </Button>
+        {price.yearly && monthlyPrice && (
+          <span className="absolute bottom-3 text-xs font-medium tracking-wider group-active:bottom-[11px]">
+            <del className="opacity-70">${monthlyPrice.amountByYear / 100}</del>{" "}
+            ${price.amountByYear / 100} / year
+          </span>
+        )}
+      </Button>
+    </form>
   );
 });
 
@@ -314,7 +340,7 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
       className={twMerge("relative h-full", props.className)}
     >
       {visibility === "hidden" && (
-        <div className="mx-auto mb-8 mt-32 h-full w-full max-w-[410px] animate-pulse rounded-xl bg-black/5 dark:bg-white/5" />
+        <div className="h-full w-full animate-pulse bg-gray-100 dark:bg-black/20" />
       )}
       {clientSecret && (
         <div ref={setWrapper} style={{ visibility }} key={clientSecret}>

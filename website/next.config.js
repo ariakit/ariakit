@@ -23,6 +23,9 @@ const nextConfig = {
       "monaco-vscode-textmate-theme-converter",
     ],
   },
+  images: {
+    domains: ["img.clerk.com"],
+  },
   reactStrictMode: true,
   transpilePackages: ["@ariakit/*"],
   eslint: {
