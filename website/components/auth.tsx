@@ -1,10 +1,7 @@
 "use client";
-import { createContext } from "react";
 import type { PropsWithChildren } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation.js";
-
-const AuthContext = createContext(false);
 
 const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -12,23 +9,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const router = useRouter();
   if (!key) return children;
   return (
-    <AuthContext.Provider value={true}>
-      <ClerkProvider
-        publishableKey={key}
-        navigate={(to) => router.push(to)}
-        signInUrl="/sign-in"
-        signUpUrl="/sign-up"
-        afterSignInUrl="/"
-        afterSignUpUrl="/"
-        appearance={{
-          variables: {
-            colorPrimary: "#007acc",
-          },
-        }}
-      >
-        {children}
-      </ClerkProvider>
-    </AuthContext.Provider>
+    <ClerkProvider
+      publishableKey={key}
+      navigate={(to) => router.push(to)}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
+      appearance={{
+        variables: {
+          colorPrimary: "#007acc",
+        },
+      }}
+    >
+      {children}
+    </ClerkProvider>
   );
 }
 
