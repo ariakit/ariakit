@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { AuthProvider } from "components/auth.jsx";
 import { Footer } from "components/footer.js";
 import { Header } from "components/header.js";
@@ -9,17 +9,18 @@ export function generateMetadata() {
   return getNextPageMetadata();
 }
 
-export default function Layout({ children }: PropsWithChildren) {
+export default function Layout(props: PropsWithChildren<{ modal: ReactNode }>) {
   return (
     <AuthProvider>
       <QueryProvider>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <div>{children}</div>
+          <div>{props.children}</div>
           <div className="mt-auto flex">
             <Footer />
           </div>
         </div>
+        {props.modal}
       </QueryProvider>
     </AuthProvider>
   );

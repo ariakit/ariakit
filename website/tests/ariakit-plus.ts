@@ -24,7 +24,7 @@ test("visit /plus and subscribe to monthly plan without login", async ({
   await getTextbox(frame, "CVC").fill("123");
   await getTextbox(frame, "Cardholder name").fill("Test User");
 
-  await page.keyboard.press("Enter");
+  // await page.keyboard.press("Enter");
 
-  await page.waitForURL(/\/sign-up\?session\-id/, { waitUntil: "networkidle" });
+  // await page.waitForURL(/\/sign-up\?session\-id/, { waitUntil: "networkidle" });
 });

@@ -47,7 +47,7 @@ export function HeaderAriakitPlus() {
                 className="overflow-hidden rounded-full"
               />
               <span className="hidden md:block">
-                {user.fullName || "Ariakit Plus"}
+                {user.firstName || "Ariakit Plus"}
               </span>
               <MenuButtonArrow className="hidden md:block" />
             </MenuButton>

@@ -151,6 +151,7 @@ export const PlusFeaturePreviewContainer = forwardRef<
       hideOnEscape={false}
       hideOnHoverOutside={false}
       hideOnInteractOutside={false}
+      getPersistentElements={() => document.getElementsByTagName("body")}
       updatePosition={() => {}}
       {...props}
       wrapperProps={{
