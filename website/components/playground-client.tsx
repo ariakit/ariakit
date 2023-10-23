@@ -10,6 +10,7 @@ import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
+import { AuthEnabled } from "./auth.jsx";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
 import { PlaygroundBrowser } from "./playground-browser.jsx";
@@ -184,14 +185,16 @@ export function PlaygroundClient({
             {preview}
           </div>
           {type === "wide" && (
-            <PreviewToolbar
-              exampleId={id}
-              files={files}
-              javascriptFiles={javascriptFiles}
-              dependencies={dependencies}
-              devDependencies={devDependencies}
-              language={language}
-            />
+            <AuthEnabled>
+              <PreviewToolbar
+                exampleId={id}
+                files={files}
+                javascriptFiles={javascriptFiles}
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+                language={language}
+              />
+            </AuthEnabled>
           )}
         </div>
       )}
@@ -207,15 +210,17 @@ export function PlaygroundClient({
           >
             <PlaygroundBrowser previewLink={previewLink} />
           </div>
-          <PreviewToolbar
-            exampleId={id}
-            files={files}
-            javascriptFiles={javascriptFiles}
-            dependencies={dependencies}
-            devDependencies={devDependencies}
-            language={language}
-            className="-mt-12 rounded-lg bg-gray-150 p-1 pl-3 dark:bg-gray-850"
-          />
+          <AuthEnabled>
+            <PreviewToolbar
+              exampleId={id}
+              files={files}
+              javascriptFiles={javascriptFiles}
+              dependencies={dependencies}
+              devDependencies={devDependencies}
+              language={language}
+              className="-mt-12 rounded-lg bg-gray-150 p-1 pl-3 dark:bg-gray-850"
+            />
+          </AuthEnabled>
         </div>
       )}
       <div className={style.codeWrapper}>
