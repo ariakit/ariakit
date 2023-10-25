@@ -9,9 +9,7 @@ import {
   useToolbarStore,
 } from "@ariakit/react";
 import { JavaScript } from "icons/javascript.jsx";
-import { NewWindow } from "icons/new-window.jsx";
 import { TypeScript } from "icons/typescript.jsx";
-import Link from "next/link.js";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.jsx";
 import { Popup } from "./popup.jsx";
@@ -20,7 +18,6 @@ import { TooltipButton } from "./tooltip-button.jsx";
 type Language = "ts" | "js";
 
 interface Props {
-  previewLink?: string;
   language?: Language;
   setLanguage?: (language: Language) => void;
   code?: string | null;
@@ -52,12 +49,7 @@ const style = {
   `,
 };
 
-export function PlaygroundToolbar({
-  previewLink,
-  language,
-  setLanguage,
-  code,
-}: Props) {
+export function PlaygroundToolbar({ language, setLanguage, code }: Props) {
   const toolbar = useToolbarStore();
 
   const select = useSelectStore({
@@ -103,20 +95,6 @@ export function PlaygroundToolbar({
           <JavaScript className="h-5 w-5" /> JavaScript
         </SelectItem>
       </SelectPopover>
-      {previewLink && (
-        <ToolbarItem
-          className={style.toolbarItem}
-          render={
-            <TooltipButton
-              title="Open example in a new tab"
-              render={<Link href={previewLink} target="_blank" />}
-            />
-          }
-        >
-          <span className="sr-only">Open example in a new tab</span>
-          <NewWindow strokeWidth={1.5} className="h-5 w-5" />
-        </ToolbarItem>
-      )}
       {code != null && (
         <ToolbarItem
           className={style.toolbarItem}

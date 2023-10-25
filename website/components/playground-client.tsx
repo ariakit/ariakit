@@ -6,16 +6,20 @@ import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
+import { NewWindow } from "icons/new-window.jsx";
+import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
 import { AuthEnabled } from "./auth.jsx";
+import { Command } from "./command.jsx";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
 import { PlaygroundBrowser } from "./playground-browser.jsx";
 import { PlaygroundToolbar } from "./playground-toolbar.jsx";
 import { PreviewToolbar } from "./preview-toolbar.jsx";
+import { TooltipButton } from "./tooltip-button.jsx";
 
 export interface PlaygroundClientProps extends EditorProps {
   id: string;
@@ -174,11 +178,27 @@ export function PlaygroundClient({
             type === "wide" ? "md:rounded-2xl" : "md:rounded-xl",
           )}
         >
+          {type === "wide" && previewLink && (
+            <TooltipButton
+              title="Open preview in a new tab"
+              className="w-10 self-end p-0 text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white"
+              render={
+                <Command
+                  flat
+                  variant="secondary"
+                  render={<Link href={previewLink} target="_blank" />}
+                />
+              }
+            >
+              <span className="sr-only">Open preview in a new tab</span>
+              <NewWindow strokeWidth={1.5} className="h-5 w-5" />
+            </TooltipButton>
+          )}
           <div
             className={twJoin(
               "flex h-full flex-1 flex-col items-center justify-center",
               type === "wide"
-                ? "min-h-[240px] p-6 md:p-12 md:pt-20"
+                ? ["min-h-[240px] p-6 md:p-12", previewLink && "md:pt-10"]
                 : "p-4 md:p-6",
             )}
           >
@@ -235,7 +255,6 @@ export function PlaygroundClient({
           </TabList>
           <PlaygroundToolbar
             code={content}
-            previewLink={previewLink}
             language={language}
             setLanguage={setLanguage}
           />

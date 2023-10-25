@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import { Toolbar, ToolbarItem } from "@ariakit/react";
-import type { ToolbarProps } from "@ariakit/react";
+import type { ComponentPropsWithoutRef } from "react";
+import { Button } from "@ariakit/react";
 import { track } from "@vercel/analytics/react";
 import { Nextjs } from "icons/nextjs.jsx";
 import { Vite } from "icons/vite.jsx";
@@ -12,7 +12,7 @@ import { Command } from "./command.jsx";
 
 type Language = "ts" | "js";
 
-export interface PreviewToolbarProps extends ToolbarProps {
+export interface PreviewToolbarProps extends ComponentPropsWithoutRef<"div"> {
   exampleId: string;
   files: Record<string, string>;
   javascriptFiles?: Record<string, string>;
@@ -59,14 +59,14 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
     };
 
     return (
-      <Toolbar
+      <div
         ref={ref}
         {...props}
         className={twMerge("flex items-center gap-1.5", props.className)}
       >
         <span className="text-sm font-medium opacity-70">Edit with</span>
         {!isAppDir && (
-          <ToolbarItem
+          <Button
             className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
             onClick={onStackblitzClick("vite")}
             render={
@@ -74,7 +74,7 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
                 flat
                 render={
                   !hasSubscription ? (
-                    <Link href="/plus?feature=edit-examples" />
+                    <Link href="/plus?feature=edit-examples" scroll={false} />
                   ) : undefined
                 }
               />
@@ -82,9 +82,9 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
           >
             <Vite className="h-4 w-4" />
             Vite
-          </ToolbarItem>
+          </Button>
         )}
-        <ToolbarItem
+        <Button
           className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
           onClick={onStackblitzClick("next")}
           render={
@@ -92,7 +92,7 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
               flat
               render={
                 !hasSubscription ? (
-                  <Link href="/plus?feature=edit-examples" />
+                  <Link href="/plus?feature=support" scroll={false} />
                 ) : undefined
               }
             />
@@ -100,8 +100,8 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
         >
           <Nextjs className="h-4 w-4" />
           Next.js
-        </ToolbarItem>
-      </Toolbar>
+        </Button>
+      </div>
     );
   },
 );

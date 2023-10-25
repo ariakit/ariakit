@@ -11,6 +11,7 @@ import { SignedIn, useSession, useUser } from "@clerk/clerk-react";
 import { AriakitPlus } from "icons/ariakit-plus.jsx";
 import Image from "next/image.js";
 import Link from "next/link.js";
+import { useSelectedLayoutSegments } from "next/navigation.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 import { Popup } from "./popup.jsx";
@@ -19,22 +20,30 @@ export function HeaderAriakitPlus() {
   const { isLoaded, user } = useUser();
   const { session } = useSession();
   const subscription = useSubscription();
+  const segments = useSelectedLayoutSegments();
 
   if (!isLoaded) return null;
 
   return (
     <>
-      <Button
-        // onClick={() => setOpen(true)}
-        className="text-sm max-sm:w-10 max-sm:p-0"
-        aria-label="Unlock Ariakit Plus"
-        render={<Command variant="plus" render={<Link href="/plus" />} />}
-      >
-        <AriakitPlus className="-translate-y-px" />
-        <span className="hidden sm:inline">
-          Unlock <span className="font-semibold">Ariakit Plus</span>
-        </span>
-      </Button>
+      {!segments.includes("plus") && (
+        <Button
+          // onClick={() => setOpen(true)}
+          className="text-sm max-sm:w-10 max-sm:p-0"
+          aria-label="Unlock Ariakit Plus"
+          render={
+            <Command
+              variant="plus"
+              render={<Link href="/plus" scroll={false} />}
+            />
+          }
+        >
+          <AriakitPlus className="-translate-y-px" />
+          <span className="hidden sm:inline">
+            Unlock <span className="font-semibold">Ariakit Plus</span>
+          </span>
+        </Button>
+      )}
       <SignedIn>
         {user && (
           <MenuProvider placement="bottom-end">

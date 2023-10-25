@@ -5,12 +5,12 @@ import type { UseQueryResult } from "@tanstack/react-query";
 export function useSubscription(): UseQueryResult<string> {
   const { isLoaded, userId } = useAuth();
 
-  const query = useQuery({
+  const query = useQuery<string>({
     enabled: isLoaded && !!userId,
     queryKey: ["subscription", userId],
-    queryFn: async () => {
+    async queryFn() {
       const res = await fetch("/api/subscription");
-      return res.json() as Promise<string>;
+      return res.json();
     },
   });
 

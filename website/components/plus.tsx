@@ -151,9 +151,9 @@ export const PlusFeaturePreviewContainer = forwardRef<
       hideOnEscape={false}
       hideOnHoverOutside={false}
       hideOnInteractOutside={false}
-      getPersistentElements={() => document.getElementsByTagName("body")}
       updatePosition={() => {}}
       {...props}
+      render={<Role.div id={undefined} render={props.render} />}
       wrapperProps={{
         ...props.wrapperProps,
         style: {

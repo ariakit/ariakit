@@ -28,6 +28,7 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
   const isLarge = useMedia("(min-width: 640px)", true);
   const { seen, previousSeen, seeNow } = useUpdates({ updates });
   const popover = Ariakit.usePopoverStore({
+    animated: true,
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {
       if (open) {
@@ -80,9 +81,8 @@ export function HeaderUpdates({ updates, ...props }: HeaderUpdatesProps) {
       <Ariakit.Popover
         store={popover}
         unmountOnHide
-        modal
         shift={-8}
-        className="max-w-[min(var(--popover-available-width),480px)]"
+        className="max-w-[min(var(--popover-available-width),480px)] origin-top-right animate-in fade-in zoom-in-95 data-[leave]:animate-out data-[leave]:fade-out data-[leave]:zoom-out-95"
         onClick={(event) => {
           if (!(event.target instanceof Element)) return;
           const closestAnchor = event.target.closest("a");

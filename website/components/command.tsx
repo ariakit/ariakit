@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
 import { twMerge } from "tailwind-merge";
+import { Focusable } from "./focusable.jsx";
 
 interface CommandProps extends RoleProps<"button"> {
   flat?: boolean;
@@ -10,15 +11,13 @@ interface CommandProps extends RoleProps<"button"> {
 
 export const Command = forwardRef<HTMLButtonElement, CommandProps>(
   function Command({ flat, variant, ...props }, ref) {
-    return (
+    const button = (
       <Role.button
-        {...props}
         ref={ref}
+        {...props}
         className={twMerge(
           "relative flex h-10 touch-none select-none items-center justify-center gap-1 whitespace-nowrap rounded-lg border-none bg-white px-4 text-base text-black no-underline hover:bg-gray-100 aria-disabled:opacity-50 aria-expanded:bg-gray-100 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 aria-expanded:dark:bg-white/10 sm:gap-2",
-          "outline-offset-2 data-[focus-visible]:![outline:2px_solid_theme(colors.blue.600)] [&:focus-visible]:[outline:none]",
           "active:pt-0.5",
-          (variant === "secondary" || !variant) && flat && "outline-offset-0",
           !flat &&
             "[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--highlight),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)] dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--highlight)]",
           !flat &&
@@ -36,6 +35,12 @@ export const Command = forwardRef<HTMLButtonElement, CommandProps>(
             "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600",
           props.className,
         )}
+      />
+    );
+    return (
+      <Focusable
+        flat={flat && (variant === "secondary" || !variant)}
+        render={button}
       />
     );
   },
