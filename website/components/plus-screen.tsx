@@ -7,6 +7,8 @@ import {
 } from "@ariakit/react";
 import { ArrowLeft } from "icons/arrow-left.jsx";
 import { Heart } from "icons/heart.jsx";
+import { Nextjs } from "icons/nextjs.jsx";
+import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import { usePrices } from "utils/use-prices.js";
@@ -37,12 +39,12 @@ export function PlusScreen() {
             <div className="top-20 flex flex-col gap-8 rounded-xl bg-gray-100 p-3 py-8 dark:bg-gray-700 sm:p-8 md:sticky [[role=dialog]_&]:top-0 [[role=dialog]_&]:bg-white dark:[[role=dialog]_&]:bg-gray-700">
               {parentDialog && (
                 <Button
-                  className="-mb-6 -ml-4 -mt-4 self-start text-blue-700 dark:text-blue-400"
+                  className="-mb-6 -ml-4 -mt-4 self-start text-sm text-black/80 dark:text-white/80"
                   onClick={router.back}
                   render={<Command variant="secondary" flat />}
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Go back
+                  Back to page
                 </Button>
               )}
               <Heading className="flex items-center gap-2 text-3xl font-semibold">
@@ -82,7 +84,7 @@ export function PlusScreen() {
                   );
                 })}
               </div>
-              <p className="mt-4 self-end">
+              <p className="mt-4 self-end text-sm">
                 Already a member?{" "}
                 <InlineLink
                   className="no-underline hover:underline"
@@ -93,27 +95,45 @@ export function PlusScreen() {
               </p>
             </div>
           </div>
-          <div className="[[role=dialog]_&]:bg-gray-150 dark:[[role=dialog]_&]:bg-gray-850">
+          <div className="[[role=dialog]_&]:bg-gray-150 dark:[[role=dialog]_&]:bg-gray-800">
             <div className="[[role=dialog]_&]:py-8">
-              <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 md:mx-8" />
+              <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 md:mx-8 [[role=dialog]_&]:mx-8" />
             </div>
             <PlusFeaturePreviewContainer className="p-8 [[role=dialog]_&]:-mt-8">
               <PlusFeaturePreview
                 feature="edit-examples"
                 heading="Edit examples"
               >
-                <div className="h-52 overflow-hidden rounded-md">
-                  {/* <Image
-                    src={examplesImage}
-                    alt="Interacting with the open example in a new tab dropdown menu"
-                    priority
-                  /> */}
+                <div className="flex cursor-default flex-col items-center gap-6 overflow-hidden rounded-lg bg-black/5 p-6 dark:bg-gray-850">
+                  <div className="h-20 w-[200px] rounded-md border-2 border-dashed border-black/20 dark:border-gray-600" />
+                  <div className="flex gap-2 text-sm">
+                    <div className="relative flex h-8 items-center gap-2 rounded-md bg-black/[15%] pl-2 pr-3 dark:bg-gray-600">
+                      <Vite className="h-4 w-4" />
+                      Vite
+                      <div className="absolute -bottom-4 left-8">
+                        <svg
+                          strokeWidth={1.5}
+                          viewBox="0 0 24 24"
+                          className="h-5 w-5 fill-white stroke-black dark:fill-black dark:stroke-white"
+                        >
+                          <polygon points="6 3 18 14 13 15 16 20.5 13 22 10 16 6 19" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex h-8 items-center gap-2 rounded bg-black/10 pl-2 pr-3 dark:bg-gray-700">
+                      <Nextjs className="h-4 w-4" />
+                      Next.js
+                    </div>
+                  </div>
                 </div>
                 <p>
-                  Open examples on StackBlitz and play with them right in your
-                  browser without having to install anything.
+                  Edit Ariakit examples in the browser using Vite and Next.js
+                  without having to install anything.
                 </p>
-                <p>Choose between Vite and Next.js</p>
+                <p>
+                  Reproduce issues or quickly test something out using an
+                  existing example as a starting point.
+                </p>
               </PlusFeaturePreview>
               <PlusFeaturePreview
                 feature="support"
@@ -124,11 +144,16 @@ export function PlusScreen() {
                 </div>
                 <p>
                   Ariakit is an independent open-source project. Your support
-                  enables us to keep improving and maintaining it.
+                  enables us to keep improving and maintaining the library.
                 </p>
                 <p>
-                  If you are using Ariakit at work and find it enhances your
-                  productivity, consider giving back.
+                  We spend thousands of hours building primitive components and
+                  testing them across various browsers and assistive
+                  technologies, so you can focus on your product.
+                </p>
+                <p>
+                  If you are using Ariakit at work and it&apos;s saving you time
+                  and money, consider giving back.
                 </p>
               </PlusFeaturePreview>
             </PlusFeaturePreviewContainer>

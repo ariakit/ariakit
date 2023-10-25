@@ -29,7 +29,7 @@ export function HeaderAriakitPlus() {
       {!segments.includes("plus") && (
         <Button
           // onClick={() => setOpen(true)}
-          className="text-sm max-sm:w-10 max-sm:p-0"
+          className="text-sm animate-in fade-in zoom-in-95 max-sm:w-10 max-sm:p-0"
           aria-label="Unlock Ariakit Plus"
           render={
             <Command

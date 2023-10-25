@@ -92,7 +92,7 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
               flat
               render={
                 !hasSubscription ? (
-                  <Link href="/plus?feature=support" scroll={false} />
+                  <Link href="/plus?feature=edit-examples" scroll={false} />
                 ) : undefined
               }
             />

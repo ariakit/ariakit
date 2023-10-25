@@ -8,7 +8,8 @@ import {
   useState,
 } from "react";
 import type { CSSProperties } from "react";
-import { createStore } from "@ariakit/core/utils/store";
+import { scrollIntoViewIfNeeded } from "@ariakit/core/utils/dom";
+import { createStore, sync } from "@ariakit/core/utils/store";
 import {
   Button,
   Heading,
@@ -37,6 +38,7 @@ import { Heart } from "icons/heart.jsx";
 import { twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import type { Price } from "utils/stripe.js";
+import { useMedia } from "utils/use-media.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 
@@ -56,6 +58,8 @@ interface PlusStoreProps {
 }
 
 function usePlusStore(props: PlusStoreProps) {
+  const isMedium = useMedia("(min-width: 768px)", true);
+
   const [store] = useStore(createStore, {
     feature: props.feature ?? props.defaultFeature ?? "",
     clientSecret: props.clientSecret ?? "",
@@ -65,6 +69,13 @@ function usePlusStore(props: PlusStoreProps) {
   useStoreProps(store, props, "feature", "setFeature");
   useStoreProps(store, props, "clientSecret", "setClientSecret");
   useStoreProps(store, props, "priceId", "setPriceId");
+
+  useEffect(() => {
+    return sync(store, ["feature"], () => {
+      if (isMedium) return;
+      store.setState("feature", "");
+    });
+  }, [isMedium, store]);
 
   return store;
 }
@@ -186,11 +197,11 @@ export const PlusFeaturePreview = forwardRef<
     <div
       ref={ref}
       {...props}
-      className={twMerge("flex flex-col gap-4", props.className)}
+      className={twMerge("flex flex-col gap-6", props.className)}
     >
       {heading ? (
         <HeadingLevel>
-          <Heading className="text-2xl font-semibold">{heading}</Heading>
+          <Heading className="text-2xl font-medium">{heading}</Heading>
           {children}
         </HeadingLevel>
       ) : (
@@ -314,7 +325,12 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
 
     let iframe = wrapper.querySelector<HTMLIFrameElement>("iframe");
 
-    const onLoad = () => setVisibility("visible");
+    const onLoad = () => {
+      setVisibility("visible");
+      if (iframe) {
+        scrollIntoViewIfNeeded(iframe, { behavior: "smooth" });
+      }
+    };
 
     const observer = new MutationObserver(() => {
       iframe?.removeEventListener("load", onLoad);
