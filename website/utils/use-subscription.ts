@@ -8,6 +8,7 @@ export function useSubscription(): UseQueryResult<string> {
   const query = useQuery<string>({
     enabled: isLoaded && !!userId,
     queryKey: ["subscription", userId],
+    refetchOnMount: false,
     async queryFn() {
       const res = await fetch("/api/subscription");
       return res.json();

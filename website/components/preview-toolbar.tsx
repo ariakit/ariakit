@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
-import { Button } from "@ariakit/react";
 import { track } from "@vercel/analytics/react";
+import { NewWindow } from "icons/new-window.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
 import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
@@ -9,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import { openInStackblitz } from "utils/stackblitz.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
+import { TooltipButton } from "./tooltip-button.jsx";
 
 type Language = "ts" | "js";
 
@@ -66,7 +67,13 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
       >
         <span className="text-sm font-medium opacity-70">Edit with</span>
         {!isAppDir && (
-          <Button
+          <TooltipButton
+            title={
+              <div className="flex items-center gap-1">
+                Edit example with Vite{" "}
+                <NewWindow className="h-4 w-4 opacity-60" />
+              </div>
+            }
             className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
             onClick={onStackblitzClick("vite")}
             render={
@@ -82,9 +89,15 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
           >
             <Vite className="h-4 w-4" />
             Vite
-          </Button>
+          </TooltipButton>
         )}
-        <Button
+        <TooltipButton
+          title={
+            <div className="flex items-center gap-1">
+              Edit example with Next.js{" "}
+              <NewWindow className="h-4 w-4 opacity-60" />
+            </div>
+          }
           className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
           onClick={onStackblitzClick("next")}
           render={
@@ -100,7 +113,7 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
         >
           <Nextjs className="h-4 w-4" />
           Next.js
-        </Button>
+        </TooltipButton>
       </div>
     );
   },

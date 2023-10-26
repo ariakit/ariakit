@@ -71,8 +71,8 @@ function usePlusStore(props: PlusStoreProps) {
   useStoreProps(store, props, "priceId", "setPriceId");
 
   useEffect(() => {
+    if (isMedium) return;
     return sync(store, ["feature"], () => {
-      if (isMedium) return;
       store.setState("feature", "");
     });
   }, [isMedium, store]);
@@ -165,6 +165,7 @@ export const PlusFeaturePreviewContainer = forwardRef<
       updatePosition={() => {}}
       {...props}
       render={<Role.div id={undefined} render={props.render} />}
+      getPersistentElements={() => document.getElementsByTagName("body")}
       wrapperProps={{
         ...props.wrapperProps,
         style: {

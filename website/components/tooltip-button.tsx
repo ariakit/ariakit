@@ -11,7 +11,7 @@ import type {
 import {
   Tooltip,
   TooltipAnchor,
-  useTooltipStore,
+  TooltipProvider,
 } from "@ariakit/react/tooltip";
 import { createComponent } from "@ariakit/react-core/utils/system";
 
@@ -25,40 +25,28 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
 
 export const TooltipButton = createComponent<TooltipButtonOptions>(
   ({ title, tooltipProps, fixed, isLabel, store, ...props }) => {
-    const tooltip = useTooltipStore({
-      store,
-      type: isLabel ? "label" : "description",
-    });
-    const mounted = tooltip.useState("mounted");
     return (
-      <>
+      <TooltipProvider store={store} type={isLabel ? "label" : "description"}>
         <Role.button
           {...props}
-          render={
-            <TooltipAnchor
-              store={tooltip}
-              render={<Button render={props.render} />}
-            />
-          }
+          render={<TooltipAnchor render={<Button render={props.render} />} />}
         />
-        {mounted && (
-          <Tooltip
-            {...tooltipProps}
-            fixed
-            store={tooltip}
-            className={cx(
-              "z-40 cursor-default rounded-md px-2 py-1 text-sm",
-              "drop-shadow-sm dark:drop-shadow-sm-dark",
-              "bg-gray-150 dark:bg-gray-700",
-              "text-black dark:text-white",
-              "border border-gray-300 dark:border-gray-600",
-              tooltipProps?.className,
-            )}
-          >
-            {title}
-          </Tooltip>
-        )}
-      </>
+        <Tooltip
+          {...tooltipProps}
+          fixed
+          unmountOnHide
+          className={cx(
+            "z-40 cursor-default rounded-md px-2 py-1 text-sm",
+            "drop-shadow-sm dark:drop-shadow-sm-dark",
+            "bg-gray-150 dark:bg-gray-700",
+            "text-black dark:text-white",
+            "border border-gray-300 dark:border-gray-600",
+            tooltipProps?.className,
+          )}
+        >
+          {title}
+        </Tooltip>
+      </TooltipProvider>
     );
   },
 );

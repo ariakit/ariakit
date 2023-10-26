@@ -10,7 +10,7 @@ export async function GET() {
   const item = subscription?.items.data[0];
 
   if (!subscription || !item) {
-    return new Response("Not found", { status: 404 });
+    return Response.json(null);
   }
 
   return Response.json(item.price.id);

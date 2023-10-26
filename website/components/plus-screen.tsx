@@ -127,8 +127,8 @@ export function PlusScreen() {
                   </div>
                 </div>
                 <p>
-                  Edit Ariakit examples in the browser using Vite and Next.js
-                  without having to install anything.
+                  With Ariakit Plus, you can edit examples in the browser using
+                  Vite and Next.js without having to install anything.
                 </p>
                 <p>
                   Reproduce issues or quickly test something out using an
@@ -139,7 +139,7 @@ export function PlusScreen() {
                 feature="support"
                 heading="Support the project"
               >
-                <div className="h-36 overflow-hidden rounded-md bg-gradient-to-br from-pink-400 to-blue-400 dark:from-pink-600 dark:to-blue-600">
+                <div className="h-40 overflow-hidden rounded-md bg-gradient-to-br from-pink-400 to-blue-400 p-4 dark:from-pink-600 dark:to-blue-600">
                   <Heart className="h-full w-full fill-white" />
                 </div>
                 <p>
