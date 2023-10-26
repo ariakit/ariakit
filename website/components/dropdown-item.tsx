@@ -13,7 +13,7 @@ export const DropdownItem = forwardRef<HTMLDivElement, DropdownItemProps>(
         {...props}
         ref={ref}
         className={twMerge(
-          "justify-betwen justify-start rounded bg-transparent px-2 hover:bg-transparent data-[active-item]:bg-blue-200/70 dark:bg-transparent dark:hover:bg-transparent dark:data-[active-item]:bg-blue-600/25",
+          "justify-betwen justify-start rounded bg-transparent px-2 hover:bg-transparent data-[active-item]:bg-blue-200/40 dark:bg-transparent dark:hover:bg-transparent dark:data-[active-item]:bg-blue-600/25",
           props.className,
         )}
         render={<Command flat render={props.render} />}
