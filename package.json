@@ -90,7 +90,7 @@
     "@types/node": "18.18.7",
     "@types/postcss-import": "14.0.2",
     "@types/prettier": "2.7.3",
-    "@types/react": "18.2.31",
+    "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@types/stylis": "4.2.2",
     "@types/textarea-caret": "3.0.2",
