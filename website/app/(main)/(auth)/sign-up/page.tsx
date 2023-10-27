@@ -5,6 +5,8 @@ interface PageProps {
   searchParams: { "session-id": string | null };
 }
 
+export const runtime = "nodejs";
+
 export default async function Page({ searchParams }: PageProps) {
   const sessionId = searchParams["session-id"];
   if (!sessionId) return <SignUpClient />;
