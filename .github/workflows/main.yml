@@ -425,7 +425,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run npm run playwright -- --project plus
+        run: npm run playwright -- --project plus
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
