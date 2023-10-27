@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect as _expect, test } from "@playwright/test";
 import type { BrowserContext, Page } from "@playwright/test";
 import dotenv from "dotenv";
 
@@ -63,7 +63,7 @@ async function updatePlanOnSite(
 }
 
 test.skip(() => !process.env.CLERK_SECRET_KEY);
-expect.configure({ timeout: 10_000 });
+const expect = _expect.configure({ timeout: 10_000 });
 
 for (const plan of ["Monthly", "Yearly"]) {
   test(`subscribe to ${plan} plan without login, then switch plans`, async ({
