@@ -9,11 +9,7 @@ import mergeSelectors from "postcss-merge-selectors";
 import prettify from "postcss-prettify";
 import { format } from "prettier";
 import { PurgeCSS } from "purgecss";
-import _tailwindcss from "tailwindcss";
-
-/** @type {import("tailwindcss")["default"]} */
-// @ts-expect-error
-const tailwindcss = _tailwindcss;
+import tailwindcss from "tailwindcss";
 
 /** @type {import("postcss").PluginCreator<{ id?: string }>} */
 const plugin = (opts = {}) => {
