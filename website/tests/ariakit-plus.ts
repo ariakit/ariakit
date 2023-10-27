@@ -41,8 +41,10 @@ async function signUpWithPassword(page: Page) {
   await textbox(page, "Password").fill("password");
   await page.keyboard.press("Enter");
   await textbox(page, "Verification code").click();
-  await page.keyboard.type("424242", { delay: 200 });
-  await page.waitForURL("/");
+  await expect(async () => {
+    await page.keyboard.type("424242", { delay: 200 });
+    await page.waitForURL("/");
+  }).toPass();
 }
 
 async function updatePlanOnSite(
