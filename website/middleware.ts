@@ -22,6 +22,7 @@ export const config = {
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (!process.env.CLERK_SECRET_KEY) return;
+  if (!request.cookies.size) return;
 
   const withAuth = authMiddleware({
     publicRoutes() {
