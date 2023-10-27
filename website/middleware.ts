@@ -100,7 +100,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
 
       const email = getPrimaryEmailAddress(user);
       const customer = await createCustomerWithClerkId(userId, { email });
-      console.log("CUSTOMER", customer);
+      console.log("CUSTOMER", customer?.id);
       if (!customer) return NextResponse.error();
 
       await updateUserWithStripeId(userId, customer.id);

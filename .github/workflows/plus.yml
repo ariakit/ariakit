@@ -14,7 +14,7 @@ env:
 jobs:
   test:
     name: Test Plus
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     if: github.repository == 'ariakit/ariakit'
 
     steps:
@@ -61,8 +61,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-chromium-
+          key: playwright-macos-chromium-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-macos-chromium-
 
       - name: Install playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'
