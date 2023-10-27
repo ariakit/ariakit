@@ -2,7 +2,8 @@ import "./style.css";
 
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font";
+
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 
 const darkModeScript = `
@@ -39,15 +40,13 @@ if (typeof window !== "undefined") {
 }
 `;
 
-const inter = Inter({ subsets: ["latin"] });
-
 export function generateMetadata() {
   return getNextPageMetadata();
 }
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.className}>
+    <html lang="en" suppressHydrationWarning className={GeistSans.className}>
       <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         <script dangerouslySetInnerHTML={{ __html: dblClickWorkaround }} />
