@@ -56,6 +56,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
 
     async afterAuth(auth) {
       const { userId } = auth;
+      console.log("USERID", request.url, userId);
       if (!userId) return;
 
       const clerk = getClerkClient();
@@ -94,6 +95,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         }
       }
 
+      console.log("STRIPEID", stripeId);
       if (stripeId) return response;
 
       const email = getPrimaryEmailAddress(user);
