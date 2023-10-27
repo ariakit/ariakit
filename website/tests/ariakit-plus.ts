@@ -33,6 +33,7 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   await textbox(frame, "Expiration").fill("12/40");
   await textbox(frame, "CVC").fill("123");
   await textbox(frame, "Cardholder name").fill("John Doe");
+  await frame.getByRole("combobox", { name: "Country" }).selectOption("Spain");
   return frame;
 }
 
