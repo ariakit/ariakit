@@ -18,6 +18,7 @@ export default defineConfig({
   webServer: {
     command: "npm start",
     reuseExistingServer: !CI,
+    stdout: CI ? "pipe" : "ignore",
     port: 3000,
   },
   expect: {
