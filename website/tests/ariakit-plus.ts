@@ -27,7 +27,7 @@ function generateUserEmail() {
 async function fillCheckout(page: Page, assertEmail?: string) {
   const frame = page.frameLocator("[name=embedded-checkout]");
   if (assertEmail) {
-    await expect(frame.getByText(assertEmail)).toBeVisible();
+    await expect(frame.getByText(assertEmail)).toBeVisible({ timeout: 10000 });
   }
   await textbox(frame, "Card number").fill("4242424242424242");
   await textbox(frame, "Expiration").fill("12/40");
