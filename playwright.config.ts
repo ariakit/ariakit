@@ -60,6 +60,11 @@ export default defineConfig({
       use: devices["Pixel 5"],
     },
     {
+      name: "plus",
+      testMatch: [/website\/tests\/ariakit-plus/],
+      use: devices["Desktop Chrome"],
+    },
+    {
       name: "vo",
       testMatch: [/\/test[^\/]*\-vo/],
       retries: CI ? 4 : 0,

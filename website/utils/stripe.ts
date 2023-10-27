@@ -1,9 +1,10 @@
+import { currentUser } from "@clerk/nextjs";
 import { Stripe } from "stripe";
 import { getStripeId } from "./clerk.js";
 import { nonNullable } from "./non-nullable.js";
 
 const key = process.env.STRIPE_SECRET_KEY;
-const stripe = key ? new Stripe(key, { apiVersion: "2023-10-16" }) : null;
+const stripe = key ? new Stripe(key) : null;
 
 export function getStripeClient() {
   return stripe;
@@ -80,7 +81,7 @@ export async function createCheckout({
   if (!stripe) return;
 
   const url = new URL(returnUrl);
-  const customer = customerId ?? getStripeId();
+  const customer = customerId ?? getStripeId(await currentUser());
   const pathname = customer ? "" : "/sign-up";
 
   const session = await stripe.checkout.sessions.create({
