@@ -57,7 +57,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
     async afterAuth(auth) {
       const { userId } = auth;
       console.log("USERID", request.url, userId);
-      console.log("COOKIES", [...request.cookies.getAll().keys()].join(", "));
+      console.log("COOKIES", request.cookies.getAll());
       if (!userId) return;
 
       const clerk = getClerkClient();
