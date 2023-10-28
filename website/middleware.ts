@@ -25,9 +25,6 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (!request.cookies.size) return;
 
   const withAuth = authMiddleware({
-    debug: true,
-    authorizedParties: ["http://localhost:3000"],
-
     publicRoutes() {
       return true;
     },
@@ -59,8 +56,6 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
 
     async afterAuth(auth) {
       const { userId } = auth;
-      console.log("USERID", request.url, userId);
-      console.log("COOKIES", request.cookies.getAll());
       if (!userId) return;
 
       const clerk = getClerkClient();
@@ -99,12 +94,10 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         }
       }
 
-      console.log("STRIPEID", stripeId);
       if (stripeId) return response;
 
       const email = getPrimaryEmailAddress(user);
       const customer = await createCustomerWithClerkId(userId, { email });
-      console.log("CUSTOMER", customer?.id);
       if (!customer) return NextResponse.error();
 
       await updateUserWithStripeId(userId, customer.id);
