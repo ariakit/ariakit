@@ -753,9 +753,18 @@ export default async function Page({ params }: PageProps) {
               }
               return <a {...props} className={className} />;
             },
-            img: ({ node, ...props }) => {
+            img: ({ node, src, alt, width, height, placeholder, ...props }) => {
               const className = cx(style.media, props.className);
-              return <Image {...props} className={className} />;
+              return (
+                <Image
+                  src={src!}
+                  alt={alt!}
+                  width={+width!}
+                  height={+height!}
+                  {...props}
+                  className={className}
+                />
+              );
             },
             video: ({ node, ...props }) => {
               const className = cx(style.media, props.className);

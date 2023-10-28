@@ -6,13 +6,20 @@ import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { ChevronDown } from "icons/chevron-down.jsx";
 import { ChevronUp } from "icons/chevron-up.jsx";
+import { NewWindow } from "icons/new-window.jsx";
+import Link from "next/link.js";
+import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
+import { AuthEnabled } from "./auth.jsx";
+import { Command } from "./command.jsx";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
 import { PlaygroundBrowser } from "./playground-browser.jsx";
 import { PlaygroundToolbar } from "./playground-toolbar.jsx";
+import { PreviewToolbar } from "./preview-toolbar.jsx";
+import { TooltipButton } from "./tooltip-button.jsx";
 
 export interface PlaygroundClientProps extends EditorProps {
   id: string;
@@ -25,18 +32,6 @@ export interface PlaygroundClientProps extends EditorProps {
 }
 
 const style = {
-  wrapper: tw`
-    flex flex-col items-center justify-center gap-4 md:gap-6
-  `,
-  previewWrapper: tw`
-    relative flex w-full items-center justify-center rounded-lg
-    bg-gray-150 p-4 dark:bg-gray-850
-  `,
-  embed: tw`
-    w-full rounded-lg overflow-hidden
-    border border-gray-300 dark:border-gray-650
-    bg-gray-150 dark:bg-gray-850
-  `,
   codeWrapper: tw`
     w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650
     md:rounded-xl
@@ -102,7 +97,7 @@ export function PlaygroundClient({
   // theme,
   previewLink,
   preview,
-  githubLink,
+  // githubLink,
   dependencies,
   devDependencies,
   codeBlocks,
@@ -172,32 +167,80 @@ export function PlaygroundClient({
   }, [collapsed, selectedId]);
 
   return (
-    <div className={style.wrapper}>
+    <div className="flex flex-col items-center justify-center gap-4 md:gap-6">
       {preview && (
         <div
-          className={cx(
+          className={twJoin(
             id,
-            style.previewWrapper,
+            "relative flex w-full flex-col items-center rounded-lg bg-gray-150 p-2 dark:bg-gray-850",
             /\-radix/.test(id) &&
               "bg-gradient-to-br from-blue-600 to-purple-600",
-            type === "wide"
-              ? "min-h-[320px] md:rounded-2xl md:p-8"
-              : "md:rounded-xl md:p-6",
+            type === "wide" ? "md:rounded-2xl" : "md:rounded-xl",
           )}
         >
-          {preview}
+          {type === "wide" && previewLink && (
+            <TooltipButton
+              title="Open preview in a new tab"
+              className="w-10 self-end p-0 text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white"
+              render={
+                <Command
+                  flat
+                  variant="secondary"
+                  render={<Link href={previewLink} target="_blank" />}
+                />
+              }
+            >
+              <span className="sr-only">Open preview in a new tab</span>
+              <NewWindow strokeWidth={1.5} className="h-5 w-5" />
+            </TooltipButton>
+          )}
+          <div
+            className={twJoin(
+              "flex h-full flex-1 flex-col items-center justify-center",
+              type === "wide"
+                ? ["min-h-[240px] p-6 md:p-12", previewLink && "md:pt-10"]
+                : "p-4 md:p-6",
+            )}
+          >
+            {preview}
+          </div>
+          {type === "wide" && (
+            <AuthEnabled>
+              <PreviewToolbar
+                exampleId={id}
+                files={files}
+                javascriptFiles={javascriptFiles}
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+                language={language}
+              />
+            </AuthEnabled>
+          )}
         </div>
       )}
       {isAppDir && previewLink && (
-        <div
-          className={cx(
-            style.embed,
-            type === "wide"
-              ? "h-[480px] md:rounded-2xl"
-              : "h-[320px] md:rounded-xl",
-          )}
-        >
-          <PlaygroundBrowser previewLink={previewLink} />
+        <div className="flex w-full flex-col items-center">
+          <div
+            className={cx(
+              "w-full overflow-hidden rounded-lg border border-gray-300 bg-gray-150 dark:border-gray-650 dark:bg-gray-850",
+              type === "wide"
+                ? "h-[480px] md:rounded-2xl"
+                : "h-[320px] md:rounded-xl",
+            )}
+          >
+            <PlaygroundBrowser previewLink={previewLink} />
+          </div>
+          <AuthEnabled>
+            <PreviewToolbar
+              exampleId={id}
+              files={files}
+              javascriptFiles={javascriptFiles}
+              dependencies={dependencies}
+              devDependencies={devDependencies}
+              language={language}
+              className="-mt-12 rounded-lg bg-gray-150 p-1 pl-3 dark:bg-gray-850"
+            />
+          </AuthEnabled>
         </div>
       )}
       <div className={style.codeWrapper}>
@@ -211,14 +254,7 @@ export function PlaygroundClient({
             ))}
           </TabList>
           <PlaygroundToolbar
-            exampleId={id}
-            files={files}
-            javascriptFiles={javascriptFiles}
             code={content}
-            dependencies={dependencies}
-            devDependencies={devDependencies}
-            previewLink={previewLink}
-            githubLink={githubLink}
             language={language}
             setLanguage={setLanguage}
           />

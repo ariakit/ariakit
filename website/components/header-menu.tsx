@@ -31,6 +31,7 @@ import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import { useMedia } from "utils/use-media.js";
 import { whenIdle } from "utils/when-idle.js";
+import { Command } from "./command.jsx";
 import { Popup } from "./popup.js";
 
 const SelectContext = createContext(false);
@@ -165,17 +166,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           <Ariakit.MenuButtonArrow />
         </HeaderMenuItem>
       ) : (
-        <button
-          {...props}
-          className={twJoin(
-            "flex h-10 items-center justify-center gap-2 overflow-hidden px-3",
-            "cursor-default whitespace-nowrap rounded-lg border-none",
-            "hover:bg-black/5 dark:hover:bg-white/5",
-            "aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10",
-            "[&:focus-visible]:ariakit-outline-input",
-            props.className,
-          )}
-        />
+        <Command flat variant="secondary" {...props} />
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => (
@@ -285,53 +276,48 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       </Ariakit.MenuButton>
     );
 
-    const selectMounted = select.useState("mounted");
-    const menuMounted = menu.useState("mounted");
-
     const popover = selectable ? (
       <SelectContext.Provider value={true}>
-        {selectMounted && (
-          <Ariakit.SelectPopover
-            ref={popoverRef}
-            store={select}
-            typeahead={!searchable}
-            composite={!searchable}
-            fixed
-            fitViewport
-            gutter={4}
-            render={
-              <Ariakit.MenuList
-                store={menu}
-                typeahead={false}
-                composite={false}
-                render={renderPopover}
-              />
-            }
-          />
-        )}
+        <Ariakit.SelectPopover
+          ref={popoverRef}
+          store={select}
+          typeahead={!searchable}
+          composite={!searchable}
+          unmountOnHide
+          fixed
+          fitViewport
+          gutter={4}
+          render={
+            <Ariakit.MenuList
+              store={menu}
+              typeahead={false}
+              composite={false}
+              render={renderPopover}
+            />
+          }
+        />
       </SelectContext.Provider>
     ) : (
       <SelectContext.Provider value={false}>
-        {menuMounted && (
-          <Ariakit.Menu
-            store={menu}
-            ref={popoverRef}
-            fixed
-            portal
-            gutter={4}
-            fitViewport
-            typeahead={!searchable}
-            composite={!searchable}
-            render={renderPopover}
-            getAnchorRect={(anchor) => {
-              if (parent?.current) {
-                return parent.current.getBoundingClientRect();
-              }
-              if (!anchor) return null;
-              return anchor.getBoundingClientRect();
-            }}
-          />
-        )}
+        <Ariakit.Menu
+          store={menu}
+          ref={popoverRef}
+          unmountOnHide
+          fixed
+          portal
+          gutter={4}
+          fitViewport
+          typeahead={!searchable}
+          composite={!searchable}
+          render={renderPopover}
+          getAnchorRect={(anchor) => {
+            if (parent?.current) {
+              return parent.current.getBoundingClientRect();
+            }
+            if (!anchor) return null;
+            return anchor.getBoundingClientRect();
+          }}
+        />
       </SelectContext.Provider>
     );
 

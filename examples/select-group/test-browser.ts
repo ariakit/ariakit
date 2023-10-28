@@ -9,7 +9,7 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-group");
+  await page.goto("/previews/select-group", { waitUntil: "networkidle" });
 });
 
 test("scroll into view", async ({ page }) => {

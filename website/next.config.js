@@ -7,7 +7,6 @@ import { redirects } from "./redirects.js";
 const nextConfig = {
   redirects,
   experimental: {
-    serverActions: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
@@ -22,6 +21,9 @@ const nextConfig = {
       "vscode-textmate",
       "monaco-vscode-textmate-theme-converter",
     ],
+  },
+  images: {
+    domains: ["img.clerk.com"],
   },
   reactStrictMode: true,
   transpilePackages: ["@ariakit/*"],

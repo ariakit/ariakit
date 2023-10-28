@@ -1,3 +1,4 @@
+declare module "*.png";
 declare module "react-toastify/dist/ReactToastify.css";
 
 declare module "next/link.js" {
@@ -7,7 +8,7 @@ declare module "next/link.js" {
 }
 
 declare module "next/image.js" {
-  import Image from "next/dist/client/image.js";
-  export * from "next/dist/client/image.js";
+  import Image from "next/dist/shared/lib/image-external.js";
+  export * from "next/dist/shared/lib/image-external.js";
   export default Image["default"];
 }

@@ -1,0 +1,81 @@
+name: plus
+
+on:
+  push:
+    branches: [main, next]
+  pull_request:
+
+env:
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+
+jobs:
+  test:
+    name: Test Plus
+    runs-on: ubuntu-latest
+    if: github.repository == 'ariakit/ariakit'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Cache playwright
+        id: cache-playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-chromium-
+
+      - name: Install playwright
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Cache Next.js
+        uses: actions/cache@v3
+        with:
+          path: website/.next
+          key: nextjs-${{ github.run_id }}
+          restore-keys: nextjs-
+
+      - name: Build website
+        run: npm run build-website-lite
+
+      - name: Test
+        id: test
+        run: npm run test-plus
+
+      - name: Upload test results to GitHub
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 30

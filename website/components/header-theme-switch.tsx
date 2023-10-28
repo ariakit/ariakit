@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import type { ButtonHTMLAttributes } from "react";
+import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { Moon } from "icons/moon.js";
 import { Sun } from "icons/sun.js";
 import { twJoin } from "tailwind-merge";
+import { Command } from "./command.jsx";
 import { TooltipButton } from "./tooltip-button.js";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
@@ -25,6 +28,17 @@ export function onThemeSwitch(callback: (theme: Theme) => void) {
   };
 }
 
+export function useDarkTheme() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useSafeLayoutEffect(() => {
+    setDarkMode(document.documentElement.classList.contains("dark"));
+    return onThemeSwitch((theme) => setDarkMode(theme === "dark"));
+  }, []);
+
+  return darkMode;
+}
+
 export function HeaderThemeSwitch(props: Props) {
   return (
     <TooltipButton
@@ -35,13 +49,8 @@ export function HeaderThemeSwitch(props: Props) {
           <span className="dark:hidden">dark</span> mode
         </>
       }
-      className={twJoin(
-        "flex h-10 w-10 flex-none cursor-default items-center justify-center",
-        "rounded-lg border-none hover:bg-black/5 aria-expanded:bg-black/10",
-        "dark:hover:bg-white/5 dark:aria-expanded:bg-white/10",
-        "[&:focus-visible]:ariakit-outline-input",
-        props.className,
-      )}
+      className={twJoin("h-10 w-10 p-0", props.className)}
+      render={<Command variant="secondary" flat />}
       onClick={() => {
         if (document.documentElement.classList.contains("dark")) {
           document.documentElement.classList.remove("dark");

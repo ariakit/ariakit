@@ -148,6 +148,7 @@ module.exports = {
     boxShadow: false,
   },
   plugins: [
+    require("tailwindcss-animate"),
     {
       handler: ({ addUtilities, matchUtilities, addVariant, theme }) => {
         const dropShadow = theme("dropShadow");

@@ -328,7 +328,7 @@ export async function CodeBlock({
             ? "leading-[26px]"
             : "leading-[21px]",
           "relative z-10 flex max-h-[inherit] overflow-auto text-sm text-black dark:text-white",
-          "border border-black/[15%] bg-white dark:border-0 dark:bg-gray-850",
+          "border border-black/[15%] bg-white dark:border-gray-650 dark:bg-gray-850",
         )}
       >
         {lineNumbers && (

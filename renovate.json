@@ -22,6 +22,7 @@
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
+        "dotenv",
         "framer-motion",
         "fs-extra",
         "glob",
@@ -37,7 +38,8 @@
         "textarea-caret",
         "tsup",
         "typescript",
-        "webpack"
+        "webpack",
+        "zod"
       ],
       "matchPackagePatterns": [
         "^@babel/",

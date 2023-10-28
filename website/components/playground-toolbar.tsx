@@ -1,30 +1,15 @@
-import { cx } from "@ariakit/core/utils/misc";
 import {
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuItem,
-  MenuSeparator,
   PopoverHeading,
   Select,
   SelectItem,
   SelectPopover,
   Toolbar,
   ToolbarItem,
-  useMenuStore,
   useSelectStore,
   useToolbarStore,
 } from "@ariakit/react";
-import { track } from "@vercel/analytics";
-import { Github } from "icons/github.jsx";
 import { JavaScript } from "icons/javascript.jsx";
-import { NewWindow } from "icons/new-window.jsx";
-import { Nextjs } from "icons/nextjs.jsx";
 import { TypeScript } from "icons/typescript.jsx";
-import { Vite } from "icons/vite.jsx";
-import Link from "next/link.js";
-import { openInStackblitz } from "utils/stackblitz.js";
 import { tw } from "utils/tw.js";
 import { CopyToClipboard } from "./copy-to-clipboard.jsx";
 import { Popup } from "./popup.jsx";
@@ -33,22 +18,12 @@ import { TooltipButton } from "./tooltip-button.jsx";
 type Language = "ts" | "js";
 
 interface Props {
-  exampleId: string;
-  files: Record<string, string>;
-  javascriptFiles?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  previewLink?: string;
-  githubLink?: string;
   language?: Language;
   setLanguage?: (language: Language) => void;
   code?: string | null;
 }
 
 const style = {
-  toolbar: tw`
-    flex flex-none p-1
-  `,
   toolbarItem: tw`
     flex h-12 w-12 items-center justify-center rounded-md
     focus-visible:ariakit-outline-input sm:rounded-lg sm:h-10 sm:w-10
@@ -74,18 +49,7 @@ const style = {
   `,
 };
 
-export function PlaygroundToolbar({
-  exampleId,
-  previewLink,
-  githubLink,
-  files,
-  javascriptFiles,
-  dependencies,
-  devDependencies,
-  language,
-  setLanguage,
-  code,
-}: Props) {
+export function PlaygroundToolbar({ language, setLanguage, code }: Props) {
   const toolbar = useToolbarStore();
 
   const select = useSelectStore({
@@ -96,29 +60,8 @@ export function PlaygroundToolbar({
 
   const isJS = select.useState((state) => state.value === "js");
 
-  const menu = useMenuStore();
-
-  const [firstFile] = Object.keys(files);
-  const isAppDir =
-    !!firstFile && /^(page|layout)\.[mc]?[tj]sx?/.test(firstFile);
-
-  const onStackblitzClick = (template: "vite" | "next") => {
-    return () => {
-      track("edit-on-stackblitz", { template, exampleId });
-      const isDark = document.documentElement.classList.contains("dark");
-      openInStackblitz({
-        template,
-        id: exampleId,
-        files: (isJS && javascriptFiles) || files,
-        dependencies,
-        devDependencies,
-        theme: isDark ? "dark" : "light",
-      });
-    };
-  };
-
   return (
-    <Toolbar store={toolbar} className={style.toolbar}>
+    <Toolbar store={toolbar} className="flex flex-none p-1">
       <ToolbarItem
         className={style.toolbarItem}
         render={(props) => (
@@ -152,62 +95,6 @@ export function PlaygroundToolbar({
           <JavaScript className="h-5 w-5" /> JavaScript
         </SelectItem>
       </SelectPopover>
-
-      <ToolbarItem
-        className={style.toolbarItem}
-        render={
-          <MenuButton
-            store={menu}
-            render={<TooltipButton title="Open example in a new tab" />}
-          />
-        }
-      >
-        <span className="sr-only">Open example in a new tab</span>
-        <NewWindow strokeWidth={1.5} className="h-5 w-5" />
-      </ToolbarItem>
-
-      <Menu store={menu} portal shift={-6} render={<Popup size="responsive" />}>
-        {previewLink && (
-          <MenuItem
-            className={style.popupItem}
-            render={<Link target="__blank" href={previewLink} />}
-          >
-            <NewWindow strokeWidth={1.5} className="h-5 w-5 opacity-70" /> Open
-            preview
-          </MenuItem>
-        )}
-        {githubLink && (
-          <MenuItem
-            className={style.popupItem}
-            render={<Link target="__blank" href={githubLink} />}
-          >
-            <Github className="h-5 w-5 p-0.5" /> View on GitHub
-          </MenuItem>
-        )}
-        {(previewLink || githubLink) && (
-          <MenuSeparator className={style.separator} />
-        )}
-        <MenuGroup>
-          <MenuGroupLabel className={style.popupLabel}>
-            Edit on StackBlitz
-          </MenuGroupLabel>
-          {!isAppDir && (
-            <MenuItem
-              className={cx(style.popupItem, "!cursor-pointer")}
-              onClick={onStackblitzClick("vite")}
-            >
-              <Vite className="h-5 w-5" /> Vite
-            </MenuItem>
-          )}
-          <MenuItem
-            className={cx(style.popupItem, "!cursor-pointer")}
-            onClick={onStackblitzClick("next")}
-          >
-            <Nextjs className="h-5 w-5" /> Next.js
-          </MenuItem>
-        </MenuGroup>
-      </Menu>
-
       {code != null && (
         <ToolbarItem
           className={style.toolbarItem}

@@ -21,22 +21,10 @@ import { Vue } from "icons/vue.js";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
 import { tw } from "utils/tw.js";
+import { Command } from "./command.jsx";
 import { Popup } from "./popup.js";
 
 const style = {
-  select: tw`
-    hidden md:flex items-center justify-center gap-1.5
-    cursor-default
-    px-3 h-8 mr-2
-    rounded-lg border-none
-    text-xs font-semibold whitespace-nowrap
-    text-black/80 dark:text-white/80
-    bg-black/5 dark:bg-white/5
-    hover:bg-black/10 dark:hover:bg-white/10
-    aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
-    shadow-button dark:shadow-button-dark
-    focus-visible:ariakit-outline-input
-  `,
   group: tw`
     flex flex-col
   `,
@@ -136,7 +124,11 @@ export function HeaderVersionSelect({ versions }: Props) {
       <SelectLabel store={select} hidden>
         Version
       </SelectLabel>
-      <Select store={select} className={style.select}>
+      <Select
+        store={select}
+        className="mr-2 hidden h-8 px-3 text-xs font-semibold text-black/80 dark:text-white/80 md:flex md:gap-1.5"
+        render={<Command />}
+      >
         {getIcon(selectedPkg.name)}
         {getDisplayValue(selectedPkg.version)}
         <SelectArrow />
