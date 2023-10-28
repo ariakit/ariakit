@@ -71,7 +71,7 @@ for (const plan of ["Monthly", "Yearly"]) {
   }) => {
     test.setTimeout(90_000);
 
-    await page.goto("/plus");
+    await page.goto("/plus", { waitUntil: "networkidle" });
     await button(page, plan).click();
     const email = generateUserEmail();
     const frame = await fillCheckout(page);
@@ -96,14 +96,14 @@ for (const plan of ["Monthly", "Yearly"]) {
 test("sign up, then subscribe to Monthly plan", async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.goto("/sign-up");
+  await page.goto("/sign-up", { waitUntil: "networkidle" });
   const email = generateUserEmail();
   await textbox(page, "Email address").fill(email);
   await signUpWithPassword(page);
   await button(page, "Plus").click();
   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
 
-  await page.goto("/components/button");
+  await page.goto("/components/button", { waitUntil: "networkidle" });
   await link(page, "Vite").click();
 
   await page.waitForURL("/plus?feature=edit-examples");
@@ -129,7 +129,7 @@ test("sign up, then subscribe to Monthly plan", async ({ page }) => {
 test("subscribe, then sign in with free account", async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.goto("/sign-up");
+  await page.goto("/sign-up", { waitUntil: "networkidle" });
   const email = generateUserEmail();
   await textbox(page, "Email address").fill(email);
   await signUpWithPassword(page);
@@ -138,7 +138,7 @@ test("subscribe, then sign in with free account", async ({ page }) => {
   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
   await menuitem(page, "Sign out").click();
 
-  await page.goto("/plus");
+  await page.goto("/plus", { waitUntil: "networkidle" });
   await button(page, "Monthly").click();
   await textbox(await fillCheckout(page), "Email").fill(email);
   await page.keyboard.press("Enter");
@@ -159,7 +159,7 @@ test("subscribe, then sign in with free account", async ({ page }) => {
 test("subscribe, then sign in with paid account", async ({ page }) => {
   test.setTimeout(60_000);
 
-  await page.goto("/plus");
+  await page.goto("/plus", { waitUntil: "networkidle" });
   await button(page, "Monthly").click();
   const email = generateUserEmail();
   await textbox(await fillCheckout(page), "Email").fill(email);
@@ -170,7 +170,7 @@ test("subscribe, then sign in with paid account", async ({ page }) => {
   await expect(menuitem(page, "Subscription")).toBeVisible();
   await menuitem(page, "Sign out").click();
 
-  await page.goto("/plus");
+  await page.goto("/plus", { waitUntil: "networkidle" });
   await button(page, "Yearly").click();
   await textbox(await fillCheckout(page), "Email").fill(email);
   await page.keyboard.press("Enter");

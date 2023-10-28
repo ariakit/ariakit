@@ -70,7 +70,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run playwright -- --project plus --workers 1
+        run: xvfb-run npm run test-plus-headed
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
