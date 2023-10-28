@@ -31,7 +31,7 @@ import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js/pure.js";
 import { Check } from "icons/check.jsx";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { Heart } from "icons/heart.jsx";
@@ -42,8 +42,16 @@ import { useMedia } from "utils/use-media.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 
-const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = key ? loadStripe(key) : null;
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+
+const getStripe = () => {
+  const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  if (!key) return null;
+  if (!stripePromise) {
+    stripePromise = loadStripe(key);
+  }
+  return stripePromise;
+};
 
 const PlusContext = createContext<ReturnType<typeof usePlusStore> | null>(null);
 
@@ -348,6 +356,8 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
       iframe?.removeEventListener("load", onLoad);
     };
   }, [wrapper]);
+
+  const stripePromise = getStripe();
 
   if (!stripePromise) return null;
   if (!hasPriceId) return null;

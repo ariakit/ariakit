@@ -25,8 +25,6 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (!request.cookies.size) return;
 
   const withAuth = authMiddleware({
-    debug: true,
-
     publicRoutes() {
       return true;
     },
