@@ -1,4 +1,4 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { authMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server.js";
 import type { NextFetchEvent, NextRequest } from "next/server.js";
 import {
