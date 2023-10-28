@@ -14,7 +14,7 @@ env:
 jobs:
   test:
     name: Test Plus
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     if: github.repository == 'ariakit/ariakit'
 
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 20
 
       - name: Cache npm
         uses: actions/cache@v3
@@ -54,15 +54,15 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        run: npm run build-website
+        run: npm run build-website-lite
 
       - name: Cache playwright
         id: cache-playwright
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-macos-chromium-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-macos-chromium-
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-chromium-
 
       - name: Install playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'

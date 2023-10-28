@@ -1,4 +1,4 @@
-import { expect as _expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import type { BrowserContext, Page } from "@playwright/test";
 import dotenv from "dotenv";
 
@@ -27,7 +27,7 @@ function generateUserEmail() {
 async function fillCheckout(page: Page, assertEmail?: string) {
   const frame = page.frameLocator("[name=embedded-checkout]");
   if (assertEmail) {
-    await expect(frame.getByText(assertEmail)).toBeVisible({ timeout: 10000 });
+    await expect(frame.getByText(assertEmail)).toBeVisible();
   }
   await textbox(frame, "Card number").fill("4242424242424242");
   await textbox(frame, "Expiration").fill("12/40");
@@ -41,10 +41,8 @@ async function signUpWithPassword(page: Page) {
   await textbox(page, "Password").fill("password");
   await page.keyboard.press("Enter");
   await textbox(page, "Verification code").click();
-  await expect(async () => {
-    await page.keyboard.type("424242", { delay: 200 });
-    await page.waitForURL("/");
-  }).toPass();
+  await page.keyboard.type("424242424242424242424242", { delay: 250 });
+  await page.waitForURL("/");
 }
 
 async function updatePlanOnSite(
@@ -65,14 +63,13 @@ async function updatePlanOnSite(
 }
 
 test.skip(() => !process.env.CLERK_SECRET_KEY);
-const expect = _expect.configure({ timeout: 10_000 });
 
 for (const plan of ["Monthly", "Yearly"]) {
   test(`subscribe to ${plan} plan without login, then switch plans`, async ({
     page,
     context,
   }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(90_000);
 
     await page.goto("/plus");
     await button(page, plan).click();
@@ -97,7 +94,7 @@ for (const plan of ["Monthly", "Yearly"]) {
 }
 
 test("sign up, then subscribe to Monthly plan", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(60_000);
 
   await page.goto("/sign-up");
   const email = generateUserEmail();
@@ -130,7 +127,7 @@ test("sign up, then subscribe to Monthly plan", async ({ page }) => {
 });
 
 test("subscribe, then sign in with free account", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(60_000);
 
   await page.goto("/sign-up");
   const email = generateUserEmail();
@@ -160,7 +157,7 @@ test("subscribe, then sign in with free account", async ({ page }) => {
 });
 
 test("subscribe, then sign in with paid account", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(60_000);
 
   await page.goto("/plus");
   await button(page, "Monthly").click();
