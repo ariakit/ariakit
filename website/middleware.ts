@@ -25,6 +25,8 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (!request.cookies.size) return;
 
   const withAuth = authMiddleware({
+    authorizedParties: ["http://localhost:3000"],
+
     publicRoutes() {
       return true;
     },
