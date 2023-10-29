@@ -17,7 +17,7 @@ import {
 } from "utils/stripe.js";
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/(api|trpc)(.*)"],
+  matcher: ["/api(.*)", "/sign-up(.*)"],
 };
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
@@ -25,8 +25,6 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (!request.cookies.size) return;
 
   const withAuth = authMiddleware({
-    ignoredRoutes: ["/"],
-
     publicRoutes() {
       return true;
     },

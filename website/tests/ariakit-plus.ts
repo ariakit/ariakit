@@ -63,16 +63,32 @@ async function updatePlanOnSite(
   await expect(button(page, `Current plan ${alternatePlan}`)).toBeDisabled();
 }
 
+const users = new Set<string>();
+
+async function addCurrentUser(page: Page) {
+  const id = await page.evaluate(() => window.Clerk?.user?.id);
+  if (!id) return;
+  users.add(id);
+}
+
 test.skip(() => !process.env.CLERK_SECRET_KEY);
 
 test.afterEach(async ({ page }) => {
-  await page.evaluate(() => window.Clerk?.user?.delete());
+  const id = await page.evaluate(async () => {
+    const user = window.Clerk?.user;
+    if (!user) return;
+    await user.delete();
+    return user.id;
+  });
+  if (!id) return;
+  users.delete(id);
 });
 
 test.afterAll(async () => {
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-  const users = await clerk.users.getUserList({ query: "clerk_test" });
-  await Promise.all(users.map((user) => clerk.users.deleteUser(user.id)));
+  await Promise.all(
+    Array.from(users).map((user) => clerk.users.deleteUser(user)),
+  );
 });
 
 for (const plan of ["Monthly", "Yearly"]) {
@@ -127,6 +143,7 @@ test("sign up, then subscribe to Monthly plan", async ({ page }) => {
 
   await button(page, "Plus").click();
   await expect(menuitem(page, "Subscription")).toBeVisible();
+  await addCurrentUser(page);
   await menuitem(page, "Sign out").click();
 
   await page.goto(`/sign-up?session-id=${sessionId}`);
