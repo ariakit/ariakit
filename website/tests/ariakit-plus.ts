@@ -1,3 +1,4 @@
+import { createClerkClient } from "@clerk/clerk-sdk-node";
 import { expect, test } from "@playwright/test";
 import type { BrowserContext, Page } from "@playwright/test";
 import dotenv from "dotenv";
@@ -64,12 +65,22 @@ async function updatePlanOnSite(
 
 test.skip(() => !process.env.CLERK_SECRET_KEY);
 
+test.afterEach(async ({ page }) => {
+  await page.evaluate(() => window.Clerk?.user?.delete());
+});
+
+test.afterAll(async () => {
+  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  const users = await clerk.users.getUserList({ query: "clerk_test" });
+  await Promise.all(users.map((user) => clerk.users.deleteUser(user.id)));
+});
+
 for (const plan of ["Monthly", "Yearly"]) {
   test(`subscribe to ${plan} plan without login, then switch plans`, async ({
     page,
     context,
   }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(100_000);
 
     await page.goto("/plus", { waitUntil: "networkidle" });
     await button(page, plan).click();
@@ -94,7 +105,7 @@ for (const plan of ["Monthly", "Yearly"]) {
 }
 
 test("sign up, then subscribe to Monthly plan", async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(80_000);
 
   await page.goto("/sign-up", { waitUntil: "networkidle" });
   const email = generateUserEmail();
@@ -127,7 +138,7 @@ test("sign up, then subscribe to Monthly plan", async ({ page }) => {
 });
 
 test("subscribe, then sign in with free account", async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(80_000);
 
   await page.goto("/sign-up", { waitUntil: "networkidle" });
   const email = generateUserEmail();
@@ -157,7 +168,7 @@ test("subscribe, then sign in with free account", async ({ page }) => {
 });
 
 test("subscribe, then sign in with paid account", async ({ page }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(80_000);
 
   await page.goto("/plus", { waitUntil: "networkidle" });
   await button(page, "Monthly").click();
