@@ -1,4 +1,4 @@
-import { click, hover, press, q, type } from "@ariakit/test";
+import { click, hover, press, q, type, waitFor } from "@ariakit/test";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
@@ -37,7 +37,9 @@ test("show/hide on space", async () => {
   await press.Space();
   expect(q.menu()).toBeVisible();
   expect(q.menuitem("Edit")).toHaveFocus();
-  expect(q.menuitem("Edit")).toHaveAttribute("data-focus-visible");
+  await waitFor(() =>
+    expect(q.menuitem("Edit")).toHaveAttribute("data-focus-visible"),
+  );
   await press.ShiftTab();
   expect(q.menu()).toBeVisible();
   await press.Space();

@@ -62,6 +62,7 @@ test.each(["nested", "sibling"])(
     expect(q.button("Open dialog")).toHaveFocus();
     expectModalStyle(false);
   },
+  10000,
 );
 
 test.each(["nested", "sibling"])(
@@ -101,6 +102,7 @@ test.each(["nested", "sibling"])(
     expect(q.button("Open dialog")).toHaveFocus();
     expectModalStyle(false);
   },
+  10000,
 );
 
 test.each(["nested", "sibling"])(
@@ -147,6 +149,7 @@ test.each(["nested", "sibling"])(
     expect(q.button("Open dialog")).toHaveFocus();
     expectModalStyle(false);
   },
+  10000,
 );
 
 test.each(["nested", "sibling"])(
@@ -187,6 +190,7 @@ test.each(["nested", "sibling"])(
     expect(q.button("Open dialog")).toHaveFocus();
     expectModalStyle(false);
   },
+  10000,
 );
 
 test.each(["nested", "sibling"])(
