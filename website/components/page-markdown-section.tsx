@@ -5,6 +5,10 @@ import type { ComponentPropsWithoutRef } from "react";
 
 const PageMarkdownSectionContext = createContext("");
 
+export function usePageMarkdownSectionContext() {
+  return useContext(PageMarkdownSectionContext);
+}
+
 export interface PageMarkdownSectionProviderProps {
   section: string;
   children: React.ReactNode;
@@ -28,7 +32,7 @@ export const PageMarkdownSection = forwardRef<
   HTMLDivElement,
   PageMarkdownSectionProps
 >(function PageMarkdownSection(props, ref) {
-  const section = useContext(PageMarkdownSectionContext);
+  const section = usePageMarkdownSectionContext();
   if (section && section !== props.id) return null;
   return <div ref={ref} {...props} />;
 });

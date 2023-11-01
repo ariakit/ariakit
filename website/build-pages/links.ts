@@ -1,6 +1,8 @@
 // @ts-ignore
 import links from "../.pages/links.json";
 
+console.log("pqp");
+
 export interface PageLink {
   path: string;
   hashes: string[];

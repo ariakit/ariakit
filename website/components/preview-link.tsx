@@ -4,7 +4,8 @@ import { PageMarkdown } from "./page-markdown.jsx";
 import { PreviewLinkClient } from "./preview-link-client.jsx";
 import type { PreviewLinkClientProps } from "./preview-link-client.jsx";
 
-export interface PreviewLinkProps extends PreviewLinkClientProps {}
+export interface PreviewLinkProps
+  extends Omit<PreviewLinkClientProps, "preview"> {}
 
 export const PreviewLink = forwardRef<HTMLAnchorElement, PreviewLinkProps>(
   ({ href, ...props }, ref) => {

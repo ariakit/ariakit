@@ -1,4 +1,4 @@
-import { Children, cloneElement, isValidElement, useId } from "react";
+import { Children, cache, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from "react";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
@@ -64,6 +64,8 @@ function wrapWithSection(node: ReactNode, section?: string) {
   );
 }
 
+console.log("dsadsadsadasdsa");
+
 const style = {
   headingBase: twJoin(
     "text-black dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
@@ -98,7 +100,13 @@ export interface PageMarkdownProps {
 
 const cacheMap = new Map<string, ReactElement>();
 
-export function PageMarkdown({ category, page, section }: PageMarkdownProps) {
+const cached = cache(PageMarkdownImpl);
+
+export function PageMarkdown(props: PageMarkdownProps) {
+  return cached(props.category, props.page, props.section);
+}
+
+function PageMarkdownImpl(category: string, page: string, section?: string) {
   let cacheId =
     process.env.NODE_ENV === "production" ? `${category}/${page}` : "";
   const productionCachedValue = cacheMap.get(cacheId);
