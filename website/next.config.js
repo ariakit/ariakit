@@ -7,6 +7,7 @@ import { redirects } from "./redirects.js";
 const nextConfig = {
   redirects,
   experimental: {
+    webpackBuildWorker: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
