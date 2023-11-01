@@ -1,9 +1,20 @@
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
-import { FontStyle, getHighlighter } from "shiki";
-import type { Highlighter, IThemedToken } from "shiki";
+import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
+import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
+import css from "shiki/languages/css.tmLanguage.json";
+import diff from "shiki/languages/diff.tmLanguage.json";
+import html from "shiki/languages/html.tmLanguage.json";
+import javascript from "shiki/languages/javascript.tmLanguage.json";
+import jsx from "shiki/languages/jsx.tmLanguage.json";
+import sh from "shiki/languages/shellscript.tmLanguage.json";
+import tsx from "shiki/languages/tsx.tmLanguage.json";
+import typescript from "shiki/languages/typescript.tmLanguage.json";
+import darkPlus from "shiki/themes/dark-plus.json";
+import lightPlus from "shiki/themes/light-plus.json";
 import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
+import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 import { PreviewLink } from "./preview-link.jsx";
 
@@ -37,6 +48,30 @@ function parseFontStyle(fontStyle?: FontStyle) {
     fontStyle & FontStyle.Bold && "font-bold",
     fontStyle & FontStyle.Underline && "underline",
   );
+}
+
+function getLanguage(lang: string, grammar: any) {
+  const language = BUNDLED_LANGUAGES.find((l) => l.id === lang);
+  if (!language) throw new Error(`Language not found: ${lang}`);
+  return { ...language, grammar: grammar as IGrammar };
+}
+
+function loadLanguages(highlighter: Highlighter) {
+  if (highlighter.getLoadedLanguages().length) {
+    return Promise.resolve();
+  }
+  return Promise.all([
+    highlighter.loadLanguage(getLanguage("javascript", javascript)),
+    highlighter.loadLanguage(getLanguage("typescript", typescript)),
+    highlighter.loadLanguage(getLanguage("tsx", tsx)),
+    highlighter.loadLanguage(getLanguage("jsx", jsx)),
+    highlighter.loadLanguage(getLanguage("shellscript", sh)),
+    highlighter.loadLanguage(getLanguage("css", css)),
+    highlighter.loadLanguage(getLanguage("html", html)),
+    highlighter.loadLanguage(getLanguage("diff", diff)),
+    highlighter.loadTheme(lightPlus as unknown as IShikiTheme),
+    highlighter.loadTheme(darkPlus as unknown as IShikiTheme),
+  ]);
 }
 
 function getLinkableType(token: IThemedToken) {
@@ -160,19 +195,7 @@ export async function CodeBlock({
 
   if (!highlighter) {
     try {
-      highlighter = await getHighlighter({
-        themes: ["light-plus", "dark-plus"],
-        langs: [
-          "javascript",
-          "typescript",
-          "tsx",
-          "jsx",
-          "shellscript",
-          "css",
-          "html",
-          "diff",
-        ],
-      });
+      highlighter = await getHighlighter({ themes: [], langs: [] });
     } catch (error) {
       console.error(error);
       return null;
@@ -180,16 +203,17 @@ export async function CodeBlock({
   }
 
   try {
+    await loadLanguages(highlighter);
     if (lightCache.has(code)) {
       lightTokens = lightCache.get(code)!;
     } else {
-      lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
+      lightTokens = highlighter.codeToThemedTokens(code, lang, lightPlus.name);
       lightCache.set(code, lightTokens);
     }
     if (darkCache.has(code)) {
       darkTokens = darkCache.get(code)!;
     } else {
-      darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+      darkTokens = highlighter.codeToThemedTokens(code, lang, darkPlus.name);
       darkCache.set(code, darkTokens);
     }
   } catch (error) {
