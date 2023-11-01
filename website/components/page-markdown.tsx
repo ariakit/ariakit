@@ -1,4 +1,4 @@
-import { Children, cache, cloneElement, isValidElement, useId } from "react";
+import { Children, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from "react";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
@@ -100,13 +100,7 @@ export interface PageMarkdownProps {
 
 const cacheMap = new Map<string, ReactElement>();
 
-const cached = cache(PageMarkdownImpl);
-
-export function PageMarkdown(props: PageMarkdownProps) {
-  return cached(props.category, props.page, props.section);
-}
-
-function PageMarkdownImpl(category: string, page: string, section?: string) {
+export function PageMarkdown({ category, page, section }: PageMarkdownProps) {
   let cacheId =
     process.env.NODE_ENV === "production" ? `${category}/${page}` : "";
   const productionCachedValue = cacheMap.get(cacheId);
