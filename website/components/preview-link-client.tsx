@@ -1,14 +1,12 @@
 "use client";
-import {
-  Suspense,
-  createContext,
-  forwardRef,
-  useContext,
-  useState,
-  useTransition,
-} from "react";
+import { createContext, forwardRef, useContext } from "react";
 import type { ComponentPropsWithoutRef, ElementRef, ReactNode } from "react";
-import { Hovercard, HovercardAnchor, HovercardProvider } from "@ariakit/react";
+import {
+  Hovercard,
+  HovercardAnchor,
+  HovercardProvider,
+  useHovercardStore,
+} from "@ariakit/react";
 import Link from "next/link.js";
 import type { LinkProps } from "next/link.js";
 import { twMerge } from "tailwind-merge";
@@ -20,16 +18,15 @@ export interface PreviewLinkClientProps
   extends ComponentPropsWithoutRef<"a">,
     Omit<LinkProps, "href"> {
   href: string;
-  preview?: () => Promise<ReactNode>;
+  preview?: ReactNode;
 }
 
 export const PreviewLinkClient = forwardRef<
   ElementRef<typeof Link>,
   PreviewLinkClientProps
 >(function PreviewLinkClient({ href, preview, ...props }, ref) {
-  const [isPending, startTransition] = useTransition();
-  const [node, setNode] = useState<ReactNode>();
-
+  const store = useHovercardStore();
+  const mounted = store.useState("mounted");
   const level = useContext(LevelContext) + 1;
   if (level > 2) {
     return (
@@ -43,25 +40,17 @@ export const PreviewLinkClient = forwardRef<
   }
   return (
     <LevelContext.Provider value={level}>
-      <HovercardProvider
-        setMounted={(mounted) => {
-          if (!mounted) return;
-          if (!preview) return;
-          startTransition(async () => {
-            const node = await preview();
-            setNode(node);
-          });
-        }}
-      >
+      <HovercardProvider>
         <HovercardAnchor render={<Link {...props} ref={ref} href={href} />} />
-        <Hovercard
-          render={<Popup className="h-[320px] w-[420px]" />}
-          portal
-          unmountOnHide
-          data-pending={isPending ? true : undefined}
-        >
-          <Suspense>{node}</Suspense>
-        </Hovercard>
+        {mounted && (
+          <Hovercard
+            render={<Popup className="h-[320px] w-[420px]" />}
+            portal
+            // unmountOnHide
+          >
+            {preview}
+          </Hovercard>
+        )}
       </HovercardProvider>
     </LevelContext.Provider>
   );

@@ -8,7 +8,8 @@ const nextConfig = {
   redirects,
   experimental: {
     webpackBuildWorker: true,
-    cpus: 3,
+    // workerThreads: false,
+    // cpus: 3,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
