@@ -1,5 +1,12 @@
 "use client";
-import { createContext, forwardRef, useContext } from "react";
+import {
+  Suspense,
+  createContext,
+  forwardRef,
+  useContext,
+  useState,
+  useTransition,
+} from "react";
 import type { ComponentPropsWithoutRef, ElementRef, ReactNode } from "react";
 import { Hovercard, HovercardAnchor, HovercardProvider } from "@ariakit/react";
 import Link from "next/link.js";
@@ -13,13 +20,16 @@ export interface PreviewLinkClientProps
   extends ComponentPropsWithoutRef<"a">,
     Omit<LinkProps, "href"> {
   href: string;
-  preview?: ReactNode;
+  preview?: () => Promise<ReactNode>;
 }
 
 export const PreviewLinkClient = forwardRef<
   ElementRef<typeof Link>,
   PreviewLinkClientProps
 >(function PreviewLinkClient({ href, preview, ...props }, ref) {
+  const [isPending, startTransition] = useTransition();
+  const [node, setNode] = useState<ReactNode>();
+
   const level = useContext(LevelContext) + 1;
   if (level > 2) {
     return (
@@ -33,14 +43,24 @@ export const PreviewLinkClient = forwardRef<
   }
   return (
     <LevelContext.Provider value={level}>
-      <HovercardProvider>
+      <HovercardProvider
+        setMounted={(mounted) => {
+          if (!mounted) return;
+          if (!preview) return;
+          startTransition(async () => {
+            const node = await preview();
+            setNode(node);
+          });
+        }}
+      >
         <HovercardAnchor render={<Link {...props} ref={ref} href={href} />} />
         <Hovercard
           render={<Popup className="h-[320px] w-[420px]" />}
           portal
           unmountOnHide
+          data-pending={isPending ? true : undefined}
         >
-          {preview}
+          <Suspense>{node}</Suspense>
         </Hovercard>
       </HovercardProvider>
     </LevelContext.Provider>

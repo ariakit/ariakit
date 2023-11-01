@@ -20,9 +20,12 @@ export const PreviewLink = forwardRef<HTMLAnchorElement, PreviewLinkProps>(
         {...props}
         ref={ref}
         href={href}
-        preview={
-          <PageMarkdown category={category} page={page} section={section} />
-        }
+        preview={async () => {
+          "use server";
+          return (
+            <PageMarkdown category={category} page={page} section={section} />
+          );
+        }}
       />
     );
   },
