@@ -1,5 +1,6 @@
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
+import Link from "next/link.js";
 import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
 import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
 import css from "shiki/languages/css.tmLanguage.json";
@@ -16,7 +17,6 @@ import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
 import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
-import { PreviewLink } from "./preview-link.jsx";
 
 interface Props {
   code: string;
@@ -286,7 +286,7 @@ export async function CodeBlock({
 
                 if (href) {
                   return (
-                    <PreviewLink
+                    <Link
                       key={j}
                       href={href}
                       style={{ color }}
@@ -297,7 +297,7 @@ export async function CodeBlock({
                       data-scopes={getScopes()}
                     >
                       {token.content}
-                    </PreviewLink>
+                    </Link>
                   );
                 }
 

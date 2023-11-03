@@ -36,6 +36,7 @@
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/ban-types": ["error", { "types": { "{}": false } }],
     "sort-imports": ["error", { "ignoreDeclarationSort": true }],
     "import/no-duplicates": "error",
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],

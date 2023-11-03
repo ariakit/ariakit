@@ -41,6 +41,10 @@ export const PreviewLinkClient = forwardRef<
       />
     );
   }
+  // TODO: RSC doesn't work. We need to do everything at the end of the page
+  // markdown file. Maybe using cache
+  // (https://github.com/manvalls/server-only-context/blob/main/src/index.ts) to
+  // set the preview paths in child components (like CodeBlocks).
   return (
     <LevelContext.Provider value={level}>
       <HovercardProvider
