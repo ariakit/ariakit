@@ -102,7 +102,7 @@
     "@types/react-dom": "18.2.14",
     "@types/stylis": "4.2.3",
     "@types/textarea-caret": "3.0.2",
-    "@types/use-sync-external-store": "0.0.5",
+    "@types/use-sync-external-store": "0.0.6",
     "@typescript-eslint/eslint-plugin": "6.10.0",
     "@typescript-eslint/parser": "6.10.0",
     "@vercel/analytics": "1.1.1",
