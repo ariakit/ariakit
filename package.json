@@ -92,7 +92,7 @@
     "@types/babel__core": "7.20.4",
     "@types/cross-spawn": "6.0.5",
     "@types/fs-extra": "11.0.4",
-    "@types/lodash": "4.14.200",
+    "@types/lodash": "4.14.201",
     "@types/lodash-es": "4.17.11",
     "@types/marked": "5.0.2",
     "@types/node": "18.18.9",
