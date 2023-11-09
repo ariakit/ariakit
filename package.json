@@ -72,11 +72,11 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.23.2",
-    "@babel/preset-env": "7.23.2",
-    "@babel/preset-react": "7.22.15",
-    "@babel/preset-typescript": "7.23.2",
-    "@babel/types": "7.23.0",
+    "@babel/core": "7.23.3",
+    "@babel/preset-env": "7.23.3",
+    "@babel/preset-react": "7.23.3",
+    "@babel/preset-typescript": "7.23.3",
+    "@babel/types": "7.23.3",
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.27.1",
     "@clerk/nextjs": "4.26.1",
