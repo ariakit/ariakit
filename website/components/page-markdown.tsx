@@ -172,7 +172,9 @@ async function Pqp({
     const [, category, page] = pathname.split("/");
     if (!category) continue;
     if (!page) continue;
-    contents[href] = (
+    const path = `/${category}/${page}`;
+    if (contents[path]) continue;
+    contents[path] = (
       <PageMarkdown category={category} page={page} cards={false} />
     );
   }
