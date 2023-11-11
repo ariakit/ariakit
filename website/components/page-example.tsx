@@ -10,12 +10,14 @@ import { getPageName } from "build-pages/get-page-name.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import { Playground } from "components/playground.js";
 import { Preview } from "components/preview.js";
+import { defer } from "utils/defer.js";
 import { getExampleId } from "utils/get-example-id.js";
 
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
   href: string;
   type?: "code" | "compact" | "wide";
+  hovercards?: Set<Promise<string | Iterable<string>>>;
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
@@ -46,7 +48,11 @@ export async function PageExample({
   pageFilename,
   href,
   type = "wide",
+  hovercards,
 }: Props) {
+  const deferred = defer<Iterable<string>>();
+  hovercards?.add(deferred);
+
   const path = resolve(dirname(pageFilename), href);
   const previewLink = getPreviewLink(path);
   const id = getExampleId(path);
@@ -94,6 +100,7 @@ export async function PageExample({
         githubLink={getGithubLink(path)}
         previewLink={previewLink}
         preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
+        onRender={deferred.resolve}
       />
     </div>
   );

@@ -13,6 +13,7 @@ import { isValidHref } from "utils/is-valid-href.js";
 import { InlineLink } from "./inline-link.jsx";
 import { PageCards } from "./page-cards.jsx";
 import { PageExample } from "./page-example.jsx";
+import { PageHovercardAnchor } from "./page-hovercard.jsx";
 import { PageTag, PageTagList } from "./page-tag.jsx";
 
 export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
@@ -379,9 +380,10 @@ function getNodeText(node: Element | ElementContent): string {
 export interface PageAProps extends ComponentPropsWithoutRef<"a"> {
   node: Element;
   file: string;
+  hovercards?: Set<Promise<string | Iterable<string>>>;
 }
 
-export function PageA({ node, file, href, ...props }: PageAProps) {
+export function PageA({ node, file, href, hovercards, ...props }: PageAProps) {
   if ("data-playground" in props && href) {
     return (
       <PageExample
@@ -439,11 +441,12 @@ export function PageA({ node, file, href, ...props }: PageAProps) {
           : "text-[#795e26] dark:text-[#dcdcaa]",
         props.className,
       );
+      hovercards?.add(Promise.resolve(href));
       return (
         <InlineLink
           {...props}
           className={className}
-          render={<Link href={href} />}
+          render={<PageHovercardAnchor render={<Link href={href} />} />}
         />
       );
     }

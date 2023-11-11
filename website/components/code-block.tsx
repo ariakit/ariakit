@@ -17,6 +17,7 @@ import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
 import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
+import { PageHovercardAnchor } from "./page-hovercard.jsx";
 
 interface Props {
   code: string;
@@ -29,6 +30,7 @@ interface Props {
   definition?: boolean;
   className?: string;
   preClassName?: string;
+  onRender?: (hrefs: Iterable<string>) => void;
 }
 
 const highlightBeforeStyle = twJoin(
@@ -183,7 +185,10 @@ export async function CodeBlock({
   highlightLines,
   highlightTokens,
   className,
+  onRender,
 }: Props) {
+  const previewPaths = new Set<string>();
+
   code = type === "static" || type === "definition" ? code.trim() : code;
 
   if (process.env.DISABLE_SHIKI) {
@@ -235,7 +240,7 @@ export async function CodeBlock({
             type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
             type === "editor" && lineNumbers && "sm:!pl-0",
             type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
-            type === "definition" && "px-4",
+            type === "definition" && "px-2",
             highlightLine && "bg-blue-200/20 dark:bg-blue-600/[15%]",
             highlightLine && !lineNumbers && highlightBeforeStyle,
             className,
@@ -285,19 +290,20 @@ export async function CodeBlock({
                 };
 
                 if (href) {
+                  previewPaths.add(href);
                   return (
-                    <Link
+                    <PageHovercardAnchor
                       key={j}
-                      href={href}
                       style={{ color }}
                       className={twJoin(
                         className,
                         "underline decoration-dotted decoration-1 underline-offset-[3px] hover:decoration-solid hover:decoration-2",
                       )}
                       data-scopes={getScopes()}
+                      render={<Link href={href} />}
                     >
                       {token.content}
-                    </Link>
+                    </PageHovercardAnchor>
                   );
                 }
 
@@ -322,7 +328,7 @@ export async function CodeBlock({
     };
   };
 
-  return (
+  const element = (
     <div
       className={twMerge(
         type !== "definition" && "w-full",
@@ -343,8 +349,9 @@ export async function CodeBlock({
       )}
       <pre
         className={twJoin(
-          type === "definition" ? "w-max max-w-full py-3" : "w-full pt-4",
-          type === "definition" && "rounded-lg",
+          type === "definition"
+            ? "w-max max-w-full rounded-md py-1"
+            : "w-full pt-4",
           type === "static" && !oneLiner && "sm:pt-8",
           type === "static" && "rounded-lg sm:rounded-xl",
           type === "editor" && "rounded-b-lg !border-0 sm:rounded-b-xl",
@@ -352,7 +359,8 @@ export async function CodeBlock({
             ? "leading-[26px]"
             : "leading-[21px]",
           "relative z-10 flex max-h-[inherit] overflow-auto text-sm text-black dark:text-white",
-          "border border-black/[15%] bg-white dark:border-gray-650 dark:bg-gray-850",
+          "border border-black/[15%] dark:border-gray-650",
+          "bg-white dark:bg-gray-850",
         )}
       >
         {lineNumbers && (
@@ -399,4 +407,8 @@ export async function CodeBlock({
       </pre>
     </div>
   );
+
+  onRender?.(previewPaths);
+
+  return element;
 }

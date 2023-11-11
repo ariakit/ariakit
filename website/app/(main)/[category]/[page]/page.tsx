@@ -1,5 +1,4 @@
 import pagesConfig from "build-pages/config.js";
-import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTitle } from "build-pages/get-page-title.js";
@@ -11,7 +10,11 @@ import type {
   TableOfContents as TableOfContentsData,
 } from "build-pages/types.js";
 import { NewsletterForm } from "components/newsletter-form.jsx";
-import { PageMarkdown } from "components/page-markdown.jsx";
+import {
+  PageMarkdown,
+  getContent,
+  getFile,
+} from "components/page-markdown.jsx";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
@@ -79,23 +82,12 @@ export default async function Page({ params }: PageProps) {
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
 
-  const entryFiles = getPageEntryFilesCached(config);
-
-  const file = config.reference
-    ? entryFiles.find((file) =>
-        page.replace(/^use\-/, "").startsWith(getPageName(file)),
-      )
-    : entryFiles.find((file) => getPageName(file) === page);
-
+  const file = getFile(config, page);
   if (!file) return notFound();
 
-  const reference = config.reference
-    ? getReferences(file).find((reference) => getPageName(reference) === page)
-    : undefined;
+  const content = getContent(config, file, page);
+  if (!content) return notFound();
 
-  if (config.reference && !reference) return notFound();
-
-  const content = getPageContent(reference || file);
   const tree = getPageTreeFromContent(content);
   const pageDetail = pageIndex[category]?.find((item) => item.slug === page);
   const categoryDetail = pagesConfig.pages.find(

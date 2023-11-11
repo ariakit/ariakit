@@ -2,6 +2,7 @@ import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
+import { batch } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -38,7 +39,16 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         "HovercardAnchor must receive a `store` prop or be wrapped in a HovercardProvider component.",
     );
 
-    const mounted = store.useState("mounted");
+    useEffect(() => {
+      return batch(store, ["anchorElement", "mounted"], (state) => {
+        if (!state.mounted) return;
+        // We need to set the anchor element as the hovercard disclosure
+        // disclosure element only when the hovercard is shown so it doesn't get
+        // assigned an arbitrary element by the dialog component.
+        store?.setDisclosureElement(state.anchorElement);
+      });
+    }, [store]);
+
     const disabled = disabledFromProps(props);
     const showTimeoutRef = useRef(0);
 
@@ -88,14 +98,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
 
     props = {
       ...props,
-      ref: useMergeRefs(
-        store.setAnchorElement,
-        // We need to set the anchor element as the hovercard disclosure
-        // disclosure element only when the hovercard is shown so it doesn't get
-        // assigned an arbitrary element by the dialog component.
-        mounted ? store.setDisclosureElement : undefined,
-        props.ref,
-      ),
+      ref: useMergeRefs(store.setAnchorElement, props.ref),
       onMouseMove,
     };
 

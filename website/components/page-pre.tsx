@@ -4,13 +4,15 @@ import type { Element } from "hast";
 import parseNumericRange from "parse-numeric-range";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
+import { defer } from "utils/defer.js";
 import { CodeBlock } from "./code-block.jsx";
 
 export interface PagePreProps extends ComponentProps<"pre"> {
   node?: Element;
+  hovercards?: Set<Promise<string | Iterable<string>>>;
 }
 
-export function PagePre({ node, ...props }: PagePreProps) {
+export function PagePre({ node, hovercards, ...props }: PagePreProps) {
   const pre = (
     <pre
       {...props}
@@ -62,6 +64,9 @@ export function PagePre({ node, ...props }: PagePreProps) {
       return [token, parseNumericRange(ranges)] as const;
     });
 
+  const deferred = defer<Iterable<string>>();
+  hovercards?.add(deferred);
+
   return (
     <CodeBlock
       type={definition ? "definition" : undefined}
@@ -71,6 +76,7 @@ export function PagePre({ node, ...props }: PagePreProps) {
       highlightLines={highlightLines}
       highlightTokens={highlightTokens}
       className={definition ? "" : "!max-w-[832px]"}
+      onRender={deferred.resolve}
     />
   );
 }
