@@ -192,6 +192,7 @@ export async function CodeBlock({
   code = type === "static" || type === "definition" ? code.trim() : code;
 
   if (process.env.DISABLE_SHIKI) {
+    onRender?.(previewPaths);
     return null;
   }
 
