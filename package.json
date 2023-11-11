@@ -137,7 +137,7 @@
     "lerna": "7.4.2",
     "lint-staged": "15.0.2",
     "lodash-es": "4.17.21",
-    "marked": "4.3.0",
+    "marked": "10.0.0",
     "match-sorter": "6.3.1",
     "monaco-editor": "0.44.0",
     "monaco-editor-textmate": "4.0.0",
