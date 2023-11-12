@@ -125,7 +125,7 @@ export function PageHovercardAnchor(props: PageHovercardAnchorProps) {
         {...props}
         className={twJoin(
           props.className,
-          "[[data-dialog]_&]:decoration-solid [[data-dialog]_&]:decoration-[0.5px]",
+          "[[data-dialog]_&]:decoration-solid [[data-dialog]_&]:decoration-[0.5px] [[data-dialog]_&]:hover:decoration-2",
         )}
       />
     );

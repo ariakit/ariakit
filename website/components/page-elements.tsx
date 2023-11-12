@@ -29,7 +29,7 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
     "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%]",
     // sticky styles
     level < 4 &&
-      "sticky md:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-transparent",
+      "sticky md:static [[data-dialog]_&]:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-inherit",
     level === 1 &&
       "text-2xl font-extrabold dark:font-bold sm:text-4xl md:text-5xl [[data-dialog]_&]:text-2xl",
     level === 2 &&
@@ -262,10 +262,11 @@ export function PageSection({ level, ...props }: PageSectionProps) {
       data-lavel={level}
       {...props}
       className={twJoin(
-        "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-6",
+        "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-5",
         "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
         `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
+        "[[data-dialog]_&]:bg-inherit",
         props.className,
       )}
     />
@@ -392,6 +393,7 @@ export function PageA({ node, file, href, hovercards, ...props }: PageAProps) {
       <PageExample
         pageFilename={file}
         href={href}
+        hovercards={hovercards}
         {...props}
         type={props.type as any}
       />

@@ -57,7 +57,7 @@ export interface PageMarkdownProps {
   section?: string;
   content?: string;
   file?: string;
-  cards?: boolean;
+  showHovercards?: boolean;
 }
 
 export function PageMarkdown({
@@ -65,7 +65,7 @@ export function PageMarkdown({
   page,
   content,
   file,
-  cards = true,
+  showHovercards = true,
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();
 
@@ -82,7 +82,7 @@ export function PageMarkdown({
 
   const { content: contentWithoutMatter } = matter(content);
 
-  const Wrapper = cards ? PageHovercardProvider : Fragment;
+  const Wrapper = showHovercards ? PageHovercardProvider : Fragment;
 
   return (
     <Wrapper>
@@ -114,7 +114,10 @@ export function PageMarkdown({
 
           pre(props) {
             return (
-              <PagePre {...props} hovercards={cards ? hovercards : undefined} />
+              <PagePre
+                {...props}
+                hovercards={showHovercards ? hovercards : undefined}
+              />
             );
           },
 
@@ -123,7 +126,7 @@ export function PageMarkdown({
               <PageA
                 {...props}
                 file={file!}
-                hovercards={cards ? hovercards : undefined}
+                hovercards={showHovercards ? hovercards : undefined}
               />
             );
           },
@@ -143,7 +146,7 @@ export function PageMarkdown({
       >
         {contentWithoutMatter}
       </ReactMarkdown>
-      {cards && <Hovercards hovercards={hovercards} />}
+      {showHovercards && <Hovercards hovercards={hovercards} />}
     </Wrapper>
   );
 }
@@ -175,7 +178,7 @@ async function Hovercards({
     if (!category) continue;
     if (contents[page]) continue;
     contents[page] = (
-      <PageMarkdown category={category} page={page} cards={false} />
+      <PageMarkdown category={category} page={page} showHovercards={false} />
     );
   }
 
