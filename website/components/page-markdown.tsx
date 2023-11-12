@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { Fragment, cache } from "react";
 import type { ReactNode } from "react";
 import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
@@ -82,8 +82,10 @@ export function PageMarkdown({
 
   const { content: contentWithoutMatter } = matter(content);
 
+  const Wrapper = cards ? PageHovercardProvider : Fragment;
+
   return (
-    <PageHovercardProvider>
+    <Wrapper>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
@@ -142,7 +144,7 @@ export function PageMarkdown({
         {contentWithoutMatter}
       </ReactMarkdown>
       {cards && <Hovercards hovercards={hovercards} />}
-    </PageHovercardProvider>
+    </Wrapper>
   );
 }
 

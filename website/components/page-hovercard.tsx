@@ -7,7 +7,6 @@ import {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
-import { toArray } from "@ariakit/core/utils/array";
 import type {
   HovercardAnchorProps,
   HovercardProps,
@@ -21,33 +20,30 @@ import {
   Role,
   useHovercardStore,
 } from "@ariakit/react";
-import { twJoin, twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { Popup } from "./popup.jsx";
 
 // Breadth-first search algorithm
 function findSection(node: ReactNode, id?: string | null): ReactNode {
   if (!id) return node;
-  const queue: ReactNode[] = [node];
+  const queue = [node];
 
   while (queue.length > 0) {
     const size = queue.length;
     for (let i = 0; i < size; i += 1) {
       const currentNode = queue.shift();
+      if (Array.isArray(currentNode)) {
+        queue.push(...currentNode);
+        continue;
+      }
       if (!isValidElement(currentNode)) continue;
       if (currentNode.props.id === id) return currentNode;
-      const children = toArray(currentNode.props.children);
-      for (const child of children) {
-        if (isValidElement(child)) {
-          queue.push(child);
-        } else if (Array.isArray(child)) {
-          queue.push(...child);
-        }
-      }
+      queue.push(currentNode.props.children);
     }
   }
 
-  return undefined;
+  return null;
 }
 
 const PageHovercardContext = createContext<HovercardStore | null>(null);
@@ -127,7 +123,10 @@ export function PageHovercardAnchor(props: PageHovercardAnchorProps) {
     return (
       <Role.a
         {...props}
-        className={twMerge(props.className, "decoration-solid")}
+        className={twJoin(
+          props.className,
+          "[[data-dialog]_&]:decoration-solid [[data-dialog]_&]:decoration-[0.5px]",
+        )}
       />
     );
   }

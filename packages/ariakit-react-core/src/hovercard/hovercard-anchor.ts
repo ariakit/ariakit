@@ -2,7 +2,7 @@ import type { MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import { batch } from "@ariakit/core/utils/store";
+import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -41,7 +41,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     );
 
     useSafeLayoutEffect(() => {
-      return batch(store, ["anchorElement", "mounted"], (state) => {
+      return sync(store, ["anchorElement", "mounted"], (state) => {
         if (!state.mounted) return;
         // We need to set the anchor element as the hovercard disclosure element
         // only when the hovercard is shown so it doesn't get assigned an

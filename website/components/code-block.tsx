@@ -237,7 +237,7 @@ export async function CodeBlock({
         <div
           key={i}
           className={twJoin(
-            type === "static" && "sm:!px-8 [[data-dialog]_&]:!px-4",
+            type === "static" && "sm:!pl-8 [[data-dialog]_&]:!pl-4",
             type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
             type === "editor" && lineNumbers && "sm:!pl-0",
             type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
