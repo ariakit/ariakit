@@ -31,6 +31,7 @@ export function PageTagList({ ...props }: PageTagListProps) {
       {...props}
       className={twJoin(
         "flex flex-wrap gap-2 [[data-description]+&]:-translate-y-2",
+        "[[data-dialog]_&]:hidden",
         props.className,
       )}
     />

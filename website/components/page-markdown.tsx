@@ -32,7 +32,6 @@ import {
 import { PageHovercard, PageHovercardProvider } from "./page-hovercard.jsx";
 import { PagePre } from "./page-pre.jsx";
 import { PageVideo } from "./page-video.jsx";
-import { Popup } from "./popup.jsx";
 
 export const getFile = cache((config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);
@@ -142,12 +141,12 @@ export function PageMarkdown({
       >
         {contentWithoutMatter}
       </ReactMarkdown>
-      {cards && <Pqp hovercards={hovercards} />}
+      {cards && <Hovercards hovercards={hovercards} />}
     </PageHovercardProvider>
   );
 }
 
-async function Pqp({
+async function Hovercards({
   hovercards,
 }: {
   hovercards: Set<Promise<string | Iterable<string>>>;
@@ -170,18 +169,13 @@ async function Pqp({
     const url = new URL(href, "https://ariakit.dev");
     const pathname = url.pathname;
     const [, category, page] = pathname.split("/");
-    if (!category) continue;
     if (!page) continue;
-    const path = `/${category}/${page}`;
-    if (contents[path]) continue;
-    contents[path] = (
+    if (!category) continue;
+    if (contents[page]) continue;
+    contents[page] = (
       <PageMarkdown category={category} page={page} cards={false} />
     );
   }
 
-  return (
-    <PageHovercard render={<Popup />} contents={contents}>
-      dadsa
-    </PageHovercard>
-  );
+  return <PageHovercard contents={contents} />;
 }

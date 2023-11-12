@@ -36,7 +36,7 @@ export const TooltipButton = createComponent<TooltipButtonOptions>(
           fixed
           unmountOnHide
           className={cx(
-            "z-40 cursor-default rounded-md px-2 py-1 text-sm",
+            "z-50 cursor-default rounded-md px-2 py-1 text-sm",
             "drop-shadow-sm dark:drop-shadow-sm-dark",
             "bg-gray-150 dark:bg-gray-700",
             "text-black dark:text-white",

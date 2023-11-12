@@ -29,12 +29,13 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
     "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%]",
     // sticky styles
     level < 4 &&
-      "sticky md:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800",
+      "sticky md:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-transparent",
     level === 1 &&
-      "text-2xl font-extrabold dark:font-bold sm:text-4xl md:text-5xl",
+      "text-2xl font-extrabold dark:font-bold sm:text-4xl md:text-5xl [[data-dialog]_&]:text-2xl",
     level === 2 &&
-      "text-xl font-semibold dark:font-medium sm:text-2xl md:text-3xl [&_code]:font-medium",
-    level === 3 && "text-lg font-semibold dark:font-medium sm:text-xl",
+      "text-xl font-semibold dark:font-medium sm:text-2xl md:text-3xl [&_code]:font-medium [[data-dialog]_&]:text-xl",
+    level === 3 &&
+      "text-lg font-semibold dark:font-medium sm:text-xl [[data-dialog]_&]:text-lg",
     level === 4 && "text-sm uppercase tracking-wider opacity-70",
     props.className,
   );
@@ -162,6 +163,7 @@ export interface PageDividerProps extends ComponentPropsWithoutRef<"hr"> {
 export function PageDivider({ node, ...props }: PageDividerProps) {
   const className = twJoin(
     "w-full border-t border-black/10 dark:border-white/10",
+    "[[data-dialog]_section:last-of-type_&]:hidden",
     props.className,
   );
   return <hr {...props} className={className} />;
@@ -260,9 +262,10 @@ export function PageSection({ level, ...props }: PageSectionProps) {
       data-lavel={level}
       {...props}
       className={twJoin(
-        "flex w-full flex-col items-center justify-center gap-8",
+        "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-6",
         "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
         `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
+        "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         props.className,
       )}
     />

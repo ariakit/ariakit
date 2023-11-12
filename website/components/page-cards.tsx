@@ -57,7 +57,7 @@ export function PageCards({
         {...props}
         className={twJoin(
           props.className,
-          "grid !max-w-[792px] grid-cols-1 gap-4 md:grid-cols-2",
+          "grid !max-w-[792px] grid-cols-1 gap-4 md:grid-cols-2 [[data-dialog]_&]:grid-cols-1",
         )}
       >
         {pages.map((page) => (

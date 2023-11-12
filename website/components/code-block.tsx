@@ -237,7 +237,7 @@ export async function CodeBlock({
         <div
           key={i}
           className={twJoin(
-            type === "static" && "sm:!px-8",
+            type === "static" && "sm:!px-8 [[data-dialog]_&]:!px-4",
             type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
             type === "editor" && lineNumbers && "sm:!pl-0",
             type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
@@ -353,8 +353,9 @@ export async function CodeBlock({
           type === "definition"
             ? "w-max max-w-full rounded-md py-1"
             : "w-full pt-4",
-          type === "static" && !oneLiner && "sm:pt-8",
-          type === "static" && "rounded-lg sm:rounded-xl",
+          type === "static" && !oneLiner && "sm:pt-8 [[data-dialog]_&]:pt-4",
+          type === "static" &&
+            "rounded-lg sm:rounded-xl [[data-dialog]_&]:rounded-md",
           type === "editor" && "rounded-b-lg !border-0 sm:rounded-b-xl",
           !oneLiner && (highlightLines?.length || highlightTokens?.length)
             ? "leading-[26px]"
@@ -400,7 +401,7 @@ export async function CodeBlock({
           {darkTokens.map(renderLine("hidden dark:block"))}
           <div
             className={twJoin(
-              type === "static" && !oneLiner && "sm:h-8",
+              type === "static" && !oneLiner && "sm:h-8 [[data-dialog]_&]:h-4",
               type !== "definition" && "h-4",
             )}
           />
