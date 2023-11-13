@@ -54,8 +54,9 @@ async function updatePlanOnSite(
 ) {
   await page.goto("/plus");
   await expect(button(page, `Current plan ${plan}`)).toBeDisabled();
+  const pagePromise = context.waitForEvent("page");
   await button(page, alternatePlan).click();
-  const nextPage = await context.waitForEvent("page");
+  const nextPage = await pagePromise;
   await button(nextPage, /^(Confirm|Subscribe and pay)/).click();
   await expect(nextPage.getByText("Plan updated")).toBeVisible();
   await nextPage.close();
@@ -115,8 +116,9 @@ for (const plan of ["Monthly", "Yearly"]) {
     await updatePlanOnSite(page, context, plan, alternatePlan);
 
     await page.goto("/components/button");
+    const pagePromise = context.waitForEvent("page");
     await button(page, "Vite").click();
-    await context.waitForEvent("page");
+    await pagePromise;
   });
 }
 
