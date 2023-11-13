@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentProps } from "react";
+import type { Element } from "hast";
 import { flushSync } from "react-dom";
+import { twJoin } from "tailwind-merge";
 
-interface Props extends ComponentPropsWithoutRef<"video"> {
+export interface PageVideoProps extends ComponentProps<"video"> {
+  node?: Element;
   gif?: boolean | "true" | "false";
   lazy?: boolean;
 }
 
-export function PageVideo({ gif, lazy, src, ...props }: Props) {
+export function PageVideo({ node, gif, lazy, src, ...props }: PageVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [source, setSource] = useState(lazy ? undefined : src);
   gif = gif === "true" || gif === true;
@@ -49,6 +52,10 @@ export function PageVideo({ gif, lazy, src, ...props }: Props) {
       muted={gif}
       src={source}
       {...props}
+      className={twJoin(
+        "overflow-hidden rounded-lg data-[large]:!max-w-[832px] data-[wide]:!max-w-5xl md:rounded-xl data-[wide]:md:rounded-2xl",
+        props.className,
+      )}
     />
   );
 }

@@ -14,7 +14,6 @@ import {
   SignedOut,
   useSession,
 } from "@clerk/clerk-react";
-import { AriakitPlus } from "icons/ariakit-plus.jsx";
 import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
 import { useSelectedLayoutSegments } from "next/navigation.js";
@@ -39,7 +38,7 @@ export function HeaderAriakitPlus() {
       <SignedOut>
         {!segments.includes("plus") && (
           <Button
-            className="text-sm max-sm:w-10 max-sm:p-0"
+            className="text-sm max-sm:px-3"
             aria-label="Unlock Ariakit Plus"
             render={
               <Command
@@ -48,23 +47,20 @@ export function HeaderAriakitPlus() {
               />
             }
           >
-            <AriakitPlus className="-translate-y-px" />
             <span className="hidden sm:inline">
               Unlock <span className="font-semibold">Ariakit Plus</span>
             </span>
+            <span className="inline font-semibold sm:hidden">Plus</span>
           </Button>
         )}
       </SignedOut>
       <SignedIn>
         <MenuProvider placement="bottom-end" animated>
           <MenuButton
-            className="px-3"
-            render={<Command variant="secondary" flat />}
+            className="px-3 text-sm"
+            render={<Command variant="plus" />}
           >
-            <span className="block md:hidden">
-              <AriakitPlus className="-translate-y-px" />
-            </span>
-            <span className="hidden md:block">Plus</span>
+            <span className="font-semibold">Plus</span>
             <MenuButtonArrow className="hidden md:block" />
           </MenuButton>
           <Menu

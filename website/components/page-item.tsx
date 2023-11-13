@@ -8,7 +8,7 @@ const style = {
   wrapper: tw`
     group
     flex items-center
-    rounded-lg
+    rounded-lg [[data-dialog]_&]:rounded-md
     [@media(any-hover:hover)]:hover:bg-blue-200/40
     [@media(any-hover:hover)]:dark:hover:bg-blue-600/25
     active:!bg-blue-200/70 dark:active:!bg-blue-800/25
@@ -60,7 +60,8 @@ export function PageItem({
         style.wrapper,
         props.className,
         size === "sm" && "gap-2 p-2",
-        size === "md" && "gap-3 p-3",
+        size === "md" &&
+          "gap-3 p-3 [[data-dialog]_&]:gap-2 [[data-dialog]_&]:p-2",
         size === "lg" && "gap-4 p-4",
       )}
     >
@@ -70,7 +71,8 @@ export function PageItem({
           className={cx(
             style.thumbnail,
             size === "sm" && "h-16 w-16",
-            size === "md" && "h-20 w-20",
+            size === "md" &&
+              "h-20 w-20 [[data-dialog]_&]:h-16 [[data-dialog]_&]:w-16",
             size === "lg" && "h-28 w-28",
           )}
         >
@@ -84,7 +86,8 @@ export function PageItem({
             className={cx(
               style.title,
               size === "sm" && "text-base",
-              size === "md" && "pb-1 text-lg",
+              size === "md" &&
+                "pb-1 text-lg [[data-dialog]_&]:pb-0 [[data-dialog]_&]:text-base",
               size === "lg" && "pb-2 text-xl",
             )}
           >
@@ -96,7 +99,8 @@ export function PageItem({
               className={cx(
                 style.description,
                 size === "sm" && "line-clamp-2 text-sm",
-                size === "md" && "line-clamp-2 text-base",
+                size === "md" &&
+                  "line-clamp-2 text-base [[data-dialog]_&]:text-sm",
                 size === "lg" && "line-clamp-3 text-base",
               )}
             >

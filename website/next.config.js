@@ -7,6 +7,7 @@ import { redirects } from "./redirects.js";
 const nextConfig = {
   redirects,
   experimental: {
+    webpackBuildWorker: true,
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
@@ -23,7 +24,7 @@ const nextConfig = {
     ],
   },
   images: {
-    domains: ["img.clerk.com"],
+    remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
   reactStrictMode: true,
   transpilePackages: ["@ariakit/*"],

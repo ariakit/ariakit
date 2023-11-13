@@ -1,11 +1,23 @@
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
-import { FontStyle, getHighlighter } from "shiki";
-import type { Highlighter, IThemedToken } from "shiki";
+import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
+import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
+import css from "shiki/languages/css.tmLanguage.json";
+import diff from "shiki/languages/diff.tmLanguage.json";
+import html from "shiki/languages/html.tmLanguage.json";
+import javascript from "shiki/languages/javascript.tmLanguage.json";
+import jsx from "shiki/languages/jsx.tmLanguage.json";
+import sh from "shiki/languages/shellscript.tmLanguage.json";
+import tsx from "shiki/languages/tsx.tmLanguage.json";
+import typescript from "shiki/languages/typescript.tmLanguage.json";
+import darkPlus from "shiki/themes/dark-plus.json";
+import lightPlus from "shiki/themes/light-plus.json";
 import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
+import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
+import { PageHovercardAnchor } from "./page-hovercard.jsx";
 
 interface Props {
   code: string;
@@ -18,6 +30,7 @@ interface Props {
   definition?: boolean;
   className?: string;
   preClassName?: string;
+  onRender?: (hrefs: Iterable<string>) => void;
 }
 
 const highlightBeforeStyle = twJoin(
@@ -37,6 +50,30 @@ function parseFontStyle(fontStyle?: FontStyle) {
     fontStyle & FontStyle.Bold && "font-bold",
     fontStyle & FontStyle.Underline && "underline",
   );
+}
+
+function getLanguage(lang: string, grammar: any) {
+  const language = BUNDLED_LANGUAGES.find((l) => l.id === lang);
+  if (!language) throw new Error(`Language not found: ${lang}`);
+  return { ...language, grammar: grammar as IGrammar };
+}
+
+function loadLanguages(highlighter: Highlighter) {
+  if (highlighter.getLoadedLanguages().length) {
+    return Promise.resolve();
+  }
+  return Promise.all([
+    highlighter.loadLanguage(getLanguage("javascript", javascript)),
+    highlighter.loadLanguage(getLanguage("typescript", typescript)),
+    highlighter.loadLanguage(getLanguage("tsx", tsx)),
+    highlighter.loadLanguage(getLanguage("jsx", jsx)),
+    highlighter.loadLanguage(getLanguage("shellscript", sh)),
+    highlighter.loadLanguage(getLanguage("css", css)),
+    highlighter.loadLanguage(getLanguage("html", html)),
+    highlighter.loadLanguage(getLanguage("diff", diff)),
+    highlighter.loadTheme(lightPlus as unknown as IShikiTheme),
+    highlighter.loadTheme(darkPlus as unknown as IShikiTheme),
+  ]);
 }
 
 function getLinkableType(token: IThemedToken) {
@@ -148,10 +185,14 @@ export async function CodeBlock({
   highlightLines,
   highlightTokens,
   className,
+  onRender,
 }: Props) {
+  const previewPaths = new Set<string>();
+
   code = type === "static" || type === "definition" ? code.trim() : code;
 
   if (process.env.DISABLE_SHIKI) {
+    onRender?.(previewPaths);
     return null;
   }
 
@@ -160,19 +201,7 @@ export async function CodeBlock({
 
   if (!highlighter) {
     try {
-      highlighter = await getHighlighter({
-        themes: ["light-plus", "dark-plus"],
-        langs: [
-          "javascript",
-          "typescript",
-          "tsx",
-          "jsx",
-          "shellscript",
-          "css",
-          "html",
-          "diff",
-        ],
-      });
+      highlighter = await getHighlighter({ themes: [], langs: [] });
     } catch (error) {
       console.error(error);
       return null;
@@ -180,16 +209,17 @@ export async function CodeBlock({
   }
 
   try {
+    await loadLanguages(highlighter);
     if (lightCache.has(code)) {
       lightTokens = lightCache.get(code)!;
     } else {
-      lightTokens = highlighter.codeToThemedTokens(code, lang, "light-plus");
+      lightTokens = highlighter.codeToThemedTokens(code, lang, lightPlus.name);
       lightCache.set(code, lightTokens);
     }
     if (darkCache.has(code)) {
       darkTokens = darkCache.get(code)!;
     } else {
-      darkTokens = highlighter.codeToThemedTokens(code, lang, "dark-plus");
+      darkTokens = highlighter.codeToThemedTokens(code, lang, darkPlus.name);
       darkCache.set(code, darkTokens);
     }
   } catch (error) {
@@ -207,11 +237,11 @@ export async function CodeBlock({
         <div
           key={i}
           className={twJoin(
-            type === "static" && "sm:!px-8",
+            type === "static" && "sm:!pl-8 [[data-dialog]_&]:!pl-4",
             type === "static" && lineNumbers && "!pl-0 sm:!pl-0",
             type === "editor" && lineNumbers && "sm:!pl-0",
             type !== "definition" && "px-4 pr-14 sm:pl-[26px]",
-            type === "definition" && "px-4",
+            type === "definition" && "px-2",
             highlightLine && "bg-blue-200/20 dark:bg-blue-600/[15%]",
             highlightLine && !lineNumbers && highlightBeforeStyle,
             className,
@@ -261,19 +291,20 @@ export async function CodeBlock({
                 };
 
                 if (href) {
+                  previewPaths.add(href);
                   return (
-                    <Link
+                    <PageHovercardAnchor
                       key={j}
-                      href={href}
                       style={{ color }}
                       className={twJoin(
                         className,
                         "underline decoration-dotted decoration-1 underline-offset-[3px] hover:decoration-solid hover:decoration-2",
                       )}
                       data-scopes={getScopes()}
+                      render={<Link href={href} />}
                     >
                       {token.content}
-                    </Link>
+                    </PageHovercardAnchor>
                   );
                 }
 
@@ -298,7 +329,7 @@ export async function CodeBlock({
     };
   };
 
-  return (
+  const element = (
     <div
       className={twMerge(
         type !== "definition" && "w-full",
@@ -319,16 +350,19 @@ export async function CodeBlock({
       )}
       <pre
         className={twJoin(
-          type === "definition" ? "w-max max-w-full py-3" : "w-full pt-4",
-          type === "definition" && "rounded-lg",
-          type === "static" && !oneLiner && "sm:pt-8",
-          type === "static" && "rounded-lg sm:rounded-xl",
+          type === "definition"
+            ? "w-max max-w-full rounded-md py-1"
+            : "w-full pt-4",
+          type === "static" && !oneLiner && "sm:pt-8 [[data-dialog]_&]:pt-4",
+          type === "static" &&
+            "rounded-lg sm:rounded-xl [[data-dialog]_&]:rounded-md",
           type === "editor" && "rounded-b-lg !border-0 sm:rounded-b-xl",
           !oneLiner && (highlightLines?.length || highlightTokens?.length)
             ? "leading-[26px]"
             : "leading-[21px]",
           "relative z-10 flex max-h-[inherit] overflow-auto text-sm text-black dark:text-white",
-          "border border-black/[15%] bg-white dark:border-gray-650 dark:bg-gray-850",
+          "border border-black/[15%] dark:border-gray-650",
+          "bg-white dark:bg-gray-850",
         )}
       >
         {lineNumbers && (
@@ -367,7 +401,7 @@ export async function CodeBlock({
           {darkTokens.map(renderLine("hidden dark:block"))}
           <div
             className={twJoin(
-              type === "static" && !oneLiner && "sm:h-8",
+              type === "static" && !oneLiner && "sm:h-8 [[data-dialog]_&]:h-4",
               type !== "definition" && "h-4",
             )}
           />
@@ -375,4 +409,8 @@ export async function CodeBlock({
       </pre>
     </div>
   );
+
+  onRender?.(previewPaths);
+
+  return element;
 }

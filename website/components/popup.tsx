@@ -1,3 +1,4 @@
+"use client";
 import { forwardRef } from "react";
 import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
