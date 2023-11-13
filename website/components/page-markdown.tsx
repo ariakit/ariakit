@@ -14,6 +14,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
+import { AuthEnabled } from "./auth.jsx";
 import {
   PageA,
   PageAside,
@@ -182,5 +183,9 @@ async function Hovercards({
     );
   }
 
-  return <PageHovercard contents={contents} />;
+  return (
+    <AuthEnabled>
+      <PageHovercard contents={contents} />
+    </AuthEnabled>
+  );
 }

@@ -20,8 +20,11 @@ import {
   Role,
   useHovercardStore,
 } from "@ariakit/react";
+import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
+import { useSubscription } from "utils/use-subscription.js";
+import { Command } from "./command.jsx";
 import { Popup } from "./popup.jsx";
 
 // Breadth-first search algorithm
@@ -75,9 +78,11 @@ export interface PageHovercardProps extends HovercardProps {
 }
 
 export function PageHovercard({ contents, ...props }: PageHovercardProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const store = useContext(PageHovercardContext);
   invariant(store);
+
+  const sub = useSubscription();
+  const ref = useRef<HTMLDivElement>(null);
   const href = store.useState("anchorElement")?.getAttribute("href");
   const url = new URL(href || "", "https://ariakit.org");
   const [, , page] = url.pathname.split("/");
@@ -93,6 +98,10 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
   }, [contents, page, id]);
 
   if (!content) return null;
+  if (!sub.isLoaded) return null;
+  if (sub.userId && !sub.isFetched) return null;
+
+  const subscribed = !!sub.data;
 
   return (
     <Hovercard
@@ -109,7 +118,26 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
     >
       <HovercardArrow />
       <PageHovercardContext.Provider value={null}>
-        {content}
+        {subscribed ? (
+          content
+        ) : (
+          <div className="flex max-w-xs flex-col">
+            <h3 className="mb-3 text-lg font-semibold">Preview API docs</h3>
+            <p className="relative after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent after:to-white dark:after:to-gray-700">
+              With Ariakit Plus, you can quickly preview comprehensive API
+              documentation by simply hovering over the relevant API link on our
+              site.
+            </p>
+            <Command
+              variant="plus"
+              render={<Link href="/plus?feature=preview-docs" scroll={false} />}
+            >
+              <span>
+                Unlock <span className="font-semibold">Ariakit Plus</span>
+              </span>
+            </Command>
+          </div>
+        )}
       </PageHovercardContext.Provider>
     </Hovercard>
   );
