@@ -14,6 +14,14 @@
       "groupName": "unified"
     },
     {
+      "matchPackagePatterns": ["clerk"],
+      "groupName": "clerk"
+    },
+    {
+      "matchPackagePatterns": ["stripe"],
+      "groupName": "stripe"
+    },
+    {
       "matchPackagePatterns": ["monaco"],
       "groupName": "monaco"
     },
