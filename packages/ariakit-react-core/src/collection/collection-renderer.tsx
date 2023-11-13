@@ -102,8 +102,8 @@ type ItemProps<
 type RawItemProps<T extends Item> = unknown extends T
   ? EmptyObject
   : T extends AnyObject
-  ? T
-  : { value: T };
+    ? T
+    : { value: T };
 
 type Data = Map<
   string,

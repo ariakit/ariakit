@@ -18,10 +18,10 @@ export function getValue(listValue: string, trigger: string | null) {
     trigger === "@"
       ? users
       : trigger === "#"
-      ? issues
-      : trigger === ":"
-      ? emoji
-      : [];
+        ? issues
+        : trigger === ":"
+          ? emoji
+          : [];
   return list.find((item) => item.listValue === listValue)?.value;
 }
 

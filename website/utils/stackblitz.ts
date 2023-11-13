@@ -98,8 +98,8 @@ function getIndexCss(
   const background = isRadix
     ? "linear-gradient(to bottom right, hsl(204 100% 40%), #9333ea)"
     : theme === "light"
-    ? "hsl(204 20% 94%)"
-    : "hsl(204 3% 12%)";
+      ? "hsl(204 20% 94%)"
+      : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
   return `@import url("tailwindcss/lib/css/preflight.css");
 
@@ -336,8 +336,8 @@ function getProject({ template = "vite", ...props }: StackblitzProps) {
     template === "vite"
       ? getViteProject(props)
       : template === "next"
-      ? getNextProject(props)
-      : null;
+        ? getNextProject(props)
+        : null;
 
   invariant(templateProject, "Unsupported template");
 

@@ -442,8 +442,8 @@ export function PageA({ node, file, href, hovercards, ...props }: PageAProps) {
             ? "text-[#000f80] dark:text-[#9cdcfe]"
             : "text-[#ce0000] dark:text-[#9cdcfe]"
           : isComponent
-          ? "text-[#227289] dark:text-[#4ec9b0]"
-          : "text-[#795e26] dark:text-[#dcdcaa]",
+            ? "text-[#227289] dark:text-[#4ec9b0]"
+            : "text-[#795e26] dark:text-[#dcdcaa]",
         props.className,
       );
       hovercards?.add(Promise.resolve(href));

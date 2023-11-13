@@ -265,12 +265,12 @@ export async function CodeBlock({
                   !highlightToken && !highlightLine
                     ? token.color
                     : // Adjust contrast for custom component tokens
-                    token.color === "#267F99"
-                    ? "#227289"
-                    : // Adjust contrast for component prop tokens
-                    token.color === "#E50000"
-                    ? "#CE0000"
-                    : token.color;
+                      token.color === "#267F99"
+                      ? "#227289"
+                      : // Adjust contrast for component prop tokens
+                        token.color === "#E50000"
+                        ? "#CE0000"
+                        : token.color;
 
                 const className = twJoin(
                   highlightToken &&

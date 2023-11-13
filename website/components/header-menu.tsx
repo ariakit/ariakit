@@ -432,8 +432,8 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
                   ? "scroll-mt-[145px]"
                   : "scroll-mt-[88px]"
                 : hasTitle
-                ? "scroll-mt-[113px]"
-                : "scroll-mt-14"),
+                  ? "scroll-mt-[113px]"
+                  : "scroll-mt-14"),
             !!thumbnail && "!items-start !gap-4 !p-4",
             !!footer && "scroll-mb-14",
             isExternalLink && "justify-between",

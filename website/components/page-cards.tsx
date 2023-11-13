@@ -14,8 +14,8 @@ function findCardLinks(children: ReactNode): string[] {
       ? child.props?.href
         ? child.props.href
         : child.props?.children
-        ? findCardLinks(child.props.children)
-        : []
+          ? findCardLinks(child.props.children)
+          : []
       : [],
   );
 }

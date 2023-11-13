@@ -60,12 +60,12 @@ export type StringWithValue<T extends string> =
 export type ToPrimitive<T> = T extends string
   ? string
   : T extends number
-  ? number
-  : T extends boolean
-  ? boolean
-  : T extends AnyFunction
-  ? (...args: Parameters<T>) => ReturnType<T>
-  : T;
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends AnyFunction
+        ? (...args: Parameters<T>) => ReturnType<T>
+        : T;
 
 /**
  * Picks only the properties from a type that have a specific value.

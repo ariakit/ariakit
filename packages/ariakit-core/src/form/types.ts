@@ -36,6 +36,6 @@ export type Names<T> = {
       ? { [key: number]: Names<U> } & StringLike
       : { [key: number]: U & StringLike } & StringLike
     : T[K] extends AnyObject
-    ? Names<T[K]>
-    : StringLike;
+      ? Names<T[K]>
+      : StringLike;
 };
