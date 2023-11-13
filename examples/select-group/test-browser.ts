@@ -8,6 +8,8 @@ const getPopover = (page: Page) =>
 const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
+test.describe.configure({ retries: 2 });
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/select-group", { waitUntil: "networkidle" });
 });

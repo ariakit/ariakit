@@ -56,7 +56,7 @@ async function updatePlanOnSite(
   await expect(button(page, `Current plan ${plan}`)).toBeDisabled();
   await button(page, alternatePlan).click();
   const nextPage = await context.waitForEvent("page");
-  await button(nextPage, "Confirm").click();
+  await button(nextPage, /^(Confirm|Subscribe and pay)/).click();
   await expect(nextPage.getByText("Plan updated")).toBeVisible();
   await nextPage.close();
   await page.reload();

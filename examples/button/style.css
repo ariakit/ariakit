@@ -24,10 +24,17 @@
     aria-expanded:bg-gray-100
     aria-expanded:dark:bg-white/10
     data-[focus-visible]:outline
-    active:[transform:scale(0.98)]
-    aria-expanded:active:[transform:scale(1)]
-    [box-shadow:inset_0_0_0_1px_rgba(0,0,0,0.1),inset_0_-1px_0_rgba(0,0,0,0.1),0_1px_1px_rgba(0,0,0,0.1)]
-    dark:[box-shadow:inset_0_0_0_1px_rgba(255,255,255,0.1),inset_0_-1px_0_1px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]
+    active:pt-0.5
+    [--border:rgba(0,0,0,0.1)]
+    [--highlight:rgba(255,255,255,0.2)]
+    [--shadow:rgba(0,0,0,0.1)]
+    dark:[--shadow:rgba(0,0,0,0.25)]
+    dark:[--border:rgba(255,255,255,0.1)]
+    dark:[--highlight:rgba(255,255,255,0.05)]
+    [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--highlight),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
+    dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--highlight)]
+    active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
+    dark:active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
     outline-2
     outline-offset-2
     outline-blue-600
@@ -38,15 +45,22 @@
   @apply
     [box-shadow:none]
     dark:[box-shadow:none]
+    dark:active:[box-shadow:none]
   ;
 }
 
 .primary {
   @apply
+    [--border:rgba(0,0,0,0.15)]
+    [--highlight:rgba(255,255,255,0.25)]
+    [--shadow:rgba(0,0,0,0.15)]
+    dark:[--border:rgba(255,255,255,0.25)]
+    dark:[--highlight:rgba(255,255,255,0.1)]
+    dark:[--shadow:rgba(0,0,0,0.25)]
     text-white
     bg-blue-600
-    dark:bg-blue-800
-    hover:bg-blue-800
+    dark:bg-blue-700
+    hover:bg-blue-700
     dark:hover:bg-blue-600
   ;
 }
@@ -60,11 +74,18 @@
     dark:hover:bg-white/5
     [box-shadow:none]
     dark:[box-shadow:none]
+    dark:active:[box-shadow:none]
   ;
 }
 
 .danger {
   @apply
+    [--border:rgba(0,0,0,0.15)]
+    [--highlight:rgba(255,255,255,0.25)]
+    [--shadow:rgba(0,0,0,0.15)]
+    dark:[--border:rgba(255,255,255,0.25)]
+    dark:[--highlight:rgba(255,255,255,0.1)]
+    dark:[--shadow:rgba(0,0,0,0.25)]
     text-white
     bg-red-600
     dark:bg-red-700
