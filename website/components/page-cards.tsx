@@ -25,6 +25,7 @@ export interface PageCardsProps extends ComponentProps<"div"> {
   category: string;
   page: string;
   title?: string;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   type?: "components" | "examples" | (string & {});
 }
 
