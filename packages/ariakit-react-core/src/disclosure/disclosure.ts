@@ -9,7 +9,6 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
-  useSafeLayoutEffect,
 } from "../utils/hooks.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
