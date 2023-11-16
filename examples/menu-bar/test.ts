@@ -115,5 +115,5 @@ test("hide on escape", async () => {
   expect(q.menu("File")).not.toBeInTheDocument();
   await press.ArrowRight();
   expect(q.menuitem("Edit")).toHaveFocus();
-  expect(q.menu("Edit")).not.toBeInTheDocument();
+  expect(q.menu("Edit")).toBeInTheDocument();
 });

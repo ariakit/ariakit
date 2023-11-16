@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
@@ -48,15 +48,15 @@ export const useDisclosure = createHook<DisclosureOptions>(
     // Assigns the disclosure element whenever it's undefined or disconnected
     // from the DOM. If the current element is the disclosure element, it will
     // get the `aria-expanded` attribute set to `true` when the disclosure
-    // content is open. This must be done in a layout effect.
-    useSafeLayoutEffect(() => {
+    // content is open.
+    useEffect(() => {
       let isCurrentDisclosure = disclosureElement === ref.current;
-      if (!disclosureElement || !disclosureElement.isConnected) {
+      if (!disclosureElement?.isConnected) {
         store?.setDisclosureElement(ref.current);
         isCurrentDisclosure = true;
       }
       setExpanded(open && isCurrentDisclosure);
-    }, [disclosureElement, open]);
+    }, [store, disclosureElement, open]);
 
     const onMouseDownProp = props.onMouseDown;
 
@@ -70,11 +70,11 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
     const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store?.setDisclosureElement(event.currentTarget);
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
       if (!toggleOnClickProp(event)) return;
+      store?.setDisclosureElement(event.currentTarget);
       store?.toggle();
     });
 
