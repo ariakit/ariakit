@@ -1,7 +1,7 @@
 import "./style.css";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import items from "./items.js";
+import { items } from "./items.js";
 
 export default function Example() {
   const menu = Ariakit.useMenuStore();
@@ -44,7 +44,7 @@ export default function Example() {
             }
           >
             {items.map((item) => {
-              if ("items" in item) {
+              if (item.items) {
                 return (
                   <Ariakit.MenuButton
                     key={item.label}
@@ -87,35 +87,32 @@ export default function Example() {
               >
                 <Ariakit.HovercardArrow className={animated ? "aaa" : ""} />
                 {subItems.map((item) => {
-                  if ("items" in item) {
+                  if (!item.items) {
                     return (
-                      <Ariakit.MenuGroup
+                      <Ariakit.MenuItem
+                        tabbable
                         key={item.label}
-                        className="menu-group"
+                        className="menu-item"
                       >
-                        <Ariakit.MenuHeading className="menu-heading">
-                          {item.label}
-                        </Ariakit.MenuHeading>
-                        {item.items?.map((item) => (
-                          <Ariakit.MenuItem
-                            tabbable
-                            key={item.label}
-                            className="menu-item"
-                          >
-                            {item.label}
-                          </Ariakit.MenuItem>
-                        ))}
-                      </Ariakit.MenuGroup>
+                        {item.label}
+                      </Ariakit.MenuItem>
                     );
                   }
                   return (
-                    <Ariakit.MenuItem
-                      tabbable
-                      key={item.label}
-                      className="menu-item"
-                    >
-                      {item.label}
-                    </Ariakit.MenuItem>
+                    <Ariakit.MenuGroup key={item.label} className="menu-group">
+                      <Ariakit.MenuHeading className="menu-heading">
+                        {item.label}
+                      </Ariakit.MenuHeading>
+                      {item.items?.map((item) => (
+                        <Ariakit.MenuItem
+                          tabbable
+                          key={item.label}
+                          className="menu-item"
+                        >
+                          {item.label}
+                        </Ariakit.MenuItem>
+                      ))}
+                    </Ariakit.MenuGroup>
                   );
                 })}
               </Ariakit.Menu>

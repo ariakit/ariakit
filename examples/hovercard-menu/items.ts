@@ -1,4 +1,11 @@
-export default [
+interface Item {
+  label: string;
+  href?: string;
+  description?: string;
+  items?: Item[];
+}
+
+export const items: Item[] = [
   {
     label: "Services",
     href: "#/services",
