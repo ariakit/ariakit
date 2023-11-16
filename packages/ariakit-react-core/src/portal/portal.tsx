@@ -59,16 +59,39 @@ function queueFocus(element?: HTMLElement | null) {
  * ```
  */
 export const usePortal = createHook<PortalOptions>(
-  ({ preserveTabOrder, portalElement, portalRef, portal = true, ...props }) => {
+  ({
+    preserveTabOrder,
+    portalElement,
+    anchorElement,
+    portalRef,
+    portal = true,
+    ...props
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
     const refProp = useMergeRefs(ref, props.ref);
     const context = useContext(PortalContext);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
 
+    const [anchorPortalNode, setAnchorPortalNode] =
+      useState<HTMLElement | null>(null);
+
     const outerBeforeRef = useRef<HTMLButtonElement>(null);
     const innerBeforeRef = useRef<HTMLSpanElement>(null);
     const innerAfterRef = useRef<HTMLButtonElement>(null);
     const outerAfterRef = useRef<HTMLButtonElement>(null);
+
+    useSafeLayoutEffect(() => {
+      if (!anchorElement) return;
+      const doc = getDocument(anchorElement);
+      const element = doc.createElement("span");
+      element.style.position = "fixed";
+      anchorElement.insertAdjacentElement("afterend", element);
+      setAnchorPortalNode(element);
+      return () => {
+        element.remove();
+        setAnchorPortalNode(null);
+      };
+    }, [anchorElement]);
 
     // Create the portal node and attach it to the DOM.
     useSafeLayoutEffect(() => {
@@ -202,7 +225,7 @@ export const usePortal = createHook<PortalOptions>(
           element = createPortal(element, portalNode);
         }
 
-        element = (
+        let finalElement = (
           <>
             {preserveTabOrder && portalNode && (
               <FocusTrap
@@ -228,7 +251,6 @@ export const usePortal = createHook<PortalOptions>(
               // add margin to the element when setting gap on a parent element.
               <span aria-owns={portalNode?.id} style={{ position: "fixed" }} />
             )}
-            {element}
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={outerAfterRef}
@@ -257,9 +279,25 @@ export const usePortal = createHook<PortalOptions>(
           </>
         );
 
-        return element;
+        if (anchorPortalNode && preserveTabOrder) {
+          finalElement = createPortal(finalElement, anchorPortalNode);
+        }
+
+        return (
+          <>
+            {finalElement}
+            {element}
+          </>
+        );
       },
-      [portalNode, context, portal, props.id, preserveTabOrder],
+      [
+        portalNode,
+        context,
+        portal,
+        props.id,
+        anchorPortalNode,
+        preserveTabOrder,
+      ],
     );
 
     props = {
@@ -343,6 +381,10 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
     | ((element: HTMLElement) => HTMLElement | null)
     | HTMLElement
     | null;
+  /**
+   * TODO: Comment
+   */
+  anchorElement?: HTMLElement | null;
 }
 
 export type PortalProps<T extends As = "div"> = Props<PortalOptions<T>>;

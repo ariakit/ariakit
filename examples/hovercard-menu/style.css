@@ -1,0 +1,24 @@
+@import url("../menu-bar/style.css");
+
+.menu {
+  @apply
+    overflow-visible
+    min-w-[320px]
+  ;
+}
+
+.hovercard-wrapper {
+  @apply
+    relative
+    inline-flex
+    gap-1
+    items-center
+  ;
+}
+
+
+.aaa {
+  @apply
+    transition-[transform,left]
+  ;
+}

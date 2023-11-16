@@ -73,7 +73,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // menu items.
       return sync(store, ["disclosureElement"], (state) => {
         if (!state.disclosureElement) return;
-        store?.setState("disclosureElement", ref.current);
+        // store?.setState("disclosureElement", ref.current);
       });
     }, [store]);
 
@@ -95,7 +95,12 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       if (!parentIsMenuBar) return;
       const { items } = parentMenuBar.getState();
       // and there's already another expanded menu button.
-      if (hasExpandedMenuButton(items, event.currentTarget)) {
+      if (
+        hasExpandedMenuButton(items, event.currentTarget) ||
+        items.some((item) => item.element === event.relatedTarget)
+      ) {
+        store?.setAnchorElement(event.currentTarget);
+        store?.setDisclosureElement(event.currentTarget);
         store?.show();
       }
     });
@@ -113,6 +118,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
         event.preventDefault();
+        store?.setAnchorElement(event.currentTarget);
+        store?.setDisclosureElement(event.currentTarget);
         store?.show();
         store?.setAutoFocusOnShow(true);
         store?.setInitialFocus(initialFocus);

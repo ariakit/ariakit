@@ -4,7 +4,8 @@ export function hasExpandedMenuButton(
   items?: MenuStoreState["items"],
   currentElement?: Element,
 ) {
-  return !!items
-    ?.filter((item) => item.element !== currentElement)
-    .some((item) => item.element?.getAttribute("aria-expanded") === "true");
+  return !!items?.some((item) => {
+    if (item.element === currentElement) return false;
+    return item.element?.getAttribute("aria-expanded") === "true";
+  });
 }

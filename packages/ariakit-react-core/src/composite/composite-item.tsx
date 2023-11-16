@@ -165,6 +165,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     rowId: rowIdProp,
     preventScrollOnKeyDown = false,
     moveOnKeyPress = true,
+    tabbable = false,
     getItem: getItemProp,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
@@ -377,6 +378,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     });
 
     const isTabbable = useStoreState(store, (state) => {
+      if (tabbable) return true;
       if (!state?.renderedItems.length) return true;
       return !state.virtualFocus && state.activeId === id;
     });
@@ -458,6 +460,11 @@ export interface CompositeItemOptions<T extends As = "button">
    * @default true
    */
   moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * TODO: Comment
+   * Does not work on virtual focus.
+   */
+  tabbable?: boolean;
 }
 
 export type CompositeItemProps<T extends As = "button"> = Props<
