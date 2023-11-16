@@ -81,7 +81,7 @@
     "@clerk/clerk-react": "4.28.0",
     "@clerk/nextjs": "4.27.1",
     "@guidepup/playwright": "0.10.0",
-    "@playwright/test": "1.39.0",
+    "@playwright/test": "1.40.0",
     "@stackblitz/sdk": "1.9.0",
     "@stripe/react-stripe-js": "2.3.2",
     "@stripe/stripe-js": "2.1.11",
