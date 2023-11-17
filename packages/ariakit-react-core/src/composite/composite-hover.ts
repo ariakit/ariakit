@@ -49,7 +49,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  * ```
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
-  ({ store, focusOnHover = true, ...props }) => {
+  ({ store, focusOnHover = true, blurOnHoverEnd = true, ...props }) => {
     const context = useCompositeContext();
     store = store || context;
 
@@ -83,6 +83,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     });
 
     const onMouseLeaveProp = props.onMouseLeave;
+    const blurOnHoverEndProp = useBooleanEvent(blurOnHoverEnd);
 
     const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
       onMouseLeaveProp?.(event);
@@ -91,6 +92,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       if (hoveringInside(event)) return;
       if (movingToAnotherItem(event)) return;
       if (!focusOnHoverProp(event)) return;
+      if (!blurOnHoverEndProp(event)) return;
       store?.setActiveId(null);
       // Move focus to the composite element.
       store?.getState().baseElement?.focus();
@@ -148,6 +150,10 @@ export interface CompositeHoverOptions<T extends As = "div">
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+  /**
+   * TODO: Comment
+   */
+  blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
 export type CompositeHoverProps<T extends As = "div"> = Props<

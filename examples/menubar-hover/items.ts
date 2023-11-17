@@ -1,7 +1,11 @@
+import type { HoverMenubarProps } from "./hover-menubar.jsx";
+
 interface Item {
   label: string;
   href?: string;
   description?: string;
+  placement?: HoverMenubarProps["placement"];
+  shift?: number;
   items?: Item[];
 }
 
@@ -9,6 +13,8 @@ export const items: Item[] = [
   {
     label: "Services",
     href: "#/services",
+    placement: "bottom-start",
+    shift: -48,
     items: [
       {
         label: "Web Development",
@@ -24,6 +30,8 @@ export const items: Item[] = [
   },
   {
     label: "Blog",
+    placement: "bottom-start",
+    shift: -96,
     items: [
       {
         label: "Categories",
