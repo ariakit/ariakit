@@ -68,13 +68,14 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       (event: ReactMouseEvent<HTMLAnchorElement>) => {
         onMouseMoveProp?.(event);
         if (disabled) return;
+        if (!store) return;
         if (event.defaultPrevented) return;
         if (showTimeoutRef.current) return;
         if (!isMouseMoving()) return;
-        if (!store) return;
         if (!showOnHoverProp(event)) return;
         const element = event.currentTarget;
         store.setAnchorElement(element);
+        store.setDisclosureElement(element);
         const { showTimeout, timeout } = store.getState();
         showTimeoutRef.current = window.setTimeout(() => {
           showTimeoutRef.current = 0;
