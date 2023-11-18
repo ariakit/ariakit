@@ -241,6 +241,7 @@ export const usePopover = createHook<PopoverOptions>(
 
     const arrowElement = store.useState("arrowElement");
     const anchorElement = store.useState("anchorElement");
+    const disclosureElement = store.useState("disclosureElement");
     const popoverElement = store.useState("popoverElement");
     const contentElement = store.useState("contentElement");
     const placement = store.useState("placement");
@@ -435,6 +436,7 @@ export const usePopover = createHook<PopoverOptions>(
       store,
       modal,
       preserveTabOrder,
+      preserveTabOrderAnchor: disclosureElement || anchorElement,
       portal,
       autoFocusOnShow: positioned && autoFocusOnShow,
       ...props,

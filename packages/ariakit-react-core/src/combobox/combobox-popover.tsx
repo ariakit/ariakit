@@ -66,6 +66,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       autoFocusOnShow: false,
       autoFocusOnHide: false,
       finalFocus: baseElement,
+      preserveTabOrderAnchor: null,
       ...props,
       // Combobox popovers can't be modal because the focus may be (and is by
       // default) outside of it on the combobox input element.
