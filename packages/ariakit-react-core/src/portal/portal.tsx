@@ -59,11 +59,20 @@ function queueFocus(element?: HTMLElement | null) {
  * ```
  */
 export const usePortal = createHook<PortalOptions>(
-  ({ preserveTabOrder, portalElement, portalRef, portal = true, ...props }) => {
+  ({
+    preserveTabOrder,
+    preserveTabOrderAnchor,
+    portalElement,
+    portalRef,
+    portal = true,
+    ...props
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
     const refProp = useMergeRefs(ref, props.ref);
     const context = useContext(PortalContext);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
+    const [anchorPortalNode, setAnchorPortalNode] =
+      useState<HTMLElement | null>(null);
 
     const outerBeforeRef = useRef<HTMLButtonElement>(null);
     const innerBeforeRef = useRef<HTMLSpanElement>(null);
@@ -106,6 +115,21 @@ export const usePortal = createHook<PortalOptions>(
         setRef(portalRef, null);
       };
     }, [portal, portalElement, context, portalRef]);
+
+    // Create the anchor portal node and attach it to the DOM.
+    useSafeLayoutEffect(() => {
+      if (!preserveTabOrder) return;
+      if (!preserveTabOrderAnchor) return;
+      const doc = getDocument(preserveTabOrderAnchor);
+      const element = doc.createElement("span");
+      element.style.position = "fixed";
+      preserveTabOrderAnchor.insertAdjacentElement("afterend", element);
+      setAnchorPortalNode(element);
+      return () => {
+        element.remove();
+        setAnchorPortalNode(null);
+      };
+    }, [preserveTabOrder, preserveTabOrderAnchor]);
 
     // When preserveTabOrder is true, make sure elements inside the portal
     // element are tabbable only when the portal has already been focused,
@@ -202,7 +226,7 @@ export const usePortal = createHook<PortalOptions>(
           element = createPortal(element, portalNode);
         }
 
-        element = (
+        let preserveTabOrderElement = (
           <>
             {preserveTabOrder && portalNode && (
               <FocusTrap
@@ -228,7 +252,6 @@ export const usePortal = createHook<PortalOptions>(
               // add margin to the element when setting gap on a parent element.
               <span aria-owns={portalNode?.id} style={{ position: "fixed" }} />
             )}
-            {element}
             {preserveTabOrder && portalNode && (
               <FocusTrap
                 ref={outerAfterRef}
@@ -257,9 +280,28 @@ export const usePortal = createHook<PortalOptions>(
           </>
         );
 
-        return element;
+        if (anchorPortalNode && preserveTabOrder) {
+          preserveTabOrderElement = createPortal(
+            preserveTabOrderElement,
+            anchorPortalNode,
+          );
+        }
+
+        return (
+          <>
+            {preserveTabOrderElement}
+            {element}
+          </>
+        );
       },
-      [portalNode, context, portal, props.id, preserveTabOrder],
+      [
+        portalNode,
+        context,
+        portal,
+        props.id,
+        preserveTabOrder,
+        anchorPortalNode,
+      ],
     );
 
     props = {
@@ -294,9 +336,48 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * same as the order in which the underlying
    * [`Portal`](https://ariakit.org/reference/portal) component was mounted in
    * the React tree.
+   *
+   * If the
+   * [`preserveTabOrderAnchor`](https://ariakit.org/reference/portal#preservetaborderanchor)
+   * prop is provided, the tab order will be preserved relative to that element.
    * @default false
    */
   preserveTabOrder?: boolean;
+  /**
+   * An anchor element for maintaining the tab order when
+   * [`preserveTabOrder`](https://ariakit.org/reference/portal#preservetaborder)
+   * prop is enabled. The tab order will be kept relative to this element.
+   *
+   * By default, the tab order is kept relative to the original location in the
+   * React tree where the underlying
+   * [`Portal`](https://ariakit.org/reference/portal) component was mounted.
+   * @example
+   * ```jsx {18-20}
+   * const [anchor, setAnchor] = useState(null);
+   *
+   * <button ref={setAnchor}>Order 0</button>
+   * <button>Order 2</button>
+   *
+   * // Rendered at the end of the document.
+   * <Portal>
+   *   <button>Order 5</button>
+   * </Portal>
+   *
+   * // Rendered at the end of the document, but the tab order is preserved.
+   * <Portal preserveTabOrder>
+   *   <button>Order 3</button>
+   * </Portal>
+   *
+   * // Rendered at the end of the document, but the tab order is preserved
+   * // relative to the anchor element.
+   * <Portal preserveTabOrder preserveTabOrderAnchor={anchor}>
+   *   <button>Order 1</button>
+   * </Portal>
+   *
+   * <button>Order 4</button>
+   * ```
+   */
+  preserveTabOrderAnchor?: Element | null;
   /**
    * `portalRef` is similar to `ref` but is scoped to the portal node. It's
    * useful when you need to be informed when the portal element is appended to
@@ -318,14 +399,12 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * An HTML element or a memoized callback function that returns an HTML
    * element to be used as the portal element. By default, the portal element
    * will be a `div` element appended to the `document.body`.
-   * @default HTMLDivElement
    * @example
    * ```jsx
    * const [portal, setPortal] = useState(null);
-   * <>
-   *   <Portal portalElement={portal} />
-   *   <div ref={setPortal} />
-   * </>
+   *
+   * <Portal portalElement={portal} />
+   * <div ref={setPortal} />
    * ```
    * @example
    * ```jsx
