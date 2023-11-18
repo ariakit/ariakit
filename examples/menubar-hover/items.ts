@@ -14,7 +14,7 @@ export const items: Item[] = [
     label: "Services",
     href: "#/services",
     placement: "bottom-start",
-    shift: -48,
+    shift: -96,
     items: [
       {
         label: "Web Development",
@@ -31,7 +31,7 @@ export const items: Item[] = [
   {
     label: "Blog",
     placement: "bottom-start",
-    shift: -96,
+    shift: -192,
     items: [
       {
         label: "Categories",

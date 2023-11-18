@@ -13,7 +13,7 @@ export default function Example() {
   const [currentLabel, setCurrentLabel] = useState("");
   const currentItem = items.find((item) => item.label === currentLabel);
   return (
-    <div>
+    <nav aria-label="Example">
       <HoverMenubar onOpen={setCurrentLabel} placement={currentItem?.placement}>
         {items.map((item) => (
           <HoverMenubarItem
@@ -50,6 +50,6 @@ export default function Example() {
           })}
         </HoverMenubarMenu>
       </HoverMenubar>
-    </div>
+    </nav>
   );
 }

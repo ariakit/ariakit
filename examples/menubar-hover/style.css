@@ -18,6 +18,7 @@
     underline-offset-4
     rounded-full
     outline-none
+    transition-[background-color]
     aria-expanded:bg-black/10
     dark:aria-expanded:bg-white/10
     hover:bg-black/5

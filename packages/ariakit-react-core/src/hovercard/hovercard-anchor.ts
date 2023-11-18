@@ -75,6 +75,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         if (!showOnHoverProp(event)) return;
         const element = event.currentTarget;
         store.setAnchorElement(element);
+        store.setDisclosureElement(element);
         const { showTimeout, timeout } = store.getState();
         showTimeoutRef.current = window.setTimeout(() => {
           showTimeoutRef.current = 0;

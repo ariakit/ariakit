@@ -1,6 +1,7 @@
 import type { MouseEvent } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
+import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeHoverOptions } from "../composite/composite-hover.js";
@@ -21,7 +22,6 @@ import {
   useMenuScopedContext,
 } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
-import { hasExpandedMenuButton } from "./utils.js";
 
 /**
  * Returns props to create a `MenuItem` component.
@@ -107,10 +107,19 @@ export const useMenuItem = createHook<MenuItemOptions>(
           }
           return true;
         }
+        const expandedItem = state?.items.find((item) => {
+          if (item.element === event.currentTarget) return false;
+          return item.element?.getAttribute("aria-expanded") === "true";
+        });
+        const menuId = expandedItem?.element?.getAttribute("aria-controls");
+        const menu = menuId && document.getElementById(menuId);
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if there's another expanded menu button inside the menu
         // bar. Without this, the open menus in the menu bar wouldn't close.
-        else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
+        if (
+          (menu && hasFocusWithin(menu)) ||
+          (state?.baseElement && hasFocusWithin(state.baseElement))
+        ) {
           event.currentTarget.focus();
           return true;
         }

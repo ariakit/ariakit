@@ -1,5 +1,5 @@
 import "./style.css";
-import { forwardRef, useId, useLayoutEffect } from "react";
+import { forwardRef, useEffect, useId } from "react";
 import type { ReactNode } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
@@ -12,15 +12,17 @@ export interface HoverMenubarProps extends Ariakit.MenuBarProps {
 
 export const HoverMenubar = forwardRef<HTMLDivElement, HoverMenubarProps>(
   function HoverMenubar({ placement = "bottom", onOpen, ...props }, ref) {
-    const menu = Ariakit.useMenuStore({ animated: true, placement });
+    const menu = Ariakit.useMenuStore({
+      animated: true,
+      hideTimeout: 250,
+      placement,
+    });
     const mounted = menu.useState("mounted");
     const anchorElement = menu.useState("anchorElement");
 
-    useLayoutEffect(() => {
+    useEffect(() => {
       if (!mounted) return;
-      if (!anchorElement?.hasAttribute("aria-haspopup")) return;
-      anchorElement.focus();
-      const label = anchorElement.dataset.label;
+      const label = anchorElement?.dataset.label;
       if (!label) return;
       onOpen?.(label);
     }, [mounted, anchorElement]);
