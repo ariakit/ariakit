@@ -436,6 +436,7 @@ export const usePopover = createHook<PopoverOptions>(
       store,
       modal,
       preserveTabOrder,
+      preserveTabOrderAnchor: disclosureElement || anchorElement,
       portal,
       anchorElement: disclosureElement || anchorElement,
       autoFocusOnShow: positioned && autoFocusOnShow,
