@@ -1,6 +1,7 @@
 import type { MouseEvent } from "react";
-import { getPopupItemRole } from "@ariakit/core/utils/dom";
+import { getDocument, getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
+import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeHoverOptions } from "../composite/composite-hover.js";
@@ -20,8 +21,26 @@ import {
   useMenuBarScopedContext,
   useMenuScopedContext,
 } from "./menu-context.js";
-import type { MenuStore } from "./menu-store.js";
-import { hasExpandedMenuButton } from "./utils.js";
+import type { MenuStore, MenuStoreState } from "./menu-store.js";
+
+function menubarHasFocus(
+  baseElement?: MenuStoreState["baseElement"],
+  items?: MenuStoreState["items"],
+  currentTarget?: Element,
+) {
+  if (!baseElement) return false;
+  if (hasFocusWithin(baseElement)) return true;
+  const expandedItem = items?.find((item) => {
+    if (item.element === currentTarget) return false;
+    return item.element?.getAttribute("aria-expanded") === "true";
+  });
+  const expandedMenuId = expandedItem?.element?.getAttribute("aria-controls");
+  if (!expandedMenuId) return false;
+  const doc = getDocument(baseElement);
+  const expandedMenu = doc.getElementById(expandedMenuId);
+  if (!expandedMenu) return false;
+  return hasFocusWithin(expandedMenu);
+}
 
 /**
  * Returns props to create a `MenuItem` component.
@@ -97,7 +116,6 @@ export const useMenuItem = createHook<MenuItemOptions>(
         // The menu container should be focused on mouseleave only if the menu
         // item is inside a menu, not a menu bar.
         if (event.type === "mouseleave") return isWithinMenu;
-        const state = store?.getState();
         if (isWithinMenu) {
           // If the menu item is also a submenu button, we should move actual
           // DOM focus to it so that the submenu will not close when the user
@@ -107,10 +125,12 @@ export const useMenuItem = createHook<MenuItemOptions>(
           }
           return true;
         }
+        if (!store) return false;
+        const { baseElement, items } = store.getState();
         // If the menu item is inside a menu bar, we should move DOM focus to
-        // the menu item if there's another expanded menu button inside the menu
-        // bar. Without this, the open menus in the menu bar wouldn't close.
-        else if (hasExpandedMenuButton(state?.items, event.currentTarget)) {
+        // the menu item if focus is somewhere on the widget. Without this, the
+        // open menus in the menu bar wouldn't close.
+        if (menubarHasFocus(baseElement, items, event.currentTarget)) {
           event.currentTarget.focus();
           return true;
         }
