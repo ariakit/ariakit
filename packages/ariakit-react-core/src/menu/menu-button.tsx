@@ -19,8 +19,7 @@ import { useStoreState } from "../utils/store.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
-import type { MenuStore } from "./menu-store.js";
-import { hasExpandedMenuButton } from "./utils.js";
+import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
@@ -32,6 +31,19 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
     ArrowLeft: dir === "left" ? "first" : false,
   } as const;
   return keyMap[event.key as keyof typeof keyMap];
+}
+
+function hasActiveItem(
+  items?: MenuStoreState["items"],
+  currentTarget?: Element | null,
+  relatedTarget?: Element | null,
+) {
+  return !!items?.some((item) => {
+    if (!item.element) return false;
+    if (item.element === currentTarget) return false;
+    if (item.element === relatedTarget) return true;
+    return item.element.getAttribute("aria-expanded") === "true";
+  });
 }
 
 /**
@@ -85,10 +97,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const { items } = parentMenuBar.getState();
       // and there's already another expanded menu button or the previously
       // focused element is another menu item.
-      const canShowMenu =
-        hasExpandedMenuButton(items, event.currentTarget) ||
-        items.some((item) => item.element === event.relatedTarget);
-      if (canShowMenu) {
+      if (hasActiveItem(items, event.currentTarget, event.relatedTarget)) {
         store?.setDisclosureElement(event.currentTarget);
         store?.setAnchorElement(event.currentTarget);
         store?.show();
@@ -197,7 +206,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
         if (hasParentMenu) return true;
         if (!parentMenuBar) return false;
         const { items } = parentMenuBar.getState();
-        return parentIsMenuBar && hasExpandedMenuButton(items);
+        return parentIsMenuBar && hasActiveItem(items);
       },
     });
 
