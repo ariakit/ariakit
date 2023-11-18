@@ -214,7 +214,6 @@ export const useComposite = createHook<CompositeOptions>(
       if (hasFocus(baseElement)) {
         fireFocusEvent(baseElement, { relatedTarget: previousElement });
       } else {
-        // TODO: Check this
         baseElement.focus();
       }
     }, [store, moves, composite]);
