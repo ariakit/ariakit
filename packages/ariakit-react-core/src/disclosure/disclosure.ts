@@ -55,14 +55,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
         isCurrentDisclosure = true;
       }
       setExpanded(open && isCurrentDisclosure);
-    }, [store, disclosureElement, open]);
-
-    const onMouseDownProp = props.onMouseDown;
-
-    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store?.setDisclosureElement(event.currentTarget);
-      onMouseDownProp?.(event);
-    });
+    }, [disclosureElement, store, open]);
 
     const onClickProp = props.onClick;
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
@@ -85,7 +78,6 @@ export const useDisclosure = createHook<DisclosureOptions>(
       ...metadataProps,
       ...props,
       ref: useMergeRefs(ref, props.ref),
-      onMouseDown,
       onClick,
     };
 

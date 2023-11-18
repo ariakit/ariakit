@@ -1,8 +1,7 @@
 import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
@@ -67,16 +66,6 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
     const disabled = disabledFromProps(props);
 
-    useEffect(() => {
-      // Makes sure that the menu button is assigned as the menu disclosure
-      // element. This is needed to support screen reader focusing on sibling
-      // menu items.
-      return sync(store, ["disclosureElement"], (state) => {
-        if (!state.disclosureElement) return;
-        // store?.setState("disclosureElement", ref.current);
-      });
-    }, [store]);
-
     const onFocusProp = props.onFocus;
 
     const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
@@ -94,13 +83,14 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       if (!parentMenuBar) return;
       if (!parentIsMenuBar) return;
       const { items } = parentMenuBar.getState();
-      // and there's already another expanded menu button.
-      if (
+      // and there's already another expanded menu button or the previously
+      // focused element is another menu item.
+      const canShowMenu =
         hasExpandedMenuButton(items, event.currentTarget) ||
-        items.some((item) => item.element === event.relatedTarget)
-      ) {
-        store?.setAnchorElement(event.currentTarget);
+        items.some((item) => item.element === event.relatedTarget);
+      if (canShowMenu) {
         store?.setDisclosureElement(event.currentTarget);
+        store?.setAnchorElement(event.currentTarget);
         store?.show();
       }
     });
