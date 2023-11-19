@@ -17,11 +17,12 @@ import type {
   HovercardStoreState,
 } from "../hovercard/hovercard-store.js";
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
+import { useMenubarContext } from "../menubar/menubar-context.js";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
-import { useMenuBarContext, useMenuContext } from "./menu-context.js";
+import { useMenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;
 
@@ -65,7 +66,7 @@ export function useMenuStore(props?: MenuStoreProps): MenuStore;
 
 export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
   const parent = useMenuContext();
-  const menubar = useMenuBarContext();
+  const menubar = useMenubarContext();
   const combobox = useComboboxProviderContext();
   props = {
     ...props,

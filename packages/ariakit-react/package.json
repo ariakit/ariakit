@@ -55,6 +55,7 @@
     "./radio": "./src/radio.ts",
     "./portal": "./src/portal.ts",
     "./popover": "./src/popover.ts",
+    "./menubar": "./src/menubar.ts",
     "./menu": "./src/menu.ts",
     "./hovercard": "./src/hovercard.ts",
     "./heading": "./src/heading.ts",

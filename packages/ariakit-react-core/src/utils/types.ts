@@ -37,8 +37,8 @@ export type Children<T = any> =
  */
 export type Options<T extends As = any> = {
   /**
-   * @deprecated Use the [`render`](https://ariakit.org/guide/composition) prop
-   * instead.
+   * @deprecated
+   * Use the [`render`](https://ariakit.org/guide/composition) prop instead.
    */
   as?: T;
 };

@@ -23,7 +23,7 @@ import {
 } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
-function menubarHasFocus(
+function menuHasFocus(
   baseElement?: MenuStoreState["baseElement"],
   items?: MenuStoreState["items"],
   currentTarget?: Element,
@@ -39,7 +39,8 @@ function menubarHasFocus(
   const doc = getDocument(baseElement);
   const expandedMenu = doc.getElementById(expandedMenuId);
   if (!expandedMenu) return false;
-  return hasFocusWithin(expandedMenu);
+  if (hasFocusWithin(expandedMenu)) return true;
+  return !!expandedMenu.querySelector("[role=menuitem][aria-expanded=true]");
 }
 
 /**
@@ -130,7 +131,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
-        if (menubarHasFocus(baseElement, items, event.currentTarget)) {
+        if (menuHasFocus(baseElement, items, event.currentTarget)) {
           event.currentTarget.focus();
           return true;
         }

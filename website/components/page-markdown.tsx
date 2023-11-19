@@ -37,9 +37,11 @@ import { PageVideo } from "./page-video.jsx";
 export const getFile = cache((config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);
   const file = config.reference
-    ? entryFiles.find((file) =>
-        page.replace(/^use\-/, "").startsWith(getPageName(file)),
-      )
+    ? [...entryFiles]
+        .reverse()
+        .find((file) =>
+          page.replace(/^use\-/, "").startsWith(getPageName(file)),
+        )
     : entryFiles.find((file) => getPageName(file) === page);
   return file;
 });

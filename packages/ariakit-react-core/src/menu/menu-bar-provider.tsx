@@ -1,11 +1,11 @@
-import type { ReactNode } from "react";
-import { useMenuBarStore } from "./menu-bar-store.js";
-import type { MenuBarStoreProps } from "./menu-bar-store.js";
-import { MenuBarContextProvider } from "./menu-context.js";
+import { MenubarProvider } from "../menubar/menubar-provider.js";
+import type { MenubarProviderProps } from "../menubar/menubar-provider.js";
 
 /**
  * Provides a menubar store to MenuBar components.
- * @see https://ariakit.org/components/menu
+ * @deprecated
+ * Use [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+ * instead.
  * @example
  * ```jsx
  * <MenuBarProvider>
@@ -29,14 +29,7 @@ import { MenuBarContextProvider } from "./menu-context.js";
  * ```
  */
 export function MenuBarProvider(props: MenuBarProviderProps = {}) {
-  const store = useMenuBarStore(props);
-  return (
-    <MenuBarContextProvider value={store}>
-      {props.children}
-    </MenuBarContextProvider>
-  );
+  return <MenubarProvider {...props} />;
 }
 
-export interface MenuBarProviderProps extends MenuBarStoreProps {
-  children?: ReactNode;
-}
+export interface MenuBarProviderProps extends MenubarProviderProps {}

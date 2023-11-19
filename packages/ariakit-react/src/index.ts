@@ -13,6 +13,7 @@ export * from "./group.js";
 export * from "./heading.js";
 export * from "./hovercard.js";
 export * from "./menu.js";
+export * from "./menubar.js";
 export * from "./popover.js";
 export * from "./portal.js";
 export * from "./radio.js";
