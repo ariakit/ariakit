@@ -4,7 +4,7 @@ async function getDependencyReleaseLine(_, dependenciesUpdated) {
   const updatedDepenenciesList = dependenciesUpdated.map(
     (dependency) => `\`${dependency.name}@${dependency.newVersion}\``,
   );
-  return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}.`;
+  return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}`;
 }
 
 /** @type {import("@changesets/types").ChangelogFunctions["getReleaseLine"]} */
