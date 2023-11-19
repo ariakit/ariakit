@@ -1,0 +1,44 @@
+diff --git a/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.dev.js b/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.dev.js
+index a537ba7..d1cb0fd 100644
+--- a/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.dev.js
++++ b/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.dev.js
+@@ -244,6 +244,15 @@ async function getChangelogEntry(release, releases, changesets, changelogFuncs,
+   });
+   let relevantChangesets = changesets.filter(cs => relevantChangesetIds.has(cs.id));
+   changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));
++
++  if (typeof changelogFuncs.getChangelogEntry === "function") {
++    return await changelogFuncs.getChangelogEntry(
++      release,
++      changelogLines,
++      changelogOpts
++    );
++  }
++
+   return [`## ${release.newVersion}`, await generateChangesForVersionTypeMarkdown(changelogLines, "major"), await generateChangesForVersionTypeMarkdown(changelogLines, "minor"), await generateChangesForVersionTypeMarkdown(changelogLines, "patch")].filter(line => line).join("\n");
+ }
+ 
+diff --git a/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.prod.js b/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.prod.js
+index 41b2127..b3a99b2 100644
+--- a/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.prod.js
++++ b/node_modules/@changesets/apply-release-plan/dist/apply-release-plan.cjs.prod.js
+@@ -136,8 +136,17 @@ async function getChangelogEntry(release, releases, changesets, changelogFuncs,
+     }));
+   }));
+   let relevantChangesets = changesets.filter((cs => relevantChangesetIds.has(cs.id)));
+-  return changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts)), 
+-  [ "## " + release.newVersion, await generateChangesForVersionTypeMarkdown(changelogLines, "major"), await generateChangesForVersionTypeMarkdown(changelogLines, "minor"), await generateChangesForVersionTypeMarkdown(changelogLines, "patch") ].filter((line => line)).join("\n");
++  changelogLines.patch.push(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts));
++
++  if (typeof changelogFuncs.getChangelogEntry === "function") {
++    return await changelogFuncs.getChangelogEntry(
++      release,
++      changelogLines,
++      changelogOpts
++    );
++  }
++
++  return [`## ${release.newVersion}`, await generateChangesForVersionTypeMarkdown(changelogLines, "major"), await generateChangesForVersionTypeMarkdown(changelogLines, "minor"), await generateChangesForVersionTypeMarkdown(changelogLines, "patch")].filter(line => line).join("\n");
+ }
+ 
+ function getPrettierInstance(cwd) {

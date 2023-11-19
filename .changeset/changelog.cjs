@@ -1,31 +1,74 @@
-/** @type {import("@changesets/types").ChangelogFunctions} */
-const changelogFunctions = {
-  getDependencyReleaseLine: async (_, dependenciesUpdated) => {
-    if (dependenciesUpdated.length === 0) return "";
-    const updatedDepenenciesList = dependenciesUpdated.map(
-      (dependency) => `\`${dependency.name}@${dependency.newVersion}\``
-    );
-    return `\n- Updated dependencies: ${updatedDepenenciesList.join(", ")}.`;
-  },
-  getReleaseLine: async (changeset) => {
-    const [firstLine, ...nextLines] = changeset.summary
-      .split("\n")
-      .map((l) => l.trimEnd());
+/** @type {import("@changesets/types").ChangelogFunctions["getDependencyReleaseLine"]} */
+async function getDependencyReleaseLine(_, dependenciesUpdated) {
+  if (dependenciesUpdated.length === 0) return "";
+  const updatedDepenenciesList = dependenciesUpdated.map(
+    (dependency) => `\`${dependency.name}@${dependency.newVersion}\``,
+  );
+  return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}`;
+}
 
-    const match = changeset.id.match(/^(?:\d\-)?(?<number>\d+)/);
-    const number = match?.groups?.number;
-    const prefix = !number || firstLine.startsWith("[`#")
-      ? ""
-      : `[\`#${number}\`](https://github.com/ariakit/ariakit/pull/${number}) `;
+/** @type {import("@changesets/types").ChangelogFunctions["getReleaseLine"]} */
+async function getReleaseLine(changeset) {
+  const [firstLine, ...nextLines] = changeset.summary
+    .split("\n")
+    .map((l) => l.trimEnd());
 
-    let returnVal = `\n\n- ${prefix}${firstLine}`;
+  if (!nextLines.length) return `- ${firstLine}`;
 
-    if (nextLines.length > 0) {
-      returnVal += `\n${nextLines.map((l) => `  ${l}`).join("\n")}`;
-    }
+  return `### ${firstLine}\n${nextLines.join("\n")}`;
+}
 
-    return returnVal;
-  },
+/**
+ * @param {Array<Promise<string>} changelogLines
+ */
+async function getTextForType(changelogLines) {
+  const lines = await Promise.all(changelogLines);
+  if (!lines.length) return "";
+
+  const headingLines = lines.filter((l) => l.startsWith("###"));
+  const otherLines = lines.filter((l) => !l.startsWith("###"));
+  if (!headingLines.length && !otherLines.length) return "";
+
+  const other = otherLines.join("\n");
+  if (!headingLines.length) return other;
+
+  const heading = headingLines.join("\n\n");
+  if (!otherLines.length) return heading;
+
+  return `${heading}\n\n### Other updates\n\n${other}`;
+}
+
+/**
+ * @param {import("@changesets/types").ModCompWithPackage} release
+ * @param {Record<"major" | "minor" | "patch", Array<Promise<string>>} changelogLines
+ */
+async function getChangelogEntry(release, changelogLines) {
+  const v0 = release.newVersion.startsWith("0.");
+
+  // const date = new Date().toLocaleDateString("en-US", {
+  //   month: "long",
+  //   day: "numeric",
+  //   year: "numeric",
+  // });
+
+  const major = await getTextForType(changelogLines["major"]);
+  const minor = await getTextForType(changelogLines["minor"]);
+  const patch = await getTextForType(changelogLines["patch"]);
+
+  return [
+    `## ${release.newVersion}`,
+    major || (v0 && minor),
+    v0 && patch,
+    !v0 && minor,
+    !v0 && patch,
+  ]
+    .flat()
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+module.exports = {
+  getDependencyReleaseLine,
+  getReleaseLine,
+  getChangelogEntry,
 };
-
-module.exports = changelogFunctions;
