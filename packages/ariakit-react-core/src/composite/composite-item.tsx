@@ -378,9 +378,10 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     });
 
     const isTabbable = useStoreState(store, (state) => {
-      if (tabbable) return true;
       if (!state?.renderedItems.length) return true;
-      return !state.virtualFocus && state.activeId === id;
+      if (state.virtualFocus) return false;
+      if (tabbable) return true;
+      return state.activeId === id;
     });
 
     props = {
@@ -439,14 +440,19 @@ export interface CompositeItemOptions<T extends As = "button">
   extends CommandOptions<T>,
     CollectionItemOptions<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
   /**
    * The id that will be used to group items in the same row. This is usually
-   * retrieved by the `CompositeRow` component through context so in most cases
-   * you don't need to set it manually.
+   * retrieved by the
+   * [`CompositeRow`](https://ariakit.org/reference/composite-row) component
+   * through context so in most cases you don't need to set it manually.
    */
   rowId?: string;
   /**
@@ -461,8 +467,32 @@ export interface CompositeItemOptions<T extends As = "button">
    */
   moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * TODO: Comment
-   * Does not work on virtual focus.
+   * When the `tabbable` prop is set to `true`, the [roving
+   * tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex)
+   * method is partially disabled for this element. This means that the
+   * `tabIndex` prop won't be assigned `-1` when the item is inactive. In
+   * addition to using arrow keys, users will be able to tab to this element,
+   * leading to the composite widget no longer existing as a single tab stop.
+   *
+   * As per the [ARIA spec](https://w3c.github.io/aria/#composite):
+   *
+   * > Authors **SHOULD** ensure that a composite widget exists as a single
+   * > navigation stop within the larger navigation system of the web page.
+   *
+   * Additionally, as stated in
+   * [RFC-2119](https://www.rfc-editor.org/rfc/rfc2119.txt):
+   *
+   * > **SHOULD** This word, or the adjective "RECOMMENDED", mean that there may
+   * > exist valid reasons in particular circumstances to ignore a particular
+   * > item, but the full implications must be understood and carefully weighed
+   * > before choosing a different course.
+   *
+   * Therefore, while this may be allowed, you should think carefully about the
+   * implications of using this prop.
+   *
+   * **Note**: This prop has no effect when the
+   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * option is enabled.
    */
   tabbable?: boolean;
 }
