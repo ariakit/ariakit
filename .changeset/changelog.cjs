@@ -45,18 +45,18 @@ async function getTextForType(changelogLines) {
 async function getChangelogEntry(release, changelogLines) {
   const v0 = release.newVersion.startsWith("0.");
 
-  const date = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  // const date = new Date().toLocaleDateString("en-US", {
+  //   month: "long",
+  //   day: "numeric",
+  //   year: "numeric",
+  // });
 
   const major = await getTextForType(changelogLines["major"]);
   const minor = await getTextForType(changelogLines["minor"]);
   const patch = await getTextForType(changelogLines["patch"]);
 
   return [
-    `## ${release.newVersion} (${date})`,
+    `## ${release.newVersion}`,
     major || (v0 && minor),
     v0 && patch,
     !v0 && minor,
