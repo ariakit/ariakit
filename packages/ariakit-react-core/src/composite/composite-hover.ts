@@ -49,7 +49,12 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  * ```
  */
 export const useCompositeHover = createHook<CompositeHoverOptions>(
-  ({ store, focusOnHover = true, ...props }) => {
+  ({
+    store,
+    focusOnHover = true,
+    blurOnHoverEnd = !!focusOnHover,
+    ...props
+  }) => {
     const context = useCompositeContext();
     store = store || context;
 
@@ -83,6 +88,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     });
 
     const onMouseLeaveProp = props.onMouseLeave;
+    const blurOnHoverEndProp = useBooleanEvent(blurOnHoverEnd);
 
     const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
       onMouseLeaveProp?.(event);
@@ -91,6 +97,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       if (hoveringInside(event)) return;
       if (movingToAnotherItem(event)) return;
       if (!focusOnHoverProp(event)) return;
+      if (!blurOnHoverEndProp(event)) return;
       store?.setActiveId(null);
       // Move focus to the composite element.
       store?.getState().baseElement?.focus();
@@ -135,12 +142,16 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeHoverOptions<T extends As = "div">
   extends Options<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
   /**
-   * Whether to focus the composite item on hover.
+   * Determines if the composite item should be focused on hover.
    *
    * Live examples:
    * - [Textarea with inline
@@ -148,6 +159,13 @@ export interface CompositeHoverOptions<T extends As = "div">
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+  /**
+   * Determines if the composite item should lose focus when the mouse leaves.
+   * By default, this is set to `true` if
+   * [`focusOnHover`](https://ariakit.org/reference/composite-hover#focusonhover)
+   * is `true`.
+   */
+  blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
 export type CompositeHoverProps<T extends As = "div"> = Props<
