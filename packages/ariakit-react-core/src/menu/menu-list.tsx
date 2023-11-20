@@ -73,7 +73,7 @@ export const useMenuList = createHook<MenuListOptions>(
     );
 
     const parentMenu = store.parent;
-    const parentMenuBar = store.menubar;
+    const parentMenubar = store.menubar;
     const hasParentMenu = !!parentMenu;
     const id = useId(props.id);
 
@@ -85,15 +85,15 @@ export const useMenuList = createHook<MenuListOptions>(
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
-    const isMenuBarHorizontal = useStoreState(
-      parentMenuBar,
+    const isMenubarHorizontal = useStoreState(
+      parentMenubar,
       (state) => !!state && state.orientation !== "vertical",
     );
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      if (hasParentMenu || (parentMenuBar && !isHorizontal)) {
+      if (hasParentMenu || (parentMenubar && !isHorizontal)) {
         const hideMap = {
           ArrowRight: () => dir === "left" && !isHorizontal,
           ArrowLeft: () => dir === "right" && !isHorizontal,
@@ -107,23 +107,23 @@ export const useMenuList = createHook<MenuListOptions>(
           return store?.hide();
         }
       }
-      if (parentMenuBar) {
+      if (parentMenubar) {
         const keyMap = {
           ArrowRight: () => {
-            if (!isMenuBarHorizontal) return;
-            return parentMenuBar.next();
+            if (!isMenubarHorizontal) return;
+            return parentMenubar.next();
           },
           ArrowLeft: () => {
-            if (!isMenuBarHorizontal) return;
-            return parentMenuBar.previous();
+            if (!isMenubarHorizontal) return;
+            return parentMenubar.previous();
           },
           ArrowDown: () => {
-            if (isMenuBarHorizontal) return;
-            return parentMenuBar.next();
+            if (isMenubarHorizontal) return;
+            return parentMenubar.next();
           },
           ArrowUp: () => {
-            if (isMenuBarHorizontal) return;
-            return parentMenuBar.previous();
+            if (isMenubarHorizontal) return;
+            return parentMenubar.previous();
           },
         };
         const action = keyMap[event.key as keyof typeof keyMap];
@@ -131,7 +131,7 @@ export const useMenuList = createHook<MenuListOptions>(
         if (id !== undefined) {
           event.stopPropagation();
           event.preventDefault();
-          parentMenuBar.move(id);
+          parentMenubar.move(id);
         }
       }
     });

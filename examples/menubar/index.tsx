@@ -6,13 +6,15 @@ import {
   MenuItem,
   MenuProvider,
   MenuSeparator,
-} from "./menu.js";
+} from "./menu.jsx";
 
 export default function Example() {
   return (
-    <Menubar className="menu-bar">
+    <Menubar className="menubar">
       <MenuProvider>
-        <MenuItem render={<MenuButton />}>File</MenuItem>
+        <MenuItem className="menubar-item" render={<MenuButton />}>
+          File
+        </MenuItem>
         <Menu>
           <MenuItem>New Tab</MenuItem>
           <MenuItem>New Window</MenuItem>
@@ -37,7 +39,9 @@ export default function Example() {
         </Menu>
       </MenuProvider>
       <MenuProvider>
-        <MenuItem render={<MenuButton />}>Edit</MenuItem>
+        <MenuItem className="menubar-item" render={<MenuButton />}>
+          Edit
+        </MenuItem>
         <Menu>
           <MenuItem>Undo</MenuItem>
           <MenuItem>Redo</MenuItem>
@@ -80,7 +84,9 @@ export default function Example() {
         </Menu>
       </MenuProvider>
       <MenuProvider>
-        <MenuItem render={<MenuButton />}>View</MenuItem>
+        <MenuItem className="menubar-item" render={<MenuButton />}>
+          View
+        </MenuItem>
         <Menu>
           <MenuItem disabled>Stop</MenuItem>
           <MenuItem>Force Reload This Page</MenuItem>

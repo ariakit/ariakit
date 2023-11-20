@@ -1,6 +1,6 @@
 @import url("../menu/style.css");
 
-.menu-bar {
+.menubar {
   @apply
     flex
     rounded-lg
@@ -12,53 +12,36 @@
   ;
 }
 
-.menu-bar:not(:focus-within) > .menu-item {
-  @apply
-    bg-transparent
-    text-inherit
-  ;
-}
-
-.menu-bar > .menu-item {
+.menubar-item {
   @apply
     px-4
     h-10
     rounded-md
-    hover:bg-blue-200/40
-    dark:hover:bg-blue-600/40
-  ;
-}
-
-.menu-bar:focus-within > .menu-item {
-  @apply
-    active-item:bg-blue-600
-    active-item:text-white
-  ;
-}
-
-.menu-bar:not(:focus) .menu-item:not(:focus)[aria-expanded="true"],
-.menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
-  @apply
-    text-current
-    bg-black/10
-    dark:bg-white/10
+    [.menubar:not(:focus-within)_&]:bg-transparent
+    [.menubar:not(:focus-within)_&]:text-inherit
+    [.menubar:not(:focus-within)_&]:hover:bg-blue-200/40
+    [.menubar:not(:focus-within)_&]:hover:dark:bg-blue-600/40
+    [.menubar:not(:focus-within)_&]:aria-expanded:bg-black/10
+    [.menubar:not(:focus-within)_&]:aria-expanded:dark:bg-white/10
+    focus:text-white
+    focus:bg-blue-600
+    focus:dark:bg-blue-600
   ;
 }
 
 .menu {
-  max-width:
-    max(
-      var(--popover-available-width),
-      calc(100% - calc(var(--popover-overflow-padding) * 2))
-    );
   @apply
     w-max
+    max-w-[max(var(--popover-available-width),calc(100%-calc(var(--popover-overflow-padding)*2)))]
+    [&_.menu-item>.label]:flex-1
+    [&_.menu-item>.label]:pr-8
   ;
 }
 
-.menu .menu-item .label {
+.menu-item {
   @apply
-    flex-1
-    pr-8
+    [.menu:not(:focus-within)_&]:aria-expanded:text-current
+    [.menu:not(:focus-within)_&]:aria-expanded:bg-black/10
+    [.menu:not(:focus-within)_&]:aria-expanded:dark:bg-white/10
   ;
 }

@@ -11,14 +11,14 @@ import type { MenubarProviderProps } from "../menubar/menubar-provider.js";
  * <MenuBarProvider>
  *   <MenuBar>
  *     <MenuProvider>
- *       <MenuButton>File</MenuButton>
+ *       <MenuItem render={<MenuButton />}>File</MenuItem>
  *       <Menu>
  *         <MenuItem>New File</MenuItem>
  *         <MenuItem>New Window</MenuItem>
  *       </Menu>
  *     </MenuProvider>
  *     <MenuProvider>
- *       <MenuButton>Edit</MenuButton>
+ *       <MenuItem render={<MenuButton />}>Edit</MenuItem>
  *       <Menu>
  *         <MenuItem>Undo</MenuItem>
  *         <MenuItem>Redo</MenuItem>

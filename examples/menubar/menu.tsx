@@ -7,19 +7,16 @@ export { MenuProvider } from "@ariakit/react";
 export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
   function Menu(props, ref) {
     const menu = Ariakit.useMenuContext();
-    if (!menu) {
-      throw new Error("Menu must be used within a MenuProvider");
-    }
     return (
       <Ariakit.Menu
         ref={ref}
         portal
-        overlap={!!menu.parent}
-        gutter={menu.parent ? 12 : 4}
-        shift={menu.parent ? -9 : -2}
-        flip={menu.parent ? true : "bottom-end"}
         fitViewport
         unmountOnHide
+        overlap={!!menu?.parent}
+        gutter={menu?.parent ? 12 : 4}
+        shift={menu?.parent ? -9 : -2}
+        flip={menu?.parent ? true : "bottom-end"}
         {...props}
         className={clsx("menu", props.className)}
       />

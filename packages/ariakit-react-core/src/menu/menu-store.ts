@@ -18,10 +18,10 @@ import type {
 } from "../hovercard/hovercard-store.js";
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
 import { useMenubarContext } from "../menubar/menubar-context.js";
+import type { MenubarStore } from "../menubar/menubar-store.js";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
 import { useMenuContext } from "./menu-context.js";
 
 type Values = Core.MenuStoreValues;
@@ -114,7 +114,7 @@ export interface MenuStoreOptions<T extends Values = Values>
    * nested in the React tree.
    *
    * Live examples:
-   * - [MenuBar](https://ariakit.org/examples/menu-bar)
+   * - [Menubar](https://ariakit.org/components/menubar)
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    */
   parent?: MenuStore | null;
@@ -122,7 +122,7 @@ export interface MenuStoreOptions<T extends Values = Values>
    * A reference to a menu bar store. It's automatically set when rendering
    * menus inside a menu bar in the React tree.
    */
-  menubar?: MenuBarStore | null;
+  menubar?: MenubarStore | null;
 }
 
 export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &

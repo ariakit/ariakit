@@ -8,6 +8,8 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.js";
 import { useCompositeHover } from "../composite/composite-hover.js";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
+import { useMenubarScopedContext } from "../menubar/menubar-context.js";
+import type { MenubarStore } from "../menubar/menubar-store.js";
 import { useBooleanEvent, useEvent } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
@@ -16,11 +18,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
-import {
-  useMenuBarScopedContext,
-  useMenuScopedContext,
-} from "./menu-context.js";
+import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
 function menuHasFocus(
@@ -67,13 +65,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
     ...props
   }) => {
     const menuContext = useMenuScopedContext(true);
-    const menuBarContext = useMenuBarScopedContext();
-    store = store || menuContext || (menuBarContext as any);
+    const menubarContext = useMenubarScopedContext();
+    store = store || menuContext || (menubarContext as any);
 
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "MenuItem must be wrapped in a MenuList, Menu or MenuBar component",
+        "MenuItem must be wrapped in a MenuList, Menu or Menubar component",
     );
 
     const onClickProp = props.onClick;
@@ -172,15 +170,15 @@ export interface MenuItemOptions<T extends As = "div">
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
-   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store)
+   * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
    * hooks. If not provided, the closest
    * [`Menu`](https://ariakit.org/reference/menu),
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
-   * [`MenuBar`](https://ariakit.org/reference/menu-bar), or
-   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
+   * [`Menubar`](https://ariakit.org/reference/menubar), or
+   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
    * components' context will be used.
    */
-  store?: MenuBarStore | MenuStore;
+  store?: MenubarStore | MenuStore;
   /**
    * Whether to hide the menu when the menu item is clicked.
    * @default true
