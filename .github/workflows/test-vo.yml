@@ -46,7 +46,7 @@ jobs:
         run: npm run build-website
 
       - name: Guidepup Setup
-        uses: guidepup/setup-action@0.11.2
+        uses: guidepup/setup-action@0.11.3
         with:
           record: true
 
