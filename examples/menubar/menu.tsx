@@ -4,35 +4,19 @@ import clsx from "clsx";
 
 export { MenuProvider } from "@ariakit/react";
 
-export const MenuBar = React.forwardRef<HTMLDivElement, Ariakit.MenuBarProps>(
-  function MenuBar(props, ref) {
-    return (
-      <Ariakit.MenuBarProvider>
-        <Ariakit.MenuBar
-          ref={ref}
-          {...props}
-          className={clsx("menu-bar", props.className)}
-        />
-      </Ariakit.MenuBarProvider>
-    );
-  },
-);
-
 export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
   function Menu(props, ref) {
     const menu = Ariakit.useMenuContext();
-    if (!menu) {
-      throw new Error("Menu must be used within a MenuProvider");
-    }
     return (
       <Ariakit.Menu
         ref={ref}
         portal
-        overlap={!!menu.parent}
-        gutter={menu.parent ? 12 : 4}
-        shift={menu.parent ? -9 : -2}
         fitViewport
         unmountOnHide
+        overlap={!!menu?.parent}
+        gutter={menu?.parent ? 12 : 4}
+        shift={menu?.parent ? -9 : -2}
+        flip={menu?.parent ? true : "bottom-end"}
         {...props}
         className={clsx("menu", props.className)}
       />

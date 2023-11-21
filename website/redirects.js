@@ -6,5 +6,10 @@ export async function redirects() {
       destination: "/examples/combobox-filtering",
       permanent: true,
     },
+    {
+      source: "/examples/menu-bar",
+      destination: "/components/menubar",
+      permanent: true,
+    },
   ];
 }

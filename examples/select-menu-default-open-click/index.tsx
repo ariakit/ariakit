@@ -5,11 +5,11 @@ import {
   FilterMenu,
   FilterMenuItem,
   FilterMenuSeparator,
-} from "../select-menu-default-open/filter-menu.js";
+} from "../select-menu-default-open/filter-menu.jsx";
 import {
   FilterSelect,
   FilterSelectItem,
-} from "../select-menu-default-open/filter-select.js";
+} from "../select-menu-default-open/filter-select.jsx";
 
 type Filters = Record<string, string | undefined>;
 

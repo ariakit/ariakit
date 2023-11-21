@@ -7,8 +7,14 @@ import {
   HovercardContextProvider,
   HovercardScopedContextProvider,
 } from "../hovercard/hovercard-context.js";
+import {
+  MenubarContextProvider,
+  MenubarScopedContextProvider,
+  useMenubarContext,
+  useMenubarProviderContext,
+  useMenubarScopedContext,
+} from "../menubar/menubar-context.js";
 import { createStoreContext } from "../utils/system.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
 import type { MenuStore } from "./menu-store.js";
 
 const menu = createStoreContext<MenuStore>(
@@ -39,13 +45,11 @@ export const MenuContextProvider = menu.ContextProvider;
 
 export const MenuScopedContextProvider = menu.ScopedContextProvider;
 
-const menubar = createStoreContext<MenuBarStore>(
-  [CompositeContextProvider],
-  [CompositeScopedContextProvider],
-);
-
 /**
  * Returns the menuBar store from the nearest menuBar container.
+ * @deprecated
+ * Use [`useMenubarContext`](https://ariakit.org/reference/use-menubar-context)
+ * instead.
  * @example
  * function MenuBar() {
  *   const store = useMenuBarContext();
@@ -57,15 +61,15 @@ const menubar = createStoreContext<MenuBarStore>(
  *   // Use the store...
  * }
  */
-export const useMenuBarContext = menubar.useContext;
+export const useMenuBarContext = useMenubarContext;
 
-export const useMenuBarScopedContext = menubar.useScopedContext;
+export const useMenuBarScopedContext = useMenubarScopedContext;
 
-export const useMenuBarProviderContext = menubar.useProviderContext;
+export const useMenuBarProviderContext = useMenubarProviderContext;
 
-export const MenuBarContextProvider = menubar.ContextProvider;
+export const MenuBarContextProvider = MenubarContextProvider;
 
-export const MenuBarScopedContextProvider = menubar.ScopedContextProvider;
+export const MenuBarScopedContextProvider = MenubarScopedContextProvider;
 
 export const MenuItemCheckedContext = createContext<boolean | undefined>(
   undefined,

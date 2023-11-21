@@ -8,7 +8,7 @@ tags:
 
 <div data-description>
 
-Access a set of commands within a menu bar or dropdown menu. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
+Access a set of commands within a dropdown menu. This component is based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu/">WAI-ARIA Menu Pattern</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/">WAI-ARIA Menu Button Pattern</a>.
 
 </div>
 
@@ -90,9 +90,9 @@ On the other hand, [`MenuButton`](/reference/menu-button) can't hold a value, on
 
 - [](/components/button)
 - [](/components/checkbox)
+- [](/components/menubar)
 - [](/components/popover)
 - [](/components/radio)
 - [](/components/select)
-- [](/components/composite)
 
 </div>

@@ -64,19 +64,27 @@ export function createReferencePageContent(reference) {
     .filter((prop) => prop.optional && prop.name !== "as")
     .sort(sortProp);
 
+  /** @param {string | boolean} [deprecated] */
+  const renderDeprecated = (deprecated, warn = false) => {
+    if (!deprecated) return "";
+    const text = `
+**Deprecated**${typeof deprecated === "string" ? `: ${deprecated}` : ""}
+`;
+    if (!warn) return text;
+    return `
+<aside data-type="warn">
+${text}
+</aside>
+`;
+  };
+
   /** @param {import("./types.js").ReferenceProp} prop */
   const renderProp = (prop) => {
     return `### ${prop.deprecated ? `~\`${prop.name}\`~` : `\`${prop.name}\``}
 
 ${`\`\`\`ts definition
 ${prop.type}${prop.defaultValue ? ` = ${prop.defaultValue}` : ""}
-\`\`\``}${
-      prop.deprecated
-        ? `\n**Deprecated**${
-            typeof prop.deprecated === "string" ? `: ${prop.deprecated}` : ""
-          }\n`
-        : ""
-    }
+\`\`\``}${renderDeprecated(prop.deprecated)}
 ${prop.description.replace(
   "Live examples:",
   `#### Live examples
@@ -109,9 +117,10 @@ tags:
 ---
 
 # ${name}
-${deprecated ? "\n**Deprecated**\n" : ""}
 
 <div data-tags></div>
+
+${renderDeprecated(deprecated, true)}
 
 ${description}
 

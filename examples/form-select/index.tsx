@@ -7,7 +7,7 @@ import {
   FormSubmit,
   useFormStore,
 } from "./form.jsx";
-import { SelectItem } from "./select.js";
+import { SelectItem } from "./select.jsx";
 
 export default function Example() {
   const form = useFormStore({ defaultValues: { name: "", fruit: "" } });
