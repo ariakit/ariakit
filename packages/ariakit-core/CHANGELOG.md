@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.3.5
+
+- Added new `menubar` module.
+
 ## 0.3.4
 
 ### Patch Changes
