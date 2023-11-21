@@ -72,7 +72,7 @@ export function PlusScreen() {
                   icon="heart"
                   render={<Focusable flat render={<li />} />}
                 >
-                  Support the project
+                  Support the mission
                 </PlusFeature>
               </ul>
               <div className="flex flex-col gap-6">
@@ -176,7 +176,7 @@ export function PlusScreen() {
               </PlusFeaturePreview>
               <PlusFeaturePreview
                 feature="support"
-                heading="Support the project"
+                heading="Support the mission"
               >
                 <div className="h-40 overflow-hidden rounded-md bg-gradient-to-br from-pink-400 to-blue-400 p-4 dark:from-pink-600 dark:to-blue-600">
                   <Heart className="h-full w-full fill-white" />
@@ -186,9 +186,9 @@ export function PlusScreen() {
                   enables us to keep improving and maintaining the library.
                 </p>
                 <p>
-                  We spend thousands of hours building primitive components and
-                  testing them across various browsers and assistive
-                  technologies, so you can focus on your product.
+                  We spend thousands of hours crafting examples and primitive
+                  components, testing them across different browsers and
+                  assistive technologies.
                 </p>
                 <p>
                   If you are using Ariakit at work and it&apos;s saving you time
