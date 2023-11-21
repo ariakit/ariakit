@@ -1,6 +1,6 @@
 @import url("../menu/style.css");
 
-.hover-menubar {
+.menubar {
   @apply
     flex
     gap-1
@@ -8,7 +8,7 @@
   ;
 }
 
-.hover-menubar-item {
+.menubar-item {
   @apply
     h-10
     px-5

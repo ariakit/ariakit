@@ -73,9 +73,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     const ref = useRef<HTMLElement>(null);
     const parentMenu = store.parent;
-    const parentMenuBar = store.menubar;
+    const parentMenubar = store.menubar;
     const hasParentMenu = !!parentMenu;
-    const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
+    const parentIsMenubar = !!parentMenubar && !hasParentMenu;
     const disabled = disabledFromProps(props);
 
     const onFocusProp = props.onFocus;
@@ -92,9 +92,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       store?.setActiveId(null);
       // When the menu button is focused, we'll only show its menu if it's in a
       // menu bar
-      if (!parentMenuBar) return;
-      if (!parentIsMenuBar) return;
-      const { items } = parentMenuBar.getState();
+      if (!parentMenubar) return;
+      if (!parentIsMenubar) return;
+      const { items } = parentMenubar.getState();
       // and there's already another expanded menu button or the previously
       // focused element is another menu item.
       if (hasActiveItem(items, event.currentTarget, event.relatedTarget)) {
@@ -178,7 +178,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     // attribute here so it doesn't get overridden by the button component with
     // role="button".
     const role =
-      hasParentMenu || parentIsMenuBar
+      hasParentMenu || parentIsMenubar
         ? getPopupItemRole(parentContentElement, "menuitem")
         : undefined;
 
@@ -201,12 +201,20 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       accessibleWhenDisabled,
       ...props,
       showOnHover: (event) => {
-        if (typeof showOnHover === "function") return showOnHover(event);
-        if (showOnHover != null) return showOnHover;
-        if (hasParentMenu) return true;
-        if (!parentMenuBar) return false;
-        const { items } = parentMenuBar.getState();
-        return parentIsMenuBar && hasActiveItem(items);
+        const getShowOnHover = () => {
+          if (typeof showOnHover === "function") return showOnHover(event);
+          if (showOnHover != null) return showOnHover;
+          if (hasParentMenu) return true;
+          if (!parentMenubar) return false;
+          const { items } = parentMenubar.getState();
+          return parentIsMenubar && hasActiveItem(items);
+        };
+        const canShowOnHover = getShowOnHover();
+        if (!canShowOnHover) return false;
+        const parent = parentIsMenubar ? parentMenubar : parentMenu;
+        if (!parent) return true;
+        parent.setActiveId(event.currentTarget.id);
+        return true;
       },
     });
 
@@ -220,7 +228,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 
     props = useCompositeTypeahead({
       store,
-      typeahead: parentIsMenuBar,
+      typeahead: parentIsMenubar,
       ...props,
     });
 

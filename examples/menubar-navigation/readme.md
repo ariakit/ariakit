@@ -1,9 +1,9 @@
 ---
 tags:
-  - Hovercard
+  - Menubar
 ---
 
-# Hover Menubar
+# Navigation Menubar
 
 <div data-description>
 

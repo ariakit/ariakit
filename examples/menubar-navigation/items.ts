@@ -1,10 +1,10 @@
-import type { HoverMenubarProps } from "./hover-menubar.jsx";
+import type { MenubarProps } from "./menubar.jsx";
 
 interface Item {
   label: string;
   href?: string;
   description?: string;
-  placement?: HoverMenubarProps["placement"];
+  placement?: MenubarProps["placement"];
   shift?: number;
   items?: Item[];
 }

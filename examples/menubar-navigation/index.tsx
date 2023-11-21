@@ -1,46 +1,46 @@
 import "./style.css";
 import { useState } from "react";
-import {
-  HoverMenubar,
-  HoverMenubarItem,
-  HoverMenubarMenu,
-  HoverMenubarMenuGroup,
-  HoverMenubarMenuItem,
-} from "./hover-menubar.jsx";
 import { items } from "./items.js";
+import {
+  Menubar,
+  MenubarItem,
+  MenubarMenu,
+  MenubarMenuGroup,
+  MenubarMenuItem,
+} from "./menubar.jsx";
 
 export default function Example() {
   const [currentLabel, setCurrentLabel] = useState("");
   const currentItem = items.find((item) => item.label === currentLabel);
   return (
     <nav aria-label="Example">
-      <HoverMenubar onOpen={setCurrentLabel} placement={currentItem?.placement}>
+      <Menubar onOpen={setCurrentLabel} placement={currentItem?.placement}>
         {items.map((item) => (
-          <HoverMenubarItem
+          <MenubarItem
             key={item.label}
             label={item.label}
             href={item.href}
             hasPopup={!!item.items}
           />
         ))}
-        <HoverMenubarMenu shift={currentItem?.shift}>
+        <MenubarMenu shift={currentItem?.shift}>
           {currentItem?.items?.map((item) => {
             if (item.items) {
               return (
-                <HoverMenubarMenuGroup key={item.label} label={item.label}>
+                <MenubarMenuGroup key={item.label} label={item.label}>
                   {item.items.map((item) => (
-                    <HoverMenubarMenuItem
+                    <MenubarMenuItem
                       key={item.label}
                       label={item.label}
                       href={item.href}
                       description={item.description}
                     />
                   ))}
-                </HoverMenubarMenuGroup>
+                </MenubarMenuGroup>
               );
             }
             return (
-              <HoverMenubarMenuItem
+              <MenubarMenuItem
                 key={item.label}
                 label={item.label}
                 href={item.href}
@@ -48,8 +48,8 @@ export default function Example() {
               />
             );
           })}
-        </HoverMenubarMenu>
-      </HoverMenubar>
+        </MenubarMenu>
+      </Menubar>
     </nav>
   );
 }
