@@ -100,7 +100,7 @@
     "@types/postcss-import": "14.0.3",
     "@types/prettier": "2.7.3",
     "@types/react": "18.2.38",
-    "@types/react-dom": "18.2.16",
+    "@types/react-dom": "18.2.17",
     "@types/stylis": "4.2.3",
     "@types/textarea-caret": "3.0.3",
     "@types/use-sync-external-store": "0.0.6",
