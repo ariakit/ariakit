@@ -12,7 +12,13 @@ import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
 import { tw } from "utils/tw.js";
-import { AuthEnabled } from "./auth.jsx";
+import {
+  AuthEnabled,
+  AuthLoading,
+  NotSubscribed,
+  Subscribed,
+} from "./auth.jsx";
+import { CodePlaceholder } from "./code-placeholder.jsx";
 import { Command } from "./command.jsx";
 import type { EditorProps } from "./editor.js";
 // import { Editor } from "./editor.js";
@@ -28,6 +34,8 @@ export interface PlaygroundClientProps extends EditorProps {
   githubLink?: string;
   previewLink?: string;
   preview?: ReactNode;
+  abstracted?: boolean;
+  plus?: boolean;
   type?: "code" | "compact" | "wide";
 }
 
@@ -102,6 +110,8 @@ export function PlaygroundClient({
   devDependencies,
   codeBlocks,
   javascript,
+  abstracted,
+  plus,
   type = "wide",
 }: PlaygroundClientProps) {
   const getTabId = (file: string) =>
@@ -159,6 +169,56 @@ export function PlaygroundClient({
         {},
       ),
     [files, javascript],
+  );
+
+  const subscriptionOnly =
+    plus && (!abstracted || (file && !/^index\.(j|t)sx?$/.test(file)));
+
+  const playgroundToolbar = (
+    <PlaygroundToolbar
+      code={content}
+      language={language}
+      setLanguage={setLanguage}
+    />
+  );
+
+  const codeBlockElement = (
+    <>
+      {codeBlock}
+      {collapsible && collapsed && (
+        <Button
+          ref={expandRef}
+          className={style.expandButton}
+          onClick={() => {
+            setCollapsed(false);
+            requestAnimationFrame(() => {
+              collapseRef.current?.focus();
+            });
+          }}
+        >
+          <span className={style.expandButtonInner}>
+            Expand code
+            <ChevronDown className="h-5 w-5" />
+          </span>
+        </Button>
+      )}
+    </>
+  );
+
+  const collapseButton = collapsible && !collapsed && (
+    <Button
+      ref={collapseRef}
+      className={style.collapseButton}
+      onClick={() => {
+        setCollapsed(true);
+        requestAnimationFrame(() => {
+          expandRef.current?.focus();
+        });
+      }}
+    >
+      Collapse code
+      <ChevronUp className="h-5 w-5" />
+    </Button>
   );
 
   useUpdateEffect(() => {
@@ -253,11 +313,13 @@ export function PlaygroundClient({
               </Tab>
             ))}
           </TabList>
-          <PlaygroundToolbar
-            code={content}
-            language={language}
-            setLanguage={setLanguage}
-          />
+          {subscriptionOnly ? (
+            <AuthEnabled>
+              <Subscribed>{playgroundToolbar}</Subscribed>
+            </AuthEnabled>
+          ) : (
+            playgroundToolbar
+          )}
         </div>
         {codeBlock && (
           <TabPanel
@@ -270,40 +332,55 @@ export function PlaygroundClient({
                 : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
             )}
           >
-            {codeBlock}
-            {collapsible && collapsed && (
-              <Button
-                ref={expandRef}
-                className={style.expandButton}
-                onClick={() => {
-                  setCollapsed(false);
-                  requestAnimationFrame(() => {
-                    collapseRef.current?.focus();
-                  });
-                }}
-              >
-                <span className={style.expandButtonInner}>
-                  Expand code
-                  <ChevronDown className="h-5 w-5" />
-                </span>
-              </Button>
+            {subscriptionOnly ? (
+              <AuthEnabled>
+                <AuthLoading>
+                  <div className="relative h-64 bg-white dark:bg-gray-850">
+                    <div className="absolute left-0 top-0 p-4">
+                      <CodePlaceholder />
+                    </div>
+                  </div>
+                </AuthLoading>
+                <Subscribed>{codeBlockElement}</Subscribed>
+                <NotSubscribed>
+                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
+                    <div className="absolute left-0 top-0 p-4">
+                      <CodePlaceholder />
+                    </div>
+                    <div className="relative flex flex-col items-center justify-center gap-4 text-center ">
+                      <h2 className="text-xl font-medium">
+                        Access the source code
+                      </h2>
+                      <p>
+                        Unlock Ariakit Plus to view the source code for this
+                        example
+                      </p>
+                      <Command
+                        variant="plus"
+                        render={
+                          <Link
+                            href="/plus?feature=new-examples"
+                            scroll={false}
+                          />
+                        }
+                      >
+                        Unlock Ariakit Plus
+                      </Command>
+                    </div>
+                  </div>
+                </NotSubscribed>
+              </AuthEnabled>
+            ) : (
+              codeBlockElement
             )}
           </TabPanel>
         )}
-        {collapsible && !collapsed && (
-          <Button
-            ref={collapseRef}
-            className={style.collapseButton}
-            onClick={() => {
-              setCollapsed(true);
-              requestAnimationFrame(() => {
-                expandRef.current?.focus();
-              });
-            }}
-          >
-            Collapse code
-            <ChevronUp className="h-5 w-5" />
-          </Button>
+        {subscriptionOnly ? (
+          <AuthEnabled>
+            <Subscribed>{collapseButton}</Subscribed>
+          </AuthEnabled>
+        ) : (
+          collapseButton
         )}
       </div>
       {/* <Editor theme={theme} files={files} codeBlocks={codeBlocks} /> */}

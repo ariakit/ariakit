@@ -87,15 +87,15 @@ export function createStore<S extends State>(
           const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return sync(store, [key], (state) =>
+          return sync(store, [key], (state) => {
             setState(
               key,
               state[key]!,
               // @ts-expect-error - Not public API. This is just to prevent
               // infinite loops.
               true,
-            ),
-          );
+            );
+          });
         }),
       ),
     );

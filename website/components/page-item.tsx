@@ -2,7 +2,9 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import Link from "next/link.js";
+import { twJoin } from "tailwind-merge";
 import { tw } from "utils/tw.js";
+import { PlusBordered } from "./plus-bordered.jsx";
 
 const style = {
   wrapper: tw`
@@ -13,13 +15,6 @@ const style = {
     [@media(any-hover:hover)]:dark:hover:bg-blue-600/25
     active:!bg-blue-200/70 dark:active:!bg-blue-800/25
     focus-visible:ariakit-outline-input
-  `,
-  thumbnail: tw`
-    flex items-center justify-center flex-none
-    rounded overflow-hidden
-    bg-gray-150 dark:bg-gray-850
-    group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80
-    group-active:bg-black/[7.5%] dark:group-active:bg-black/80
   `,
   textWrapper: tw`
     flex flex-col items-start h-full min-w-0
@@ -39,6 +34,7 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   thumbnail?: ReactNode;
   description?: ReactNode;
   size?: "sm" | "md" | "lg";
+  plus?: boolean;
 }
 
 export function PageItem({
@@ -47,6 +43,7 @@ export function PageItem({
   description,
   size = "md",
   href,
+  plus = false,
   ...props
 }: Props) {
   const id = useId();
@@ -67,9 +64,16 @@ export function PageItem({
     >
       {props.children}
       {thumbnail && (
-        <div
-          className={cx(
-            style.thumbnail,
+        <PlusBordered
+          thick={size === "lg"}
+          thickerOnLight={size !== "sm"}
+          plus={plus}
+          className={twJoin(
+            "flex flex-none items-center justify-center rounded",
+            "bg-gray-150 dark:bg-gray-850",
+            !plus && "group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80",
+            !plus &&
+              "group-active:bg-black/[7.5%] dark:group-active:bg-black/80",
             size === "sm" && "h-16 w-16",
             size === "md" &&
               "h-20 w-20 [[data-dialog]_&]:h-16 [[data-dialog]_&]:w-16",
@@ -77,7 +81,7 @@ export function PageItem({
           )}
         >
           {thumbnail}
-        </div>
+        </PlusBordered>
       )}
       {title && (
         <div className={style.textWrapper}>
