@@ -1,6 +1,6 @@
 .composite {
   @apply
-    min-w-[200px]
+    min-w-[240px]
     flex
     flex-col
     p-4
@@ -13,3 +13,7 @@
   ;
 }
 
+.composite-item {
+  @apply
+    text-left
+}
