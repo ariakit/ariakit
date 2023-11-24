@@ -7,7 +7,11 @@ import type {
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { getPopupRole, getScrollingElement } from "@ariakit/core/utils/dom";
+import {
+  getPopupRole,
+  getScrollingElement,
+  setSelectionRange,
+} from "@ariakit/core/utils/dom";
 import {
   isFocusEventOutside,
   queueBeforeEvent,
@@ -205,7 +209,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       queueMicrotask(() => {
         const element = ref.current;
         if (!element) return;
-        element.setSelectionRange(storeValue.length, activeValue.length);
+        setSelectionRange(element, storeValue.length, activeValue.length);
       });
     }, [
       valueUpdated,
@@ -353,7 +357,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // call above and calling setSelectionRange in a queueMicrotask
         // callback, but I think flushSync is a safer approach. See
         // combobox-group "keep caret position when typing" test.
-        event.currentTarget.setSelectionRange(selectionStart, selectionEnd);
+        setSelectionRange(event.currentTarget, selectionStart, selectionEnd);
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The
