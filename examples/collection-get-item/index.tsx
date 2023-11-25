@@ -8,7 +8,9 @@ interface CustomItem {
 }
 
 export default function Example() {
-  const collection = Ariakit.useCollectionStore<CustomItem>({ items: [] });
+  const collection = Ariakit.useCollectionStore<CustomItem>({
+    defaultItems: [],
+  });
   const renderedItems = collection.useState((state) => state.renderedItems);
   const purpleItems = renderedItems.filter((item) => item.color === "purple");
   return (
