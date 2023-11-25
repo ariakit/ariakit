@@ -32,6 +32,7 @@ import { twJoin } from "tailwind-merge";
 import { useMedia } from "utils/use-media.js";
 import { whenIdle } from "utils/when-idle.js";
 import { Command } from "./command.jsx";
+import { PlusBordered } from "./plus-bordered.jsx";
 import { Popup } from "./popup.js";
 
 const SelectContext = createContext(false);
@@ -377,6 +378,7 @@ export interface HeaderMenuItemProps extends HTMLAttributes<HTMLElement> {
   path?: ReactNode[];
   nested?: boolean;
   autoFocus?: boolean;
+  plus?: boolean;
 }
 
 export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
@@ -390,6 +392,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       path,
       nested,
       autoFocus,
+      plus = false,
       ...props
     },
     ref,
@@ -422,7 +425,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
             isLink ? isExternalLink ? <a /> : <Link href={href} /> : <div />
           }
           className={twJoin(
-            "group flex w-full cursor-default scroll-m-2 items-center gap-2 rounded p-2",
+            "group z-[1] flex w-full cursor-default scroll-m-2 items-center gap-2 rounded p-2",
             "active-item:bg-blue-200/40 active:bg-blue-200/70",
             "focus-visible:!outline-none dark:active-item:bg-blue-600/25",
             "dark:active:bg-blue-800/25 [a&]:cursor-pointer",
@@ -442,17 +445,21 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
         >
           {children}
           {!nested && thumbnail && (
-            <div
+            <PlusBordered
+              plus={plus}
+              thickerOnLight
               aria-hidden
               className={twJoin(
-                "flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-sm",
+                "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
                 "bg-gray-150 dark:bg-gray-800",
-                "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
-                "group-active:bg-black/[7.5%] dark:group-active:bg-black/70",
+                !plus &&
+                  "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
+                !plus &&
+                  "group-active:bg-black/[7.5%] dark:group-active:bg-black/70",
               )}
             >
               {thumbnail}
-            </div>
+            </PlusBordered>
           )}
           {nested && (
             <div

@@ -2,24 +2,28 @@ import type { ComponentProps } from "react";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import { getTagSlug } from "utils/tag.js";
+import { PlusBordered } from "./plus-bordered.jsx";
 
 export interface PageTagProps
   extends Omit<ComponentProps<typeof Link>, "href"> {
   tag: string;
 }
 
-export function PageTag({ tag, ...props }: PageTagProps) {
+export function PageTag({ tag, className, ...props }: PageTagProps) {
   return (
-    <Link
-      {...props}
-      href={`/tags/${getTagSlug(tag)}`}
+    <PlusBordered
+      plus={tag === "New"}
+      thickerOnLight
+      render={<Link href={`/tags/${getTagSlug(tag)}`} {...props} />}
       className={twJoin(
-        "rounded-full border-black/[15%] bg-black/[7.5%] p-2 px-4 text-sm font-medium text-black/90 hover:bg-black/[15%] focus-visible:ariakit-outline-input dark:border dark:border-gray-650 dark:bg-gray-850 dark:text-white/90 hover:dark:bg-gray-750",
-        props.className,
+        "rounded-full border-2 border-transparent bg-gray-150 p-1.5 px-3.5 text-sm font-medium text-black/90 hover:bg-gray-250",
+        "dark:border dark:border-gray-650 dark:bg-gray-850 dark:p-2 dark:px-4 dark:text-white/90 dark:hover:border-gray-550 hover:dark:bg-gray-750",
+        "focus-visible:ariakit-outline-input",
+        className,
       )}
     >
       {props.children ?? tag}
-    </Link>
+    </PlusBordered>
   );
 }
 

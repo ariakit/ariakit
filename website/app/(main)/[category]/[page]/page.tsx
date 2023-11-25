@@ -15,6 +15,7 @@ import {
   getContent,
   getFile,
 } from "components/page-markdown.jsx";
+import { PlusBordered } from "components/plus-bordered.jsx";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { Document } from "icons/document.jsx";
 import { FolderOpen } from "icons/folder-open.jsx";
@@ -96,6 +97,7 @@ export default async function Page({ params }: PageProps) {
 
   if (!categoryDetail) return notFound();
 
+  const tableOfContentsData = tree.data?.tableOfContents as TableOfContentsData;
   const tableOfContents: TableOfContentsData = [
     {
       id: "",
@@ -106,7 +108,7 @@ export default async function Page({ params }: PageProps) {
       id: "",
       href: "#",
       text: pageDetail?.title ?? page,
-      children: tree.data?.tableOfContents as TableOfContentsData,
+      children: tableOfContentsData,
     },
   ];
 
@@ -183,14 +185,23 @@ export default async function Page({ params }: PageProps) {
     nextPage = sortedIndex?.[index + 1];
   }
 
+  const isNextPageNew = nextPage?.tags.includes("New");
+
   const nextPageLink = nextPage && (
     <Link
       href={`/${nextPage.category}/${nextPage.slug}`}
       className="group flex w-auto items-center gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70 focus-visible:ariakit-outline-input dark:active:!bg-blue-800/25 md:ml-3 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25"
     >
-      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-150 group-hover:bg-black/[7.5%] dark:bg-gray-850 dark:group-hover:bg-black/80">
+      <PlusBordered
+        plus={isNextPageNew}
+        className={twJoin(
+          "flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-150 dark:bg-gray-850",
+          !isNextPageNew &&
+            "group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80",
+        )}
+      >
         {getPageIcon(nextPage.category, nextPage.slug) || <span />}
-      </div>
+      </PlusBordered>
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-sm">
         <div className="font-semibold">Up Next</div>
         <div className="truncate opacity-60">{nextPage.title}</div>
@@ -223,7 +234,11 @@ export default async function Page({ params }: PageProps) {
         </div>
       </TableOfContents>
       <main className="relative flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8">
-        <PageMarkdown category={category} page={page} />
+        <PageMarkdown
+          tableOfContents={tableOfContentsData}
+          category={category}
+          page={page}
+        />
         <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:to-pink-600/10 sm:grid-cols-2 sm:gap-8 sm:rounded-xl sm:p-8">
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-medium sm:text-2xl">Follow updates</h2>

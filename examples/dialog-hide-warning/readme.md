@@ -1,5 +1,6 @@
 ---
 tags:
+  - New
   - Dialog
   - Button
   - Focusable

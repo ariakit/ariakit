@@ -29,7 +29,7 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 
 <div data-cards="examples">
 
-- [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)

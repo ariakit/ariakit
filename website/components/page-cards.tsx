@@ -58,7 +58,7 @@ export function PageCards({
         {...props}
         className={twJoin(
           props.className,
-          "grid !max-w-[792px] grid-cols-1 gap-4 md:grid-cols-2 [[data-dialog]_&]:grid-cols-1",
+          "z-[1] grid !max-w-[792px] grid-cols-1 gap-4 md:grid-cols-2 [[data-dialog]_&]:grid-cols-1",
         )}
       >
         {pages.map((page) => (
@@ -68,6 +68,7 @@ export function PageCards({
             title={page.title}
             description={page.content}
             thumbnail={getPageIcon(page.category, page.slug) || <span />}
+            plus={page.tags.includes("New")}
           />
         ))}
       </div>

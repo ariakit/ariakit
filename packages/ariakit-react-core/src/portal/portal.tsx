@@ -394,7 +394,8 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * Determines whether the element should be rendered as a React Portal.
    *
    * Live examples:
-   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
    * - [Hovercard with keyboard
    *   support](https://ariakit.org/examples/hovercard-disclosure)

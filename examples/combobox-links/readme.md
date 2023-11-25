@@ -60,6 +60,7 @@ To provide a better user experience, when opening the link in a new tab, the [`C
 <div data-cards="examples">
 
 - [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-animated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)

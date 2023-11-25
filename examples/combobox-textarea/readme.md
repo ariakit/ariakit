@@ -34,9 +34,9 @@ Rendering <a href="/components/combobox">Combobox</a> as a textarea element to c
 
 - [](/examples/combobox-animated)
 - [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
-- [](/examples/combobox-cancel)
 - [](/examples/combobox-multiple)
 
 </div>

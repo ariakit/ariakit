@@ -1,6 +1,7 @@
 import { Children, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import pageLinks from "build-pages/links.js";
+import type { TableOfContents } from "build-pages/types.js";
 import type { Element, ElementContent } from "hast";
 import { ArrowRight } from "icons/arrow-right.jsx";
 import { Hashtag } from "icons/hashtag.jsx";
@@ -10,6 +11,8 @@ import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { isValidHref } from "utils/is-valid-href.js";
+import { AuthEnabled, NotSubscribed, Subscribed } from "./auth.jsx";
+import { Command } from "./command.jsx";
 import { InlineLink } from "./inline-link.jsx";
 import { PageCards } from "./page-cards.jsx";
 import { PageExample } from "./page-example.jsx";
@@ -254,12 +257,25 @@ export function PageListItem({
 
 export interface PageSectionProps extends ComponentPropsWithoutRef<"section"> {
   level?: number;
+  plus?: boolean;
+  tableOfContents?: TableOfContents;
 }
 
-export function PageSection({ level, ...props }: PageSectionProps) {
-  return (
+export function PageSection({
+  level,
+  plus,
+  tableOfContents,
+  ...props
+}: PageSectionProps) {
+  level =
+    level ??
+    ("data-level" in props
+      ? parseInt(props["data-level"] as string)
+      : undefined);
+
+  const section = (
     <section
-      data-lavel={level}
+      data-level={level}
       {...props}
       className={twJoin(
         "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-5",
@@ -271,6 +287,62 @@ export function PageSection({ level, ...props }: PageSectionProps) {
       )}
     />
   );
+
+  if (plus) {
+    if (level && level > 1 && props.id !== "related-examples") {
+      return (
+        <AuthEnabled>
+          <Subscribed>{section}</Subscribed>
+        </AuthEnabled>
+      );
+    }
+
+    if (level === 1) {
+      tableOfContents = tableOfContents?.filter(
+        (item) => !["Components", "Related examples"].includes(item.text),
+      );
+      return (
+        <>
+          {section}
+          {!!tableOfContents?.length && (
+            <AuthEnabled>
+              <NotSubscribed>
+                <PageSection level={2} id="learn-more-about-this-example">
+                  <PageHeading level={2} id="learn-more-about-this-example">
+                    Learn more about this example
+                  </PageHeading>
+                  <PageParagraph>
+                    This is a new example exclusive to Ariakit Plus subscribers.
+                    In addition to gaining access to the complete source code
+                    above, you will also have the opportunity to delve deeper
+                    into this example through the following topics:
+                  </PageParagraph>
+                  <PageList ordered={false}>
+                    {tableOfContents.map((item, index) => (
+                      <PageListItem key={item.id} index={index} ordered={false}>
+                        {item.text}
+                      </PageListItem>
+                    ))}
+                  </PageList>
+                  <Command
+                    variant="plus"
+                    className="h-14 text-lg focus-visible:!ariakit-outline"
+                    render={
+                      <Link href="/plus?feature=new-examples" scroll={false} />
+                    }
+                  >
+                    Unlock Ariakit Plus
+                  </Command>
+                </PageSection>
+              </NotSubscribed>
+            </AuthEnabled>
+          )}
+        </>
+      );
+    }
+  }
+
+  return section;
 }
 
 export interface PageDivProps extends ComponentPropsWithoutRef<"div"> {
@@ -279,6 +351,7 @@ export interface PageDivProps extends ComponentPropsWithoutRef<"div"> {
   category: string;
   page: string;
   title?: string;
+  tableOfContents?: TableOfContents;
 }
 
 export function PageDiv({
@@ -287,10 +360,17 @@ export function PageDiv({
   page,
   title,
   tags = [],
+  tableOfContents,
   ...props
 }: PageDivProps) {
   if (node?.properties?.dataLevel) {
-    return <PageSection {...props} />;
+    return (
+      <PageSection
+        {...props}
+        plus={tags.includes("New")}
+        tableOfContents={tableOfContents}
+      />
+    );
   }
   if (node?.properties?.dataDescription != null) {
     return <PageDescription {...props} />;
@@ -382,20 +462,30 @@ function getNodeText(node: Element | ElementContent): string {
 }
 
 export interface PageAProps extends ComponentPropsWithoutRef<"a"> {
-  node: Element;
-  file: string;
+  file?: string;
+  node?: Element;
   hovercards?: Set<Promise<string | Iterable<string>>>;
+  tags?: string[];
 }
 
-export function PageA({ node, file, href, hovercards, ...props }: PageAProps) {
+export function PageA({
+  node,
+  file,
+  href,
+  hovercards,
+  tags,
+  ...props
+}: PageAProps) {
   if ("data-playground" in props && href) {
     return (
       <PageExample
-        pageFilename={file}
+        pageFilename={file!}
         href={href}
         hovercards={hovercards}
         {...props}
         type={props.type as any}
+        abstracted={tags?.includes("Abstracted examples")}
+        plus={tags?.includes("New")}
       />
     );
   }
@@ -430,7 +520,7 @@ export function PageA({ node, file, href, hovercards, ...props }: PageAProps) {
     }
     const url = new URL(href, "https://ariakit.org");
     const [, category, page] = url.pathname.split("/");
-    if (category === "reference" && page) {
+    if (category === "reference" && page && node) {
       const hash = url.hash.replace("#", "");
       const text = getNodeText(node);
       const isComponent = /^[A-Z]/.test(text);

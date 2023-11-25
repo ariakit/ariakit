@@ -154,6 +154,8 @@ export interface CompositeHoverOptions<T extends As = "div">
    * Determines if the composite item should be focused on hover.
    *
    * Live examples:
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @default true
@@ -164,6 +166,10 @@ export interface CompositeHoverOptions<T extends As = "div">
    * By default, this is set to `true` if
    * [`focusOnHover`](https://ariakit.org/reference/composite-hover#focusonhover)
    * is `true`.
+   *
+   * Live examples:
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    */
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }

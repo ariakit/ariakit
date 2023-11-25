@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
-import { Role } from "@ariakit/react";
-import type { RoleProps } from "@ariakit/react";
 import { twMerge } from "tailwind-merge";
+import { Role } from "./role.jsx";
+import type { RoleProps } from "./role.jsx";
 
 interface FocusableProps extends RoleProps {
   flat?: boolean;

@@ -546,7 +546,8 @@ export interface ComboboxOptions<T extends As = "input">
    *   popup opens, but the input value doesn't change.
    *
    * Live examples:
-   * - [ComboboxCancel](https://ariakit.org/examples/combobox-cancel)
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Textarea with inline
