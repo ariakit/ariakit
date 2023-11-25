@@ -201,12 +201,25 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       accessibleWhenDisabled,
       ...props,
       showOnHover: (event) => {
-        if (typeof showOnHover === "function") return showOnHover(event);
-        if (showOnHover != null) return showOnHover;
-        if (hasParentMenu) return true;
-        if (!parentMenubar) return false;
-        const { items } = parentMenubar.getState();
-        return parentIsMenubar && hasActiveItem(items);
+        const getShowOnHover = () => {
+          if (typeof showOnHover === "function") return showOnHover(event);
+          if (showOnHover != null) return showOnHover;
+          if (hasParentMenu) return true;
+          if (!parentMenubar) return false;
+          const { items } = parentMenubar.getState();
+          return parentIsMenubar && hasActiveItem(items);
+        };
+        const canShowOnHover = getShowOnHover();
+        if (!canShowOnHover) return false;
+        const parent = parentIsMenubar ? parentMenubar : parentMenu;
+        if (!parent) return true;
+        // When hovering over a menu button shows a menu and the menu button is
+        // part of another menu or menubar, it's not guaranteed that the button
+        // will get focused. That's why we make sure the active item is updated
+        // on the parent menu store. See "moving between menus with arrow keys
+        // after hovering over subitems" test.
+        parent.setActiveId(event.currentTarget.id);
+        return true;
       },
     });
 
