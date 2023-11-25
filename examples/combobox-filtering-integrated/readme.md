@@ -43,7 +43,7 @@ function ComboboxItem(props) {
 }
 ```
 
-However, the filtering logic won't have the ability to alter the order of the items. In other words, the filtered items will consistently display in the same sequence as the original list. This may or may not be desirable, depending on your use case.
+However, the filtering logic can't change the order of the items. That is, the filtered items will always appear in the same order as the original list. This could be either desirable or not, depending on your needs. It's a good approach if you want to maintain the original order after filtering.
 
 ## Exposing `value` and `onChange` props
 
