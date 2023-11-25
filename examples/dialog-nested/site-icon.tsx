@@ -2,7 +2,7 @@ export default function Icon() {
   return (
     <svg viewBox="0 0 128 128" width={128} height={128}>
       <foreignObject width={128} height={128}>
-        <div className="h-full overflow-hidden rounded-[inherit]">
+        <div className="h-full overflow-hidden">
           <div className="-ml-6 -mt-5">
             <div className="flex w-28 flex-col gap-3 rounded-md border border-black/20 bg-white p-3 shadow-md dark:border-white/10 dark:bg-white/10 dark:shadow-md-dark">
               <div className="mt-4 flex flex-col gap-2">
