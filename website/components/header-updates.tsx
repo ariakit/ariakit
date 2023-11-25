@@ -62,7 +62,7 @@ export function HeaderUpdates({
       <TooltipButton
         {...props}
         title="Updates"
-        className={twJoin("h-10 w-10 p-0", props.className)}
+        className={twJoin("h-10 w-10 flex-none p-0", props.className)}
         render={
           <Ariakit.PopoverDisclosure
             store={popover}

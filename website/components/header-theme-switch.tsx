@@ -49,7 +49,7 @@ export function HeaderThemeSwitch(props: Props) {
           <span className="dark:hidden">dark</span> mode
         </>
       }
-      className={twJoin("h-10 w-10 p-0", props.className)}
+      className={twJoin("h-10 w-10 flex-none p-0", props.className)}
       render={<Command variant="secondary" flat />}
       onClick={() => {
         if (document.documentElement.classList.contains("dark")) {
