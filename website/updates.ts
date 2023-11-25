@@ -7,6 +7,18 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Combobox with integrated filter",
+    type: "page",
+    href: "/examples/combobox-filtering-integrated",
+    dateTime: "2023-11-25T16:10Z",
+  },
+  {
+    title: "New component: Menubar",
+    type: "page",
+    href: "/components/menubar",
+    dateTime: "2023-11-21T09:32Z",
+  },
+  {
     title: "Improved docs: Nested Dialog",
     type: "page",
     href: "/examples/dialog-nested",

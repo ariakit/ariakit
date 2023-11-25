@@ -157,7 +157,8 @@ export interface ComboboxStoreState
    * The input value.
    *
    * Live examples:
-   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
    * - [Multi-selectable
@@ -176,6 +177,8 @@ export interface ComboboxStoreState
    * Live examples:
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * @default false
    */
   resetValueOnHide: boolean;

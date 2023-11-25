@@ -279,7 +279,7 @@ export interface MenuButtonOptions<T extends As = "button" | "div">
    * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
    * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
    * that character. By default, it's `true` for menu buttons in a
-   * [`MenuBar`](https://ariakit.org/reference/menu-bar), but `false` for other
+   * [Menubar](https://ariakit.org/components/menubar), but `false` for other
    * menu buttons.
    */
   typeahead?: boolean;

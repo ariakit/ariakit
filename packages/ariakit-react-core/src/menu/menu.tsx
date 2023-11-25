@@ -53,9 +53,9 @@ export const useMenu = createHook<MenuOptions>(
     const ref = useRef<HTMLDivElement>(null);
 
     const parentMenu = store.parent;
-    const parentMenuBar = store.menubar;
+    const parentMenubar = store.menubar;
     const hasParentMenu = !!parentMenu;
-    const parentIsMenuBar = !!parentMenuBar && !hasParentMenu;
+    const parentIsMenubar = !!parentMenubar && !hasParentMenu;
 
     props = {
       ...props,
@@ -150,7 +150,7 @@ export const useMenu = createHook<MenuOptions>(
           parentMenu.setActiveId(null);
           return true;
         }
-        if (!parentIsMenuBar) return false;
+        if (!parentIsMenubar) return false;
         const disclosure = store?.getState().disclosureElement;
         if (!disclosure) return true;
         if (hasFocusWithin(disclosure)) return false;

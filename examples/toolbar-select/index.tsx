@@ -1,7 +1,7 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import * as icons from "./icons.js";
+import * as icons from "./icons.jsx";
 
 const options = [
   { value: "Align Left", icon: icons.alignLeft },

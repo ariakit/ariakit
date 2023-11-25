@@ -6,7 +6,7 @@ import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import pageIndex from "build-pages/index.js";
 import { getReferences } from "build-pages/reference-utils.js";
-import type { Page } from "build-pages/types.js";
+import type { Page, TableOfContents } from "build-pages/types.js";
 import matter from "gray-matter";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -37,9 +37,11 @@ import { PageVideo } from "./page-video.jsx";
 export const getFile = cache((config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);
   const file = config.reference
-    ? entryFiles.find((file) =>
-        page.replace(/^use\-/, "").startsWith(getPageName(file)),
-      )
+    ? [...entryFiles]
+        .reverse()
+        .find((file) =>
+          page.replace(/^use\-/, "").startsWith(getPageName(file)),
+        )
     : entryFiles.find((file) => getPageName(file) === page);
   return file;
 });
@@ -59,6 +61,7 @@ export interface PageMarkdownProps {
   content?: string;
   file?: string;
   showHovercards?: boolean;
+  tableOfContents?: TableOfContents;
 }
 
 export function PageMarkdown({
@@ -67,6 +70,7 @@ export function PageMarkdown({
   content,
   file,
   showHovercards = true,
+  tableOfContents,
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();
 
@@ -128,6 +132,7 @@ export function PageMarkdown({
                 {...props}
                 file={file!}
                 hovercards={showHovercards ? hovercards : undefined}
+                tags={pageDetail?.tags}
               />
             );
           },
@@ -140,6 +145,7 @@ export function PageMarkdown({
                 page={page}
                 title={pageDetail?.title}
                 tags={pageDetail?.tags}
+                tableOfContents={tableOfContents}
               />
             );
           },

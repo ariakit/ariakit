@@ -121,7 +121,7 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
         {subscribed ? (
           content
         ) : (
-          <div className="flex max-w-xs flex-col">
+          <div className="z-[1] flex max-w-xs flex-col">
             <h3 className="mb-3 text-lg font-semibold">Preview API docs</h3>
             <p className="relative after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent after:to-white dark:after:to-gray-700">
               With Ariakit Plus, you can quickly preview comprehensive API

@@ -11,6 +11,7 @@ import { twJoin, twMerge } from "tailwind-merge";
 import type { UpdateItem } from "updates.js";
 import { getPageIcon } from "utils/get-page-icon.jsx";
 import { DateFromNow } from "./date-from-now.jsx";
+import { PlusBordered } from "./plus-bordered.jsx";
 
 export interface UpdateLinkProps
   extends UpdateItem,
@@ -20,6 +21,7 @@ export interface UpdateLinkProps
   date?: Date;
   unread?: boolean;
   connected?: boolean;
+  plus?: boolean;
 }
 
 function renderPaths(id: string, url: URL) {
@@ -70,6 +72,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
       date = new Date(dateTime),
       unread,
       connected,
+      plus = false,
       ...props
     },
     ref,
@@ -86,7 +89,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         target={url.origin !== "https://ariakit.org" ? "_blank" : undefined}
         {...props}
         className={twMerge(
-          "group relative flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",
+          "group relative z-[1] flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",
           "focus-visible:outline-none focus-visible:[box-shadow:inset_0_0_0_2px_theme(colors.blue.600)]",
           "active:!bg-blue-200/70 dark:active:!bg-blue-800/25 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25",
           props.className,
@@ -98,12 +101,16 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         {connected && (
           <div className="absolute -top-3 left-[47px] h-6 w-0.5 bg-black/10 dark:bg-white/10" />
         )}
-        <div
+        <PlusBordered
+          plus={plus}
+          thickerOnLight
           aria-hidden
           className={twJoin(
-            "flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-sm",
-            "bg-gray-150 group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
-            "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
+            "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
+            "bg-gray-150",
+            !plus && "group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
+            !plus &&
+              "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
             layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
           )}
         >
@@ -114,7 +121,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
           ) : type === "newsletter" ? (
             <Substack />
           ) : null}
-        </div>
+        </PlusBordered>
         <div className="flex min-w-0 flex-col">
           <span
             id={`${id}/label`}

@@ -2,6 +2,7 @@ import { UpdateLink } from "components/update-link.jsx";
 import { twJoin } from "tailwind-merge";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 import { getUpdates } from "utils/get-updates.js";
+import { getPagesByTag } from "utils/tag.js";
 import { PageContainer } from "../page-container.jsx";
 import { SeeNow } from "./see-now.jsx";
 
@@ -11,6 +12,9 @@ export function generateMetadata() {
 
 export default async function Page() {
   const updates = await getUpdates();
+  const newPages = getPagesByTag("New").map(
+    (page) => `/${page.category}/${page.slug}`,
+  );
   return (
     <div className="flex items-start justify-center">
       <SeeNow updates={updates} />
@@ -25,7 +29,11 @@ export default async function Page() {
             <ul className="flex max-w-2xl flex-col">
               {updates.map((item, index) => (
                 <li key={index}>
-                  <UpdateLink {...item} connected={index !== 0} />
+                  <UpdateLink
+                    {...item}
+                    connected={index !== 0}
+                    plus={newPages.some((page) => item.href.startsWith(page))}
+                  />
                 </li>
               ))}
             </ul>

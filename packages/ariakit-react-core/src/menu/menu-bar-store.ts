@@ -1,24 +1,29 @@
-import * as Core from "@ariakit/core/menu/menu-bar-store";
+import type * as Core from "@ariakit/core/menu/menu-bar-store";
+import {
+  useMenubarStore,
+  useMenubarStoreProps,
+} from "../menubar/menubar-store.js";
 import type {
-  CompositeStoreFunctions,
-  CompositeStoreOptions,
-  CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+  MenubarStore,
+  MenubarStoreFunctions,
+  MenubarStoreOptions,
+  MenubarStoreProps,
+  MenubarStoreState,
+} from "../menubar/menubar-store.js";
 
 export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
   store: T,
   update: () => void,
   props: MenuBarStoreProps,
 ) {
-  return useCompositeStoreProps(store, update, props);
+  return useMenubarStoreProps(store, update, props);
 }
 
 /**
  * Creates a menu bar store.
- * @see https://ariakit.org/components/menu
+ * @deprecated
+ * Use [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
+ * instead.
  * @example
  * ```jsx
  * const menu = useMenuBarStore();
@@ -26,22 +31,15 @@ export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
  * ```
  */
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
-  const [store, update] = useStore(Core.createMenuBarStore, props);
-  return useMenuBarStoreProps(store, update, props);
+  return useMenubarStore(props);
 }
 
-export interface MenuBarStoreState
-  extends Core.MenuBarStoreState,
-    CompositeStoreState {}
+export interface MenuBarStoreState extends MenubarStoreState {}
 
-export interface MenuBarStoreFunctions
-  extends Core.MenuBarStoreFunctions,
-    CompositeStoreFunctions {}
+export interface MenuBarStoreFunctions extends MenubarStoreFunctions {}
 
-export interface MenuBarStoreOptions
-  extends Core.MenuBarStoreOptions,
-    CompositeStoreOptions {}
+export interface MenuBarStoreOptions extends MenubarStoreOptions {}
 
-export type MenuBarStoreProps = MenuBarStoreOptions & Core.MenuBarStoreProps;
+export interface MenuBarStoreProps extends MenubarStoreProps {}
 
-export type MenuBarStore = MenuBarStoreFunctions & Store<Core.MenuBarStore>;
+export interface MenuBarStore extends MenubarStore {}

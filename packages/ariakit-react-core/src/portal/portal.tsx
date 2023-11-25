@@ -392,6 +392,16 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
   portalRef?: RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>;
   /**
    * Determines whether the element should be rendered as a React Portal.
+   *
+   * Live examples:
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   * - [Hovercard with keyboard
+   *   support](https://ariakit.org/examples/hovercard-disclosure)
+   * - [Menubar](https://ariakit.org/components/menubar)
+   * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
    * @default true
    */
   portal?: boolean;

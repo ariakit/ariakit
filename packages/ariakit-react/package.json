@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "components"
   ],
   "dependencies": {
-    "@ariakit/react-core": "0.3.5"
+    "@ariakit/react-core": "0.3.6"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
@@ -55,6 +55,7 @@
     "./radio": "./src/radio.ts",
     "./portal": "./src/portal.ts",
     "./popover": "./src/popover.ts",
+    "./menubar": "./src/menubar.ts",
     "./menu": "./src/menu.ts",
     "./hovercard": "./src/hovercard.ts",
     "./heading": "./src/heading.ts",

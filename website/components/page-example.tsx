@@ -18,6 +18,8 @@ interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
   type?: "code" | "compact" | "wide";
   hovercards?: Set<Promise<string | Iterable<string>>>;
+  abstracted?: boolean;
+  plus?: boolean;
 }
 
 const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
@@ -49,6 +51,8 @@ export async function PageExample({
   href,
   type = "wide",
   hovercards,
+  abstracted,
+  plus,
 }: Props) {
   const deferred = defer<Iterable<string>>();
   hovercards?.add(deferred);
@@ -101,6 +105,8 @@ export async function PageExample({
         previewLink={previewLink}
         preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
         onRender={deferred.resolve}
+        abstracted={abstracted}
+        plus={plus}
       />
     </div>
   );

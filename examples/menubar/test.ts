@@ -98,6 +98,11 @@ test("show/hide on hover", async () => {
   expect(q.menuitem("View")).toHaveFocus();
   expect(q.menu("File")).not.toBeInTheDocument();
   expect(q.menu("View")).toBeVisible();
+  await hover(q.menuitem("Developer"));
+  await hover(await q.menuitem.wait("View Source"));
+  await hover(q.menuitem("File"));
+  expect(q.menu("File")).toBeVisible();
+  expect(q.menu("View")).not.toBeInTheDocument();
 });
 
 test("hide on escape", async () => {

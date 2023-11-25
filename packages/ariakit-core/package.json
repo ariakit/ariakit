@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/core",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",
@@ -44,6 +44,7 @@
     "./select/select-store": "./src/select/select-store.ts",
     "./radio/radio-store": "./src/radio/radio-store.ts",
     "./popover/popover-store": "./src/popover/popover-store.ts",
+    "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
     "./menu/menu-store": "./src/menu/menu-store.ts",
     "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
     "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",

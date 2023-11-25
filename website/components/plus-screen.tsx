@@ -12,6 +12,7 @@ import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import { usePrices } from "utils/use-prices.js";
+import { CodePlaceholder } from "./code-placeholder.jsx";
 import { Command } from "./command.jsx";
 import { Focusable } from "./focusable.jsx";
 import { InlineLink } from "./inline-link.jsx";
@@ -30,7 +31,7 @@ export function PlusScreen() {
   const searchParams = useSearchParams();
   const query = usePrices();
   const monthlyPrice = query.data?.find((price) => !price.yearly);
-  const defaultFeature = searchParams.get("feature") ?? "edit-examples";
+  const defaultFeature = searchParams.get("feature") ?? "new-examples";
   return (
     <HeadingLevel>
       <PlusProvider defaultFeature={defaultFeature}>
@@ -56,6 +57,12 @@ export function PlusScreen() {
               </p>
               <ul className="mb-8 flex cursor-default flex-col gap-2">
                 <PlusFeature
+                  feature="new-examples"
+                  render={<Focusable flat render={<li />} />}
+                >
+                  Access new examples
+                </PlusFeature>
+                <PlusFeature
                   feature="edit-examples"
                   render={<Focusable flat render={<li />} />}
                 >
@@ -72,7 +79,7 @@ export function PlusScreen() {
                   icon="heart"
                   render={<Focusable flat render={<li />} />}
                 >
-                  Support the project
+                  Support the mission
                 </PlusFeature>
               </ul>
               <div className="flex flex-col gap-6">
@@ -106,6 +113,28 @@ export function PlusScreen() {
               <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 md:mx-8 [[role=dialog]_&]:mx-8" />
             </div>
             <PlusFeaturePreviewContainer className="p-8 [[role=dialog]_&]:-mt-8">
+              <PlusFeaturePreview
+                feature="new-examples"
+                heading="Access new examples"
+              >
+                <div className="flex cursor-default flex-col items-center gap-6 overflow-hidden rounded-lg bg-black/5 px-14 pt-6 dark:bg-gray-850">
+                  <div className="h-20 w-full rounded-md border-2 border-dashed border-black/20 dark:border-gray-600" />
+                  <div className="w-full overflow-hidden rounded-lg rounded-b-none border border-b-0 border-gray-300 bg-gray-150 dark:border-gray-650 dark:bg-gray-850">
+                    <div className="h-8 border-b border-[inherit] bg-gray-100 dark:bg-gray-800" />
+                    <div className="relative h-28 bg-white p-4 dark:bg-gray-900">
+                      <CodePlaceholder />
+                    </div>
+                  </div>
+                </div>
+                <p>
+                  Ariakit Plus subscribers gain access to all new examples,
+                  including the complete source code, as well as documentation.
+                </p>
+                <p>
+                  Copy and paste JavaScript, TypeScript and CSS code snippets
+                  into your project and get started right away.
+                </p>
+              </PlusFeaturePreview>
               <PlusFeaturePreview
                 feature="edit-examples"
                 heading="Edit examples"
@@ -176,7 +205,7 @@ export function PlusScreen() {
               </PlusFeaturePreview>
               <PlusFeaturePreview
                 feature="support"
-                heading="Support the project"
+                heading="Support the mission"
               >
                 <div className="h-40 overflow-hidden rounded-md bg-gradient-to-br from-pink-400 to-blue-400 p-4 dark:from-pink-600 dark:to-blue-600">
                   <Heart className="h-full w-full fill-white" />
@@ -186,9 +215,9 @@ export function PlusScreen() {
                   enables us to keep improving and maintaining the library.
                 </p>
                 <p>
-                  We spend thousands of hours building primitive components and
-                  testing them across various browsers and assistive
-                  technologies, so you can focus on your product.
+                  We spend thousands of hours crafting examples and primitive
+                  components, testing them across different browsers and
+                  assistive technologies.
                 </p>
                 <p>
                   If you are using Ariakit at work and it&apos;s saving you time

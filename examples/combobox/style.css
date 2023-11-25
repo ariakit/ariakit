@@ -32,15 +32,16 @@
     dark:placeholder-white/[46%]
     text-black
     dark:text-white
-    bg-gray-150/40
-    dark:bg-gray-850
-    hover:bg-gray-150
-    dark:hover:bg-gray-900
-    shadow-input
-    dark:shadow-input-dark
+    bg-white
+    hover:bg-gray-50
+    dark:bg-black/70
+    dark:hover:bg-black
     outline-2
+    outline-offset-[-1px]
     outline-blue-600
     data-[focus-visible]:outline
+    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
+    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
   ;
 }
 

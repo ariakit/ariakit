@@ -1,18 +1,12 @@
-import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
+import { useMenubar } from "../menubar/menubar.js";
+import type { MenubarOptions } from "../menubar/menubar.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
-import {
-  MenuBarScopedContextProvider,
-  useMenuBarProviderContext,
-} from "./menu-context.js";
 
 /**
  * Returns props to create a `MenuBar` component.
- * @see https://ariakit.org/components/menu
+ * @deprecated
+ * Use [`useMenubar`](https://ariakit.org/reference/use-menubar) instead.
  * @example
  * ```jsx
  * const store = useMenuBarStore();
@@ -30,51 +24,15 @@ import {
  * </Role>
  * ```
  */
-export const useMenuBar = createHook<MenuBarOptions>(
-  ({ store, composite = true, ...props }) => {
-    const context = useMenuBarProviderContext();
-    store = store || context;
-
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "MenuBar must receive a `store` prop or be wrapped in a MenuBarProvider component.",
-    );
-
-    const orientation = store.useState((state) =>
-      !composite || state.orientation === "both"
-        ? undefined
-        : state.orientation,
-    );
-
-    props = useWrapElement(
-      props,
-      (element) => (
-        <MenuBarScopedContextProvider value={store}>
-          {element}
-        </MenuBarScopedContextProvider>
-      ),
-      [store],
-    );
-
-    if (composite) {
-      props = {
-        role: "menubar",
-        "aria-orientation": orientation,
-        ...props,
-      };
-    }
-
-    props = useComposite({ store, composite, ...props });
-
-    return props;
-  },
-);
+export const useMenuBar = createHook<MenuBarOptions>((props) => {
+  return useMenubar(props);
+});
 
 /**
  * Renders a menu bar that may contain a group of menu items that control other
  * submenus.
- * @see https://ariakit.org/components/menu
+ * @deprecated
+ * Use [`Menubar`](https://ariakit.org/reference/menubar) instead.
  * @example
  * ```jsx
  * <MenuBarProvider>
@@ -107,15 +65,6 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface MenuBarOptions<T extends As = "div">
-  extends CompositeOptions<T> {
-  /**
-   * Object returned by the
-   * [`useMenuBarStore`](https://ariakit.org/reference/use-menu-bar-store) hook.
-   * If not provided, the closest
-   * [`MenuBarProvider`](https://ariakit.org/reference/menu-bar-provider)
-   * component's context will be used.
-   */
-  store?: MenuBarStore;
-}
+  extends MenubarOptions<T> {}
 
 export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;

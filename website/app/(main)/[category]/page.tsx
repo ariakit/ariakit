@@ -58,6 +58,7 @@ export default function Page({ params }: Props) {
               description={page.content}
               size={size}
               thumbnail={getPageIcon(page.category, page.slug) || <span />}
+              plus={page.tags.includes("New")}
             />
           ))}
         </div>
@@ -73,6 +74,7 @@ export default function Page({ params }: Props) {
                 description={page.content}
                 size={size}
                 thumbnail={getPageIcon(page.category, page.slug) || <span />}
+                plus={page.tags.includes("New")}
               />
             ))}
           </div>

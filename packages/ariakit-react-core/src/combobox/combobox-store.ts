@@ -67,7 +67,8 @@ export interface ComboboxStoreOptions
    * A callback that gets called when the `value` state changes.
    *
    * Live examples:
-   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
+   * - [Combobox with integrated
+   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Multi-selectable
