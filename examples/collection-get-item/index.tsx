@@ -1,11 +1,11 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
 
-type CustomItem = {
+interface CustomItem {
   id: string;
   element?: HTMLElement | null | undefined;
   color?: string;
-};
+}
 
 export default function Example() {
   const collection = Ariakit.useCollectionStore<CustomItem>({ items: [] });
