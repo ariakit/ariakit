@@ -326,7 +326,7 @@ export function PageSection({
                   </PageList>
                   <Command
                     variant="plus"
-                    className="h-14 text-lg"
+                    className="h-14 text-lg focus-visible:!ariakit-outline"
                     render={
                       <Link href="/plus?feature=new-examples" scroll={false} />
                     }

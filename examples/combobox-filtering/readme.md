@@ -51,7 +51,7 @@ In this example, we use the [match-sorter](https://www.npmjs.com/package/match-s
 
 ```jsx "matchSorter" "ComboboxItem"
 const matches = useMemo(() => {
-  return matchSorter(list, searchValue)
+  return matchSorter(list, searchValue);
 }, [searchValue]);
 
 matches.map((value) => <ComboboxItem key={value} value={value} />);
@@ -61,9 +61,9 @@ matches.map((value) => <ComboboxItem key={value} value={value} />);
 
 <div data-cards="examples">
 
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-animated)
 - [](/examples/combobox-cancel)
-- [](/examples/combobox-disclosure)
 - [](/examples/combobox-group)
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)

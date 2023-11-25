@@ -11,7 +11,6 @@ import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.js";
-import { tw } from "utils/tw.js";
 import {
   AuthEnabled,
   AuthLoading,
@@ -38,66 +37,6 @@ export interface PlaygroundClientProps extends EditorProps {
   plus?: boolean;
   type?: "code" | "compact" | "wide";
 }
-
-const style = {
-  codeWrapper: tw`
-    w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650
-    md:rounded-xl
-  `,
-  codeHeader: tw`
-    relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit]
-    bg-gray-100 dark:bg-gray-750
-  `,
-  tabList: tw`
-    flex w-full flex-row overflow-x-auto p-2 sm:gap-2
-  `,
-  tab: tw`
-    flex-start group relative flex h-10
-    items-center justify-center whitespace-nowrap rounded bg-transparent
-    px-2 text-sm tracking-tight outline-none
-    text-black/75 dark:text-white/75
-    hover:bg-black/5 dark:hover:bg-white/5
-    aria-selected:text-black dark:aria-selected:text-white
-    data-[focus-visible]:ariakit-outline-input
-    sm:h-8
-  `,
-  tabIndicator: tw`
-    pointer-events-none absolute left-0 top-full h-[3px] w-full
-    translate-y-[5px] bg-transparent
-    group-hover:bg-gray-250 dark:group-hover:bg-gray-650
-    group-aria-selected:bg-blue-600 dark:group-aria-selected:bg-blue-600
-  `,
-  tabPanel: tw`
-    relative overflow-hidden
-    rounded-b-[inherit] border border-t-0
-    border-[inherit] focus-visible:z-[13]
-    focus-visible:ariakit-outline-input
-  `,
-  expandButton: tw`
-    group flex justify-center items-end text-sm pb-2 outline-none
-    absolute bottom-0 left-0 z-10 w-full h-32 rounded-[inherit]
-    bg-gradient-to-t from-[24px]
-    from-white/100 to-white/0
-    dark:from-gray-850/100 dark:to-gray-850/0
-  `,
-  expandButtonInner: tw`
-    group-data-[focus-visible]:ariakit-outline border
-    flex items-center justify-center gap-1 h-8 pr-2 pl-4 rounded
-    group-hover:bg-gray-250 group-hover:text-black/90
-    dark:group-hover:bg-gray-650 dark:group-hover:border-gray-550 dark:group-hover:text-white
-    bg-gray-150 border-gray-300 text-black/80
-    dark:bg-gray-750 dark:border-gray-650 dark:text-white/90
-  `,
-  collapseButton: tw`
-    flex items-center justify-center gap-1 h-8 pr-2 pl-4 rounded
-    m-auto mt-2 text-sm border focus-visible:ariakit-outline
-    shadow-sm dark:shadow-sm-dark
-    hover:bg-gray-250 hover:text-black/90
-    dark:hover:bg-gray-650 dark:hover:border-gray-550 dark:hover:text-white
-    bg-gray-150 border-gray-300 text-black/80
-    dark:bg-gray-750 dark:border-gray-650 dark:text-white/90
-  `,
-};
 
 export function PlaygroundClient({
   id,
@@ -188,7 +127,7 @@ export function PlaygroundClient({
       {collapsible && collapsed && (
         <Button
           ref={expandRef}
-          className={style.expandButton}
+          className="group absolute bottom-0 left-0 z-10 flex h-32 w-full items-end justify-center rounded-[inherit] bg-gradient-to-t from-white/100 from-[24px] to-white/0 pb-2 text-sm outline-none dark:from-gray-850/100 dark:to-gray-850/0"
           onClick={() => {
             setCollapsed(false);
             requestAnimationFrame(() => {
@@ -196,7 +135,7 @@ export function PlaygroundClient({
             });
           }}
         >
-          <span className={style.expandButtonInner}>
+          <span className="flex h-8 items-center justify-center gap-1 rounded border border-gray-300 bg-gray-150 pl-4 pr-2 text-black/80 group-hover:bg-gray-250 group-hover:text-black/90 group-data-[focus-visible]:ariakit-outline dark:border-gray-650 dark:bg-gray-750 dark:text-white/90 dark:group-hover:border-gray-550 dark:group-hover:bg-gray-650 dark:group-hover:text-white">
             Expand code
             <ChevronDown className="h-5 w-5" />
           </span>
@@ -208,7 +147,7 @@ export function PlaygroundClient({
   const collapseButton = collapsible && !collapsed && (
     <Button
       ref={collapseRef}
-      className={style.collapseButton}
+      className="m-auto mt-2 flex h-8 items-center justify-center gap-1 rounded border border-gray-300 bg-gray-150 pl-4 pr-2 text-sm text-black/80 shadow-sm hover:bg-gray-250 hover:text-black/90 focus-visible:ariakit-outline dark:border-gray-650 dark:bg-gray-750 dark:text-white/90 dark:shadow-sm-dark dark:hover:border-gray-550 dark:hover:bg-gray-650 dark:hover:text-white"
       onClick={() => {
         setCollapsed(true);
         requestAnimationFrame(() => {
@@ -303,13 +242,20 @@ export function PlaygroundClient({
           </AuthEnabled>
         </div>
       )}
-      <div className={style.codeWrapper}>
-        <div className={style.codeHeader}>
-          <TabList store={tab} className={style.tabList}>
+      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
+        <div className="relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
+          <TabList
+            store={tab}
+            className="flex w-full flex-row overflow-x-auto p-2 sm:gap-2"
+          >
             {Object.keys(files).map((file) => (
-              <Tab key={file} id={getTabId(file)} className={style.tab}>
+              <Tab
+                key={file}
+                id={getTabId(file)}
+                className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 aria-selected:text-black data-[focus-visible]:ariakit-outline-input dark:text-white/75 dark:hover:bg-white/5 dark:aria-selected:text-white sm:h-8"
+              >
                 <span>{isJS ? tsToJsFilename(file) : file}</span>
-                <div className={style.tabIndicator} />
+                <div className="pointer-events-none absolute left-0 top-full h-[3px] w-full translate-y-[5px] bg-transparent group-hover:bg-gray-250 group-aria-selected:bg-blue-600 dark:group-hover:bg-gray-650 dark:group-aria-selected:bg-blue-600" />
               </Tab>
             ))}
           </TabList>
@@ -325,8 +271,9 @@ export function PlaygroundClient({
           <TabPanel
             store={tab}
             tabId={selectedId}
-            className={cx(
-              style.tabPanel,
+            className={twJoin(
+              "relative overflow-hidden rounded-b-[inherit] border border-t-0",
+              "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
               collapsed
                 ? "max-h-64 [&_pre]:!overflow-hidden"
                 : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
@@ -355,17 +302,21 @@ export function PlaygroundClient({
                         Unlock Ariakit Plus to view the source code for this
                         example
                       </p>
-                      <Command
-                        variant="plus"
+                      <Button
                         render={
-                          <Link
-                            href="/plus?feature=new-examples"
-                            scroll={false}
+                          <Command
+                            variant="plus"
+                            render={
+                              <Link
+                                href="/plus?feature=new-examples"
+                                scroll={false}
+                              />
+                            }
                           />
                         }
                       >
                         Unlock Ariakit Plus
-                      </Command>
+                      </Button>
                     </div>
                   </div>
                 </NotSubscribed>

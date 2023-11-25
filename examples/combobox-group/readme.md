@@ -32,7 +32,7 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 
 <div data-cards="examples">
 
-- [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-animated)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)

@@ -22,11 +22,11 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 <div data-cards="examples">
 
 - [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-animated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
-- [](/examples/combobox-multiple)
 
 </div>
 

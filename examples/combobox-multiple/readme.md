@@ -45,6 +45,7 @@ For more information about this pattern, refer to the [Composition](/guide/compo
 <div data-cards="examples">
 
 - [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)

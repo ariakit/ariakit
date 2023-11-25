@@ -18,14 +18,17 @@ export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox({ value, onChange, children, ...props }, ref) {
     const [list, setList] = React.useState<string[]>([]);
+
     const combobox = Ariakit.useComboboxStore({ value, setValue: onChange });
     const searchValue = combobox.useState("value");
+
+    // Use deferred value to avoid lag when typing.
     const deferredValue = React.useDeferredValue(searchValue);
 
-    const matches = React.useMemo(
-      () => matchSorter(list, deferredValue),
-      [list, deferredValue],
-    );
+    // matchSorter may be expensive to run on every render, so we memoize it.
+    const matches = React.useMemo(() => {
+      return matchSorter(list, deferredValue);
+    }, [list, deferredValue]);
 
     const contextValue = React.useMemo(() => ({ matches, setList }), [matches]);
 
@@ -60,15 +63,19 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem({ value, ...props }, ref) {
     const { matches, setList } = React.useContext(ComboboxContext);
 
+    // Add item to list when it mounts, remove it when it unmounts.
     React.useLayoutEffect(() => {
       if (!setList) return;
       if (value == null) return;
       setList((list) => [...list, value]);
-      return () => setList((list) => list.filter((v) => v !== value));
+      return () => {
+        setList((list) => list.filter((v) => v !== value));
+      };
     }, [setList, value]);
 
     const match = value != null && matches && matches?.includes(value);
 
+    // If the item is not in the list, don't render it.
     if (!match) return null;
 
     return (
@@ -91,7 +98,9 @@ export const ComboboxEmpty = React.forwardRef<
   ComboboxEmptyProps
 >(function ComboboxEmpty(props, ref) {
   const { matches } = React.useContext(ComboboxContext);
+
   if (matches?.length) return null;
+
   return (
     <Ariakit.Role
       ref={ref}
