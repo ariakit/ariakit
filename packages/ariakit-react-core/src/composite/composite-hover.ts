@@ -1,9 +1,15 @@
+import { useCallback } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
-import { closest, contains } from "@ariakit/core/utils/dom";
+import { contains } from "@ariakit/core/utils/dom";
 import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useBooleanEvent, useEvent, useIsMouseMoving } from "../utils/hooks.js";
+import {
+  useBooleanEvent,
+  useEvent,
+  useIsMouseMoving,
+  useMergeRefs,
+} from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -27,11 +33,17 @@ function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
   return contains(event.currentTarget, nextElement);
 }
 
+const symbol = Symbol("composite-hover");
+type ElementWithSymbol = HTMLElement & { [symbol]?: boolean };
+
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
-  const dest = getMouseDestination(event);
+  let dest = getMouseDestination(event);
   if (!dest) return false;
-  const item = closest(dest, "[data-composite-hover]");
-  return !!item;
+  do {
+    if (hasOwnProperty(dest, symbol) && dest[symbol]) return true;
+    dest = dest.parentElement;
+  } while (dest);
+  return false;
 }
 
 /**
@@ -103,9 +115,14 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       store?.getState().baseElement?.focus();
     });
 
+    const ref = useCallback((element: ElementWithSymbol | null) => {
+      if (!element) return;
+      element[symbol] = true;
+    }, []);
+
     props = {
-      "data-composite-hover": "",
       ...props,
+      ref: useMergeRefs(ref, props.ref),
       onMouseMove,
       onMouseLeave,
     };
