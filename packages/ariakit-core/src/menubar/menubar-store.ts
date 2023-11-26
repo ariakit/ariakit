@@ -1,12 +1,12 @@
 import type {
-  CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreOptions,
-  CompositeStoreProps,
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { createCompositeStore } from "../composite/composite-store.js";
 import { defaultValue } from "../utils/misc.js";
+import { createStore } from "../utils/store.js";
+import type { Store, StoreProps } from "../utils/store.js";
 
 /**
  * Creates a menu bar store.
@@ -16,7 +16,7 @@ export function createMenubarStore(
 ): MenubarStore {
   const syncState = props.store?.getState();
 
-  return createCompositeStore({
+  const composite = createCompositeStore({
     ...props,
     orientation: defaultValue(
       props.orientation,
@@ -25,14 +25,29 @@ export function createMenubarStore(
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
+
+  const initialState: MenubarStoreState = {
+    ...composite.getState(),
+  };
+
+  const menubar = createStore(initialState, composite, props.store);
+
+  return {
+    ...composite,
+    ...menubar,
+  };
 }
 
-export type MenubarStoreState = CompositeStoreState;
+export interface MenubarStoreState extends CompositeStoreState {}
 
-export type MenubarStoreFunctions = CompositeStoreFunctions;
+export interface MenubarStoreFunctions extends CompositeStoreFunctions {}
 
-export type MenubarStoreOptions = CompositeStoreOptions;
+export interface MenubarStoreOptions extends CompositeStoreOptions {}
 
-export type MenubarStoreProps = CompositeStoreProps;
+export interface MenubarStoreProps
+  extends MenubarStoreOptions,
+    StoreProps<MenubarStoreState> {}
 
-export type MenubarStore = CompositeStore;
+export interface MenubarStore
+  extends MenubarStoreFunctions,
+    Store<MenubarStoreState> {}

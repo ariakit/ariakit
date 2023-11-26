@@ -75,7 +75,7 @@ test("show menus by focusing on items", async ({ page, browserName }) => {
   const q = query(page);
   await pressTab(page, browserName);
   await expect(q.menuitem("Services")).toBeFocused();
-  await expect(q.menu("Services")).not.toBeVisible();
+  await expect(q.menu("Services")).toBeVisible();
   await page.keyboard.press("ArrowRight");
   await expect(q.menuitem("Blog")).toBeFocused();
   await expect(q.menu("Blog")).toBeVisible();
@@ -92,6 +92,10 @@ test("show menus by tabbing through items", async ({ page, browserName }) => {
   const q = query(page);
   await pressTab(page, browserName);
   await expect(q.menuitem("Services")).toBeFocused();
+  await pressTab(page, browserName);
+  await expect(q.menuitem("Web Development")).toBeFocused();
+  await pressTab(page, browserName);
+  await expect(q.menuitem("Mobile Development")).toBeFocused();
   await pressTab(page, browserName);
   await expect(q.menuitem("Blog")).toBeFocused();
   await expect(q.menu("Blog")).toBeVisible();

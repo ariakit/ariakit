@@ -1,6 +1,9 @@
 ---
 tags:
+  - New
   - Menubar
+  - Menu
+  - Abstracted examples
 ---
 
 # Navigation Menubar

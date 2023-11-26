@@ -28,17 +28,15 @@ export const Menubar = forwardRef<HTMLDivElement, MenubarProps>(
     }, [mounted, anchorElement]);
 
     return (
-      <Ariakit.MenuBarProvider>
-        <Ariakit.MenuBar
-          ref={ref}
-          {...props}
-          className={clsx("menubar", props.className)}
-        >
-          <Ariakit.MenuProvider store={menu}>
-            {props.children}
-          </Ariakit.MenuProvider>
-        </Ariakit.MenuBar>
-      </Ariakit.MenuBarProvider>
+      <Ariakit.Menubar
+        ref={ref}
+        {...props}
+        className={clsx("menubar", props.className)}
+      >
+        <Ariakit.MenuProvider store={menu}>
+          {props.children}
+        </Ariakit.MenuProvider>
+      </Ariakit.Menubar>
     );
   },
 );
@@ -71,10 +69,14 @@ export const MenubarItem = forwardRef<HTMLDivElement, MenubarItemProps>(
         {...props}
         ref={ref}
         showOnHover
+        onFocusVisible={(event) => {
+          menu?.setAnchorElement(event.currentTarget);
+          menu?.setDisclosureElement(event.currentTarget);
+          menu?.show();
+        }}
         toggleOnClick={() => {
-          if (!href) {
-            menu?.show();
-          }
+          if (href) return false;
+          menu?.show();
           return false;
         }}
         data-label={label}
