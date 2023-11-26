@@ -1,25 +1,29 @@
 import "./style.css";
+import { useCallback } from "react";
 import * as Ariakit from "@ariakit/react";
 
-interface CustomItem {
+interface Item {
   id: string;
   element?: HTMLElement | null | undefined;
-  color?: string;
+}
+
+interface CustomItem extends Item {
+  custom?: boolean;
 }
 
 export default function Example() {
   const collection = Ariakit.useCollectionStore<CustomItem>({
     defaultItems: [],
   });
+  const getItem = useCallback((item: Item) => ({ ...item, custom: true }), []);
   const renderedItems = collection.useState((state) => state.renderedItems);
-  const purpleItems = renderedItems.filter((item) => item.color === "purple");
+  const customItems = renderedItems.filter((item) => item.custom === true);
+
   return (
     <Ariakit.Collection store={collection} className="collection">
-      <div>Purple items: {purpleItems.length}</div>
+      <div>Custom items: {customItems.length}</div>
       <Ariakit.CollectionItem>🍎 Apple</Ariakit.CollectionItem>
-      <Ariakit.CollectionItem
-        getItem={(item) => ({ ...item, color: "purple" })}
-      >
+      <Ariakit.CollectionItem getItem={getItem}>
         🍇 Grape
       </Ariakit.CollectionItem>
       <Ariakit.CollectionItem>🍊 Orange</Ariakit.CollectionItem>
