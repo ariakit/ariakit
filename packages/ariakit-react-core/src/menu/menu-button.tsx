@@ -35,13 +35,11 @@ function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
 
 function hasActiveItem(
   items?: MenuStoreState["items"],
-  currentTarget?: Element | null,
-  relatedTarget?: Element | null,
+  excludeElement?: Element | null,
 ) {
   return !!items?.some((item) => {
     if (!item.element) return false;
-    if (item.element === currentTarget) return false;
-    if (item.element === relatedTarget) return true;
+    if (item.element === excludeElement) return false;
     return item.element.getAttribute("aria-expanded") === "true";
   });
 }
@@ -78,6 +76,14 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     const parentIsMenubar = !!parentMenubar && !hasParentMenu;
     const disabled = disabledFromProps(props);
 
+    const showMenu = () => {
+      const trigger = ref.current;
+      if (!trigger) return;
+      store?.setDisclosureElement(trigger);
+      store?.setAnchorElement(trigger);
+      store?.show();
+    };
+
     const onFocusProp = props.onFocus;
 
     const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
@@ -97,10 +103,8 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const { items } = parentMenubar.getState();
       // and there's already another expanded menu button or the previously
       // focused element is another menu item.
-      if (hasActiveItem(items, event.currentTarget, event.relatedTarget)) {
-        store?.setDisclosureElement(event.currentTarget);
-        store?.setAnchorElement(event.currentTarget);
-        store?.show();
+      if (hasActiveItem(items, event.currentTarget)) {
+        showMenu();
       }
     });
 
@@ -117,9 +121,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
         event.preventDefault();
-        store?.setAnchorElement(event.currentTarget);
-        store?.setDisclosureElement(event.currentTarget);
-        store?.show();
+        showMenu();
         store?.setAutoFocusOnShow(true);
         store?.setInitialFocus(initialFocus);
       }
@@ -146,7 +148,7 @@ export const useMenuButton = createHook<MenuButtonOptions>(
       // On submenu buttons, we can't hide the submenu by clicking on the menu
       // button again.
       if (hasParentMenu) {
-        store.show();
+        showMenu();
       }
     });
 
