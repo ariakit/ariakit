@@ -311,6 +311,12 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           typeahead={!searchable}
           composite={!searchable}
           render={renderPopover}
+          // hideOnHoverOutside={(event) => {
+          //   if (!event.target) return true;
+          //   const target = event.target as HTMLElement;
+          //   if (target.closest("[data-active-item]")) return true;
+          //   return false;
+          // }}
           getAnchorRect={(anchor) => {
             if (parent?.current) {
               return parent.current.getBoundingClientRect();
@@ -550,6 +556,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
         {...props}
         value={value}
         autoFocus={autoFocus}
+        // blurOnHoverEnd={false}
         hideOnClick={hideOnClick}
         render={renderItem}
       />
@@ -559,6 +566,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       <Ariakit.ComboboxItem
         {...props}
         focusOnHover
+        // blurOnHoverEnd={false}
         hideOnClick={hideOnClick}
         render={select ? renderSelectItem : renderItem}
       />
@@ -572,7 +580,14 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       return renderSelectItem({ ...props, ref });
     }
 
-    return <Ariakit.MenuItem {...props} ref={ref} render={renderItem} />;
+    return (
+      <Ariakit.MenuItem
+        {...props}
+        ref={ref}
+        // blurOnHoverEnd={false}
+        render={renderItem}
+      />
+    );
   },
 );
 

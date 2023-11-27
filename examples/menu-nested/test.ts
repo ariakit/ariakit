@@ -116,3 +116,12 @@ test("typeahead on submenu", async () => {
   await type("fffff");
   expect(q.menuitem("Find Previous")).toHaveFocus();
 });
+
+test("blur submenu button on mouse leave after hovering over disabled submenu item", async () => {
+  await click(q.button("Edit"));
+  await hover(q.menuitem("Speech"));
+  await hover(await q.menuitem.wait("Stop Speaking"));
+  await hover(document.body);
+  expect(q.menu("Speech")).not.toBeInTheDocument();
+  expect(q.menuitem("Speech")).not.toHaveAttribute("data-active-item");
+});
