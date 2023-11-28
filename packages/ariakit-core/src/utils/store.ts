@@ -386,6 +386,9 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
 export type StoreProps<S extends State = State> = {
   /**
    * Another store object that will be kept in sync with the original store.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   store?: Store<Partial<S>>;
 };

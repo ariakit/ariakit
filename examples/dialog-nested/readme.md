@@ -66,5 +66,6 @@ This applies to all components that use [Dialog](/components/dialog) under the h
 - [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
 - [](/examples/menu-nested)
+- [](/examples/menubar-navigation)
 
 </div>

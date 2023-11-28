@@ -493,6 +493,9 @@ export interface CompositeItemOptions<T extends As = "button">
    * **Note**: This prop has no effect when the
    * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
    * option is enabled.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   tabbable?: boolean;
 }

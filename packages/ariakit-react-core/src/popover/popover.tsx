@@ -482,6 +482,9 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   /**
    * Props that will be passed to the popover wrapper element. This element will
    * be used to position the popover.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   wrapperProps?: HTMLAttributes<HTMLDivElement>;
   /**
@@ -507,6 +510,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * negative values to make the popover shift to the opposite side.
    *
    * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    * - [Menubar](https://ariakit.org/components/menubar)
    * @default 0

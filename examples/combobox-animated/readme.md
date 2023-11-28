@@ -49,7 +49,7 @@ Learn more on the [Styling](/guide/styling) guide.
 <div data-cards="examples">
 
 - [](/examples/combobox-filtering-integrated)
-- [](/examples/combobox-group)
+- [](/examples/menubar-navigation)
 - [](/examples/dialog-animated)
 - [](/examples/dialog-framer-motion)
 - [](/examples/menu-framer-motion)

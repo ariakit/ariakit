@@ -43,3 +43,11 @@ Use the `data-enter` and `data-leave` attributes to animate the dialog and the b
 ```
 
 You can learn more about these `data-*` attributes on the [Styling](/guide/styling) guide.
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menubar-navigation)
+
+</div>

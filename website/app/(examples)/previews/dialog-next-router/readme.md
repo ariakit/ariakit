@@ -61,10 +61,11 @@ const pathname = usePathname();
 
 <div data-cards="examples">
 
-- [](/examples/tab-next-router/)
-- [](/examples/dialog-react-router/)
-- [](/examples/dialog-menu/)
-- [](/examples/dialog-nested/)
-- [](/examples/dialog-hide-warning/)
+- [](/examples/tab-next-router)
+- [](/examples/dialog-react-router)
+- [](/examples/dialog-menu)
+- [](/examples/dialog-nested)
+- [](/examples/dialog-hide-warning)
+- [](/examples/menubar-navigation)
 
 </div>

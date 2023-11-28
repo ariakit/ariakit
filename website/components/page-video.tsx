@@ -10,13 +10,28 @@ export interface PageVideoProps extends ComponentProps<"video"> {
   node?: Element;
   gif?: boolean | "true" | "false";
   lazy?: boolean;
+  playbackrate?: string | number;
 }
 
-export function PageVideo({ node, gif, lazy, src, ...props }: PageVideoProps) {
+export function PageVideo({
+  node,
+  gif,
+  lazy,
+  src,
+  playbackrate = 1,
+  ...props
+}: PageVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [source, setSource] = useState(lazy ? undefined : src);
   gif = gif === "true" || gif === true;
   lazy = lazy ?? gif;
+  const playbackRate = parseFloat(playbackrate.toString());
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    element.playbackRate = playbackRate;
+  }, [playbackRate]);
 
   useEffect(() => {
     if (!lazy) return;

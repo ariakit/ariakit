@@ -72,5 +72,6 @@ You can learn more about reading state from the store on the [Component stores](
 - [](/examples/tooltip-framer-motion)
 - [](/examples/menu-nested)
 - [](/examples/menu-item-checkbox)
+- [](/examples/menubar-navigation)
 
 </div>

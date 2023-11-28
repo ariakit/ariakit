@@ -6,6 +6,7 @@ tags:
   - Search
   - Dropdowns
   - Form controls
+  - Advanced
   - Abstracted examples
 ---
 

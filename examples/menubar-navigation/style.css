@@ -1,0 +1,111 @@
+@import url("../menu/style.css");
+
+.menubar {
+  @apply
+    flex
+    gap-1
+    items-center
+  ;
+}
+
+.menubar-item {
+  @apply
+    h-10
+    px-5
+    flex
+    items-center
+    cursor-default
+    underline-offset-4
+    rounded-full
+    outline-none
+    transition-[background-color]
+    aria-expanded:bg-black/10
+    dark:aria-expanded:bg-white/10
+    hover:bg-black/5
+    dark:hover:bg-white/5
+    data-[focus-visible]:bg-blue-200/40
+    dark:data-[focus-visible]:bg-blue-600/25
+    [a&]:data-[focus-visible]:underline
+    [a&]:cursor-pointer
+    [a&]:hover:underline
+  ;
+}
+
+.menu-wrapper {
+  @apply
+    [&:has([data-enter])]:transition-[transform]
+  ;
+}
+
+.menu-arrow {
+  @apply
+    transition-[left]
+  ;
+}
+
+.menu {
+  @apply
+    p-4
+    overflow-visible
+    min-w-[320px]
+    transition-opacity
+    opacity-0
+    data-[enter]:opacity-100
+  ;
+}
+
+.menu-contents {
+  @apply
+    flex
+    flex-col
+    [&:has([role=group])]:grid
+    [&:has([role=group])]:grid-cols-2
+    [&:has([role=group])]:items-start
+  ;
+}
+
+.group {
+  @apply
+    flex
+    flex-col
+  ;
+}
+
+.group-label {
+  @apply
+    p-2
+    px-4
+    font-medium
+    opacity-60
+    cursor-default
+  ;
+}
+
+.menu-item {
+  @apply
+    flex-col
+    items-start
+    gap-1
+    p-4
+    [a&]:cursor-pointer
+    data-[active-item]:bg-blue-200/40
+    data-[active-item]:text-black
+    dark:data-[active-item]:bg-blue-600/25
+    dark:data-[active-item]:text-white
+    active:bg-blue-200/70
+    dark:active:bg-blue-800/25
+  ;
+}
+
+.menu-item-label {
+  @apply
+    font-medium
+  ;
+}
+
+.menu-item-description {
+  @apply
+    opacity-70
+    font-light
+  ;
+}

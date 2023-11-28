@@ -112,6 +112,7 @@ export interface DisclosureStoreState {
    *   milliseconds to pass before becoming `false`.
    *
    * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
    * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
    * - [Animated Select](https://ariakit.org/examples/select-animated)
@@ -150,6 +151,7 @@ export interface DisclosureStoreFunctions {
    * Sets the `open` state to `true`.
    *
    * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
    */

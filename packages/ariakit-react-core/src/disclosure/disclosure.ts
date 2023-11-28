@@ -123,6 +123,9 @@ export interface DisclosureOptions<T extends As = "button">
    * [`toggle`](https://ariakit.org/reference/use-disclosure-store#toggle) will
    * be called on click. This is useful if you want to handle the toggle logic
    * yourself.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * @default true
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

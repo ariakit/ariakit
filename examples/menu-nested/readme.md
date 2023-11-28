@@ -31,16 +31,14 @@ In this example, we created a higher-level abstraction of the [Menu](/components
 
 However, in practice, creating submenus with Ariakit is as straightforward as nesting `Menu` components and merging [`MenuButton`](/reference/menu-button) and [`MenuItem`](/reference/menu-item) into a single element using the [`render`](/apis/menu-item#render) prop:
 
-```jsx {6-14} "render"
+```jsx {6-12} "render"
 <MenuProvider>
   <MenuButton>Edit</MenuButton>
   <Menu>
     <MenuItem>Undo</MenuItem>
     <MenuItem>Redo</MenuItem>
     <MenuProvider>
-      <MenuItem render={<MenuButton />}>
-        Find
-      </MenuItem>
+      <MenuItem render={<MenuButton />}>Find</MenuItem>
       <Menu>
         <MenuItem>Find Next</MenuItem>
         <MenuItem>Find Previous</MenuItem>
@@ -57,5 +55,6 @@ However, in practice, creating submenus with Ariakit is as straightforward as ne
 - [](/examples/menu-tooltip)
 - [](/examples/menu-item-checkbox)
 - [](/examples/menu-framer-motion)
+- [](/examples/menubar-navigation)
 
 </div>
