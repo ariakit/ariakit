@@ -18,6 +18,7 @@
     underline-offset-4
     rounded-full
     outline-none
+    whitespace-nowrap
     transition-[background-color]
     aria-expanded:bg-black/10
     dark:aria-expanded:bg-white/10
@@ -47,7 +48,7 @@
   @apply
     p-4
     overflow-visible
-    min-w-[320px]
+    max-w-[--popover-available-width]
     transition-opacity
     opacity-0
     data-[enter]:opacity-100
