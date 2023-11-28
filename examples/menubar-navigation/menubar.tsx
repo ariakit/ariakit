@@ -27,7 +27,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
         className={clsx("menubar", props.className)}
       >
         <SetShiftContext.Provider value={setShift}>
-          <Ariakit.MenuProvider animated hideTimeout={250}>
+          <Ariakit.MenuProvider animated showTimeout={100} hideTimeout={250}>
             {props.children}
             <Ariakit.Menu
               // This menu component is shared across all menus in the menubar.
