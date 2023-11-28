@@ -185,6 +185,7 @@ export interface CompositeHoverOptions<T extends As = "div">
    * is `true`.
    *
    * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Combobox with integrated
    *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    */

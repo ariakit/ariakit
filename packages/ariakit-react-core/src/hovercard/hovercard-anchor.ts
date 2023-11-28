@@ -155,6 +155,9 @@ export interface HovercardAnchorOptions<T extends As = "a">
   store?: HovercardStore;
   /**
    * Whether to show the hovercard on mouse move.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * @default true
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;

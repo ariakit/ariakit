@@ -409,6 +409,9 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * An HTML element or a memoized callback function that returns an HTML
    * element to be used as the portal element. By default, the portal element
    * will be a `div` element appended to the `document.body`.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * @example
    * ```jsx
    * const [portal, setPortal] = useState(null);

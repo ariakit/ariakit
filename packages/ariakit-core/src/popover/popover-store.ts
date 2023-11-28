@@ -93,6 +93,9 @@ export interface PopoverStoreState extends DialogStoreState {
   currentPlacement: Placement;
   /**
    * The placement of the popover.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * @default "bottom"
    */
   placement: Placement;
