@@ -52,5 +52,6 @@ const navigate = useNavigate();
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
+- [](/examples/menubar-navigation)
 
 </div>

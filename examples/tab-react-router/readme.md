@@ -57,5 +57,6 @@ const selectedId = tab.useState("selectedId");
 - [](/examples/dialog-react-router)
 - [](/examples/tab-next-router)
 - [](/examples/dialog-next-router)
+- [](/examples/menubar-navigation)
 
 </div>

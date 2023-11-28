@@ -65,5 +65,6 @@ const tabId = tab.useState("selectedId");
 
 - [](/examples/dialog-next-router/)
 - [](/examples/tab-react-router/)
+- [](/examples/menubar-navigation)
 
 </div>

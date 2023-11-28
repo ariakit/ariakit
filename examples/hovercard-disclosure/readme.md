@@ -14,3 +14,11 @@ Using the [`HovercardDisclosure`](/reference/hovercard-disclosure) component to 
 <div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menubar-navigation)
+
+</div>

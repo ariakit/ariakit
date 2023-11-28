@@ -110,7 +110,7 @@ To display the menu when hovering over the menubar items, we can use the [`showO
 
 This feature is driven by the [Hovercard](/components/hovercard) module, which takes _hover intent_ into account and determines whether the user is moving the cursor towards the menu:
 
-TODO: Video
+<video gif="true" playbackrate="0.5" data-large src="/videos/menubar-navigation-hover-intent.mp4" poster="/videos/menubar-navigation-hover-intent.jpg" width="960" height="540"></video>
 
 ## Showing menus on focus
 
