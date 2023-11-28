@@ -1,54 +1,67 @@
-import "./style.css";
-import { useState } from "react";
-import { items } from "./items.js";
-import {
-  Menubar,
-  MenubarItem,
-  MenubarMenu,
-  MenubarMenuGroup,
-  MenubarMenuItem,
-} from "./menubar.jsx";
+import { Menu, MenuGroup, MenuItem, Menubar } from "./menubar.jsx";
 
 export default function Example() {
-  const [currentLabel, setCurrentLabel] = useState("");
-  const currentItem = items.find((item) => item.label === currentLabel);
   return (
     <nav aria-label="Example">
-      <Menubar onOpen={setCurrentLabel} placement={currentItem?.placement}>
-        {items.map((item) => (
-          <MenubarItem
-            key={item.label}
-            label={item.label}
-            href={item.href}
-            hasPopup={!!item.items}
+      <Menubar>
+        <Menu
+          href="#/services"
+          label="Services"
+          placement="bottom-start"
+          shift={-96}
+        >
+          <MenuItem
+            href="#/webdev"
+            label="Web Development"
+            description="Professional web development services"
           />
-        ))}
-        <MenubarMenu shift={currentItem?.shift}>
-          {currentItem?.items?.map((item) => {
-            if (item.items) {
-              return (
-                <MenubarMenuGroup key={item.label} label={item.label}>
-                  {item.items.map((item) => (
-                    <MenubarMenuItem
-                      key={item.label}
-                      label={item.label}
-                      href={item.href}
-                      description={item.description}
-                    />
-                  ))}
-                </MenubarMenuGroup>
-              );
-            }
-            return (
-              <MenubarMenuItem
-                key={item.label}
-                label={item.label}
-                href={item.href}
-                description={item.description}
-              />
-            );
-          })}
-        </MenubarMenu>
+          <MenuItem
+            href="#/mobiledev"
+            label="Mobile Development"
+            description="High-quality mobile application development"
+          />
+        </Menu>
+        <Menu label="Blog" placement="bottom-start" shift={-192}>
+          <MenuGroup label="Categories">
+            <MenuItem
+              href="#/blog/tech"
+              label="Tech"
+              description="Latest technology news and insights"
+            />
+            <MenuItem
+              href="#/business"
+              label="Business"
+              description="Business trends and market analysis"
+            />
+          </MenuGroup>
+          <MenuItem
+            href="#/blog/archives"
+            label="Archives"
+            description="Access past blog articles"
+          />
+        </Menu>
+        <Menu label="Company">
+          <MenuGroup label="Info">
+            <MenuItem
+              href="#/aboutus"
+              label="About Us"
+              description="Learn more about our company"
+            />
+          </MenuGroup>
+          <MenuGroup label="Departments">
+            <MenuItem
+              href="#/hr"
+              label="HR"
+              description="Jobs and career at our company"
+            />
+            <MenuItem
+              href="#/finance"
+              label="Finance"
+              description="Financial and investor information"
+            />
+          </MenuGroup>
+        </Menu>
+        <Menu href="#/contactus" label="Contact Us" />
       </Menubar>
     </nav>
   );

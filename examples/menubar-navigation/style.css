@@ -31,7 +31,6 @@
   ;
 }
 
-
 .menu-wrapper {
   @apply
     [&:has([data-enter])]:transition-[transform]
@@ -52,6 +51,13 @@
     transition-opacity
     opacity-0
     data-[enter]:opacity-100
+  ;
+}
+
+.menu-contents {
+  @apply
+    flex
+    flex-col
     [&:has([role=group])]:grid
     [&:has([role=group])]:grid-cols-2
     [&:has([role=group])]:items-start

@@ -17,13 +17,13 @@ Render a visually persistent menu similar to those found near the top of the win
 
 <a href="../examples/menubar/index.tsx" data-playground>Example</a>
 
-<!-- ## Examples
+## Examples
 
 <div data-cards="examples">
 
 - [](/examples/menubar-navigation)
 
-</div> -->
+</div>
 
 ## API
 
@@ -38,7 +38,7 @@ useMenubarContext()
 
 ## Can I use Menubar for site navigation?
 
-**Short answer**: Yes, but be mindful.
+**Short answer**: Yes, but be mindful. Check out the [Navigation Menubar](/examples/menubar-navigation) example.
 
 ARIA doesn't specify how you should structure the contents of your site. It just describes how the roles should behave. If you've designed your site navigation to work precisely like a menubar and it's clear to the user, then you can use `Menubar`.
 
