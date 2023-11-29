@@ -45,7 +45,7 @@ test("show menus by hovering over items without moving focus", async ({
   await expect(q.menu("Company")).toBeVisible();
   await expect(body).toBeFocused();
 
-  await q.menuitem("Contact Us").hover();
+  await q.menuitem("Contact").hover();
   await expect(q.menu("Company")).not.toBeVisible();
   await expect(body).toBeFocused();
 
@@ -84,7 +84,7 @@ test("show menus by focusing on items", async ({ page, browserName }) => {
   await expect(q.menu("Blog")).not.toBeVisible();
   await expect(q.menu("Company")).toBeVisible();
   await page.keyboard.press("ArrowRight");
-  await expect(q.menuitem("Contact Us")).toBeFocused();
+  await expect(q.menuitem("Contact")).toBeFocused();
   await expect(q.menu("Company")).not.toBeVisible();
 });
 
@@ -116,7 +116,7 @@ test("show menus by tabbing through items", async ({ page, browserName }) => {
   await pressTab(page, browserName);
   await expect(q.menuitem("Finance")).toBeFocused();
   await pressTab(page, browserName);
-  await expect(q.menuitem("Contact Us")).toBeFocused();
+  await expect(q.menuitem("Contact")).toBeFocused();
   await expect(q.menu("Company")).not.toBeVisible();
   await pressTab(page, browserName, true);
   await expect(q.menuitem("Company")).toBeFocused();
@@ -157,9 +157,9 @@ test("click on menuitem links", async ({ page, browserName }) => {
   await page.waitForURL(/#\/services$/);
   await expect(q.menu("Services")).toBeVisible();
 
-  await q.menuitem("Contact Us").click();
-  await q.menuitem("Contact Us").focus();
-  await page.waitForURL(/#\/contactus$/);
+  await q.menuitem("Contact").click();
+  await q.menuitem("Contact").focus();
+  await page.waitForURL(/#\/contact$/);
   await expect(q.menu("Services")).not.toBeVisible();
 
   await page.keyboard.press("ArrowLeft");

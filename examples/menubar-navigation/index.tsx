@@ -61,7 +61,7 @@ export default function Example() {
             />
           </MenuGroup>
         </Menu>
-        <Menu href="#/contactus" label="Contact Us" />
+        <Menu href="#/contact" label="Contact" />
       </Menubar>
     </nav>
   );
