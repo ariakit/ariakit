@@ -5,6 +5,7 @@ import {
   HeadingLevel,
   useDialogContext,
 } from "@ariakit/react";
+import { SignedOut } from "@clerk/clerk-react";
 import { ArrowLeft } from "icons/arrow-left.jsx";
 import { Heart } from "icons/heart.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
@@ -97,15 +98,17 @@ export function PlusScreen() {
                   );
                 })}
               </div>
-              <p className="mt-4 self-end text-sm">
-                Already a member?{" "}
-                <InlineLink
-                  className="no-underline hover:underline"
-                  render={<Link href="/sign-in" />}
-                >
-                  Sign In
-                </InlineLink>
-              </p>
+              <SignedOut>
+                <p className="mt-4 self-end text-sm">
+                  Already a member?{" "}
+                  <InlineLink
+                    className="no-underline hover:underline"
+                    render={<Link href="/sign-in" />}
+                  >
+                    Sign In
+                  </InlineLink>
+                </p>
+              </SignedOut>
             </div>
           </div>
           <div className="[[role=dialog]_&]:bg-gray-150 dark:[[role=dialog]_&]:bg-gray-800">
