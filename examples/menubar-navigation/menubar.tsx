@@ -79,7 +79,9 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const parentMenu = menu.useState("contentElement");
   // Compare the menu button element with the current anchor element set when
   // the menu opens to ascertain whether the menu is open.
-  const open = menu.useState((state) => state.anchorElement === menuButton);
+  const open = menu.useState(
+    (state) => state.mounted && state.anchorElement === menuButton,
+  );
 
   React.useLayoutEffect(() => {
     if (!open) return;
