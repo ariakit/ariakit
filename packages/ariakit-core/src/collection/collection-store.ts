@@ -4,7 +4,6 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
   createStore,
-  init,
   setup,
   throwOnConflictingProps,
 } from "../utils/store.js";
@@ -62,16 +61,6 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-function getPrivateStore<T extends Item>(
-  store?: Store & {
-    __unstablePrivateStore?: Store<{
-      renderedItems: T[];
-    }>;
-  },
-) {
-  return store?.__unstablePrivateStore;
-}
-
 /**
  * Creates a collection store.
  */
@@ -96,13 +85,9 @@ export function createCollectionStore<T extends Item = Item>(
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
-  const syncPrivateStore = getPrivateStore<T>(props.store);
-
-  const privateStore = createStore(
-    { renderedItems: initialState.renderedItems },
-    syncPrivateStore,
-  );
-
+  const privateStore = createStore({
+    renderedItems: initialState.renderedItems,
+  });
   const collection = createStore(initialState, props.store);
 
   const sortItems = () => {
@@ -112,9 +97,7 @@ export function createCollectionStore<T extends Item = Item>(
     collection.setState("renderedItems", renderedItems);
   };
 
-  setup(collection, () => init(privateStore));
-
-  setup(privateStore, () => {
+  setup(collection, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
       let raf = requestAnimationFrame(sortItems);
@@ -206,9 +189,6 @@ export function createCollectionStore<T extends Item = Item>(
       }
       return item || null;
     },
-
-    // @ts-expect-error Internal
-    __unstablePrivateStore: privateStore,
   };
 }
 
@@ -269,8 +249,10 @@ export interface CollectionStoreOptions<T extends Item = Item>
   defaultItems?: CollectionStoreState<T>["items"];
 }
 
-export type CollectionStoreProps<T extends Item = Item> =
-  CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;
+export interface CollectionStoreProps<T extends Item = Item>
+  extends CollectionStoreOptions<T>,
+    StoreProps<CollectionStoreState<T>> {}
 
-export type CollectionStore<T extends Item = Item> =
-  CollectionStoreFunctions<T> & Store<CollectionStoreState<T>>;
+export interface CollectionStore<T extends Item = Item>
+  extends CollectionStoreFunctions<T>,
+    Store<CollectionStoreState<T>> {}

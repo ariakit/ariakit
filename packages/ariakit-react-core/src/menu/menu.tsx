@@ -107,7 +107,7 @@ export const useMenu = createHook<MenuOptions>(
           default:
             ref.current = baseElement;
         }
-        // if (!ref.current) return;
+        if (!ref.current) return;
         return ref;
       });
       return () => {
