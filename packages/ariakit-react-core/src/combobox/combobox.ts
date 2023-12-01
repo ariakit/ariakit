@@ -299,7 +299,9 @@ export const useCombobox = createHook<ComboboxOptions>(
         store.move(store.first() ?? null);
       } else {
         const element = store.item(activeId)?.element;
-        element?.scrollIntoView({ block: "nearest", inline: "nearest" });
+        if (element && "scrollIntoView" in element) {
+          element.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
       }
       return;
     }, [
