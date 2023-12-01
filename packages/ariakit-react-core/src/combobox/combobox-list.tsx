@@ -7,6 +7,7 @@ import type { DisclosureContentOptions } from "../disclosure/disclosure-content.
 import { useFocusable } from "../focusable/focusable.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import {
+  useAttribute,
   useEvent,
   useId,
   useMergeRefs,
@@ -104,11 +105,22 @@ export const useComboboxList = createHook<ComboboxListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
+    const multiSelectable = store.useState((state) =>
+      Array.isArray(state.selectedValue),
+    );
+    const role = useAttribute(ref, "role", props.role);
+    const isCompositeRole =
+      role === "listbox" || role === "tree" || role === "grid";
+    const ariaMultiSelectable = isCompositeRole
+      ? multiSelectable || undefined
+      : undefined;
+
     props = {
       id,
       hidden,
       role: "listbox",
       tabIndex: focusable ? -1 : undefined,
+      "aria-multiselectable": ariaMultiSelectable,
       ...props,
       ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
       style,

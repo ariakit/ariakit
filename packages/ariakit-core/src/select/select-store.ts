@@ -29,9 +29,9 @@ import type { PickRequired, SetState } from "../utils/types.js";
 type Value = string | string[];
 type MutableValue<T extends Value = Value> = T extends string ? string : T;
 
-type Item = CompositeStoreItem & {
+interface Item extends CompositeStoreItem {
   value?: string;
-};
+}
 
 export function createSelectStore<T extends Value = Value>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,

@@ -21,13 +21,25 @@ import {
   sync,
   throwOnConflictingProps,
 } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+import type { PickRequired, SetState } from "../utils/types.js";
 
-type Item = CompositeStoreItem & {
+type Value = string | string[];
+type MutableValue<T extends Value = Value> = T extends string ? string : T;
+
+interface Item extends CompositeStoreItem {
   value?: string;
-};
+}
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
+
+export function createComboboxStore<T extends Value = Value>(
+  props: PickRequired<
+    ComboboxStoreProps<T>,
+    "selectedValue" | "defaultSelectedValue"
+  >,
+): ComboboxStore<T>;
+
+export function createComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
 
 /**
  * Creates a combobox store.
@@ -77,21 +89,36 @@ export function createComboboxStore(
     ),
   });
 
-  const initialValue = defaultValue(
+  const value = defaultValue(
     props.value,
     syncState?.value,
     props.defaultValue,
     "",
   );
 
+  const selectedValue = defaultValue(
+    props.selectedValue,
+    syncState?.selectedValue,
+    props.defaultSelectedValue,
+    "",
+  );
+
+  const multiSelectable = Array.isArray(selectedValue);
+
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value: initialValue,
+    value,
+    selectedValue,
+    resetValueOnSelect: defaultValue(
+      props.resetValueOnSelect,
+      syncState?.resetValueOnSelect,
+      multiSelectable,
+    ),
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
       syncState?.resetValueOnHide,
-      false,
+      multiSelectable,
     ),
     activeValue: syncState?.activeValue,
   };
@@ -102,7 +129,14 @@ export function createComboboxStore(
     sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
       if (!state.resetValueOnHide) return;
       if (state.mounted) return;
-      combobox.setState("value", initialValue);
+      combobox.setState("value", value);
+    }),
+  );
+
+  setup(combobox, () =>
+    sync(combobox, ["resetValueOnSelect", "selectedValue"], (state) => {
+      if (!state.resetValueOnSelect) return;
+      combobox.setState("value", value);
     }),
   );
 
@@ -141,12 +175,16 @@ export function createComboboxStore(
     ...composite,
     ...combobox,
     setValue: (value) => combobox.setState("value", value),
+    setSelectedValue: (selectedValue) =>
+      combobox.setState("selectedValue", selectedValue),
   };
 }
 
 export type ComboboxStoreItem = Item;
 
-export interface ComboboxStoreState
+export type ComboboxStoreSelectedValue = Value;
+
+export interface ComboboxStoreState<T extends Value = Value>
   extends CompositeStoreState<Item>,
     PopoverStoreState {
   /**
@@ -172,6 +210,10 @@ export interface ComboboxStoreState
    */
   activeValue: string | undefined;
   /**
+   * The value of the selected item(s).
+   */
+  selectedValue: MutableValue<T>;
+  /**
    * Whether to reset the value when the combobox popover is hidden.
    *
    * Live examples:
@@ -182,9 +224,13 @@ export interface ComboboxStoreState
    * @default false
    */
   resetValueOnHide: boolean;
+  /**
+   * TODO: Document this.
+   */
+  resetValueOnSelect: boolean;
 }
 
-export interface ComboboxStoreFunctions
+export interface ComboboxStoreFunctions<T extends Value = Value>
   extends CompositeStoreFunctions<Item>,
     PopoverStoreFunctions {
   /**
@@ -199,13 +245,21 @@ export interface ComboboxStoreFunctions
    * store.setValue("Hello world");
    * store.setValue((value) => value + "!");
    */
-  setValue: SetState<ComboboxStoreState["value"]>;
+  setValue: SetState<ComboboxStoreState<T>["value"]>;
+  /**
+   * Sets the `selectedValue` state.
+   */
+  setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
 }
 
-export interface ComboboxStoreOptions
+export interface ComboboxStoreOptions<T extends Value = Value>
   extends StoreOptions<
-      ComboboxStoreState,
-      "includesBaseElement" | "value" | "resetValueOnHide"
+      ComboboxStoreState<T>,
+      | "includesBaseElement"
+      | "value"
+      | "selectedValue"
+      | "resetValueOnHide"
+      | "resetValueOnSelect"
     >,
     CompositeStoreOptions<Item>,
     PopoverStoreOptions {
@@ -221,10 +275,17 @@ export interface ComboboxStoreOptions
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default ""
    */
-  defaultValue?: ComboboxStoreState["value"];
+  defaultValue?: ComboboxStoreState<T>["value"];
+  /**
+   * The initial combobox selected value.
+   */
+  defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];
 }
 
-export type ComboboxStoreProps = ComboboxStoreOptions &
-  StoreProps<ComboboxStoreState>;
+export interface ComboboxStoreProps<T extends Value = Value>
+  extends ComboboxStoreOptions<T>,
+    StoreProps<ComboboxStoreState<T>> {}
 
-export type ComboboxStore = ComboboxStoreFunctions & Store<ComboboxStoreState>;
+export interface ComboboxStore<T extends Value = Value>
+  extends ComboboxStoreFunctions<T>,
+    Store<ComboboxStoreState<T>> {}

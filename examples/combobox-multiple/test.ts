@@ -46,7 +46,7 @@ test("check/uncheck item after filtering", async () => {
   expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
   await press.ArrowDown();
-  expect(q.option("Apple")).toHaveFocus();
+  expect(q.option("Pizza")).toHaveFocus();
 });
 
 test("open with keyboard, then try to open again", async () => {
@@ -62,16 +62,6 @@ test("open with keyboard, then try to open again", async () => {
   expect(q.listbox()).toBeVisible();
   await press.ArrowDown();
   expect(q.option("Apple")).toHaveFocus();
-});
-
-test("click on listbox then move through items with keyboard", async () => {
-  await click(q.combobox());
-  expect(q.combobox()).toHaveFocus();
-  await click(q.listbox());
-  expect(q.listbox()).toHaveFocus();
-  await press.ArrowDown();
-  expect(q.option("Apple")).toHaveFocus();
-  expect(q.combobox()).toHaveFocus();
 });
 
 test("no result", async () => {

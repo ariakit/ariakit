@@ -17,10 +17,20 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
+  ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+function isSelected(storeValue?: string | string[], itemValue?: string) {
+  if (itemValue == null) return;
+  if (storeValue == null) return false;
+  if (Array.isArray(storeValue)) {
+    return storeValue.includes(itemValue);
+  }
+  return storeValue === itemValue;
+}
 
 /**
  * Returns props to create a `ComboboxItem` component.
@@ -36,8 +46,9 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
   ({
     store,
     value,
-    hideOnClick = value != null,
-    setValueOnClick = true,
+    hideOnClick,
+    selectValueOnClick = true,
+    setValueOnClick,
     focusOnHover = false,
     moveOnKeyPress = true,
     getItem: getItemProp,
@@ -63,8 +74,16 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value, getItemProp],
     );
 
+    const multiSelectable = store.useState((state) =>
+      Array.isArray(state.selectedValue),
+    );
+
+    setValueOnClick = setValueOnClick ?? !multiSelectable;
+    hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
+
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
+    const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
@@ -72,8 +91,19 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       if (event.defaultPrevented) return;
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
-      if (value != null && setValueOnClickProp(event)) {
-        store?.setValue(value);
+      if (value != null) {
+        if (selectValueOnClickProp(event)) {
+          store?.setSelectedValue((prevValue) => {
+            if (!Array.isArray(prevValue)) return value;
+            if (prevValue.includes(value)) {
+              return prevValue.filter((v) => v !== value);
+            }
+            return [...prevValue, value];
+          });
+        }
+        if (setValueOnClickProp(event)) {
+          store?.setValue(value);
+        }
       }
       if (hideOnClickProp(event)) {
         // When ComboboxList is used instead of ComboboxPopover, store.hide()
@@ -110,14 +140,24 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       }
     });
 
+    const selected = store.useState((state) =>
+      isSelected(state.selectedValue, value),
+    );
+
+    if (multiSelectable && selected != null) {
+      props["aria-selected"] = selected;
+    }
+
     props = useWrapElement(
       props,
       (element) => (
         <ComboboxItemValueContext.Provider value={value}>
-          {element}
+          <ComboboxItemCheckedContext.Provider value={selected ?? false}>
+            {element}
+          </ComboboxItemCheckedContext.Provider>
         </ComboboxItemValueContext.Provider>
       ),
-      [value],
+      [value, selected],
     );
 
     const contentElement = store.useState("contentElement");
@@ -232,9 +272,14 @@ export interface ComboboxItemOptions<T extends As = "div">
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to set the combobox value with this item's value when this item is
-   * clicked.
+   * Whether to set the `selectedValue` state with this item's value when this
+   * item is clicked.
    * @default true
+   */
+  selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether to set the combobox value with this item's value when this item is
+   * clicked. TODO: By default, true when...
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**

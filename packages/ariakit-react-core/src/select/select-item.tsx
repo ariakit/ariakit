@@ -27,8 +27,8 @@ import {
 import type { SelectStore } from "./select-store.js";
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
+  if (itemValue == null) return;
   if (storeValue == null) return false;
-  if (itemValue == null) return false;
   if (Array.isArray(storeValue)) {
     return storeValue.includes(itemValue);
   }
@@ -118,7 +118,7 @@ export const useSelectItem = createHook<SelectItemOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <SelectItemCheckedContext.Provider value={selected}>
+        <SelectItemCheckedContext.Provider value={selected ?? false}>
           {element}
         </SelectItemCheckedContext.Provider>
       ),

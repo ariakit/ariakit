@@ -272,13 +272,15 @@ export const useCombobox = createHook<ComboboxOptions>(
       canAutoSelectRef.current = false;
     }, [open]);
 
+    const resetValueOnSelect = store.useState("resetValueOnSelect");
+
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
       if (!store) return;
-      if (!autoSelect) return;
+      if (!autoSelect && !resetValueOnSelect) return;
       if (!canAutoSelectRef.current) return;
-      const { baseElement, contentElement } = store.getState();
+      const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribue is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
@@ -293,9 +295,21 @@ export const useCombobox = createHook<ComboboxOptions>(
       // If there's no first item (that is, there no items or all items are
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
-      store.move(store.first() ?? null);
+      if (autoSelect) {
+        store.move(store.first() ?? null);
+      } else {
+        const element = store.item(activeId)?.element;
+        element?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
       return;
-    }, [store, valueUpdated, storeValue, autoSelect, items]);
+    }, [
+      store,
+      valueUpdated,
+      storeValue,
+      autoSelect,
+      resetValueOnSelect,
+      items,
+    ]);
 
     // Focus on the combobox input on type.
     useSafeLayoutEffect(() => {

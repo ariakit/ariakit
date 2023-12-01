@@ -8,6 +8,7 @@ export { ComboboxGroupLabel } from "@ariakit/react-core/combobox/combobox-group-
 export { ComboboxGroup } from "@ariakit/react-core/combobox/combobox-group";
 export { ComboboxItemValue } from "@ariakit/react-core/combobox/combobox-item-value";
 export { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item";
+export { ComboboxItemCheck } from "@ariakit/react-core/combobox/combobox-item-check";
 export { ComboboxList } from "@ariakit/react-core/combobox/combobox-list";
 export { ComboboxPopover } from "@ariakit/react-core/combobox/combobox-popover";
 export { ComboboxRow } from "@ariakit/react-core/combobox/combobox-row";
@@ -55,6 +56,11 @@ export type {
   ComboboxItemOptions,
   ComboboxItemProps,
 } from "@ariakit/react-core/combobox/combobox-item";
+
+export type {
+  ComboboxItemCheckOptions,
+  ComboboxItemCheckProps,
+} from "@ariakit/react-core/combobox/combobox-item-check";
 
 export type {
   ComboboxListOptions,
