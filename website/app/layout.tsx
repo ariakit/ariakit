@@ -2,7 +2,7 @@ import "./style.css";
 
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import { GeistSans } from "geist/font";
+import { GeistSans } from "geist/font/sans";
 
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
 
