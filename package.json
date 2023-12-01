@@ -162,7 +162,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-markdown": "8.0.7",
-    "react-router-dom": "6.20.0",
+    "react-router-dom": "6.20.1",
     "react-toastify": "9.1.3",
     "read-pkg-up": "11.0.0",
     "recast": "0.23.4",
