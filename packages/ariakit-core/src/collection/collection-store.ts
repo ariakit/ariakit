@@ -4,15 +4,16 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
   createStore,
+  init,
   setup,
   throwOnConflictingProps,
 } from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
-type Item = {
+interface Item {
   id: string;
   element?: HTMLElement | null;
-};
+}
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -61,6 +62,16 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
+function getPrivateStore<T extends Item>(
+  store?: Store & {
+    __unstablePrivateStore?: Store<{
+      renderedItems: T[];
+    }>;
+  },
+) {
+  return store?.__unstablePrivateStore;
+}
+
 /**
  * Creates a collection store.
  */
@@ -85,9 +96,13 @@ export function createCollectionStore<T extends Item = Item>(
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
-  const privateStore = createStore({
-    renderedItems: initialState.renderedItems,
-  });
+  const syncPrivateStore = getPrivateStore<T>(props.store);
+
+  const privateStore = createStore(
+    { renderedItems: initialState.renderedItems },
+    syncPrivateStore,
+  );
+
   const collection = createStore(initialState, props.store);
 
   const sortItems = () => {
@@ -97,7 +112,9 @@ export function createCollectionStore<T extends Item = Item>(
     collection.setState("renderedItems", renderedItems);
   };
 
-  setup(collection, () => {
+  setup(collection, () => init(privateStore));
+
+  setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
       let raf = requestAnimationFrame(sortItems);
@@ -189,6 +206,9 @@ export function createCollectionStore<T extends Item = Item>(
       }
       return item || null;
     },
+
+    // @ts-expect-error Internal
+    __unstablePrivateStore: privateStore,
   };
 }
 

@@ -110,6 +110,9 @@ export const useMenuItem = createHook<MenuItemOptions>(
       store,
       ...props,
       focusOnHover: (event) => {
+        // TODO: Similar to showOnHover on MenuButton, we should get the return
+        // value of the focusOnHover prop and keep doing the same thing below.
+        // Test passing focusOnHover to a MenuItem that triggers a menu button.
         if (typeof focusOnHover === "function") return focusOnHover(event);
         if (focusOnHover != null) return focusOnHover;
         // The menu container should be focused on mouseleave only if the menu
