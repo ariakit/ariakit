@@ -9,10 +9,10 @@ import {
 } from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
-type Item = {
+interface Item {
   id: string;
   element?: HTMLElement | null;
-};
+}
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
@@ -249,8 +249,10 @@ export interface CollectionStoreOptions<T extends Item = Item>
   defaultItems?: CollectionStoreState<T>["items"];
 }
 
-export type CollectionStoreProps<T extends Item = Item> =
-  CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;
+export interface CollectionStoreProps<T extends Item = Item>
+  extends CollectionStoreOptions<T>,
+    StoreProps<CollectionStoreState<T>> {}
 
-export type CollectionStore<T extends Item = Item> =
-  CollectionStoreFunctions<T> & Store<CollectionStoreState<T>>;
+export interface CollectionStore<T extends Item = Item>
+  extends CollectionStoreFunctions<T>,
+    Store<CollectionStoreState<T>> {}

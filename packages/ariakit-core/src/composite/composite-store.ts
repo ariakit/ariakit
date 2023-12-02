@@ -13,11 +13,11 @@ import type { SetState } from "../utils/types.js";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
-type Item = CollectionStoreItem & {
+interface Item extends CollectionStoreItem {
   rowId?: string;
   disabled?: boolean;
   children?: string;
-};
+}
 
 const NULL_ITEM = { id: null as unknown as string };
 
@@ -380,10 +380,6 @@ export interface CompositeStoreState<T extends Item = Item>
    * tabindex](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_roving_tabindex).
    * DOM focus will remain on the composite element while its items receive
    * virtual focus.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @default false
    */
   virtualFocus: boolean;
@@ -572,8 +568,10 @@ export interface CompositeStoreOptions<T extends Item = Item>
   defaultActiveId?: CompositeStoreState<T>["activeId"];
 }
 
-export type CompositeStoreProps<T extends Item = Item> =
-  CompositeStoreOptions<T> & StoreProps<CompositeStoreState<T>>;
+export interface CompositeStoreProps<T extends Item = Item>
+  extends CompositeStoreOptions<T>,
+    StoreProps<CompositeStoreState<T>> {}
 
-export type CompositeStore<T extends Item = Item> = CompositeStoreFunctions<T> &
-  Store<CompositeStoreState<T>>;
+export interface CompositeStore<T extends Item = Item>
+  extends CompositeStoreFunctions<T>,
+    Store<CompositeStoreState<T>> {}

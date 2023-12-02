@@ -1,7 +1,13 @@
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
+import type { PickRequired } from "@ariakit/core/utils/types";
 import { ComboboxContextProvider } from "./combobox-context.js";
 import { useComboboxStore } from "./combobox-store.js";
-import type { ComboboxStoreProps } from "./combobox-store.js";
+import type {
+  ComboboxStoreProps,
+  ComboboxStoreSelectedValue,
+} from "./combobox-store.js";
+
+type Value = ComboboxStoreSelectedValue;
 
 /**
  * Provides a combobox store to Combobox components.
@@ -18,6 +24,15 @@ import type { ComboboxStoreProps } from "./combobox-store.js";
  * </ComboboxProvider>
  * ```
  */
+export function ComboboxProvider<T extends Value = Value>(
+  props: PickRequired<
+    ComboboxProviderProps<T>,
+    "selectedValue" | "defaultSelectedValue"
+  >,
+): ReactElement;
+
+export function ComboboxProvider(props?: ComboboxProviderProps): ReactElement;
+
 export function ComboboxProvider(props: ComboboxProviderProps = {}) {
   const store = useComboboxStore(props);
   return (
@@ -27,6 +42,7 @@ export function ComboboxProvider(props: ComboboxProviderProps = {}) {
   );
 }
 
-export interface ComboboxProviderProps extends ComboboxStoreProps {
+export interface ComboboxProviderProps<T extends Value = Value>
+  extends ComboboxStoreProps<T> {
   children?: ReactNode;
 }

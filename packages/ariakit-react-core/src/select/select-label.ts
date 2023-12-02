@@ -7,7 +7,7 @@ import {
   createMemoComponent,
 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { useSelectScopedContext } from "./select-context.js";
+import { useSelectProviderContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
 /**
@@ -26,7 +26,7 @@ import type { SelectStore } from "./select-store.js";
  */
 export const useSelectLabel = createHook<SelectLabelOptions>(
   ({ store, ...props }) => {
-    const context = useSelectScopedContext();
+    const context = useSelectProviderContext();
     store = store || context;
 
     invariant(
