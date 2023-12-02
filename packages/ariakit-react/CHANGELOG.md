@@ -1,5 +1,29 @@
 # @ariakit/react
 
+## 0.3.8
+
+### Multi-selectable Combobox
+
+We've added support for the [Combobox](https://ariakit.org/components/combobox) with multiple selection capabilities using a new [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue) prop, along with [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue) and [`setSelectedValue`](https://ariakit.org/reference/combobox-provider#setselectedvalue).
+
+This works similarly to the [`value`](https://ariakit.org/reference/select-provider#value) prop on [Select](https://ariakit.org/components/select) components. If it receives an array, the combobox will allow multiple selections. By default, it's a string that represents the selected value in a single-select combobox.
+
+Check out the [Multi-selectable Combobox](https://ariakit.org/examples/combobox-multiple) example to see it in action.
+
+### New Combobox components
+
+This version introduces new [Combobox](https://ariakit.org/components/combobox) components:
+
+- [`ComboboxLabel`](https://ariakit.org/reference/combobox-label): This renders a `label` element for a [`Combobox`](https://ariakit.org/reference/combobox), with the `htmlFor` prop set automatically.
+- [`ComboboxItemCheck`](https://ariakit.org/reference/combobox-item-check): This displays a checkmark for a [`ComboboxItem`](https://ariakit.org/reference/combobox-item) when the item is selected.
+
+### Other updates
+
+- Added [`resetValueOnSelect`](https://ariakit.org/reference/combobox-provider#resetvalueonselect) state to [Combobox](https://ariakit.org/components/combobox) components.
+- Added [`selectValueOnClick`](https://ariakit.org/reference/combobox-item#selectvalueonclick) prop to [`ComboboxItem`](https://ariakit.org/reference/combobox-item).
+- Fixed [`SelectItem`](https://ariakit.org/reference/select-item) rendering an `aria-selected` attribute even when the [`value`](https://ariakit.org/reference/select-item#value) prop is omitted.
+- Updated dependencies: `@ariakit/react-core@0.3.8`
+
 ## 0.3.7
 
 ### Expanding Menubar
