@@ -13,29 +13,27 @@ const list = [
 
 export default function Example() {
   return (
-    <div className="wrapper">
-      <Ariakit.ComboboxProvider>
-        <label className="label">
-          Your favorite food
-          <div className="combobox-wrapper">
-            <Ariakit.Combobox
-              autoSelect
-              placeholder="e.g., Apple"
-              className="combobox"
-            />
-            <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
-          </div>
-        </label>
-        <Ariakit.ComboboxPopover gutter={4} sameWidth className="popover">
-          {list.map((value) => (
-            <Ariakit.ComboboxItem
-              key={value}
-              value={value}
-              className="combobox-item"
-            />
-          ))}
-        </Ariakit.ComboboxPopover>
-      </Ariakit.ComboboxProvider>
-    </div>
+    <Ariakit.ComboboxProvider>
+      <Ariakit.ComboboxLabel className="label">
+        Your favorite food
+      </Ariakit.ComboboxLabel>
+      <div className="combobox-wrapper">
+        <Ariakit.Combobox
+          autoSelect
+          placeholder="e.g., Apple"
+          className="combobox"
+        />
+        <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
+      </div>
+      <Ariakit.ComboboxPopover gutter={4} sameWidth className="popover">
+        {list.map((value) => (
+          <Ariakit.ComboboxItem
+            key={value}
+            value={value}
+            className="combobox-item"
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
 }

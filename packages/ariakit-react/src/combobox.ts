@@ -6,9 +6,10 @@ export { ComboboxCancel } from "@ariakit/react-core/combobox/combobox-cancel";
 export { ComboboxDisclosure } from "@ariakit/react-core/combobox/combobox-disclosure";
 export { ComboboxGroupLabel } from "@ariakit/react-core/combobox/combobox-group-label";
 export { ComboboxGroup } from "@ariakit/react-core/combobox/combobox-group";
+export { ComboboxItemCheck } from "@ariakit/react-core/combobox/combobox-item-check";
 export { ComboboxItemValue } from "@ariakit/react-core/combobox/combobox-item-value";
 export { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item";
-export { ComboboxItemCheck } from "@ariakit/react-core/combobox/combobox-item-check";
+export { ComboboxLabel } from "@ariakit/react-core/combobox/combobox-label";
 export { ComboboxList } from "@ariakit/react-core/combobox/combobox-list";
 export { ComboboxPopover } from "@ariakit/react-core/combobox/combobox-popover";
 export { ComboboxRow } from "@ariakit/react-core/combobox/combobox-row";
@@ -48,6 +49,11 @@ export type {
 } from "@ariakit/react-core/combobox/combobox-group";
 
 export type {
+  ComboboxItemCheckOptions,
+  ComboboxItemCheckProps,
+} from "@ariakit/react-core/combobox/combobox-item-check";
+
+export type {
   ComboboxItemValueOptions,
   ComboboxItemValueProps,
 } from "@ariakit/react-core/combobox/combobox-item-value";
@@ -58,9 +64,9 @@ export type {
 } from "@ariakit/react-core/combobox/combobox-item";
 
 export type {
-  ComboboxItemCheckOptions,
-  ComboboxItemCheckProps,
-} from "@ariakit/react-core/combobox/combobox-item-check";
+  ComboboxLabelOptions,
+  ComboboxLabelProps,
+} from "@ariakit/react-core/combobox/combobox-label";
 
 export type {
   ComboboxListOptions,

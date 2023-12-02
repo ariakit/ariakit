@@ -464,7 +464,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     });
 
     // This is necessary so other components like ComboboxCancel can reference
-    // the combobox input in their aria-controls attribute.
+    // the combobox input in their aria-controls attribute. It's also used by
+    // ComboboxLabel.
     const id = useId(props.id);
 
     const ariaAutoComplete = isAriaAutoCompleteValue(autoComplete)

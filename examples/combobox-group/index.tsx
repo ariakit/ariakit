@@ -20,32 +20,30 @@ export default function Example() {
   }, [deferredValue]);
 
   return (
-    <div className="wrapper">
-      <label className="label">
-        Your favorite food
-        <Combobox
-          autoSelect
-          autoComplete="both"
-          placeholder="e.g., Apple"
-          value={value}
-          onChange={setValue}
-        >
-          {matches.length ? (
-            matches.map(([type, items], i) => (
-              <React.Fragment key={type}>
-                <ComboboxGroup label={type}>
-                  {items.map((item) => (
-                    <ComboboxItem key={item.name} value={item.name} />
-                  ))}
-                </ComboboxGroup>
-                {i < matches.length - 1 && <ComboboxSeparator />}
-              </React.Fragment>
-            ))
-          ) : (
-            <div className="no-results">No results found</div>
-          )}
-        </Combobox>
-      </label>
-    </div>
+    <label className="label">
+      Your favorite food
+      <Combobox
+        autoSelect
+        autoComplete="both"
+        placeholder="e.g., Apple"
+        value={value}
+        onChange={setValue}
+      >
+        {matches.length ? (
+          matches.map(([type, items], i) => (
+            <React.Fragment key={type}>
+              <ComboboxGroup label={type}>
+                {items.map((item) => (
+                  <ComboboxItem key={item.name} value={item.name} />
+                ))}
+              </ComboboxGroup>
+              {i < matches.length - 1 && <ComboboxSeparator />}
+            </React.Fragment>
+          ))
+        ) : (
+          <div className="no-results">No results found</div>
+        )}
+      </Combobox>
+    </label>
   );
 }

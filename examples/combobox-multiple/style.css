@@ -1,20 +1,14 @@
 @import url("../combobox-filtering/style.css");
 
-.label {
-  @apply
-    indent-4
-  ;
-}
-
 .popover {
   @apply
-    aria-busy:[--opacity:0.5]
+    aria-busy:[--item-opacity:0.5]
   ;
 }
 
 .combobox-item {
   @apply
     transition-opacity
-    opacity-[var(--opacity,1)]
+    opacity-[var(--item-opacity,1)]
   ;
 }

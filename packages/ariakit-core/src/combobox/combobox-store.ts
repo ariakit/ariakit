@@ -211,8 +211,8 @@ export interface ComboboxStoreState<T extends Value = Value>
   activeValue: string | undefined;
   /**
    * The value(s) of the currently selected item(s). This can be a string or an
-   * array of strings. If it's an array, the combobox is considered multi-
-   * selectable.
+   * array of strings. If it's an array, the combobox is considered
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
    *
    * Live examples:
    * - [Multi-selectable

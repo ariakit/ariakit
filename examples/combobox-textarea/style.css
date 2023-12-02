@@ -1,10 +1,31 @@
 @import url("../combobox/style.css");
 @import url("../button/style.css");
 
+.wrapper {
+  @apply
+    flex
+    flex-col
+    p-4
+    gap-2
+  ;
+}
+
+.label {
+  @apply
+    flex
+    flex-col
+    gap-2
+    p-0
+    indent-2
+    w-auto
+  ;
+}
+
 .combobox {
   @apply
     p-2
-    w-[380px]
+    w-[320px]
+    sm:w-[380px]
     h-auto
   ;
 }

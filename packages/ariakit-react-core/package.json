@@ -222,6 +222,7 @@
     "./combobox/combobox-provider": "./src/combobox/combobox-provider.tsx",
     "./combobox/combobox-popover": "./src/combobox/combobox-popover.tsx",
     "./combobox/combobox-list": "./src/combobox/combobox-list.tsx",
+    "./combobox/combobox-label": "./src/combobox/combobox-label.ts",
     "./combobox/combobox-item": "./src/combobox/combobox-item.tsx",
     "./combobox/combobox-item-value": "./src/combobox/combobox-item-value.tsx",
     "./combobox/combobox-item-check": "./src/combobox/combobox-item-check.ts",

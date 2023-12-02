@@ -195,7 +195,7 @@ export function PlaygroundClient({
           )}
           <div
             className={twJoin(
-              "flex h-full flex-1 flex-col items-center justify-center",
+              "flex h-full w-full flex-1 flex-col items-center justify-center overflow-x-auto",
               type === "wide"
                 ? ["min-h-[240px] p-6 md:p-12", previewLink && "md:pt-10"]
                 : "p-4 md:p-6",

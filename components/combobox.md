@@ -37,6 +37,7 @@ useComboboxStore()
 useComboboxContext()
 
 <ComboboxProvider>
+  <ComboboxLabel />
   <Combobox />
   <ComboboxCancel />
   <ComboboxDisclosure />
@@ -46,6 +47,7 @@ useComboboxContext()
       <ComboboxGroupLabel />
       <ComboboxRow>
         <ComboboxItem>
+          <ComboboxItemCheck />
           <ComboboxItemValue />
         </ComboboxItem>
         <ComboboxSeparator>

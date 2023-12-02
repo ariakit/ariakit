@@ -35,46 +35,42 @@ export default function Example() {
   }, [searchValue]);
 
   return (
-    <div className="wrapper">
-      <Ariakit.ComboboxProvider
-        open={open}
-        setOpen={setOpen}
-        setValue={(value) => startTransition(() => setSearchValue(value))}
+    <Ariakit.ComboboxProvider
+      open={open}
+      setOpen={setOpen}
+      setValue={(value) => startTransition(() => setSearchValue(value))}
+    >
+      <Ariakit.ComboboxLabel className="label">Links</Ariakit.ComboboxLabel>
+      <Ariakit.Combobox
+        placeholder="e.g., Twitter"
+        className="combobox"
+        autoSelect
+      />
+      <Ariakit.ComboboxPopover
+        gutter={4}
+        sameWidth
+        unmountOnHide
+        className="popover"
       >
-        <label className="label">
-          Links
-          <Ariakit.Combobox
-            placeholder="e.g., Twitter"
-            className="combobox"
-            autoSelect
-          />
-        </label>
-        <Ariakit.ComboboxPopover
-          gutter={4}
-          sameWidth
-          unmountOnHide
-          className="popover"
-        >
-          {matches.length ? (
-            matches.map(({ children, ...props }) => (
-              <Ariakit.ComboboxItem
-                key={children}
-                focusOnHover
-                hideOnClick
-                className="combobox-item"
-                render={<a {...props} />}
-              >
-                {children}
-                {props.target === "_blank" && (
-                  <NewWindow className="combobox-item-icon" />
-                )}
-              </Ariakit.ComboboxItem>
-            ))
-          ) : (
-            <div className="no-results">No results found</div>
-          )}
-        </Ariakit.ComboboxPopover>
-      </Ariakit.ComboboxProvider>
-    </div>
+        {matches.length ? (
+          matches.map(({ children, ...props }) => (
+            <Ariakit.ComboboxItem
+              key={children}
+              focusOnHover
+              hideOnClick
+              className="combobox-item"
+              render={<a {...props} />}
+            >
+              {children}
+              {props.target === "_blank" && (
+                <NewWindow className="combobox-item-icon" />
+              )}
+            </Ariakit.ComboboxItem>
+          ))
+        ) : (
+          <div className="no-results">No results found</div>
+        )}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
 }

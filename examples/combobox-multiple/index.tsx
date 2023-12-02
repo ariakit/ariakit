@@ -21,13 +21,13 @@ export default function Example() {
         });
       }}
     >
-      <label className="label">
+      <Ariakit.ComboboxLabel className="label">
         Your favorite food
-        <Ariakit.Combobox
-          placeholder="e.g., Apple, Burger"
-          className="combobox"
-        />
-      </label>
+      </Ariakit.ComboboxLabel>
+      <Ariakit.Combobox
+        placeholder="e.g., Apple, Burger"
+        className="combobox"
+      />
       <Ariakit.ComboboxPopover
         sameWidth
         gutter={8}
