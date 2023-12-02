@@ -243,15 +243,15 @@ export interface ComboboxItemOptions<T extends As = "div">
   store?: ComboboxStore;
   /**
    * The value of the item. This will be rendered as the children by default.
-   *   - If
-   *     [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
-   *     is set to `true`, this will be the value of the combobox input when the
-   *     user clicks on this item.
-   *   - If the
-   *     [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
-   *     prop on the [`Combobox`](https://ariakit.org/reference/combobox)
-   *     component is set to `both` or `inline`, this will be the value of the
-   *     combobox input when the combobox loses focus.
+   * - If
+   *   [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
+   *   is set to `true`, this will be the value of the combobox input when the
+   *   user clicks on this item.
+   * - If the
+   *   [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
+   *   prop on the [`Combobox`](https://ariakit.org/reference/combobox)
+   *   component is set to `both` or `inline`, this will be the value of the
+   *   combobox input when the combobox loses focus.
    *
    * Live examples:
    * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
@@ -264,22 +264,35 @@ export interface ComboboxItemOptions<T extends As = "div">
    */
   value?: string;
   /**
-   * Whether to hide the combobox when this item is clicked.
+   * Whether to hide the combobox when this item is clicked. By default, the
+   * combobox will be hidden when the user clicks on an item with a
+   * [`value`](https://ariakit.org/reference/combobox-item#value) prop, unless
+   * the combobox is
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
    *
    * Live examples:
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
-   * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to set the `selectedValue` state with this item's value when this
-   * item is clicked.
+   * Whether to set the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state using this item's
+   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * is clicked.
    * @default true
    */
   selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to set the combobox value with this item's value when this item is
-   * clicked. TODO: By default, true when...
+   * Whether to set the combobox
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * using this item's
+   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * is clicked. The default is `true`, unless the combobox is
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   *
+   * Live examples:
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**

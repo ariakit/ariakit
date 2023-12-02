@@ -7,13 +7,14 @@ import list from "./list.js";
 export default function Example() {
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
-  const [values, setValues] = useState(["Bacon"]);
+  const [selectedValues, setSelectedValues] = useState(["Bacon"]);
+
   const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
 
   return (
     <Ariakit.ComboboxProvider
-      selectedValue={values}
-      setSelectedValue={setValues}
+      selectedValue={selectedValues}
+      setSelectedValue={setSelectedValues}
       setValue={(value) => {
         startTransition(() => {
           setSearchValue(value);

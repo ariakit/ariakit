@@ -313,12 +313,6 @@ export const useCombobox = createHook<ComboboxOptions>(
       items,
     ]);
 
-    // Focus on the combobox input on type.
-    useSafeLayoutEffect(() => {
-      if (autoSelect) return;
-      store?.setActiveId(null);
-    }, [valueUpdated, autoSelect, store]);
-
     // If it has inline auto completion, set the store value when the combobox
     // input or the combobox list lose focus.
     useEffect(() => {

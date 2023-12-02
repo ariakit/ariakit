@@ -199,18 +199,32 @@ export interface SelectStoreState<T extends Value = Value>
    * The select value.
    *
    * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.org/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
    */
   value: MutableValue<T>;
   /**
-   * Whether the select value should be set when the active item changes by
-   * moving (which usually happens when moving to an item using the keyboard).
+   * Whether the select
+   * [`value`](https://ariakit.org/reference/select-provider#value) should be
+   * set when the active item changes by moving (which usually happens when
+   * moving to an item using the keyboard).
+   *
+   * Live examples:
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.org/examples/select-item-custom)
    * @default false
    */
   setValueOnMove: boolean;
   /**
    * The select button element.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.org/examples/form-select)
    */
   selectElement: HTMLElement | null;
   /**
@@ -225,10 +239,6 @@ export interface SelectStoreFunctions<T extends Value = Value>
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @example
    * store.setValue("Apple");
    * store.setValue(["Apple", "Banana"]);
@@ -262,24 +272,24 @@ export interface SelectStoreOptions<T extends Value = Value>
    * A reference to a combobox store. This is used when combining the combobox
    * with a select (e.g., select with a search input). The stores will share the
    * same state.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   combobox?: ComboboxStore | null;
   /**
    * The default value. If not set, the first non-disabled item will be used.
    *
    * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   * - [SelectGroup](https://ariakit.org/examples/select-group)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }
 
-export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
-  StoreProps<SelectStoreState<T>>;
+export interface SelectStoreProps<T extends Value = Value>
+  extends SelectStoreOptions<T>,
+    StoreProps<SelectStoreState<T>> {}
 
-export type SelectStore<T extends Value = Value> = SelectStoreFunctions<T> &
-  Store<SelectStoreState<T>>;
+export interface SelectStore<T extends Value = Value>
+  extends SelectStoreFunctions<T>,
+    Store<SelectStoreState<T>> {}

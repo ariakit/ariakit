@@ -79,7 +79,9 @@ export interface ComboboxStoreOptions<T extends Value = Value>
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
-   * A callback that gets called when the `value` state changes.
+   * A callback that gets called when the
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * changes.
    *
    * Live examples:
    * - [Combobox with integrated
@@ -93,7 +95,13 @@ export interface ComboboxStoreOptions<T extends Value = Value>
    */
   setValue?: (value: ComboboxStoreState<T>["value"]) => void;
   /**
-   * A callback that gets called when the `selectedValue` state changes.
+   * A callback that gets called when the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state changes.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
 }
