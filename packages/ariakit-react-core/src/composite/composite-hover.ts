@@ -171,6 +171,8 @@ export interface CompositeHoverOptions<T extends As = "div">
    * Determines if the composite item should be focused on hover.
    *
    * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Combobox with integrated
    *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Textarea with inline
