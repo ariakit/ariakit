@@ -97,6 +97,7 @@ export function PlaygroundClient({
   const [collapsed, setCollapsed] = useState(collapsible);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
+  const isRadix = /\-radix/.test(id);
 
   const javascriptFiles = useMemo(
     () =>
@@ -172,15 +173,19 @@ export function PlaygroundClient({
           className={twJoin(
             id,
             "relative flex w-full flex-col items-center rounded-lg bg-gray-150 p-2 dark:bg-gray-850",
-            /\-radix/.test(id) &&
-              "bg-gradient-to-br from-blue-600 to-purple-600",
+            isRadix && "dark bg-gradient-to-br from-blue-600 to-purple-600",
             type === "wide" ? "md:rounded-2xl" : "md:rounded-xl",
           )}
         >
           {type === "wide" && previewLink && (
             <TooltipButton
               title="Open preview in a new tab"
-              className="w-10 self-end p-0 text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white"
+              className={twJoin(
+                "w-10 self-end p-0",
+                isRadix
+                  ? "text-white"
+                  : "text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white",
+              )}
               render={
                 <Command
                   flat

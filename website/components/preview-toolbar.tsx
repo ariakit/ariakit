@@ -5,7 +5,7 @@ import { NewWindow } from "icons/new-window.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
 import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
-import { twMerge } from "tailwind-merge";
+import { twJoin, twMerge } from "tailwind-merge";
 import { openInStackblitz } from "utils/stackblitz.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
@@ -59,13 +59,29 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
       };
     };
 
+    const isRadix = /-radix/.test(exampleId);
+
+    const buttonClassName = twJoin(
+      "h-8 rounded-md pl-2 pr-3 text-sm hover:cursor-pointer",
+      isRadix
+        ? "dark:bg-white/10 dark:hover:bg-white/[15%]"
+        : "bg-gray-250 hover:bg-gray-300",
+    );
+
     return (
       <div
         ref={ref}
         {...props}
         className={twMerge("flex items-center gap-1.5", props.className)}
       >
-        <span className="text-sm font-medium opacity-70">Edit with</span>
+        <span
+          className={twJoin(
+            "text-sm font-medium text-black dark:text-white",
+            isRadix ? "opacity-90" : "opacity-70",
+          )}
+        >
+          Edit with
+        </span>
         {!isAppDir && (
           <TooltipButton
             title={
@@ -74,8 +90,8 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
                 <NewWindow className="h-4 w-4 opacity-60" />
               </div>
             }
-            className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
             onClick={onStackblitzClick("vite")}
+            className={buttonClassName}
             render={
               <Command
                 flat
@@ -98,8 +114,8 @@ export const PreviewToolbar = forwardRef<HTMLDivElement, PreviewToolbarProps>(
               <NewWindow className="h-4 w-4 opacity-60" />
             </div>
           }
-          className="h-8 rounded-md bg-gray-250 pl-2 pr-3 text-sm hover:cursor-pointer hover:bg-gray-300"
           onClick={onStackblitzClick("next")}
+          className={buttonClassName}
           render={
             <Command
               flat

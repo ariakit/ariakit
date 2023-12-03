@@ -1,0 +1,60 @@
+.label {
+  @apply
+    text-white
+    font-medium
+    text-[15px]
+    leading-[35px]
+    pl-[10px]
+    w-[250px]
+  ;
+}
+
+.combobox {
+  @apply
+    h-[35px]
+    w-[250px]
+    px-[10px]
+    text-[15px]
+    rounded
+    text-white
+    bg-black/25
+    selection:bg-blue-200
+    selection:text-black
+    [--border-width:1px]
+    [--border-color:rgba(0,0,0,0.8)]
+    focus:[outline:none]
+    focus:[--border-width:2px]
+    focus:[--border-color:black]
+    hover:[--border-color:black]
+    placeholder-white/70
+    [box-shadow:0_0_0_var(--border-width)_var(--border-color)]
+  ;
+}
+
+.listbox {
+  @apply
+    z-50
+    p-[5px]
+    text-[15px]
+    max-h-[280px]
+    rounded
+    overflow-y-auto
+    w-[--radix-popover-trigger-width]
+    bg-white
+    text-black
+    [box-shadow:rgba(14,18,22,0.35)_0px_10px_38px_-10px,rgba(14,18,22,0.2)_0px_10px_20px_-15px]
+  ;
+}
+
+.option {
+  @apply
+    flex
+    p-[5px]
+    rounded-sm
+    scroll-my-[5px]
+    cursor-default
+    text-black
+    data-[active-item]:bg-[rgb(110,86,207)]
+    data-[active-item]:text-white
+  ;
+}
