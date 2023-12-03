@@ -36,8 +36,8 @@ Explore the Ariakit components used in this example:
     <RadixPopover.Anchor asChild>
       <Combobox />
     </RadixPopover.Anchor>
-    <RadixPopover.Content asChild onOpenAutoFocus={...} onInteractOutside={...}>
-      <ComboboxList role="listbox">
+    <RadixPopover.Content asChild>
+      <ComboboxList>
         <ComboboxItem />
       </ComboboxList>
     </RadixPopover.Content>
