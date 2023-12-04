@@ -94,19 +94,34 @@ Here are a few things to keep in mind when assembling these components:
 
 3. Finally, we must explicitly set `role="listbox"` on the [`ComboboxList`](/reference/combobox-list) component, otherwise Radix will overwrite it with `role="dialog"`.
 
-## Related examples
+## Additional features
 
-Explore other examples to learn how to dynamically filter combobox options, organize them into groups, render them as links, accept multiple selections, filter items in a menu or select widget, and more:
+Explore more examples to learn how to:
+
+- Dynamically filter combobox options with the [`setValue`](/reference/combobox-provider#setvalue) prop.
+- Automatically select the first item upon typing with the [`autoSelect`](/reference/combobox#autoselect) prop.
+- Group items using the [`ComboboxGroup`](/reference/combobox-group) component.
+- Allow multiple selections via the [`selectedValue`](/reference/combobox-provider#selectedvalue) prop.
+- Filter items inside a menu or select widget.
+
+<div data-cards>
+
+- [](/examples/combobox-filtering)
+- [](/examples/combobox-filtering-integrated)
+- [](/examples/combobox-group)
+- [](/examples/combobox-multiple)
+- [](/examples/menu-combobox)
+- [](/examples/select-combobox)
+
+</div>
+
+## More examples
 
 <div data-cards="examples">
 
 - [](/examples/dialog-radix)
-- [](/examples/combobox-filtering)
-- [](/examples/combobox-filtering-integrated)
-- [](/examples/combobox-group)
 - [](/examples/combobox-links)
-- [](/examples/combobox-multiple)
-- [](/examples/menu-combobox)
-- [](/examples/select-combobox)
+- [](/examples/combobox-disclosure)
+- [](/examples/combobox-cancel)
 
 </div>
