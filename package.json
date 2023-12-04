@@ -83,6 +83,7 @@
     "@clerk/nextjs": "4.27.2",
     "@guidepup/playwright": "0.10.0",
     "@playwright/test": "1.40.1",
+    "@radix-ui/react-popover": "1.0.7",
     "@stackblitz/sdk": "1.9.0",
     "@stripe/react-stripe-js": "2.4.0",
     "@stripe/stripe-js": "2.2.0",
