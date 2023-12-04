@@ -1,6 +1,6 @@
 import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { init, subscribe, sync } from "@ariakit/core/utils/store";
+import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -141,7 +141,8 @@ export function useStoreProps<
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
     canSyncValue.current = true;
-    return sync(store, [key], () => {
+    store.setState(key, value);
+    return batch(store, [key], () => {
       if (value === undefined) return;
       if (!canSyncValue.current) return;
       store.setState(key, value);

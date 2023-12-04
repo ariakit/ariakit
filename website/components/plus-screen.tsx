@@ -13,6 +13,7 @@ import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import { usePrices } from "utils/use-prices.js";
+import { AuthLoading, NotSubscribed, Subscribed } from "./auth.jsx";
 import { CodePlaceholder } from "./code-placeholder.jsx";
 import { Command } from "./command.jsx";
 import { Focusable } from "./focusable.jsx";
@@ -130,8 +131,16 @@ export function PlusScreen() {
                   </div>
                 </div>
                 <p>
-                  Ariakit Plus subscribers gain access to all new examples,
-                  including the complete source code, as well as documentation.
+                  Ariakit Plus subscribers gain access to all{" "}
+                  <AuthLoading>new examples</AuthLoading>
+                  <NotSubscribed>new examples</NotSubscribed>
+                  <Subscribed>
+                    <InlineLink render={<Link href="/tags/new" />}>
+                      new examples
+                    </InlineLink>
+                  </Subscribed>
+                  , including the complete source code, as well as
+                  documentation.
                 </p>
                 <p>
                   Copy and paste JavaScript, TypeScript and CSS code snippets
