@@ -18,6 +18,7 @@ test("scroll offscreen item into view after selecting it", async ({ page }) => {
   const q = query(page);
   await q.combobox().click();
   await page.keyboard.type("pin");
+  await expect(q.option("Pineapple")).toBeInViewport();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
   await expect(q.combobox()).toHaveValue("");
