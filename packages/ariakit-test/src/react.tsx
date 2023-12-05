@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { StrictMode } from "react";
 import * as ReactTestingLibrary from "@testing-library/react";
-import { nextFrame, wrapAsync } from "./__utils.js";
+import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.js";
 
 export * from "./index.js";
 
@@ -20,7 +20,9 @@ export async function render(ui: ReactElement, options?: RenderOptions) {
 
   return wrapAsync(async () => {
     const { unmount } = ReactTestingLibrary.render(ui, { ...options, wrapper });
+    await flushMicrotasks();
     await nextFrame();
+    await flushMicrotasks();
     return unmount;
   });
 }
