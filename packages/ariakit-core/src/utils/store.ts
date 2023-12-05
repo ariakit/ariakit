@@ -62,7 +62,6 @@ export function createStore<S extends State>(
   let state = initialState;
   let prevStateBatch = state;
   let lastUpdate = Symbol();
-  let initialized = false;
   const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
@@ -77,9 +76,7 @@ export function createStore<S extends State>(
   };
 
   const storeInit: StoreInit = () => {
-    if (initialized) return noop;
     if (!stores.length) return noop;
-    initialized = true;
 
     const desyncs = getKeys(state).map((key) =>
       chain(
@@ -105,9 +102,7 @@ export function createStore<S extends State>(
 
     const cleanups = stores.map(init);
 
-    return chain(...desyncs, ...teardowns, ...cleanups, () => {
-      initialized = false;
-    });
+    return chain(...desyncs, ...teardowns, ...cleanups);
   };
 
   const sub = (
