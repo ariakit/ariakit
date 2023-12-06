@@ -46,6 +46,10 @@ export interface ToolbarStoreOptions
   extends Core.ToolbarStoreOptions,
     CompositeStoreOptions {}
 
-export type ToolbarStoreProps = ToolbarStoreOptions & Core.ToolbarStoreProps;
+export interface ToolbarStoreProps
+  extends ToolbarStoreOptions,
+    Core.ToolbarStoreProps {}
 
-export type ToolbarStore = ToolbarStoreFunctions & Store<Core.ToolbarStore>;
+export interface ToolbarStore
+  extends ToolbarStoreFunctions,
+    Store<Core.ToolbarStore> {}

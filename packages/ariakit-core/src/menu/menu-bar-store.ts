@@ -1,11 +1,10 @@
-import { createMenubarStore } from "../menubar/menubar-store.js";
 import type {
-  MenubarStore,
   MenubarStoreFunctions,
   MenubarStoreOptions,
-  MenubarStoreProps,
   MenubarStoreState,
 } from "../menubar/menubar-store.js";
+import { createMenubarStore } from "../menubar/menubar-store.js";
+import type { Store, StoreProps } from "../utils/store.js";
 
 /**
  * Creates a menu bar store.
@@ -16,12 +15,16 @@ export function createMenuBarStore(
   return createMenubarStore(props);
 }
 
-export type MenuBarStoreState = MenubarStoreState;
+export interface MenuBarStoreState extends MenubarStoreState {}
 
-export type MenuBarStoreFunctions = MenubarStoreFunctions;
+export interface MenuBarStoreFunctions extends MenubarStoreFunctions {}
 
-export type MenuBarStoreOptions = MenubarStoreOptions;
+export interface MenuBarStoreOptions extends MenubarStoreOptions {}
 
-export type MenuBarStoreProps = MenubarStoreProps;
+export interface MenuBarStoreProps
+  extends MenuBarStoreOptions,
+    StoreProps<MenuBarStoreState> {}
 
-export type MenuBarStore = MenubarStore;
+export interface MenuBarStore
+  extends MenuBarStoreFunctions,
+    Store<MenuBarStoreState> {}

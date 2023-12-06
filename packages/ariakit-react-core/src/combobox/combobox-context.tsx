@@ -41,3 +41,5 @@ export const ComboboxScopedContextProvider = ctx.ScopedContextProvider;
 export const ComboboxItemValueContext = createContext<string | undefined>(
   undefined,
 );
+
+export const ComboboxItemCheckedContext = createContext(false);

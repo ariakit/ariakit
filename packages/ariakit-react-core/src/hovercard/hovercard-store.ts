@@ -50,8 +50,10 @@ export interface HovercardStoreOptions
   extends Core.HovercardStoreOptions,
     PopoverStoreOptions {}
 
-export type HovercardStoreProps = HovercardStoreOptions &
-  Core.HovercardStoreProps;
+export interface HovercardStoreProps
+  extends HovercardStoreOptions,
+    Core.HovercardStoreProps {}
 
-export type HovercardStore = HovercardStoreFunctions &
-  Store<Core.HovercardStore>;
+export interface HovercardStore
+  extends HovercardStoreFunctions,
+    Store<Core.HovercardStore> {}

@@ -1,1 +1,14 @@
 @import url("../combobox-filtering/style.css");
+
+.popover {
+  @apply
+    aria-busy:[--item-opacity:0.5]
+  ;
+}
+
+.combobox-item {
+  @apply
+    transition-opacity
+    opacity-[var(--item-opacity,1)]
+  ;
+}

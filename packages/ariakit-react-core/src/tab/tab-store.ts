@@ -9,8 +9,6 @@ import { useCompositeStoreProps } from "../composite/composite-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Item = Core.TabStoreItem;
-
 export function useTabStoreProps<T extends Core.TabStore>(
   store: T,
   update: () => void,
@@ -42,21 +40,21 @@ export function useTabStore(props: TabStoreProps = {}): TabStore {
   return useTabStoreProps(store, update, props);
 }
 
-export type TabStoreItem = Item;
+export interface TabStoreItem extends Core.TabStoreItem {}
 
 export interface TabStoreState
   extends Core.TabStoreState,
-    CompositeStoreState<Item> {}
+    CompositeStoreState<TabStoreItem> {}
 
 export interface TabStoreFunctions
   extends Core.TabStoreFunctions,
-    CompositeStoreFunctions<Item> {
+    CompositeStoreFunctions<TabStoreItem> {
   panels: Store<Core.TabStoreFunctions["panels"]>;
 }
 
 export interface TabStoreOptions
   extends Core.TabStoreOptions,
-    CompositeStoreOptions<Item> {
+    CompositeStoreOptions<TabStoreItem> {
   /**
    * Function that will be called when the `selectedId` state changes.
    * @param selectedId The new selected id.
@@ -64,6 +62,8 @@ export interface TabStoreOptions
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
 }
 
-export type TabStoreProps = TabStoreOptions & Core.TabStoreProps;
+export interface TabStoreProps extends TabStoreOptions, Core.TabStoreProps {}
 
-export type TabStore = TabStoreFunctions & Store<Core.TabStore>;
+export interface TabStore
+  extends TabStoreFunctions,
+    Omit<Store<Core.TabStore>, "panels"> {}

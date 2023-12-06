@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useId } from "react";
+import { forwardRef, useEffect } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 
@@ -33,9 +33,6 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
     // Reset the combobox value whenever an item is checked or unchecked.
     useEffect(() => combobox.setValue(""), [selectValue, combobox]);
 
-    const defaultInputId = useId();
-    const inputId = comboboxProps.id || defaultInputId;
-
     return (
       <Ariakit.ComboboxProvider
         store={combobox}
@@ -50,10 +47,13 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
           setValue={onValuesChange}
           defaultValue={defaultValues}
         >
-          {label && <label htmlFor={inputId}>{label}</label>}
+          {label && (
+            <Ariakit.ComboboxLabel className="label">
+              {label}
+            </Ariakit.ComboboxLabel>
+          )}
           <Ariakit.Combobox
             ref={ref}
-            id={inputId}
             {...comboboxProps}
             className={clsx("combobox", comboboxProps.className)}
           />

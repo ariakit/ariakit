@@ -1,34 +1,52 @@
 import "./style.css";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import { Combobox, ComboboxItem } from "./combobox-multiple.jsx";
 import list from "./list.js";
 
 export default function Example() {
-  const [value, setValue] = useState("");
-  const [values, setValues] = useState<string[]>(["Bacon"]);
-  const deferredValue = useDeferredValue(value);
+  const [isPending, startTransition] = useTransition();
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedValues, setSelectedValues] = useState(["Bacon"]);
 
-  const matches = useMemo(
-    () => matchSorter(list, deferredValue),
-    [deferredValue],
-  );
+  const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
 
   return (
-    <div className="wrapper">
-      <Combobox
-        label="Your favorite food"
+    <Ariakit.ComboboxProvider
+      selectedValue={selectedValues}
+      setSelectedValue={setSelectedValues}
+      setValue={(value) => {
+        startTransition(() => {
+          setSearchValue(value);
+        });
+      }}
+    >
+      <Ariakit.ComboboxLabel className="label">
+        Your favorite food
+      </Ariakit.ComboboxLabel>
+      <Ariakit.Combobox
         placeholder="e.g., Apple, Burger"
-        value={value}
-        onChange={setValue}
-        values={values}
-        onValuesChange={setValues}
+        className="combobox"
+      />
+      <Ariakit.ComboboxPopover
+        sameWidth
+        gutter={8}
+        className="popover"
+        aria-busy={isPending}
       >
-        {matches.map((value, i) => (
-          <ComboboxItem key={value + i} value={value} />
+        {matches.map((value) => (
+          <Ariakit.ComboboxItem
+            key={value}
+            value={value}
+            focusOnHover
+            className="combobox-item"
+          >
+            <Ariakit.ComboboxItemCheck />
+            {value}
+          </Ariakit.ComboboxItem>
         ))}
         {!matches.length && <div className="no-results">No results found</div>}
-      </Combobox>
-    </div>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
 }

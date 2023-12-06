@@ -12,7 +12,7 @@ import {
   ClerkLoading,
   SignedIn,
   SignedOut,
-  useSession,
+  useClerk,
 } from "@clerk/clerk-react";
 import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
@@ -23,7 +23,7 @@ import { DropdownItem } from "./dropdown-item.jsx";
 import { Popup } from "./popup.jsx";
 
 export function HeaderAriakitPlus() {
-  const { session } = useSession();
+  const clerk = useClerk();
   const subscription = useSubscription();
   const segments = useSelectedLayoutSegments();
 
@@ -114,9 +114,7 @@ export function HeaderAriakitPlus() {
             <MenuItem
               className="hover:cursor-pointer"
               render={<DropdownItem />}
-              onClick={async () => {
-                await session?.end();
-              }}
+              onClick={() => clerk.signOut()}
             >
               Sign out
             </MenuItem>

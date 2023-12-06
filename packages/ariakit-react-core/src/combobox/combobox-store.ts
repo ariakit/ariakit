@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
+import type { PickRequired } from "@ariakit/core/utils/types";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -22,7 +23,9 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store = usePopoverStoreProps(store, update, props);
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
+  useStoreProps(store, props, "selectedValue", "setSelectedValue");
   useStoreProps(store, props, "resetValueOnHide");
+  useStoreProps(store, props, "resetValueOnSelect");
   return store;
 }
 
@@ -40,6 +43,17 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
  * </ComboboxPopover>
  * ```
  */
+export function useComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+>(
+  props: PickRequired<
+    ComboboxStoreProps<T>,
+    "selectedValue" | "defaultSelectedValue"
+  >,
+): ComboboxStore<T>;
+
+export function useComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
+
 export function useComboboxStore(
   props: ComboboxStoreProps = {},
 ): ComboboxStore {
@@ -47,24 +61,31 @@ export function useComboboxStore(
   return useComboboxStoreProps(store, update, props);
 }
 
-export type ComboboxStoreItem = Core.ComboboxStoreItem;
+export type ComboboxStoreSelectedValue = Core.ComboboxStoreSelectedValue;
 
-export interface ComboboxStoreState
-  extends Core.ComboboxStoreState,
+export interface ComboboxStoreItem extends Core.ComboboxStoreItem {}
+
+export interface ComboboxStoreState<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreState<T>,
     CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {}
 
-export interface ComboboxStoreFunctions
-  extends Core.ComboboxStoreFunctions,
+export interface ComboboxStoreFunctions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreFunctions<T>,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {}
 
-export interface ComboboxStoreOptions
-  extends Core.ComboboxStoreOptions,
+export interface ComboboxStoreOptions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreOptions<T>,
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
-   * A callback that gets called when the `value` state changes.
+   * A callback that gets called when the
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * changes.
    *
    * Live examples:
    * - [Combobox with integrated
@@ -75,11 +96,26 @@ export interface ComboboxStoreOptions
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
-   * @param value The new value.
    */
-  setValue?: (value: ComboboxStoreState["value"]) => void;
+  setValue?: (value: ComboboxStoreState<T>["value"]) => void;
+  /**
+   * A callback that gets called when the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state changes.
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   */
+  setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
 }
 
-export type ComboboxStoreProps = ComboboxStoreOptions & Core.ComboboxStoreProps;
+export interface ComboboxStoreProps<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreOptions<T>,
+    Core.ComboboxStoreProps<T> {}
 
-export type ComboboxStore = ComboboxStoreFunctions & Store<Core.ComboboxStore>;
+export interface ComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreFunctions<T>,
+    Store<Core.ComboboxStore<T>> {}

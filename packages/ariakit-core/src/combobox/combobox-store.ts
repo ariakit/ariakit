@@ -21,17 +21,28 @@ import {
   sync,
   throwOnConflictingProps,
 } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+import type { PickRequired, SetState } from "../utils/types.js";
 
-type Item = CompositeStoreItem & {
-  value?: string;
-};
+type MutableValue<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> = T extends string ? string : T;
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
 /**
  * Creates a combobox store.
  */
+export function createComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+>(
+  props: PickRequired<
+    ComboboxStoreProps<T>,
+    "selectedValue" | "defaultSelectedValue"
+  >,
+): ComboboxStore<T>;
+
+export function createComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
+
 export function createComboboxStore(
   props: ComboboxStoreProps = {},
 ): ComboboxStore {
@@ -77,21 +88,36 @@ export function createComboboxStore(
     ),
   });
 
-  const initialValue = defaultValue(
+  const value = defaultValue(
     props.value,
     syncState?.value,
     props.defaultValue,
     "",
   );
 
+  const selectedValue = defaultValue(
+    props.selectedValue,
+    syncState?.selectedValue,
+    props.defaultSelectedValue,
+    "",
+  );
+
+  const multiSelectable = Array.isArray(selectedValue);
+
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value: initialValue,
+    value,
+    selectedValue,
+    resetValueOnSelect: defaultValue(
+      props.resetValueOnSelect,
+      syncState?.resetValueOnSelect,
+      multiSelectable,
+    ),
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
       syncState?.resetValueOnHide,
-      false,
+      multiSelectable,
     ),
     activeValue: syncState?.activeValue,
   };
@@ -102,7 +128,14 @@ export function createComboboxStore(
     sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
       if (!state.resetValueOnHide) return;
       if (state.mounted) return;
-      combobox.setState("value", initialValue);
+      combobox.setState("value", value);
+    }),
+  );
+
+  setup(combobox, () =>
+    sync(combobox, ["resetValueOnSelect", "selectedValue"], (state) => {
+      if (!state.resetValueOnSelect) return;
+      combobox.setState("value", value);
     }),
   );
 
@@ -141,20 +174,27 @@ export function createComboboxStore(
     ...composite,
     ...combobox,
     setValue: (value) => combobox.setState("value", value),
+    setSelectedValue: (selectedValue) =>
+      combobox.setState("selectedValue", selectedValue),
   };
 }
 
-export type ComboboxStoreItem = Item;
+export type ComboboxStoreSelectedValue = string | string[];
 
-export interface ComboboxStoreState
-  extends CompositeStoreState<Item>,
+export interface ComboboxStoreItem extends CompositeStoreItem {
+  value?: string;
+}
+
+export interface ComboboxStoreState<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {
   /**
    * @default true
    */
   includesBaseElement: boolean;
   /**
-   * The input value.
+   * The combobox input value.
    *
    * Live examples:
    * - [Combobox with integrated
@@ -172,59 +212,109 @@ export interface ComboboxStoreState
    */
   activeValue: string | undefined;
   /**
-   * Whether to reset the value when the combobox popover is hidden.
+   * The value(s) of the currently selected item(s). This can be a string or an
+   * array of strings. If it's an array, the combobox is considered
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   *
+   * Live examples:
+   * - [Multi-selectable
+   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   */
+  selectedValue: MutableValue<T>;
+  /**
+   * Whether to reset the value when the combobox popover closes. This prop is
+   * automatically set to `true` by default if the combobox supports multiple
+   * selections. In other words, if the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * or
+   * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
+   * props are arrays.
    *
    * Live examples:
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
-   * @default false
    */
   resetValueOnHide: boolean;
-}
-
-export interface ComboboxStoreFunctions
-  extends CompositeStoreFunctions<Item>,
-    PopoverStoreFunctions {
   /**
-   * Sets the `value` state.
+   * Whether to reset the value when an item is selected. This prop is
+   * automatically set to `true` by default if the combobox supports multiple
+   * selections. In other words, if the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * or
+   * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
+   * props are arrays.
    *
    * Live examples:
    * - [Multi-selectable
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   */
+  resetValueOnSelect: boolean;
+}
+
+export interface ComboboxStoreFunctions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreFunctions<ComboboxStoreItem>,
+    PopoverStoreFunctions {
+  /**
+   * Sets the [`value`](https://ariakit.org/reference/combobox-provider#value)
+   * state.
+   *
+   * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * @example
    * store.setValue("Hello world");
    * store.setValue((value) => value + "!");
    */
-  setValue: SetState<ComboboxStoreState["value"]>;
+  setValue: SetState<ComboboxStoreState<T>["value"]>;
+  /**
+   * Sets the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state.
+   */
+  setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
 }
 
-export interface ComboboxStoreOptions
-  extends StoreOptions<
-      ComboboxStoreState,
-      "includesBaseElement" | "value" | "resetValueOnHide"
-    >,
-    CompositeStoreOptions<Item>,
-    PopoverStoreOptions {
+export interface ComboboxStoreOptions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreOptions<ComboboxStoreItem>,
+    PopoverStoreOptions,
+    StoreOptions<
+      ComboboxStoreState<T>,
+      | "includesBaseElement"
+      | "value"
+      | "selectedValue"
+      | "resetValueOnHide"
+      | "resetValueOnSelect"
+    > {
   /**
    * @default null
    */
-  defaultActiveId?: CompositeStoreOptions<Item>["activeId"];
+  defaultActiveId?: CompositeStoreOptions<ComboboxStoreItem>["activeId"];
   /**
-   * The combobox initial value.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * The initial value of the combobox input.
    * @default ""
    */
-  defaultValue?: ComboboxStoreState["value"];
+  defaultValue?: ComboboxStoreState<T>["value"];
+  /**
+   * The initial value of the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state. This can be a string or an array of strings. If it's an array, the
+   * combobox is considered
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   * @default ""
+   */
+  defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];
 }
 
-export type ComboboxStoreProps = ComboboxStoreOptions &
-  StoreProps<ComboboxStoreState>;
+export interface ComboboxStoreProps<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreOptions<T>,
+    StoreProps<ComboboxStoreState<T>> {}
 
-export type ComboboxStore = ComboboxStoreFunctions & Store<ComboboxStoreState>;
+export interface ComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreFunctions<T>,
+    Store<ComboboxStoreState<T>> {}

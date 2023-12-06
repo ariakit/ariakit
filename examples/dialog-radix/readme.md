@@ -1,5 +1,10 @@
 ---
-unlisted: true
+tags:
+  - Dialog
+  - Disclosure
+  - Portal
+  - Role
+  - Radix UI
 ---
 
 # Radix UI Dialog
@@ -9,6 +14,8 @@ unlisted: true
 Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
 
 </div>
+
+<div data-tags></div>
 
 <aside data-type="note" title="Note">
 
@@ -72,6 +79,7 @@ However, Ariakit will make sure the dialog is not closed when users interact wit
 
 <div data-cards="examples">
 
+- [](/examples/combobox-radix)
 - [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-hide-warning)

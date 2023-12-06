@@ -70,6 +70,8 @@ await Promise.all(
       entry,
       format,
       outDir,
+      // dts: true,
+      // tsconfig: "tsconfig.build.json",
       splitting: true,
       esbuildOptions(options) {
         options.chunkNames = "__chunks/[hash]";

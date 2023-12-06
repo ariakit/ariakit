@@ -7,8 +7,6 @@ import type {
   CollectionStoreProps,
 } from "./collection-store.js";
 
-type Item = CollectionStoreItem;
-
 /**
  * Provides a collection store to CollectionItem components.
  * @see https://ariakit.org/components/collection
@@ -22,7 +20,9 @@ type Item = CollectionStoreItem;
  * ```
  */
 
-export function CollectionProvider<T extends Item = Item>(
+export function CollectionProvider<
+  T extends CollectionStoreItem = CollectionStoreItem,
+>(
   props: PickRequired<CollectionProviderProps<T>, "items" | "defaultItems">,
 ): ReactElement;
 
@@ -39,7 +39,8 @@ export function CollectionProvider(props: CollectionProviderProps = {}) {
   );
 }
 
-export interface CollectionProviderProps<T extends Item = Item>
-  extends CollectionStoreProps<T> {
+export interface CollectionProviderProps<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends CollectionStoreProps<T> {
   children?: ReactNode;
 }

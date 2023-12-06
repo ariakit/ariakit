@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.3.6",
+    "@ariakit/core": "0.3.7",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -222,8 +222,10 @@
     "./combobox/combobox-provider": "./src/combobox/combobox-provider.tsx",
     "./combobox/combobox-popover": "./src/combobox/combobox-popover.tsx",
     "./combobox/combobox-list": "./src/combobox/combobox-list.tsx",
+    "./combobox/combobox-label": "./src/combobox/combobox-label.ts",
     "./combobox/combobox-item": "./src/combobox/combobox-item.tsx",
     "./combobox/combobox-item-value": "./src/combobox/combobox-item-value.tsx",
+    "./combobox/combobox-item-check": "./src/combobox/combobox-item-check.ts",
     "./combobox/combobox-group": "./src/combobox/combobox-group.ts",
     "./combobox/combobox-group-label": "./src/combobox/combobox-group-label.ts",
     "./combobox/combobox-disclosure": "./src/combobox/combobox-disclosure.tsx",

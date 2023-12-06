@@ -7,8 +7,6 @@ import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Item = Core.CollectionStoreItem;
-
 export function useCollectionStoreProps<T extends Core.CollectionStore>(
   store: T,
   update: () => void,
@@ -33,7 +31,9 @@ export function useCollectionStoreProps<T extends Core.CollectionStore>(
  * ```
  */
 
-export function useCollectionStore<T extends Item = Item>(
+export function useCollectionStore<
+  T extends CollectionStoreItem = CollectionStoreItem,
+>(
   props: PickRequired<CollectionStoreProps<T>, "items" | "defaultItems">,
 ): CollectionStore<T>;
 
@@ -48,16 +48,19 @@ export function useCollectionStore(
   return useCollectionStoreProps(store, update, props);
 }
 
-export type CollectionStoreItem = Core.CollectionStoreItem;
+export interface CollectionStoreItem extends Core.CollectionStoreItem {}
 
-export type CollectionStoreState<T extends Item = Item> =
-  Core.CollectionStoreState<T>;
+export interface CollectionStoreState<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends Core.CollectionStoreState<T> {}
 
-export type CollectionStoreFunctions<T extends Item = Item> =
-  Core.CollectionStoreFunctions<T>;
+export interface CollectionStoreFunctions<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends Core.CollectionStoreFunctions<T> {}
 
-export interface CollectionStoreOptions<T extends Item = Item>
-  extends Core.CollectionStoreOptions<T> {
+export interface CollectionStoreOptions<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends Core.CollectionStoreOptions<T> {
   /**
    * A callback that gets called when the `items` state changes.
    * @param items The new items.
@@ -70,10 +73,12 @@ export interface CollectionStoreOptions<T extends Item = Item>
   >;
 }
 
-export interface CollectionStoreProps<T extends Item = Item>
-  extends CollectionStoreOptions<T>,
+export interface CollectionStoreProps<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends CollectionStoreOptions<T>,
     Core.CollectionStoreProps<T> {}
 
-export interface CollectionStore<T extends Item = Item>
-  extends CollectionStoreFunctions<T>,
+export interface CollectionStore<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends CollectionStoreFunctions<T>,
     Store<Core.CollectionStore<T>> {}

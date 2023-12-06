@@ -12,9 +12,6 @@ import { useEvent } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Values = Core.FormStoreValues;
-type Item = Core.FormStoreItem;
-
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
 >(store: T, update: () => void, props: FormStoreProps) {
@@ -79,7 +76,7 @@ export function useFormStoreProps<
  * </Form>
  * ```
  */
-export function useFormStore<T extends Values = Values>(
+export function useFormStore<T extends FormStoreValues = FormStoreValues>(
   props: PickRequired<
     FormStoreProps<T>,
     | "values"
@@ -98,15 +95,17 @@ export function useFormStore(props: FormStoreProps = {}): FormStore {
   return useFormStoreProps(store, update, props);
 }
 
-export type FormStoreItem = Item;
+export interface FormStoreValues extends Core.FormStoreValues {}
 
-export interface FormStoreState<T extends Values = Values>
+export interface FormStoreItem extends Core.FormStoreItem {}
+
+export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
   extends Core.FormStoreState<T>,
-    CollectionStoreState<Item> {}
+    CollectionStoreState<FormStoreItem> {}
 
-export interface FormStoreFunctions<T extends Values = Values>
+export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   extends Core.FormStoreFunctions<T>,
-    CollectionStoreFunctions<Item> {
+    CollectionStoreFunctions<FormStoreItem> {
   /**
    * A custom hook that rerenders the component when the value of the given
    * field changes. It returns the value of the field.
@@ -146,9 +145,9 @@ export interface FormStoreFunctions<T extends Values = Values>
   useSubmit: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
 }
 
-export interface FormStoreOptions<T extends Values = Values>
+export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
   extends Core.FormStoreOptions<T>,
-    CollectionStoreOptions<Item> {
+    CollectionStoreOptions<FormStoreItem> {
   /**
    * Function that will be called when `values` state changes.
    * @param values The new values.
@@ -174,8 +173,10 @@ export interface FormStoreOptions<T extends Values = Values>
   setTouched?: (touched: FormStoreState<T>["touched"]) => void;
 }
 
-export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
-  Core.FormStoreProps<T>;
+export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
+  extends FormStoreOptions<T>,
+    Core.FormStoreProps<T> {}
 
-export type FormStore<T extends Values = Values> = FormStoreFunctions<T> &
-  Store<Core.FormStore<T>>;
+export interface FormStore<T extends FormStoreValues = FormStoreValues>
+  extends FormStoreFunctions<T>,
+    Store<Core.FormStore<T>> {}

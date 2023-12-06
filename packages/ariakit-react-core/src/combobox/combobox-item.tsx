@@ -17,10 +17,20 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
+  ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+function isSelected(storeValue?: string | string[], itemValue?: string) {
+  if (itemValue == null) return;
+  if (storeValue == null) return false;
+  if (Array.isArray(storeValue)) {
+    return storeValue.includes(itemValue);
+  }
+  return storeValue === itemValue;
+}
 
 /**
  * Returns props to create a `ComboboxItem` component.
@@ -36,8 +46,9 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
   ({
     store,
     value,
-    hideOnClick = value != null,
-    setValueOnClick = true,
+    hideOnClick,
+    selectValueOnClick = true,
+    setValueOnClick,
     focusOnHover = false,
     moveOnKeyPress = true,
     getItem: getItemProp,
@@ -63,8 +74,16 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       [value, getItemProp],
     );
 
+    const multiSelectable = store.useState((state) =>
+      Array.isArray(state.selectedValue),
+    );
+
+    setValueOnClick = setValueOnClick ?? !multiSelectable;
+    hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
+
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
+    const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
     const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
@@ -72,8 +91,19 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       if (event.defaultPrevented) return;
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
-      if (value != null && setValueOnClickProp(event)) {
-        store?.setValue(value);
+      if (value != null) {
+        if (selectValueOnClickProp(event)) {
+          store?.setSelectedValue((prevValue) => {
+            if (!Array.isArray(prevValue)) return value;
+            if (prevValue.includes(value)) {
+              return prevValue.filter((v) => v !== value);
+            }
+            return [...prevValue, value];
+          });
+        }
+        if (setValueOnClickProp(event)) {
+          store?.setValue(value);
+        }
       }
       if (hideOnClickProp(event)) {
         // When ComboboxList is used instead of ComboboxPopover, store.hide()
@@ -110,14 +140,24 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
       }
     });
 
+    const selected = store.useState((state) =>
+      isSelected(state.selectedValue, value),
+    );
+
+    if (multiSelectable && selected != null) {
+      props["aria-selected"] = selected;
+    }
+
     props = useWrapElement(
       props,
       (element) => (
         <ComboboxItemValueContext.Provider value={value}>
-          {element}
+          <ComboboxItemCheckedContext.Provider value={selected ?? false}>
+            {element}
+          </ComboboxItemCheckedContext.Provider>
         </ComboboxItemValueContext.Provider>
       ),
-      [value],
+      [value, selected],
     );
 
     const contentElement = store.useState("contentElement");
@@ -203,15 +243,15 @@ export interface ComboboxItemOptions<T extends As = "div">
   store?: ComboboxStore;
   /**
    * The value of the item. This will be rendered as the children by default.
-   *   - If
-   *     [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
-   *     is set to `true`, this will be the value of the combobox input when the
-   *     user clicks on this item.
-   *   - If the
-   *     [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
-   *     prop on the [`Combobox`](https://ariakit.org/reference/combobox)
-   *     component is set to `both` or `inline`, this will be the value of the
-   *     combobox input when the combobox loses focus.
+   * - If
+   *   [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
+   *   is set to `true`, this will be the value of the combobox input when the
+   *   user clicks on this item.
+   * - If the
+   *   [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
+   *   prop on the [`Combobox`](https://ariakit.org/reference/combobox)
+   *   component is set to `both` or `inline`, this will be the value of the
+   *   combobox input when the combobox loses focus.
    *
    * Live examples:
    * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
@@ -224,17 +264,35 @@ export interface ComboboxItemOptions<T extends As = "div">
    */
   value?: string;
   /**
-   * Whether to hide the combobox when this item is clicked.
+   * Whether to hide the combobox when this item is clicked. By default, the
+   * combobox will be hidden when the user clicks on an item with a
+   * [`value`](https://ariakit.org/reference/combobox-item#value) prop, unless
+   * the combobox is
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
    *
    * Live examples:
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
-   * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to set the combobox value with this item's value when this item is
-   * clicked.
+   * Whether to set the
+   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * state using this item's
+   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * is clicked.
    * @default true
+   */
+  selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether to set the combobox
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * using this item's
+   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * is clicked. The default is `true`, unless the combobox is
+   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   *
+   * Live examples:
+   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**

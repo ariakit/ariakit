@@ -43,6 +43,10 @@ export interface DialogStoreOptions
   extends Core.DialogStoreOptions,
     DisclosureStoreOptions {}
 
-export type DialogStoreProps = DialogStoreOptions & Core.DialogStoreProps;
+export interface DialogStoreProps
+  extends DialogStoreOptions,
+    Core.DialogStoreProps {}
 
-export type DialogStore = DialogStoreFunctions & Store<Core.DialogStore>;
+export interface DialogStore
+  extends DialogStoreFunctions,
+    Store<Core.DialogStore> {}

@@ -1,6 +1,16 @@
 @import url("../combobox/style.css");
 @import url("../separator/style.css");
 
+.label {
+  @apply
+    flex
+    flex-col
+    gap-2
+    p-0
+    indent-4
+  ;
+}
+
 .group-label {
   @apply
     text-sm

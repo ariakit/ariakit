@@ -4,16 +4,16 @@ import "./style.css";
 export default function Example() {
   const combobox = Ariakit.useComboboxStore();
   return (
-    <div>
-      <label className="label">
+    <>
+      <Ariakit.ComboboxLabel store={combobox} className="label">
         Your favorite fruit
-        <Ariakit.Combobox
-          store={combobox}
-          placeholder="e.g., Apple"
-          className="combobox"
-          autoComplete="inline"
-        />
-      </label>
+      </Ariakit.ComboboxLabel>
+      <Ariakit.Combobox
+        store={combobox}
+        placeholder="e.g., Apple"
+        className="combobox"
+        autoComplete="inline"
+      />
       <Ariakit.ComboboxPopover
         store={combobox}
         gutter={8}
@@ -36,6 +36,6 @@ export default function Example() {
           🍉 Watermelon
         </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
-    </div>
+    </>
   );
 }

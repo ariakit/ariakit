@@ -3,12 +3,12 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import { createStore, throwOnConflictingProps } from "../utils/store.js";
 import type { PickRequired, SetState, ToPrimitive } from "../utils/types.js";
 
-type Value = boolean | string | number | Array<string | number>;
-
 /**
  * Creates a checkbox store.
  */
-export function createCheckboxStore<T extends Value = Value>(
+export function createCheckboxStore<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+>(
   props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">,
 ): CheckboxStore<T>;
 
@@ -35,9 +35,15 @@ export function createCheckboxStore(
   };
 }
 
-export type CheckboxStoreValue = Value;
+export type CheckboxStoreValue =
+  | boolean
+  | string
+  | number
+  | Array<string | number>;
 
-export interface CheckboxStoreState<T extends Value = Value> {
+export interface CheckboxStoreState<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> {
   /**
    * The checked state of the checkbox.
    *
@@ -47,7 +53,9 @@ export interface CheckboxStoreState<T extends Value = Value> {
   value: ToPrimitive<T>;
 }
 
-export interface CheckboxStoreFunctions<T extends Value = Value> {
+export interface CheckboxStoreFunctions<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> {
   /**
    * Sets the `value` state.
    * @example
@@ -57,8 +65,9 @@ export interface CheckboxStoreFunctions<T extends Value = Value> {
   setValue: SetState<CheckboxStoreState<T>["value"]>;
 }
 
-export interface CheckboxStoreOptions<T extends Value = Value>
-  extends StoreOptions<CheckboxStoreState<T>, "value"> {
+export interface CheckboxStoreOptions<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends StoreOptions<CheckboxStoreState<T>, "value"> {
   /**
    * The default value of the checkbox.
    *
@@ -70,8 +79,12 @@ export interface CheckboxStoreOptions<T extends Value = Value>
   defaultValue?: CheckboxStoreState<T>["value"];
 }
 
-export type CheckboxStoreProps<T extends Value = Value> =
-  CheckboxStoreOptions<T> & StoreProps<CheckboxStoreState<T>>;
+export interface CheckboxStoreProps<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends CheckboxStoreOptions<T>,
+    StoreProps<CheckboxStoreState<T>> {}
 
-export type CheckboxStore<T extends Value = Value> = CheckboxStoreFunctions<T> &
-  Store<CheckboxStoreState<T>>;
+export interface CheckboxStore<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends CheckboxStoreFunctions<T>,
+    Store<CheckboxStoreState<T>> {}

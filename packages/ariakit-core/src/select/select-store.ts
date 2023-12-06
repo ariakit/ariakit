@@ -26,14 +26,12 @@ import {
 } from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
-type Value = string | string[];
-type MutableValue<T extends Value = Value> = T extends string ? string : T;
+type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
+  T extends string ? string : T;
 
-type Item = CompositeStoreItem & {
-  value?: string;
-};
-
-export function createSelectStore<T extends Value = Value>(
+export function createSelectStore<
+  T extends SelectStoreValue = SelectStoreValue,
+>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
@@ -178,39 +176,55 @@ export function createSelectStore({
   };
 }
 
-export type SelectStoreItem = Item;
+export type SelectStoreValue = string | string[];
 
-export type SelectStoreValue = Value;
+export interface SelectStoreItem extends CompositeStoreItem {
+  value?: string;
+}
 
-export interface SelectStoreState<T extends Value = Value>
-  extends CompositeStoreState<Item>,
+export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
+  extends CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {
   /** @default true */
-  virtualFocus: CompositeStoreState<Item>["virtualFocus"];
+  virtualFocus: CompositeStoreState<SelectStoreItem>["virtualFocus"];
   /** @default false */
-  includesBaseElement: CompositeStoreState<Item>["includesBaseElement"];
+  includesBaseElement: CompositeStoreState<SelectStoreItem>["includesBaseElement"];
   /** @default null */
-  activeId: CompositeStoreState<Item>["activeId"];
+  activeId: CompositeStoreState<SelectStoreItem>["activeId"];
   /** @default "vertical" */
-  orientation: CompositeStoreState<Item>["orientation"];
+  orientation: CompositeStoreState<SelectStoreItem>["orientation"];
   /** @default "bottom-start" */
   placement: PopoverStoreState["placement"];
   /**
    * The select value.
    *
    * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.org/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
    */
   value: MutableValue<T>;
   /**
-   * Whether the select value should be set when the active item changes by
-   * moving (which usually happens when moving to an item using the keyboard).
+   * Whether the select
+   * [`value`](https://ariakit.org/reference/select-provider#value) should be
+   * set when the active item changes by moving (which usually happens when
+   * moving to an item using the keyboard).
+   *
+   * Live examples:
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.org/examples/select-item-custom)
    * @default false
    */
   setValueOnMove: boolean;
   /**
    * The select button element.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.org/examples/form-select)
    */
   selectElement: HTMLElement | null;
   /**
@@ -219,16 +233,13 @@ export interface SelectStoreState<T extends Value = Value>
   labelElement: HTMLElement | null;
 }
 
-export interface SelectStoreFunctions<T extends Value = Value>
-  extends Pick<SelectStoreOptions<T>, "combobox">,
-    CompositeStoreFunctions<Item>,
+export interface SelectStoreFunctions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends Pick<SelectStoreOptions<T>, "combobox">,
+    CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * @example
    * store.setValue("Apple");
    * store.setValue(["Apple", "Banana"]);
@@ -245,8 +256,11 @@ export interface SelectStoreFunctions<T extends Value = Value>
   setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
 }
 
-export interface SelectStoreOptions<T extends Value = Value>
-  extends StoreOptions<
+export interface SelectStoreOptions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends CompositeStoreOptions<SelectStoreItem>,
+    PopoverStoreOptions,
+    StoreOptions<
       SelectStoreState<T>,
       | "virtualFocus"
       | "includesBaseElement"
@@ -255,31 +269,29 @@ export interface SelectStoreOptions<T extends Value = Value>
       | "placement"
       | "value"
       | "setValueOnMove"
-    >,
-    CompositeStoreOptions<Item>,
-    PopoverStoreOptions {
+    > {
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a select (e.g., select with a search input). The stores will share the
    * same state.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
    */
   combobox?: ComboboxStore | null;
   /**
    * The default value. If not set, the first non-disabled item will be used.
    *
    * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Animated Select](https://ariakit.org/examples/select-animated)
+   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   * - [SelectGroup](https://ariakit.org/examples/select-group)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }
 
-export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
-  StoreProps<SelectStoreState<T>>;
+export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
+  extends SelectStoreOptions<T>,
+    StoreProps<SelectStoreState<T>> {}
 
-export type SelectStore<T extends Value = Value> = SelectStoreFunctions<T> &
-  Store<SelectStoreState<T>>;
+export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
+  extends SelectStoreFunctions<T>,
+    Store<SelectStoreState<T>> {}

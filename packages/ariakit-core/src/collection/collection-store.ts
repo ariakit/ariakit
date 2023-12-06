@@ -10,18 +10,13 @@ import {
 } from "../utils/store.js";
 import type { BivariantCallback } from "../utils/types.js";
 
-interface Item {
-  id: string;
-  element?: HTMLElement | null;
-}
-
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(
     b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
   );
 }
 
-function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
+function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {
@@ -48,7 +43,7 @@ function sortBasedOnDOMPosition<T extends Item>(items: T[]) {
   return items;
 }
 
-function getCommonParent(items: Item[]) {
+function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
   const lastItem = [...items].reverse().find((item) => !!item.element);
   let parentElement = firstItem?.element?.parentElement;
@@ -62,7 +57,7 @@ function getCommonParent(items: Item[]) {
   return getDocument(parentElement).body;
 }
 
-function getPrivateStore<T extends Item>(
+function getPrivateStore<T extends CollectionStoreItem>(
   store?: Store & {
     __unstablePrivateStore?: Store<{
       renderedItems: T[];
@@ -75,9 +70,9 @@ function getPrivateStore<T extends Item>(
 /**
  * Creates a collection store.
  */
-export function createCollectionStore<T extends Item = Item>(
-  props: CollectionStoreProps<T> = {},
-): CollectionStore<T> {
+export function createCollectionStore<
+  T extends CollectionStoreItem = CollectionStoreItem,
+>(props: CollectionStoreProps<T> = {}): CollectionStore<T> {
   throwOnConflictingProps(props, props.store);
 
   const syncState = props.store?.getState();
@@ -212,9 +207,20 @@ export function createCollectionStore<T extends Item = Item>(
   };
 }
 
-export type CollectionStoreItem = Item;
+export interface CollectionStoreItem {
+  /**
+   * The id of the item.
+   */
+  id: string;
+  /**
+   * The item HTML element. This is automatically set when the item is rendered.
+   */
+  element?: HTMLElement | null;
+}
 
-export interface CollectionStoreState<T extends Item = Item> {
+export interface CollectionStoreState<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> {
   /**
    * Lists all the items with their meta data. This state is automatically
    * updated when an item is registered or unregistered with the `registerItem`
@@ -230,7 +236,9 @@ export interface CollectionStoreState<T extends Item = Item> {
   renderedItems: T[];
 }
 
-export interface CollectionStoreFunctions<T extends Item = Item> {
+export interface CollectionStoreFunctions<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> {
   /**
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
@@ -260,8 +268,9 @@ export interface CollectionStoreFunctions<T extends Item = Item> {
   item: (id: string | null | undefined) => T | null;
 }
 
-export interface CollectionStoreOptions<T extends Item = Item>
-  extends StoreOptions<CollectionStoreState<T>, "items"> {
+export interface CollectionStoreOptions<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
    * The defaut value for the `items` state.
    * @default []
@@ -269,8 +278,12 @@ export interface CollectionStoreOptions<T extends Item = Item>
   defaultItems?: CollectionStoreState<T>["items"];
 }
 
-export type CollectionStoreProps<T extends Item = Item> =
-  CollectionStoreOptions<T> & StoreProps<CollectionStoreState<T>>;
+export interface CollectionStoreProps<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends CollectionStoreOptions<T>,
+    StoreProps<CollectionStoreState<T>> {}
 
-export type CollectionStore<T extends Item = Item> =
-  CollectionStoreFunctions<T> & Store<CollectionStoreState<T>>;
+export interface CollectionStore<
+  T extends CollectionStoreItem = CollectionStoreItem,
+> extends CollectionStoreFunctions<T>,
+    Store<CollectionStoreState<T>> {}

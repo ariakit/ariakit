@@ -13,15 +13,15 @@ export default function Example() {
   }
 
   return (
-    <div className="wrapper">
-      <label className="label">
+    <>
+      <Ariakit.ComboboxLabel store={combobox} className="label">
         Your favorite fruit
-        <Ariakit.Combobox
-          store={combobox}
-          placeholder="e.g., Apple"
-          className="combobox"
-        />
-      </label>
+      </Ariakit.ComboboxLabel>
+      <Ariakit.Combobox
+        store={combobox}
+        placeholder="e.g., Apple"
+        className="combobox"
+      />
       <Ariakit.ComboboxPopover
         store={combobox}
         gutter={8}
@@ -44,6 +44,6 @@ export default function Example() {
           🍉 Watermelon
         </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
-    </div>
+    </>
   );
 }

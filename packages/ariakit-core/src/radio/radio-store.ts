@@ -64,8 +64,8 @@ export interface RadioStoreFunctions extends CompositeStoreFunctions {
 }
 
 export interface RadioStoreOptions
-  extends StoreOptions<RadioStoreState, "focusLoop" | "value">,
-    CompositeStoreOptions {
+  extends CompositeStoreOptions,
+    StoreOptions<RadioStoreState, "focusLoop" | "value"> {
   /**
    * The default value of the radio group.
    * @default null
@@ -73,6 +73,10 @@ export interface RadioStoreOptions
   defaultValue?: RadioStoreState["value"];
 }
 
-export type RadioStoreProps = RadioStoreOptions & StoreProps<RadioStoreState>;
+export interface RadioStoreProps
+  extends RadioStoreOptions,
+    StoreProps<RadioStoreState> {}
 
-export type RadioStore = RadioStoreFunctions & Store<RadioStoreState>;
+export interface RadioStore
+  extends RadioStoreFunctions,
+    Store<RadioStoreState> {}
