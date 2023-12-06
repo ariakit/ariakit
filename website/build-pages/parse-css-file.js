@@ -93,7 +93,7 @@ export async function parseCSSFile(filename, options) {
     // TODO: https://github.com/FullHuman/purgecss/issues/1104
     const originalWarn = console.warn;
     console.warn = () => {};
-    const safelist = [/^aria\-/, /^data-/, ":is", "dark"];
+    const safelist = [/^aria\-/, /^data-/, ":is", "dark", "svg"];
 
     const content = Object.entries(options.contents).map(([filename, raw]) => ({
       raw,

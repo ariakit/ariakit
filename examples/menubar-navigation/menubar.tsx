@@ -1,4 +1,3 @@
-import "./style.css";
 import * as React from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import * as Ariakit from "@ariakit/react";
@@ -7,11 +6,14 @@ import clsx from "clsx";
 export type { MenuProviderProps } from "@ariakit/react";
 export { MenuProvider } from "@ariakit/react";
 
-// This context allows us to set the shift prop on the parent menu component
-// from a child component.
+// These contexts allow us to set the props on the parent menu component from a
+// child component.
 const SetShiftContext = React.createContext<Dispatch<SetStateAction<number>>>(
   () => {},
 );
+const SetPlacementContext = React.createContext<
+  Dispatch<SetStateAction<Ariakit.MenuProviderProps["placement"]>>
+>(() => {});
 
 export interface MenubarProps extends Ariakit.MenubarProps {
   children?: ReactNode;
@@ -20,6 +22,8 @@ export interface MenubarProps extends Ariakit.MenubarProps {
 export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
   function Menubar(props, ref) {
     const [shift, setShift] = React.useState(0);
+    const [placement, setPlacement] =
+      React.useState<Ariakit.MenuProviderProps["placement"]>("bottom");
     return (
       <Ariakit.Menubar
         ref={ref}
@@ -27,24 +31,31 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
         className={clsx("menubar", props.className)}
       >
         <SetShiftContext.Provider value={setShift}>
-          <Ariakit.MenuProvider animated showTimeout={100} hideTimeout={250}>
-            {props.children}
-            <Ariakit.Menu
-              // This menu component is shared across all menus in the menubar.
-              // This enables us to animate the menu position when the user
-              // hovers over a menu item.
-              portal
-              shift={shift}
-              tabIndex={-1}
-              unmountOnHide
-              className={clsx("menu", props.className)}
-              // The menu position styles are applied to the menu wrapper, so we
-              // need to add a class name to the wrapper for animation.
-              wrapperProps={{ className: "menu-wrapper" }}
+          <SetPlacementContext.Provider value={setPlacement}>
+            <Ariakit.MenuProvider
+              animated
+              placement={placement}
+              showTimeout={100}
+              hideTimeout={250}
             >
-              <Ariakit.MenuArrow className="menu-arrow" />
-            </Ariakit.Menu>
-          </Ariakit.MenuProvider>
+              {props.children}
+              <Ariakit.Menu
+                // This menu component is shared across all menus in the
+                // menubar. This enables us to animate the menu position when
+                // the user hovers over a menu item.
+                portal
+                shift={shift}
+                tabIndex={-1}
+                unmountOnHide
+                className={clsx("menu", props.className)}
+                // The menu position styles are applied to the menu wrapper, so
+                // we need to add a class name to the wrapper for animation.
+                wrapperProps={{ className: "menu-wrapper" }}
+              >
+                <Ariakit.MenuArrow className="menu-arrow" />
+              </Ariakit.Menu>
+            </Ariakit.MenuProvider>
+          </SetPlacementContext.Provider>
         </SetShiftContext.Provider>
       </Ariakit.Menubar>
     );
@@ -68,6 +79,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 
   const setShift = React.useContext(SetShiftContext);
+  const setPlacement = React.useContext(SetPlacementContext);
   // By passing the menu context from the MenuProvider component, which is
   // rendered in the Menubar component above, to our menu store, they'll share
   // the same state. In this way, we can control the parent menu store from
@@ -86,8 +98,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   React.useLayoutEffect(() => {
     if (!open) return;
     setShift(shift);
-    menu.setState("placement", placement);
-  }, [open, setShift, shift, menu, placement]);
+    setPlacement(placement);
+  }, [open, setShift, shift, setPlacement, placement]);
 
   const item = (
     <Ariakit.MenuItem
@@ -100,6 +112,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       render={href ? <a href={href} /> : undefined}
     >
       {label}
+      {!!children && <Ariakit.MenuButtonArrow className="menubar-arrow" />}
     </Ariakit.MenuItem>
   );
 
@@ -161,6 +174,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         ref={ref}
         store={menu}
         tabbable
+        focusOnHover={false}
         aria-labelledby={labelId}
         aria-describedby={props.description ? descriptionId : undefined}
         {...props}

@@ -58,7 +58,6 @@ import {
 } from "./dialog-context.js";
 import { useDialogStore } from "./dialog-store.js";
 import type { DialogStore } from "./dialog-store.js";
-import { disableAccessibilityTreeOutside } from "./utils/disable-accessibility-tree-outside.js";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
@@ -215,33 +214,20 @@ export const useDialog = createHook<DialogOptions>(
       }, [store, mounted]);
     }
 
-    const shouldDisableAccessibilityTree =
-      modal ||
-      // Usually, we only want to disable the accessibility tree outside if the
-      // dialog is a modal. But the Portal component can't preserve the tab
-      // order on Safari/VoiceOver. By allowing only the dialog/portal to be
-      // accessible, we provide a similar tab order flow. We don't need to
-      // disable pointer events because it's just for screen readers.
-      (portal && preserveTabOrder && isSafari());
-
     // Renders a hidden dismiss button at the top of the modal dialog element.
     // So that screen reader users aren't trapped in the dialog when there's no
     // visible dismiss button.
     useEffect(() => {
+      if (!modal) return;
       if (!mounted) return;
       if (!domReady) return;
       const dialog = ref.current;
       if (!dialog) return;
-      // Usually, we only want to force the presence of a dismiss button if the
-      // dialog is a modal. But, on Safari, since we're disabling the
-      // accessibility tree outside, we need to ensure the user will be able to
-      // close the dialog.
-      if (!shouldDisableAccessibilityTree) return;
       // If there's already a DialogDismiss component, it does nothing.
       const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
       if (existingDismiss) return;
       return prependHiddenDismiss(dialog, store.hide);
-    }, [store, mounted, domReady, shouldDisableAccessibilityTree]);
+    }, [store, modal, mounted, domReady]);
 
     // When the dialog is animated, the open state will be false and the mounted
     // state will be true. The dialog will still be visible until the animation
@@ -287,26 +273,19 @@ export const useDialog = createHook<DialogOptions>(
         ...persistentElements,
         ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
       ];
-      if (!shouldDisableAccessibilityTree) {
-        return markTreeOutside(id, [disclosureElement, ...allElements]);
-      }
       if (modal) {
         return chain(
           markTreeOutside(id, allElements),
           disableTreeOutside(id, allElements),
         );
       }
-      return chain(
-        markTreeOutside(id, [disclosureElement, ...allElements]),
-        disableAccessibilityTreeOutside(id, allElements),
-      );
+      return markTreeOutside(id, [disclosureElement, ...allElements]);
     }, [
       id,
       store,
       canTakeTreeSnapshot,
       getPersistentElementsProp,
       nestedDialogs,
-      shouldDisableAccessibilityTree,
       modal,
     ]);
 
