@@ -176,7 +176,7 @@ function getTokenHref(
 const lightCache = new Map<string, IThemedToken[][]>();
 const darkCache = new Map<string, IThemedToken[][]>();
 
-const createHighlighter = cache(async () => {
+const getHighlighterFromCache = cache(async () => {
   const highlighter = await getHighlighter({ themes: [], langs: [] });
   await loadLanguages(highlighter);
   return highlighter;
@@ -207,7 +207,7 @@ export async function CodeBlock({
   let darkTokens: IThemedToken[][] = [];
 
   try {
-    highlighter = await createHighlighter();
+    highlighter = await getHighlighterFromCache();
   } catch (error) {
     console.error(error);
     return null;
