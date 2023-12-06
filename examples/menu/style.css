@@ -45,9 +45,9 @@
     p-2
     active:pt-[9px]
     active:pb-[7px]
+    data-[active-item]:bg-blue-600
+    data-[active-item]:text-white
     aria-disabled:opacity-25
-    active-item:bg-blue-600
-    active-item:text-white
     active:bg-blue-800
   ;
 }
