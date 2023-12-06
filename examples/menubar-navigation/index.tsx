@@ -1,8 +1,9 @@
+import "./style.css";
 import { Menu, MenuGroup, MenuItem, Menubar } from "./menubar.jsx";
 
 export default function Example() {
   return (
-    <nav aria-label="Example">
+    <nav aria-label="Example" className="nav">
       <Menubar>
         <Menu
           href="#/services"

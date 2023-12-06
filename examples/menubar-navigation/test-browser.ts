@@ -58,17 +58,17 @@ test("show menus by hovering over items and subitems", async ({ page }) => {
   const q = query(page);
   await q.menuitem("Services").hover();
   await q.menuitem("Web Development").hover();
-  await expect(q.menu("Services")).toBeFocused();
+  await expect(q.menu("Services")).not.toBeFocused();
 
   await q.menuitem("Company").hover();
-  await expect(q.menuitem("Company")).toBeFocused();
+  await expect(q.menuitem("Company")).not.toBeFocused();
   await expect(q.menu("Services")).not.toBeVisible();
   await expect(q.menu("Company")).toBeVisible();
 
   // hover outside
   await page.mouse.move(10, 10);
   await page.waitForTimeout(750);
-  await expect(q.menu("Company")).toBeVisible();
+  await expect(q.menu("Company")).not.toBeVisible();
 });
 
 test("show menus by focusing on items", async ({ page, browserName }) => {
@@ -143,9 +143,9 @@ test("moving between menus with arrow keys after hovering over subitems", async 
   await q.menuitem("Blog").hover();
   await q.menuitem("Tech").hover();
   await page.keyboard.press("ArrowRight");
-  await expect(q.menu("Blog")).not.toBeVisible();
-  await expect(q.menu("Company")).toBeVisible();
-  await expect(q.menuitem("Company")).toBeFocused();
+  await expect(q.menu("Blog")).toBeVisible();
+  await expect(q.menu("Company")).not.toBeVisible();
+  await expect(q.menuitem("Company")).not.toBeFocused();
 });
 
 test("click on menuitem links", async ({ page, browserName }) => {

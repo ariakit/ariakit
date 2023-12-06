@@ -1,4 +1,10 @@
-@import url("../menu/style.css");
+@import url("../button/style.css");
+
+.nav {
+  @apply
+    mx-auto
+  ;
+}
 
 .menubar {
   @apply
@@ -12,8 +18,10 @@
   @apply
     h-10
     px-5
+    aria-[haspopup]:pr-3.5
     flex
     items-center
+    gap-2
     cursor-default
     underline-offset-4
     rounded-full
@@ -32,6 +40,14 @@
   ;
 }
 
+.menubar-arrow {
+  @apply
+    [&_svg]:stroke-1
+    transition-transform
+    [[aria-expanded=true]_&]:[transform:rotate(180deg)]
+  ;
+}
+
 .menu-wrapper {
   @apply
     [&:has([data-enter])]:transition-[transform]
@@ -46,9 +62,22 @@
 
 .menu {
   @apply
+    relative
+    z-50
     p-4
-    overflow-visible
+    rounded-xl
+    border
+    border-solid
     max-w-[--popover-available-width]
+    max-h-[var(--popover-available-height)]
+    border-gray-250
+    dark:border-gray-600
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    shadow-lg
+    dark:shadow-lg-dark
     transition-opacity
     opacity-0
     data-[enter]:opacity-100
@@ -84,17 +113,21 @@
 
 .menu-item {
   @apply
+    flex
     flex-col
     items-start
-    gap-1
     p-4
+    gap-1
+    rounded-md
     [a&]:cursor-pointer
-    data-[active-item]:bg-blue-200/40
-    data-[active-item]:text-black
-    dark:data-[active-item]:bg-blue-600/25
-    dark:data-[active-item]:text-white
-    active:bg-blue-200/70
-    dark:active:bg-blue-800/25
+    hover:bg-blue-200/40
+    hover:text-black
+    dark:hover:bg-blue-600/25
+    dark:hover:text-white
+    data-[focus-visible]:outline
+    data-[focus-visible]:outline-2
+    data-[focus-visible]:-outline-offset-1
+    data-[focus-visible]:outline-blue-600
   ;
 }
 

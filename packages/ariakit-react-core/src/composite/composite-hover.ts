@@ -177,6 +177,7 @@ export interface CompositeHoverOptions<T extends As = "div">
    *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
