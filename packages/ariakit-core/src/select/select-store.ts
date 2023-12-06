@@ -26,14 +26,12 @@ import {
 } from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
-type Value = string | string[];
-type MutableValue<T extends Value = Value> = T extends string ? string : T;
+type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
+  T extends string ? string : T;
 
-interface Item extends CompositeStoreItem {
-  value?: string;
-}
-
-export function createSelectStore<T extends Value = Value>(
+export function createSelectStore<
+  T extends SelectStoreValue = SelectStoreValue,
+>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
@@ -178,21 +176,23 @@ export function createSelectStore({
   };
 }
 
-export type SelectStoreItem = Item;
+export type SelectStoreValue = string | string[];
 
-export type SelectStoreValue = Value;
+export interface SelectStoreItem extends CompositeStoreItem {
+  value?: string;
+}
 
-export interface SelectStoreState<T extends Value = Value>
-  extends CompositeStoreState<Item>,
+export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
+  extends CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {
   /** @default true */
-  virtualFocus: CompositeStoreState<Item>["virtualFocus"];
+  virtualFocus: CompositeStoreState<SelectStoreItem>["virtualFocus"];
   /** @default false */
-  includesBaseElement: CompositeStoreState<Item>["includesBaseElement"];
+  includesBaseElement: CompositeStoreState<SelectStoreItem>["includesBaseElement"];
   /** @default null */
-  activeId: CompositeStoreState<Item>["activeId"];
+  activeId: CompositeStoreState<SelectStoreItem>["activeId"];
   /** @default "vertical" */
-  orientation: CompositeStoreState<Item>["orientation"];
+  orientation: CompositeStoreState<SelectStoreItem>["orientation"];
   /** @default "bottom-start" */
   placement: PopoverStoreState["placement"];
   /**
@@ -233,9 +233,10 @@ export interface SelectStoreState<T extends Value = Value>
   labelElement: HTMLElement | null;
 }
 
-export interface SelectStoreFunctions<T extends Value = Value>
-  extends Pick<SelectStoreOptions<T>, "combobox">,
-    CompositeStoreFunctions<Item>,
+export interface SelectStoreFunctions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends Pick<SelectStoreOptions<T>, "combobox">,
+    CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
   /**
    * Sets the `value` state.
@@ -255,8 +256,11 @@ export interface SelectStoreFunctions<T extends Value = Value>
   setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
 }
 
-export interface SelectStoreOptions<T extends Value = Value>
-  extends StoreOptions<
+export interface SelectStoreOptions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends CompositeStoreOptions<SelectStoreItem>,
+    PopoverStoreOptions,
+    StoreOptions<
       SelectStoreState<T>,
       | "virtualFocus"
       | "includesBaseElement"
@@ -265,9 +269,7 @@ export interface SelectStoreOptions<T extends Value = Value>
       | "placement"
       | "value"
       | "setValueOnMove"
-    >,
-    CompositeStoreOptions<Item>,
-    PopoverStoreOptions {
+    > {
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a select (e.g., select with a search input). The stores will share the
@@ -286,10 +288,10 @@ export interface SelectStoreOptions<T extends Value = Value>
   defaultValue?: SelectStoreState<T>["value"];
 }
 
-export interface SelectStoreProps<T extends Value = Value>
+export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreOptions<T>,
     StoreProps<SelectStoreState<T>> {}
 
-export interface SelectStore<T extends Value = Value>
+export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreFunctions<T>,
     Store<SelectStoreState<T>> {}

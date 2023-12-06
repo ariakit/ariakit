@@ -32,9 +32,10 @@ export function useDisclosureStore(
   return useDisclosureStoreProps(store, update, props);
 }
 
-export type DisclosureStoreState = Core.DisclosureStoreState;
+export interface DisclosureStoreState extends Core.DisclosureStoreState {}
 
-export type DisclosureStoreFunctions = Core.DisclosureStoreFunctions;
+export interface DisclosureStoreFunctions
+  extends Core.DisclosureStoreFunctions {}
 
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   /**
@@ -55,8 +56,10 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   setMounted?: (mounted: DisclosureStoreState["mounted"]) => void;
 }
 
-export type DisclosureStoreProps = DisclosureStoreOptions &
-  Core.DisclosureStoreProps;
+export interface DisclosureStoreProps
+  extends DisclosureStoreOptions,
+    Core.DisclosureStoreProps {}
 
-export type DisclosureStore = DisclosureStoreFunctions &
-  Store<Core.DisclosureStore>;
+export interface DisclosureStore
+  extends DisclosureStoreFunctions,
+    Store<Core.DisclosureStore> {}

@@ -9,7 +9,7 @@ import { createStore } from "../utils/store.js";
 import type { Store, StoreProps } from "../utils/store.js";
 
 /**
- * Creates a menu bar store.
+ * Creates a menubar store.
  */
 export function createMenubarStore(
   props: MenubarStoreProps = {},

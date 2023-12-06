@@ -4,8 +4,6 @@ import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Value = Core.CheckboxStoreValue;
-
 export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   store: T,
   update: () => void,
@@ -26,7 +24,9 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
  * ```
  */
 
-export function useCheckboxStore<T extends Value = Value>(
+export function useCheckboxStore<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+>(
   props: PickRequired<CheckboxStoreProps<T>, "value" | "defaultValue">,
 ): CheckboxStore<T>;
 
@@ -41,14 +41,17 @@ export function useCheckboxStore(
 
 export type CheckboxStoreValue = Core.CheckboxStoreValue;
 
-export type CheckboxStoreState<T extends Value = Value> =
-  Core.CheckboxStoreState<T>;
+export type CheckboxStoreState<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> = Core.CheckboxStoreState<T>;
 
-export type CheckboxStoreFunctions<T extends Value = Value> =
-  Core.CheckboxStoreFunctions<T>;
+export type CheckboxStoreFunctions<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> = Core.CheckboxStoreFunctions<T>;
 
-export interface CheckboxStoreOptions<T extends Value = Value>
-  extends Core.CheckboxStoreOptions<T> {
+export interface CheckboxStoreOptions<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends Core.CheckboxStoreOptions<T> {
   /**
    * A callback that gets called when the `value` state changes.
    * @param value The new value.
@@ -60,10 +63,12 @@ export interface CheckboxStoreOptions<T extends Value = Value>
   setValue?: (value: CheckboxStoreState<T>["value"]) => void;
 }
 
-export interface CheckboxStoreProps<T extends Value = Value>
-  extends CheckboxStoreOptions<T>,
+export interface CheckboxStoreProps<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends CheckboxStoreOptions<T>,
     Core.CheckboxStoreProps<T> {}
 
-export interface CheckboxStore<T extends Value = Value>
-  extends CheckboxStoreFunctions<T>,
+export interface CheckboxStore<
+  T extends CheckboxStoreValue = CheckboxStoreValue,
+> extends CheckboxStoreFunctions<T>,
     Store<Core.CheckboxStore<T>> {}

@@ -9,8 +9,6 @@ import { useCollectionStoreProps } from "../collection/collection-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Item = Core.CompositeStoreItem;
-
 export function useCompositeStoreProps<T extends Core.CompositeStore>(
   store: T,
   update: () => void,
@@ -42,7 +40,9 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
  * ```
  */
 
-export function useCompositeStore<T extends Item = Item>(
+export function useCompositeStore<
+  T extends CompositeStoreItem = CompositeStoreItem,
+>(
   props: PickRequired<CompositeStoreProps<T>, "items" | "defaultItems">,
 ): CompositeStore<T>;
 
@@ -55,18 +55,21 @@ export function useCompositeStore(
   return useCompositeStoreProps(store, update, props);
 }
 
-export type CompositeStoreItem = Core.CompositeStoreItem;
+export interface CompositeStoreItem extends Core.CompositeStoreItem {}
 
-export interface CompositeStoreState<T extends Item = Item>
-  extends Core.CompositeStoreState<T>,
+export interface CompositeStoreState<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends Core.CompositeStoreState<T>,
     CollectionStoreState<T> {}
 
-export interface CompositeStoreFunctions<T extends Item = Item>
-  extends Core.CompositeStoreFunctions<T>,
+export interface CompositeStoreFunctions<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends Core.CompositeStoreFunctions<T>,
     CollectionStoreFunctions<T> {}
 
-export interface CompositeStoreOptions<T extends Item = Item>
-  extends Core.CompositeStoreOptions<T>,
+export interface CompositeStoreOptions<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends Core.CompositeStoreOptions<T>,
     CollectionStoreOptions<T> {
   /**
    * A callback that gets called when the `activeId` state changes.
@@ -78,8 +81,12 @@ export interface CompositeStoreOptions<T extends Item = Item>
   setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
 }
 
-export type CompositeStoreProps<T extends Item = Item> =
-  CompositeStoreOptions<T> & Core.CompositeStoreProps<T>;
+export interface CompositeStoreProps<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CompositeStoreOptions<T>,
+    Core.CompositeStoreProps<T> {}
 
-export type CompositeStore<T extends Item = Item> = CompositeStoreFunctions<T> &
-  Store<Core.CompositeStore<T>>;
+export interface CompositeStore<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CompositeStoreFunctions<T>,
+    Store<Core.CompositeStore<T>> {}
