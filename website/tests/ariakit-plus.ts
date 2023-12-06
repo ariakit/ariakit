@@ -217,3 +217,29 @@ test("subscribe, then sign in with paid account", async ({ page }) => {
   await page.goto("/plus");
   await expect(button(page, "Current plan Monthly")).toBeDisabled();
 });
+
+test("subscribe, sign out, then subscribe again with a different account", async ({
+  page,
+}) => {
+  test.setTimeout(80_000);
+
+  await page.goto("/plus", { waitUntil: "networkidle" });
+  await button(page, "Monthly").click();
+  await textbox(await fillCheckout(page), "Email").fill(generateUserEmail());
+  await page.keyboard.press("Enter");
+  await signUpWithPassword(page);
+
+  await button(page, "Plus").click();
+  await expect(menuitem(page, "Subscription")).toBeVisible();
+  await addCurrentUser(page);
+  await menuitem(page, "Sign out").click();
+
+  await link(page, "Unlock Ariakit Plus").click();
+  await button(page, "Yearly").click();
+  await textbox(await fillCheckout(page), "Email").fill(generateUserEmail());
+  await page.keyboard.press("Enter");
+  await signUpWithPassword(page);
+
+  await button(page, "Plus").click();
+  await expect(menuitem(page, "Subscription")).toBeVisible();
+});
