@@ -77,7 +77,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
         store.setAnchorElement(element);
         store.setDisclosureElement(element);
         const { showTimeout, timeout } = store.getState();
-        showTimeoutRef.current = window.setTimeout(() => {
+        const showHovercard = () => {
           showTimeoutRef.current = 0;
           // Let's check again if the mouse is moving. This is to avoid showing
           // the hovercard on mobile clicks or after clicking on the anchor.
@@ -90,7 +90,13 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
             // assigned an arbitrary element by the dialog component.
             store?.setDisclosureElement(element);
           });
-        }, showTimeout ?? timeout);
+        };
+        const timeoutMs = showTimeout ?? timeout;
+        if (timeoutMs === 0) {
+          showHovercard();
+        } else {
+          showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
+        }
       },
     );
 
