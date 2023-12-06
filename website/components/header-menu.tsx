@@ -170,95 +170,97 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
         <Command flat variant="secondary" {...props} />
       );
 
-    const renderPopover = (props: ComponentPropsWithRef<"div">) => (
-      <Popup
-        {...props}
-        aria-label={contentLabel}
-        aria-busy={loading}
-        className={twJoin(
-          "w-[--popover-available-width]",
-          size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
-          size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
-          size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
-          size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]",
-        )}
-        scroller={(props) => (
-          <div
-            {...props}
-            className={twJoin(
-              searchable && "pt-0",
-              !!footer && "pb-0",
-              props.className,
-            )}
-          />
-        )}
-      >
-        {searchable ? (
-          <>
+    const renderPopover = (props: ComponentPropsWithRef<"div">) => {
+      return (
+        <Popup
+          {...props}
+          aria-label={contentLabel}
+          aria-busy={loading}
+          className={twJoin(
+            "w-[--popover-available-width]",
+            size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
+            size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
+            size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
+            size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]",
+          )}
+          scroller={(props) => (
             <div
+              {...props}
               className={twJoin(
-                "sticky top-0 z-50 w-full rounded-b bg-[color:inherit] py-2",
-                "[&:not(:focus-within)+*>[aria-expanded=true]]:bg-black/[7.5%]",
-                "dark:[&:not(:focus-within)+*>[aria-expanded=true]]:bg-white/[7.5%]",
+                searchable && "pt-0",
+                !!footer && "pb-0",
+                props.className,
               )}
-            >
-              <div className="relative">
-                {loading ? (
-                  <Spinner className="absolute left-2 top-3 h-4 w-4 animate-spin opacity-50" />
-                ) : (
-                  <Search className="absolute left-2 top-3 h-4 w-4 opacity-50" />
+            />
+          )}
+        >
+          {searchable ? (
+            <>
+              <div
+                className={twJoin(
+                  "sticky top-0 z-50 w-full rounded-b bg-[color:inherit] py-2",
+                  "[&:not(:focus-within)+*>[aria-expanded=true]]:bg-black/[7.5%]",
+                  "dark:[&:not(:focus-within)+*>[aria-expanded=true]]:bg-white/[7.5%]",
                 )}
-                <Ariakit.Combobox
-                  store={combobox}
-                  placeholder={searchPlaceholder}
-                  autoSelect={autoSelect}
-                  className={twJoin(
-                    "h-10 w-full pl-[30px] pr-[50px] text-base",
-                    "placeholder-black/60 dark:placeholder-white/[46%]",
-                    "rounded border-none",
-                    "text-black dark:text-white",
-                    "bg-gray-150/40 dark:bg-gray-850",
-                    "hover:bg-gray-150 dark:hover:bg-gray-900",
-                    "shadow-input dark:shadow-input-dark",
-                    "focus-visible:ariakit-outline-input",
-                  )}
-                />
-                <Ariakit.ComboboxCancel
-                  store={combobox}
-                  aria-label="Cancel search"
-                  render={<Ariakit.PopoverDismiss />}
-                  className={twJoin(
-                    "absolute right-2 top-2 flex items-center justify-center",
-                    "h-6 cursor-default rounded-sm border-none p-2",
-                    "text-[10px] text-black/80 dark:text-white/80",
-                    "bg-black/10 dark:bg-white/10",
-                    "hover:bg-black/20 dark:hover:bg-white/20",
-                    "focus-visible:ariakit-outline-input",
-                  )}
-                >
-                  ESC
-                </Ariakit.ComboboxCancel>
-              </div>
-            </div>
-            <ComboboxContext.Provider value={true}>
-              <Ariakit.ComboboxList
-                store={combobox}
-                aria-label={contentLabel}
-                className="flex flex-col bg-[color:inherit]"
               >
-                {children}
-              </Ariakit.ComboboxList>
+                <div className="relative">
+                  {loading ? (
+                    <Spinner className="absolute left-2 top-3 h-4 w-4 animate-spin opacity-50" />
+                  ) : (
+                    <Search className="absolute left-2 top-3 h-4 w-4 opacity-50" />
+                  )}
+                  <Ariakit.Combobox
+                    store={combobox}
+                    placeholder={searchPlaceholder}
+                    autoSelect={autoSelect}
+                    className={twJoin(
+                      "h-10 w-full pl-[30px] pr-[50px] text-base",
+                      "placeholder-black/60 dark:placeholder-white/[46%]",
+                      "rounded border-none",
+                      "text-black dark:text-white",
+                      "bg-gray-150/40 dark:bg-gray-850",
+                      "hover:bg-gray-150 dark:hover:bg-gray-900",
+                      "shadow-input dark:shadow-input-dark",
+                      "focus-visible:ariakit-outline-input",
+                    )}
+                  />
+                  <Ariakit.ComboboxCancel
+                    store={combobox}
+                    aria-label="Cancel search"
+                    render={<Ariakit.PopoverDismiss />}
+                    className={twJoin(
+                      "absolute right-2 top-2 flex items-center justify-center",
+                      "h-6 cursor-default rounded-sm border-none p-2",
+                      "text-[10px] text-black/80 dark:text-white/80",
+                      "bg-black/10 dark:bg-white/10",
+                      "hover:bg-black/20 dark:hover:bg-white/20",
+                      "focus-visible:ariakit-outline-input",
+                    )}
+                  >
+                    ESC
+                  </Ariakit.ComboboxCancel>
+                </div>
+              </div>
+              <ComboboxContext.Provider value={true}>
+                <Ariakit.ComboboxList
+                  store={combobox}
+                  aria-label={contentLabel}
+                  className="flex flex-col bg-[color:inherit]"
+                >
+                  {children}
+                </Ariakit.ComboboxList>
+              </ComboboxContext.Provider>
+              {footerElement}
+            </>
+          ) : (
+            <ComboboxContext.Provider value={false}>
+              {children}
+              {footerElement}
             </ComboboxContext.Provider>
-            {footerElement}
-          </>
-        ) : (
-          <ComboboxContext.Provider value={false}>
-            {children}
-            {footerElement}
-          </ComboboxContext.Provider>
-        )}
-      </Popup>
-    );
+          )}
+        </Popup>
+      );
+    };
 
     const selectChildren = select.useState((state) => label ?? state.value);
 
@@ -551,26 +553,30 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       return false;
     };
 
-    const renderSelectItem = (props: ComponentPropsWithRef<"div">) => (
-      <Ariakit.SelectItem
-        {...props}
-        value={value}
-        autoFocus={autoFocus}
-        // blurOnHoverEnd={false}
-        hideOnClick={hideOnClick}
-        render={renderItem}
-      />
-    );
+    const renderSelectItem = (props: ComponentPropsWithRef<"div">) => {
+      return (
+        <Ariakit.SelectItem
+          {...props}
+          value={value}
+          autoFocus={autoFocus}
+          // blurOnHoverEnd={false}
+          hideOnClick={hideOnClick}
+          render={renderItem}
+        />
+      );
+    };
 
-    const renderComboboxItem = (props: ComponentPropsWithRef<"div">) => (
-      <Ariakit.ComboboxItem
-        {...props}
-        focusOnHover
-        // blurOnHoverEnd={false}
-        hideOnClick={hideOnClick}
-        render={select ? renderSelectItem : renderItem}
-      />
-    );
+    const renderComboboxItem = (props: ComponentPropsWithRef<"div">) => {
+      return (
+        <Ariakit.ComboboxItem
+          {...props}
+          focusOnHover
+          // blurOnHoverEnd={false}
+          hideOnClick={hideOnClick}
+          render={select ? renderSelectItem : renderItem}
+        />
+      );
+    };
 
     if (combobox) {
       return renderComboboxItem({ ...props, ref });
