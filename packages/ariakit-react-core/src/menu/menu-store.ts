@@ -24,8 +24,6 @@ import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 import { useMenuContext } from "./menu-context.js";
 
-type Values = Core.MenuStoreValues;
-
 export function useMenuStoreProps<T extends Core.MenuStore>(
   store: T,
   update: () => void,
@@ -58,7 +56,7 @@ export function useMenuStoreProps<T extends Core.MenuStore>(
  * </Menu>
  * ```
  */
-export function useMenuStore<T extends Values = Values>(
+export function useMenuStore<T extends MenuStoreValues = MenuStoreValues>(
   props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,
 ): MenuStore<T>;
 
@@ -80,18 +78,18 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
 
 export type MenuStoreValues = Core.MenuStoreValues;
 
-export interface MenuStoreState<T extends Values = Values>
+export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   extends Core.MenuStoreState<T>,
     CompositeStoreState,
     HovercardStoreState {}
 
-export interface MenuStoreFunctions<T extends Values = Values>
+export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
   extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
     Omit<Core.MenuStoreFunctions<T>, "combobox" | "parent" | "menubar">,
     CompositeStoreFunctions,
     HovercardStoreFunctions {}
 
-export interface MenuStoreOptions<T extends Values = Values>
+export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
   extends Core.MenuStoreOptions<T>,
     CompositeStoreOptions,
     HovercardStoreOptions {
@@ -125,8 +123,10 @@ export interface MenuStoreOptions<T extends Values = Values>
   menubar?: MenubarStore | null;
 }
 
-export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
-  Core.MenuStoreProps<T>;
+export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
+  extends MenuStoreOptions<T>,
+    Omit<Core.MenuStoreProps<T>, "combobox" | "parent" | "menubar"> {}
 
-export type MenuStore<T extends Values = Values> = MenuStoreFunctions<T> &
-  Store<Core.MenuStore<T>>;
+export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
+  extends MenuStoreFunctions<T>,
+    Omit<Store<Core.MenuStore<T>>, "combobox" | "parent" | "menubar"> {}

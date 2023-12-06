@@ -13,15 +13,9 @@ import type { SetState } from "../utils/types.js";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
-interface Item extends CollectionStoreItem {
-  rowId?: string;
-  disabled?: boolean;
-  children?: string;
-}
-
 const NULL_ITEM = { id: null as unknown as string };
 
-function findFirstEnabledItem(items: Item[], excludeId?: string) {
+function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -30,7 +24,7 @@ function findFirstEnabledItem(items: Item[], excludeId?: string) {
   });
 }
 
-function getEnabledItems(items: Item[], excludeId?: string) {
+function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -45,15 +39,15 @@ function getOppositeOrientation(orientation: Orientation) {
   return;
 }
 
-function getItemsInRow(items: Item[], rowId?: string) {
+function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
 function flipItems(
-  items: Item[],
+  items: CompositeStoreItem[],
   activeId: string,
   shouldInsertNullItem = false,
-): Item[] {
+): CompositeStoreItem[] {
   const index = items.findIndex((item) => item.id === activeId);
   return [
     ...items.slice(index + 1),
@@ -62,8 +56,8 @@ function flipItems(
   ];
 }
 
-function groupItemsByRows(items: Item[]) {
-  const rows: Item[][] = [];
+function groupItemsByRows(items: CompositeStoreItem[]) {
+  const rows: CompositeStoreItem[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
     if (row) {
@@ -75,7 +69,7 @@ function groupItemsByRows(items: Item[]) {
   return rows;
 }
 
-function getMaxRowLength(array: Item[][]) {
+function getMaxRowLength(array: CompositeStoreItem[][]) {
   let maxLength = 0;
   for (const { length } of array) {
     if (length > maxLength) {
@@ -94,7 +88,7 @@ function createEmptyItem(rowId?: string) {
 }
 
 function normalizeRows(
-  rows: Item[][],
+  rows: CompositeStoreItem[][],
   activeId?: string | null,
   focusShift?: boolean,
 ) {
@@ -116,10 +110,10 @@ function normalizeRows(
   return rows;
 }
 
-function verticalizeItems(items: Item[]) {
+function verticalizeItems(items: CompositeStoreItem[]) {
   const rows = groupItemsByRows(items);
   const maxLength = getMaxRowLength(rows);
-  const verticalized: Item[] = [];
+  const verticalized: CompositeStoreItem[] = [];
   for (let i = 0; i < maxLength; i += 1) {
     for (const row of rows) {
       const item = row[i];
@@ -142,9 +136,9 @@ function verticalizeItems(items: Item[]) {
 /**
  * Creates a composite store.
  */
-export function createCompositeStore<T extends Item = Item>(
-  props: CompositeStoreProps<T> = {},
-): CompositeStore<T> {
+export function createCompositeStore<
+  T extends CompositeStoreItem = CompositeStoreItem,
+>(props: CompositeStoreProps<T> = {}): CompositeStore<T> {
   const syncState = props.store?.getState();
 
   const collection = createCollectionStore(props);
@@ -195,7 +189,7 @@ export function createCompositeStore<T extends Item = Item>(
   );
 
   const getNextId = (
-    items: Item[],
+    items: CompositeStoreItem[],
     orientation: Orientation,
     hasNullItem: boolean,
     skip?: number,
@@ -365,10 +359,26 @@ export function createCompositeStore<T extends Item = Item>(
 
 export type CompositeStoreOrientation = Orientation;
 
-export type CompositeStoreItem = Item;
+export interface CompositeStoreItem extends CollectionStoreItem {
+  /**
+   * The row id of the item. This is only used on two-dimensional composites
+   * (when using `CompositeRow`).
+   */
+  rowId?: string;
+  /**
+   * If enabled, the item will be disabled and users won't be able to focus it
+   * using arrow keys.
+   */
+  disabled?: boolean;
+  /**
+   * The item children. This can be used for typeahead purposes.
+   */
+  children?: string;
+}
 
-export interface CompositeStoreState<T extends Item = Item>
-  extends CollectionStoreState<T> {
+export interface CompositeStoreState<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CollectionStoreState<T> {
   /**
    * The composite element.
    */
@@ -473,8 +483,9 @@ export interface CompositeStoreState<T extends Item = Item>
   activeId: string | null | undefined;
 }
 
-export interface CompositeStoreFunctions<T extends Item = Item>
-  extends CollectionStoreFunctions<T> {
+export interface CompositeStoreFunctions<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CollectionStoreFunctions<T> {
   /**
    * Sets the `baseElement`.
    */
@@ -546,8 +557,10 @@ export interface CompositeStoreFunctions<T extends Item = Item>
   last: () => string | null | undefined;
 }
 
-export interface CompositeStoreOptions<T extends Item = Item>
-  extends StoreOptions<
+export interface CompositeStoreOptions<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CollectionStoreOptions<T>,
+    StoreOptions<
       CompositeStoreState<T>,
       | "virtualFocus"
       | "orientation"
@@ -557,8 +570,7 @@ export interface CompositeStoreOptions<T extends Item = Item>
       | "focusShift"
       | "includesBaseElement"
       | "activeId"
-    >,
-    CollectionStoreOptions<T> {
+    > {
   /**
    * The composite item id that should be active by default when the composite
    * widget is rendered. If `null`, the composite element itself will have focus
@@ -568,10 +580,12 @@ export interface CompositeStoreOptions<T extends Item = Item>
   defaultActiveId?: CompositeStoreState<T>["activeId"];
 }
 
-export interface CompositeStoreProps<T extends Item = Item>
-  extends CompositeStoreOptions<T>,
+export interface CompositeStoreProps<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CompositeStoreOptions<T>,
     StoreProps<CompositeStoreState<T>> {}
 
-export interface CompositeStore<T extends Item = Item>
-  extends CompositeStoreFunctions<T>,
+export interface CompositeStore<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CompositeStoreFunctions<T>,
     Store<CompositeStoreState<T>> {}

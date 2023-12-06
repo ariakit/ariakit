@@ -52,6 +52,10 @@ export interface RadioStoreOptions
   setValue?: (value: RadioStoreState["value"]) => void;
 }
 
-export type RadioStoreProps = RadioStoreOptions & Core.RadioStoreProps;
+export interface RadioStoreProps
+  extends RadioStoreOptions,
+    Core.RadioStoreProps {}
 
-export type RadioStore = RadioStoreFunctions & Store<Core.RadioStore>;
+export interface RadioStore
+  extends RadioStoreFunctions,
+    Store<Core.RadioStore> {}

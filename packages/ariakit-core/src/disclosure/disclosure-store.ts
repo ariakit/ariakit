@@ -203,8 +203,10 @@ export interface DisclosureStoreOptions
   disclosure?: DisclosureStore | null;
 }
 
-export type DisclosureStoreProps = DisclosureStoreOptions &
-  StoreProps<DisclosureStoreState>;
+export interface DisclosureStoreProps
+  extends DisclosureStoreOptions,
+    StoreProps<DisclosureStoreState> {}
 
-export type DisclosureStore = DisclosureStoreFunctions &
-  Store<DisclosureStoreState>;
+export interface DisclosureStore
+  extends DisclosureStoreFunctions,
+    Store<DisclosureStoreState> {}

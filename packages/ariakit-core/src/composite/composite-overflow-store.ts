@@ -1,14 +1,13 @@
 import type {
-  PopoverStore,
   PopoverStoreFunctions,
   PopoverStoreOptions,
-  PopoverStoreProps,
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { createPopoverStore } from "../popover/popover-store.js";
+import type { Store, StoreProps } from "../utils/store.js";
 
 /**
- * Creates a composite overflow store.
+ * Creates a compositeOverflow store.
  */
 export function createCompositeOverflowStore(
   props: CompositeOverflowStoreProps = {},
@@ -16,12 +15,17 @@ export function createCompositeOverflowStore(
   return createPopoverStore(props);
 }
 
-export type CompositeOverflowStoreState = PopoverStoreState;
+export interface CompositeOverflowStoreState extends PopoverStoreState {}
 
-export type CompositeOverflowStoreFunctions = PopoverStoreFunctions;
+export interface CompositeOverflowStoreFunctions
+  extends PopoverStoreFunctions {}
 
-export type CompositeOverflowStoreOptions = PopoverStoreOptions;
+export interface CompositeOverflowStoreOptions extends PopoverStoreOptions {}
 
-export type CompositeOverflowStoreProps = PopoverStoreProps;
+export interface CompositeOverflowStoreProps
+  extends CompositeOverflowStoreOptions,
+    StoreProps<CompositeOverflowStoreState> {}
 
-export type CompositeOverflowStore = PopoverStore;
+export interface CompositeOverflowStore
+  extends CompositeOverflowStoreFunctions,
+    Store<CompositeOverflowStoreState> {}

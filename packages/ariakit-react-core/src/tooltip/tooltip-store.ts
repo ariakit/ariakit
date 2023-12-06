@@ -46,6 +46,10 @@ export interface TooltipStoreOptions
   extends Core.TooltipStoreOptions,
     HovercardStoreOptions {}
 
-export type TooltipStoreProps = TooltipStoreOptions & Core.TooltipStoreProps;
+export interface TooltipStoreProps
+  extends TooltipStoreOptions,
+    Core.TooltipStoreProps {}
 
-export type TooltipStore = TooltipStoreFunctions & Store<Core.TooltipStore>;
+export interface TooltipStore
+  extends TooltipStoreFunctions,
+    Store<Core.TooltipStore> {}

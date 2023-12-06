@@ -26,19 +26,13 @@ import type {
 } from "../utils/types.js";
 import type { DeepMap, DeepPartial, Names, StringLike } from "./types.js";
 
-type Values = AnyObject;
 type ErrorMessage = string | undefined | null;
-
-type Item = CollectionStoreItem & {
-  type: "field" | "label" | "description" | "error" | "button";
-  name: string;
-};
 
 function nextFrame() {
   return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-export function hasMessages(object: Values): boolean {
+export function hasMessages(object: FormStoreValues): boolean {
   return Object.keys(object).some((key) => {
     if (isObject(object[key])) {
       return hasMessages(object[key]);
@@ -48,7 +42,7 @@ export function hasMessages(object: Values): boolean {
 }
 
 export function get<T>(
-  values: Values,
+  values: FormStoreValues,
   path: StringLike | string[],
   defaultValue?: T,
 ): T {
@@ -62,7 +56,7 @@ export function get<T>(
   return get(values[key], rest, defaultValue);
 }
 
-function set<T extends Values | unknown[]>(
+function set<T extends FormStoreValues | unknown[]>(
   values: T,
   path: StringLike | string[],
   value: unknown,
@@ -93,8 +87,8 @@ function set<T extends Values | unknown[]>(
   return { ...values, [key]: result };
 }
 
-function setAll<T extends Values, V>(values: T, value: V) {
-  const result = {} as Values;
+function setAll<T extends FormStoreValues, V>(values: T, value: V) {
+  const result = {} as FormStoreValues;
   const keys = Object.keys(values);
   for (const key of keys) {
     const currentValue = values[key];
@@ -114,8 +108,11 @@ function setAll<T extends Values, V>(values: T, value: V) {
   return result as DeepMap<T, V>;
 }
 
-function getNameHandler(cache: Values, prevKeys: Array<string | symbol> = []) {
-  const handler: ProxyHandler<Values> = {
+function getNameHandler(
+  cache: FormStoreValues,
+  prevKeys: Array<string | symbol> = [],
+) {
+  const handler: ProxyHandler<FormStoreValues> = {
     get(target, key) {
       if (["toString", "valueOf", Symbol.toPrimitive].includes(key)) {
         return () => prevKeys.join(".");
@@ -152,7 +149,7 @@ function createNames() {
 /**
  * Creates a form store.
  */
-export function createFormStore<T extends Values = Values>(
+export function createFormStore<T extends FormStoreValues = FormStoreValues>(
   props: PickRequired<
     FormStoreProps<T>,
     | "values"
@@ -351,12 +348,15 @@ export type FormStoreCallback<T extends FormStoreState = FormStoreState> = (
   state: T,
 ) => void | Promise<void>;
 
-export type FormStoreValues = Values;
+export type FormStoreValues = AnyObject;
 
-export type FormStoreItem = Item;
+export interface FormStoreItem extends CollectionStoreItem {
+  type: "field" | "label" | "description" | "error" | "button";
+  name: string;
+}
 
-export interface FormStoreState<T extends Values = Values>
-  extends CollectionStoreState<Item> {
+export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
+  extends CollectionStoreState<FormStoreItem> {
   /**
    * Form values.
    * @default {}
@@ -393,8 +393,8 @@ export interface FormStoreState<T extends Values = Values>
   submitFailed: number;
 }
 
-export interface FormStoreFunctions<T extends Values = Values>
-  extends CollectionStoreFunctions<Item> {
+export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
+  extends CollectionStoreFunctions<FormStoreItem> {
   /**
    * An object containing the names of the form fields for type-safety.
    * @example
@@ -557,9 +557,9 @@ export interface FormStoreFunctions<T extends Values = Values>
   reset: () => void;
 }
 
-export interface FormStoreOptions<T extends Values = Values>
-  extends StoreOptions<FormStoreState<T>, "values" | "errors" | "touched">,
-    CollectionStoreOptions<Item> {
+export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
+  extends CollectionStoreOptions<FormStoreItem>,
+    StoreOptions<FormStoreState<T>, "values" | "errors" | "touched"> {
   /**
    * The default values of the form.
    * @default {}
@@ -575,8 +575,10 @@ export interface FormStoreOptions<T extends Values = Values>
   defaultTouched?: FormStoreState<T>["touched"];
 }
 
-export type FormStoreProps<T extends Values = Values> = FormStoreOptions<T> &
-  StoreProps<FormStoreState<T>>;
+export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
+  extends FormStoreOptions<T>,
+    StoreProps<FormStoreState<T>> {}
 
-export type FormStore<T extends Values = Values> = FormStoreFunctions<T> &
-  Store<FormStoreState<T>>;
+export interface FormStore<T extends FormStoreValues = FormStoreValues>
+  extends FormStoreFunctions<T>,
+    Store<FormStoreState<T>> {}

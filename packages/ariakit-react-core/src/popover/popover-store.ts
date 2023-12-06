@@ -47,6 +47,10 @@ export interface PopoverStoreOptions
   extends Core.PopoverStoreOptions,
     DialogStoreOptions {}
 
-export type PopoverStoreProps = PopoverStoreOptions & Core.PopoverStoreProps;
+export interface PopoverStoreProps
+  extends PopoverStoreOptions,
+    Core.PopoverStoreProps {}
 
-export type PopoverStore = PopoverStoreFunctions & Store<Core.PopoverStore>;
+export interface PopoverStore
+  extends PopoverStoreFunctions,
+    Store<Core.PopoverStore> {}

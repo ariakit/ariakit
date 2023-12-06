@@ -15,8 +15,6 @@ import { usePopoverStoreProps } from "../popover/popover-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Value = Core.ComboboxStoreSelectedValue;
-
 export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store: T,
   update: () => void,
@@ -45,7 +43,9 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
  * </ComboboxPopover>
  * ```
  */
-export function useComboboxStore<T extends Value = Value>(
+export function useComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+>(
   props: PickRequired<
     ComboboxStoreProps<T>,
     "selectedValue" | "defaultSelectedValue"
@@ -61,21 +61,25 @@ export function useComboboxStore(
   return useComboboxStoreProps(store, update, props);
 }
 
-export type ComboboxStoreItem = Core.ComboboxStoreItem;
 export type ComboboxStoreSelectedValue = Core.ComboboxStoreSelectedValue;
 
-export interface ComboboxStoreState<T extends Value = Value>
-  extends Core.ComboboxStoreState<T>,
+export interface ComboboxStoreItem extends Core.ComboboxStoreItem {}
+
+export interface ComboboxStoreState<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreState<T>,
     CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {}
 
-export interface ComboboxStoreFunctions<T extends Value = Value>
-  extends Core.ComboboxStoreFunctions<T>,
+export interface ComboboxStoreFunctions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreFunctions<T>,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {}
 
-export interface ComboboxStoreOptions<T extends Value = Value>
-  extends Core.ComboboxStoreOptions<T>,
+export interface ComboboxStoreOptions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends Core.ComboboxStoreOptions<T>,
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
@@ -106,10 +110,12 @@ export interface ComboboxStoreOptions<T extends Value = Value>
   setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
 }
 
-export interface ComboboxStoreProps<T extends Value = Value>
-  extends ComboboxStoreOptions<T>,
+export interface ComboboxStoreProps<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreOptions<T>,
     Core.ComboboxStoreProps<T> {}
 
-export interface ComboboxStore<T extends Value = Value>
-  extends ComboboxStoreFunctions<T>,
+export interface ComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreFunctions<T>,
     Store<Core.ComboboxStore<T>> {}

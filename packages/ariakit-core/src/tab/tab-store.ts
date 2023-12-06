@@ -15,14 +15,6 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import { batch, createStore, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
-type Item = CompositeStoreItem & {
-  dimmed?: boolean;
-};
-
-type Panel = CollectionStoreItem & {
-  tabId?: string | null;
-};
-
 export function createTabStore(props: TabStoreProps = {}): TabStore {
   const syncState = props.store?.getState();
 
@@ -36,7 +28,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
 
-  const panels = createCollectionStore<Panel>();
+  const panels = createCollectionStore<TabStorePanel>();
 
   const initialState: TabStoreState = {
     ...composite.getState(),
@@ -130,19 +122,23 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
   };
 }
 
-export type TabStoreItem = Item;
+export interface TabStoreItem extends CompositeStoreItem {
+  dimmed?: boolean;
+}
 
-export type TabStorePanel = Panel;
+export interface TabStorePanel extends CollectionStoreItem {
+  tabId?: string | null;
+}
 
-export interface TabStoreState extends CompositeStoreState<Item> {
+export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
   /**
    * @default "horizontal"
    */
-  orientation: CompositeStoreState<Item>["orientation"];
+  orientation: CompositeStoreState<TabStoreItem>["orientation"];
   /**
    * @default true
    */
-  focusLoop: CompositeStoreState<Item>["focusLoop"];
+  focusLoop: CompositeStoreState<TabStoreItem>["focusLoop"];
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
@@ -162,7 +158,8 @@ export interface TabStoreState extends CompositeStoreState<Item> {
   selectOnMove?: boolean;
 }
 
-export interface TabStoreFunctions extends CompositeStoreFunctions<Item> {
+export interface TabStoreFunctions
+  extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the `selectedId` state without moving focus. If you want to move focus,
    * use the `select` function instead.
@@ -183,7 +180,7 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<Item> {
   /**
    * A collection store containing the tab panels.
    */
-  panels: CollectionStore<Panel>;
+  panels: CollectionStore<TabStorePanel>;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
    * the `selectedId` state without moving focus, use the `setSelectedId`
@@ -205,7 +202,7 @@ export interface TabStoreOptions
       TabStoreState,
       "orientation" | "focusLoop" | "selectedId" | "selectOnMove"
     >,
-    CompositeStoreOptions<Item> {
+    CompositeStoreOptions<TabStoreItem> {
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
@@ -213,6 +210,8 @@ export interface TabStoreOptions
   defaultSelectedId?: TabStoreState["selectedId"];
 }
 
-export type TabStoreProps = TabStoreOptions & StoreProps<TabStoreState>;
+export interface TabStoreProps
+  extends TabStoreOptions,
+    StoreProps<TabStoreState> {}
 
-export type TabStore = TabStoreFunctions & Store<TabStoreState>;
+export interface TabStore extends TabStoreFunctions, Store<TabStoreState> {}

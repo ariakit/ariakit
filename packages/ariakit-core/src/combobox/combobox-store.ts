@@ -23,19 +23,18 @@ import {
 } from "../utils/store.js";
 import type { PickRequired, SetState } from "../utils/types.js";
 
-type Value = string | string[];
-type MutableValue<T extends Value = Value> = T extends string ? string : T;
-
-interface Item extends CompositeStoreItem {
-  value?: string;
-}
+type MutableValue<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> = T extends string ? string : T;
 
 const isSafariOnMobile = isSafari() && isTouchDevice();
 
 /**
  * Creates a combobox store.
  */
-export function createComboboxStore<T extends Value = Value>(
+export function createComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+>(
   props: PickRequired<
     ComboboxStoreProps<T>,
     "selectedValue" | "defaultSelectedValue"
@@ -180,12 +179,15 @@ export function createComboboxStore(
   };
 }
 
-export type ComboboxStoreItem = Item;
+export type ComboboxStoreSelectedValue = string | string[];
 
-export type ComboboxStoreSelectedValue = Value;
+export interface ComboboxStoreItem extends CompositeStoreItem {
+  value?: string;
+}
 
-export interface ComboboxStoreState<T extends Value = Value>
-  extends CompositeStoreState<Item>,
+export interface ComboboxStoreState<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {
   /**
    * @default true
@@ -251,8 +253,9 @@ export interface ComboboxStoreState<T extends Value = Value>
   resetValueOnSelect: boolean;
 }
 
-export interface ComboboxStoreFunctions<T extends Value = Value>
-  extends CompositeStoreFunctions<Item>,
+export interface ComboboxStoreFunctions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
   /**
    * Sets the [`value`](https://ariakit.org/reference/combobox-provider#value)
@@ -274,21 +277,22 @@ export interface ComboboxStoreFunctions<T extends Value = Value>
   setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
 }
 
-export interface ComboboxStoreOptions<T extends Value = Value>
-  extends StoreOptions<
+export interface ComboboxStoreOptions<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends CompositeStoreOptions<ComboboxStoreItem>,
+    PopoverStoreOptions,
+    StoreOptions<
       ComboboxStoreState<T>,
       | "includesBaseElement"
       | "value"
       | "selectedValue"
       | "resetValueOnHide"
       | "resetValueOnSelect"
-    >,
-    CompositeStoreOptions<Item>,
-    PopoverStoreOptions {
+    > {
   /**
    * @default null
    */
-  defaultActiveId?: CompositeStoreOptions<Item>["activeId"];
+  defaultActiveId?: CompositeStoreOptions<ComboboxStoreItem>["activeId"];
   /**
    * The initial value of the combobox input.
    * @default ""
@@ -305,10 +309,12 @@ export interface ComboboxStoreOptions<T extends Value = Value>
   defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];
 }
 
-export interface ComboboxStoreProps<T extends Value = Value>
-  extends ComboboxStoreOptions<T>,
+export interface ComboboxStoreProps<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreOptions<T>,
     StoreProps<ComboboxStoreState<T>> {}
 
-export interface ComboboxStore<T extends Value = Value>
-  extends ComboboxStoreFunctions<T>,
+export interface ComboboxStore<
+  T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
+> extends ComboboxStoreFunctions<T>,
     Store<ComboboxStoreState<T>> {}

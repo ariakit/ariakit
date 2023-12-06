@@ -30,12 +30,7 @@ import type {
 } from "../utils/types.js";
 import type { MenuBarStore } from "./menu-bar-store.js";
 
-type Values = Record<
-  string,
-  string | boolean | number | Array<string | number>
->;
-
-export function createMenuStore<T extends Values = Values>(
+export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>(
   props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,
 ): MenuStore<T>;
 
@@ -157,7 +152,7 @@ export type MenuStoreValues = Record<
   string | boolean | number | Array<string | number>
 >;
 
-export interface MenuStoreState<T extends Values = Values>
+export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   extends CompositeStoreState,
     HovercardStoreState {
   /**
@@ -177,10 +172,10 @@ export interface MenuStoreState<T extends Values = Values>
   hideTimeout?: HovercardStoreState["hideTimeout"];
 }
 
-export interface MenuStoreFunctions<T extends Values = Values>
-  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
-    CompositeStoreFunctions,
-    HovercardStoreFunctions {
+export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
+  extends CompositeStoreFunctions,
+    HovercardStoreFunctions,
+    Pick<MenuStoreOptions, "combobox" | "parent" | "menubar"> {
   /**
    * Hides the menu and all its parent menus.
    */
@@ -212,13 +207,13 @@ export interface MenuStoreFunctions<T extends Values = Values>
   >;
 }
 
-export interface MenuStoreOptions<T extends Values = Values>
-  extends StoreOptions<
+export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
+  extends CompositeStoreOptions,
+    HovercardStoreOptions,
+    StoreOptions<
       MenuStoreState<T>,
       "orientation" | "placement" | "hideTimeout" | "values"
-    >,
-    CompositeStoreOptions,
-    HovercardStoreOptions {
+    > {
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a menu (e.g., dropdown menu with a search input). The stores will
@@ -241,8 +236,10 @@ export interface MenuStoreOptions<T extends Values = Values>
   defaultValues?: MenuStoreState<T>["values"];
 }
 
-export type MenuStoreProps<T extends Values = Values> = MenuStoreOptions<T> &
-  StoreProps<MenuStoreState<T>>;
+export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
+  extends MenuStoreOptions<T>,
+    StoreProps<MenuStoreState<T>> {}
 
-export type MenuStore<T extends Values = Values> = MenuStoreFunctions<T> &
-  Store<MenuStoreState<T>>;
+export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
+  extends MenuStoreFunctions<T>,
+    Store<MenuStoreState<T>> {}

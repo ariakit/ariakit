@@ -21,9 +21,6 @@ import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-type Item = Core.SelectStoreItem;
-type Value = Core.SelectStoreValue;
-
 export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
   update: () => void,
@@ -50,7 +47,7 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
  * </SelectPopover>
  * ```
  */
-export function useSelectStore<T extends Value = Value>(
+export function useSelectStore<T extends SelectStoreValue = SelectStoreValue>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
@@ -66,24 +63,26 @@ export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
   return useSelectStoreProps(store, update, props);
 }
 
-export type SelectStoreItem = Item;
+export type SelectStoreValue = Core.SelectStoreValue;
 
-export type SelectStoreValue = Value;
+export interface SelectStoreItem extends Core.SelectStoreItem {}
 
-export interface SelectStoreState<T extends Value = Value>
+export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   extends Core.SelectStoreState<T>,
-    CompositeStoreState<Item>,
+    CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {}
 
-export interface SelectStoreFunctions<T extends Value = Value>
-  extends Pick<SelectStoreOptions<T>, "combobox">,
+export interface SelectStoreFunctions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends Pick<SelectStoreOptions<T>, "combobox">,
     Omit<Core.SelectStoreFunctions<T>, "combobox">,
-    CompositeStoreFunctions<Item>,
+    CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {}
 
-export interface SelectStoreOptions<T extends Value = Value>
-  extends Core.SelectStoreOptions<T>,
-    CompositeStoreOptions<Item>,
+export interface SelectStoreOptions<
+  T extends SelectStoreValue = SelectStoreValue,
+> extends Core.SelectStoreOptions<T>,
+    CompositeStoreOptions<SelectStoreItem>,
     PopoverStoreOptions {
   /**
    * Function that will be called when the `value` state changes.
@@ -102,8 +101,10 @@ export interface SelectStoreOptions<T extends Value = Value>
   combobox?: ComboboxStore | null;
 }
 
-export type SelectStoreProps<T extends Value = Value> = SelectStoreOptions<T> &
-  Core.SelectStoreProps<T>;
+export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
+  extends SelectStoreOptions<T>,
+    Omit<Core.SelectStoreProps<T>, "combobox"> {}
 
-export type SelectStore<T extends Value = Value> = SelectStoreFunctions<T> &
-  Store<Core.SelectStore<T>>;
+export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
+  extends SelectStoreFunctions<T>,
+    Omit<Store<Core.SelectStore<T>>, "combobox"> {}

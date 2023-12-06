@@ -42,6 +42,10 @@ export interface MenubarStoreOptions
   extends Core.MenubarStoreOptions,
     CompositeStoreOptions {}
 
-export type MenubarStoreProps = MenubarStoreOptions & Core.MenubarStoreProps;
+export interface MenubarStoreProps
+  extends MenubarStoreOptions,
+    Core.MenubarStoreProps {}
 
-export type MenubarStore = MenubarStoreFunctions & Store<Core.MenubarStore>;
+export interface MenubarStore
+  extends MenubarStoreFunctions,
+    Store<Core.MenubarStore> {}

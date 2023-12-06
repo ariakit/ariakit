@@ -7,8 +7,6 @@ import type {
   CompositeStoreProps,
 } from "./composite-store.js";
 
-type Item = CompositeStoreItem;
-
 /**
  * Provides a composite store to CompositeItem components.
  * @see https://ariakit.org/components/composite
@@ -24,7 +22,9 @@ type Item = CompositeStoreItem;
  * ```
  */
 
-export function CompositeProvider<T extends Item = Item>(
+export function CompositeProvider<
+  T extends CompositeStoreItem = CompositeStoreItem,
+>(
   props: PickRequired<CompositeProviderProps<T>, "items" | "defaultItems">,
 ): ReactElement;
 
@@ -39,7 +39,8 @@ export function CompositeProvider(props: CompositeProviderProps = {}) {
   );
 }
 
-export interface CompositeProviderProps<T extends Item = Item>
-  extends CompositeStoreProps<T> {
+export interface CompositeProviderProps<
+  T extends CompositeStoreItem = CompositeStoreItem,
+> extends CompositeStoreProps<T> {
   children?: ReactNode;
 }

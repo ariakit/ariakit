@@ -62,7 +62,8 @@ export interface TooltipStoreState extends HovercardStoreState {
 export type TooltipStoreFunctions = HovercardStoreFunctions;
 
 export interface TooltipStoreOptions
-  extends StoreOptions<
+  extends HovercardStoreOptions,
+    StoreOptions<
       TooltipStoreState,
       | "type"
       | "placement"
@@ -70,10 +71,12 @@ export interface TooltipStoreOptions
       | "showTimeout"
       | "hideTimeout"
       | "skipTimeout"
-    >,
-    HovercardStoreOptions {}
+    > {}
 
-export type TooltipStoreProps = TooltipStoreOptions &
-  StoreProps<TooltipStoreState>;
+export interface TooltipStoreProps
+  extends TooltipStoreOptions,
+    StoreProps<TooltipStoreState> {}
 
-export type TooltipStore = TooltipStoreFunctions & Store<TooltipStoreState>;
+export interface TooltipStore
+  extends TooltipStoreFunctions,
+    Store<TooltipStoreState> {}
