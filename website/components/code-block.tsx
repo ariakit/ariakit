@@ -1,3 +1,4 @@
+import { cache } from "react";
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
@@ -172,9 +173,14 @@ function getTokenHref(
   return href;
 }
 
-let highlighter: Highlighter | undefined;
 const lightCache = new Map<string, IThemedToken[][]>();
 const darkCache = new Map<string, IThemedToken[][]>();
+
+const createHighlighter = cache(async () => {
+  const highlighter = await getHighlighter({ themes: [], langs: [] });
+  await loadLanguages(highlighter);
+  return highlighter;
+});
 
 export async function CodeBlock({
   code,
@@ -196,20 +202,18 @@ export async function CodeBlock({
     return null;
   }
 
+  let highlighter: Highlighter | undefined;
   let lightTokens: IThemedToken[][] = [];
   let darkTokens: IThemedToken[][] = [];
 
-  if (!highlighter) {
-    try {
-      highlighter = await getHighlighter({ themes: [], langs: [] });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  try {
+    highlighter = await createHighlighter();
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 
   try {
-    await loadLanguages(highlighter);
     if (lightCache.has(code)) {
       lightTokens = lightCache.get(code)!;
     } else {
