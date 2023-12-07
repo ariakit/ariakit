@@ -146,12 +146,13 @@ export const useMenu = createHook<MenuOptions>(
           return hideOnHoverOutside(event);
         }
         if (hideOnHoverOutside != null) return hideOnHoverOutside;
+        const disclosure = store?.getState().disclosureElement;
         if (hasParentMenu) {
+          if (disclosure && hasFocusWithin(disclosure)) return false;
           parentMenu.setActiveId(null);
           return true;
         }
         if (!parentIsMenubar) return false;
-        const disclosure = store?.getState().disclosureElement;
         if (!disclosure) return true;
         if (hasFocusWithin(disclosure)) return false;
         return true;

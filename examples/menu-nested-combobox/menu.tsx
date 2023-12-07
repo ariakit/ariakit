@@ -11,42 +11,44 @@ export interface MenuItemProps
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   function MenuItem(props, ref) {
     const searchable = React.useContext(SearchableContext);
-
-    // TODO: Put focusOnHover here.
-    const defaultProps: typeof props = {
-      ref,
-      ...props,
-      className: clsx("menu-item", props.className),
-    };
-
-    if (searchable) {
-      return <Ariakit.ComboboxItem focusOnHover {...defaultProps} />;
-    }
-    return <Ariakit.MenuItem {...defaultProps} />;
+    const Component = searchable ? Ariakit.ComboboxItem : Ariakit.MenuItem;
+    return (
+      <Component
+        ref={ref}
+        focusOnHover
+        blurOnHoverEnd={false}
+        {...props}
+        className={clsx("menu-item", props.className)}
+      />
+    );
   },
 );
 
 export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
-  label: React.ReactNode;
+  label?: React.ReactNode;
+  trigger?: Ariakit.MenuButtonProps["render"];
   children?: React.ReactNode;
   searchValue?: string;
   onSearch?: (value: string) => void;
+  combobox?: Ariakit.ComboboxProps["render"];
 }
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
-  { label, searchValue, onSearch, children, ...props },
+  { label, searchValue, onSearch, children, combobox, ...props },
   ref,
 ) {
   const parentMenu = Ariakit.useMenuContext();
-  const searchable = searchValue != null || !!onSearch;
+  const searchable = searchValue != null || !!onSearch || !!combobox;
 
-  const menuItem = parentMenu ? (
-    <MenuItem render={props.render} hideOnClick={false} />
-  ) : undefined;
+  const trigger = parentMenu ? (
+    <MenuItem render={props.trigger} />
+  ) : (
+    props.trigger
+  );
 
-  const menuItems = searchable ? (
+  const content = searchable ? (
     <>
-      <Ariakit.Combobox autoSelect className="combobox" />
+      <Ariakit.Combobox autoSelect className="combobox" render={combobox} />
       <Ariakit.ComboboxList className="combobox-list">
         {children}
       </Ariakit.ComboboxList>
@@ -56,12 +58,12 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 
   const element = (
-    <Ariakit.MenuProvider>
+    <Ariakit.MenuProvider placement={parentMenu ? "right" : "left"}>
       <Ariakit.MenuButton
         ref={ref}
         {...props}
+        render={trigger}
         className={clsx(!parentMenu && "button", props.className)}
-        render={menuItem}
       >
         <span className="label">{label}</span>
         <Ariakit.MenuButtonArrow />
@@ -74,7 +76,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         className="menu"
       >
         <SearchableContext.Provider value={searchable}>
-          {menuItems}
+          {content}
         </SearchableContext.Provider>
       </Ariakit.Menu>
     </Ariakit.MenuProvider>
