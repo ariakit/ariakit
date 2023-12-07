@@ -145,8 +145,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
           if (blurOnHoverEnd != null) return blurOnHoverEnd;
           // The menu container should be focused on mouseleave only if the menu
           // item is inside a menu, not a menu bar.
-          if (isWithinMenu) return false;
-          return true;
+          return isWithinMenu;
         };
         if (!getBlurOnHoverEnd()) {
           // event.currentTarget
