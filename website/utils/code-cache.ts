@@ -16,6 +16,7 @@ const CACHE_SEEN_PATH = path.resolve(CACHE_DATA_PATH, "seen");
 
 const DISABLE_CODE_CACHE = process.env.DISABLE_CODE_CACHE === "true";
 const UPDATE_CODE_CACHE = process.env.UPDATE_CODE_CACHE === "true";
+const DEBUG_CODE_CACHE = process.env.DEBUG_CODE_CACHE === "true";
 
 const CODE_CACHE = {
   _initPromise: false as Promise<void> | false,
@@ -43,14 +44,16 @@ const CODE_CACHE = {
   ): Promise<IThemedToken[][]> {
     await this.waitForInit();
 
+    const memoryKey = `${code}-${theme}`;
+
     // in memory
-    const memoryValue = this.memory.get(code);
+    const memoryValue = this.memory.get(memoryKey);
     if (memoryValue) return memoryValue;
 
     // not in memory and cache is disabled
     if (DISABLE_CODE_CACHE) {
       const value = await create();
-      this.memory.set(code, value);
+      this.memory.set(memoryKey, value);
       return value;
     }
 
@@ -63,17 +66,21 @@ const CODE_CACHE = {
       const value = desia(
         await fs.readFile(path.resolve(CACHE_DATA_PATH, key)),
       ) as IThemedToken[][];
-      this.memory.set(code, value);
+      this.memory.set(memoryKey, value);
+      if (DEBUG_CODE_CACHE) console.log(`CODE CACHE HIT: ${key}`);
       return value;
 
       // not in disk
     } catch (error) {
       if ((error as any)?.code !== "ENOENT") {
-        console.error(`ERROR: skipped cache for item with key ${key}`);
+        console.error(
+          `CODE CACHE ERROR: skipped cache for item with key ${key}`,
+        );
         console.error(error);
       }
+      if (DEBUG_CODE_CACHE) console.log(`CODE CACHE MISS: ${key}`);
       const value = await create();
-      this.memory.set(code, value);
+      this.memory.set(memoryKey, value);
       this.persist(key, sia(value));
       return value;
     }
