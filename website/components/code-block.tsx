@@ -198,20 +198,14 @@ export async function CodeBlock({
   let lightTokens: IThemedToken[][] = [];
   let darkTokens: IThemedToken[][] = [];
 
-  if (!highlighter) {
-    try {
-      highlighter = await getHighlighter({ themes: [], langs: [] });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
   try {
-    await loadLanguages(highlighter);
-    lightTokens = await CODE_CACHE_GET_OR_CREATE(code, "light", async () =>
-      highlighter!.codeToThemedTokens(code, lang, lightPlus.name),
-    );
+    lightTokens = await CODE_CACHE_GET_OR_CREATE(code, "light", async () => {
+      if (!highlighter)
+        highlighter = await getHighlighter({ themes: [], langs: [] });
+
+      await loadLanguages(highlighter);
+      return highlighter.codeToThemedTokens(code, lang, lightPlus.name);
+    });
     darkTokens = await CODE_CACHE_GET_OR_CREATE(code, "dark", async () =>
       highlighter!.codeToThemedTokens(code, lang, darkPlus.name),
     );
