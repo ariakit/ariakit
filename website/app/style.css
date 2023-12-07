@@ -4,8 +4,9 @@
 
 html,
 body {
-  padding: 0;
   margin: 0;
+  padding: 0;
+  font-synthesis-weight: none;
 }
 
 body {
@@ -16,9 +17,9 @@ body {
     dark:text-white;
 }
 
-button:not([type="submit"]),
-[role="button"] {
-  @apply cursor-default;
+[role="button"],
+button:not([type="submit"]) {
+  cursor: default;
 }
 
 .dark {
