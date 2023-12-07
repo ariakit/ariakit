@@ -199,15 +199,19 @@ export async function CodeBlock({
   let darkTokens: IThemedToken[][] = [];
 
   try {
-    lightTokens = await CODE_CACHE_GET_OR_CREATE(code, "light", async () => {
-      if (!highlighter)
+    async function withHighlighter() {
+      if (!highlighter) {
         highlighter = await getHighlighter({ themes: [], langs: [] });
+        await loadLanguages(highlighter);
+      }
+      return highlighter;
+    }
 
-      await loadLanguages(highlighter);
-      return highlighter.codeToThemedTokens(code, lang, lightPlus.name);
-    });
+    lightTokens = await CODE_CACHE_GET_OR_CREATE(code, "light", async () =>
+      (await withHighlighter()).codeToThemedTokens(code, lang, lightPlus.name),
+    );
     darkTokens = await CODE_CACHE_GET_OR_CREATE(code, "dark", async () =>
-      highlighter!.codeToThemedTokens(code, lang, darkPlus.name),
+      (await withHighlighter()).codeToThemedTokens(code, lang, darkPlus.name),
     );
   } catch (error) {
     console.error(error);

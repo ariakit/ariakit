@@ -1,3 +1,5 @@
+// see: website/utils/code-cache.ts
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { packageDirectory } from "pkg-dir";
@@ -12,13 +14,8 @@ const CACHE_DATA_PATH = path.resolve(CACHE_DIR, "data");
 const CACHE_SEEN_PATH = path.resolve(CACHE_DATA_PATH, "seen");
 
 async function getSeenKeys() {
-  try {
-    const file = await fs.readFile(CACHE_SEEN_PATH, "utf8");
-    return file.split("\n").filter(Boolean);
-  } catch (error) {
-    if (error.code === "ENOENT") return [];
-    throw error;
-  }
+  const file = await fs.readFile(CACHE_SEEN_PATH, "utf8");
+  return file.split("\n").filter(Boolean);
 }
 
 async function getDataKeys() {
@@ -34,15 +31,19 @@ async function main() {
 
   // remove not seen entries from the cache
   let obsoleteEntryCount = 0;
+  const remainingKeys = [];
   for (const key of cacheKeys) {
-    if (seenKeys.includes(key)) continue;
+    if (seenKeys.includes(key)) {
+      remainingKeys.push(key);
+      continue;
+    }
     await fs.unlink(path.resolve(CACHE_DATA_PATH, key));
     obsoleteEntryCount++;
   }
 
   // remove invalid entries from the cache
   let invalidEntryCount = 0;
-  for (const key of cacheKeys) {
+  for (const key of remainingKeys) {
     try {
       desia(await fs.readFile(path.resolve(CACHE_DATA_PATH, key)));
     } catch (error) {
