@@ -313,12 +313,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           typeahead={!searchable}
           composite={!searchable}
           render={renderPopover}
-          // hideOnHoverOutside={(event) => {
-          //   if (!event.target) return true;
-          //   const target = event.target as HTMLElement;
-          //   if (target.closest("[data-active-item]")) return true;
-          //   return false;
-          // }}
           getAnchorRect={(anchor) => {
             if (parent?.current) {
               return parent.current.getBoundingClientRect();

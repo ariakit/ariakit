@@ -1,7 +1,10 @@
+import { getPopupRole } from "@ariakit/core/utils/dom";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
+import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
 /**
@@ -21,10 +24,29 @@ import type { ComboboxStore } from "./combobox-store.js";
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxGroup = createHook<ComboboxGroupOptions>((props) => {
-  props = useCompositeGroup(props);
-  return props;
-});
+export const useComboboxGroup = createHook<ComboboxGroupOptions>(
+  ({ store, ...props }) => {
+    const context = useComboboxScopedContext();
+    store = store || context;
+
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxRow must be wrapped in a ComboboxList or ComboboxPopover component",
+    );
+
+    const contentElement = store.useState("contentElement");
+    const popupRole = getPopupRole(contentElement);
+
+    if (popupRole === "grid") {
+      props = { role: "rowgroup", ...props };
+    }
+
+    props = useCompositeGroup({ store, ...props });
+
+    return props;
+  },
+);
 
 /**
  * Renders a combobox group.

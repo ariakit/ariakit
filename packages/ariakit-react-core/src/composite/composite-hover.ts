@@ -99,8 +99,8 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       store?.setActiveId(event.currentTarget.id);
     });
 
-    const onMouseLeaveProp = props.onMouseLeave;
     const blurOnHoverEndProp = useBooleanEvent(blurOnHoverEnd);
+    const onMouseLeaveProp = props.onMouseLeave;
 
     const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
       onMouseLeaveProp?.(event);

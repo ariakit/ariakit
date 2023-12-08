@@ -1,5 +1,6 @@
 import type { MutableRefObject, RefObject } from "react";
 import { createRef, useEffect, useRef, useState } from "react";
+import { fireEvent } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
@@ -148,8 +149,21 @@ export const useMenu = createHook<MenuOptions>(
         if (hideOnHoverOutside != null) return hideOnHoverOutside;
         const disclosure = store?.getState().disclosureElement;
         if (hasParentMenu) {
+          if (disclosure) {
+            fireEvent(disclosure, "mouseout", event);
+            const target = event.target as HTMLElement;
+            queueMicrotask(() => {
+              if (!target) return;
+              if (disclosure && hasFocusWithin(disclosure)) return;
+              fireEvent(target, "mousemove", event);
+            });
+          }
+          // TODO: This works when blurOnHoverEnd is false, but it should also
+          // take into account blurOnHoverEnd=true, which is the default. The
+          // problem is that moving towards the submenu does not trigger the
+          // blurOnHoverEnd event so the disclosure will still have focus.
           if (disclosure && hasFocusWithin(disclosure)) return false;
-          parentMenu.setActiveId(null);
+          // parentMenu.setActiveId(null);
           return true;
         }
         if (!parentIsMenubar) return false;
