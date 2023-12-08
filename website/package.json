@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-code-cache": "rm -f .code-cache/data/seen && UPDATE_CODE_CACHE=true next build && node .code-cache/cleanup.js"
   }
 }

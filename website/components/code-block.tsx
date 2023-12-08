@@ -14,6 +14,7 @@ import typescript from "shiki/languages/typescript.tmLanguage.json";
 import darkPlus from "shiki/themes/dark-plus.json";
 import lightPlus from "shiki/themes/light-plus.json";
 import { twJoin, twMerge } from "tailwind-merge";
+import { CODE_CACHE_GET_OR_CREATE } from "utils/code-cache.js";
 import { isValidHref } from "utils/is-valid-href.js";
 import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
@@ -173,8 +174,6 @@ function getTokenHref(
 }
 
 let highlighter: Highlighter | undefined;
-const lightCache = new Map<string, IThemedToken[][]>();
-const darkCache = new Map<string, IThemedToken[][]>();
 
 export async function CodeBlock({
   code,
@@ -199,29 +198,21 @@ export async function CodeBlock({
   let lightTokens: IThemedToken[][] = [];
   let darkTokens: IThemedToken[][] = [];
 
-  if (!highlighter) {
-    try {
-      highlighter = await getHighlighter({ themes: [], langs: [] });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
   try {
-    await loadLanguages(highlighter);
-    if (lightCache.has(code)) {
-      lightTokens = lightCache.get(code)!;
-    } else {
-      lightTokens = highlighter.codeToThemedTokens(code, lang, lightPlus.name);
-      lightCache.set(code, lightTokens);
+    async function withHighlighter() {
+      if (!highlighter) {
+        highlighter = await getHighlighter({ themes: [], langs: [] });
+        await loadLanguages(highlighter);
+      }
+      return highlighter;
     }
-    if (darkCache.has(code)) {
-      darkTokens = darkCache.get(code)!;
-    } else {
-      darkTokens = highlighter.codeToThemedTokens(code, lang, darkPlus.name);
-      darkCache.set(code, darkTokens);
-    }
+
+    lightTokens = await CODE_CACHE_GET_OR_CREATE(code, "light", async () =>
+      (await withHighlighter()).codeToThemedTokens(code, lang, lightPlus.name),
+    );
+    darkTokens = await CODE_CACHE_GET_OR_CREATE(code, "dark", async () =>
+      (await withHighlighter()).codeToThemedTokens(code, lang, darkPlus.name),
+    );
   } catch (error) {
     console.error(error);
   }
