@@ -62,7 +62,8 @@ export function createStore<S extends State>(
   let state = initialState;
   let prevStateBatch = state;
   let lastUpdate = Symbol();
-  let initialized = false;
+  let destroy = noop;
+  const instances = new Set<symbol>();
   const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
@@ -77,17 +78,22 @@ export function createStore<S extends State>(
   };
 
   const storeInit: StoreInit = () => {
-    if (initialized) return noop;
     if (!stores.length) return noop;
+    // Make sure we only initialize the store once, even when it's passed to
+    // other stores. However, the store can't be destroyed until all instances
+    // are unmounted. See https://github.com/ariakit/ariakit/issues/3147. See
+    // select-default-open-controlled tests.
+    const initialized = instances.size;
+    const instance = Symbol();
+    instances.add(instance);
 
-    // Setting initialized outside of the microtask will prevent external stores
-    // combined into child stores from being initialized after the child store
-    // is unmounted/destroyed. See https://github.com/ariakit/ariakit/pull/3151
-    // At the same time, not setting this flag at all has a huge performance
-    // impact.
-    queueMicrotask(() => {
-      initialized = true;
-    });
+    const maybeDestroy = () => {
+      instances.delete(instance);
+      if (instances.size) return;
+      destroy();
+    };
+
+    if (initialized) return maybeDestroy;
 
     const desyncs = getKeys(state).map((key) =>
       chain(
@@ -113,9 +119,9 @@ export function createStore<S extends State>(
 
     const cleanups = stores.map(init);
 
-    return chain(...desyncs, ...teardowns, ...cleanups, () => {
-      initialized = false;
-    });
+    destroy = chain(...desyncs, ...teardowns, ...cleanups);
+
+    return maybeDestroy;
   };
 
   const sub = (
