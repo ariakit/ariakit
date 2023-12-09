@@ -170,14 +170,15 @@ export const useMenu = createHook<MenuOptions>(
         // here when the menu is closed by hovering away.
         fireEvent(disclosureElement, "mouseout", event);
         if (!hasFocusWithin(disclosureElement)) return true;
-        const activeId = parentMenu.getState().activeId;
         // When the focus is determined by the aria-activedescendant attribute
         // (virtual focus), the mouseout event above won't update the state
         // synchronously. That is, the hasFocusWithin function above (which also
         // takes into account aria-activedescendant) will be true even though
-        // the mouseout event has blurred the menu button. That's why we need to
-        // manually check the activeId here.
-        if (disclosureElement.id !== activeId) return true;
+        // the mouseout event has blurred the menu button.
+        requestAnimationFrame(() => {
+          if (hasFocusWithin(disclosureElement)) return;
+          store?.hide();
+        });
         return false;
       },
       modal,
