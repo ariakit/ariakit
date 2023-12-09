@@ -142,8 +142,7 @@ export const useMenu = createHook<MenuOptions>(
         return true;
       },
       hideOnHoverOutside: (event) => {
-        if (!store) return true;
-        const { disclosureElement, activeId } = store.getState();
+        const disclosureElement = store?.getState().disclosureElement;
         const getHideOnHoverOutside = () => {
           if (typeof hideOnHoverOutside === "function") {
             return hideOnHoverOutside(event);
@@ -171,6 +170,7 @@ export const useMenu = createHook<MenuOptions>(
         // here when the menu is closed by hovering away.
         fireEvent(disclosureElement, "mouseout", event);
         if (!hasFocusWithin(disclosureElement)) return true;
+        const activeId = parentMenu.getState().activeId;
         // When the focus is determined by the aria-activedescendant attribute
         // (virtual focus), the mouseout event above won't update the state
         // synchronously. That is, the hasFocusWithin function above (which also
