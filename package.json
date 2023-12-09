@@ -141,7 +141,7 @@
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
     "match-sorter": "6.3.1",
-    "monaco-editor": "0.44.0",
+    "monaco-editor": "0.45.0",
     "monaco-editor-textmate": "4.0.0",
     "monaco-editor-webpack-plugin": "7.1.0",
     "monaco-textmate": "3.0.1",
