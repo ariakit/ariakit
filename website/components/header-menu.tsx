@@ -180,7 +180,11 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           aria-busy={loading}
           className={twJoin(
             "w-[--popover-available-width]",
-            !deferredOpen && "hidden",
+            !deferredOpen && [
+              parent
+                ? "h-[min(var(--popover-available-height,800px),800px)]"
+                : "hidden",
+            ],
             size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
             size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
             size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
