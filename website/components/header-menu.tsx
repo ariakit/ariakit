@@ -196,7 +196,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
               <div
                 {...props}
                 className={twJoin(
-                  parent && "animate-in fade-in",
                   searchable && "pt-0",
                   !!footer && "pb-0",
                   props.className,
