@@ -436,7 +436,6 @@ export function PageImage({
   alt,
   width,
   height,
-  placeholder,
   ...props
 }: PageImageProps) {
   const className = twJoin(
