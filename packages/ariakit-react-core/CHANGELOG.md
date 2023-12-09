@@ -1,5 +1,31 @@
 # @ariakit/react-core
 
+## 0.3.9
+
+### Automatic role on ComboboxGroup
+
+The [`ComboboxGroup`](https://ariakit.org/reference/combobox-group) component now automatically assigns the `role` attribute as `rowgroup` if it's nestled within a [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) or [`ComboboxList`](https://ariakit.org/reference/combobox-list) wrapper that has the `role` attribute set to `grid`.
+
+### Custom submenu auto focus
+
+When opening nested [Menu](https://ariakit.org/components/menu) components with <kbd>Enter</kbd>, <kbd>Space</kbd>, or arrow keys, the first tabbable element will now receive focus, even if it's not a [`MenuItem`](https://ariakit.org/reference/menu-item) element. This should enable custom popups that behave like submenus, but use different semantics.
+
+### Hovercard display timeout
+
+The [Hovercard](https://ariakit.org/components/hovercard), [Menu](https://ariakit.org/components/menu), and [Tooltip](https://ariakit.org/components/tooltip) components now display synchronously when the [`timeout`](https://ariakit.org/reference/hovercard-provider#timeout) or [`showTimeout`](https://ariakit.org/reference/hovercard-provider#showtimeout) states are set to `0`. This should stop submenus from vanishing for a few frames prior to displaying a new menu when hovering over menu items in sequence.
+
+### Other updates
+
+- Fixed [`CollectionItem`](https://ariakit.org/reference/collection-item) elements getting out of order when composing stores.
+- Fixed [`MenuButton`](https://ariakit.org/reference/menu-button) not assigning the correct `role` attribute when used within a [`ComboboxList`](https://ariakit.org/reference/combobox-list) element.
+- Fixed [`MenuItem`](https://ariakit.org/reference/menu-item) with an explicit [`focusOnHover`](https://ariakit.org/reference/menu-item#focusonhover) prop not moving focus properly.
+- Fixed [`blurOnHoverEnd`](https://ariakit.org/reference/menu-item#bluronhoverend) not working on submenu triggers.
+- Fixed [Dialog](https://ariakit.org/components/dialog) not respecting the controlled [`open`](https://ariakit.org/reference/use-dialog-store#open) state.
+- Fixed unmounted [`SelectPopover`](https://ariakit.org/reference/select-popover) not re-opening when its [`open`](https://ariakit.org/reference/select-provider#open) state is initially set to `true`.
+- Fixed TypeScript build errors.
+- Fixed focus order when using [Popover](https://ariakit.org/components/popover) with the [`portal`](https://ariakit.org/reference/popover#portal) prop with VoiceOver.
+- Updated dependencies: `@ariakit/core@0.3.8`
+
 ## 0.3.8
 
 ### Multi-selectable Combobox
