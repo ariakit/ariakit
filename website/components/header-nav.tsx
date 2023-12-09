@@ -6,6 +6,7 @@ import {
   forwardRef,
   memo,
   useContext,
+  useDeferredValue,
   useEffect,
   useMemo,
   useState,
@@ -456,6 +457,8 @@ const HeaderNavMenu = memo(
         ));
     }, [searchAllData, hasSearchValue, category, onItemClick]);
 
+    const deferredOpen = useDeferredValue(open);
+
     return (
       <HeaderNavMenuContext.Provider value={true}>
         <HeaderMenu
@@ -464,6 +467,7 @@ const HeaderNavMenu = memo(
           className={hiddenOnMobile ? "hidden flex-none sm:block" : undefined}
           open={open}
           onToggle={setOpen}
+          deferredOpen={deferredOpen}
           label={
             <>
               <span className="truncate">{label}</span>

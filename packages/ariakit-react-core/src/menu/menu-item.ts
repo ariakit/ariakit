@@ -62,6 +62,7 @@ export const useMenuItem = createHook<MenuItemOptions>(
     hideOnClick = true,
     preventScrollOnKeyDown = true,
     focusOnHover,
+    blurOnHoverEnd,
     ...props
   }) => {
     const menuContext = useMenuScopedContext(true);
@@ -109,23 +110,24 @@ export const useMenuItem = createHook<MenuItemOptions>(
     props = useCompositeHover({
       store,
       ...props,
-      focusOnHover: (event) => {
-        if (typeof focusOnHover === "function") return focusOnHover(event);
-        if (focusOnHover != null) return focusOnHover;
-        // The menu container should be focused on mouseleave only if the menu
-        // item is inside a menu, not a menu bar.
-        if (event.type === "mouseleave") return isWithinMenu;
+      focusOnHover(event) {
+        const getFocusOnHover = () => {
+          if (typeof focusOnHover === "function") return focusOnHover(event);
+          if (focusOnHover != null) return focusOnHover;
+          return true;
+        };
+        if (!store) return false;
+        if (!getFocusOnHover()) return false;
+        const { baseElement, items } = store.getState();
+        // If the menu item is also a submenu button, we should move actual DOM
+        // focus to it so that the submenu will not close when the user moves
+        // the cursor back to the menu button.
         if (isWithinMenu) {
-          // If the menu item is also a submenu button, we should move actual
-          // DOM focus to it so that the submenu will not close when the user
-          // moves the cursor back to the menu button.
           if (event.currentTarget.hasAttribute("aria-expanded")) {
             event.currentTarget.focus();
           }
           return true;
         }
-        if (!store) return false;
-        const { baseElement, items } = store.getState();
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
@@ -134,6 +136,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
           return true;
         }
         return false;
+      },
+      blurOnHoverEnd(event) {
+        if (typeof blurOnHoverEnd === "function") return blurOnHoverEnd(event);
+        if (blurOnHoverEnd != null) return blurOnHoverEnd;
+        // The menu container should be focused on mouseleave only if the menu
+        // item is inside a menu, not a menu bar.
+        return isWithinMenu;
       },
     });
 

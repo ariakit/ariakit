@@ -174,7 +174,10 @@ export const useMenuButton = createHook<MenuButtonOptions>(
     // We'll use this id to render the aria-labelledby attribute on the menu.
     const id = useId(props.id);
 
-    const parentContentElement = useStoreState(parentMenu, "contentElement");
+    const parentContentElement = useStoreState(
+      parentMenu?.combobox || parentMenu,
+      "contentElement",
+    );
 
     // When the menu button is rendered inside another menu, we set the role
     // attribute here so it doesn't get overridden by the button component with

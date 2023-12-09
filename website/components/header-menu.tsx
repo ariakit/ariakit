@@ -48,6 +48,7 @@ export interface HeaderMenuProps
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
+  deferredOpen?: boolean;
   value?: string;
   onChange?: (value: string) => void;
   searchValue?: string;
@@ -70,6 +71,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
       label,
       open,
       onToggle,
+      deferredOpen = true,
       value,
       onChange,
       searchValue,
@@ -178,21 +180,25 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           aria-busy={loading}
           className={twJoin(
             "w-[--popover-available-width]",
+            !deferredOpen && "hidden",
             size === "sm" && "sm:w-[min(var(--popover-available-width),240px)]",
             size === "md" && "sm:w-[min(var(--popover-available-width),320px)]",
             size === "lg" && "sm:w-[min(var(--popover-available-width),480px)]",
             size === "xl" && "sm:w-[min(var(--popover-available-width),640px)]",
           )}
-          scroller={(props) => (
-            <div
-              {...props}
-              className={twJoin(
-                searchable && "pt-0",
-                !!footer && "pb-0",
-                props.className,
-              )}
-            />
-          )}
+          scroller={(props) => {
+            if (!deferredOpen) return null;
+            return (
+              <div
+                {...props}
+                className={twJoin(
+                  searchable && "pt-0",
+                  !!footer && "pb-0",
+                  props.className,
+                )}
+              />
+            );
+          }}
         >
           {searchable ? (
             <>
@@ -313,12 +319,6 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           typeahead={!searchable}
           composite={!searchable}
           render={renderPopover}
-          // hideOnHoverOutside={(event) => {
-          //   if (!event.target) return true;
-          //   const target = event.target as HTMLElement;
-          //   if (target.closest("[data-active-item]")) return true;
-          //   return false;
-          // }}
           getAnchorRect={(anchor) => {
             if (parent?.current) {
               return parent.current.getBoundingClientRect();
@@ -559,7 +559,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
           {...props}
           value={value}
           autoFocus={autoFocus}
-          // blurOnHoverEnd={false}
+          blurOnHoverEnd={false}
           hideOnClick={hideOnClick}
           render={renderItem}
         />
@@ -571,7 +571,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
         <Ariakit.ComboboxItem
           {...props}
           focusOnHover
-          // blurOnHoverEnd={false}
+          blurOnHoverEnd={false}
           hideOnClick={hideOnClick}
           render={select ? renderSelectItem : renderItem}
         />
@@ -590,7 +590,7 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
       <Ariakit.MenuItem
         {...props}
         ref={ref}
-        // blurOnHoverEnd={false}
+        blurOnHoverEnd={false}
         render={renderItem}
       />
     );

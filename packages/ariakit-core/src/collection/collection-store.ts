@@ -4,6 +4,7 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
   createStore,
+  init,
   setup,
   throwOnConflictingProps,
 } from "../utils/store.js";
@@ -56,6 +57,16 @@ function getCommonParent(items: CollectionStoreItem[]) {
   return getDocument(parentElement).body;
 }
 
+function getPrivateStore<T extends CollectionStoreItem>(
+  store?: Store & {
+    __unstablePrivateStore?: Store<{
+      renderedItems: T[];
+    }>;
+  },
+) {
+  return store?.__unstablePrivateStore;
+}
+
 /**
  * Creates a collection store.
  */
@@ -80,9 +91,13 @@ export function createCollectionStore<
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
-  const privateStore = createStore({
-    renderedItems: initialState.renderedItems,
-  });
+  const syncPrivateStore = getPrivateStore<T>(props.store);
+
+  const privateStore = createStore(
+    { renderedItems: initialState.renderedItems },
+    syncPrivateStore,
+  );
+
   const collection = createStore(initialState, props.store);
 
   const sortItems = () => {
@@ -92,7 +107,9 @@ export function createCollectionStore<
     collection.setState("renderedItems", renderedItems);
   };
 
-  setup(collection, () => {
+  setup(collection, () => init(privateStore));
+
+  setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
       let raf = requestAnimationFrame(sortItems);
@@ -184,6 +201,9 @@ export function createCollectionStore<
       }
       return item || null;
     },
+
+    // @ts-expect-error Internal
+    __unstablePrivateStore: privateStore,
   };
 }
 
