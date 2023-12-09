@@ -138,20 +138,11 @@ export const useMenuItem = createHook<MenuItemOptions>(
         return false;
       },
       blurOnHoverEnd(event) {
-        const getBlurOnHoverEnd = () => {
-          if (typeof blurOnHoverEnd === "function") {
-            return blurOnHoverEnd(event);
-          }
-          if (blurOnHoverEnd != null) return blurOnHoverEnd;
-          // The menu container should be focused on mouseleave only if the menu
-          // item is inside a menu, not a menu bar.
-          return isWithinMenu;
-        };
-        if (!getBlurOnHoverEnd()) {
-          // event.currentTarget
-          return false;
-        }
-        return true;
+        if (typeof blurOnHoverEnd === "function") return blurOnHoverEnd(event);
+        if (blurOnHoverEnd != null) return blurOnHoverEnd;
+        // The menu container should be focused on mouseleave only if the menu
+        // item is inside a menu, not a menu bar.
+        return isWithinMenu;
       },
     });
 

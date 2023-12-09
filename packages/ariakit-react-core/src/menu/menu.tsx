@@ -108,7 +108,6 @@ export const useMenu = createHook<MenuOptions>(
           default:
             ref.current = baseElement;
         }
-        // if (!ref.current) return;
         return ref;
       });
       return () => {
@@ -143,33 +142,43 @@ export const useMenu = createHook<MenuOptions>(
         return true;
       },
       hideOnHoverOutside: (event) => {
-        if (typeof hideOnHoverOutside === "function") {
-          return hideOnHoverOutside(event);
-        }
-        if (hideOnHoverOutside != null) return hideOnHoverOutside;
-        const disclosure = store?.getState().disclosureElement;
-        if (hasParentMenu) {
-          if (disclosure) {
-            fireEvent(disclosure, "mouseout", event);
-            const target = event.target as HTMLElement;
-            queueMicrotask(() => {
-              if (!target) return;
-              if (disclosure && hasFocusWithin(disclosure)) return;
-              fireEvent(target, "mousemove", event);
-            });
+        if (!store) return true;
+        const { disclosureElement, activeId } = store.getState();
+        const getHideOnHoverOutside = () => {
+          if (typeof hideOnHoverOutside === "function") {
+            return hideOnHoverOutside(event);
           }
-          // TODO: This works when blurOnHoverEnd is false, but it should also
-          // take into account blurOnHoverEnd=true, which is the default. The
-          // problem is that moving towards the submenu does not trigger the
-          // blurOnHoverEnd event so the disclosure will still have focus.
-          if (disclosure && hasFocusWithin(disclosure)) return false;
-          // parentMenu.setActiveId(null);
+          if (hideOnHoverOutside != null) return hideOnHoverOutside;
+          // Hide the menu when hovering outside if it's a submenu in a dropdown
+          // menu or if it's a menu in a menubar and the menu button doesn't
+          // have focus.
+          if (hasParentMenu) return true;
+          if (!parentIsMenubar) return false;
+          if (!disclosureElement) return true;
+          if (hasFocusWithin(disclosureElement)) return false;
           return true;
-        }
-        if (!parentIsMenubar) return false;
-        if (!disclosure) return true;
-        if (hasFocusWithin(disclosure)) return false;
-        return true;
+        };
+        if (!getHideOnHoverOutside()) return false;
+        if (event.defaultPrevented) return true;
+        if (!hasParentMenu) return true;
+        if (!disclosureElement) return true;
+        // This can be tested by hovering over a menu item (that's also a menu
+        // button), waiting for the menu to open, and then moving towards the
+        // menu, but stopping before reaching it. Then, move the mouse to the
+        // other direction. The menu should close, but since we've already left
+        // the menu button, the mouseout and therefore the blurOnHoverEnd
+        // behavior won't be fired. That's why we need to manually re-fire it
+        // here when the menu is closed by hovering away.
+        fireEvent(disclosureElement, "mouseout", event);
+        if (!hasFocusWithin(disclosureElement)) return true;
+        // When the focus is determined by the aria-activedescendant attribute
+        // (virtual focus), the mouseout event above won't update the state
+        // synchronously. That is, the hasFocusWithin function above (which also
+        // takes into account aria-activedescendant) will be true even though
+        // the mouseout event has blurred the menu button. That's why we need to
+        // manually check the activeId here.
+        if (disclosureElement.id !== activeId) return true;
+        return false;
       },
       modal,
       portal,
