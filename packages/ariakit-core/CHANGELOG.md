@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.3.8
+
+- Fixed [`CollectionItem`](https://ariakit.org/reference/collection-item) elements getting out of order when composing stores.
+- Fixed unmounted [`SelectPopover`](https://ariakit.org/reference/select-popover) not re-opening when its [`open`](https://ariakit.org/reference/select-provider#open) state is initially set to `true`.
+- Fixed TypeScript build errors.
+
 ## 0.3.7
 
 ### Multi-selectable Combobox
