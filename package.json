@@ -81,7 +81,7 @@
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.28.3",
     "@clerk/nextjs": "4.27.5",
-    "@guidepup/playwright": "0.10.0",
+    "@guidepup/playwright": "0.11.0",
     "@playwright/test": "1.40.1",
     "@radix-ui/react-popover": "1.0.7",
     "@stackblitz/sdk": "1.9.0",
