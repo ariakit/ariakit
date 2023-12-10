@@ -141,10 +141,12 @@ export const usePortal = createHook<PortalOptions>(
       const onFocus = (event: FocusEvent) => {
         if (!isFocusEventOutside(event)) return;
         const focusing = event.type === "focusin";
-        if (focusing) return restoreFocusIn(portalNode);
+        cancelAnimationFrame(raf);
+        if (focusing) {
+          return restoreFocusIn(portalNode);
+        }
         // Wait for the next frame to allow tabindex changes after the focus
         // event.
-        cancelAnimationFrame(raf);
         raf = requestAnimationFrame(() => {
           disableFocusIn(portalNode, true);
         });
@@ -154,6 +156,7 @@ export const usePortal = createHook<PortalOptions>(
       portalNode.addEventListener("focusin", onFocus, true);
       portalNode.addEventListener("focusout", onFocus, true);
       return () => {
+        cancelAnimationFrame(raf);
         portalNode.removeEventListener("focusin", onFocus, true);
         portalNode.removeEventListener("focusout", onFocus, true);
       };

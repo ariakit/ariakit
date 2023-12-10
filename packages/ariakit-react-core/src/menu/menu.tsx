@@ -1,5 +1,5 @@
 import type { MutableRefObject, RefObject } from "react";
-import { createRef, useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { fireEvent } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
@@ -7,6 +7,7 @@ import { createDialogComponent } from "../dialog/dialog.js";
 import type { HovercardOptions } from "../hovercard/hovercard.jsx";
 import { useHovercard } from "../hovercard/hovercard.jsx";
 import { useMergeRefs } from "../utils/hooks.js";
+import { useStoreState } from "../utils/store.js";
 import {
   createComponent,
   createElement,
@@ -127,6 +128,33 @@ export const useMenu = createHook<MenuOptions>(
     // focus on the dialog container when no initialFocusRef is set.
     const canAutoFocusOnShow =
       !!initialFocusRef || !!props.initialFocus || !!modal;
+
+    const contentElement = useStoreState(
+      store.combobox || store,
+      "contentElement",
+    );
+    const parentContentElement = useStoreState(
+      parentMenu?.combobox || parentMenu,
+      "contentElement",
+    );
+
+    const preserveTabOrderAnchor = useMemo(() => {
+      if (!parentContentElement) return;
+      if (!contentElement) return;
+      const role = contentElement.getAttribute("role");
+      const parentRole = parentContentElement.getAttribute("role");
+      const parentIsMenuOrMenubar =
+        parentRole === "menu" || parentRole === "menubar";
+      if (parentIsMenuOrMenubar && role === "menu") return;
+      return parentContentElement;
+    }, [contentElement, parentContentElement]);
+
+    if (preserveTabOrderAnchor !== undefined) {
+      props = {
+        ...props,
+        preserveTabOrderAnchor,
+      };
+    }
 
     props = useHovercard({
       store,
