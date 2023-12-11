@@ -10,6 +10,7 @@ import {
 } from "utils/clerk.js";
 import {
   createCustomerWithClerkId,
+  getActiveCustomerByEmail,
   getCheckout,
   getCustomer,
   getStripeClient,
@@ -35,7 +36,10 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
       if (!sessionId) return;
 
       const currentSessionId = request.cookies.get("stripe-session-id");
-      if (currentSessionId?.value === sessionId) return;
+      if (currentSessionId?.value === sessionId) {
+        console.log("Before auth: session-id search param matches cookie");
+        return;
+      }
 
       const stripe = getStripeClient();
       if (!stripe) return;
@@ -43,14 +47,22 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
       const session = await getCheckout(sessionId);
 
       if (!session) {
+        console.log("Before auth: session not found");
         url.searchParams.delete("session-id");
         return NextResponse.redirect(url);
       }
-      if (session.status !== "complete") return;
-      if (session.payment_status !== "paid") return;
+      if (session.status !== "complete") {
+        console.log("Before auth: session not complete");
+        return;
+      }
+      if (session.payment_status !== "paid") {
+        console.log("Before auth: session not paid");
+        return;
+      }
 
       const res = NextResponse.next();
       res.cookies.set("stripe-session-id", sessionId);
+      console.log("Before auth: session-id cookie set");
       return res;
     },
 
@@ -68,7 +80,12 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
 
       const stripeSessionId = request.cookies.get("stripe-session-id")?.value;
       const stripeId = getStripeId(user);
-      if (stripeId && !stripeSessionId) return;
+      if (stripeId && !stripeSessionId) {
+        console.log(
+          `After auth: stripeId ${stripeId} found, no session-id cookie`,
+        );
+        return;
+      }
 
       const response = NextResponse.next();
 
@@ -81,10 +98,15 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         ) {
           const customer = await getCustomer(session.customer);
           if (customer?.metadata.clerkId) {
+            console.log("After auth: customer already has clerkId");
             response.cookies.set("stripe-session-id", "");
           } else {
+            console.log("After auth: customer has no clerkId");
             const activeSubscriptions = await getActiveSubscriptions(user);
             if (!activeSubscriptions?.data.length) {
+              console.log(
+                "After auth: user has no active subscriptions, connecting customer to user",
+              );
               await updateCustomerWithClerkId(session.customer, userId);
               await updateUserWithStripeId(userId, session.customer);
               response.cookies.set("stripe-session-id", "");
@@ -94,13 +116,40 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         }
       }
 
-      if (stripeId) return response;
+      if (stripeId) {
+        console.log(
+          `After auth: user ${userId} already has stripeId ${stripeId}`,
+        );
+        return response;
+      }
 
       const email = getPrimaryEmailAddress(user);
-      const customer = await createCustomerWithClerkId(userId, { email });
-      if (!customer) return NextResponse.error();
+      if (!email) {
+        console.log(`After auth: user ${userId} has no primary email address`);
+        return NextResponse.error();
+      }
+
+      let customer = await getActiveCustomerByEmail(email);
+
+      if (customer) {
+        console.log(
+          `After auth: active customer ${customer.id} found, setting clerkId ${userId}`,
+        );
+        await updateCustomerWithClerkId(customer.id, userId);
+      } else {
+        console.log(
+          `After auth: no active customer found for email ${email}, creating one for user ${userId}`,
+        );
+        customer = await createCustomerWithClerkId(userId, { email });
+      }
+
+      if (!customer) {
+        console.log("After auth: could not create customer");
+        return NextResponse.error();
+      }
 
       await updateUserWithStripeId(userId, customer.id);
+      console.log("After auth: user updated with stripeId");
       return response;
     },
   });
