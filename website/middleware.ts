@@ -10,7 +10,7 @@ import {
 } from "utils/clerk.js";
 import {
   createCustomerWithClerkId,
-  getActiveCustomerByEmail,
+  getActiveCustomerByEmailWithoutClerkId,
   getCheckout,
   getCustomer,
   getStripeClient,
@@ -129,7 +129,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         return NextResponse.error();
       }
 
-      let customer = await getActiveCustomerByEmail(email);
+      let customer = await getActiveCustomerByEmailWithoutClerkId(email);
 
       if (customer) {
         console.log(
