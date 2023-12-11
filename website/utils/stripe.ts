@@ -52,7 +52,10 @@ export async function getActiveSubscriptions(customerId: string) {
 
 export async function getActiveCustomerByEmail(email: string) {
   if (!stripe) return;
-  const customers = await stripe.customers.list({ email });
+  const customers = await stripe.customers.list({
+    email,
+    expand: ["data.subscriptions"],
+  });
   const customer = customers.data.find((customer) => {
     if (customer.deleted) return false;
     return !!customer.subscriptions?.data.some((s) => s.status === "active");

@@ -243,3 +243,56 @@ test("subscribe, sign out, then subscribe again with a different account", async
   await button(page, "Plus").click();
   await expect(menuitem(page, "Subscription")).toBeVisible();
 });
+
+test("subscribe, clear cookies, then sign up with the same email", async ({
+  page,
+}) => {
+  test.setTimeout(80_000);
+
+  await page.goto("/plus", { waitUntil: "networkidle" });
+  await button(page, "Yearly").click();
+  const email = generateUserEmail();
+  await textbox(await fillCheckout(page), "Email").fill(email);
+  await page.keyboard.press("Enter");
+
+  await page.waitForURL(/\/sign-up/);
+  await page.context().clearCookies();
+
+  await page.goto("/sign-up", { waitUntil: "networkidle" });
+  await textbox(page, "Email address").fill(email);
+  await signUpWithPassword(page);
+
+  await button(page, "Plus").click();
+  await expect(menuitem(page, "Subscription")).toBeVisible();
+});
+
+// test.skip("subscribe, clear cookies, then sign in with the same email", async ({
+//   page,
+// }) => {
+//   test.setTimeout(80_000);
+
+//   await page.goto("/sign-up", { waitUntil: "networkidle" });
+//   const email = generateUserEmail();
+//   await textbox(page, "Email address").fill(email);
+//   await signUpWithPassword(page);
+//   await button(page, "Plus").click();
+//   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
+//   await menuitem(page, "Sign out").click();
+
+//   await link(page, "Unlock Ariakit Plus").click();
+//   await button(page, "Yearly").click();
+//   await textbox(await fillCheckout(page), "Email").fill(email);
+//   await page.keyboard.press("Enter");
+
+//   await page.waitForURL(/\/sign-up/);
+//   await page.context().clearCookies();
+
+//   await page.goto("/sign-in", { waitUntil: "networkidle" });
+//   await textbox(page, "Email address").fill(email);
+//   await textbox(page, "Password").fill("password");
+//   await page.keyboard.press("Enter");
+
+//   await page.waitForURL("/");
+//   await page.goto("/plus");
+//   await expect(button(page, "Current plan Yearly")).toBeDisabled();
+// });
