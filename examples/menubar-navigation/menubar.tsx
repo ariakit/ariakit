@@ -3,9 +3,6 @@ import type { Dispatch, ReactNode, SetStateAction } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 
-export type { MenuProviderProps } from "@ariakit/react";
-export { MenuProvider } from "@ariakit/react";
-
 // These contexts allow us to set the props on the parent menu component from a
 // child component.
 const SetShiftContext = React.createContext<Dispatch<SetStateAction<number>>>(
