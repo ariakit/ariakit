@@ -1,3 +1,8 @@
+export interface Action {
+  label: string;
+  items?: Action[];
+}
+
 const blocks = [
   { label: "Text" },
   { label: "Heading 1" },
@@ -20,7 +25,7 @@ const blocks = [
   { label: "3 columns" },
   { label: "4 columns" },
   { label: "5 columns" },
-];
+] satisfies Action[];
 
 const pages = [
   { label: "Private pages" },
@@ -36,7 +41,7 @@ const pages = [
   { label: "Task List" },
   { label: "Travel Plans" },
   { label: "Yearly Goals" },
-];
+] satisfies Action[];
 
 const colors = [
   { label: "Default" },
@@ -49,7 +54,7 @@ const colors = [
   { label: "Purple" },
   { label: "Pink" },
   { label: "Red" },
-];
+] satisfies Action[];
 
 const backgrounds = [
   { label: "Default background" },
@@ -62,28 +67,34 @@ const backgrounds = [
   { label: "Purple background" },
   { label: "Pink background" },
   { label: "Red background" },
-];
+] satisfies Action[];
+
+const duplicateActions = [
+  { label: "Duplicate with content" },
+  { label: "Duplicate without content" },
+] satisfies Action[];
+
+const allPages = [{ label: "Suggested", items: pages }] satisfies Action[];
+
+const allColors = [
+  { label: "Color", items: colors },
+  { label: "Background", items: backgrounds },
+] satisfies Action[];
 
 export const actions = {
   askAi: { label: "Ask AI" },
   delete: { label: "Delete" },
-  duplicate: {
-    label: "Duplicate",
-    items: [
-      { label: "Duplicate with content" },
-      { label: "Duplicate without content" },
-    ],
-  },
+  duplicate: { label: "Duplicate", items: duplicateActions },
   turnInto: { label: "Turn into", items: blocks },
-  turnIntoPageIn: { label: "Turn into page in", items: pages },
+  turnIntoPageIn: { label: "Turn into page in", items: allPages },
   copyLinkToBlock: { label: "Copy link to block" },
   moveTo: { label: "Move to", items: pages },
   comment: { label: "Comment" },
-  color: {
-    label: "Color",
-    items: [
-      { label: "Color", items: colors },
-      { label: "Background", items: backgrounds },
-    ],
-  },
+  color: { label: "Color", items: allColors },
+} satisfies Record<string, Action>;
+
+export const defaultValues = {
+  "Turn into": "Text",
+  Color: "Default",
+  Background: "Default background",
 };
