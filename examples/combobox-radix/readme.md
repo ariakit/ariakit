@@ -10,7 +10,7 @@ tags:
 
 <div data-description>
 
-Using just the necessary Ariakit components to build a [Combobox](/components/combobox) with [Radix UI](https://radix-ui.com). For projects already using Radix UI and looking to start with Ariakit components.
+Using just the necessary Ariakit components to build a [Combobox](/components/combobox) with [Radix UI](https://radix-ui.com). For projects already using Radix UI and looking for autocomplete, autosuggest and search features.
 
 </div>
 
