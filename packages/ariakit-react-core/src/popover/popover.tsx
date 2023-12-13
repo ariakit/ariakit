@@ -6,6 +6,7 @@ import {
   autoUpdate,
   computePosition,
   flip,
+  limitShift,
   offset,
   shift,
   size,
@@ -137,7 +138,10 @@ function getFlipMiddleware(
 }
 
 function getShiftMiddleware(
-  props: Pick<PopoverOptions, "slide" | "overlap" | "overflowPadding">,
+  props: Pick<
+    PopoverOptions,
+    "slide" | "shift" | "overlap" | "overflowPadding"
+  >,
 ) {
   if (!props.slide && !props.overlap) return;
   // https://floating-ui.com/docs/shift
@@ -145,6 +149,7 @@ function getShiftMiddleware(
     mainAxis: props.slide,
     crossAxis: props.overlap,
     padding: props.overflowPadding,
+    limiter: limitShift(),
   });
 }
 
@@ -275,7 +280,7 @@ export const usePopover = createHook<PopoverOptions>(
         const middleware = [
           getOffsetMiddleware(arrowElement, { gutter, shift }),
           getFlipMiddleware({ flip, overflowPadding }),
-          getShiftMiddleware({ slide, overlap, overflowPadding }),
+          getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
           getArrowMiddleware(arrowElement, { arrowPadding }),
           getSizeMiddleware({
             sameWidth,

@@ -1,14 +1,8 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
-import { matchSorter } from "match-sorter";
 
 const SearchableContext = React.createContext(false);
-
-export interface MenuOption {
-  label: string;
-  group?: string;
-}
 
 export interface MenuItemProps
   extends Omit<Ariakit.ComboboxItemProps, "store"> {
@@ -44,10 +38,15 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     });
 
     if (checkable) {
+      const checkedLabel = checked ? "checked" : "not checked";
       defaultProps.children = (
         <React.Fragment>
           <span className="label">{defaultProps.children}</span>
-          <Ariakit.MenuItemCheck checked={checked} />
+          <Ariakit.MenuItemCheck
+            checked={checked}
+            aria-hidden={!searchable}
+            aria-label={searchable ? checkedLabel : undefined}
+          />
         </React.Fragment>
       );
     }
@@ -67,9 +66,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     }
 
     if (checkable) {
-      defaultProps["aria-checked"] = checked;
       defaultProps.value = value;
-
       defaultProps.selectValueOnClick = () => {
         if (name == null || value == null) return false;
         menu.setValue(name, value);
@@ -138,8 +135,6 @@ export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
   onValuesChange?: Ariakit.MenuProviderProps["setValues"];
   searchValue?: string;
   onSearch?: (value: string) => void;
-  options?: MenuOption[];
-  onMatch?: (options: MenuOption[] | null) => void;
   combobox?: Ariakit.ComboboxProps["render"];
   trigger?: Ariakit.MenuButtonProps["render"];
 }
@@ -152,8 +147,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     onValuesChange,
     searchValue,
     onSearch,
-    options,
-    onMatch,
     combobox,
     trigger,
     ...props
@@ -161,8 +154,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   ref,
 ) {
   const parent = Ariakit.useMenuContext();
-  const searchable =
-    searchValue != null || !!onSearch || !!options || !!onMatch || !!combobox;
+  const searchable = searchValue != null || !!onSearch || !!combobox;
 
   const element = (
     <Ariakit.MenuProvider
@@ -185,8 +177,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         overlap
         unmountOnHide
         gutter={parent ? -4 : 4}
-        data-searchable={searchable || undefined}
-        className="menu"
+        className={clsx("menu", searchable && "search-menu")}
       >
         <SearchableContext.Provider value={searchable}>
           {searchable ? (
@@ -216,25 +207,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         resetValueOnHide
         includesBaseElement={false}
         value={searchValue}
-        setValue={(value) => {
-          onSearch?.(value);
-          if (!onMatch) return;
-          React.startTransition(() => {
-            if (!value || !options) {
-              return onMatch(null);
-            }
-            const matches = matchSorter(options, value, {
-              keys: ["label", "group"],
-              baseSort(a, b) {
-                if (!a.item.group && !b.item.group) return 0;
-                if (!a.item.group) return -1;
-                if (!b.item.group) return 1;
-                return 0;
-              },
-            });
-            onMatch(matches.slice(0, 15));
-          });
-        }}
+        setValue={onSearch}
       >
         {element}
       </Ariakit.ComboboxProvider>

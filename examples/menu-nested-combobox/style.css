@@ -22,7 +22,12 @@
   @apply
     p-1
     max-h-[min(380px,var(--popover-available-height))]
-    data-[searchable]:p-0
+  ;
+}
+
+.search-menu {
+  @apply
+    p-0
   ;
 }
 

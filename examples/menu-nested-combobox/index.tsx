@@ -1,12 +1,9 @@
 import "./style.css";
-import { Fragment, useState } from "react";
+import { Fragment, startTransition, useMemo, useState } from "react";
 import { actions, defaultValues } from "./actions.js";
 import type { Action } from "./actions.js";
 import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.jsx";
-import { actionsToOptions, optionsToActions } from "./utils.js";
-
-const options = actionsToOptions(Object.values(actions));
-const pageOptions = actionsToOptions(actions.turnIntoPageIn.items);
+import { filterActions } from "./utils.js";
 
 function renderItems(items: Action[], group?: string) {
   return items.map((item, index) => {
@@ -39,8 +36,17 @@ function renderMatches(matches: Action[] | null) {
 
 export default function Example() {
   const [values, setValues] = useState(defaultValues);
-  const [matches, setMatches] = useState<Action[] | null>(null);
-  const [pageMatches, setPageMatches] = useState<Action[] | null>(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [pageSearchValue, setPageSearchValue] = useState("");
+
+  const matches = useMemo(
+    () => filterActions(Object.values(actions), searchValue),
+    [searchValue],
+  );
+  const pageMatches = useMemo(
+    () => filterActions(actions.turnIntoPageIn.items, pageSearchValue),
+    [pageSearchValue],
+  );
 
   const defaultItems = (
     <>
@@ -52,8 +58,7 @@ export default function Example() {
       </Menu>
       <Menu
         label={actions.turnIntoPageIn.label}
-        options={pageOptions}
-        onMatch={(options) => setPageMatches(optionsToActions(options))}
+        onSearch={(value) => startTransition(() => setPageSearchValue(value))}
         combobox={<input placeholder="Search pages to add in..." />}
       >
         {renderMatches(pageMatches) ||
@@ -92,8 +97,7 @@ export default function Example() {
       <Menu
         values={values}
         onValuesChange={(values: typeof defaultValues) => setValues(values)}
-        options={options}
-        onMatch={(options) => setMatches(optionsToActions(options))}
+        onSearch={(value) => startTransition(() => setSearchValue(value))}
         combobox={<input placeholder="Search actions..." />}
         trigger={trigger}
       >
