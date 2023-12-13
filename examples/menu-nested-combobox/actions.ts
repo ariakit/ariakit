@@ -1,5 +1,7 @@
 export interface Action {
   label: string;
+  value?: string;
+  group?: string;
   items?: Action[];
 }
 
@@ -44,57 +46,60 @@ const pages = [
 ] satisfies Action[];
 
 const colors = [
-  { label: "Default" },
-  { label: "Gray" },
-  { label: "Brown" },
-  { label: "Orange" },
-  { label: "Yellow" },
-  { label: "Green" },
-  { label: "Blue" },
-  { label: "Purple" },
-  { label: "Pink" },
-  { label: "Red" },
+  { label: "Default", value: "inherit" },
+  { label: "Gray", value: "gray" },
+  { label: "Brown", value: "brown" },
+  { label: "Orange", value: "orange" },
+  { label: "Yellow", value: "yellow" },
+  { label: "Green", value: "green" },
+  { label: "Blue", value: "blue" },
+  { label: "Purple", value: "purple" },
+  { label: "Pink", value: "pink" },
+  { label: "Red", value: "red" },
 ] satisfies Action[];
 
 const backgrounds = [
-  { label: "Default background" },
-  { label: "Gray background" },
-  { label: "Brown background" },
-  { label: "Orange background" },
-  { label: "Yellow background" },
-  { label: "Green background" },
-  { label: "Blue background" },
-  { label: "Purple background" },
-  { label: "Pink background" },
-  { label: "Red background" },
-] satisfies Action[];
-
-const duplicateActions = [
-  { label: "Duplicate with content" },
-  { label: "Duplicate without content" },
-] satisfies Action[];
-
-const allPages = [{ label: "Suggested", items: pages }] satisfies Action[];
-
-const allColors = [
-  { label: "Color", items: colors },
-  { label: "Background", items: backgrounds },
+  { label: "Default background", value: "transparent" },
+  { label: "Gray background", value: "gray" },
+  { label: "Brown background", value: "brown" },
+  { label: "Orange background", value: "orange" },
+  { label: "Yellow background", value: "yellow" },
+  { label: "Green background", value: "green" },
+  { label: "Blue background", value: "blue" },
+  { label: "Purple background", value: "purple" },
+  { label: "Pink background", value: "pink" },
+  { label: "Red background", value: "red" },
 ] satisfies Action[];
 
 export const actions = {
   askAi: { label: "Ask AI" },
   delete: { label: "Delete" },
-  duplicate: { label: "Duplicate", items: duplicateActions },
+  duplicate: {
+    label: "Duplicate",
+    items: [
+      { label: "Duplicate with content" },
+      { label: "Duplicate without content" },
+    ],
+  },
   turnInto: { label: "Turn into", items: blocks },
-  turnIntoPageIn: { label: "Turn into page in", items: allPages },
+  turnIntoPageIn: {
+    label: "Turn into page in",
+    items: [{ label: "Suggested", items: pages }],
+  },
   copyLinkToBlock: { label: "Copy link to block" },
   moveTo: { label: "Move to", items: pages },
   comment: { label: "Comment" },
-  color: { label: "Color", items: allColors },
+  color: {
+    label: "Color",
+    items: [
+      { label: "Color", items: colors },
+      { label: "Background", items: backgrounds },
+    ],
+  },
 } satisfies Record<string, Action>;
 
 export const defaultValues = {
   "Turn into": "Text",
-  Color: "Default",
-  Background: "Default background",
+  Color: "inherit",
+  Background: "transparent",
 };

@@ -1,12 +1,14 @@
 import type { Action } from "./actions.js";
 import type { MenuOption } from "./menu.jsx";
 
-export function actionsToOptions(items: Action[]): MenuOption[] {
+export function actionsToOptions(
+  items: Array<Action & MenuOption>,
+): MenuOption[] {
   return items.flatMap((item) => {
     if (item.items) {
-      return actionsToOptions(
-        item.items.map((i) => ({ ...i, group: item.label })),
-      );
+      const group =
+        item.label === "Suggested" ? item.group || item.label : item.label;
+      return actionsToOptions(item.items.map((item) => ({ ...item, group })));
     }
     return item;
   });

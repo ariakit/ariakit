@@ -1,31 +1,53 @@
 @import url("../menu/style.css");
 
+.wrapper {
+  @apply
+    flex
+    gap-2
+    items-center
+  ;
+}
+
+.menu-button {
+  @apply
+    px-0
+    w-10
+    h-10
+    sm:w-8
+    sm:h-8
+  ;
+}
+
 .menu {
   @apply
+    p-1
     max-h-[min(380px,var(--popover-available-height))]
-    p-0
+    data-[searchable]:p-0
   ;
 }
 
 .menu-item {
   @apply
-    first-of-type:scroll-mt-16
+    scroll-m-1
+    scroll-mt-[calc(var(--combobox-height,_0px)+var(--label-height,_4px))]
     sm:text-sm
     sm:py-1
     sm:active:pt-[5px]
     sm:active:pb-[3px]
-
     active:bg-black/10
     data-[active-item]:bg-black/[7.5%]
     data-[active-item]:text-black
-
     dark:active:bg-white/5
     dark:data-[active-item]:bg-white/10
     dark:data-[active-item]:text-white
+  ;
+}
 
-    [&_svg]:text-base
-    [&_svg]:stroke-1
-    [&_svg]:opacity-75
+.button-arrow {
+  @apply
+    [&>svg]:text-base
+    [&>svg]:stroke-1
+    [&>svg]:opacity-75
   ;
 }
 
@@ -48,6 +70,8 @@
     top-0
     p-1
     z-10
+    [&~*]:[--combobox-height:theme(spacing.11)]
+    sm:[&~*]:[--combobox-height:theme(spacing.9)]
   ;
 }
 
@@ -81,6 +105,7 @@
 .combobox-list {
   @apply
     p-1
+    pt-0
   ;
 }
 
@@ -90,6 +115,17 @@
     sm:text-xs
     opacity-60
     font-medium
+    p-2
+    sm:py-1
+    cursor-default
+    [&+*]:[--label-height:theme(spacing.10)]
+    sm:[&+*]:[--label-height:theme(spacing.7)]
+  ;
+}
+
+.no-results {
+  @apply
+    sm:text-sm
     p-2
     sm:py-1
     cursor-default

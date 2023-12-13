@@ -4,6 +4,7 @@
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
     "selector-class-pattern": null,
+    "length-zero-no-unit": null,
     "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "selector-pseudo-class-no-unknown": [
       true,
