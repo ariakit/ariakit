@@ -8,6 +8,12 @@ tags:
   - CSS transitions
   - Advanced
   - Abstracted examples
+media:
+  - type: image
+    src: /videos/menubar-navigation-hover-intent.jpg
+    alt: A green shape demonstrating the hover intent area of the menubar navigation menu
+    width: 960
+    height: 540
 ---
 
 # Navigation Menubar

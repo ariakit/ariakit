@@ -1,7 +1,7 @@
 import { Children, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import pageLinks from "build-pages/links.js";
-import type { TableOfContents } from "build-pages/types.js";
+import type { PageIndexDetail, TableOfContents } from "build-pages/types.js";
 import type { Element, ElementContent } from "hast";
 import { ArrowRight } from "icons/arrow-right.jsx";
 import { Hashtag } from "icons/hashtag.jsx";
@@ -18,6 +18,7 @@ import { PageCards } from "./page-cards.jsx";
 import { PageExample } from "./page-example.jsx";
 import { PageHovercardAnchor } from "./page-hovercard.jsx";
 import { PageTag, PageTagList } from "./page-tag.jsx";
+import { PageVideo } from "./page-video.jsx";
 
 export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
   node?: Element;
@@ -258,12 +259,14 @@ export function PageListItem({
 export interface PageSectionProps extends ComponentPropsWithoutRef<"section"> {
   level?: number;
   plus?: boolean;
+  media?: PageIndexDetail["media"];
   tableOfContents?: TableOfContents;
 }
 
 export function PageSection({
   level,
   plus,
+  media,
   tableOfContents,
   ...props
 }: PageSectionProps) {
@@ -324,15 +327,32 @@ export function PageSection({
                       </PageListItem>
                     ))}
                   </PageList>
-                  <Command
-                    variant="plus"
-                    className="h-14 text-lg focus-visible:!ariakit-outline"
-                    render={
-                      <Link href="/plus?feature=new-examples" scroll={false} />
-                    }
-                  >
-                    Unlock Ariakit Plus
-                  </Command>
+                  <div>
+                    {!!media?.length && (
+                      <div className="relative max-h-[240px] overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800">
+                        {media.map((item) => {
+                          if (item.type === "video") {
+                            return <PageVideo key={item.src} {...item} />;
+                          } else if (item.type === "image") {
+                            return <PageImage key={item.src} {...item} />;
+                          }
+                          return null;
+                        })}
+                      </div>
+                    )}
+                    <Command
+                      variant="plus"
+                      className="h-14 text-lg focus-visible:!ariakit-outline"
+                      render={
+                        <Link
+                          href="/plus?feature=new-examples"
+                          scroll={false}
+                        />
+                      }
+                    >
+                      Unlock Ariakit Plus
+                    </Command>
+                  </div>
                 </PageSection>
               </NotSubscribed>
             </AuthEnabled>
@@ -348,6 +368,7 @@ export function PageSection({
 export interface PageDivProps extends ComponentPropsWithoutRef<"div"> {
   node?: Element;
   tags?: string[];
+  media?: PageIndexDetail["media"];
   category: string;
   page: string;
   title?: string;
@@ -360,6 +381,7 @@ export function PageDiv({
   page,
   title,
   tags = [],
+  media = [],
   tableOfContents,
   ...props
 }: PageDivProps) {
@@ -369,6 +391,7 @@ export function PageDiv({
         {...props}
         plus={tags.includes("New")}
         tableOfContents={tableOfContents}
+        media={media}
       />
     );
   }

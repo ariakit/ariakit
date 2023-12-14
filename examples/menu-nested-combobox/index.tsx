@@ -8,20 +8,23 @@ import { filterActions } from "./utils.js";
 function renderItems(items: Action[], group?: string) {
   return items.map((item, index) => {
     const value = item.value || item.label;
-    if (item.items) {
-      return (
-        <Fragment key={value}>
-          {index > 0 && <MenuSeparator />}
-          <MenuGroup label={item.label}>
-            {renderItems(item.items, item.label)}
-          </MenuGroup>
-        </Fragment>
-      );
-    }
-    return (
-      <MenuItem key={value} name={group} value={value}>
+    const separator = !!items[index - 1]?.items || (item.items && index > 0);
+
+    const element = item.items ? (
+      <MenuGroup label={item.label}>
+        {renderItems(item.items, item.label)}
+      </MenuGroup>
+    ) : (
+      <MenuItem name={group} value={value}>
         {item.label}
       </MenuItem>
+    );
+
+    return (
+      <Fragment key={value}>
+        {separator && <MenuSeparator />}
+        {element}
+      </Fragment>
     );
   });
 }

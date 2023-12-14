@@ -23,14 +23,13 @@ test("open/hide menu with keyboard", async () => {
 test("filter actions", async () => {
   await click(q.button("Actions"));
   await type("de");
-  expect(q.option("Delete")).toHaveFocus();
-  expect(q.option("Delete")).toHaveAttribute("aria-selected", "true");
-  await press.ArrowDown();
   expect(q.option("Default checked")).toHaveFocus();
   expect(q.option("Default checked")).toHaveAttribute("aria-selected", "true");
-  expect(q.option("Delete")).not.toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   expect(q.option("Default background checked")).toHaveFocus();
+  await press.ArrowDown();
+  expect(q.option("Delete")).toHaveFocus();
+  expect(q.option("Delete")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   expect(q.option("Code not checked")).toHaveFocus();
 });

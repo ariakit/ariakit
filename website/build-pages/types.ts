@@ -26,6 +26,20 @@ export interface Page {
   getGroup?: (filename: string | Reference) => string | null;
 }
 
+export interface PageVideo {
+  type: "video";
+  gif?: boolean;
+  playbackrate?: number;
+  src: string;
+  poster?: string;
+}
+
+export interface PageImage {
+  type: "image";
+  src: string;
+  alt: string;
+}
+
 export interface PageIndexDetail {
   /**
    * The category that the page belongs to (e.g., "components", "examples").
@@ -57,6 +71,11 @@ export interface PageIndexDetail {
    * @default []
    */
   tags: string[];
+  /**
+   * Page media.
+   * @default []
+   */
+  media: Array<PageVideo | PageImage>;
 }
 
 export interface PageContent extends PageIndexDetail {

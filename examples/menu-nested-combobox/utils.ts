@@ -8,15 +8,9 @@ export function filterActions(
   if (!searchValue) return null;
   const options = flattenActions(actions);
   const matches = matchSorter(options, searchValue, {
-    keys: ["label", "group"],
-    baseSort(a, b) {
-      if (!a.item.group && !b.item.group) return 0;
-      if (!a.item.group) return -1;
-      if (!b.item.group) return 1;
-      return 0;
-    },
+    keys: ["label", "group", "value"],
   });
-  return nestActions(matches);
+  return nestActions(matches.slice(0, 15));
 }
 
 export function flattenActions(actions: Action[]): Action[] {
@@ -36,10 +30,7 @@ export function nestActions(actions: Action[] | null) {
     if (option.group) {
       const group = actions.find((action) => action.label === option.group);
       if (group) {
-        if (!group.items) {
-          group.items = [];
-        }
-        group.items.push(option);
+        group.items!.push(option);
       } else {
         actions.push({ label: option.group, items: [option] });
       }
