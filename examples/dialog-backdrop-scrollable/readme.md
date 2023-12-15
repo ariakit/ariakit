@@ -49,7 +49,7 @@ The Ariakit [Dialog](/components/dialog) component automatically closes when use
 
 However, Ariakit will make sure the dialog is not closed when users interact with the scrollbar on a container element.
 
-<video gif="true" data-large src="/videos/dialog-backdrop-scrollable.mp4" poster="/videos/dialog-backdrop-scrollable.jpg" width="960" height="540"></video>
+<video gif="true" data-large src="/media/dialog-backdrop-scrollable.mp4" poster="/media/dialog-backdrop-scrollable.jpg" width="960" height="540"></video>
 
 ## Related examples
 

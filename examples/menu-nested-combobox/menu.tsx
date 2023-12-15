@@ -165,23 +165,23 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
 
     // If the item is checkable, we render a checkmark icon next to the label.
     if (checkable) {
-      const checkedLabel = checked ? "checked" : "not checked";
       defaultProps.children = (
         <React.Fragment>
           <span className="label">{defaultProps.children}</span>
-          <Ariakit.MenuItemCheck
-            checked={checked}
+          <Ariakit.MenuItemCheck checked={checked} />
+          {searchable && (
             // When an item is displayed in a search menu as a role=option
             // element instead of a role=menuitemradio, we can't depend on the
             // aria-checked attribute. Although NVDA and JAWS announce it
             // accurately, VoiceOver doesn't. TalkBack does announce the checked
             // state, but misleadingly implies that a double tap will change the
-            // state, which isn't the case. Therefore, we use aria-label to
-            // indicate whether the item is checked or not, ensuring
-            // cross-browser/at compatibility.
-            aria-hidden={!searchable}
-            aria-label={searchable ? checkedLabel : undefined}
-          />
+            // state, which isn't the case. Therefore, we use a visually hidden
+            // element to indicate whether the item is checked or not, ensuring
+            // cross-browser/AT compatibility.
+            <Ariakit.VisuallyHidden>
+              {checked ? "checked" : "not checked"}
+            </Ariakit.VisuallyHidden>
+          )}
         </React.Fragment>
       );
     }
@@ -190,34 +190,26 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     // as a MenuItem/MenuItemRadio.
     if (!searchable) {
       if (name != null && value != null) {
-        return (
-          <Ariakit.MenuItemRadio
-            {...defaultProps}
-            name={name}
-            value={value}
-            hideOnClick
-          />
-        );
+        const radioProps = { ...defaultProps, name, value, hideOnClick: true };
+        return <Ariakit.MenuItemRadio {...radioProps} />;
       }
       return <Ariakit.MenuItem {...defaultProps} />;
-    }
-
-    if (checkable) {
-      defaultProps.value = value;
-      defaultProps.selectValueOnClick = () => {
-        if (name == null || value == null) return false;
-        // By default, clicking on a ComboboxItem will update the selectedValue
-        // state of the combobox. However, since we're sharing state between
-        // combobox and menu, we also need to update the menu's values state.
-        menu.setValue(name, value);
-        return true;
-      };
     }
 
     return (
       <Ariakit.ComboboxItem
         {...defaultProps}
         setValueOnClick={false}
+        value={checkable ? value : undefined}
+        selectValueOnClick={() => {
+          if (name == null || value == null) return false;
+          // By default, clicking on a ComboboxItem will update the
+          // selectedValue state of the combobox. However, since we're sharing
+          // state between combobox and menu, we also need to update the menu's
+          // values state.
+          menu.setValue(name, value);
+          return true;
+        }}
         hideOnClick={(event) => {
           // Make sure that clicking on a combobox item that opens a nested
           // menu/dialog does not close the menu.
@@ -226,7 +218,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
           // By default, clicking on a ComboboxItem only closes its own popover.
           // However, since we're in a menu context, we also close all parent
           // menus.
-          menu?.hideAll();
+          menu.hideAll();
           return true;
         }}
       />

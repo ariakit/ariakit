@@ -329,12 +329,31 @@ export function PageSection({
                   </PageList>
                   <div>
                     {!!media?.length && (
-                      <div className="relative max-h-[240px] overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800">
-                        {media.map((item) => {
+                      <div
+                        className={twJoin(
+                          "relative grid max-h-[200px] gap-2 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800 dark:after:via-80% sm:max-h-[240px] md:max-h-[280px]",
+                          media.length === 1 && "grid-cols-1",
+                          media.length === 2 && "grid-cols-2",
+                          media.length >= 3 && "grid-cols-3",
+                        )}
+                      >
+                        {media.slice(0, 3).map((item) => {
                           if (item.type === "video") {
-                            return <PageVideo key={item.src} {...item} />;
+                            return (
+                              <PageVideo
+                                key={item.src}
+                                {...item}
+                                className="!rounded-none"
+                              />
+                            );
                           } else if (item.type === "image") {
-                            return <PageImage key={item.src} {...item} />;
+                            return (
+                              <PageImage
+                                key={item.src}
+                                {...item}
+                                className="!h-full !rounded-none object-cover"
+                              />
+                            );
                           }
                           return null;
                         })}
@@ -389,9 +408,9 @@ export function PageDiv({
     return (
       <PageSection
         {...props}
+        media={media}
         plus={tags.includes("New")}
         tableOfContents={tableOfContents}
-        media={media}
       />
     );
   }

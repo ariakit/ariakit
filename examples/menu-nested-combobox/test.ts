@@ -110,7 +110,7 @@ test("set block type", async () => {
   expect(q.text("Callout")).toBeInTheDocument();
   await press.Enter();
   await type("Turn into");
-  expect(q.option("Text")).toHaveFocus();
+  expect(q.option("Text not checked")).toHaveFocus();
   expect(q.option("Callout checked")).toBeInTheDocument();
   await press.Enter();
   expect(q.dialog("Actions")).not.toBeInTheDocument();
