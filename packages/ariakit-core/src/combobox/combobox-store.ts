@@ -235,6 +235,8 @@ export interface ComboboxStoreState<
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   resetValueOnHide: boolean;
   /**

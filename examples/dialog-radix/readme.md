@@ -42,8 +42,8 @@ In a real application, you may want to provide a simpler API to streamline usage
 
 <figure data-media data-wide>
 
-<img src="/images/dialog-radix-1password.png" width="640" height="480" alt="Ariakit Dialog inspired by Radix UI with keyboard focus on the username input showing the 1Password popup" />
-<img src="/images/dialog-radix-google-translate.png" width="640" height="480" alt="Ariakit Dialog inspired by Radix UI with part of the text selected showing the Google Translate popup" />
+<img src="/media/dialog-radix-1password.png" width="640" height="480" alt="Ariakit Dialog inspired by Radix UI with keyboard focus on the username input showing the 1Password popup" />
+<img src="/media/dialog-radix-google-translate.png" width="640" height="480" alt="Ariakit Dialog inspired by Radix UI with part of the text selected showing the Google Translate popup" />
 
 </figure>
 
@@ -73,7 +73,7 @@ The Ariakit [Dialog](/components/dialog) component automatically closes when use
 
 However, Ariakit will make sure the dialog is not closed when users interact with the scrollbar on a backdrop container. See the [Dialog with scrollable backdrop](/examples/dialog-backdrop-scrollable) example for a practical use case.
 
-<video gif="true" data-large src="/videos/dialog-backdrop-scrollable.mp4" poster="/videos/dialog-backdrop-scrollable.jpg" width="960" height="540"></video>
+<video gif="true" data-large src="/media/dialog-backdrop-scrollable.mp4" poster="/media/dialog-backdrop-scrollable.jpg" width="960" height="540"></video>
 
 ## Related examples
 

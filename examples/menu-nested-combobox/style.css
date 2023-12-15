@@ -1,21 +1,138 @@
-@import url("../menu-combobox/style.css");
+@import url("../menu/style.css");
 
-.menu {
+.wrapper {
   @apply
-    overflow-visible
+    flex
+    gap-2
+    items-center
   ;
 }
 
-/* .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
+.menu-button {
   @apply
-    text-current
-    bg-black/10
-    dark:bg-white/10
+    px-0
+    w-10
+    h-10
+    sm:w-8
+    sm:h-8
   ;
-} */
+}
 
-.menu-item .label {
+.menu {
+  @apply
+    p-1
+    max-h-[min(380px,var(--popover-available-height))]
+  ;
+}
+
+.search-menu {
+  @apply
+    p-0
+  ;
+}
+
+.menu-item {
+  @apply
+    scroll-m-1
+    scroll-mt-[calc(var(--combobox-height,_0px)+var(--label-height,_4px))]
+    sm:text-sm
+    sm:py-1
+    sm:active:pt-[5px]
+    sm:active:pb-[3px]
+    active:bg-black/10
+    data-[active-item]:bg-black/[7.5%]
+    data-[active-item]:text-black
+    dark:active:bg-white/5
+    dark:data-[active-item]:bg-white/10
+    dark:data-[active-item]:text-white
+  ;
+}
+
+.button-arrow {
+  @apply
+    [&>svg]:text-base
+    [&>svg]:stroke-1
+    [&>svg]:opacity-75
+  ;
+}
+
+.separator {
+  @apply
+    my-1
+  ;
+}
+
+.label {
   @apply
     flex-1
+  ;
+}
+
+.combobox-wrapper {
+  @apply
+    sticky
+    bg-inherit
+    top-0
+    p-1
+    z-10
+    [&~*]:[--combobox-height:theme(spacing.11)]
+    sm:[&~*]:[--combobox-height:theme(spacing.9)]
+  ;
+}
+
+.combobox {
+  @apply
+    h-10
+    sm:h-8
+    sm:text-sm
+    rounded
+    border-none
+    px-2
+    w-full
+    text-base
+    placeholder-black/60
+    dark:placeholder-white/50
+    bg-gray-150
+    text-black
+    hover:bg-gray-200
+    dark:bg-gray-850
+    dark:text-white
+    dark:hover:bg-gray-900
+    data-[focus-visible]:outline
+    outline-2
+    -outline-offset-1
+    outline-blue-600
+    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
+    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
+  ;
+}
+
+.combobox-list {
+  @apply
+    p-1
+    pt-0
+  ;
+}
+
+.group-label {
+  @apply
+    text-sm
+    sm:text-xs
+    opacity-60
+    font-medium
+    p-2
+    sm:py-1
+    cursor-default
+    [&+*]:[--label-height:theme(spacing.10)]
+    sm:[&+*]:[--label-height:theme(spacing.7)]
+  ;
+}
+
+.no-results {
+  @apply
+    sm:text-sm
+    p-2
+    sm:py-1
+    cursor-default
   ;
 }

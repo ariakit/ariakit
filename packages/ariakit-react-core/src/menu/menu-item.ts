@@ -189,7 +189,14 @@ export interface MenuItemOptions<T extends As = "div">
    */
   store?: MenubarStore | MenuStore;
   /**
-   * Whether to hide the menu when the menu item is clicked.
+   * Whether to hide the menu when a menu item is clicked. This prop won't be
+   * invoked if the click is on a link and modifier keys are used to open the
+   * link in a new tab or download it.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

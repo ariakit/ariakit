@@ -162,6 +162,10 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   /**
    * A map of names and values that will be used by the `MenuItemCheckbox` and
    * `MenuItemRadio` components.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   values: T;
   /** @default "vertical" */
@@ -178,6 +182,10 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
     Pick<MenuStoreOptions, "combobox" | "parent" | "menubar"> {
   /**
    * Hides the menu and all its parent menus.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   hideAll: () => void;
   /**
@@ -193,8 +201,10 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
   setValues: SetState<MenuStoreState<T>["values"]>;
   /**
    * Sets a specific menu value.
-   * @param name The name.
-   * @param value The value.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @example
    * store.setValue("watching", ["issues"]);
    * store.setValue("watching", (value) => [...value, "issues"]);

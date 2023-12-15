@@ -19,3 +19,12 @@ Combining [Select](/components/select) and [Combobox](/components/combobox) to c
 <div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menu-combobox)
+- [](/examples/menu-nested-combobox)
+
+</div>

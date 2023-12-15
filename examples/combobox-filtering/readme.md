@@ -67,5 +67,6 @@ matches.map((value) => <ComboboxItem key={value} value={value} />);
 - [](/examples/combobox-group)
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
+- [](/examples/menu-nested-combobox)
 
 </div>

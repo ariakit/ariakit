@@ -59,15 +59,19 @@ export interface HovercardStoreState extends PopoverStoreState {
   timeout: number;
   /**
    * The amount of time in milliseconds to wait before **showing** the popover.
-   * It defaults to the value passed to `timeout`.
+   * It defaults to the value passed to
+   * [`timeout`](https://ariakit.org/reference/hovercard-provider#timeout).
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   showTimeout?: number;
   /**
    * The amount of time in milliseconds to wait before **hiding** the popover.
-   * It defaults to the value passed to `timeout`.
+   * It defaults to the value passed to
+   * [`timeout`](https://ariakit.org/reference/hovercard-provider#timeout).
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)

@@ -4,81 +4,74 @@ import clsx from "clsx";
 
 const SearchableContext = React.createContext(false);
 
-export interface MenuItemProps extends Ariakit.ComboboxItemProps {}
-
-export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  function MenuItem(props, ref) {
-    const searchable = React.useContext(SearchableContext);
-
-    const defaultProps = {
-      ref,
-      focusOnHover: true,
-      blurOnHoverEnd: false,
-      ...props,
-      className: clsx("menu-item", props.className),
-    } satisfies typeof props;
-
-    if (searchable) {
-      return (
-        <Ariakit.ComboboxRow>
-          <Ariakit.ComboboxItem {...defaultProps} />
-        </Ariakit.ComboboxRow>
-      );
-    }
-
-    return <Ariakit.MenuItem {...defaultProps} />;
-  },
-);
-
 export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
   label?: React.ReactNode;
-  trigger?: Ariakit.MenuButtonProps["render"];
   children?: React.ReactNode;
+  values?: Ariakit.MenuProviderProps["values"];
+  onValuesChange?: Ariakit.MenuProviderProps["setValues"];
   searchValue?: string;
   onSearch?: (value: string) => void;
   combobox?: Ariakit.ComboboxProps["render"];
+  trigger?: Ariakit.MenuButtonProps["render"];
 }
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
-  { label, searchValue, onSearch, children, combobox, ...props },
+  {
+    label,
+    children,
+    values,
+    onValuesChange,
+    searchValue,
+    onSearch,
+    combobox,
+    trigger,
+    ...props
+  },
   ref,
 ) {
   const parent = Ariakit.useMenuContext();
   const searchable = searchValue != null || !!onSearch || !!combobox;
 
-  const trigger = parent ? <MenuItem render={props.trigger} /> : props.trigger;
-
-  const content = searchable ? (
-    <React.Fragment>
-      <Ariakit.Combobox autoSelect className="combobox" render={combobox} />
-      <Ariakit.ComboboxList className="combobox-list" role="grid">
-        {children}
-      </Ariakit.ComboboxList>
-    </React.Fragment>
-  ) : (
-    children
-  );
-
   const element = (
-    <Ariakit.MenuProvider placement={parent ? "right" : "left"}>
+    <Ariakit.MenuProvider
+      showTimeout={100}
+      placement={parent ? "right" : "left"}
+      values={values}
+      setValues={onValuesChange}
+    >
       <Ariakit.MenuButton
         ref={ref}
         {...props}
-        render={trigger}
         className={clsx(!parent && "button", props.className)}
+        render={parent ? <MenuItem render={trigger} /> : trigger}
       >
         <span className="label">{label}</span>
-        <Ariakit.MenuButtonArrow />
+        <Ariakit.MenuButtonArrow className="button-arrow" />
       </Ariakit.MenuButton>
       <Ariakit.Menu
-        gutter={8}
         portal
+        overlap
         unmountOnHide
-        shift={parent ? -9 : 0}
-        className="menu"
+        gutter={parent ? -4 : 4}
+        className={clsx("menu", searchable && "search-menu")}
       >
         <SearchableContext.Provider value={searchable}>
-          {content}
+          {searchable ? (
+            <React.Fragment>
+              <div className="combobox-wrapper">
+                <Ariakit.Combobox
+                  autoSelect
+                  render={combobox}
+                  className="combobox"
+                />
+              </div>
+              <Ariakit.ComboboxList className="combobox-list">
+                {children}
+              </Ariakit.ComboboxList>
+            </React.Fragment>
+          ) : (
+            children
+          )}
         </SearchableContext.Provider>
       </Ariakit.Menu>
     </Ariakit.MenuProvider>
@@ -87,8 +80,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   if (searchable) {
     return (
       <Ariakit.ComboboxProvider
-        focusWrap={false}
         resetValueOnHide
+        includesBaseElement={false}
         value={searchValue}
         setValue={onSearch}
       >
@@ -99,3 +92,136 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
 
   return element;
 });
+
+export interface MenuSeparatorProps extends Ariakit.MenuSeparatorProps {}
+
+export const MenuSeparator = React.forwardRef<
+  HTMLHRElement,
+  MenuSeparatorProps
+>(function MenuSeparator(props, ref) {
+  return (
+    <Ariakit.MenuSeparator
+      ref={ref}
+      {...props}
+      className={clsx("separator", props.className)}
+    />
+  );
+});
+
+export interface MenuGroupProps extends Ariakit.MenuGroupProps {
+  label?: React.ReactNode;
+  children?: React.ReactNode;
+}
+
+export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
+  function MenuGroup({ label, ...props }, ref) {
+    return (
+      <Ariakit.MenuGroup
+        ref={ref}
+        {...props}
+        className={clsx("group", props.className)}
+      >
+        {label && (
+          <Ariakit.MenuGroupLabel className="group-label">
+            {label}
+          </Ariakit.MenuGroupLabel>
+        )}
+        {props.children}
+      </Ariakit.MenuGroup>
+    );
+  },
+);
+
+export interface MenuItemProps
+  extends Omit<Ariakit.ComboboxItemProps, "store"> {
+  name?: string;
+  children?: React.ReactNode;
+}
+
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
+  function MenuItem({ name, value, ...props }, ref) {
+    const menu = Ariakit.useMenuContext();
+    if (!menu) throw new Error("MenuItem must be used inside a Menu");
+
+    const searchable = React.useContext(SearchableContext);
+    const defaultProps: MenuItemProps = {
+      ref,
+      focusOnHover: true,
+      blurOnHoverEnd: false,
+      ...props,
+      className: clsx("menu-item", props.className),
+    };
+
+    const checkable = menu.useState((state) => {
+      if (!name) return false;
+      if (value == null) return false;
+      return state.values[name] != null;
+    });
+
+    const checked = menu.useState((state) => {
+      if (!name) return false;
+      return state.values[name] === value;
+    });
+
+    // If the item is checkable, we render a checkmark icon next to the label.
+    if (checkable) {
+      defaultProps.children = (
+        <React.Fragment>
+          <span className="label">{defaultProps.children}</span>
+          <Ariakit.MenuItemCheck checked={checked} />
+          {searchable && (
+            // When an item is displayed in a search menu as a role=option
+            // element instead of a role=menuitemradio, we can't depend on the
+            // aria-checked attribute. Although NVDA and JAWS announce it
+            // accurately, VoiceOver doesn't. TalkBack does announce the checked
+            // state, but misleadingly implies that a double tap will change the
+            // state, which isn't the case. Therefore, we use a visually hidden
+            // element to indicate whether the item is checked or not, ensuring
+            // cross-browser/AT compatibility.
+            <Ariakit.VisuallyHidden>
+              {checked ? "checked" : "not checked"}
+            </Ariakit.VisuallyHidden>
+          )}
+        </React.Fragment>
+      );
+    }
+
+    // If the item is not rendered in a search menu (listbox), we can render it
+    // as a MenuItem/MenuItemRadio.
+    if (!searchable) {
+      if (name != null && value != null) {
+        const radioProps = { ...defaultProps, name, value, hideOnClick: true };
+        return <Ariakit.MenuItemRadio {...radioProps} />;
+      }
+      return <Ariakit.MenuItem {...defaultProps} />;
+    }
+
+    return (
+      <Ariakit.ComboboxItem
+        {...defaultProps}
+        setValueOnClick={false}
+        value={checkable ? value : undefined}
+        selectValueOnClick={() => {
+          if (name == null || value == null) return false;
+          // By default, clicking on a ComboboxItem will update the
+          // selectedValue state of the combobox. However, since we're sharing
+          // state between combobox and menu, we also need to update the menu's
+          // values state.
+          menu.setValue(name, value);
+          return true;
+        }}
+        hideOnClick={(event) => {
+          // Make sure that clicking on a combobox item that opens a nested
+          // menu/dialog does not close the menu.
+          const expandable = event.currentTarget.hasAttribute("aria-expanded");
+          if (expandable) return false;
+          // By default, clicking on a ComboboxItem only closes its own popover.
+          // However, since we're in a menu context, we also close all parent
+          // menus.
+          menu.hideAll();
+          return true;
+        }}
+      />
+    );
+  },
+);

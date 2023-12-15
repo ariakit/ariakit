@@ -8,6 +8,12 @@ tags:
   - CSS transitions
   - Advanced
   - Abstracted examples
+media:
+  - type: image
+    src: /media/menubar-navigation-hover-intent.jpg
+    alt: A green shape demonstrating the hover intent area of the menubar navigation menu
+    width: 960
+    height: 540
 ---
 
 # Navigation Menubar
@@ -112,7 +118,7 @@ To display the menu when hovering over the menubar items, we can use the [`showO
 
 This feature is driven by the [Hovercard](/components/hovercard) module, which takes _hover intent_ into account and determines whether the user is moving the cursor towards the menu:
 
-<video gif="true" playbackrate="0.5" data-large src="/videos/menubar-navigation-hover-intent.mp4" poster="/videos/menubar-navigation-hover-intent.jpg" width="960" height="540"></video>
+<video gif="true" playbackrate="0.5" data-large src="/media/menubar-navigation-hover-intent.mp4" poster="/media/menubar-navigation-hover-intent.jpg" width="960" height="540"></video>
 
 ## Showing menus on focus
 

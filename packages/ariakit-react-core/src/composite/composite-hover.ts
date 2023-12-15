@@ -168,7 +168,12 @@ export interface CompositeHoverOptions<T extends As = "div">
    */
   store?: CompositeStore;
   /**
-   * Determines if the composite item should be focused on hover.
+   * Determines if the composite item should be _focused_ when hovered over.
+   *
+   * Note that the actual DOM focus will stay on the composite element. This
+   * item will get the
+   * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+   * attribute so it can be styled as if it's focused.
    *
    * Live examples:
    * - [Multi-selectable
@@ -178,6 +183,8 @@ export interface CompositeHoverOptions<T extends As = "div">
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
@@ -191,6 +198,8 @@ export interface CompositeHoverOptions<T extends As = "div">
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Combobox with integrated
    *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }

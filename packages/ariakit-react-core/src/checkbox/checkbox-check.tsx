@@ -88,9 +88,12 @@ export interface CheckboxCheckOptions<T extends As = "span">
    */
   store?: CheckboxStore;
   /**
-   * Whether the check mark should be shown. This value is automatically
-   * inferred from the `store` prop or the parent `Checkbox` component. Manually
-   * setting this prop will override the inferred value.
+   * Determines if the check mark should be displayed. This value is
+   * automatically derived from the
+   * [`store`](https://ariakit.org/reference/checkbox-check#store) prop or the
+   * parent [`Checkbox`](https://ariakit.org/reference/checkbox) component.
+   *
+   * Manually setting this prop will supersede the derived value.
    */
   checked?: boolean;
 }

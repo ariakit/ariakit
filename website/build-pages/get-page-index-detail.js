@@ -31,5 +31,6 @@ export function getPageIndexDetail(filename, getGroup, tree) {
     content,
     unlisted: !!tree.data?.unlisted,
     tags: Array.isArray(tree.data?.tags) ? tree.data?.tags || [] : [],
+    media: Array.isArray(tree.data?.media) ? tree.data?.media || [] : [],
   };
 }

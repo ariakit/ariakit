@@ -544,6 +544,8 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    *
    * Live examples:
    * - [Menubar](https://ariakit.org/components/menubar)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @default false
    */
   overlap?: boolean;

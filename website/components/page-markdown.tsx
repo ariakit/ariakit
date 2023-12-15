@@ -145,6 +145,7 @@ export function PageMarkdown({
                 page={page}
                 title={pageDetail?.title}
                 tags={pageDetail?.tags}
+                media={pageDetail?.media}
                 tableOfContents={tableOfContents}
               />
             );
