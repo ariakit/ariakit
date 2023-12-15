@@ -138,6 +138,13 @@ export const useMenu = createHook<MenuOptions>(
       "contentElement",
     );
 
+    // This ensures that, when the menu is nested in a non-menu wrapper, the tab
+    // order will be preserved from the parent content element rather than from
+    // the anchor element. This is because the preserveTabOrderAnchor feature
+    // will use aria-owns to fix the tab order on screen readers. The parent
+    // content element may have a role that does not allow this menu's role as a
+    // child. By passing the parent content element as the tab order anchor, the
+    // aria-owns element will be added as a sibling instead. TODO: Test this.
     const preserveTabOrderAnchor = useMemo(() => {
       if (!parentContentElement) return;
       if (!contentElement) return;
@@ -151,8 +158,8 @@ export const useMenu = createHook<MenuOptions>(
 
     if (preserveTabOrderAnchor !== undefined) {
       props = {
-        ...props,
         preserveTabOrderAnchor,
+        ...props,
       };
     }
 
