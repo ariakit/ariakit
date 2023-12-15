@@ -145,7 +145,10 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     );
 
     if (multiSelectable && selected != null) {
-      props["aria-selected"] = selected;
+      props = {
+        "aria-selected": selected,
+        ...props,
+      };
     }
 
     props = useWrapElement(
