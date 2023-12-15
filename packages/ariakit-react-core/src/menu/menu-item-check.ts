@@ -62,6 +62,20 @@ export interface MenuItemCheckOptions<T extends As = "span">
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
    */
   store?: MenuStore;
+  /**
+   * Determines if the check mark should be displayed. This value is automatically
+   * derived from the parent
+   * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) or
+   * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox)
+   * component.
+   *
+   * Manually setting this prop will supersede the derived value.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   */
+  checked?: CheckboxCheckOptions<T>["checked"];
 }
 
 export type MenuItemCheckProps<T extends As = "span"> = Props<

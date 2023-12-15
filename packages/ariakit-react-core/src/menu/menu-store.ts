@@ -98,6 +98,8 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
    *
    * Live examples:
    * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
   /**

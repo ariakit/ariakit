@@ -15,3 +15,12 @@ Rendering [Menu](/components/menu) using [`MenuItemRadio`](/reference/menu-item-
 <div data-tags></div>
 
 <a href="./index.tsx" data-playground>Example</a>
+
+## Related examples
+
+<div data-cards="examples">
+
+- [](/examples/menu-item-checkbox)
+- [](/examples/menu-nested-combobox)
+
+</div>

@@ -96,6 +96,8 @@ export interface PopoverStoreState extends DialogStoreState {
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @default "bottom"
    */
   placement: Placement;

@@ -52,6 +52,7 @@ However, in practice, creating submenus with Ariakit is as straightforward as ne
 
 <div data-cards="examples">
 
+- [](/examples/menu-nested-combobox)
 - [](/examples/menu-tooltip)
 - [](/examples/menu-item-checkbox)
 - [](/examples/menu-framer-motion)

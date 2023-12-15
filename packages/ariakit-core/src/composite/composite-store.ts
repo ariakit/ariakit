@@ -466,8 +466,15 @@ export interface CompositeStoreState<
    */
   moves: number;
   /**
-   * Indicates whether the composite element should be included in the focus
-   * order.
+   * Indicates if the composite element (such as `menu`, `combobox`, `listbox`,
+   * `toolbar`, etc.) should be part of the focus order. In other words, moving
+   * to the previous element when the first item is in focus will focus on the
+   * composite element itself. The same applies to the last item when moving to
+   * the next element.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @default false
    */
   includesBaseElement: boolean;

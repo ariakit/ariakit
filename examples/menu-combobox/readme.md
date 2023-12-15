@@ -23,6 +23,8 @@ Combining [Menu](/components/menu) and [Combobox](/components/combobox) to creat
 
 <div data-cards="examples">
 
+- [](/examples/menu-nested-combobox)
+- [](/examples/select-combobox)
 - [](/examples/menubar-navigation)
 
 </div>

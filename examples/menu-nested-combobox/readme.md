@@ -124,7 +124,7 @@ Regardless of whether the item is rendered as a [`ComboboxItem`](/reference/comb
    });
    ```
 
-2. Next, we can use the same approach to determine if the item is checked:
+2. Next, we can use the same approach to determine if the item is checked in our custom `MenuItem` component:
 
    ```jsx
    const checked = menu.useState((state) => {
@@ -138,7 +138,7 @@ Regardless of whether the item is rendered as a [`ComboboxItem`](/reference/comb
 
 ## Rendering checkable items
 
-If the item is `checkable`, we render a [`MenuItemCheck`](/reference/menu-item-check) as its child. This component is typically a child of the [`MenuItemRadio`](/reference/menu-item-radio) or [`MenuItemCheckbox`](/reference/menu-item-checkbox) components, automatically inferring the [`checked`](/reference/menu-item-check#checked) prop from them. However, we need to manually pass the [`checked`](/reference/menu-item-check#checked) prop in this scenario, as the component might be a child of a [`ComboboxItem`](/reference/combobox-item) component:
+If the item is checkable, we render a [`MenuItemCheck`](/reference/menu-item-check) as its child. This component is typically a child of the [`MenuItemRadio`](/reference/menu-item-radio) or [`MenuItemCheckbox`](/reference/menu-item-checkbox) components, automatically inferring the [`checked`](/reference/menu-item-check#checked) prop from them. However, we need to manually pass the [`checked`](/reference/menu-item-check#checked) prop in this scenario, as the component might be a child of a [`ComboboxItem`](/reference/combobox-item) component:
 
 ```jsx
 <MenuItemCheck checked={checked} />

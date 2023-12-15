@@ -250,6 +250,11 @@ export interface ComboboxItemOptions<T extends As = "div">
    *   [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
    *   is set to `true`, this will be the value of the combobox input when the
    *   user clicks on this item.
+   * - If
+   *   [`selectValueOnClick`](https://ariakit.org/reference/combobox-item#selectvalueonclick)
+   *   is set to `true`, this will be the value of the
+   *   [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   *   state.
    * - If the
    *   [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
    *   prop on the [`Combobox`](https://ariakit.org/reference/combobox)
@@ -282,7 +287,12 @@ export interface ComboboxItemOptions<T extends As = "div">
    * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
    * state using this item's
    * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
-   * is clicked.
+   * is clicked. If a callback is provided, it will only be invoked if the item
+   * has a value.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * @default true
    */
   selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
@@ -296,6 +306,8 @@ export interface ComboboxItemOptions<T extends As = "div">
    *
    * Live examples:
    * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
