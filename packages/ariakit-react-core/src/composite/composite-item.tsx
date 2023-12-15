@@ -229,7 +229,10 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (!isSelfTarget(event)) return;
       // and the composite item is not a text field or contenteditable element.
       if (isEditableElement(event.currentTarget)) return;
-      if (!baseElement) return;
+      // We need to verify if the base element is connected to the DOM to avoid
+      // a scroll jump on Safari. This is necessary when the base element is
+      // removed from the DOM just before triggering this focus event.
+      if (!baseElement?.isConnected) return;
       hasFocusedComposite.current = true;
       // If the previously focused element is a composite or composite item
       // component, we'll transfer focus silently to the composite element.
