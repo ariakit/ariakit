@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Submenu with Combobox",
+    type: "page",
+    href: "/examples/menu-nested-combobox",
+    dateTime: "2023-12-15T12:40Z",
+  },
+  {
     title: "New example: Radix UI Combobox",
     type: "page",
     href: "/examples/combobox-radix",
