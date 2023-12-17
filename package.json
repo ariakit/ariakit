@@ -125,7 +125,7 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-prettier": "5.0.1",
     "eslint-plugin-react": "7.33.2",
-    "eslint-plugin-vitest": "0.3.17",
+    "eslint-plugin-vitest": "0.3.18",
     "fast-fuzzy": "1.12.0",
     "framer-motion": "9.1.7",
     "fs-extra": "11.2.0",
