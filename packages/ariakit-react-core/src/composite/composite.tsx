@@ -388,6 +388,19 @@ export const useComposite = createHook<CompositeOptions>(
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const grid = isGrid(renderedItems);
+      // TODO: Refactor and explain
+      if (isTextField(event.currentTarget)) {
+        const focusingInputOnly = activeId === null;
+        const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
+        const isHorizontalNavigation =
+          event.key === "ArrowLeft" ||
+          event.key === "ArrowRight" ||
+          event.key === "Home" ||
+          event.key === "End";
+        if (!allowHorizontalNavigationOnItems && isHorizontalNavigation) {
+          return;
+        }
+      }
       const up = () => {
         if (grid) {
           const item = items && findFirstEnabledItemInTheLastRow(items);

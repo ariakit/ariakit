@@ -6,6 +6,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
+import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
@@ -17,8 +18,11 @@ export function useTabStoreProps<T extends Core.TabStore>(
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "selectedId", "setSelectedId");
   useStoreProps(store, props, "selectOnMove");
-  const [panels] = useStore(() => store.panels, {});
-  return useMemo(() => ({ ...store, panels }), []);
+
+  const [panels, updatePanels] = useStore(() => store.panels, {});
+  useUpdateEffect(updatePanels, [store]);
+
+  return useMemo(() => ({ ...store, panels }), [store, panels]);
 }
 
 /**
