@@ -448,7 +448,7 @@ export interface PageKbdProps extends ComponentPropsWithoutRef<"kbd"> {
 
 export function PageKbd({ node, ...props }: PageKbdProps) {
   const className = twJoin(
-    "font-monospace px-[0.2667em] p-[0.1334em] text-[0.9375em]",
+    "font-mono px-[0.2667em] p-[0.1334em] text-[0.9375em]",
     "rounded-[0.2667em] rounded-b-[0.3334em] border-b-[0.1334em] border-t-[0.0667em] border-b-black/[7.5%] border-t-white",
     "dark:border-b-[0.2em] dark:border-t-0 dark:border-b-black/40 dark:rounded-b-[0.4em]",
     "bg-gradient-to-b from-black/[15%] to-black/5 dark:from-white/10 dark:to-white/[15%]",

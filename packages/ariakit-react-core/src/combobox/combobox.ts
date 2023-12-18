@@ -244,6 +244,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         // focused.
         const { activeId } = store.getState();
         if (activeId === null) return;
+        // TODO
         if (activeId === store.first()) return;
         canAutoSelectRef.current = false;
       };
@@ -309,6 +310,13 @@ export const useCombobox = createHook<ComboboxOptions>(
           { once: true },
         );
         baseElement?.dispatchEvent(event);
+        // TODO: If it's default prevented, we should get the focused item so we
+        // don't disable autoSelect on the scroll event above. Maybe
+        // onAutoSelect is not a good idea. Maybe something like
+        // moveOnAutoSelect or getAutoSelectId? Or maybe we just get the
+        // activeId here and compare it with the previous activeId, so we can
+        // use check it in the scroll event (if they're different). No, it can
+        // autoSelect the same item?
         if (event.defaultPrevented) return;
         store.move(store.first() ?? null);
       } else {

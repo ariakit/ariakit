@@ -1,26 +1,129 @@
 @import url("../combobox/style.css");
-@import url("../button/style.css");
-
-.combobox-wrapper {
-  @apply
-    relative
-  ;
-}
 
 .combobox {
   @apply
-    pr-10
+    data-[focus-visible]:aria-[activedescendant]:outline-1
   ;
 }
 
-.combobox-cancel {
+.popover {
   @apply
-    absolute
-    h-8
-    w-8
     p-0
-    top-1
-    right-1
-    rounded-sm
+    max-w-[--popover-available-width]
+    rounded-xl
+  ;
+}
+
+.popover-footer {
+  @apply
+    sticky
+    flex-none
+    bg-inherit
+    text-sm
+    bottom-0
+    flex
+    gap-4
+    p-2
+    border-t
+    border-inherit
+    text-black/70
+    dark:text-white/80
+    overflow-x-auto
+  ;
+}
+
+.shortcut {
+  @apply
+    flex
+    gap-1
+    whitespace-nowrap
+  ;
+}
+
+.kbd {
+  @apply
+    flex
+    items-center
+    font-mono
+    px-[0.2667em]
+    p-[0.1334em]
+    text-[0.9375em]
+    rounded-[0.2667em]
+    rounded-b-[0.3334em]
+    border-b-[0.1334em]
+    border-t-[0.0667em]
+    border-b-black/[7.5%]
+    border-t-white
+    dark:border-b-[0.2em]
+    dark:border-t-0
+    dark:border-b-black/40
+    dark:rounded-b-[0.4em]
+    bg-gradient-to-b
+    from-black/[15%]
+    to-black/5
+    dark:from-white/10
+    dark:to-white/[15%]
+    [box-shadow:0_0_0_max(1px,0.0333em)_rgba(0,0,0,0.25)]
+    dark:[box-shadow:0_min(-1px,(-0.0666em))_rgba(255,255,255,0.1),0_0_0_max(1px,0.0666em)_rgba(255,255,255,0.15)]
+  ;
+}
+
+.tab-list {
+  @apply
+    flex-none
+    sticky
+    top-0
+    bg-inherit
+    flex
+    gap-2
+    p-2
+    overflow-x-auto
+    border-inherit
+    text-[15px]
+  ;
+}
+
+.tab {
+  @apply
+    rounded-full
+    border
+    border-inherit
+    px-3
+    py-1
+    whitespace-nowrap
+    text-black/80
+    dark:text-white/90
+
+    aria-selected:text-black
+    aria-selected:dark:text-white
+    aria-selected:bg-gray-200
+    aria-selected:dark:bg-gray-500
+    aria-selected:border-gray-200
+    aria-selected:dark:border-gray-500
+
+    data-[active-item]:text-white
+    data-[active-item]:bg-blue-600
+    data-[active-item]:dark:bg-blue-600
+    data-[active-item]:border-blue-600
+    data-[active-item]:dark:border-blue-600
+
+    /* data-[focus-visible]:outline */
+  ;
+}
+
+
+.listbox {
+  @apply
+    p-2
+    pt-0
+  ;
+}
+
+.combobox-item {
+  @apply
+    cursor-pointer
+    px-3
+    scroll-mt-[48.5px]
+    scroll-mb-[45px]
   ;
 }

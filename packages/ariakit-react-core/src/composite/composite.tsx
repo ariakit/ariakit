@@ -358,6 +358,11 @@ export const useComposite = createHook<CompositeOptions>(
         else if (activeElement) {
           fireBlurEvent(activeElement, event);
         }
+        // TODO: Comment. Moving with keyboard with another store. The state is
+        // not updated before.
+        else if (previousElement) {
+          fireBlurEvent(previousElement, event);
+        }
         // We want to ignore intermediate blur events, so we stop the
         // propagation of this event.
         event.stopPropagation();

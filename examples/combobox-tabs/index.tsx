@@ -1,5 +1,5 @@
 import "./style.css";
-import { startTransition, useMemo, useState } from "react";
+import { startTransition, useId, useMemo, useState } from "react";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import {
@@ -11,49 +11,69 @@ import {
   ComboboxTab,
   ComboboxTabs,
 } from "./combobox.jsx";
-import { pages } from "./pages.js";
+import { flatPages, pages } from "./pages.js";
 
 const categories = ["All", ...Object.keys(pages)];
-const flatPages = Object.entries(pages).flatMap(([category, pages]) =>
-  pages.map((page) => ({ ...page, category })),
-);
+
+function getTabId(category: string, prefix: string) {
+  return `${prefix}/${category}`;
+}
 
 export default function Example() {
+  const prefix = useId();
+  const [tabId, setTabId] = useState(getTabId("Components", prefix));
   const [searchValue, setSearchValue] = useState("");
 
   const matches = useMemo(() => {
-    const allMatches = matchSorter(flatPages, searchValue, {
-      keys: ["label", "path"],
-    });
+    const keys = ["label", "path"];
+    const allMatches = matchSorter(flatPages, searchValue, { keys });
     const groups = groupBy(allMatches, "category");
     groups.All = allMatches;
     return groups;
   }, [searchValue]);
 
+  const tabs = categories.map((category) => {
+    const pages = matches[category];
+    return (
+      <ComboboxTab
+        key={category}
+        disabled={!pages?.length}
+        id={getTabId(category, prefix)}
+      >
+        {category} ({pages?.length || 0})
+      </ComboboxTab>
+    );
+  });
+
+  const panels = categories.map((category) => {
+    const pages = matches[category];
+    return (
+      <ComboboxPanel key={category} tabId={getTabId(category, prefix)}>
+        {!pages?.length && (
+          <div className="no-results">
+            No pages found for &quot;<strong>{searchValue}</strong>
+            &quot;
+          </div>
+        )}
+        {pages?.map((page) => (
+          <ComboboxItem key={page.label} render={<a href={page.path} />}>
+            {page.label}
+          </ComboboxItem>
+        ))}
+      </ComboboxPanel>
+    );
+  });
+
   return (
     <ComboboxProvider
-      setValue={(value) => {
-        startTransition(() => {
-          setSearchValue(value);
-        });
-      }}
+      selectedId={tabId}
+      setSelectedId={(tabId) => tabId && setTabId(tabId)}
+      setValue={(value) => startTransition(() => setSearchValue(value))}
     >
       <Combobox placeholder="Search pages" />
       <ComboboxPopover aria-label="Pages">
-        <ComboboxTabs>
-          {categories.map((category) => (
-            <ComboboxTab key={category}>{category}</ComboboxTab>
-          ))}
-        </ComboboxTabs>
-        {categories.map((category) => (
-          <ComboboxPanel key={category}>
-            {matches[category]?.map((page) => (
-              <ComboboxItem key={page.label} render={<a href={page.path} />}>
-                {page.label}
-              </ComboboxItem>
-            ))}
-          </ComboboxPanel>
-        ))}
+        <ComboboxTabs aria-label="Categories">{tabs}</ComboboxTabs>
+        {panels}
       </ComboboxPopover>
     </ComboboxProvider>
   );

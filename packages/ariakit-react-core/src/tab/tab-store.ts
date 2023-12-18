@@ -20,7 +20,7 @@ export function useTabStoreProps<T extends Core.TabStore>(
   useStoreProps(store, props, "selectOnMove");
 
   const [panels, updatePanels] = useStore(() => store.panels, {});
-  useUpdateEffect(updatePanels, [store]);
+  useUpdateEffect(updatePanels, [store, updatePanels]);
 
   return useMemo(() => ({ ...store, panels }), [store, panels]);
 }

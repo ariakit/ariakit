@@ -59,3 +59,7 @@ export const pages = {
     { label: "Toolbar with Select", path: "/examples/toolbar-select" },
   ],
 };
+
+export const flatPages = Object.entries(pages).flatMap(([category, pages]) =>
+  pages.map((page) => ({ ...page, category })),
+);
