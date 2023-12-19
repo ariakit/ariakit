@@ -278,6 +278,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (event.defaultPrevented) return;
       if (!isSelfTarget(event)) return;
       if (!store) return;
+      const { baseElement } = store.getState();
       const { currentTarget } = event;
       const state = store.getState();
       const item = store.item(id);
@@ -290,12 +291,15 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         ArrowDown: (isGrid || isVertical) && store.down,
         ArrowLeft: (isGrid || isHorizontal) && store.previous,
         Home: () => {
+          // TODO: Explain. Replaces composite.tsx:76
+          if (baseElement && isTextField(baseElement)) return;
           if (!isGrid || event.ctrlKey) {
             return store?.first();
           }
           return store?.previous(-1);
         },
         End: () => {
+          if (baseElement && isTextField(baseElement)) return;
           if (!isGrid || event.ctrlKey) {
             return store?.last();
           }

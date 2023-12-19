@@ -32,8 +32,6 @@ export function ComboboxProvider({
     <Ariakit.ComboboxProvider
       activeId={activeId}
       setActiveId={setActiveId}
-      focusWrap={false}
-      focusLoop="vertical"
       {...props}
       setValue={(value) => {
         props.setValue?.(value);
@@ -43,7 +41,6 @@ export function ComboboxProvider({
       }}
     >
       <Ariakit.TabProvider
-        focusLoop="horizontal"
         includesBaseElement={false}
         activeId={activeId}
         setActiveId={setActiveId}
@@ -102,7 +99,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           {hasValue && (
             <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
           )}
-          <Ariakit.ComboboxDisclosure className="button secondary combobox-disclosure" />
+          <Ariakit.ComboboxDisclosure className="button flat combobox-disclosure" />
         </div>
       </div>
     );
@@ -194,14 +191,14 @@ export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
       <Ariakit.ComboboxItem
         ref={ref}
         id={id}
-        rowId={id}
+        // rowId={id}
         role="tab"
         shouldRegisterItem={isSelected}
         {...props}
         className={clsx("tab", props.className)}
-        moveOnKeyPress={(event) => {
-          return event.key !== "ArrowRight" && event.key !== "ArrowLeft";
-        }}
+        // moveOnKeyPress={(event) => {
+        //   return event.key !== "ArrowRight" && event.key !== "ArrowLeft";
+        // }}
         render={
           <Ariakit.Tab
             render={props.render}
@@ -271,7 +268,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         ref={ref}
         role="option"
         id={id}
-        rowId={id}
+        // rowId={id}
         focusOnHover
         blurOnHoverEnd={false}
         {...props}

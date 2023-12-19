@@ -1,6 +1,5 @@
 import "./style.css";
 import { useId, useMemo, useState } from "react";
-import { CompositeRenderer } from "@ariakit/react-core/composite/composite-renderer";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import {
@@ -37,7 +36,7 @@ export default function Example() {
     return groups;
   }, [searchValue]);
 
-  const deferredPages = matches[getCategory(tabId, prefix)];
+  const pages = matches[getCategory(tabId, prefix)] || [];
 
   return (
     <ComboboxProvider
@@ -62,23 +61,17 @@ export default function Example() {
           })}
         </ComboboxTabs>
         <ComboboxPanel>
-          {!deferredPages?.length && (
+          {!pages.length && (
             <div className="no-results">
               No pages found for &quot;<strong>{searchValue}</strong>
               &quot;
             </div>
           )}
-          <CompositeRenderer
-            itemSize={40}
-            items={deferredPages}
-            orientation="vertical"
-          >
-            {({ path, label, ...page }) => (
-              <ComboboxItem key={label} render={<a href={path} />} {...page}>
-                {label}
-              </ComboboxItem>
-            )}
-          </CompositeRenderer>
+          {pages.map((page) => (
+            <ComboboxItem key={page.label} render={<a href={page.path} />}>
+              {page.label}
+            </ComboboxItem>
+          ))}
         </ComboboxPanel>
       </ComboboxPopover>
     </ComboboxProvider>

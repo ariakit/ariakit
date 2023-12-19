@@ -22,14 +22,15 @@
     top-0
     right-0
     flex
+    gap-1
     items-center
   ;
 }
 
 .combobox-cancel {
   @apply
-    h-8
-    w-8
+    h-6
+    w-6
     p-0
     rounded-sm
     text-black/70

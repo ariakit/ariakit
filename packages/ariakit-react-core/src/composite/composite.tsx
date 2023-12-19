@@ -63,7 +63,8 @@ function isModifierKey(event: ReactKeyboardEvent) {
 
 function canProxyKeyboardEvent(
   event: ReactKeyboardEvent,
-  state: CompositeStoreState,
+  // TODO: Remove?
+  _state: CompositeStoreState,
 ) {
   if (!isSelfTarget(event)) return false;
   if (isModifierKey(event)) return false;
@@ -73,17 +74,17 @@ function canProxyKeyboardEvent(
     // Printable characters shouldn't perform actions on the composite items if
     // the composite widget is a combobox.
     if (isPrintableKey(event)) return false;
-    const grid = isGrid(state.renderedItems);
-    const focusingInputOnly = state.activeId === null;
-    // Pressing Home or End keys on the text field should only be allowed when
-    // the widget has rows and the input is not the only element with focus.
-    // That is, the aria-activedescendant has no value.
-    const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
-    const isHomeOrEnd = event.key === "Home" || event.key === "End";
-    // If there are no rows or the input is the only focused element, then we
-    // should stop the event propagation so no action is performed on the
-    // composite items, but only on the input, like moving the caret/selection.
-    if (!allowHorizontalNavigationOnItems && isHomeOrEnd) return false;
+    // const grid = isGrid(state.renderedItems);
+    // const focusingInputOnly = state.activeId === null;
+    // // Pressing Home or End keys on the text field should only be allowed when
+    // // the widget has rows and the input is not the only element with focus.
+    // // That is, the aria-activedescendant has no value.
+    // const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
+    // const isHomeOrEnd = event.key === "Home" || event.key === "End";
+    // // If there are no rows or the input is the only focused element, then we
+    // // should stop the event propagation so no action is performed on the
+    // // composite items, but only on the input, like moving the caret/selection.
+    // if (!allowHorizontalNavigationOnItems && isHomeOrEnd) return false;
   }
   return !event.isPropagationStopped();
 }
