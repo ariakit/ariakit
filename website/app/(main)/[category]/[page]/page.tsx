@@ -190,7 +190,7 @@ export default async function Page({ params }: PageProps) {
   const nextPageLink = nextPage && (
     <Link
       href={`/${nextPage.category}/${nextPage.slug}`}
-      className="group flex w-auto items-center gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70 focus-visible:ariakit-outline-input dark:active:!bg-blue-800/25 md:ml-3 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25"
+      className="group flex w-auto items-center gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70 focus-visible:ariakit-outline-input md:ml-3 dark:active:!bg-blue-800/25 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25"
     >
       <PlusBordered
         plus={isNextPageNew}
@@ -210,7 +210,7 @@ export default async function Page({ params }: PageProps) {
   );
 
   const navList = (
-    <ul className="flex flex-col p-2 text-black/90 dark:text-white/80 md:p-0 md:text-sm md:text-black/80 md:dark:text-white/70">
+    <ul className="flex flex-col p-2 text-black/90 md:p-0 md:text-sm md:text-black/80 dark:text-white/80 md:dark:text-white/70">
       {renderTableOfContents(tableOfContents)}
     </ul>
   );
@@ -226,7 +226,7 @@ export default async function Page({ params }: PageProps) {
           </div>
         }
       >
-        <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
+        <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 md:flex dark:border-white/10">
           <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
             {navList}
           </nav>
@@ -239,7 +239,7 @@ export default async function Page({ params }: PageProps) {
           category={category}
           page={page}
         />
-        <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:to-pink-600/10 sm:grid-cols-2 sm:gap-8 sm:rounded-xl sm:p-8">
+        <div className="mt-20 grid w-full max-w-[832px] grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 sm:grid-cols-2 sm:gap-8 sm:rounded-xl sm:p-8 dark:from-blue-600/30 dark:to-pink-600/10">
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-medium sm:text-2xl">Follow updates</h2>
             <p className="text-black/80 dark:font-light dark:text-white/80">

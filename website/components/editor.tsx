@@ -194,7 +194,7 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
   return (
     <div
       className={tw`w-full max-w-[832px] overflow-hidden rounded-lg
-    border-gray-650 dark:border md:rounded-xl`}
+    border-gray-650 md:rounded-xl dark:border`}
     >
       <div
         className={tw`relative z-[12] flex h-12 gap-2 rounded-t-[inherit]
