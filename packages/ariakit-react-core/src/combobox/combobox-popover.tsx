@@ -1,4 +1,4 @@
-import { matches } from "@ariakit/core/utils/dom";
+import { getDocument, matches } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
@@ -63,19 +63,29 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
     props = usePopover({
       store,
       alwaysVisible,
+      backdrop: false,
       autoFocusOnShow: false,
       autoFocusOnHide: false,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       ...props,
-      // Combobox popovers can't be modal because the focus may be (and is by
-      // default) outside of it on the combobox input element.
-      modal: false,
+      getPersistentElements() {
+        const elements = props.getPersistentElements?.() || [];
+        if (!baseElement) return elements;
+        const doc = getDocument(baseElement);
+        const id = store?.getState()?.contentElement?.id;
+        const id2 = store?.getState()?.baseElement?.id;
+        if (!id) return [...elements, baseElement];
+        const controlElements = doc?.querySelectorAll<HTMLElement>(
+          `[aria-controls~="${id}"],[aria-controls="${id2}"]`,
+        );
+        return [...elements, ...controlElements];
+      },
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
       // combobox popover elements.
-      hideOnInteractOutside: (event: Event) => {
+      hideOnInteractOutside(event: Event) {
         const state = store?.getState();
         const contentId = state?.contentElement?.id;
         const baseId = state?.baseElement?.id;
@@ -124,7 +134,7 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface ComboboxPopoverOptions<T extends As = "div">
   extends ComboboxListOptions<T>,
-    Omit<PopoverOptions<T>, "store" | "modal"> {}
+    Omit<PopoverOptions<T>, "store"> {}
 
 export type ComboboxPopoverProps<T extends As = "div"> = Props<
   ComboboxPopoverOptions<T>

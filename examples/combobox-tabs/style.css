@@ -1,15 +1,57 @@
+@import url("../button/style.css");
 @import url("../combobox/style.css");
+
+.combobox-wrapper {
+  @apply
+    relative
+  ;
+}
 
 .combobox {
   @apply
-    data-[focus-visible]:aria-[activedescendant]:outline-1
+    outline-1
+    data-[focus-visible]:data-[active]:outline-2
+    pr-[72px]
+  ;
+}
+
+.combobox-buttons {
+  @apply
+    absolute
+    p-1
+    top-0
+    right-0
+    flex
+    items-center
+  ;
+}
+
+.combobox-cancel {
+  @apply
+    h-8
+    w-8
+    p-0
+    rounded-sm
+    text-black/70
+    dark:text-white/70
+  ;
+}
+
+.combobox-disclosure {
+  @apply
+    h-8
+    w-8
+    p-0
+    rounded-sm
   ;
 }
 
 .popover {
   @apply
     p-0
+    w-[480px]
     max-w-[--popover-available-width]
+    max-h-[min(var(--popover-available-height,333.5px),333.5px)]
     rounded-xl
   ;
 }
@@ -75,20 +117,22 @@
     top-0
     bg-inherit
     flex
-    gap-2
+    gap-1
     p-2
     overflow-x-auto
-    border-inherit
     text-[15px]
+    z-10
   ;
 }
 
 .tab {
   @apply
     rounded-full
-    border
-    border-inherit
-    px-3
+    flex
+    items-center
+    gap-1
+    pl-3
+    pr-2
     py-1
     whitespace-nowrap
     text-black/80
@@ -106,11 +150,30 @@
     data-[active-item]:dark:bg-blue-600
     data-[active-item]:border-blue-600
     data-[active-item]:dark:border-blue-600
-
-    /* data-[focus-visible]:outline */
   ;
 }
 
+.count {
+  @apply
+    rounded-full
+    text-xs
+    px-1
+    bg-black/10
+    dark:bg-white/10
+    [[aria-selected=true]_&]:bg-black/10
+    [[aria-selected=true]_&]:dark:bg-black/20
+    [[aria-selected=true][data-active-item]_&]:bg-black/20
+  ;
+}
+
+.tab-panel {
+  @apply
+    aria-busy:transition-opacity
+    aria-busy:delay-75
+    aria-busy:opacity-50
+    aria-busy:pointer-events-none
+  ;
+}
 
 .listbox {
   @apply
@@ -123,7 +186,15 @@
   @apply
     cursor-pointer
     px-3
-    scroll-mt-[48.5px]
+    scroll-mt-[46.5px]
     scroll-mb-[45px]
+    w-full
+  ;
+}
+
+.no-results {
+  @apply
+    my-10
+    text-center
   ;
 }
