@@ -31,11 +31,7 @@ import {
   CompositeContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.js";
-import type {
-  CompositeStore,
-  CompositeStoreItem,
-  CompositeStoreState,
-} from "./composite-store.js";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 import {
   findFirstEnabledItem,
   getEnabledItem,
@@ -49,6 +45,8 @@ function isGrid(items: CompositeStoreItem[]) {
 }
 
 function isPrintableKey(event: ReactKeyboardEvent): boolean {
+  const target = event.target as Element | null;
+  if (target && !isTextField(target)) return false;
   return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
 }
 
@@ -61,34 +59,6 @@ function isModifierKey(event: ReactKeyboardEvent) {
   );
 }
 
-function canProxyKeyboardEvent(
-  event: ReactKeyboardEvent,
-  // TODO: Remove?
-  _state: CompositeStoreState,
-) {
-  if (!isSelfTarget(event)) return false;
-  if (isModifierKey(event)) return false;
-  const target = event.target as Element;
-  if (!target) return true;
-  if (isTextField(target)) {
-    // Printable characters shouldn't perform actions on the composite items if
-    // the composite widget is a combobox.
-    if (isPrintableKey(event)) return false;
-    // const grid = isGrid(state.renderedItems);
-    // const focusingInputOnly = state.activeId === null;
-    // // Pressing Home or End keys on the text field should only be allowed when
-    // // the widget has rows and the input is not the only element with focus.
-    // // That is, the aria-activedescendant has no value.
-    // const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
-    // const isHomeOrEnd = event.key === "Home" || event.key === "End";
-    // // If there are no rows or the input is the only focused element, then we
-    // // should stop the event propagation so no action is performed on the
-    // // composite items, but only on the input, like moving the caret/selection.
-    // if (!allowHorizontalNavigationOnItems && isHomeOrEnd) return false;
-  }
-  return !event.isPropagationStopped();
-}
-
 function useKeyboardEventProxy(
   store: CompositeStore,
   onKeyboardEvent?: KeyboardEventHandler,
@@ -97,10 +67,13 @@ function useKeyboardEventProxy(
   return useEvent((event: ReactKeyboardEvent) => {
     onKeyboardEvent?.(event);
     if (event.defaultPrevented) return;
+    if (event.isPropagationStopped()) return;
+    if (!isSelfTarget(event)) return;
+    if (isModifierKey(event)) return;
+    if (isPrintableKey(event)) return;
     const state = store.getState();
     const activeElement = getEnabledItem(store, state.activeId)?.element;
     if (!activeElement) return;
-    if (!canProxyKeyboardEvent(event, state)) return;
     const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
     // If the active item element is not the previous element, this means that
@@ -359,8 +332,10 @@ export const useComposite = createHook<CompositeOptions>(
         else if (activeElement) {
           fireBlurEvent(activeElement, event);
         }
-        // TODO: Comment. Moving with keyboard with another store. The state is
-        // not updated before.
+        // Finally, if we still have a previousElement, this means that the
+        // store is being composed with another composite store and we're moving
+        // with keyboard. In this case, the state won't be updated before the
+        // blur event.
         else if (previousElement) {
           fireBlurEvent(previousElement, event);
         }
@@ -394,19 +369,15 @@ export const useComposite = createHook<CompositeOptions>(
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const grid = isGrid(renderedItems);
-      // TODO: Refactor and explain
-      if (isTextField(event.currentTarget)) {
-        const focusingInputOnly = activeId === null;
-        const allowHorizontalNavigationOnItems = grid && !focusingInputOnly;
-        const isHorizontalNavigation =
-          event.key === "ArrowLeft" ||
-          event.key === "ArrowRight" ||
-          event.key === "Home" ||
-          event.key === "End";
-        if (!allowHorizontalNavigationOnItems && isHorizontalNavigation) {
-          return;
-        }
-      }
+      // If the event is coming from a text field and no item is selected,
+      // horizontal keys should perform their default action on the text field
+      // instead of moving focus to an item.
+      const isHorizontalKey =
+        event.key === "ArrowLeft" ||
+        event.key === "ArrowRight" ||
+        event.key === "Home" ||
+        event.key === "End";
+      if (isHorizontalKey && isTextField(event.currentTarget)) return;
       const up = () => {
         if (grid) {
           const item = items && findFirstEnabledItemInTheLastRow(items);

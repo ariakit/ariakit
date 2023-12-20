@@ -278,28 +278,36 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (event.defaultPrevented) return;
       if (!isSelfTarget(event)) return;
       if (!store) return;
-      const { baseElement } = store.getState();
       const { currentTarget } = event;
       const state = store.getState();
       const item = store.item(id);
       const isGrid = !!item?.rowId;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
+      // If the base element is a text field, the Home and End keys should be
+      // performed on the text field, not the composite item, unless the
+      // composite is a grid or has a horizontal orientation.
+      const canHomeEnd = () => {
+        if (isGrid) return true;
+        if (isHorizontal) return true;
+        if (!state.baseElement) return true;
+        if (!isTextField(state.baseElement)) return true;
+        return false;
+      };
       const keyMap = {
         ArrowUp: (isGrid || isVertical) && store.up,
         ArrowRight: (isGrid || isHorizontal) && store.next,
         ArrowDown: (isGrid || isVertical) && store.down,
         ArrowLeft: (isGrid || isHorizontal) && store.previous,
         Home: () => {
-          // TODO: Explain. Replaces composite.tsx:76
-          if (baseElement && isTextField(baseElement)) return;
+          if (!canHomeEnd()) return;
           if (!isGrid || event.ctrlKey) {
             return store?.first();
           }
           return store?.previous(-1);
         },
         End: () => {
-          if (baseElement && isTextField(baseElement)) return;
+          if (!canHomeEnd()) return;
           if (!isGrid || event.ctrlKey) {
             return store?.last();
           }

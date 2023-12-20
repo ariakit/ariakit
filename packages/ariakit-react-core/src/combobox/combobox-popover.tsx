@@ -17,7 +17,7 @@ function isController(
   if ("id" in target) {
     const selector = ids
       .filter(Boolean)
-      .map((id) => `[aria-controls="${id}"]`)
+      .map((id) => `[aria-controls~="${id}"]`)
       .join(", ");
     if (!selector) return false;
     return matches(target, selector);
@@ -42,6 +42,7 @@ function isController(
 export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
   ({
     store,
+    modal,
     tabIndex,
     alwaysVisible,
     hideOnInteractOutside = true,
@@ -62,6 +63,7 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
 
     props = usePopover({
       store,
+      modal,
       alwaysVisible,
       backdrop: false,
       autoFocusOnShow: false,
@@ -69,16 +71,27 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       ...props,
+      // When the combobox popover is modal, we make sure to include the
+      // combobox input and all the combobox controls (cancel, disclosure) in
+      // the list of persistent elements so they make part of the modal context,
+      // allowing users to tab through them.
       getPersistentElements() {
         const elements = props.getPersistentElements?.() || [];
+        if (!modal) return elements;
+        if (!store) return elements;
+        const { contentElement, baseElement } = store.getState();
         if (!baseElement) return elements;
         const doc = getDocument(baseElement);
-        const id = store?.getState()?.contentElement?.id;
-        const id2 = store?.getState()?.baseElement?.id;
-        if (!id) return [...elements, baseElement];
-        const controlElements = doc?.querySelectorAll<HTMLElement>(
-          `[aria-controls~="${id}"],[aria-controls="${id2}"]`,
-        );
+        const selectors: string[] = [];
+        if (contentElement?.id) {
+          selectors.push(`[aria-controls~="${contentElement.id}"]`);
+        }
+        if (baseElement?.id) {
+          selectors.push(`[aria-controls~="${baseElement.id}"]`);
+        }
+        if (!selectors.length) return [...elements, baseElement];
+        const selector = selectors.join(",");
+        const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         return [...elements, ...controlElements];
       },
       // Make sure we don't hide the popover when the user interacts with the

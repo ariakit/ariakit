@@ -75,15 +75,12 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
     });
 
     const open = store.useState("open");
-    const label = store.useState((state) =>
-      state.open ? "Hide popup" : "Show popup",
-    );
 
     props = {
       children,
       tabIndex: -1,
+      "aria-label": open ? "Hide popup" : "Show popup",
       "aria-expanded": open,
-      "aria-label": label,
       ...props,
       onMouseDown,
       onClick,

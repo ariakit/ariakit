@@ -13,7 +13,7 @@ export default function Page() {
       <Hero />
 
       <div className="p-3 sm:p-8">
-        <div className="sm:rounded-x mx-auto grid w-full max-w-6xl grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 dark:from-blue-600/30 dark:via-blue-600/0 dark:to-blue-600/0 sm:grid-cols-2 sm:gap-10 sm:p-10 md:gap-20 md:rounded-2xl md:p-16">
+        <div className="sm:rounded-x mx-auto grid w-full max-w-6xl grid-cols-1 justify-between gap-4 rounded-lg bg-gradient-to-br from-blue-50 to-pink-50 p-4 sm:grid-cols-2 sm:gap-10 sm:p-10 md:gap-20 md:rounded-2xl md:p-16 dark:from-blue-600/30 dark:via-blue-600/0 dark:to-blue-600/0">
           <div className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl lg:text-4xl">
               Newsletter

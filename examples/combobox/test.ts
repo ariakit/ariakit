@@ -1,5 +1,9 @@
 import { click, press, q, type } from "@ariakit/test";
 
+function getSelectionStart(element: Element | HTMLInputElement | null) {
+  return element && "selectionStart" in element ? element.selectionStart : null;
+}
+
 test("show on click", async () => {
   expect(q.listbox()).not.toBeInTheDocument();
   await click(q.combobox());
@@ -128,4 +132,18 @@ test("clicking on combobox input removes focus from item", async () => {
   expect(q.option("🍇 Grape")).toHaveFocus();
   await click(q.combobox());
   expect(q.option("🍇 Grape")).not.toHaveFocus();
+});
+
+test("move cursor on combobox with horizontal keys", async () => {
+  await press.Tab();
+  await type("abc");
+  expect(getSelectionStart(q.combobox())).toBe(3);
+  await press.ArrowLeft();
+  expect(getSelectionStart(q.combobox())).toBe(2);
+  await press.ArrowDown();
+  expect(q.option("🍎 Apple")).toHaveFocus();
+  await press.ArrowRight();
+  expect(getSelectionStart(q.combobox())).toBe(3);
+  await press.Home();
+  expect(getSelectionStart(q.combobox())).toBe(0);
 });

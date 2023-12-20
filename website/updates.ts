@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved docs: Composition",
+    type: "page",
+    href: "/guide/composition#merging-the-rendered-element-props",
+    dateTime: "2023-12-19T21:12Z",
+  },
+  {
     title: "New example: Submenu with Combobox",
     type: "page",
     href: "/examples/menu-nested-combobox",

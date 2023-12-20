@@ -56,25 +56,49 @@ The [Tab with Next.js App Router](/examples/tab-next-router) example uses the `r
 
 ## Merging the rendered element props
 
-When passing an HTML element to the `render` prop, all the HTML props returned by the original component will be passed to the rendered element. The `style`, `className`, `ref` and event props will be automatically merged. In all other cases, the rendered element props will override the original component props:
+When passing an HTML element to the `render` prop, all the HTML props returned by the original component will be passed to the rendered element. The `style`, `className`, `ref` and event props will be automatically merged. In all other cases, the rendered element props will override the original component props.
 
-```jsx "id"0,2
-// Results in <a id="item" ...other HTML props from ComboboxItem
-<ComboboxItem id="item" render={<a />} />
+- Props coming from the original component will be passed to the rendered element:
 
-// Results in <a id="link" ...other HTML props from ComboboxItem
-<ComboboxItem id="item" render={<a id="link" />} />
-```
+  ```jsx "id"
+  <ComboboxItem id="item" render={<a />} />
+  ```
 
-This also applies to the `children` prop:
+  ```html "id"
+  <a id="item">...</a>
+  ```
 
-```jsx "Ariakit"0 "Ariakit.org"
-// Children will be Ariakit
-<ComboboxItem render={<a />}>Ariakit</ComboboxItem>
+- Props passed directly to the rendered element will override the original component props:
 
-// Children will be Ariakit.org
-<ComboboxItem render={<a>Ariakit.org</a>}>Ariakit</ComboboxItem>
-```
+  ```jsx "id"1
+  <ComboboxItem id="item" render={<a id="link" />} />
+  ```
+
+  ```html "id"
+  <a id="link">...</a>
+  ```
+
+This also applies to the `children` prop. You don't need to nest children within the `render` prop. But if you do, the children passed to the rendered element will override the original component children.
+
+- Children coming from the original component will be passed to the rendered element:
+
+  ```jsx "Ariakit"
+  <ComboboxItem render={<a />}>Ariakit</ComboboxItem>
+  ```
+
+  ```html "Ariakit"
+  <a>Ariakit</a>
+  ```
+
+- Children passed directly to the rendered element will override the original component children:
+
+  ```jsx "Ariakit.org"
+  <ComboboxItem render={<a>Ariakit.org</a>}>Ariakit</ComboboxItem>
+  ```
+
+  ```html "Ariakit.org"
+  <a>Ariakit.org</a>
+  ```
 
 <aside data-type="note" title="Flat is better than nested">
 
