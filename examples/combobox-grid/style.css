@@ -1,0 +1,8 @@
+@import url("../combobox/style.css");
+
+.combobox-row {
+  @apply
+    grid
+    grid-cols-3
+  ;
+}
