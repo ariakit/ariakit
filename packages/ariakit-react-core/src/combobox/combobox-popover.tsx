@@ -1,4 +1,4 @@
-import { matches } from "@ariakit/core/utils/dom";
+import { getDocument, matches } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
@@ -17,7 +17,7 @@ function isController(
   if ("id" in target) {
     const selector = ids
       .filter(Boolean)
-      .map((id) => `[aria-controls="${id}"]`)
+      .map((id) => `[aria-controls~="${id}"]`)
       .join(", ");
     if (!selector) return false;
     return matches(target, selector);
@@ -42,6 +42,7 @@ function isController(
 export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
   ({
     store,
+    modal,
     tabIndex,
     alwaysVisible,
     hideOnInteractOutside = true,
@@ -62,20 +63,42 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
 
     props = usePopover({
       store,
+      modal,
       alwaysVisible,
+      backdrop: false,
       autoFocusOnShow: false,
       autoFocusOnHide: false,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       ...props,
-      // Combobox popovers can't be modal because the focus may be (and is by
-      // default) outside of it on the combobox input element.
-      modal: false,
+      // When the combobox popover is modal, we make sure to include the
+      // combobox input and all the combobox controls (cancel, disclosure) in
+      // the list of persistent elements so they make part of the modal context,
+      // allowing users to tab through them.
+      getPersistentElements() {
+        const elements = props.getPersistentElements?.() || [];
+        if (!modal) return elements;
+        if (!store) return elements;
+        const { contentElement, baseElement } = store.getState();
+        if (!baseElement) return elements;
+        const doc = getDocument(baseElement);
+        const selectors: string[] = [];
+        if (contentElement?.id) {
+          selectors.push(`[aria-controls~="${contentElement.id}"]`);
+        }
+        if (baseElement?.id) {
+          selectors.push(`[aria-controls~="${baseElement.id}"]`);
+        }
+        if (!selectors.length) return [...elements, baseElement];
+        const selector = selectors.join(",");
+        const controlElements = doc.querySelectorAll<HTMLElement>(selector);
+        return [...elements, ...controlElements];
+      },
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
       // combobox popover elements.
-      hideOnInteractOutside: (event: Event) => {
+      hideOnInteractOutside(event: Event) {
         const state = store?.getState();
         const contentId = state?.contentElement?.id;
         const baseId = state?.baseElement?.id;
@@ -124,7 +147,7 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface ComboboxPopoverOptions<T extends As = "div">
   extends ComboboxListOptions<T>,
-    Omit<PopoverOptions<T>, "store" | "modal"> {}
+    Omit<PopoverOptions<T>, "store"> {}
 
 export type ComboboxPopoverProps<T extends As = "div"> = Props<
   ComboboxPopoverOptions<T>
