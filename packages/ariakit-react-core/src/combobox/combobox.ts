@@ -593,8 +593,15 @@ export interface ComboboxOptions<T extends As = "input">
    * ```jsx
    * <Combobox
    *   autoSelect
-   *   // Auto select the last item
-   *   getAutoSelectId={(items) => items.at(-1)?.id}
+   *   getAutoSelectId={(items) => {
+   *     // Auto select the first enabled item with a value
+   *     const item = items.find((item) => {
+   *       if (item.disabled) return false;
+   *       if (!item.value) return false;
+   *       return true;
+   *     });
+   *     return item?.id;
+   *   }}
    * />
    * ```
    */
