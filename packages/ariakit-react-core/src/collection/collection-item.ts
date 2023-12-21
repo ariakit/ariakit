@@ -1,47 +1,11 @@
-import { forwardRef, memo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity } from "@ariakit/core/utils/misc";
-import {
-  useId,
-  useMergeRefs,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { useId, useMergeRefs } from "../utils/hooks.js";
+import { createComponent, createElement, createHook } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
-import { useCollectionContext } from "./collection-context.jsx";
+import { useCollectionContext } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
-
-const CollectionItemImpl = ({
-  id,
-  store,
-  getItem = identity,
-  shouldRegisterItem = true,
-  elementRef,
-}) => {
-  const renderedItems = store?.useState(
-    (state) => `aa${state.renderedItems.map(({ id }) => id).join("///")}aa`,
-  );
-
-  console.log(renderedItems);
-  // Maybe use IntersectionObserver in the store to trigger a re-render here?
-  // with memo.
-
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!id) return;
-    if (!element) return;
-    if (!shouldRegisterItem) return;
-    const item = getItem({ id, element });
-    return store?.renderItem(item);
-  }, [elementRef, id, shouldRegisterItem, getItem, store, renderedItems]);
-
-  return null;
-};
 
 /**
  * Returns props to create a `CollectionItem` component. This hook will register
@@ -68,36 +32,17 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
     const context = useCollectionContext();
     store = store || context;
 
-    const ref = useRef<HTMLDivElement>(null);
     const id = useId(props.id);
+    const ref = useRef<HTMLDivElement>(element);
 
-    props = useWrapElement(
-      props,
-      (element) => (
-        <>
-          <CollectionItemImpl
-            elementRef={ref}
-            id={id}
-            store={store}
-            shouldRegisterItem={shouldRegisterItem}
-            getItem={getItem}
-          />
-          {element}
-        </>
-      ),
-      [store, id, shouldRegisterItem, getItem],
-    );
-
-    // const ref = useRef<HTMLDivElement>(element);
-
-    // useEffect(() => {
-    //   const element = ref.current;
-    //   if (!id) return;
-    //   if (!element) return;
-    //   if (!shouldRegisterItem) return;
-    //   const item = getItem({ id, element });
-    //   return store?.renderItem(item);
-    // }, [id, shouldRegisterItem, getItem, store]);
+    useEffect(() => {
+      const element = ref.current;
+      if (!id) return;
+      if (!element) return;
+      if (!shouldRegisterItem) return;
+      const item = getItem({ id, element });
+      return store?.renderItem(item);
+    }, [id, shouldRegisterItem, getItem, store]);
 
     props = {
       ...props,
