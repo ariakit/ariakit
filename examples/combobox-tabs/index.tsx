@@ -30,10 +30,7 @@ export default function Example() {
 
   const matches = useMemo(() => {
     const keys = ["label", "path"];
-    const allMatches = matchSorter(flatPages, searchValue, {
-      keys,
-      threshold: matchSorter.rankings.NO_MATCH,
-    });
+    const allMatches = matchSorter(flatPages, searchValue, { keys });
     const groups = groupBy(allMatches, "category");
     groups.All = allMatches;
     return groups;
@@ -55,8 +52,8 @@ export default function Example() {
             return (
               <ComboboxTab
                 key={category}
-                disabled={!currentPages?.length}
                 id={getTabId(category, prefix)}
+                disabled={!currentPages?.length}
               >
                 {category}
                 <span className="count">{currentPages?.length || 0}</span>
@@ -71,11 +68,11 @@ export default function Example() {
               &quot;
             </div>
           )}
-          {currentPages.map((page) => (
-            // TODO: Fix flash that only happens when the items are re-ordered,
-            // but no items are added or removed. Go to the Guide tab and type
-            // S.
-            <ComboboxItem key={page.path} render={<a href={page.path} />}>
+          {currentPages.map((page, i) => (
+            <ComboboxItem
+              key={page.path + i}
+              render={<a href={page.path} target="_blank" rel="noreferrer" />}
+            >
               {page.label}
             </ComboboxItem>
           ))}

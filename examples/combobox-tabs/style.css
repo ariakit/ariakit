@@ -10,8 +10,8 @@
 .combobox {
   @apply
     outline-1
-    data-[focus-visible]:data-[active]:outline-2
     pr-[72px]
+    data-[focus-visible]:data-[active-item]:outline-2
   ;
 }
 
@@ -131,24 +131,27 @@
     rounded-full
     flex
     items-center
-    gap-1
-    pl-3
-    pr-2
+    px-3
     py-1
+    gap-1
     whitespace-nowrap
+
     text-black/80
     dark:text-white/90
+
+    hover:bg-gray-150
+    hover:dark:bg-gray-600
 
     aria-selected:text-black
     aria-selected:dark:text-white
     aria-selected:bg-gray-200
     aria-selected:dark:bg-gray-500
-    aria-selected:border-gray-200
-    aria-selected:dark:border-gray-500
 
     data-[active-item]:text-white
     data-[active-item]:bg-blue-600
+    data-[active-item]:hover:bg-blue-600
     data-[active-item]:dark:bg-blue-600
+    data-[active-item]:hover:dark:bg-blue-600
     data-[active-item]:border-blue-600
     data-[active-item]:dark:border-blue-600
   ;
@@ -159,20 +162,12 @@
     rounded-full
     text-xs
     px-1
+    -mr-1
     bg-black/10
     dark:bg-white/10
     [[aria-selected=true]_&]:bg-black/10
     [[aria-selected=true]_&]:dark:bg-black/20
     [[aria-selected=true][data-active-item]_&]:bg-black/20
-  ;
-}
-
-.tab-panel {
-  @apply
-    aria-busy:transition-opacity
-    aria-busy:delay-75
-    aria-busy:opacity-50
-    aria-busy:pointer-events-none
   ;
 }
 
@@ -185,11 +180,11 @@
 
 .combobox-item {
   @apply
-    cursor-pointer
     px-3
+    w-full
     scroll-mt-[46.5px]
     scroll-mb-[45px]
-    w-full
+    cursor-pointer
   ;
 }
 

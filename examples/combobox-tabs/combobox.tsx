@@ -3,9 +3,6 @@ import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import { ArrowIcon, ReturnIcon } from "./icons.jsx";
 
-const PendingSearchContext = React.createContext(false);
-const PendingTabContext = React.createContext(false);
-
 export interface ComboboxProviderProps extends Ariakit.ComboboxProviderProps {
   tabId?: Ariakit.TabProviderProps["selectedId"];
   setTabId?: (id: string) => void;
@@ -22,11 +19,8 @@ export function ComboboxProvider({
   onTabChange,
   ...props
 }: ComboboxProviderProps) {
-  const [searchPending, startSearchTransition] = React.useTransition();
-  const [tabPending, startTabTransition] = React.useTransition();
-  const [activeId, setActiveId] = React.useState<string | null | undefined>(
-    null,
-  );
+  const [activeId, setActiveId] =
+    React.useState<ComboboxProviderProps["activeId"]>(null);
   return (
     <Ariakit.ComboboxProvider
       {...props}
@@ -34,7 +28,7 @@ export function ComboboxProvider({
       setActiveId={setActiveId}
       setValue={(value) => {
         props.setValue?.(value);
-        startSearchTransition(() => {
+        React.startTransition(() => {
           onSearch?.(value);
         });
       }}
@@ -48,16 +42,12 @@ export function ComboboxProvider({
         setSelectedId={(id) => {
           if (!id) return;
           setTabId?.(id);
-          startTabTransition(() => {
+          React.startTransition(() => {
             onTabChange?.(id);
           });
         }}
       >
-        <PendingSearchContext.Provider value={searchPending}>
-          <PendingTabContext.Provider value={tabPending}>
-            {props.children}
-          </PendingTabContext.Provider>
-        </PendingSearchContext.Provider>
+        {props.children}
       </Ariakit.TabProvider>
     </Ariakit.ComboboxProvider>
   );
@@ -68,7 +58,6 @@ export interface ComboboxProps extends Ariakit.ComboboxProps {}
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox(props, ref) {
     const combobox = Ariakit.useComboboxContext()!;
-    const isActive = combobox.useState((state) => state.activeId === null);
     const hasValue = combobox.useState((state) => state.value !== "");
     return (
       <div className="combobox-wrapper">
@@ -76,14 +65,13 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ref={ref}
           autoSelect
           {...props}
-          data-active={isActive || undefined}
           className={clsx("combobox", props.className)}
           getAutoSelectId={(items) => {
-            const item = items.find((item) => {
+            const firstEnabledNonTabItem = items.find((item) => {
               if (item.disabled) return false;
               return item.element?.getAttribute("role") !== "tab";
             });
-            return item?.id;
+            return firstEnabledNonTabItem?.id;
           }}
         />
         <div className="combobox-buttons">
@@ -130,7 +118,7 @@ export const ComboboxPopover = React.forwardRef<
           to navigate
         </div>
         {!isInputActive && (
-          <div className="shortcut switch-tabs">
+          <div className="shortcut">
             <kbd className="kbd" aria-label="Left Arrow">
               <ArrowIcon direction="left" />
             </kbd>
@@ -141,7 +129,7 @@ export const ComboboxPopover = React.forwardRef<
           </div>
         )}
         {!isInputActive && (
-          <div className="shortcut enter-to-select">
+          <div className="shortcut">
             <kbd className="kbd" aria-label="Enter">
               <ReturnIcon />
             </kbd>
@@ -205,15 +193,12 @@ export const ComboboxPanel = React.forwardRef<
   ComboboxPanelProps
 >(function ComboboxTabPanel(props, ref) {
   const tab = Ariakit.useTabContext()!;
-  // const tabPending = React.useContext(PendingTabContext);
-  // const searchPending = React.useContext(PendingSearchContext);
   const tabId = tab.useState((state) => props.tabId ?? state.selectedId);
   return (
     <Ariakit.TabPanel
       ref={ref}
       tabId={tabId}
       focusable={false}
-      // aria-busy={tabPending || searchPending}
       {...props}
       className={clsx("tab-panel", props.className)}
     >
@@ -224,20 +209,15 @@ export const ComboboxPanel = React.forwardRef<
   );
 });
 
-export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {
-  children?: React.ReactNode;
-}
+export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {}
 
 export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {
-    const tab = Ariakit.useTabContext();
-    const defaultId = React.useId();
-    const id = props.id ?? defaultId;
+    const tab = Ariakit.useTabContext()!;
     return (
       <Ariakit.ComboboxItem
         ref={ref}
         role="option"
-        id={id}
         focusOnHover
         blurOnHoverEnd={false}
         {...props}
@@ -245,7 +225,6 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         onKeyDownCapture={(event) => {
           props.onKeyDownCapture?.(event);
           if (event.defaultPrevented) return;
-          if (!tab) return;
           const keyMap = {
             ArrowLeft: tab.previous,
             ArrowRight: tab.next,

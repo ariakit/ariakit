@@ -296,12 +296,12 @@ export const useCombobox = createHook<ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      // If there's no first item (that is, there no items or all items are
-      // disabled), we should move the focus to the input (null), otherwise,
-      // with async items, the activeValue won't be reset.
       if (autoSelect) {
         const autoSelectId = getAutoSelectIdProp(items) ?? store.first();
         autoSelectIdRef.current = autoSelectId;
+        // If there's no first item (that is, there no items or all items are
+        // disabled), we should move the focus to the input (null), otherwise,
+        // with async items, the activeValue won't be reset.
         store.move(autoSelectId ?? null);
       } else {
         const element = store.item(activeId)?.element;
@@ -479,6 +479,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       ? autoComplete
       : undefined;
 
+    const isActiveItem = store.useState((state) => state.activeId === null);
+
     props = {
       id,
       role: "combobox",
@@ -486,6 +488,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "aria-expanded": open,
       "aria-controls": contentElement?.id,
+      "data-active-item": isActiveItem || undefined,
       value,
       ...props,
       ref: useMergeRefs(ref, props.ref),
