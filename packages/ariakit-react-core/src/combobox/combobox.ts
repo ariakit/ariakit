@@ -101,7 +101,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     store,
     focusable = true,
     autoSelect: autoSelectProp = false,
-    onAutoSelect,
+    getAutoSelectId,
     showOnChange = true,
     setValueOnChange = true,
     showOnMouseDown = true,
@@ -223,6 +223,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     ]);
 
     const scrollingElementRef = useRef<Element | null>(null);
+    const getAutoSelectIdProp = useEvent(getAutoSelectId);
+    const autoSelectIdRef = useRef<string | null | undefined>(null);
 
     // Disable the autoSelect behavior when the user scrolls the combobox
     // content. This prevents the focus from moving to the first item on
@@ -240,12 +242,12 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
       const onScroll = () => {
         if (!store) return;
-        // We won't disable the autoSelect behavior if the first item is still
-        // focused.
+        if (!canAutoSelectRef.current) return;
+        // We won't disable the autoSelect behavior if the autoSelect item is
+        // still focused.
         const { activeId } = store.getState();
         if (activeId === null) return;
-        // TODO
-        if (activeId === store.first()) return;
+        if (activeId === autoSelectIdRef.current) return;
         canAutoSelectRef.current = false;
       };
       const options = { passive: true, capture: true };
@@ -275,7 +277,6 @@ export const useCombobox = createHook<ComboboxOptions>(
     }, [open]);
 
     const resetValueOnSelect = store.useState("resetValueOnSelect");
-    const onAutoSelectProp = useEvent(onAutoSelect);
 
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
@@ -299,26 +300,9 @@ export const useCombobox = createHook<ComboboxOptions>(
       // disabled), we should move the focus to the input (null), otherwise,
       // with async items, the activeValue won't be reset.
       if (autoSelect) {
-        const event = new FocusEvent("autoselect", {
-          bubbles: true,
-          cancelable: true,
-          relatedTarget: store.item(store.first() ?? null)?.element,
-        });
-        baseElement?.addEventListener(
-          "autoselect" as "focus",
-          onAutoSelectProp,
-          { once: true },
-        );
-        baseElement?.dispatchEvent(event);
-        // TODO: If it's default prevented, we should get the focused item so we
-        // don't disable autoSelect on the scroll event above. Maybe
-        // onAutoSelect is not a good idea. Maybe something like
-        // moveOnAutoSelect or getAutoSelectId? Or maybe we just get the
-        // activeId here and compare it with the previous activeId, so we can
-        // use check it in the scroll event (if they're different). No, it can
-        // autoSelect the same item?
-        if (event.defaultPrevented) return;
-        store.move(store.first() ?? null);
+        const autoSelectId = getAutoSelectIdProp(items) ?? store.first();
+        autoSelectIdRef.current = autoSelectId;
+        store.move(autoSelectId ?? null);
       } else {
         const element = store.item(activeId)?.element;
         if (element && "scrollIntoView" in element) {
@@ -332,7 +316,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       storeValue,
       autoSelect,
       resetValueOnSelect,
-      onAutoSelectProp,
+      getAutoSelectIdProp,
       items,
     ]);
 
@@ -592,9 +576,11 @@ export interface ComboboxOptions<T extends As = "input">
    */
   autoSelect?: boolean;
   /**
-   * TODO: Docs
+   * TODO: DOcs
    */
-  onAutoSelect?: (event: FocusEvent) => void;
+  getAutoSelectId?: (
+    renderedItems: ComboboxStoreState["renderedItems"],
+  ) => string | null | undefined;
   /**
    * Whether the items will be filtered based on
    * [`value`](https://ariakit.org/reference/combobox-provider#value) and

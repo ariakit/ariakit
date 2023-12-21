@@ -28,11 +28,11 @@ export const pages = {
   Examples: [
     { label: "Custom Checkbox", path: "/examples/checkbox-custom" },
     { label: "Checkbox group", path: "/examples/checkbox-group" },
-    { label: "Animated combobox", path: "/examples/combobox-animated" },
+    { label: "Animated Combobox", path: "/examples/combobox-animated" },
     { label: "ComboboxCancel", path: "/examples/combobox-cancel" },
     { label: "ComboboxDisclosure", path: "/examples/combobox-disclosure" },
     { label: "Combobox filtering", path: "/examples/combobox-filtering" },
-    { label: "ComboboxGroup", path: "/examples/combobox-Group" },
+    { label: "ComboboxGroup", path: "/examples/combobox-group" },
     { label: "Combobox with links", path: "/examples/combobox-links" },
     { label: "Radix UI Combobox", path: "/examples/combobox-radix" },
     { label: "Animated Dialog", path: "/examples/dialog-animated" },

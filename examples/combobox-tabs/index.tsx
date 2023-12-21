@@ -30,13 +30,16 @@ export default function Example() {
 
   const matches = useMemo(() => {
     const keys = ["label", "path"];
-    const allMatches = matchSorter(flatPages, searchValue, { keys });
+    const allMatches = matchSorter(flatPages, searchValue, {
+      keys,
+      threshold: matchSorter.rankings.NO_MATCH,
+    });
     const groups = groupBy(allMatches, "category");
     groups.All = allMatches;
     return groups;
   }, [searchValue]);
 
-  const pages = matches[getCategory(tabId, prefix)] || [];
+  const currentPages = matches[getCategory(tabId, prefix)] || [];
 
   return (
     <ComboboxProvider
@@ -44,31 +47,35 @@ export default function Example() {
       onTabChange={setTabId}
       onSearch={setSearchValue}
     >
-      <Combobox placeholder="Search pages" autoSelect={false} />
+      <Combobox placeholder="Search pages" />
       <ComboboxPopover aria-label="Pages">
         <ComboboxTabs aria-label="Categories">
           {categories.map((category) => {
-            const pages = matches[category];
+            const currentPages = matches[category];
             return (
               <ComboboxTab
                 key={category}
-                disabled={!pages?.length}
+                disabled={!currentPages?.length}
                 id={getTabId(category, prefix)}
               >
-                {category} <span className="count">{pages?.length || 0}</span>
+                {category}
+                <span className="count">{currentPages?.length || 0}</span>
               </ComboboxTab>
             );
           })}
         </ComboboxTabs>
         <ComboboxPanel>
-          {!pages.length && (
+          {!currentPages.length && (
             <div className="no-results">
               No pages found for &quot;<strong>{searchValue}</strong>
               &quot;
             </div>
           )}
-          {pages.map((page) => (
-            <ComboboxItem key={page.label} render={<a href={page.path} />}>
+          {currentPages.map((page) => (
+            // TODO: Fix flash that only happens when the items are re-ordered,
+            // but no items are added or removed. Go to the Guide tab and type
+            // S.
+            <ComboboxItem key={page.path} render={<a href={page.path} />}>
               {page.label}
             </ComboboxItem>
           ))}

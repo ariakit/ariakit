@@ -1,5 +1,5 @@
 import { getDocument } from "../utils/dom.js";
-import { chain, defaultValue } from "../utils/misc.js";
+import { chain, defaultValue, shallowEqual } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
@@ -103,8 +103,8 @@ export function createCollectionStore<
   const sortItems = () => {
     const state = privateStore.getState();
     const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
-    privateStore.setState("renderedItems", renderedItems);
-    collection.setState("renderedItems", renderedItems);
+    // privateStore.setState("renderedItems", renderedItems);
+    // collection.setState("renderedItems", renderedItems);
   };
 
   setup(collection, () => init(privateStore));
@@ -147,6 +147,13 @@ export function createCollectionStore<
       if (index !== -1) {
         prevItem = items[index];
         const nextItem = { ...prevItem, ...item };
+        // TODO:
+        // if (shallowEqual(prevItem, nextItem)) {
+        //   console.log("equal");
+        //   return items;
+        // } else {
+        //   console.log(prevItem, nextItem);
+        // }
         nextItems[index] = nextItem;
         itemsMap.set(item.id, nextItem);
       } else {
@@ -185,7 +192,7 @@ export function createCollectionStore<
       chain(
         registerItem(item),
         mergeItem(item, (getItems) =>
-          privateStore.setState("renderedItems", getItems),
+          collection.setState("renderedItems", getItems),
         ),
       ),
 
