@@ -100,34 +100,47 @@ export function createCollectionStore<
 
   const collection = createStore(initialState, props.store);
 
-  const sortItems = () => {
-    const state = privateStore.getState();
-    const renderedItems = sortBasedOnDOMPosition(state.renderedItems);
-    privateStore.setState("renderedItems", renderedItems);
-    collection.setState("renderedItems", renderedItems);
-  };
-
   setup(collection, () => init(privateStore));
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
-      let raf = requestAnimationFrame(sortItems);
-      if (typeof IntersectionObserver !== "function") return;
-      const callback = () => {
+
+      const raf = requestAnimationFrame(() => {
+        const { renderedItems } = collection.getState();
+        // Bail out if the rendered items haven't changed. This is important
+        // because the following lines will cause this function to be called
+        // again.
+        if (state.renderedItems === renderedItems) return;
+        const sortedItems = sortBasedOnDOMPosition(state.renderedItems);
+        privateStore.setState("renderedItems", sortedItems);
+        collection.setState("renderedItems", sortedItems);
+      });
+
+      if (typeof IntersectionObserver !== "function") {
+        return () => cancelAnimationFrame(raf);
+      }
+
+      const ioCallback = () => {
         if (firstRun) {
+          // The IntersectionObserver callback is called synchronously the first
+          // time. We just ignore it.
           firstRun = false;
           return;
         }
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(sortItems);
+        // Re-trigger the the private store callback to sort the items again in
+        // the requestAnimationFrame callback above.
+        privateStore.setState("renderedItems", [...state.renderedItems]);
       };
+
       const root = getCommonParent(state.renderedItems);
-      const observer = new IntersectionObserver(callback, { root });
-      state.renderedItems.forEach((item) => {
-        if (!item.element) return;
+      const observer = new IntersectionObserver(ioCallback, { root });
+
+      for (const item of state.renderedItems) {
+        if (!item.element) continue;
         observer.observe(item.element);
-      });
+      }
+
       return () => {
         cancelAnimationFrame(raf);
         observer.disconnect();
