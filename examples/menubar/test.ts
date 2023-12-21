@@ -36,7 +36,7 @@ test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
   expect(q.menu("File")).toBeVisible();
-  expect(q.menuitem("New Tab")).toHaveFocus();
+  await waitFor(() => expect(q.menuitem("New Tab")).toHaveFocus());
   await press.Space();
   expect(q.menu("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
