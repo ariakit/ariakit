@@ -101,6 +101,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     store,
     focusable = true,
     autoSelect: autoSelectProp = false,
+    getAutoSelectId,
     showOnChange = true,
     setValueOnChange = true,
     showOnMouseDown = true,
@@ -222,6 +223,8 @@ export const useCombobox = createHook<ComboboxOptions>(
     ]);
 
     const scrollingElementRef = useRef<Element | null>(null);
+    const getAutoSelectIdProp = useEvent(getAutoSelectId);
+    const autoSelectIdRef = useRef<string | null | undefined>(null);
 
     // Disable the autoSelect behavior when the user scrolls the combobox
     // content. This prevents the focus from moving to the first item on
@@ -239,11 +242,12 @@ export const useCombobox = createHook<ComboboxOptions>(
       };
       const onScroll = () => {
         if (!store) return;
-        // We won't disable the autoSelect behavior if the first item is still
-        // focused.
+        if (!canAutoSelectRef.current) return;
+        // We won't disable the autoSelect behavior if the autoSelect item is
+        // still focused.
         const { activeId } = store.getState();
         if (activeId === null) return;
-        if (activeId === store.first()) return;
+        if (activeId === autoSelectIdRef.current) return;
         canAutoSelectRef.current = false;
       };
       const options = { passive: true, capture: true };
@@ -292,11 +296,16 @@ export const useCombobox = createHook<ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      // If there's no first item (that is, there no items or all items are
-      // disabled), we should move the focus to the input (null), otherwise,
-      // with async items, the activeValue won't be reset.
       if (autoSelect) {
-        store.move(store.first() ?? null);
+        const userAutoSelectId = getAutoSelectIdProp(items);
+        const autoSelectId =
+          userAutoSelectId !== undefined ? userAutoSelectId : store.first();
+        autoSelectIdRef.current = autoSelectId;
+        // If there's no first item (that is, there are no items or all items
+        // are disabled), we should move the focus to the input (null),
+        // otherwise, with async items, the activeValue won't be reset. TODO:
+        // Test this.
+        store.move(autoSelectId ?? null);
       } else {
         const element = store.item(activeId)?.element;
         if (element && "scrollIntoView" in element) {
@@ -310,6 +319,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       storeValue,
       autoSelect,
       resetValueOnSelect,
+      getAutoSelectIdProp,
       items,
     ]);
 
@@ -472,6 +482,8 @@ export const useCombobox = createHook<ComboboxOptions>(
       ? autoComplete
       : undefined;
 
+    const isActiveItem = store.useState((state) => state.activeId === null);
+
     props = {
       id,
       role: "combobox",
@@ -479,6 +491,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "aria-expanded": open,
       "aria-controls": contentElement?.id,
+      "data-active-item": isActiveItem || undefined,
       value,
       ...props,
       ref: useMergeRefs(ref, props.ref),
@@ -568,6 +581,33 @@ export interface ComboboxOptions<T extends As = "input">
    * @default false
    */
   autoSelect?: boolean;
+  /**
+   * Function that takes the currently rendered items and returns the id of the
+   * item to be auto selected when the
+   * [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop is
+   * `true`.
+   *
+   * By default, the first enabled item is auto selected. This function is handy
+   * if you prefer a different item to be auto selected.
+   * @example
+   * ```jsx
+   * <Combobox
+   *   autoSelect
+   *   getAutoSelectId={(items) => {
+   *     // Auto select the first enabled item with a value
+   *     const item = items.find((item) => {
+   *       if (item.disabled) return false;
+   *       if (!item.value) return false;
+   *       return true;
+   *     });
+   *     return item?.id;
+   *   }}
+   * />
+   * ```
+   */
+  getAutoSelectId?: (
+    renderedItems: ComboboxStoreState["renderedItems"],
+  ) => string | null | undefined;
   /**
    * Whether the items will be filtered based on
    * [`value`](https://ariakit.org/reference/combobox-provider#value) and
