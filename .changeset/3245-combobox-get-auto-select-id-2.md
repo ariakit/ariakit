@@ -3,7 +3,7 @@
 "@ariakit/react": patch
 ---
 
-Styling a Combobox without an active descendant
+Styling Combobox without an active descendant
 
 The [`Combobox`](https://ariakit.org/reference/combobox) component now includes a [`data-active-item`](https://ariakit.org/guide/styling#data-active-item) attribute when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](https://ariakit.org/reference/combobox-item) is active and the focus is solely on the combobox input.
 
