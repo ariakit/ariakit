@@ -1,11 +1,12 @@
 ---
 tags:
+  - New
   - Combobox
   - Dropdowns
   - Form controls
 ---
 
-# ComboboxCancel
+# Combobox with tabs
 
 <div data-description>
 
