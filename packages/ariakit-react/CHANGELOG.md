@@ -1,5 +1,55 @@
 # @ariakit/react
 
+## 0.3.11
+
+### Modal Combobox
+
+The [Combobox](https://ariakit.org/component/combobox) components now support the [`modal`](https://ariakit.org/reference/combobox-popover#modal) prop on [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover).
+
+When a modal combobox is expanded, users can interact with and tab through all the combobox controls, including [`Combobox`](https://ariakit.org/reference/combobox), [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure), and [`ComboboxCancel`](https://ariakit.org/reference/combobox-cancel), even if they're rendered outside the popover. The rest of the page will be inert.
+
+### Controlling the auto-select functionality of Combobox
+
+The [`Combobox`](https://ariakit.org/reference/combobox) component now includes a new [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid) prop. This allows you to specify the [`ComboboxItem`](https://ariakit.org/reference/combobox-item) that should be auto-selected if the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop is `true`.
+
+By default, the first _enabled_ item is auto-selected. Now you can customize this behavior by returning the id of another item from [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid):
+
+```jsx
+<Combobox
+  autoSelect
+  getAutoSelectId={(items) => {
+    // Auto select the first enabled item with a value
+    const item = items.find((item) => {
+      if (item.disabled) return false;
+      if (!item.value) return false;
+      return true;
+    });
+    return item?.id;
+  }}
+/>
+```
+
+### Styling Combobox without an active descendant
+
+The [`Combobox`](https://ariakit.org/reference/combobox) component now includes a [`data-active-item`](https://ariakit.org/guide/styling#data-active-item) attribute when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](https://ariakit.org/reference/combobox-item) is active and the focus is solely on the combobox input.
+
+You can use this as a CSS selector to style the combobox differently, providing additional affordance to users who pressed <kbd>↑</kbd> on the first item or <kbd>↓</kbd> on the last item. This action would place both virtual and actual DOM focus on the combobox input.
+
+```css
+.combobox[data-active-item] {
+  outline-width: 2px;
+}
+```
+
+### Other updates
+
+- Fixed [`useTabStore`](https://ariakit.org/reference/use-tab-store) return value not updating its own reference.
+- Fixed keyboard navigation on [Combobox](https://ariakit.org/components/combobox) when the content element is a grid.
+- Fixed [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure) to update its `aria-expanded` attribute when the combobox expands.
+- Fixed `Maximum update depth exceeded` warning when rendering multiple collection items on the page.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.3.11`
+
 ## 0.3.10
 
 ### Overwriting `aria-selected` value on `ComboboxItem`
