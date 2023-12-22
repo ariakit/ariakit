@@ -297,11 +297,14 @@ export const useCombobox = createHook<ComboboxOptions>(
         return () => observer.disconnect();
       }
       if (autoSelect) {
-        const autoSelectId = getAutoSelectIdProp(items) ?? store.first();
+        const userAutoSelectId = getAutoSelectIdProp(items);
+        const autoSelectId =
+          userAutoSelectId !== undefined ? userAutoSelectId : store.first();
         autoSelectIdRef.current = autoSelectId;
-        // If there's no first item (that is, there no items or all items are
-        // disabled), we should move the focus to the input (null), otherwise,
-        // with async items, the activeValue won't be reset.
+        // If there's no first item (that is, there are no items or all items
+        // are disabled), we should move the focus to the input (null),
+        // otherwise, with async items, the activeValue won't be reset. TODO:
+        // Test this.
         store.move(autoSelectId ?? null);
       } else {
         const element = store.item(activeId)?.element;
@@ -579,7 +582,28 @@ export interface ComboboxOptions<T extends As = "input">
    */
   autoSelect?: boolean;
   /**
-   * TODO: DOcs
+   * Function that takes the currently rendered items and returns the id of the
+   * item to be auto selected when the
+   * [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop is
+   * `true`.
+   *
+   * By default, the first enabled item is auto selected. This function is handy
+   * if you prefer a different item to be auto selected.
+   * @example
+   * ```jsx
+   * <Combobox
+   *   autoSelect
+   *   getAutoSelectId={(items) => {
+   *     // Auto select the first enabled item with a value
+   *     const item = items.find((item) => {
+   *       if (item.disabled) return false;
+   *       if (!item.value) return false;
+   *       return true;
+   *     });
+   *     return item?.id;
+   *   }}
+   * />
+   * ```
    */
   getAutoSelectId?: (
     renderedItems: ComboboxStoreState["renderedItems"],

@@ -86,6 +86,8 @@ It's important to note that, to avoid doing unnecessary work, the `data-active` 
 
 The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/reference/composite-hover#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite) component itself, composite widgets include [Combobox](/components/combobox), [Menu](/components/menu), [Radio](/components/radio), [Select](/components/select), [Tab](/components/tab), and [Toolbar](/components/toolbar).
 
+This attribute is also applied to the [`Combobox`](/reference/combobox) component when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](/reference/combobox-item) is active and the focus is solely on the combobox input. In this case, you can use this selector to provide additional affordance to users who pressed <kbd>↑</kbd> on the first item or <kbd>↓</kbd> on the last item to place both virtual and actual DOM focus on the combobox input.
+
 ```css
 .item[data-active-item] {
   background-color: #eee;
