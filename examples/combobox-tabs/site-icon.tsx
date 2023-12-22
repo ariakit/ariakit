@@ -1,22 +1,27 @@
 export default function Icon() {
   return (
     <svg viewBox="0 0 128 128" width={128} height={128}>
-      <foreignObject width={128} height={104} y={24}>
+      <foreignObject width={128} height={128}>
         <div className="h-full overflow-hidden">
-          <div className="-ml-14 flex w-40 flex-col gap-3">
-            <div className="flex h-10 w-full flex-row-reverse items-center rounded-md border border-black/30 bg-white px-2 py-1 dark:border-white/30 dark:bg-black">
-              <svg
-                viewBox="0 0 16 16"
-                className="h-7 w-7 fill-none stroke-black dark:stroke-white/80"
-              >
-                <line x1="5" y1="5" x2="11" y2="11" />
-                <line x1="5" y1="11" x2="11" y2="5" />
-              </svg>
+          <div className="ml-6 mt-6 flex w-40 flex-col gap-2">
+            <div className="flex h-10 w-full items-center gap-1 rounded-md border border-black/30 bg-white px-4 py-2 dark:border-white/30 dark:bg-black">
+              <div className="h-2.5 w-7 rounded-sm bg-blue-600 dark:bg-blue-500" />
+              <div className="h-full w-[2px] bg-black/70 dark:w-px dark:bg-white" />
             </div>
-            <div className="flex w-full flex-col gap-4 rounded-md border border-black/20 bg-white p-4 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
-              <div className="h-2.5 w-[75%] bg-black/50 dark:bg-white/50" />
-              <div className="h-2.5 w-[65%] bg-blue-600 dark:bg-blue-500" />
-              <div className="h-2.5 w-[80%] bg-black/50 dark:bg-white/50" />
+            <div className="flex h-40 w-full flex-col rounded-md border border-black/20 bg-gray-300 shadow dark:border-white/30 dark:bg-gray-700 dark:shadow-dark">
+              <svg
+                viewBox="0 0 58 24"
+                fill="none"
+                className="mx-1 mt-2.5 h-10 self-start fill-white stroke-none dark:fill-gray-500"
+              >
+                <rect x="5" width="48" height="24" rx="5" />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M53 15H5V19C5 21.7614 2.76141 24 0 24H58C55.2386 24 53 21.7614 53 19V15Z"
+                />
+              </svg>
+              <div className="mt-[-0.5px] h-full w-full bg-white p-2 dark:bg-gray-500"></div>
             </div>
           </div>
         </div>
