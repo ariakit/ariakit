@@ -162,20 +162,21 @@ export const ComboboxPopover = React.forwardRef<
   );
 });
 
-export interface ComboboxTabsProps extends Ariakit.TabListProps {}
+export interface ComboboxTabListProps extends Ariakit.TabListProps {}
 
-export const ComboboxTabs = React.forwardRef<HTMLDivElement, ComboboxTabsProps>(
-  function ComboboxTabs(props, ref) {
-    return (
-      <Ariakit.TabList
-        ref={ref}
-        focusable={false}
-        {...props}
-        className={clsx("tab-list", props.className)}
-      />
-    );
-  },
-);
+export const ComboboxTabList = React.forwardRef<
+  HTMLDivElement,
+  ComboboxTabListProps
+>(function ComboboxTabList(props, ref) {
+  return (
+    <Ariakit.TabList
+      ref={ref}
+      focusable={false}
+      {...props}
+      className={clsx("tab-list", props.className)}
+    />
+  );
+});
 
 export interface ComboboxTabProps extends Ariakit.ComboboxItemProps {}
 

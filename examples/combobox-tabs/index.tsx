@@ -9,7 +9,7 @@ import {
   ComboboxPopover,
   ComboboxProvider,
   ComboboxTab,
-  ComboboxTabs,
+  ComboboxTabList,
 } from "./combobox.jsx";
 import { flatPages, pages } from "./pages.js";
 
@@ -46,7 +46,7 @@ export default function Example() {
     >
       <Combobox placeholder="Search pages" />
       <ComboboxPopover aria-label="Pages">
-        <ComboboxTabs aria-label="Categories">
+        <ComboboxTabList aria-label="Categories">
           {categories.map((category) => {
             const currentPages = matches[category];
             return (
@@ -60,7 +60,7 @@ export default function Example() {
               </ComboboxTab>
             );
           })}
-        </ComboboxTabs>
+        </ComboboxTabList>
         <ComboboxPanel>
           {!currentPages.length && (
             <div className="no-results">

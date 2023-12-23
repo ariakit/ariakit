@@ -80,7 +80,8 @@ test("filter items and change tabs", async () => {
   expect(getSelectionStart(q.combobox())).toBe(2);
   await press.ArrowLeft();
   expect(getSelectionStart(q.combobox())).toBe(2);
-  expect(q.option("Component stores")).toHaveFocus();
+  expect(q.tab("Guide 2")).toHaveFocus();
+  expect(q.option("Component stores")).not.toHaveFocus();
   await press.Home();
   expect(getSelectionStart(q.combobox())).toBe(2);
 });
@@ -98,10 +99,12 @@ test("filter items until there are no results and change tabs", async () => {
   await press.ArrowLeft();
   expect(q.tab("Guide 0")).toBeDisabled();
   expect(q.tab("All 5")).toHaveAttribute("aria-selected", "true");
-  expect(q.option("Tab with React Router")).toHaveFocus();
+  expect(q.tab("All 5")).toHaveFocus();
+  expect(q.option("Tab with React Router")).not.toHaveFocus();
   await press.ArrowRight();
   expect(q.tab("Examples 5")).toHaveAttribute("aria-selected", "true");
-  expect(q.option("Tab with React Router")).toHaveFocus();
+  expect(q.tab("Examples 5")).toHaveFocus();
+  expect(q.option("Tab with React Router")).not.toHaveFocus();
 });
 
 test("clear input with keyboard", async () => {

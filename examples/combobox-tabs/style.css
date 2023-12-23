@@ -50,8 +50,7 @@
 .popover {
   @apply
     p-0
-    w-[480px]
-    max-w-[--popover-available-width]
+    w-[min(480px,var(--popover-available-width))]
     max-h-[min(var(--popover-available-height,333.5px),333.5px)]
     rounded-xl
   ;
@@ -59,18 +58,19 @@
 
 .popover-footer {
   @apply
+    hidden
+    sm:flex
     sticky
     flex-none
     bg-inherit
     text-sm
     bottom-0
-    flex
     gap-4
     p-2
     border-t
     border-inherit
-    text-black/70
-    dark:text-white/80
+    text-black/80
+    dark:text-white/90
     overflow-x-auto
   ;
 }
@@ -183,7 +183,7 @@
     px-3
     w-full
     scroll-mt-[46.5px]
-    scroll-mb-[45px]
+    sm:scroll-mb-[45px]
     cursor-pointer
   ;
 }
