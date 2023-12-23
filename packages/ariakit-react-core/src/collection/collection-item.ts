@@ -80,12 +80,19 @@ if (process.env.NODE_ENV !== "production") {
 export interface CollectionItemOptions<T extends As = "div">
   extends Options<T> {
   /**
-   * Object returned by the `useCollectionStore` hook. If not provided, the
-   * parent `Collection` component's context will be used.
+   * Object returned by the
+   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * hook. If not provided, the parent
+   * [`Collection`](https://ariakit.org/reference/collection) or
+   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
+   * components' context will be used.
    */
   store?: CollectionStore;
   /**
    * Whether the item should be registered to the store.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   shouldRegisterItem?: boolean;

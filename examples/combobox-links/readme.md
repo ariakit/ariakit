@@ -64,6 +64,7 @@ To provide a better user experience, when opening the link in a new tab, the [`C
 - [](/examples/combobox-animated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
+- [](/examples/combobox-tabs)
 - [](/examples/menubar-navigation)
 
 </div>

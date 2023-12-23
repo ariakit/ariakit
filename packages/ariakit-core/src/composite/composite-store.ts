@@ -466,26 +466,35 @@ export interface CompositeStoreState<
    */
   moves: number;
   /**
-   * Indicates if the composite element (such as `menu`, `combobox`, `listbox`,
-   * `toolbar`, etc.) should be part of the focus order. In other words, moving
-   * to the previous element when the first item is in focus will focus on the
+   * Indicates if the composite base element (the one with a [composite
+   * role](https://w3c.github.io/aria/#composite)) should be part of the focus
+   * order when navigating with arrow keys. In other words, moving to the
+   * previous element when the first item is in focus will focus on the
    * composite element itself. The same applies to the last item when moving to
    * the next element.
    *
    * Live examples:
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default false
    */
   includesBaseElement: boolean;
   /**
-   * The current focused item `id`.
-   * - `null` focuses the base composite element and users will be able to
+   * The current active item `id`. The active item is the element within the
+   * composite widget that has either DOM or virtual focus (in case
+   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * is enabled).
+   * - `null` represents the base composite element. Users will be able to
    *   navigate out of it using arrow keys.
-   * - If `activeId` is initially set to `null`, the `includesBaseElement` prop
-   *   will also default to `true`, which means the base composite element
+   * - If `activeId` is initially set to `null`, the
+   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   prop will also default to `true`, which means the base composite element
    *   itself will have focus and users will be able to navigate to it using
    *   arrow keys.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   activeId: string | null | undefined;
 }
@@ -498,8 +507,14 @@ export interface CompositeStoreFunctions<
    */
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**
-   * Sets the `activeId` state without moving focus. If you want to move focus,
-   * use the `move` function instead.
+   * Sets the
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state without moving focus. If you want to move focus, use the
+   * [`move`](https://ariakit.org/reference/use-composite-store#move) function
+   * instead.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * // Sets the composite element as the active item
    * store.setActiveId(null);
@@ -512,7 +527,6 @@ export interface CompositeStoreFunctions<
   /**
    * Moves focus to a given item id and sets it as the active item. Passing
    * `null` will focus the composite element itself.
-   * @param id The item id to move focus to.
    * @example
    * // Moves focus to the composite element
    * store.move(null);
@@ -523,32 +537,42 @@ export interface CompositeStoreFunctions<
    */
   move: (id?: string | null) => void;
   /**
-   * Returns the id of the next item based on the current `activeId` state.
-   * @param skip The number of items to skip. Defaults to 1.
+   * Returns the id of the next item based on the current
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * const nextId = store.next();
    * const nextNextId = store.next(2);
    */
   next: (skip?: number) => string | null | undefined;
   /**
-   * Returns the id of the previous item based on the current `activeId` state.
-   * @param skip The number of items to skip. Defaults to 1.
+   * Returns the id of the previous item based on the current
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * const previousId = store.previous();
    * const previousPreviousId = store.previous(2);
    */
   previous: (skip?: number) => string | null | undefined;
   /**
-   * Returns the id of the item above based on the current `activeId` state.
-   * @param skip The number of items to skip. Defaults to 1.
+   * Returns the id of the item above based on the current
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state.
    * @example
    * const upId = store.up();
    * const upUpId = store.up(2);
    */
   up: (skip?: number) => string | null | undefined;
   /**
-   * Returns the id of the item below based on the current `activeId` state.
-   * @param skip The number of items to skip. Defaults to 1.
+   * Returns the id of the item below based on the current
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state.
    * @example
    * const downId = store.down();
    * const downDownId = store.down(2);
@@ -556,10 +580,16 @@ export interface CompositeStoreFunctions<
   down: (skip?: number) => string | null | undefined;
   /**
    * Returns the id of the first item.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   first: () => string | null | undefined;
   /**
    * Returns the id of the last item.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   last: () => string | null | undefined;
 }

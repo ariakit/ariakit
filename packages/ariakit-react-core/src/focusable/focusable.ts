@@ -465,6 +465,7 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    *
    * Live examples:
    * - [Submenu](https://ariakit.org/examples/menu-nested)
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default false
    */
   disabled?: boolean;
@@ -501,6 +502,9 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
    * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
    * etc.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   focusable?: boolean;
@@ -518,6 +522,9 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    *
    * Learn more on [Focusability of disabled
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   accessibleWhenDisabled?: boolean;
   /**

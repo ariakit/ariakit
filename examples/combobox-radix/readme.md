@@ -123,5 +123,6 @@ Explore more examples to learn how to:
 - [](/examples/combobox-links)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)
+- [](/examples/combobox-tabs)
 
 </div>

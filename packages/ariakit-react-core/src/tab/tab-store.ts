@@ -60,8 +60,12 @@ export interface TabStoreOptions
   extends Core.TabStoreOptions,
     CompositeStoreOptions<TabStoreItem> {
   /**
-   * Function that will be called when the `selectedId` state changes.
-   * @param selectedId The new selected id.
+   * Function that will be called when the
+   * [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid) state
+   * changes.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
 }

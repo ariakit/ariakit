@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { Suspense, createElement, version } from "react";
+import { Suspense, createElement, useMemo, version } from "react";
 import { render } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import failOnConsole from "vitest-fail-on-console";
@@ -45,18 +45,12 @@ if (version.startsWith("17")) {
   vi.mock("react", async () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
+    let id = 0;
     const mocks = {
       startTransition: (v: () => any) => v(),
       useDeferredValue: <T>(v: T) => v,
       useTransition: () => [false, (v: () => any) => v()],
-      useId: () => {
-        const [id, setId] = actual.useState<string | undefined>();
-        actual.useLayoutEffect(() => {
-          const random = Math.random().toString(36).substr(2, 6);
-          setId(`id-${random}`);
-        }, []);
-        return id;
-      },
+      useId: () => useMemo(() => `id-${id++}`, []),
     };
     return { ...mocks, ...actual };
   });

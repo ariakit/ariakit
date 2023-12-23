@@ -37,5 +37,6 @@ Allowing [Combobox](/components/combobox) to select multiple options by passing 
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-animated)
+- [](/examples/combobox-tabs)
 
 </div>

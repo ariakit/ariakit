@@ -145,6 +145,7 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    *
    * Live examples:
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   selectedId: TabStoreState["activeId"];
   /**
@@ -161,8 +162,11 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
 export interface TabStoreFunctions
   extends CompositeStoreFunctions<TabStoreItem> {
   /**
-   * Sets the `selectedId` state without moving focus. If you want to move focus,
-   * use the `select` function instead.
+   * Sets the
+   * [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid) state
+   * without moving focus. If you want to move focus, use the
+   * [`select`](https://ariakit.org/reference/use-tab-store#select) function
+   * instead.
    *
    * Live examples:
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
@@ -183,9 +187,13 @@ export interface TabStoreFunctions
   panels: CollectionStore<TabStorePanel>;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
-   * the `selectedId` state without moving focus, use the `setSelectedId`
+   * the [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid)
+   * state without moving focus, use the
+   * [`setSelectedId`](https://ariakit.org/reference/use-tab-store#setselectedid-1)
    * function instead.
-   * @param id The id of the tab to select.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * // Selects the tab with id "tab-1"
    * store.select("tab-1");
@@ -206,6 +214,9 @@ export interface TabStoreOptions
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }

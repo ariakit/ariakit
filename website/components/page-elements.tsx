@@ -331,7 +331,7 @@ export function PageSection({
                     {!!media?.length && (
                       <div
                         className={twJoin(
-                          "relative grid max-h-[200px] gap-2 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent sm:max-h-[240px] md:max-h-[280px] dark:after:from-gray-800 dark:after:via-80%",
+                          "relative grid max-h-[200px] gap-1 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent sm:max-h-[240px] md:max-h-[280px] dark:after:from-gray-800 dark:after:via-80%",
                           media.length === 1 && "grid-cols-1",
                           media.length === 2 && "grid-cols-2",
                           media.length >= 3 && "grid-cols-3",
@@ -448,7 +448,7 @@ export interface PageKbdProps extends ComponentPropsWithoutRef<"kbd"> {
 
 export function PageKbd({ node, ...props }: PageKbdProps) {
   const className = twJoin(
-    "font-monospace px-[0.2667em] p-[0.1334em] text-[0.9375em]",
+    "font-[inherit] px-[0.2667em] p-[0.1334em]",
     "rounded-[0.2667em] rounded-b-[0.3334em] border-b-[0.1334em] border-t-[0.0667em] border-b-black/[7.5%] border-t-white",
     "dark:border-b-[0.2em] dark:border-t-0 dark:border-b-black/40 dark:rounded-b-[0.4em]",
     "bg-gradient-to-b from-black/[15%] to-black/5 dark:from-white/10 dark:to-white/[15%]",

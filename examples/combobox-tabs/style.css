@@ -1,0 +1,196 @@
+@import url("../button/style.css");
+@import url("../combobox/style.css");
+
+.combobox-wrapper {
+  @apply
+    relative
+  ;
+}
+
+.combobox {
+  @apply
+    outline-1
+    pr-[72px]
+    data-[focus-visible]:data-[active-item]:outline-2
+  ;
+}
+
+.combobox-buttons {
+  @apply
+    absolute
+    p-1
+    top-0
+    right-0
+    flex
+    gap-1
+    items-center
+  ;
+}
+
+.combobox-cancel {
+  @apply
+    h-6
+    w-6
+    p-0
+    rounded-sm
+    text-black/70
+    dark:text-white/70
+  ;
+}
+
+.combobox-disclosure {
+  @apply
+    h-8
+    w-8
+    p-0
+    rounded-sm
+  ;
+}
+
+.popover {
+  @apply
+    p-0
+    w-[min(480px,var(--popover-available-width))]
+    max-h-[min(var(--popover-available-height,333.5px),333.5px)]
+    rounded-xl
+  ;
+}
+
+.popover-footer {
+  @apply
+    hidden
+    sm:flex
+    sticky
+    flex-none
+    bg-inherit
+    text-sm
+    bottom-0
+    gap-4
+    p-2
+    border-t
+    border-inherit
+    text-black/80
+    dark:text-white/90
+    overflow-x-auto
+  ;
+}
+
+.shortcut {
+  @apply
+    flex
+    gap-1
+    whitespace-nowrap
+  ;
+}
+
+.kbd {
+  @apply
+    flex
+    items-center
+    font-mono
+    px-[0.2667em]
+    p-[0.1334em]
+    text-[0.9375em]
+    rounded-[0.2667em]
+    rounded-b-[0.3334em]
+    border-b-[0.1334em]
+    border-t-[0.0667em]
+    border-b-black/[7.5%]
+    border-t-white
+    dark:border-b-[0.2em]
+    dark:border-t-0
+    dark:border-b-black/40
+    dark:rounded-b-[0.4em]
+    bg-gradient-to-b
+    from-black/[15%]
+    to-black/5
+    dark:from-white/10
+    dark:to-white/[15%]
+    [box-shadow:0_0_0_max(1px,0.0333em)_rgba(0,0,0,0.25)]
+    dark:[box-shadow:0_min(-1px,(-0.0666em))_rgba(255,255,255,0.1),0_0_0_max(1px,0.0666em)_rgba(255,255,255,0.15)]
+  ;
+}
+
+.tab-list {
+  @apply
+    flex-none
+    sticky
+    top-0
+    bg-inherit
+    flex
+    gap-1
+    p-2
+    overflow-x-auto
+    text-[15px]
+    z-10
+  ;
+}
+
+.tab {
+  @apply
+    rounded-full
+    flex
+    items-center
+    px-3
+    py-1
+    gap-1
+    whitespace-nowrap
+
+    text-black/80
+    dark:text-white/90
+
+    hover:bg-gray-150
+    hover:dark:bg-gray-600
+
+    aria-selected:text-black
+    aria-selected:dark:text-white
+    aria-selected:bg-gray-200
+    aria-selected:dark:bg-gray-500
+
+    data-[active-item]:text-white
+    data-[active-item]:bg-blue-600
+    data-[active-item]:hover:bg-blue-600
+    data-[active-item]:dark:bg-blue-600
+    data-[active-item]:hover:dark:bg-blue-600
+    data-[active-item]:border-blue-600
+    data-[active-item]:dark:border-blue-600
+  ;
+}
+
+.count {
+  @apply
+    rounded-full
+    text-xs
+    px-1
+    -mr-1
+    bg-black/10
+    dark:bg-white/10
+    [[aria-selected=true]_&]:bg-black/10
+    [[aria-selected=true]_&]:dark:bg-black/20
+    [[aria-selected=true][data-active-item]_&]:bg-black/20
+  ;
+}
+
+.listbox {
+  @apply
+    p-2
+    pt-0
+  ;
+}
+
+.combobox-item {
+  @apply
+    px-3
+    w-full
+    scroll-mt-[46.5px]
+    sm:scroll-mb-[45px]
+    cursor-pointer
+  ;
+}
+
+.no-results {
+  @apply
+    my-10
+    text-center
+  ;
+}

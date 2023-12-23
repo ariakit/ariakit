@@ -281,9 +281,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
+      const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
-      if (!autoSelect && !resetValueOnSelect) return;
-      if (!canAutoSelectRef.current) return;
+      if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribue is an internal state added by the Popover
@@ -296,7 +296,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      if (autoSelect) {
+      if (autoSelect && canAutoSelect) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
           userAutoSelectId !== undefined ? userAutoSelectId : store.first();
@@ -443,6 +443,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
         onKeyDownProp?.(event);
+        canAutoSelectRef.current = false;
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;
         if (event.altKey) return;
@@ -589,6 +590,9 @@ export interface ComboboxOptions<T extends As = "input">
    *
    * By default, the first enabled item is auto selected. This function is handy
    * if you prefer a different item to be auto selected.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * ```jsx
    * <Combobox

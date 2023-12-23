@@ -38,5 +38,6 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
+- [](/examples/combobox-tabs)
 
 </div>
