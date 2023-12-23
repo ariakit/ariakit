@@ -72,11 +72,12 @@ export interface CompositeStoreOptions<
 > extends Core.CompositeStoreOptions<T>,
     CollectionStoreOptions<T> {
   /**
-   * A callback that gets called when the `activeId` state changes.
-   * @param activeId The new active id.
-   * @example
-   * const [activeId, setActiveId] = useState(null);
-   * const composite = useCompositeStore({ activeId, setActiveId });
+   * A callback that gets called when the
+   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * state changes.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
 }

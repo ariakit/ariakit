@@ -26,5 +26,6 @@ Combining [Menu](/components/menu) and [Combobox](/components/combobox) to creat
 - [](/examples/menu-nested-combobox)
 - [](/examples/select-combobox)
 - [](/examples/menubar-navigation)
+- [](/examples/combobox-tabs)
 
 </div>

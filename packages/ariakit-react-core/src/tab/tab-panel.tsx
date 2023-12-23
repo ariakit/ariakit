@@ -140,10 +140,11 @@ export interface TabPanelOptions<T extends As = "div">
    */
   store?: TabStore;
   /**
-   * The id of the tab that controls this panel. By default, this value will
-   * be inferred based on the order of the tabs and the panels.
+   * The `id` of the tab controlling this panel is set by default. Typically,
+   * this value is inferred from the sequence of the tabs and panels.
    *
    * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    */
   tabId?: string | null;

@@ -647,6 +647,7 @@ export interface DialogOptions<T extends As = "div">
    *   with `h1`.
    *
    * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Dialog with details &
    *   summary](https://ariakit.org/examples/dialog-details)
    * - [Form with Select](https://ariakit.org/examples/form-select)

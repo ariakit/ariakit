@@ -86,6 +86,7 @@ const matches = React.useMemo(() => {
 - [](/examples/combobox-group)
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
+- [](/examples/combobox-tabs)
 - [](/examples/menu-nested-combobox)
 
 </div>

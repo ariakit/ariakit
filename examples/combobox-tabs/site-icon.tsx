@@ -8,11 +8,12 @@ export default function Icon() {
               <div className="h-2.5 w-7 rounded-sm bg-blue-600 dark:bg-blue-500" />
               <div className="h-full w-[2px] bg-black/70 dark:w-px dark:bg-white" />
             </div>
-            <div className="flex h-40 w-full flex-col rounded-md border border-black/20 bg-gray-300 shadow dark:border-white/30 dark:bg-gray-700 dark:shadow-dark">
+            <div className="h-40 w-full rounded-md border border-black/20 bg-gray-300 shadow dark:border-white/30 dark:bg-gray-700 dark:shadow-dark">
               <svg
+                height={28}
                 viewBox="0 0 58 24"
                 fill="none"
-                className="mx-1 mt-2.5 h-10 self-start fill-white stroke-none dark:fill-gray-500"
+                className="mx-1.5 mt-2.5 fill-white stroke-none dark:fill-gray-500"
               >
                 <rect x="5" width="48" height="24" rx="5" />
                 <path

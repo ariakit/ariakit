@@ -589,6 +589,9 @@ export interface ComboboxOptions<T extends As = "input">
    *
    * By default, the first enabled item is auto selected. This function is handy
    * if you prefer a different item to be auto selected.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * ```jsx
    * <Combobox

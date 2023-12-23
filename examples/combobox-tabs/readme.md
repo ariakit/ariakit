@@ -2,8 +2,13 @@
 tags:
   - New
   - Combobox
+  - Tab
+  - Concurrent React
+  - Search
   - Dropdowns
   - Form controls
+  - Advanced
+  - Abstracted examples
 ---
 
 # Combobox with tabs
@@ -23,6 +28,7 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 <div data-cards="components">
 
 - [](/components/combobox)
+- [](/components/tab)
 
 </div>
 
@@ -30,11 +36,11 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 
 <div data-cards="examples">
 
+- [](/examples/combobox-filtering)
 - [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
-- [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
-- [](/examples/combobox-multiple)
-- [](/examples/combobox-animated)
+- [](/examples/combobox-cancel)
+- [](/examples/combobox-disclosure)
 
 </div>
