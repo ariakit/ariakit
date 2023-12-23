@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Combobox with tabs",
+    type: "page",
+    href: "/examples/combobox-tabs",
+    dateTime: "2023-12-23T17:34Z",
+  },
+  {
     title: "Improved docs: Composition",
     type: "page",
     href: "/guide/composition#merging-the-rendered-element-props",
