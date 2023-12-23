@@ -84,7 +84,7 @@ export interface CollectionItemOptions<T extends As = "div">
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
    * hook. If not provided, the parent
    * [`Collection`](https://ariakit.org/reference/collection) or
-   * [`CollectionPopover`](https://ariakit.org/reference/collection-popover)
+   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
    * components' context will be used.
    */
   store?: CollectionStore;
