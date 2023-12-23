@@ -94,7 +94,7 @@ test("filter items until there are no results and change tabs", async () => {
   expect(q.tab("Guide 0")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Guide 0")).toHaveAttribute("data-active-item", "");
   expect(q.tabpanel("Guide 0")).toBeVisible();
-  expect(q.text(/No pages found for/)).toBeVisible();
+  expect(q.text('No pages found for ""')).toBeVisible();
   await press.ArrowLeft();
   expect(q.tab("Guide 0")).toBeDisabled();
   expect(q.tab("All 5")).toHaveAttribute("aria-selected", "true");
