@@ -281,9 +281,9 @@ export const useCombobox = createHook<ComboboxOptions>(
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
     useUpdateEffect(() => {
+      const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
-      if (!autoSelect && !resetValueOnSelect) return;
-      if (!canAutoSelectRef.current) return;
+      if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribue is an internal state added by the Popover
@@ -296,7 +296,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      if (autoSelect) {
+      if (autoSelect && canAutoSelect) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
           userAutoSelectId !== undefined ? userAutoSelectId : store.first();
