@@ -25,7 +25,7 @@ media:
 
 <div data-description>
 
-Reseting the value of a [Combobox](/components/combobox) with a button rendered next to it using the [`ComboboxCancel`](/reference/combobox-cancel) component.
+Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. A UI that remains responsive by using [`React.startTransition`](https://react.dev/reference/react/startTransition).
 
 </div>
 
