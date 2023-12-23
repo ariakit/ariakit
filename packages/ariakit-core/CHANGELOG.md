@@ -1,5 +1,10 @@
 # @ariakit/core
 
+## 0.3.9
+
+- Fixed `Maximum update depth exceeded` warning when rendering multiple collection items on the page.
+- Improved JSDocs.
+
 ## 0.3.8
 
 - Fixed [`CollectionItem`](https://ariakit.org/reference/collection-item) elements getting out of order when composing stores.
