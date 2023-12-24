@@ -14,8 +14,6 @@ export default function Example() {
         <Ariakit.HovercardProvider
           setOpen={(open) => {
             if (open) setCount(count + 1);
-
-            return open;
           }}
         >
           <Ariakit.HovercardAnchor href="https://twitter.com/ariakitjs">

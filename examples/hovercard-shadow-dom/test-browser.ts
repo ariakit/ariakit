@@ -12,8 +12,6 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test.describe.configure({ retries: process.env.CI ? 2 : 1 });
-
 test("https://github.com/ariakit/ariakit/issues/2983", async ({ page }) => {
   await getAnchor(page).hover();
   await expect(getHovercard(page)).toBeVisible();
