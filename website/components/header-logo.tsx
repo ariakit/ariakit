@@ -5,5 +5,5 @@ import { Logo } from "./logo.js";
 
 export function HeaderLogo() {
   const isHome = useSelectedLayoutSegments().length === 0;
-  return <Logo iconOnly={!isHome} />;
+  return <Logo iconOnly={!isHome} responsive />;
 }

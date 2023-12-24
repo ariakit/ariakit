@@ -169,7 +169,12 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           <Ariakit.MenuButtonArrow />
         </HeaderMenuItem>
       ) : (
-        <Command flat variant="secondary" {...props} />
+        <Command
+          flat
+          variant="secondary"
+          {...props}
+          className={twJoin("truncate max-sm:px-2", props.className)}
+        />
       );
 
     const renderPopover = (props: ComponentPropsWithRef<"div">) => {

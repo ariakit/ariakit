@@ -16,7 +16,7 @@ export function PageTag({ tag, className, ...props }: PageTagProps) {
       thickerOnLight
       render={<Link href={`/tags/${getTagSlug(tag)}`} {...props} />}
       className={twJoin(
-        "rounded-full border-2 border-transparent bg-gray-150 p-1.5 px-3.5 text-sm font-medium text-black/90 hover:bg-gray-250",
+        "whitespace-nowrap rounded-full border-2 border-transparent bg-gray-150 p-1.5 px-3.5 text-sm font-medium text-black/90 hover:bg-gray-250",
         "dark:border dark:border-gray-650 dark:bg-gray-850 dark:p-2 dark:px-4 dark:text-white/90 dark:hover:border-gray-550 hover:dark:bg-gray-750",
         "focus-visible:ariakit-outline-input",
         className,
@@ -34,7 +34,7 @@ export function PageTagList({ ...props }: PageTagListProps) {
     <div
       {...props}
       className={twJoin(
-        "flex flex-wrap gap-2 [[data-description]+&]:-translate-y-2",
+        "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible [[data-description]+&]:-translate-y-2",
         "[[data-dialog]_&]:hidden",
         props.className,
       )}

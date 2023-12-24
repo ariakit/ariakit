@@ -177,7 +177,7 @@ function Shortcut() {
   }, []);
   if (!platform) return null;
   return (
-    <span className="mx-1 flex gap-0.5 justify-self-end text-black/[62.5%] dark:text-white/70">
+    <span className="mx-1 hidden gap-0.5 justify-self-end text-black/[62.5%] sm:flex dark:text-white/70">
       {platform === "mac" ? (
         <abbr title="Command" className="no-underline">
           ⌘

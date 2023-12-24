@@ -53,7 +53,7 @@ export async function Header() {
   );
   return (
     <div className="sticky left-0 top-0 z-40 flex w-full justify-center bg-gray-50 md:backdrop-blur md:supports-backdrop-blur:bg-gray-50/80 dark:bg-gray-800 md:dark:supports-backdrop-blur:bg-gray-800/80">
-      <div className="flex w-full max-w-[1440px] items-center gap-3 px-3 py-2 md:px-4 md:py-4">
+      <div className="flex w-full max-w-[1440px] items-center gap-2 px-3 py-2 sm:gap-3 md:px-4 md:py-4">
         <Link
           href="/"
           className="flex items-center gap-2 rounded-[9px] focus-visible:ariakit-outline"
