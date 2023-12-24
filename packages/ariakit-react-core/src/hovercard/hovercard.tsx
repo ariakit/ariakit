@@ -44,7 +44,7 @@ import {
 } from "./utils/polygon.js";
 
 function isMovingOnHovercard(
-  target: Node | null,
+  target: Node | null | undefined,
   card: HTMLElement,
   anchor: HTMLElement | null,
   nested?: HTMLElement[],
@@ -168,7 +168,7 @@ export const useHovercard = createHook<HovercardOptions>(
         if (!store) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
-        const target = event.target as Node | null;
+        const [target] = event.composedPath() as Node[];
         const anchor = anchorElement;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
