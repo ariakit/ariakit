@@ -6,7 +6,7 @@ function getSelectionStart(element: Element | HTMLInputElement | null) {
 
 test("open popover with components tab initially selected, but not active", async () => {
   await click(q.combobox("Search pages"));
-  expect(q.dialog("Pages")).toBeVisible();
+  expect(await q.dialog.wait("Pages")).toBeVisible();
   expect(q.combobox()).toHaveAttribute("data-active-item", "true");
   expect(q.tab("All 53")).toHaveAttribute("aria-selected", "false");
   expect(q.tab("Guide 6")).toHaveAttribute("aria-selected", "false");
@@ -27,7 +27,7 @@ test("move through items and tabs with the keyboard", async () => {
   await press.Tab();
   expect(q.dialog("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
-  expect(q.dialog("Pages")).toBeVisible();
+  expect(await q.dialog.wait("Pages")).toBeVisible();
   expect(q.combobox()).toHaveAttribute("data-active-item", "true");
   expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Components 16")).not.toHaveFocus();
@@ -63,7 +63,7 @@ test("move through items and tabs with a mouse", async () => {
   await click(q.button("Show popup"));
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveAttribute("data-active-item", "true");
-  await hover(q.option("Button"));
+  await hover(await q.option.wait("Button"));
   expect(q.option("Button")).toHaveAttribute("data-active-item", "");
   await hover(q.tab("Guide 6"));
   expect(q.option("Button")).toHaveAttribute("data-active-item", "");
@@ -88,7 +88,7 @@ test("filter items and change tabs", async () => {
 
 test("filter items until there are no results and change tabs", async () => {
   await click(q.combobox());
-  await click(q.tab("Guide 6"));
+  await click(await q.tab.wait("Guide 6"));
   await type("abc");
   expect(q.tab("Guide 0")).not.toBeDisabled();
   expect(q.tab("Guide 0")).toHaveFocus();
