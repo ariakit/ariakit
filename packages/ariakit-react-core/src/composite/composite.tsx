@@ -9,7 +9,6 @@ import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import {
   fireBlurEvent,
-  fireFocusEvent,
   fireKeyboardEvent,
   isSelfTarget,
 } from "@ariakit/core/utils/events";
@@ -183,11 +182,7 @@ export const useComposite = createHook<CompositeOptions>(
         // order (blur, then focus).
         fireBlurEvent(previousElement, { relatedTarget: baseElement });
       }
-      // If the composite element is already focused, we still need to fire a
-      // focus event on it so consumer props like onFocus are called.
-      if (hasFocus(baseElement)) {
-        fireFocusEvent(baseElement, { relatedTarget: previousElement });
-      } else {
+      if (!hasFocus(baseElement)) {
         baseElement.focus();
       }
     }, [store, moves, composite]);
