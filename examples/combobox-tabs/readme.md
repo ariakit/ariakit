@@ -25,7 +25,7 @@ media:
 
 <div data-description>
 
-Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. A UI that remains responsive by using [`React.startTransition`](https://react.dev/reference/react/startTransition).
+Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. The UI remains responsive by using [`React.startTransition`](https://react.dev/reference/react/startTransition).
 
 </div>
 
@@ -82,6 +82,16 @@ This behavior is abstracted into the custom `ComboboxProvider` component and exp
       })
     }}
   >
+```
+
+Additionally, we can make the mounting of the combobox popover children non-blocking by using [`React.useDeferredValue`](https://react.dev/reference/react/useDeferredValue) on the combobox `mounted` state:
+
+```jsx "useDeferredValue"
+const mounted = React.useDeferredValue(combobox.useState("mounted"));
+
+<Ariakit.ComboboxPopover hidden={!mounted}>
+  {mounted && props.children}
+</Ariakit.ComboboxPopover>;
 ```
 
 ## Custom auto-select behavior

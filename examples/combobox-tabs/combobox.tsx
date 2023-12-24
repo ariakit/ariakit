@@ -110,6 +110,9 @@ export const ComboboxPopover = React.forwardRef<
 >(function ComboboxPopover(props, ref) {
   const combobox = Ariakit.useComboboxContext()!;
   const isInputActive = combobox.useState((state) => state.activeId === null);
+  // React.useDeferredValue helps in maintaining a responsive UI during the
+  // mounting of the popover.
+  const mounted = React.useDeferredValue(combobox.useState("mounted"));
   return (
     <Ariakit.ComboboxPopover
       ref={ref}
@@ -124,10 +127,11 @@ export const ComboboxPopover = React.forwardRef<
       gutter={4}
       shift={-4}
       unmountOnHide
+      hidden={!mounted}
       {...props}
       className={clsx("popover", props.className)}
     >
-      {props.children}
+      {mounted && props.children}
       <div className="popover-footer">
         <div className="shortcut">
           <kbd className="kbd" aria-label="Up Arrow">
