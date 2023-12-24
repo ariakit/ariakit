@@ -20,9 +20,9 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
- * const disclosure = useDisclosureState();
- * <Disclosure state={disclosure}>Disclosure</Disclosure>
- * <DisclosureContent state={disclosure}>Content</DisclosureContent>
+ * const disclosure = useDisclosureStore();
+ * <Disclosure store={disclosure}>Disclosure</Disclosure>
+ * <DisclosureContent store={disclosure}>Content</DisclosureContent>
  * ```
  */
 export function useDisclosureStore(
