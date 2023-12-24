@@ -1,6 +1,6 @@
 ---
-"@ariakit/react-core": minor
-"@ariakit/react": minor
+"@ariakit/react-core": patch
+"@ariakit/react": patch
 ---
 
-Fixed [`Combobox`](https://ariakit.org/reference/combobox) to not call the `onFocus` callback on every input change when the property `autoSelect` is true.
+Fixed [`Combobox`](https://ariakit.org/reference/combobox) with the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop calling `onFocus` with every input change.
