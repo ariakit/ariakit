@@ -174,7 +174,7 @@
     "remark-gfm": "3.0.1",
     "resolve-from": "5.0.0",
     "rimraf": "5.0.5",
-    "sharp": "0.33.0",
+    "sharp": "0.33.1",
     "shiki": "0.14.7",
     "stripe": "14.10.0",
     "stylelint": "16.0.2",
