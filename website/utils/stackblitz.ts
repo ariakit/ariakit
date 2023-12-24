@@ -222,7 +222,7 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "13.4.7",
+      next: "13.5.4",
     },
     devDependencies: {
       "@types/node": "latest",
