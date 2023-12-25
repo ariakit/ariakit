@@ -16,6 +16,12 @@ function clearChars() {
   chars = "";
 }
 
+function stripEmojiModifiers(text: string) {
+  return text
+    .replace(/^[\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/u, "")
+    .trim();
+}
+
 function isValidTypeaheadEvent(event: KeyboardEvent) {
   const target = event.target as HTMLElement | null;
   if (target && isTextField(target)) return false;
@@ -46,7 +52,7 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
   const itemText = item.element?.textContent || item.children;
   if (!itemText) return false;
-  return normalizeString(itemText)
+  return stripEmojiModifiers(normalizeString(itemText))
     .trim()
     .toLowerCase()
     .startsWith(text.toLowerCase());
