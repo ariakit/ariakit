@@ -1,7 +1,7 @@
-import { hover, press, q } from "@ariakit/test";
-import type { SpyInstance } from "vitest";
+import { click, hover, press, q } from "@ariakit/test";
+import type { MockInstance } from "vitest";
 
-function expectCalls(mock: SpyInstance) {
+function expectCalls(mock: MockInstance) {
   const calls = mock.mock.calls.flat();
   mock.mockClear();
   return expect(calls);
@@ -107,6 +107,23 @@ test("events", async () => {
   expect(q.button("item-1")).not.toHaveAttribute("data-active-item");
   expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
   expect(q.button("item-2")).toHaveAttribute("data-active-item");
+
+  await click(q.button("item-1"));
+
+  expectCalls(log).toMatchInlineSnapshot(`
+    [
+      "event: blur | currentTarget: item-2 | target: item-2 | relatedTarget: item-1",
+      "event: blur | currentTarget: toolbar | target: item-2 | relatedTarget: item-1",
+      "event: focus | currentTarget: item-1 | target: item-1 | relatedTarget: toolbar",
+      "event: focus | currentTarget: toolbar | target: item-1 | relatedTarget: toolbar",
+    ]
+  `);
+
+  expect(q.toolbar()).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-1")).toHaveAttribute("data-active-item");
+  expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
 
   log.mockReset();
 

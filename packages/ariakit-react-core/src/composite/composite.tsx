@@ -187,14 +187,13 @@ export const useComposite = createHook<CompositeOptions>(
       }
     }, [store, moves, composite]);
 
-    // TODO: Refactor
     const activeId = store.useState("activeId");
     const virtualFocus = store.useState("virtualFocus");
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
     // so we do it here. This will be the scenario when moving through items, in
-    // which case the onFocusCapture below event will stop propgation.
+    // which case the onFocusCapture below event will stop propagation.
     useSafeLayoutEffect(() => {
       if (!store) return;
       if (!composite) return;
@@ -204,6 +203,7 @@ export const useComposite = createHook<CompositeOptions>(
       if (!previousElement) return;
       const activeElement = getEnabledItem(store, activeId)?.element;
       const relatedTarget = activeElement || getActiveElement(previousElement);
+      if (relatedTarget === previousElement) return;
       fireBlurEvent(previousElement, { relatedTarget });
     }, [store, activeId, virtualFocus, composite]);
 
@@ -302,14 +302,14 @@ export const useComposite = createHook<CompositeOptions>(
       if (isSelfTarget(event) && nextActiveElementIsItem) {
         // The next active element will be the same as the active item in the
         // store in these two scenarios:
-        //   - Moving focus with keyboard: the state is updated before the blur
-        //     event is triggered, so here the active item is already pointing
-        //     to the next active element.
-        //   - Clicking on the active item with a pointer: this will trigger
-        //     blur on the composite element and then the next active element
-        //     will be the same as the active item. Clicking on an item other
-        //     than the active one doesn't end up here as the activeItem state
-        //     will be updated only after that.
+        // - Moving focus with keyboard: the state is updated before the blur
+        //   event is triggered, so here the active item is already pointing to
+        //   the next active element.
+        // - Clicking on the active item with a pointer: this will trigger blur
+        //   on the composite element and then the next active element will be
+        //   the same as the active item. Clicking on an item other than the
+        //   active one doesn't end up here as the activeItem state will be
+        //   updated only after that.
         if (nextActiveElement === activeElement) {
           // If there's a previous active item and it's not a click action, then
           // we fire a blur event on it so it will work just like if it had DOM
@@ -330,7 +330,7 @@ export const useComposite = createHook<CompositeOptions>(
         // Finally, if we still have a previousElement, this means that the
         // store is being composed with another composite store and we're moving
         // with keyboard. In this case, the state won't be updated before the
-        // blur event.
+        // blur event. TODO: Test this.
         else if (previousElement) {
           fireBlurEvent(previousElement, event);
         }
