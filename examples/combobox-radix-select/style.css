@@ -1,0 +1,99 @@
+.select {
+  @apply
+    shadow
+    inline-flex
+    gap-1
+    h-10
+    sm:h-9
+    items-center
+    justify-center
+    rounded
+    px-4
+    sm:text-[15px]
+    bg-white
+    text-black
+    hover:bg-violet-100
+    [color-scheme:light]
+  ;
+}
+
+.select-icon {
+  @apply
+    [translate:4px_0]
+  ;
+}
+
+.popover {
+  @apply
+    z-50
+    max-h-[min(var(--radix-select-content-available-height),336px)]
+    bg-white
+    rounded-lg
+    shadow-lg-dark
+    [color-scheme:light]
+  ;
+}
+
+.combobox-wrapper {
+  @apply
+    relative
+    flex
+    items-center
+    p-1
+    pb-0
+  ;
+}
+
+.combobox {
+  @apply
+    pr-2
+    pl-7
+    h-10
+    sm:h-9
+    appearance-none
+    outline-none
+    sm:text-[15px]
+    bg-white
+    text-black
+    placeholder-black/60
+  ;
+}
+
+.combobox-icon {
+  @apply
+    absolute
+    left-2.5
+    text-black/60
+    pointer-events-none
+  ;
+}
+
+.listbox {
+  @apply
+    p-1
+    overflow-y-auto
+  ;
+}
+
+.item {
+  @apply
+    flex
+    items-center
+    relative
+    h-10
+    sm:h-9
+    px-7
+    rounded
+    scroll-my-1
+    cursor-default
+    sm:text-[15px]
+    text-black
+    data-[active-item]:bg-violet-200
+  ;
+}
+
+.item-indicator {
+  @apply
+    absolute
+    left-1.5
+}

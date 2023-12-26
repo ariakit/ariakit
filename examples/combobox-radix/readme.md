@@ -6,7 +6,7 @@ tags:
   - Radix UI
 ---
 
-# Radix UI Combobox
+# Radix Combobox
 
 <div data-description>
 
@@ -119,6 +119,7 @@ Explore more examples to learn how to:
 
 <div data-cards="examples">
 
+- [](/examples/combobox-radix-select)
 - [](/examples/dialog-radix)
 - [](/examples/combobox-links)
 - [](/examples/combobox-disclosure)
