@@ -286,11 +286,11 @@ export const useCombobox = createHook<ComboboxOptions>(
       if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
-      // The data-placing attribue is an internal state added by the Popover
+      // The data-placing attribute is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
       // itself. This is to prevent the focus from moving to the first item
       // while the popover is still calculating its position, which could cause
-      // a srcoll jump. See combobox-group test-browser file.
+      // a scroll jump. See combobox-group test-browser file.
       if (contentElement?.hasAttribute("data-placing")) {
         const observer = new MutationObserver(forceValueUpdate);
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
