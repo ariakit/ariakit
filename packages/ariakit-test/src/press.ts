@@ -228,6 +228,7 @@ export function press(
     // This allows the DOM to be updated before we fire the event
     await sleep();
 
+    // TODO: Implement repeat
     let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
 
     if (defaultAllowed && key in keyDownMap && !options.metaKey) {

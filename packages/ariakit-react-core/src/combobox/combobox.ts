@@ -443,7 +443,10 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onKeyDown = useEvent(
       (event: ReactKeyboardEvent<HTMLInputElement>) => {
         onKeyDownProp?.(event);
-        canAutoSelectRef.current = false;
+        if (!event.repeat) {
+          // Run combobox-tabs and combobox-group (browser) tests.
+          canAutoSelectRef.current = false;
+        }
         if (event.defaultPrevented) return;
         if (event.ctrlKey) return;
         if (event.altKey) return;
