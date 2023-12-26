@@ -4,17 +4,6 @@ import { createEvent, fireEvent } from "@testing-library/dom";
 import type { EventType } from "@testing-library/dom";
 import { flushMicrotasks, wrapAsync } from "./__utils.js";
 
-type FixedEventTypeMap = {
-  doubleClick: "dblclick";
-  dragExit: "dragend";
-};
-
-type FixedEventType<T extends EventType> = T extends keyof FixedEventTypeMap
-  ? FixedEventTypeMap[T]
-  : Lowercase<T> extends keyof DocumentEventMap
-    ? Lowercase<T>
-    : keyof DocumentEventMap;
-
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit
   : E extends ClipboardEvent
@@ -29,19 +18,12 @@ type SpecificEventInit<E extends Event> = E extends InputEvent
             ? UIEventInit
             : EventInit;
 
-type EventTypeInit<K extends keyof DocumentEventMap> = SpecificEventInit<
-  DocumentEventMap[K]
->;
-
 type Target = Document | Window | Node | Element | null;
 
-type EventFunction<T extends keyof DocumentEventMap> = (
-  element: Target,
-  options?: EventTypeInit<T>,
-) => Promise<boolean>;
+type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
 type EventsObject = {
-  [K in EventType]: EventFunction<FixedEventType<K>>;
+  [K in EventType]: EventFunction;
 };
 
 function assignProps<T extends object>(
