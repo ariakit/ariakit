@@ -87,6 +87,7 @@
     rounded
     scroll-my-1
     cursor-default
+    outline-none
     sm:text-[15px]
     text-black
     data-[active-item]:bg-violet-200
