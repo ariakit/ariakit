@@ -57,6 +57,32 @@ export function applyBrowserPolyfills() {
     return [{ width: 1, height: 1 }];
   };
 
+  if (!Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = noop;
+  }
+
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = noop;
+  }
+
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = noop;
+  }
+
+  if (!Element.prototype.releasePointerCapture) {
+    Element.prototype.releasePointerCapture = noop;
+  }
+
+  if (typeof window.ClipboardEvent === "undefined") {
+    // @ts-expect-error
+    window.ClipboardEvent = class ClipboardEvent extends Event {};
+  }
+
+  if (typeof window.PointerEvent === "undefined") {
+    // @ts-expect-error
+    window.PointerEvent = class PointerEvent extends MouseEvent {};
+  }
+
   return () => {
     HTMLElement.prototype.focus = originalFocus;
     Element.prototype.getClientRects = originalGetClientRects;
