@@ -54,7 +54,7 @@ function initInputEvent(
 ) {
   assignProps(event, {
     data,
-    isComposing: Boolean(isComposing),
+    isComposing: !!isComposing,
     inputType: String(inputType),
   });
 }
@@ -84,10 +84,10 @@ function initUIEventModififiers(
   }: EventModifierInit,
 ) {
   assignProps(event, {
-    altKey: Boolean(altKey),
-    ctrlKey: Boolean(ctrlKey),
-    metaKey: Boolean(metaKey),
-    shiftKey: Boolean(shiftKey),
+    altKey: !!altKey,
+    ctrlKey: !!ctrlKey,
+    metaKey: !!metaKey,
+    shiftKey: !!shiftKey,
     getModifierState(k: string) {
       return Boolean(
         {
@@ -117,8 +117,8 @@ function initKeyboardEvent(
     key: String(key),
     code: String(code),
     location: sanitizeNumber(location),
-    repeat: Boolean(repeat),
-    isComposing: Boolean(isComposing),
+    repeat: !!repeat,
+    isComposing: !!isComposing,
   });
 }
 
@@ -174,7 +174,7 @@ function initPointerEvent(
     tiltY: sanitizeNumber(tiltY),
     twist: sanitizeNumber(twist),
     pointerType: String(pointerType),
-    isPrimary: Boolean(isPrimary),
+    isPrimary: !!isPrimary,
   });
 }
 
