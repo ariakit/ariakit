@@ -55,6 +55,7 @@ export default function Example() {
         </RadixSelect.Trigger>
         <RadixSelect.Content
           role="dialog"
+          aria-label="Languages"
           position="popper"
           className="popover"
           sideOffset={4}

@@ -53,7 +53,8 @@
     appearance-none
     outline-none
     sm:text-[15px]
-    bg-white
+    rounded
+    bg-black/5
     text-black
     placeholder-black/60
   ;
