@@ -118,3 +118,25 @@ test("keep caret position when typing", async ({ page }) => {
   await page.keyboard.type("pp");
   await expect(getCombobox(page)).toHaveValue("apppple");
 });
+
+test.describe("Non-flacky", () => {
+  test.describe.configure({ retries: 0 });
+
+  test("keep first item auto selected when holding backspace down", async ({
+    page,
+  }) => {
+    await getCombobox(page).click();
+    await page.keyboard.type("coco");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await page.keyboard.down("Backspace");
+    await expect(getOption(page, "Apple")).toHaveAttribute(
+      "data-active-item",
+      "",
+    );
+  });
+});
