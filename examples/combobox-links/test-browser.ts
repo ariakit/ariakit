@@ -95,3 +95,14 @@ test("click on target blank link", async ({ page, context }) => {
   await expect(getCombobox(page)).toHaveValue("");
   await expect(newPage).toHaveURL(/https:\/\/twitter.com/);
 });
+
+test("https://github.com/ariakit/ariakit/issues/2056", async ({ page }) => {
+  await getCombobox(page).click();
+  await expect(getPopover(page)).toBeVisible();
+  // Hover here is important to reproduce the issue.
+  await getOption(page, "Ariakit.org").hover();
+  // Position the page so that the link is not fully visible.
+  await page.evaluate(() => window.scrollTo({ top: 440 }));
+  await getOption(page, "Ariakit.org").click();
+  await expect(page).toHaveURL(/https:\/\/ariakit.org/);
+});
