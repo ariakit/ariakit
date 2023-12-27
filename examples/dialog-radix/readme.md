@@ -7,11 +7,11 @@ tags:
   - Radix UI
 ---
 
-# Radix UI Dialog
+# Radix Dialog
 
 <div data-description>
 
-Creating a modal dialog primitive offering the same API as <a href="https://www.radix-ui.com">Radix UI</a> but using the Ariakit <a href="/components/dialog">Dialog</a> component instead.
+Creating a modal dialog primitive offering the same API as [Radix UI](https://www.radix-ui.com) but using the Ariakit [Dialog](/components/dialog) component instead.
 
 </div>
 
@@ -80,6 +80,7 @@ However, Ariakit will make sure the dialog is not closed when users interact wit
 <div data-cards="examples">
 
 - [](/examples/combobox-radix)
+- [](/examples/combobox-radix-select)
 - [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-hide-warning)

@@ -136,8 +136,11 @@ export const useSelect = createHook<SelectOptions>(
       const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
       if (canShow && showOnKeyDownProp(event)) {
         event.preventDefault();
-        store.show();
         store.move(activeId);
+        // Schedule the show event to run after the key event has finished
+        // bubbling. This is necessary to avoid the page to scroll when the
+        // popover is shown.
+        queueBeforeEvent(event.currentTarget, "keyup", store.show);
       }
     });
 

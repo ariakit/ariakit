@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Radix Select with Combobox",
+    type: "page",
+    href: "/examples/combobox-radix-select",
+    dateTime: "2023-12-27T13:18Z",
+  },
+  {
     title: "New example: Combobox with tabs",
     type: "page",
     href: "/examples/combobox-tabs",
@@ -25,7 +31,7 @@ const updates: UpdateItem[] = [
     dateTime: "2023-12-15T12:40Z",
   },
   {
-    title: "New example: Radix UI Combobox",
+    title: "New example: Radix Combobox",
     type: "page",
     href: "/examples/combobox-radix",
     dateTime: "2023-12-04T10:32Z",
@@ -211,7 +217,7 @@ const updates: UpdateItem[] = [
     dateTime: "2023-06-07T11:00Z",
   },
   {
-    title: "New example: Radix UI Dialog",
+    title: "New example: Radix Dialog",
     type: "page",
     href: "/examples/dialog-radix",
     dateTime: "2023-06-04T11:00Z",

@@ -1,6 +1,9 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
+const getPopover = (page: Page) =>
+  page.getByRole("dialog", { name: "Favorite fruit" });
+
 const getButton = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite fruit" });
 
@@ -34,3 +37,15 @@ test("auto select first option", async ({ page }) => {
   await page.keyboard.press("Backspace");
   await expectSelected(page, "Apple");
 });
+
+for (const { key } of [{ key: "ArrowUp" }, { key: "ArrowDown" }]) {
+  test(`not scroll jump using the ${key} key to open the combobox`, async ({
+    page,
+  }) => {
+    await getButton(page).focus();
+    await page.evaluate(() => window.scrollTo({ top: 100 }));
+    await page.keyboard.press(key);
+    await expect(getPopover(page)).toBeVisible();
+    expect(await page.evaluate(() => window.scrollY)).toBe(100);
+  });
+}
