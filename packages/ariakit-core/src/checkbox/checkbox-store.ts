@@ -57,7 +57,8 @@ export interface CheckboxStoreFunctions<
   T extends CheckboxStoreValue = CheckboxStoreValue,
 > {
   /**
-   * Sets the `value` state.
+   * Sets the [`value`](https://ariakit.org/reference/checkbox-provider#value)
+   * state.
    * @example
    * store.setValue(true);
    * store.setValue((value) => !value);
@@ -69,7 +70,9 @@ export interface CheckboxStoreOptions<
   T extends CheckboxStoreValue = CheckboxStoreValue,
 > extends StoreOptions<CheckboxStoreState<T>, "value"> {
   /**
-   * The default value of the checkbox.
+   * The default
+   * [`value`](https://ariakit.org/reference/checkbox-provider#value) state of
+   * the checkbox.
    *
    * Live examples:
    * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)

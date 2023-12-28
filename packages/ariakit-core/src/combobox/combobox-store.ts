@@ -208,7 +208,9 @@ export interface ComboboxStoreState<
    */
   value: string;
   /**
-   * The value of the current active item.
+   * The value of the currently active item. This state automatically updates as
+   * the user navigates the combobox items either by keyboard or mouse click.
+   * Note that it doesn't update when the user simply hovers over the items.
    */
   activeValue: string | undefined;
   /**
