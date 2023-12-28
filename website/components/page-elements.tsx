@@ -503,6 +503,8 @@ function getNodeText(node: Element | ElementContent): string {
 }
 
 export interface PageAProps extends ComponentPropsWithoutRef<"a"> {
+  category?: string;
+  page?: string;
   file?: string;
   node?: Element;
   hovercards?: Set<Promise<string | Iterable<string>>>;
@@ -515,6 +517,8 @@ export function PageA({
   href,
   hovercards,
   tags,
+  category: currentCategory,
+  page: currentPage,
   ...props
 }: PageAProps) {
   if ("data-playground" in props && href) {
@@ -562,6 +566,14 @@ export function PageA({
     const url = new URL(href, "https://ariakit.org");
     const [, category, page] = url.pathname.split("/");
     if (category === "reference" && page && node) {
+      if (
+        currentCategory &&
+        currentPage &&
+        url.hash &&
+        isValidHref(`/${currentCategory}/${currentPage}${url.hash}`, pageLinks)
+      ) {
+        href = `/${currentCategory}/${currentPage}${url.hash}`;
+      }
       const hash = url.hash.replace("#", "");
       const text = getNodeText(node);
       const isComponent = /^[A-Z]/.test(text);

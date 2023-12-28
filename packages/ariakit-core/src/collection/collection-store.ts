@@ -235,16 +235,18 @@ export interface CollectionStoreState<
   T extends CollectionStoreItem = CollectionStoreItem,
 > {
   /**
-   * Lists all the items with their meta data. This state is automatically
-   * updated when an item is registered or unregistered with the `registerItem`
+   * Lists all items along with their metadata. This state is automatically
+   * updated when an item is registered or unregistered using the
+   * [`registerItem`](https://ariakit.org/reference/use-collection-store#registeritem)
    * function.
    */
   items: T[];
   /**
-   * Lists all the items that are currently rendered. This state is
-   * automatically updated when an item is rendered or unrendered with the
-   * `renderItem` function. This state is also automatically sorted based on
-   * their DOM position.
+   * Lists all items, along with their metadata, in the exact order they appear in
+   * the DOM. This state is automatically updated when an item is rendered or
+   * unmounted using the
+   * [`renderItem`](https://ariakit.org/reference/use-collection-store#renderitem)
+   * function.
    */
   renderedItems: T[];
 }
@@ -255,7 +257,6 @@ export interface CollectionStoreFunctions<
   /**
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
-   * @param item The item to register.
    * @example
    * const unregisterItem = store.registerItem({ id: "item-1" });
    * // on cleanup
@@ -264,8 +265,7 @@ export interface CollectionStoreFunctions<
   registerItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Renders an item in the collection. This function returns a cleanup function
-   * that unrenders the item.
-   * @param item The item to render.
+   * that unmounts the item.
    * @example
    * const unrenderItem = store.renderItem({ id: "item-1" });
    * // on cleanup
@@ -274,7 +274,6 @@ export interface CollectionStoreFunctions<
   renderItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Gets an item by its id.
-   * @param id The id of the item.
    * @example
    * const item = store.item("item-1");
    */
@@ -285,7 +284,8 @@ export interface CollectionStoreOptions<
   T extends CollectionStoreItem = CollectionStoreItem,
 > extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
-   * The defaut value for the `items` state.
+   * The defaut value for the
+   * [`items`](https://ariakit.org/reference/collection-provider#items) state.
    * @default []
    */
   defaultItems?: CollectionStoreState<T>["items"];

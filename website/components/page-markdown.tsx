@@ -130,6 +130,8 @@ export function PageMarkdown({
             return (
               <PageA
                 {...props}
+                category={category}
+                page={page}
                 file={file!}
                 hovercards={showHovercards ? hovercards : undefined}
                 tags={pageDetail?.tags}
