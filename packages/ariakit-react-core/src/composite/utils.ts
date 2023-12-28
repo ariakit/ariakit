@@ -91,7 +91,7 @@ type FocusSilentlyElement = HTMLElement & { [FOCUS_SILENTLY]?: boolean };
  */
 export function focusSilently(element: FocusSilentlyElement) {
   element[FOCUS_SILENTLY] = true;
-  element.focus();
+  element.focus({ preventScroll: true });
 }
 
 /**
