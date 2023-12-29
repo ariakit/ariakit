@@ -10,11 +10,17 @@ tags:
 
 <div data-description>
 
-Rendering a [Radix UI](https://radix-ui.com) Select component with a search input using the primitive Ariakit [Combobox](/components/combobox) components.
+Rendering a searchable [Radix UI](https://radix-ui.com) Select component with a text field that enables typeahead & autocomplete features using the primitive Ariakit [Combobox](/components/combobox) components.
 
 </div>
 
 <div data-tags></div>
+
+<aside data-type="note" title="Note">
+
+This example is designed for those who are already using Radix UI in their projects and can't easily switch away from it. If you're starting from scratch or can update your custom select widgets to use Ariakit, we recommend checking out the [Select with Combobox](/examples/select-combobox) example instead, which uses the Ariakit [Select](/components/select) component.
+
+</aside>
 
 <a href="./index.tsx" data-playground>Example</a>
 
