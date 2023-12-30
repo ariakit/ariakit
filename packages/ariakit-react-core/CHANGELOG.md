@@ -1,5 +1,16 @@
 # @ariakit/react-core
 
+## 0.3.12
+
+- The auto-select feature on [Combobox](https://ariakit.org/components/combobox) now resets with each keystroke.
+- Fixed [`Combobox`](https://ariakit.org/reference/combobox) with the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop calling `onFocus` with every input change.
+- Fixed [`Hovercard`](https://ariakit.org/reference/hovercard) flickering when used with shadow DOM.
+- Fixed [`Select`](https://ariakit.org/reference/select) with [`Combobox`](https://ariakit.org/reference/combobox) scroll jumping when opening using keyboard navigation.
+- Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) triggering blur on focus.
+- Fixed [`ComboboxItem`](https://ariakit.org/reference/combobox-item) not triggering the `onClick` event when the item is partially visible.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.3.10`
+
 ## 0.3.11
 
 ### Modal Combobox

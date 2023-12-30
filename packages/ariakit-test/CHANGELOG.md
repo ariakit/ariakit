@@ -1,5 +1,10 @@
 # @ariakit/test
 
+## 0.3.7
+
+- Added missing properties to dispatched events.
+- Updated dependencies: `@ariakit/core@0.3.10`
+
 ## 0.3.6
 
 ### <kbd>Home</kbd> and <kbd>End</kbd> keys on text fields
