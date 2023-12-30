@@ -28,3 +28,11 @@ test("scroll offscreen item into view after selecting it", async ({ page }) => {
   await expect(q.option("Pineapple")).toHaveAttribute("data-active-item", "");
   await expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
 });
+
+test("scroll after hovering over an item", async ({ page }) => {
+  const q = query(page);
+  await q.combobox().click();
+  await q.option("Apple").hover();
+  await page.mouse.wheel(0, 200);
+  await expect(q.option("Apple")).not.toBeInViewport();
+});
