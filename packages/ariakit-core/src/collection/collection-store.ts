@@ -100,37 +100,42 @@ export function createCollectionStore<
 
   const collection = createStore(initialState, props.store);
 
+  const sortItems = () => {
+    const { renderedItems } = privateStore.getState();
+    const sortedItems = sortBasedOnDOMPosition(renderedItems);
+    privateStore.setState("renderedItems", sortedItems);
+    collection.setState("renderedItems", sortedItems);
+  };
+
   setup(collection, () => init(privateStore));
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
 
-      const raf = requestAnimationFrame(() => {
+      let raf = requestAnimationFrame(() => {
         const { renderedItems } = collection.getState();
         // Bail out if the rendered items haven't changed. This is important
-        // because the following lines will cause this function to be called
+        // because the following lines can cause this function to be called
         // again.
         if (state.renderedItems === renderedItems) return;
-        const sortedItems = sortBasedOnDOMPosition(state.renderedItems);
-        privateStore.setState("renderedItems", sortedItems);
-        collection.setState("renderedItems", sortedItems);
+        sortItems();
       });
 
       if (typeof IntersectionObserver !== "function") {
         return () => cancelAnimationFrame(raf);
       }
 
-      const ioCallback = () => {
+      const ioCallback: IntersectionObserverCallback = () => {
         if (firstRun) {
           // The IntersectionObserver callback is called synchronously the first
           // time. We just ignore it.
           firstRun = false;
           return;
         }
-        // Re-trigger the the private store callback to sort the items again in
-        // the requestAnimationFrame callback above.
-        privateStore.setState("renderedItems", [...state.renderedItems]);
+        // privateStore.setState("renderedItems", [...state.renderedItems]);
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sortItems);
       };
 
       const root = getCommonParent(state.renderedItems);
