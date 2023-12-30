@@ -133,7 +133,6 @@ export function createCollectionStore<
           firstRun = false;
           return;
         }
-        // privateStore.setState("renderedItems", [...state.renderedItems]);
         cancelAnimationFrame(raf);
         raf = requestAnimationFrame(sortItems);
       };
