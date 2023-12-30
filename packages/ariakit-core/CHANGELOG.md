@@ -1,5 +1,10 @@
 # @ariakit/core
 
+## 0.3.10
+
+- Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) triggering blur on focus.
+- Improved JSDocs.
+
 ## 0.3.9
 
 - Fixed `Maximum update depth exceeded` warning when rendering multiple collection items on the page.
