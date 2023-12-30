@@ -78,7 +78,6 @@ export function createStore<S extends State>(
   };
 
   const storeInit: StoreInit = () => {
-    if (!stores.length) return noop;
     // Make sure we only initialize the store once, even when it's passed to
     // other stores. However, the store can't be destroyed until all instances
     // are unmounted. See https://github.com/ariakit/ariakit/issues/3147. See

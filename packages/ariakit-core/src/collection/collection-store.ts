@@ -100,8 +100,7 @@ export function createCollectionStore<
 
   const collection = createStore(initialState, props.store);
 
-  const sortItems = () => {
-    const { renderedItems } = privateStore.getState();
+  const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems);
     privateStore.setState("renderedItems", sortedItems);
     collection.setState("renderedItems", sortedItems);
@@ -119,7 +118,7 @@ export function createCollectionStore<
         // because the following lines can cause this function to be called
         // again.
         if (state.renderedItems === renderedItems) return;
-        sortItems();
+        sortItems(state.renderedItems);
       });
 
       if (typeof IntersectionObserver !== "function") {
@@ -134,7 +133,7 @@ export function createCollectionStore<
           return;
         }
         cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(sortItems);
+        raf = requestAnimationFrame(() => sortItems(state.renderedItems));
       };
 
       const root = getCommonParent(state.renderedItems);
