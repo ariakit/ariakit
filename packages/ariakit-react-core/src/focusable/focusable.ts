@@ -281,10 +281,10 @@ export const useFocusable = createHook<FocusableOptions>(
       element.addEventListener("focusin", onFocus, options);
       // We can't focus right away after on mouse down, otherwise it would
       // prevent drag events from happening. So we queue the focus to the next
-      // animation frame, but always before the next mouseup event. The mouseup
-      // event might happen before the next animation frame on touch devices or
-      // by tapping on a MacBook's trackpad, for example.
-      queueBeforeEvent(element, "mouseup", () => {
+      // animation frame, but always before the next pointerup event. The
+      // pointerup event might happen before the next animation frame on touch
+      // devices or by tapping on a MacBook's trackpad, for example.
+      queueBeforeEvent(element, "pointerup", () => {
         element.removeEventListener("focusin", onFocus, true);
         if (receivedFocus) return;
         focusIfNeeded(element);
