@@ -27,13 +27,9 @@ export function createToolbarStore(
 }
 
 export interface ToolbarStoreState extends CompositeStoreState {
-  /**
-   * @default "horizontal"
-   */
+  /** @default "horizontal" */
   orientation: CompositeStoreState["orientation"];
-  /**
-   * @default true
-   */
+  /** @default true */
   focusLoop: CompositeStoreState["focusLoop"];
 }
 

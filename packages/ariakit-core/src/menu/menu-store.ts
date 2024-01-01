@@ -160,10 +160,13 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
    */
   initialFocus: "container" | "first" | "last";
   /**
-   * A map of names and values that will be used by the `MenuItemCheckbox` and
-   * `MenuItemRadio` components.
+   * A map of names and values that will be used by the
+   * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) and
+   * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio)
+   * components.
    *
    * Live examples:
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
@@ -193,7 +196,8 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    */
   setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
   /**
-   * Sets the `values` state.
+   * Sets the [`values`](https://ariakit.org/reference/menu-provider#values)
+   * state.
    * @example
    * store.setValues({ watching: ["issues"] });
    * store.setValues((values) => ({ ...values, watching: ["issues"] }));
@@ -231,16 +235,21 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
    */
   combobox?: ComboboxStore | null;
   /**
-   * A reference to a parent menu store. This should be used on nested menus.
+   * A reference to a parent menu store. This is used on nested menus.
    */
   parent?: MenuStore | null;
   /**
-   * A reference to a menu bar store. This should be used when rendering menus
-   * inside a menu bar.
+   * A reference to a menu bar store. This is used when rendering menus inside a
+   * menu bar.
    */
   menubar?: MenuBarStore | null;
   /**
-   * The default values for the `values` state.
+   * The default values for the
+   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   *
+   * Live examples:
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
    * @default {}
    */
   defaultValues?: MenuStoreState<T>["values"];
