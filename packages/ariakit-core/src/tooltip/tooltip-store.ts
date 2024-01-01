@@ -41,9 +41,15 @@ export function createTooltipStore(
 }
 
 export interface TooltipStoreState extends HovercardStoreState {
+  /** @default "top" */
+  placement: HovercardStoreState["placement"];
+  /** @default 0 */
+  hideTimeout?: HovercardStoreState["hideTimeout"];
   /**
    * Determines whether the tooltip is being used as a label or a description
    * for the anchor element.
+   * @deprecated Render a visually hidden label or use the `aria-label` or
+   * `aria-labelledby` attributes on the anchor element instead.
    * @default "description"
    */
   type: "label" | "description";
@@ -53,10 +59,6 @@ export interface TooltipStoreState extends HovercardStoreState {
    * @default 300
    */
   skipTimeout: number;
-  /** @default "top" */
-  placement: HovercardStoreState["placement"];
-  /** @default 0 */
-  hideTimeout?: HovercardStoreState["hideTimeout"];
 }
 
 export type TooltipStoreFunctions = HovercardStoreFunctions;

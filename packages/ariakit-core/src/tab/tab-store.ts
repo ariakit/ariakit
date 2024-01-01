@@ -131,13 +131,9 @@ export interface TabStorePanel extends CollectionStoreItem {
 }
 
 export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
-  /**
-   * @default "horizontal"
-   */
+  /** @default "horizontal" */
   orientation: CompositeStoreState<TabStoreItem>["orientation"];
-  /**
-   * @default true
-   */
+  /** @default true */
   focusLoop: CompositeStoreState<TabStoreItem>["focusLoop"];
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
@@ -149,8 +145,9 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    */
   selectedId: TabStoreState["activeId"];
   /**
-   * Whether the tab should be selected when it receives focus. If it's set to
-   * `false`, the tab will be selected only when it's clicked.
+   * Determines if the tab should be selected when it receives focus. If set to
+   * `false`, the tab will only be selected upon clicking, not when
+   * using arrow keys to shift focus.
    *
    * Live examples:
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
@@ -167,9 +164,6 @@ export interface TabStoreFunctions
    * without moving focus. If you want to move focus, use the
    * [`select`](https://ariakit.org/reference/use-tab-store#select) function
    * instead.
-   *
-   * Live examples:
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    * @example
    * // Selects the tab with id "tab-1"
    * store.setSelectedId("tab-1");
