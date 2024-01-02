@@ -94,7 +94,7 @@ export function createCollectionStore<
   const syncPrivateStore = getPrivateStore<T>(props.store);
 
   const privateStore = createStore(
-    { renderedItems: initialState.renderedItems },
+    { items, renderedItems: initialState.renderedItems },
     syncPrivateStore,
   );
 
@@ -107,6 +107,15 @@ export function createCollectionStore<
   };
 
   setup(collection, () => init(privateStore));
+
+  // Use the private store to register items and then batch the changes to the
+  // public store so we don't trigger multiple updates on the store when adding
+  // multiple items.
+  setup(privateStore, () => {
+    return batch(privateStore, ["items"], (state) => {
+      collection.setState("items", state.items);
+    });
+  });
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
@@ -191,7 +200,11 @@ export function createCollectionStore<
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => collection.setState("items", getItems), true);
+    mergeItem(
+      item,
+      (getItems) => privateStore.setState("items", getItems),
+      true,
+    );
 
   return {
     ...collection,

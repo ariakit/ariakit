@@ -185,12 +185,14 @@ export const useSelect = createHook<SelectOptions>(
     const labelId = store.useState((state) => state.labelElement?.id);
     const label = props["aria-label"];
     const labelledBy = props["aria-labelledby"] || labelId;
-    const items = store.useState("items");
-    const values = useMemo(
+    const items = store.useState((state) => {
+      if (!name) return;
+      return state.items;
+    });
+    const values = useMemo(() => {
       // Filter out items without value and duplicate values.
-      () => [...new Set(items.map((i) => i.value!).filter((v) => v != null))],
-      [items],
-    );
+      return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
+    }, [items]);
 
     // Renders a native select element with the same value as the select so we
     // support browser autofill. When the native select value changes, the
