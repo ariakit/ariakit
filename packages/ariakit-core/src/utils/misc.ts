@@ -118,6 +118,9 @@ export function hasOwnProperty<T extends AnyObject>(
   object: T,
   prop: keyof any,
 ): prop is keyof T {
+  if (typeof Object.hasOwn === "function") {
+    return Object.hasOwn(object, prop);
+  }
   return Object.prototype.hasOwnProperty.call(object, prop);
 }
 
