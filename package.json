@@ -155,7 +155,7 @@
     "patch-package": "8.0.0",
     "postcss": "8.4.32",
     "postcss-combine-duplicated-selectors": "10.0.3",
-    "postcss-import": "15.1.0",
+    "postcss-import": "16.0.0",
     "postcss-merge-selectors": "0.0.6",
     "postcss-prettify": "0.3.4",
     "prettier": "3.1.1",
