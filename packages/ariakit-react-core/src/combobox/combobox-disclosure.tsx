@@ -96,11 +96,16 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
 );
 
 /**
- * Renders a combobox disclosure button that toggles the combobox popover
+ * Renders a combobox disclosure button that toggles the
+ * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) element's
  * visibility when clicked.
+ *
+ * Although this button is not tabbable, it remains accessible to screen reader
+ * users. On clicking, it automatically shifts focus to the
+ * [`Combobox`](https://ariakit.org/reference/combobox) element.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {3}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxDisclosure />

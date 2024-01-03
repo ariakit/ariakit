@@ -118,11 +118,10 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
 /**
  * Renders a combobox popover. The `role` prop is set to `listbox` by default,
  * but can be overriden by any other valid combobox popup role (`listbox`,
- * `menu`, `tree`, `grid` or `dialog`). The `aria-labelledby` prop is set to the
- * combobox input element's `id` by default.
+ * `menu`, `tree`, `grid` or `dialog`).
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {3-7}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>

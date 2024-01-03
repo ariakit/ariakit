@@ -8,7 +8,8 @@ import type {
 } from "./collection-store.js";
 
 /**
- * Provides a collection store to CollectionItem components.
+ * Provides a collection store to
+ * [`CollectionItem`](https://ariakit.org/reference/collection-item) components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx

@@ -199,18 +199,17 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 
 /**
  * Renders a combobox item inside a
- * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+ * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or a
  * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
- * components. The `role` prop will be automatically set based on the list's own
+ * component. The `role` prop will be automatically set based on the list's own
  * `role` prop. For example, if the list `role` is set to `listbox` (default),
- * the `ComboboxItem` `role` will be set to `option`.
+ * the item `role` will be set to `option`.
  *
- * By default, the
- * [`value`](https://ariakit.org/reference/combobox-item#value) prop will be
- * rendered as the children, but this can be overriden.
+ * By default, the [`value`](https://ariakit.org/reference/combobox-item#value)
+ * prop will be rendered as the children, but this can be overriden.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {4-6}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>
@@ -242,6 +241,9 @@ export interface ComboboxItemOptions<T extends As = "div">
    * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   store?: ComboboxStore;
   /**
@@ -280,6 +282,8 @@ export interface ComboboxItemOptions<T extends As = "div">
    *
    * Live examples:
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**

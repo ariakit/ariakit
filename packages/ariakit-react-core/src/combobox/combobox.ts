@@ -526,10 +526,10 @@ export const useCombobox = createHook<ComboboxOptions>(
 );
 
 /**
- * Renders a combobox input.
+ * Renders a combobox input element that can be used to filter a list of items.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {2}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>
@@ -561,9 +561,9 @@ export interface ComboboxOptions<T extends As = "input">
    */
   store?: ComboboxStore;
   /**
-   * Whether the first item will be automatically selected when the combobox
-   * input value changes. When it's set to `true`, the exact behavior will
-   * depend on the value of
+   * Whether the first enabled item will be automatically selected when the
+   * combobox input value changes. When it's set to `true`, the exact behavior
+   * will depend on the value of the
    * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop:
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
    *   is `both` or `inline`, the first item is automatically focused when the
@@ -572,6 +572,10 @@ export interface ComboboxOptions<T extends As = "input">
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
    *   is `list` or `none`, the first item is automatically focused when the
    *   popup opens, but the input value doesn't change.
+   *
+   * To change which item is auto selected, use the
+   * [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid)
+   * prop.
    *
    * Live examples:
    * - [Combobox with integrated
@@ -623,22 +627,22 @@ export interface ComboboxOptions<T extends As = "input">
    * This prop is based on the standard
    * [`aria-autocomplete`](https://w3c.github.io/aria/#aria-autocomplete)
    * attribute, accepting the same values:
-   * - `both`: indicates that the items will be filtered based on
+   * - `list` (default): indicates that the items will be dynamically rendered
+   *   based on [`value`](https://ariakit.org/reference/combobox-provider#value)
+   *   and the input value will _not_ change based on the active item. The
+   *   filtering logic must be implemented by the consumer of this component.
+   * - `inline`: indicates that the items are static, that is, they won't be
+   *   filtered, but the input value will temporarily change based on the active
+   *   item. Ariakit will automatically provide the inline autocompletion
+   *   behavior.
+   * - `both`: indicates that the items will be dynamically rendered based on
    *   [`value`](https://ariakit.org/reference/combobox-provider#value) and the
    *   input value will temporarily change based on the active item. The
    *   filtering logic must be implemented by the consumer of this component,
    *   whereas Ariakit will automatically provide the inline autocompletion
    *   behavior.
-   * - `list` (default): indicates that the items will be filtered based on
-   *   [`value`](https://ariakit.org/reference/combobox-provider#value) and the
-   *   input value will NOT change based on the active item. The filtering logic
-   *   must be implemented by the consumer of this component.
-   * - `inline`: indicates that the items are static, that is, they won't be
-   *   filtered, but the input value will temporarily change based on the active
-   *   item. Ariakit will automatically provide the inline autocompletion
-   *   behavior
-   * - `none`: the items are static and the input value will NOT change based on
-   *   the active item.
+   * - `none`: the items are static and the input value will _not_ change based
+   *   on the active item.
    *
    * Live examples:
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
@@ -646,8 +650,9 @@ export interface ComboboxOptions<T extends As = "input">
    */
   autoComplete?: StringWithValue<Required<AriaAttributes>["aria-autocomplete"]>;
   /**
-   * Whether the combobox list/popover should be shown when the input value is
-   * changed.
+   * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
+   * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components should be shown when the input value changes.
    *
    * Live examples:
    * - [Textarea with inline
@@ -659,17 +664,6 @@ export interface ComboboxOptions<T extends As = "input">
    * ```
    */
   showOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
-  /**
-   * Whether the combobox store value will be updated when the input value
-   * changes. This is useful if you want to customize how the store value is
-   * updated based on the input value.
-   *
-   * Live examples:
-   * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * @default true
-   */
-  setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
   /**
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
@@ -702,11 +696,29 @@ export interface ComboboxOptions<T extends As = "input">
    */
   showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
   /**
-   * Whether the combobox store value will be updated when the combobox input
-   * element gets clicked. This usually only applies when `autoComplete` is
+   * Whether the combobox
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * should be updated when the input value changes. This is useful if you want
+   * to customize how the store
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) is updated
+   * based on the input element's value.
+   *
+   * Live examples:
+   * - [Textarea with inline
+   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * @default true
+   */
+  setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
+  /**
+   * Whether the combobox
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * should be updated when the combobox input element gets clicked. This
+   * usually only applies when
+   * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) is
    * `both` or `inline`, because the input value will temporarily change based
-   * on the active item and the store value will not be updated until the user
-   * confirms the selection.
+   * on the active item and the store
+   * [`value`](https://ariakit.org/reference/combobox-provider#value) will not
+   * be updated until the user confirms the selection.
    * @default true
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

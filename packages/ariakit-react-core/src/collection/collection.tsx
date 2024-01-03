@@ -42,9 +42,10 @@ export const useCollection = createHook<CollectionOptions>(
 );
 
 /**
- * Renders a simple wrapper for collection items. It receives the collection
- * store through the `store` prop and provides context for `CollectionItem`
- * components.
+ * Renders a simple wrapper for collection items. It accepts a collection store
+ * through the [`store`](https://ariakit.org/reference/collection#store) prop
+ * and provides context for
+ * [`CollectionItem`](https://ariakit.org/reference/collection-item) components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx

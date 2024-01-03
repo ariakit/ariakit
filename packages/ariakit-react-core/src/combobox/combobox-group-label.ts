@@ -25,11 +25,11 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
 
 /**
  * Renders a label in a combobox group. This component should be wrapped with
- * `ComboboxGroup` so the `aria-labelledby` is correctly set on the combobox
- * group element.
+ * [`ComboboxGroup`](https://ariakit.org/reference/combobox-group) so the
+ * `aria-labelledby` is correctly set on the group element.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {5}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>

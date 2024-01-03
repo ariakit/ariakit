@@ -98,13 +98,16 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
 );
 
 /**
- * Renders a value element inside a combobox item. The value will be split into
- * span elements. The portions of the value that correspond to the store value
- * will have a `data-user-value` attribute. The other portions will have a
- * `data-autocomplete-value` attribute.
+ * Renders a value element inside a
+ * [`ComboboxItem`](https://ariakit.org/reference/combobox-item). The value will
+ * be split into span elements. The portions of the value that correspond to the
+ * combobox value will have a
+ * [`data-user-value`](https://ariakit.org/guide/styling#data-user-value)
+ * attribute. The other portions will have a [`data-autocomplete-value`](https://ariakit.org/guide/styling#data-autocomplete-value)
+ * attribute.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {5} "value"
  * <ComboboxProvider value="p">
  *   <Combobox />
  *   <ComboboxPopover>
@@ -146,8 +149,10 @@ export interface ComboboxItemValueOptions<T extends As = "span">
    */
   store?: ComboboxStore;
   /**
-   * The current combobox item value. If not provided, the parent `ComboboxItem`
-   * component's `value` prop will be used.
+   * The current combobox item value. If not provided, the parent
+   * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component's
+   * [`value`](https://ariakit.org/reference/combobox-item#value) prop will be
+   * used.
    */
   value?: string;
 }

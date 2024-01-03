@@ -38,10 +38,11 @@ export const useComboboxSeparator = createHook<ComboboxSeparatorOptions>(
 );
 
 /**
- * Renders a separator element for combobox items
+ * Renders a divider between
+ * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {5}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>

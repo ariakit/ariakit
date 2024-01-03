@@ -47,10 +47,13 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
 );
 
 /**
- * Renders a combobox row.
+ * Renders a combobox row that allows two-dimensional arrow key navigation.
+ * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements
+ * wrapped within this component will automatically receive a
+ * [`rowId`](https://ariakit.org/reference/combobox-item#rowid) prop.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {4-13}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>

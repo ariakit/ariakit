@@ -30,17 +30,21 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
 }
 
 /**
- * Creates a combobox store.
+ * Creates a combobox store to control the state of
+ * [Combobox](https://ariakit.org/components/combobox) components.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxStore();
- * <Combobox store={combobox} />
- * <ComboboxPopover store={combobox}>
- *   <ComboboxItem value="Apple" />
- *   <ComboboxItem value="Banana" />
- *   <ComboboxItem value="Orange" />
- * </ComboboxPopover>
+ *
+ * <ComboboxProvider store={combobox}>
+ *   <Combobox />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Banana" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * ```
  */
 export function useComboboxStore<

@@ -49,10 +49,14 @@ export const useComboboxGroup = createHook<ComboboxGroupOptions>(
 );
 
 /**
- * Renders a combobox group.
+ * Renders a group for
+ * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements.
+ * Optionally, a
+ * [`ComboboxGroupLabel`](https://ariakit.org/reference/combobox-group-label)
+ * can be rendered as a child to provide a label for the group.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {4-8}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxPopover>
