@@ -8,8 +8,16 @@ export default function Example() {
         <Ariakit.SelectLabel className="label">
           Favorite fruit
         </Ariakit.SelectLabel>
-        <Ariakit.Select className="button" />
-        <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
+        <Ariakit.Select
+          normalizeTypeaheadText={normalizeText}
+          className="button"
+        />
+        <Ariakit.SelectPopover
+          normalizeTypeaheadText={normalizeText}
+          gutter={4}
+          sameWidth
+          className="popover"
+        >
           <Ariakit.SelectItem className="select-item" value="Apple">
             🍎 Apple
           </Ariakit.SelectItem>
@@ -26,4 +34,11 @@ export default function Example() {
       </Ariakit.SelectProvider>
     </div>
   );
+}
+
+function normalizeText(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/^[\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/iu, "")
+    .trim();
 }
