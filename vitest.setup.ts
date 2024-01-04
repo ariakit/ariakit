@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { Suspense, createElement, useMemo, version } from "react";
+import { Suspense, createElement, version } from "react";
 import { render } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import failOnConsole from "vitest-fail-on-console";
@@ -50,7 +50,7 @@ if (version.startsWith("17")) {
       startTransition: (v: () => any) => v(),
       useDeferredValue: <T>(v: T) => v,
       useTransition: () => [false, (v: () => any) => v()],
-      useId: () => useMemo(() => `id-${id++}`, []),
+      useId: () => actual.useMemo(() => `id-${id++}`, []),
     };
     return { ...mocks, ...actual };
   });
