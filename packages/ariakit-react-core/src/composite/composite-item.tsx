@@ -464,6 +464,14 @@ export interface CompositeItemOptions<T extends As = "button">
    */
   store?: CompositeStore;
   /**
+   * Determines if the item should be registered as part of the collection. If
+   * this is set to `false`, the item won't be accessible via arrow keys.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   */
+  shouldRegisterItem?: CollectionItemOptions<T>["shouldRegisterItem"];
+  /**
    * The id that will be used to group items in the same row. This is usually
    * retrieved by the
    * [`CompositeRow`](https://ariakit.org/reference/composite-row) component

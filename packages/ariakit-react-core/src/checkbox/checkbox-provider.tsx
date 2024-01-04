@@ -10,8 +10,10 @@ import type {
 type Value = CheckboxStoreValue;
 
 /**
- * Provides a checkbox store to its descendants. This is useful to create a
- * group of checkboxes that share the same store.
+ * Provides a checkbox store for its descendants. This comes in handy when
+ * creating a group of checkboxes that share the same state. `CheckboxProvider`
+ * can efficiently manage the value of a checkbox, whether it's a single string,
+ * number, or boolean value, or an array of such values.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx

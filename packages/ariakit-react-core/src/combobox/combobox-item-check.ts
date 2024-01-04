@@ -36,7 +36,7 @@ export const useComboboxItemCheck = createHook<ComboboxItemCheckOptions>(
  * component must be wrapped with
  * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) or the
  * [`checked`](https://ariakit.org/reference/combobox-item-check#checked) prop
- * must be explicitly passed to the component.
+ * must be explicitly set.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx {5,9}
@@ -82,8 +82,12 @@ export interface ComboboxItemCheckOptions<T extends As = "span">
    * inferred from the parent
    * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component.
    * Manually setting this prop will override the inferred value.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
-  checked?: boolean;
+  checked?: CheckboxCheckOptions<T>["checked"];
 }
 
 export type ComboboxItemCheckProps<T extends As = "span"> = Props<

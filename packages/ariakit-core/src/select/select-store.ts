@@ -239,7 +239,8 @@ export interface SelectStoreFunctions<
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
   /**
-   * Sets the `value` state.
+   * Sets the [`value`](https://ariakit.org/reference/select-provider#value)
+   * state.
    * @example
    * store.setValue("Apple");
    * store.setValue(["Apple", "Banana"]);

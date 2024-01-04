@@ -94,43 +94,55 @@ export function createCollectionStore<
   const syncPrivateStore = getPrivateStore<T>(props.store);
 
   const privateStore = createStore(
-    { renderedItems: initialState.renderedItems },
+    { items, renderedItems: initialState.renderedItems },
     syncPrivateStore,
   );
 
   const collection = createStore(initialState, props.store);
 
+  const sortItems = (renderedItems: T[]) => {
+    const sortedItems = sortBasedOnDOMPosition(renderedItems);
+    privateStore.setState("renderedItems", sortedItems);
+    collection.setState("renderedItems", sortedItems);
+  };
+
   setup(collection, () => init(privateStore));
+
+  // Use the private store to register items and then batch the changes to the
+  // public store so we don't trigger multiple updates on the store when adding
+  // multiple items.
+  setup(privateStore, () => {
+    return batch(privateStore, ["items"], (state) => {
+      collection.setState("items", state.items);
+    });
+  });
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
       let firstRun = true;
 
-      const raf = requestAnimationFrame(() => {
+      let raf = requestAnimationFrame(() => {
         const { renderedItems } = collection.getState();
         // Bail out if the rendered items haven't changed. This is important
-        // because the following lines will cause this function to be called
+        // because the following lines can cause this function to be called
         // again.
         if (state.renderedItems === renderedItems) return;
-        const sortedItems = sortBasedOnDOMPosition(state.renderedItems);
-        privateStore.setState("renderedItems", sortedItems);
-        collection.setState("renderedItems", sortedItems);
+        sortItems(state.renderedItems);
       });
 
       if (typeof IntersectionObserver !== "function") {
         return () => cancelAnimationFrame(raf);
       }
 
-      const ioCallback = () => {
+      const ioCallback: IntersectionObserverCallback = () => {
         if (firstRun) {
           // The IntersectionObserver callback is called synchronously the first
           // time. We just ignore it.
           firstRun = false;
           return;
         }
-        // Re-trigger the the private store callback to sort the items again in
-        // the requestAnimationFrame callback above.
-        privateStore.setState("renderedItems", [...state.renderedItems]);
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => sortItems(state.renderedItems));
       };
 
       const root = getCommonParent(state.renderedItems);
@@ -188,7 +200,11 @@ export function createCollectionStore<
   };
 
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, (getItems) => collection.setState("items", getItems), true);
+    mergeItem(
+      item,
+      (getItems) => privateStore.setState("items", getItems),
+      true,
+    );
 
   return {
     ...collection,
@@ -235,16 +251,18 @@ export interface CollectionStoreState<
   T extends CollectionStoreItem = CollectionStoreItem,
 > {
   /**
-   * Lists all the items with their meta data. This state is automatically
-   * updated when an item is registered or unregistered with the `registerItem`
+   * Lists all items along with their metadata. This state is automatically
+   * updated when an item is registered or unregistered using the
+   * [`registerItem`](https://ariakit.org/reference/use-collection-store#registeritem)
    * function.
    */
   items: T[];
   /**
-   * Lists all the items that are currently rendered. This state is
-   * automatically updated when an item is rendered or unrendered with the
-   * `renderItem` function. This state is also automatically sorted based on
-   * their DOM position.
+   * Lists all items, along with their metadata, in the exact order they appear in
+   * the DOM. This state is automatically updated when an item is rendered or
+   * unmounted using the
+   * [`renderItem`](https://ariakit.org/reference/use-collection-store#renderitem)
+   * function.
    */
   renderedItems: T[];
 }
@@ -255,7 +273,6 @@ export interface CollectionStoreFunctions<
   /**
    * Registers an item in the collection. This function returns a cleanup
    * function that unregisters the item.
-   * @param item The item to register.
    * @example
    * const unregisterItem = store.registerItem({ id: "item-1" });
    * // on cleanup
@@ -264,8 +281,7 @@ export interface CollectionStoreFunctions<
   registerItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Renders an item in the collection. This function returns a cleanup function
-   * that unrenders the item.
-   * @param item The item to render.
+   * that unmounts the item.
    * @example
    * const unrenderItem = store.renderItem({ id: "item-1" });
    * // on cleanup
@@ -274,7 +290,6 @@ export interface CollectionStoreFunctions<
   renderItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Gets an item by its id.
-   * @param id The id of the item.
    * @example
    * const item = store.item("item-1");
    */
@@ -285,7 +300,8 @@ export interface CollectionStoreOptions<
   T extends CollectionStoreItem = CollectionStoreItem,
 > extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
-   * The defaut value for the `items` state.
+   * The defaut value for the
+   * [`items`](https://ariakit.org/reference/collection-provider#items) state.
    * @default []
    */
   defaultItems?: CollectionStoreState<T>["items"];

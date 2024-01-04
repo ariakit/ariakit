@@ -63,7 +63,8 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
 );
 
 /**
- * Renders a check mark icon, usually inside a `Checkbox` component.
+ * Renders a check mark icon, usually inside a
+ * [`Checkbox`](https://ariakit.org/reference/checkbox) component.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -82,9 +83,14 @@ if (process.env.NODE_ENV !== "production") {
 export interface CheckboxCheckOptions<T extends As = "span">
   extends Options<T> {
   /**
-   * Object returned by the `useCheckboxStore` hook. If not provided, the parent
-   * `Checkbox` component's context will be used. If the `checked` prop is
-   * provided, it will override this prop.
+   * Object returned by the
+   * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
+   * hook. If not provided, the parent
+   * [`Checkbox`](https://ariakit.org/reference/checkbox) component's context
+   * will be used.
+   *
+   * If the [`checked`](https://ariakit.org/reference/checkbox-check#checked)
+   * prop is provided, it will override this prop.
    */
   store?: CheckboxStore;
   /**
@@ -94,6 +100,10 @@ export interface CheckboxCheckOptions<T extends As = "span">
    * parent [`Checkbox`](https://ariakit.org/reference/checkbox) component.
    *
    * Manually setting this prop will supersede the derived value.
+   *
+   * Live examples:
+   * - [Submenu with
+   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   checked?: boolean;
 }

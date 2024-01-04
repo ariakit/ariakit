@@ -55,8 +55,10 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
 
 /**
  * Renders an item in a collection. The collection store can be passed
- * explicitly through the `store` prop or implicitly through the parent
- * `Collection` component.
+ * explicitly through the
+ * [`store`](https://ariakit.org/reference/collection-item#store) prop or
+ * implicitly through the parent
+ * [`Collection`](https://ariakit.org/reference/collection) component.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
@@ -86,10 +88,13 @@ export interface CollectionItemOptions<T extends As = "div">
    * [`Collection`](https://ariakit.org/reference/collection) or
    * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
    * components' context will be used.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   store?: CollectionStore;
   /**
-   * Whether the item should be registered to the store.
+   * Whether the item should be registered as part of the collection.
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
@@ -97,13 +102,12 @@ export interface CollectionItemOptions<T extends As = "div">
    */
   shouldRegisterItem?: boolean;
   /**
-   * A memoized function that returns props that will be passed along with the
-   * item when it gets registered to the store.
+   * A memoized function that returns props to be passed with the item during
+   * its registration in the store.
    * @example
    * ```jsx
-   * const store = useCollectionStore();
-   * const getItem = useCallback((item) => ({ ...item, custom: true }), []);
-   * <CollectionItem store={store} getItem={getItem} />
+   * const getItem = useCallback((data) => ({ ...data, custom: true }), []);
+   * <CollectionItem getItem={getItem} />
    * ```
    */
   getItem?: (props: CollectionStoreItem) => CollectionStoreItem;

@@ -37,22 +37,14 @@ useTooltipContext()
 </TooltipProvider>
 ```
 
-## Tooltips are descriptions
+## Tooltip anchors must have accessible names
 
-By default, tooltips describe the element they are attached to (the anchor element) and are referenced by the [`aria-describedby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby) attribute.
+By default, tooltips serve as non-critical descriptions and shouldn't be used as accessible labels for the anchor element. You should ensure the anchor element has an accessible name, either by:
 
-You should make sure the anchor element has an accessible name, either by:
-
-- Rendering a visible label or a [VisuallyHidden](/components/visually-hidden) text inside the anchor element.
+- Rendering a visible label or [VisuallyHidden](/components/visually-hidden) text within the anchor element.
 - Using the [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label) or [`aria-labelledby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby) attributes on the anchor element.
 
-Alternatively, if you want to use the tooltip as a label, you must set the [`type`](/reference/tooltip-provider#type) prop to `label`:
-
-```jsx
-<TooltipProvider type="label">
-```
-
-This will make the tooltip behave like a label and will use the `aria-labelledby` attribute on the anchor element. Additionally, the tooltip's `role` attribute will be set to `none`.
+Moreover, the [`TooltipAnchor`](/reference/tooltip-anchor) component should be rendered as an accessible widget through [composition](/guide/composition), like a button or a link, so it's properly announced by screen readers when it gains focus.
 
 ## Related components
 

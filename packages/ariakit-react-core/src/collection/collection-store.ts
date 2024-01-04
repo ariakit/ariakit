@@ -18,11 +18,13 @@ export function useCollectionStoreProps<T extends Core.CollectionStore>(
 }
 
 /**
- * Creates a collection store.
+ * Creates a collection store to control
+ * [Collection](https://ariakit.org/components/collection) components.
  * @see https://ariakit.org/components/collection
  * @example
  * ```jsx
  * const collection = useCollectionStore();
+ *
  * <Collection store={collection}>
  *   <CollectionItem>Item</CollectionItem>
  *   <CollectionItem>Item</CollectionItem>
@@ -62,8 +64,9 @@ export interface CollectionStoreOptions<
   T extends CollectionStoreItem = CollectionStoreItem,
 > extends Core.CollectionStoreOptions<T> {
   /**
-   * A callback that gets called when the `items` state changes.
-   * @param items The new items.
+   * A callback that gets called when the
+   * [`items`](https://ariakit.org/reference/collection-provider#items) state
+   * changes.
    * @example
    * const [items, setItems] = useState([]);
    * const collection = useCollectionStore({ items, setItems });

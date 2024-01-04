@@ -359,6 +359,10 @@ export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
   extends CollectionStoreState<FormStoreItem> {
   /**
    * Form values.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormSelect](https://ariakit.org/examples/form-select)
    * @default {}
    */
   values: T;
@@ -383,12 +387,15 @@ export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
    */
   submitting: boolean;
   /**
-   * The number of times `form.submit` has been called with a successful
-   * response.
+   * The number of times
+   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * called with a successful response.
    */
   submitSucceed: number;
   /**
-   * The number of times `form.submit` has been called with an error response.
+   * The number of times
+   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * called with an error response.
    */
   submitFailed: number;
 }
@@ -397,6 +404,10 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   extends CollectionStoreFunctions<FormStoreItem> {
   /**
    * An object containing the names of the form fields for type-safety.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormSelect](https://ariakit.org/examples/form-select)
    * @example
    * store.names.name; // "name"
    * store.names.name.first; // "name.first"
@@ -404,7 +415,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   names: Names<T>;
   /**
-   * Sets the `values` state.
+   * Sets the [`values`](https://ariakit.org/reference/form-provider#values)
+   * state.
    * @example
    * store.setValues({ name: "John" });
    * store.setValues((values) => ({ ...values, name: "John" }));
@@ -412,7 +424,9 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setValues: SetState<FormStoreState<T>["values"]>;
   /**
    * Retrieves a field value.
-   * @param name The field name.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
    * @example
    * const nameValue = store.getValue("name");
    * // Can also use store.names for type-safety.
@@ -421,8 +435,9 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   getValue: <T = any>(name: StringLike) => T;
   /**
    * Sets a field value.
-   * @param name The field name.
-   * @param value The field value.
+   *
+   * Live examples:
+   * - [FormSelect](https://ariakit.org/examples/form-select)
    * @example
    * store.setValue("name", "John");
    * store.setValue("name", (value) => value + " Doe");
@@ -432,8 +447,6 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setValue: <T>(name: StringLike, value: SetStateAction<T>) => void;
   /**
    * Pushes a value to an array field.
-   * @param name The array field name.
-   * @param value The value to push.
    * @example
    * store.pushValue("tags", "new tag");
    * store.pushValue("tags", { id: 1, name: "new tag" });
@@ -443,8 +456,6 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   pushValue: <T>(name: StringLike, value: T) => void;
   /**
    * Removes a value from an array field.
-   * @param name The array field name.
-   * @param index The index of the value to remove.
    * @example
    * store.removeValue("tags", 0);
    * store.removeValue("tags", 1);
@@ -453,7 +464,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   removeValue: (name: StringLike, index: number) => void;
   /**
-   * Sets the `errors` state.
+   * Sets the [`errors`](https://ariakit.org/reference/form-provider#errors)
+   * state.
    * @example
    * store.setErrors({ name: "Name is required" });
    * store.setErrors((errors) => ({ ...errors, name: "Name is required" }));
@@ -461,7 +473,6 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setErrors: SetState<FormStoreState<T>["errors"]>;
   /**
    * Retrieves a field error.
-   * @param name The field name.
    * @example
    * const nameError = store.getError("name");
    * // Can also use store.names for type-safety.
@@ -470,8 +481,9 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   getError: (name: StringLike) => ErrorMessage;
   /**
    * Sets a field error.
-   * @param name The field name.
-   * @param error The field error.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
    * @example
    * store.setError("name", "Name is required");
    * store.setError("name", (error) => error + "!");
@@ -480,7 +492,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   setError: (name: StringLike, error: SetStateAction<ErrorMessage>) => void;
   /**
-   * Sets the `touched` state.
+   * Sets the [`touched`](https://ariakit.org/reference/form-provider#touched)
+   * state.
    * @example
    * store.setTouched({ name: true });
    * store.setTouched((touched) => ({ ...touched, name: true }));
@@ -488,7 +501,6 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setTouched: SetState<FormStoreState<T>["touched"]>;
   /**
    * Retrieves a field touched state.
-   * @param name The field name.
    * @example
    * const nameTouched = store.getFieldTouched("name");
    * // Can also use store.names for type-safety.
@@ -497,8 +509,6 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   getFieldTouched: (name: StringLike) => boolean;
   /**
    * Sets a field touched state.
-   * @param name The field name.
-   * @param value The field touched state.
    * @example
    * store.setFieldTouched("name", true);
    * store.setFieldTouched("name", (value) => !value);
@@ -508,9 +518,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
   /**
    * Function that accepts a callback that will be used to validate the form
-   * when `validate` is called. It returns a cleanup function that will remove
-   * the callback.
-   * @param callback The callback function.
+   * when [`validate`](https://ariakit.org/reference/use-form-store#validate) is
+   * called. It returns a cleanup function that will remove the callback.
    * @example
    * const cleanup = store.onValidate(async (state) => {
    *   const errors = await api.validate(state.values);
@@ -521,9 +530,9 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => void;
   /**
-   * Function that accepts a callback that will be used to submit the form
-   * when `submit` is called. It returns a cleanup function that will remove
-   * the callback.
+   * Function that accepts a callback that will be used to submit the form when
+   * [`submit`](https://ariakit.org/reference/use-form-store#submit) is called.
+   * It returns a cleanup function that will remove the callback.
    * @param callback The callback function.
    * @example
    * const cleanup = store.onSubmit(async (state) => {

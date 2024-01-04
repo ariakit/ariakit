@@ -10,7 +10,8 @@ import type {
 type Value = ComboboxStoreSelectedValue;
 
 /**
- * Provides a combobox store to Combobox components.
+ * Provides a combobox store that controls the state of
+ * [Combobox](https://ariakit.org/components/combobox) components.
  * @see https://ariakit.org/components/combobox
  * @example
  * ```jsx

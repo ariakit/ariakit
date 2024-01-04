@@ -215,18 +215,21 @@ export interface CheckboxOptions<T extends As = "input">
   store?: CheckboxStore;
   /**
    * The native `name` attribute.
+   *
+   * Live examples:
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    */
   name?: string;
   /**
    * The value of the checkbox. This is useful when the same checkbox store is
-   * used for multiple `Checkbox` elements, in which case the value will be an
-   * array of checked values.
+   * used for multiple [`Checkbox`](https://ariakit.org/reference/checkbox)
+   * elements, in which case the value will be an array of checked values.
    *
    * Live examples:
    * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
    * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    * @example
-   * ```jsx
+   * ```jsx "value"
    * <CheckboxProvider defaultValue={["Apple", "Orange"]}>
    *   <Checkbox value="Apple" />
    *   <Checkbox value="Orange" />
@@ -236,18 +239,20 @@ export interface CheckboxOptions<T extends As = "input">
    */
   value?: InputHTMLAttributes<HTMLInputElement>["value"];
   /**
-   * The default `checked` state of the checkbox. This prop is ignored if the
-   * `checked` or the `store` props are provided.
+   * The default checked state of the checkbox. This prop is ignored if the
+   * [`checked`](https://ariakit.org/reference/checkbox#checked) or the
+   * [`store`](https://ariakit.org/reference/checkbox#store) props are provided.
    */
   defaultChecked?: "mixed" | boolean;
   /**
-   * The `checked` state of the checkbox. This will override the value inferred
-   * from `store` prop, if provided. This can be `"mixed"` to indicate that the
-   * checkbox is partially checked.
+   * The checked state of the checkbox. This will override the value inferred
+   * from [`store`](https://ariakit.org/reference/checkbox#store) prop, if
+   * provided. This can be `"mixed"` to indicate that the checkbox is partially
+   * checked.
    */
   checked?: "mixed" | boolean;
   /**
-   * A function that is called when the checkbox's `checked` store changes.
+   * A function that is called when the checkbox's checked state changes.
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }

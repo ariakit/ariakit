@@ -82,40 +82,38 @@ export function createDisclosureStore(
 
 export interface DisclosureStoreState {
   /**
-   * The visibility state of the content.
+   * Whether the content is visible.
    *
    * Live examples:
+   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Dialog with React
    *   Router](https://ariakit.org/examples/dialog-react-router)
+   * - [Menu with Framer
+   *   Motion](https://ariakit.org/examples/menu-framer-motion)
+   * - [Lazy Popover](https://ariakit.org/examples/popover-lazy)
    * @default false
    */
   open: boolean;
   /**
-   * The mounted state of the content. If `animated` is `false` or not defined,
-   * this will be the same as `open`. Otherwise, it will wait for the animation
-   * to complete before becoming `false` so the content is not unmounted while
-   * animating.
+   * The mounted state usually matches the
+   * [`open`](https://ariakit.org/reference/disclosure-provider#open) value.
+   * However, if the content element is animated, it waits for the animation to
+   * finish before turning `false`. This ensures the content element doesn't get
+   * unmounted during the animation.
    *
    * Live examples:
-   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
-   * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
    */
   mounted: boolean;
   /**
    * Determines whether the content should animate when it is shown or hidden.
    * - If `true`, the `animating` state will be `true` when the content is shown
-   *   or hidden and it will wait for `stopAnimation` to be called or a CSS
-   *   animation/transition to end before becoming `false`.
+   *   or hidden and it will wait for a CSS animation/transition to end before
+   *   becoming `false`.
    * - If it's set to a number, the `animating` state will be `true` when the
    *   content is shown or hidden and it will wait for the number of
    *   milliseconds to pass before becoming `false`.
-   *
-   * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
-   * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
    * @default false
    */
   animated: boolean | number;
@@ -135,46 +133,50 @@ export interface DisclosureStoreState {
 
 export interface DisclosureStoreFunctions {
   /**
-   * Sets the `open` state.
+   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * state.
    *
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
    * @example
    * store.setOpen(true);
    * store.setOpen((open) => !open);
    */
   setOpen: SetState<DisclosureStoreState["open"]>;
   /**
-   * Sets the `open` state to `true`.
+   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * state to `true`.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Dialog with Framer
+   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
+   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   show: () => void;
   /**
-   * Sets the `open` state to `false`.
+   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * state to `false`.
    *
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
    * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    */
   hide: () => void;
   /**
-   * Toggles the `open` state.
+   * Toggles the
+   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state.
    */
   toggle: () => void;
   /**
    * Sets the `animating` state to `false`, which will automatically set the
    * `mounted` state to `false` if it was `true`. This means that the content
    * element can be safely unmounted.
+   * @deprecated Use `setState("animating", false)` instead.
    */
   stopAnimation: () => void;
   /**
@@ -183,6 +185,9 @@ export interface DisclosureStoreFunctions {
   setContentElement: SetState<DisclosureStoreState["contentElement"]>;
   /**
    * Sets the `disclosureElement` state.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 }
@@ -190,14 +195,15 @@ export interface DisclosureStoreFunctions {
 export interface DisclosureStoreOptions
   extends StoreOptions<DisclosureStoreState, "open" | "animated"> {
   /**
-   * The default visibility state of the content.
+   * Whether the content should be visible by default.
    * @default false
    */
   defaultOpen?: DisclosureStoreState["open"];
   /**
    * A reference to another disclosure store that controls another disclosure
    * component to keep them in sync. Element states like `contentElement` and
-   * `disclosureElement` won't be synced. For that, use the `store` prop
+   * `disclosureElement` won't be synced. For that, use the
+   * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
    * instead.
    */
   disclosure?: DisclosureStore | null;

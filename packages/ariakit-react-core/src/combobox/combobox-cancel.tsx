@@ -80,10 +80,11 @@ export const useComboboxCancel = createHook<ComboboxCancelOptions>(
 );
 
 /**
- * Renders a combobox cancel button that clears the combobox input when clicked.
+ * Renders a combobox cancel button that clears the combobox input value when
+ * clicked.
  * @see https://ariakit.org/components/combobox
  * @example
- * ```jsx
+ * ```jsx {3}
  * <ComboboxProvider>
  *   <Combobox />
  *   <ComboboxCancel />
