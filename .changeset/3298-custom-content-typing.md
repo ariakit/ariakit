@@ -1,6 +1,7 @@
 ---
+"@ariakit/core": minor
 "@ariakit/react-core": minor
 "@ariakit/react": minor
 ---
 
-Implement `normalizeTypeaheadText` function on the [`CompositeTypeahed`](https://ariakit.org/reference/composite-typeahead) to allow for custom text normalization.
+Add `typeaheadText` property on the [`CompositeItem`](https://ariakit.org/reference/composite-item) to allow a custom text to be used for the typeahead.
