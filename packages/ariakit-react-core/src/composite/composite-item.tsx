@@ -169,6 +169,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     getItem: getItemProp,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
+    typeaheadText,
     ...props
   }) => {
     const context = useCompositeContext();
@@ -194,6 +195,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
           id: id || item.id,
           rowId,
           disabled: !!trulyDisabled,
+          typeaheadText: typeaheadText,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -521,6 +523,14 @@ export interface CompositeItemOptions<T extends As = "button">
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   tabbable?: boolean;
+  /**
+   * The text that should be used for typeahead.
+   * This is useful when the text of an item is not the same as the text that should be matched.
+   *
+   * For example, if the text of an item includes an emoji, you may want the typeahead text to
+   * not include the emoji.
+   */
+  typeaheadText?: string;
 }
 
 export type CompositeItemProps<T extends As = "button"> = Props<

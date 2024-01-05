@@ -8,37 +8,39 @@ export default function Example() {
         <Ariakit.SelectLabel className="label">
           Favorite fruit
         </Ariakit.SelectLabel>
-        <Ariakit.Select
-          normalizeTypeaheadText={normalizeText}
-          className="button"
-        />
-        <Ariakit.SelectPopover
-          normalizeTypeaheadText={normalizeText}
-          gutter={4}
-          sameWidth
-          className="popover"
-        >
-          <Ariakit.SelectItem className="select-item" value="Apple">
+        <Ariakit.Select className="button" />
+        <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
+          <Ariakit.SelectItem
+            className="select-item"
+            value="Apple"
+            typeaheadText="Apple"
+          >
             🍎 Apple
           </Ariakit.SelectItem>
-          <Ariakit.SelectItem className="select-item" value="Banana">
+          <Ariakit.SelectItem
+            className="select-item"
+            value="Banana"
+            typeaheadText="Banana"
+          >
             🍌 Banana
           </Ariakit.SelectItem>
-          <Ariakit.SelectItem className="select-item" value="Grape" disabled>
+          <Ariakit.SelectItem
+            className="select-item"
+            value="Grape"
+            typeaheadText="Grape"
+            disabled
+          >
             🍇 Grape
           </Ariakit.SelectItem>
-          <Ariakit.SelectItem className="select-item" value="Orange">
+          <Ariakit.SelectItem
+            className="select-item"
+            value="Orange"
+            typeaheadText="Orange"
+          >
             🍊 Orange
           </Ariakit.SelectItem>
         </Ariakit.SelectPopover>
       </Ariakit.SelectProvider>
     </div>
   );
-}
-
-function normalizeText(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/^[\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/iu, "")
-    .trim();
 }

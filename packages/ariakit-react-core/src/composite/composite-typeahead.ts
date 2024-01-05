@@ -43,15 +43,10 @@ function getEnabledItems(items: CompositeStoreItem[]) {
   return items.filter((item) => !item.disabled);
 }
 
-function itemTextStartsWith(
-  item: CompositeStoreItem,
-  text: string,
-  typeaheadNormalizeText?: CompositeTypeaheadProps["normalizeTypeaheadText"],
-) {
-  const itemText = item.element?.textContent || item.children;
+function itemTextStartsWith(item: CompositeStoreItem, text: string) {
+  const itemText =
+    item.typeaheadText ?? item.element?.textContent ?? item.children;
   if (!itemText) return false;
-  if (typeaheadNormalizeText !== undefined)
-    return typeaheadNormalizeText(normalizeString(itemText)).startsWith(text);
   return normalizeString(itemText)
     .trim()
     .toLowerCase()
@@ -62,28 +57,20 @@ function getSameInitialItems(
   items: CompositeStoreItem[],
   char: string,
   activeId?: string | null,
-  typeaheadNormalizeText?: CompositeTypeaheadProps["normalizeTypeaheadText"],
 ) {
   if (!activeId) return items;
   const activeItem = items.find((item) => item.id === activeId);
   if (!activeItem) return items;
-  if (!itemTextStartsWith(activeItem, char, typeaheadNormalizeText))
-    return items;
+  if (!itemTextStartsWith(activeItem, char)) return items;
   // Typing "oo" will match "oof" instead of moving to the next item.
-  if (
-    chars !== char &&
-    itemTextStartsWith(activeItem, chars, typeaheadNormalizeText)
-  )
-    return items;
+  if (chars !== char && itemTextStartsWith(activeItem, chars)) return items;
   // If we're looping through the items, we'll want to reset the chars so "oo"
   // becomes just "o".
   chars = char;
   // flipItems will put the previous items at the end of the list so we can loop
   // through them.
   return flipItems(
-    items.filter((item) =>
-      itemTextStartsWith(item, chars, typeaheadNormalizeText),
-    ),
+    items.filter((item) => itemTextStartsWith(item, chars)),
     activeId,
   ).filter((item) => item.id !== activeId);
 }
@@ -102,7 +89,7 @@ function getSameInitialItems(
  * ```
  */
 export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
-  ({ store, typeahead = true, normalizeTypeaheadText, ...props }) => {
+  ({ store, typeahead = true, ...props }) => {
     const context = useCompositeContext();
     store = store || context;
 
@@ -141,14 +128,9 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
         // Always consider the lowercase version of the key.
         const char = event.key.toLowerCase();
         chars += char;
-        enabledItems = getSameInitialItems(
-          enabledItems,
-          char,
-          activeId,
-          normalizeTypeaheadText,
-        );
+        enabledItems = getSameInitialItems(enabledItems, char, activeId);
         const item = enabledItems.find((item) =>
-          itemTextStartsWith(item, chars, normalizeTypeaheadText),
+          itemTextStartsWith(item, chars),
         );
         if (item) {
           store.move(item.id);
@@ -205,14 +187,6 @@ export interface CompositeTypeaheadOptions<T extends As = "div">
    * @default true
    */
   typeahead?: boolean;
-  /**
-   * Normalizes the text of an item.
-   * This is useful when the text of an item is not the same as the text that should be matched.
-   *
-   * For example, if the text of an item includes an emoji, you may want to
-   * normalize the text to remove the emoji.
-   */
-  normalizeTypeaheadText?: (text: string) => string;
 }
 
 export type CompositeTypeaheadProps<T extends As = "div"> = Props<
