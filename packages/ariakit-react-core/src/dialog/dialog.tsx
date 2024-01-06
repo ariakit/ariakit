@@ -554,7 +554,14 @@ export function createDialogComponent<T extends DialogOptions>(
 }
 
 /**
- * Renders a dialog element.
+ * Renders a dialog similar to the native `dialog` element that's rendered in a
+ * [`portal`](https://ariakit.org/reference/dialog#portal) by default.
+ *
+ * The dialog can be either
+ * [`modal`](https://ariakit.org/reference/dialog#modal) or non-modal. The
+ * visibility state can be controlled with the
+ * [`open`](https://ariakit.org/reference/dialog#open) and
+ * [`onClose`](https://ariakit.org/reference/dialog#onclose) props.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx {4-6}
@@ -610,7 +617,7 @@ export interface DialogOptions<T extends As = "div">
    * This is an event handler prop triggered when the dialog's `close` event is
    * dispatched. The `close` event is similar to the native dialog
    * [`close`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event)
-   * event. The only difference is that this event can be cancelled with
+   * event. The only difference is that this event can be canceled with
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
    * It's important to note that this event only fires when the dialog store's
@@ -637,14 +644,14 @@ export interface DialogOptions<T extends As = "div">
    * - The [`portal`](https://ariakit.org/reference/dialog#portal) and
    *   [`preventBodyScroll`](https://ariakit.org/reference/dialog#preventbodyscroll)
    *   props are set to `true`. They can still be manually set to `false`.
-   * - A visually hidden dismiss button will be rendered if the
-   *   [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss) component
-   *   hasn't been used. This allows screen reader users to close the dialog.
-   * - When the dialog is open, element tree outside it will be disabled.
    * - When using the [`Heading`](https://ariakit.org/reference/heading) or
    *   [`DialogHeading`](https://ariakit.org/reference/dialog-heading)
    *   components within the dialog, their level will be reset so they start
    *   with `h1`.
+   * - A visually hidden dismiss button will be rendered if the
+   *   [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss) component
+   *   hasn't been used. This allows screen reader users to close the dialog.
+   * - When the dialog is open, element tree outside it will be inert.
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
@@ -661,8 +668,10 @@ export interface DialogOptions<T extends As = "div">
    * dialogs, this is `true` by default. Besides a `boolean`, this prop can also
    * be a React component or JSX element that will be rendered as the backdrop.
    *
-   * **If a custom component is used, it must accept ref and spread all props to
-   * its underlying DOM element**, the same way a native element would.
+   * **Note**: If a custom component is used, it must [accept ref and spread all
+   * props to its underlying DOM
+   * element](https://ariakit.org/guide/composition#custom-components-must-be-open-for-extension),
+   * the same way a native element would.
    *
    * Live examples:
    * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
@@ -692,14 +701,27 @@ export interface DialogOptions<T extends As = "div">
    */
   backdropProps?: ComponentPropsWithRef<"div">;
   /**
-   * Determines whether the dialog will be hidden when the user presses the
-   * Escape key.
+   * Determines if the dialog will hide when the user presses the Escape key.
+   *
+   * This prop can be either a boolean or a function that accepts an event as an
+   * argument and returns a boolean. The event object represents the keydown
+   * event that initiated the hide action, which could be either a native
+   * keyboard event or a React synthetic event.
+   *
+   * **Note**: When placing Ariakit dialogs inside third-party dialogs, using
+   * `event.stopPropagation()` within this function will stop the event from
+   * reaching the third-party dialog, closing only the Ariakit dialog.
    * @default true
    */
   hideOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
   /**
-   * Determines whether the dialog will be hidden when the user clicks or focus
-   * on an element outside of the dialog.
+   * Determines if the dialog should hide when the user clicks or focuses on an
+   * element outside the dialog.
+   *
+   * This prop can be either a boolean or a function that takes an event as an
+   * argument and returns a boolean. The event object represents the event that
+   * triggered the action, which could be a native event or a React synthetic
+   * event of various types.
    *
    * Live examples:
    * - [Selection Popover](https://ariakit.org/examples/popover-selection)
@@ -707,11 +729,17 @@ export interface DialogOptions<T extends As = "div">
    */
   hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
   /**
-   * When a dialog is open, the elements outside of it will be disabled so they
-   * can't be interacted with if the dialog is modal. For non-modal dialogs,
-   * interacting with elements outside of the dialog will close it. With this
-   * function, you can return a collection of elements that will be considered
-   * part of the dialog and therefore will be excluded from this behavior.
+   * When a dialog is open, the elements outside of it are disabled to prevent
+   * interaction if the dialog is
+   * [`modal`](https://ariakit.org/reference/dialog#modal). For non-modal
+   * dialogs, interacting with elements outside the dialog prompts it to close.
+   *
+   * This function allows you to return an iterable collection of elements that
+   * will be considered as part of the dialog, thus excluding them from this
+   * behavior.
+   *
+   * **Note**: The elements returned by this function must exist in the DOM when
+   * the dialog opens.
    *
    * Live examples:
    * - [Dialog with
@@ -720,14 +748,17 @@ export interface DialogOptions<T extends As = "div">
   getPersistentElements?: () => Iterable<Element>;
   /**
    * Determines whether the body scrolling will be prevented when the dialog is
-   * shown.
+   * shown. This is automatically set to `true` when the dialog is
+   * [`modal`](https://ariakit.org/reference/dialog#modal). You can disable this
+   * prop if you want to implement your own logic.
    */
   preventBodyScroll?: boolean;
   /**
    * Determines whether an element inside the dialog will receive focus when the
    * dialog is shown. By default, this is usually the first tabbable element in
-   * the dialog or the dialog itself. The `initialFocus` prop can be used to set
-   * a different element to receive focus.
+   * the dialog or the dialog itself. The
+   * [`initialFocus`](https://ariakit.org/reference/dialog#initialfocus) prop
+   * can be used to set a different element to receive focus.
    *
    * Live examples:
    * - [Warning on Dialog

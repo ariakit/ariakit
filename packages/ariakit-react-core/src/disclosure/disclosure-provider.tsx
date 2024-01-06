@@ -4,7 +4,8 @@ import { useDisclosureStore } from "./disclosure-store.js";
 import type { DisclosureStoreProps } from "./disclosure-store.js";
 
 /**
- * Provides a disclosure store to Disclosure components.
+ * Provides a disclosure store to
+ * [Disclosure](https://ariakit.org/components/disclosure) components.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx

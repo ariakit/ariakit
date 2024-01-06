@@ -88,11 +88,12 @@ export const useDisclosure = createHook<DisclosureOptions>(
 );
 
 /**
- * Renders an element that controls the visibility of a disclosure content
+ * Renders an element that controls the visibility of a
+ * [`DisclosureContent`](https://ariakit.org/reference/disclosure-content)
  * element.
  * @see https://ariakit.org/components/disclosure
  * @example
- * ```jsx
+ * ```jsx {2}
  * <DisclosureProvider>
  *   <Disclosure>Disclosure</Disclosure>
  *   <DisclosureContent>Content</DisclosureContent>

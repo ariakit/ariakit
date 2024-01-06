@@ -29,8 +29,9 @@ export const useFocusableContainer = createHook<FocusableContainerOptions>(
 );
 
 /**
- * Renders a div that wraps `Focusable` components and controls whether they
- * can be auto focused.
+ * Renders a div that wraps
+ * [`Focusable`](https://ariakit.org/reference/focusable) components and
+ * controls whether they can be auto-focused.
  * @see https://ariakit.org/components/focusable
  * @example
  * ```jsx
@@ -52,9 +53,10 @@ if (process.env.NODE_ENV !== "production") {
 
 export type FocusableContainerOptions<T extends As = "div"> = Options<T> & {
   /**
-   * Determines whether focusable elements inside the container should be
-   * automatically focused when the container is shown and they have the
-   * `autoFocus` prop.
+   * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
+   * elements inside the container should be automatically focused when the
+   * container is shown and they have the
+   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
    * @default true
    */
   autoFocusOnShow?: boolean;

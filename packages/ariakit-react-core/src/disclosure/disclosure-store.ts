@@ -16,11 +16,13 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
 }
 
 /**
- * Creates a disclosure store.
+ * Creates a disclosure store to control the state of
+ * [Disclosure](https://ariakit.org/components/disclosure) components.
  * @see https://ariakit.org/components/disclosure
  * @example
  * ```jsx
  * const disclosure = useDisclosureStore();
+ *
  * <Disclosure store={disclosure}>Disclosure</Disclosure>
  * <DisclosureContent store={disclosure}>Content</DisclosureContent>
  * ```
@@ -39,8 +41,9 @@ export interface DisclosureStoreFunctions
 
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   /**
-   * A callback that gets called when the `open` state changes.
-   * @param open The new open value.
+   * A callback that gets called when the
+   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state
+   * changes.
    * @example
    * const [open, setOpen] = useState(false);
    * const disclosure = useDisclosureStore({ open, setOpen });
@@ -48,7 +51,6 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   setOpen?: (open: DisclosureStoreState["open"]) => void;
   /**
    * A callback that gets called when the `mounted` state changes.
-   * @param mounted The new mounted value.
    * @example
    * const [mounted, setMounted] = useState(false);
    * const disclosure = useDisclosureStore({ setMounted });

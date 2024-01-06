@@ -17,11 +17,13 @@ export function useDialogStoreProps<T extends Core.DialogStore>(
 }
 
 /**
- * Creates a dialog store.
+ * Creates a dialog store to control the state of
+ * [Dialog](https://ariakit.org/components/dialog) components.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogStore();
+ *
  * <button onClick={dialog.toggle}>Open dialog</button>
  * <Dialog store={dialog}>Content</Dialog>
  * ```
