@@ -42,16 +42,18 @@ export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
 );
 
 /**
- * Renders a separator for composite items.
+ * Renders a divider between
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) elements.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeItem>Item 1</CompositeItem>
- *   <CompositeSeparator />
- *   <CompositeItem>Item 2</CompositeItem>
- * </Composite>
+ * ```jsx {4}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeItem>Item 1</CompositeItem>
+ *     <CompositeSeparator />
+ *     <CompositeItem>Item 2</CompositeItem>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeSeparator = createComponent<CompositeSeparatorOptions>(
@@ -68,10 +70,21 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeSeparatorOptions<T extends As = "hr">
   extends SeparatorOptions<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
+  /**
+   * The orientation of the separator. By default, this is the opposite of the
+   * [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   * state of the composite widget. Which means it doesn't need to be explicitly
+   * set in most cases.
+   */
+  orientation?: SeparatorOptions<T>["orientation"];
 }
 
 export type CompositeSeparatorProps<T extends As = "hr"> = Props<

@@ -861,7 +861,7 @@ export interface CollectionRendererOptions<T extends Item = any> {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [Collection](https://ariakit.org/components/collection) component's
    * context will be used.
    *

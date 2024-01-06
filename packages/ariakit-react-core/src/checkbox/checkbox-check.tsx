@@ -85,7 +85,7 @@ export interface CheckboxCheckOptions<T extends As = "span">
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [`Checkbox`](https://ariakit.org/reference/checkbox) component's context
    * will be used.
    *

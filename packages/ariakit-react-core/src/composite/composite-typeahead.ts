@@ -153,14 +153,21 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
 /**
  * Renders a component that adds typeahead functionality to composite
  * components.
+ *
+ * When the
+ * [`typeahead`](https://ariakit.org/reference/composite-typeahead#typeahead)
+ * prop is enabled, which it is by default, hitting printable character keys
+ * will move focus to the next composite item that begins with the input
+ * characters.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite} render={<CompositeTypeahead />}>
- *   <CompositeItem>Item 1</CompositeItem>
- *   <CompositeItem>Item 2</CompositeItem>
- * </Composite>
+ * <CompositeProvider>
+ *   <Composite render={<CompositeTypeahead />}>
+ *     <CompositeItem>Item 1</CompositeItem>
+ *     <CompositeItem>Item 2</CompositeItem>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeTypeahead = createComponent<CompositeTypeaheadOptions>(
@@ -177,12 +184,17 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeTypeaheadOptions<T extends As = "div">
   extends Options<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
   /**
-   * Determines whether the typeahead behavior is enabled.
+   * When enabled, pressing printable character keys will move focus to the next
+   * composite item that starts with the entered characters.
    * @default true
    */
   typeahead?: boolean;

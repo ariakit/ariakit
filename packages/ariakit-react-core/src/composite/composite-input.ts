@@ -78,15 +78,17 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
 
 /**
  * Renders an input as a composite item. This should be used in conjunction with
- * the `CompositeItem` component or a component that uses `CompositeItem`
- * underneath.
+ * the [`CompositeItem`](https://ariakit.org/reference/composite-item) component
+ * or a component that uses
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) underneath.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeItem render={<CompositeInput />} />
- * </Composite>
+ * ```jsx {3}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeItem render={<CompositeInput />} />
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeInput = createComponent<CompositeInputOptions>(
@@ -103,8 +105,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeInputOptions<T extends As = "input">
   extends Options<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
 }

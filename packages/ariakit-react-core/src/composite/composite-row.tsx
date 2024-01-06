@@ -71,25 +71,28 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
 );
 
 /**
- * Renders a composite row. Wrapping `CompositeItem` elements within
- * `CompositeRow` will create a two-dimensional composite widget, such as a
- * grid.
+ * Renders a row element for composite items that allows two-dimensional arrow
+ * key navigation.
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) elements
+ * wrapped within this component will automatically receive a
+ * [`rowId`](https://ariakit.org/reference/composite-item#rowid) prop.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeRow>
- *     <CompositeItem>Item 1.1</CompositeItem>
- *     <CompositeItem>Item 1.2</CompositeItem>
- *     <CompositeItem>Item 1.3</CompositeItem>
- *   </CompositeRow>
- *   <CompositeRow>
- *     <CompositeItem>Item 2.1</CompositeItem>
- *     <CompositeItem>Item 2.2</CompositeItem>
- *     <CompositeItem>Item 2.3</CompositeItem>
- *   </CompositeRow>
- * </Composite>
+ * ```jsx {3-12}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeRow>
+ *       <CompositeItem>Item 1.1</CompositeItem>
+ *       <CompositeItem>Item 1.2</CompositeItem>
+ *       <CompositeItem>Item 1.3</CompositeItem>
+ *     </CompositeRow>
+ *     <CompositeRow>
+ *       <CompositeItem>Item 2.1</CompositeItem>
+ *       <CompositeItem>Item 2.2</CompositeItem>
+ *       <CompositeItem>Item 2.3</CompositeItem>
+ *     </CompositeRow>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeRow = createComponent<CompositeRowOptions>((props) => {
@@ -103,8 +106,12 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface CompositeRowOptions<T extends As = "div"> extends Options<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
 }

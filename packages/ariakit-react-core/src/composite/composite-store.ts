@@ -27,11 +27,13 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
 }
 
 /**
- * Creates a composite store.
+ * Creates a composite store to control the state of
+ * [Composite](https://ariakit.org/components/composite) components.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
+ *
  * <Composite store={composite}>
  *   <CompositeItem>Item</CompositeItem>
  *   <CompositeItem>Item</CompositeItem>

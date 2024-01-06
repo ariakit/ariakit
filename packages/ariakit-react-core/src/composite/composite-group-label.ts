@@ -25,19 +25,20 @@ export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
 
 /**
  * Renders a label in a composite group. This component must be wrapped with
- * `CompositeGroup` so the `aria-labelledby` prop is properly set on the
- * composite group element.
+ * [`CompositeGroup`](https://ariakit.org/reference/composite-group) so the
+ * `aria-labelledby` prop is properly set on the group element.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeGroup>
- *     <CompositeGroupLabel>Label</CompositeGroupLabel>
- *     <CompositeItem>Item 1</CompositeItem>
- *     <CompositeItem>Item 2</CompositeItem>
- *   </CompositeGroup>
- * </Composite>
+ * ```jsx {4}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeGroup>
+ *       <CompositeGroupLabel>Label</CompositeGroupLabel>
+ *       <CompositeItem>Item 1</CompositeItem>
+ *       <CompositeItem>Item 2</CompositeItem>
+ *     </CompositeGroup>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeGroupLabel = createComponent<CompositeGroupLabelOptions>(
@@ -54,8 +55,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeGroupLabelOptions<T extends As = "div">
   extends GroupLabelOptions<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
 }

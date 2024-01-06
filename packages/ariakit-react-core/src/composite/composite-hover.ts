@@ -133,16 +133,25 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
 
 /**
  * Renders an element in a composite widget that receives focus on mouse move
- * and loses focus to the composite base element on mouse leave. This should be
- * combined with the `CompositeItem` component, the `useCompositeItem` hook or
- * any component/hook that uses them underneath.
+ * and loses focus to the composite base element on mouse leave.
+ *
+ * This should be combined with the
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) component.
+ * The
+ * [`focusOnHover`](https://ariakit.org/reference/composite-hover#focusonhover)
+ * and
+ * [`blurOnHoverEnd`](https://ariakit.org/reference/composite-hover#bluronhoverend)
+ * props can be used to customize the behavior.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeHover render={<CompositeItem />}>Item</CompositeHover>
- * </Composite>
+ * ```jsx {3-5}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeHover render={<CompositeItem />}>
+ *       Item
+ *     </CompositeHover>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeHover = createMemoComponent<CompositeHoverOptions>(
