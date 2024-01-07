@@ -26,16 +26,20 @@ export const useFormGroup = createHook<FormGroupOptions>(
 );
 
 /**
- * Renders a form group.
+ * Renders a group element for form controls. The
+ * [`FormGroupLabel`](https://ariakit.org/reference/form-group-label) component
+ * can be used inside this component so the `aria-labelledby` prop is properly
+ * set on the group element.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {9-15}
  * const form = useFormStore({
  *   defaultValues: {
  *     username: "",
  *     email: "",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormGroup>
  *     <FormGroupLabel>Account</FormGroupLabel>

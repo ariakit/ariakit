@@ -42,10 +42,13 @@ export const useFormReset = createHook<FormResetOptions>(
 );
 
 /**
- * Renders a reset buttom in a form.
+ * Renders a button that resets the form to its initial values, as defined by
+ * the
+ * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+ * prop given to the form store.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {4}
  * const form = useFormStore();
  *
  * <Form store={form}>

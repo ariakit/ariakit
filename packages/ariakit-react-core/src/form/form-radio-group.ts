@@ -29,15 +29,20 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
 );
 
 /**
- * Renders a radio group in a form.
+ * Renders a group element for
+ * [`FormRadio`](https://ariakit.org/reference/form-radio) elements. The
+ * [`FormGroupLabel`](https://ariakit.org/reference/form-group-label) component
+ * can be used inside this component so the `aria-labelledby` prop is properly
+ * set on the group element.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {8-13}
  * const form = useFormStore({
  *   defaultValues: {
  *     color: "red",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormRadioGroup>
  *     <FormGroupLabel>Favorite color</FormGroupLabel>

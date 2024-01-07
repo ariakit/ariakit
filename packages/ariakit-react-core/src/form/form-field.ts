@@ -146,7 +146,7 @@ export const useFormField = createHook<FormFieldOptions>(
 );
 
 /**
- * Renders a form field. Unlike
+ * Abstract component that renders a form field. Unlike
  * [`FormInput`](https://ariakit.org/reference/form-input), this component
  * doesn't automatically pass the `value` and `onChange` props down to the
  * underlying element. This is so we can use it not only for native form
@@ -154,7 +154,7 @@ export const useFormField = createHook<FormFieldOptions>(
  * native `value` and `onChange` props.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {11-19}
  * const form = useFormStore({
  *   defaultValues: {
  *     content: "",
@@ -166,9 +166,13 @@ export const useFormField = createHook<FormFieldOptions>(
  * <Form store={form}>
  *   <FormLabel name={form.names.content}>Content</FormLabel>
  *   <FormField
- *     value={value}
- *     onChange={(value) => form.setValue(form.names.content, value)}
- *     render={<Editor />}
+ *     name={form.names.content}
+ *     render={
+ *       <Editor
+ *         value={value}
+ *         onChange={(value) => form.setValue(form.names.content, value)}
+ *       />
+ *     }
  *   />
  * </Form>
  * ```
@@ -193,7 +197,16 @@ export interface FormFieldOptions<T extends As = "input">
    */
   store?: FormStore;
   /**
-   * Name of the field.
+   * Field name. This can either be a string corresponding to an existing
+   * property name in the
+   * [`values`](https://ariakit.org/reference/use-form-store#values) state of
+   * the store, or a reference to a field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, ensuring type safety.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [Form with Select](https://ariakit.org/examples/form-select)
    */
   name: StringLike;
   /**

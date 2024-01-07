@@ -403,7 +403,7 @@ export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
 export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   extends CollectionStoreFunctions<FormStoreItem> {
   /**
-   * An object containing the names of the form fields for type-safety.
+   * An object containing the names of the form fields for type safety.
    *
    * Live examples:
    * - [FormRadio](https://ariakit.org/examples/form-radio)

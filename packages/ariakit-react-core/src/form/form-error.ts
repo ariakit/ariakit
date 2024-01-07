@@ -82,11 +82,11 @@ export const useFormError = createHook<FormErrorOptions>(
 );
 
 /**
- * Renders an element that displays an error message. The `children` will be
- * automatically set to the error message set on the store.
+ * Renders an element that shows an error message. The `children` will
+ * automatically display the error message defined in the store.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {16}
  * const form = useFormStore({
  *   defaultValues: {
  *     email: "",
@@ -126,7 +126,14 @@ export interface FormErrorOptions<T extends As = "div">
    */
   store?: FormStore;
   /**
-   * Name of the field.
+   * Name of the field associated with this error. This can either be a string
+   * or a reference to a field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, for type safety.
+   * @example
+   * ```jsx
+   * <FormError name="password" />
+   * ```
    */
   name: StringLike;
 }
