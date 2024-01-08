@@ -231,10 +231,16 @@ export const useMenu = createHook<MenuOptions>(
 );
 
 /**
- * Renders a dropdown menu element.
+ * Renders a dropdown menu element that's controlled by a
+ * [`MenuButton`](https://ariakit.org/reference/menu-button) component.
+ *
+ * This component uses the primitive
+ * [`MenuList`](https://ariakit.org/reference/menu-list) component under the
+ * hood. It renders a popover and automatically focuses on items when the menu
+ * is shown.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {3-6}
  * <MenuProvider>
  *   <MenuButton>Edit</MenuButton>
  *   <Menu>

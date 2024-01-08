@@ -82,8 +82,9 @@ export const useMenubar = createHook<MenubarOptions>(
 );
 
 /**
- * Renders a menu bar that may contain a group of menu items that control other
- * submenus.
+ * Renders a menubar that may contain a group of
+ * [`MenuItem`](https://ariakit.org/reference/menu-item) elements that control
+ * other submenus.
  * @see https://ariakit.org/components/menubar
  * @example
  * ```jsx

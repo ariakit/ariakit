@@ -7,7 +7,8 @@ import type { MenuStoreProps, MenuStoreValues } from "./menu-store.js";
 type Values = MenuStoreValues;
 
 /**
- * Provides a menu store to Menu components.
+ * Provides a menu store to [Menu](https://ariakit.org/components/menu)
+ * components.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx

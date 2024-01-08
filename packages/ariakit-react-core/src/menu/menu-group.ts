@@ -27,10 +27,13 @@ export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
 });
 
 /**
- * Renders a menu group inside a menu.
+ * Renders a group for [`MenuItem`](https://ariakit.org/reference/menu-item)
+ * elements. Optionally, a
+ * [`MenuGroupLabel`](https://ariakit.org/reference/menu-group-label) can be
+ * rendered as a child to provide a label for the group.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {4-8}
  * <MenuProvider>
  *   <MenuButton>Recent Items</MenuButton>
  *   <Menu>

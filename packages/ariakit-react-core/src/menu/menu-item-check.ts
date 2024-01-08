@@ -25,12 +25,18 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
 );
 
 /**
- * Renders a checkmark inside a `MenuItemCheckbox` or `MenuItemRadio`
- * components. This component must be wrapped with one of those components or
- * the `checked` prop must be explicitly passed to the component.
+ * Renders a checkmark icon when the
+ * [`checked`](https://ariakit.org/reference/menu-item-check#checked) prop is
+ * `true`. The icon can be overridden by providing a different one as children.
+ *
+ * When rendered inside
+ * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) or
+ * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) components,
+ * the [`checked`](https://ariakit.org/reference/menu-item-check#checked) prop
+ * is automatically derived from the context.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {5,9}
  * <MenuProvider defaultValues={{ apple: true, orange: false }}>
  *   <MenuButton>Fruits</MenuButton>
  *   <Menu>
@@ -62,20 +68,6 @@ export interface MenuItemCheckOptions<T extends As = "span">
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
    */
   store?: MenuStore;
-  /**
-   * Determines if the check mark should be displayed. This value is automatically
-   * derived from the parent
-   * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) or
-   * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox)
-   * component.
-   *
-   * Manually setting this prop will supersede the derived value.
-   *
-   * Live examples:
-   * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   */
-  checked?: CheckboxCheckOptions<T>["checked"];
 }
 
 export type MenuItemCheckProps<T extends As = "span"> = Props<

@@ -24,12 +24,12 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
 );
 
 /**
- * Renders a description in a menu. This component must be wrapped with
+ * Renders a description in a menu. This component must be wrapped with a
  * [`Menu`](https://ariakit.org/reference/menu) component so the
  * `aria-describedby` prop is properly set on the menu element.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {3}
  * <MenuProvider>
  *   <Menu>
  *     <MenuDescription>Description</MenuDescription>

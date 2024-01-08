@@ -32,12 +32,17 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
 );
 
 /**
- * Renders an arrow pointing to the menu position, usually inside a
- * `MenuButton`.
+ * Displays an arrow within a
+ * [`MenuButton`](https://ariakit.org/reference/menu-button), pointing to the
+ * [`Menu`](https://ariakit.org/reference/menu) position. It's typically based
+ * on the [`placement`](https://ariakit.org/reference/menu-provider#placement)
+ * state from the menu store, but this can be overridden with the
+ * [`placement`](https://ariakit.org/reference/menu-button-arrow#placement)
+ * prop.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
- * <MenuProvider>
+ * ```jsx {4}
+ * <MenuProvider placement="bottom-start">
  *   <MenuButton>
  *     Edit
  *     <MenuButtonArrow />

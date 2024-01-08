@@ -180,10 +180,15 @@ export const useMenuList = createHook<MenuListOptions>(
 );
 
 /**
- * Renders a menu list element.
+ * Renders a menu list element. This is the primitive component used by the
+ * [`Menu`](https://ariakit.org/reference/menu) component.
+ *
+ * Unlike [`Menu`](https://ariakit.org/reference/menu), this component doesn't
+ * render a popover and therefore doesn't automatically focus on items when
+ * opened.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {3-6}
  * <MenuProvider>
  *   <MenuButton>Edit</MenuButton>
  *   <MenuList>

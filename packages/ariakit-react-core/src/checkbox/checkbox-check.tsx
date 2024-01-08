@@ -63,8 +63,14 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
 );
 
 /**
- * Renders a check mark icon, usually inside a
- * [`Checkbox`](https://ariakit.org/reference/checkbox) component.
+ * Renders a checkmark icon when the
+ * [`checked`](https://ariakit.org/reference/checkbox-check#checked) prop is
+ * `true`. The icon can be overridden by providing a different one as children.
+ *
+ * When rendered inside a [`Checkbox`](https://ariakit.org/reference/checkbox)
+ * component, the
+ * [`checked`](https://ariakit.org/reference/checkbox-check#checked) prop is
+ * automatically derived from the context.
  * @see https://ariakit.org/components/checkbox
  * @example
  * ```jsx
@@ -85,21 +91,13 @@ export interface CheckboxCheckOptions<T extends As = "span">
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
-   * hook. If not provided, the closest
-   * [`Checkbox`](https://ariakit.org/reference/checkbox) component's context
-   * will be used.
-   *
-   * If the [`checked`](https://ariakit.org/reference/checkbox-check#checked)
-   * prop is provided, it will override this prop.
+   * hook.
    */
   store?: CheckboxStore;
   /**
-   * Determines if the check mark should be displayed. This value is
-   * automatically derived from the
-   * [`store`](https://ariakit.org/reference/checkbox-check#store) prop or the
-   * parent [`Checkbox`](https://ariakit.org/reference/checkbox) component.
-   *
-   * Manually setting this prop will supersede the derived value.
+   * Determines if the checkmark should be rendered. This value is automatically
+   * derived from the context when it exists. Manually setting this prop will
+   * supersede the derived value.
    *
    * Live examples:
    * - [Submenu with

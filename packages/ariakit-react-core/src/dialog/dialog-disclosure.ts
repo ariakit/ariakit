@@ -43,7 +43,8 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
 );
 
 /**
- * Renders a button that shows/hides a dialog.
+ * Renders a button that toggles the visibility of a
+ * [`Dialog`](https://ariakit.org/reference/dialog) component when clicked.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx {2}

@@ -4,7 +4,8 @@ import { useMenubarStore } from "./menubar-store.js";
 import type { MenubarStoreProps } from "./menubar-store.js";
 
 /**
- * Provides a menubar store to Menubar components.
+ * Provides a menubar store to [Menubar](https://ariakit.org/components/menubar)
+ * components.
  * @see https://ariakit.org/components/menubar
  * @example
  * ```jsx

@@ -151,10 +151,13 @@ export const useMenuItem = createHook<MenuItemOptions>(
 );
 
 /**
- * Renders a menu item.
+ * Renders a menu item inside
+ * [`MenuList`](https://ariakit.org/reference/menu-list) or
+ * [`Menu`](https://ariakit.org/reference/menu)
+ * components.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {4-5}
  * <MenuProvider>
  *   <MenuButton>Edit</MenuButton>
  *   <Menu>
@@ -189,21 +192,17 @@ export interface MenuItemOptions<T extends As = "div">
    */
   store?: MenubarStore | MenuStore;
   /**
-   * Whether to hide the menu when a menu item is clicked. This prop won't be
-   * invoked if the click is on a link and modifier keys are used to open the
-   * link in a new tab or download it.
+   * Determines if the menu should hide when this item is clicked.
+   *
+   * **Note**: This behavior isn't triggered if this menu item is rendered as a
+   * link and modifier keys are used to either open the link in a new tab or
+   * download it.
    *
    * Live examples:
-   * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-  /**
-   * @default true
-   */
-  preventScrollOnKeyDown?: CompositeItemOptions<T>["preventScrollOnKeyDown"];
 }
 
 export type MenuItemProps<T extends As = "div"> = Props<MenuItemOptions<T>>;
