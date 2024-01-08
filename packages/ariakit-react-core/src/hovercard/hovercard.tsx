@@ -363,7 +363,7 @@ export const useHovercard = createHook<HovercardOptions>(
  * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor).
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {3}
  * <HovercardProvider>
  *   <HovercardAnchor>@username</HovercardAnchor>
  *   <Hovercard>Details</Hovercard>
@@ -393,17 +393,29 @@ export interface HovercardOptions<T extends As = "div">
    */
   store?: HovercardStore;
   /**
-   * Whether to hide the popover when the mouse cursor leaves any hovercard
-   * element, including the hovercard popover itself, but also the anchor
-   * element.
+   * Determines whether the popover should hide when the mouse leaves the
+   * popover or the anchor element and there's no _hover intent_, meaning, the
+   * mouse isn't moving toward the popover.
+   *
+   * This can be either a boolean or a callback receiving the mouse move event
+   * that initiated the behavior. The callback should return a boolean.
+   *
+   * **Note**: This behavior won't be triggered when the popover or any of its
+   * descendants are in focus.
    * @default true
    */
   hideOnHoverOutside?: BooleanOrCallback<MouseEvent>;
   /**
-   * Whether to disable the pointer events outside of the hovercard while the
-   * mouse is moving toward the hovercard. This is necessary because these
-   * events may trigger focus on other elements and close the hovercard while
-   * the user is moving the mouse toward it.
+   * Determines if the pointer events outside of the popover and its anchor
+   * element should be disabled during _hover intent_, that is, when the mouse
+   * is moving toward the popover.
+   *
+   * This is required as these external events may trigger focus on other
+   * elements and close the popover while the user is attempting to hover over
+   * it.
+   *
+   * This can be either a boolean or a callback receiving the mouse event
+   * happening during hover intent. The callback should return a boolean.
    * @default true
    */
   disablePointerEventsOnApproach?: BooleanOrCallback<MouseEvent>;

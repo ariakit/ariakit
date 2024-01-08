@@ -26,10 +26,10 @@ export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
 /**
  * Renders a description in a hovercard. This component must be wrapped within
  * [`Hovercard`](https://ariakit.org/reference/hovercard) so the
- * `aria-describedby` prop is properly set on the hovercard element.
+ * `aria-describedby` prop is properly set on the content element.
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {3}
  * <HovercardProvider>
  *   <Hovercard>
  *     <HovercardDescription>Description</HovercardDescription>

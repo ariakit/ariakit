@@ -4,7 +4,8 @@ import { useHovercardStore } from "./hovercard-store.js";
 import type { HovercardStoreProps } from "./hovercard-store.js";
 
 /**
- * Provides a hovercard store to Hovercard components.
+ * Provides a hovercard store to
+ * [Hovercard](https://ariakit.org/components/hovercard) components.
  * @see https://ariakit.org/components/hovercard
  * @example
  * ```jsx

@@ -27,10 +27,11 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
 );
 
 /**
- * Renders a button that hides a hovercard.
+ * Renders a button that hides a
+ * [`Hovercard`](https://ariakit.org/reference/hovercard) when clicked.
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {3}
  * <HovercardProvider>
  *   <Hovercard>
  *     <HovercardDismiss />
