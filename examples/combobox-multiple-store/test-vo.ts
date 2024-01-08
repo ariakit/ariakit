@@ -1,13 +1,14 @@
-import { voTest as test } from "@guidepup/playwright";
+import { voiceOverTest as test } from "@guidepup/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
 const getCombobox = (page: Page) => page.getByRole("combobox");
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, voiceOver: vo }) => {
   await page.goto("/previews/combobox-multiple-store", {
     waitUntil: "networkidle",
   });
+  await vo.navigateToWebContent();
 });
 
 test("navigate to listbox and select an item", async ({
