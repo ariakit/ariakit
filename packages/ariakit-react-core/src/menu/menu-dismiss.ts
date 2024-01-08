@@ -27,10 +27,11 @@ export const useMenuDismiss = createHook<MenuDismissOptions>(
 );
 
 /**
- * Renders a button that hides a menu.
+ * Renders a button that hides a [`Menu`](https://ariakit.org/reference/menu)
+ * when clicked.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {3}
  * <MenuProvider>
  *   <Menu>
  *     <MenuDismiss />

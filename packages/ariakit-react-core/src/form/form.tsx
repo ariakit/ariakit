@@ -155,11 +155,29 @@ export const useForm = createHook<FormOptions>(
 );
 
 /**
- * Renders a form element.
+ * Renders a form element and provides a [form
+ * store](https://ariakit.org/reference/use-form-store) to its controls.
+ *
+ * The form is automatically validated on change and on blur. This behavior can
+ * be disabled with the
+ * [`validateOnChange`](https://ariakit.org/reference/form#validateonchange) and
+ * [`validateOnBlur`](https://ariakit.org/reference/form#validateonblur) props.
+ *
+ * When the form is submitted with errors, the first invalid field is
+ * automatically focused thanks to the
+ * [`autoFocusOnSubmit`](https://ariakit.org/reference/form#autofocusonsubmit)
+ * prop. If it's successful, the
+ * [`resetOnSubmit`](https://ariakit.org/reference/form#resetonsubmit) prop
+ * ensures the form is reset to its initial values as defined by the
+ * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+ * option on the [store](https://ariakit.org/reference/use-form-store).
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
- * const form = useFormStore({ defaultValues: { username: "johndoe" } });
+ * ```jsx {5-8}
+ * const form = useFormStore({
+ *   defaultValues: { username: "johndoe" },
+ * });
+ *
  * <Form store={form}>
  *   <FormLabel name={form.names.username}>Username</FormLabel>
  *   <FormInput name={form.names.username} />
@@ -185,32 +203,40 @@ export interface FormOptions<T extends As = "form"> extends Options<T> {
    */
   store?: FormStore;
   /**
-   * Whether the form should trigger the validation callbacks when values
+   * Determines if the form should invoke the validation callbacks registered
+   * with
+   * [`useValidate`](https://ariakit.org/reference/use-form-store#usevalidate)
+   * when the [`values`](https://ariakit.org/reference/use-form-store#values)
    * change.
    * @default true
    */
   validateOnChange?: boolean;
   /**
-   * Whether the form should trigger the validation callbacks when form fields
-   * are blurred.
+   * Determines if the form should invoke the validation callbacks registered
+   * with
+   * [`useValidate`](https://ariakit.org/reference/use-form-store#usevalidate)
+   * when a field loses focus.
    * @default true
    */
   validateOnBlur?: boolean;
   /**
-   * Whether the form store should be reset when the form element gets
+   * Determines if the form state should reset to its
+   * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+   * when the [`Form`](https://ariakit.org/reference/form) component is
    * unmounted.
    * @default false
    */
   resetOnUnmount?: boolean;
   /**
-   * Whether the form store should be reset when the form gets successfully
-   * submitted.
+   * Determines if the form state should be reset to its
+   * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+   * upon successful form submission.
    * @default true
    */
   resetOnSubmit?: boolean;
   /**
-   * Whether the form should automatically focus the first invalid field when
-   * the form gets submitted.
+   * Determines if the form should automatically focus on the first invalid
+   * field when the form is submitted.
    * @default true
    */
   autoFocusOnSubmit?: boolean;

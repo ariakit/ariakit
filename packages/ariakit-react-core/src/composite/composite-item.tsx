@@ -430,16 +430,27 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 );
 
 /**
- * Renders a composite item.
+ * Renders a focusable item as part of a composite widget. The `tabindex`
+ * attribute is automatically managed by this component based on the
+ * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * option.
+ *
+ * When this component receives DOM focus or is virtually focused (when the
+ * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * option is set to `true`), the element will automatically receive the
+ * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+ * attribute. This can be used to style the focused item, no matter the focus
+ * approach employed.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeItem>Item 1</CompositeItem>
- *   <CompositeItem>Item 2</CompositeItem>
- *   <CompositeItem>Item 3</CompositeItem>
- * </Composite>
+ * ```jsx {3-5}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeItem>Item 1</CompositeItem>
+ *     <CompositeItem>Item 2</CompositeItem>
+ *     <CompositeItem>Item 3</CompositeItem>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeItem = createMemoComponent<CompositeItemOptions>(
@@ -483,12 +494,33 @@ export interface CompositeItemOptions<T extends As = "button">
   /**
    * Whether the scroll behavior should be prevented when pressing arrow keys on
    * the first or the last items.
+   * @deprecated Use CSS
+   * [`scroll-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-margin)
+   * instead.
    * @default false
    */
   preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Whether pressing arrow keys should move the focus to a different item.
+   * Determines if pressing arrow keys while this item is in focus should move
+   * focus to a different item.
+   *
+   * **Note**: To entirely disable focus moving within a composite widget, you
+   * can use the
+   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) prop
+   * on the composite component instead. If you want to control the behavior
+   * _only when arrow keys are pressed_, where
+   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) may
+   * not be applicable, this prop must be set on all composite items because
+   * they each manage their own key presses, as well as on the composite
+   * component itself.
    * @default true
+   * @example
+   * ```jsx
+   * <Composite moveOnKeyPress={false}>
+   *   <CompositeItem moveOnKeyPress={false} />
+   *   <CompositeItem moveOnKeyPress={false} />
+   * </Composite>
+   * ```
    */
   moveOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**

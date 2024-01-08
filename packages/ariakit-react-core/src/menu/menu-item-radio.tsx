@@ -114,18 +114,27 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
 );
 
 /**
- * Renders a menu item radio inside a menu.
+ * Renders a [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio)
+ * element within a [`Menu`](https://ariakit.org/reference/menu) component. The
+ * [`name`](https://ariakit.org/reference/menu-item-radio#name) prop must be
+ * provided to identify the field in the
+ * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+ *
+ * A [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check) can be
+ * used to render a checkmark inside this component.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
- * <MenuProvider defaultValues={{ fruit: "apple" }}>
- *   <MenuButton>Fruit</MenuButton>
+ * ```jsx {4-11}
+ * <MenuProvider defaultValues={{ profile: "john" }}>
+ *   <MenuButton>Profiles</MenuButton>
  *   <Menu>
- *     <MenuItemRadio name="fruit" value="apple">
- *       Apple
+ *     <MenuItemRadio name="profile" value="john">
+ *       <MenuItemCheck />
+ *       John Doe
  *     </MenuItemRadio>
- *     <MenuItemRadio name="fruit" value="orange">
- *       Orange
+ *     <MenuItemRadio name="profile" value="jane">
+ *       <MenuItemCheck />
+ *       Jane Doe
  *     </MenuItemRadio>
  *   </Menu>
  * </MenuProvider>
@@ -154,8 +163,11 @@ export interface MenuItemRadioOptions<T extends As = "div">
    */
   store?: MenuStore;
   /**
-   * MenuItemRadio's name as specified in the
+   * The name of the field in the
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   *
+   * Live examples:
+   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
    */
   name: string;
   /**

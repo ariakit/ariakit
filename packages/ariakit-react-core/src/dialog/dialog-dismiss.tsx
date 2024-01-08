@@ -68,7 +68,8 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
 );
 
 /**
- * Renders a button that hides a dialog.
+ * Renders a button that hides a
+ * [`Dialog`](https://ariakit.org/reference/dialog) when clicked.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx {4}

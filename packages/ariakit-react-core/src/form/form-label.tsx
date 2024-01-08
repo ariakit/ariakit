@@ -115,19 +115,23 @@ export const useFormLabel = createHook<FormLabelOptions>(
 );
 
 /**
- * Renders a label for a form field. If the field is not a native input, select
- * or textarea element, the component will render a `span` element. Instead of
- * relying on the `htmlFor` prop, it'll rely on the `aria-labelledby` attribute
- * on the form field. Clicking on the label will move focus to the field even if
- * it's not a native input.
+ * Renders a label associated with a form field, even if the field is not a
+ * native input.
+ *
+ * If the field is a native input, select or textarea element, this component
+ * will render a native `label` element and rely on its `htmlFor` prop.
+ * Otherwise, it'll render a `span` element and rely on the `aria-labelledby`
+ * attribute on the form field instead. Clicking on the label will move focus to
+ * the field even if it's not a native input.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {8}
  * const form = useFormStore({
  *   defaultValues: {
  *     email: "",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormLabel name={form.names.email}>Email</Role>
  *   <FormInput name={form.names.email} />
@@ -154,7 +158,14 @@ export interface FormLabelOptions<T extends As = "label">
    */
   store?: FormStore;
   /**
-   * Name of the field.
+   * Name of the field labeled by this element. This can either be a string or a
+   * reference to a field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, for type safety.
+   * @example
+   * ```jsx
+   * <FormLabel name="email">Email</FormLabel>
+   * ```
    */
   name: StringLike;
 }

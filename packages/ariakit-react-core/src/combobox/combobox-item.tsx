@@ -198,12 +198,10 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 );
 
 /**
- * Renders a combobox item inside a
- * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or a
+ * Renders a combobox item inside
+ * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
  * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
- * component. The `role` prop will be automatically set based on the list's own
- * `role` prop. For example, if the list `role` is set to `listbox` (default),
- * the item `role` will be set to `option`.
+ * components.
  *
  * By default, the [`value`](https://ariakit.org/reference/combobox-item#value)
  * prop will be rendered as the children, but this can be overriden.
@@ -237,7 +235,7 @@ export interface ComboboxItemOptions<T extends As = "div">
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.

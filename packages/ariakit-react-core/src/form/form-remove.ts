@@ -110,14 +110,26 @@ export const useFormRemove = createHook<FormRemoveOptions>(
 /**
  * Renders a button that will remove an item from an array field in the form
  * when clicked.
+ *
+ * The [`name`](https://ariakit.org/reference/form-remove#name) prop must be
+ * provided to identify the array field. Similarly, the
+ * [`index`](https://ariakit.org/reference/form-remove#index) prop is required
+ * to pinpoint the item to remove.
+ *
+ * By default, the button will automatically move focus to the next field in the
+ * form when clicked, or to the previous field if there isn't a next field. This
+ * behavior can be disabled by setting the
+ * [`autoFocusOnClick`](https://ariakit.org/reference/form-remove#autofocusonclick)
+ * prop to `false`.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {13}
  * const form = useFormStore({
  *   defaultValues: {
  *     languages: ["JavaScript", "PHP"],
  *   },
  * });
+ *
  * const values = form.useState("values");
  *
  * <Form store={form}>
@@ -150,7 +162,10 @@ export interface FormRemoveOptions<T extends As = "button">
    */
   store?: FormStore;
   /**
-   * Name of the array field.
+   * Name of the array field. This can either be a string or a reference to a
+   * field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, for type safety.
    */
   name: StringLike;
   /**

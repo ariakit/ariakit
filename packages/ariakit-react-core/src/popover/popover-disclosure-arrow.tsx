@@ -117,9 +117,11 @@ export interface PopoverDisclosureArrowOptions<T extends As = "span">
    */
   store?: PopoverStore;
   /**
-   * Placement to which the arrow should point. If not provided, the parent
-   * [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure)
-   * component's context will be used.
+   * Arrow's placement direction. If not provided, it will be inferred from the
+   * context.
+   *
+   * Live examples:
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    */
   placement?: PopoverStoreState["placement"];
 }

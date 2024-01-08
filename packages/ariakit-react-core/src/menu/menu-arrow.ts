@@ -27,10 +27,12 @@ export const useMenuArrow = createHook<MenuArrowOptions>(
 );
 
 /**
- * Renders an arrow inside the menu element.
+ * Renders an arrow element inside a
+ * [`Menu`](https://ariakit.org/reference/menu) component that points to its
+ * [`MenuButton`](https://ariakit.org/reference/menu-button).
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {4}
  * <MenuProvider>
  *   <MenuButton>Menu</MenuButton>
  *   <Menu>

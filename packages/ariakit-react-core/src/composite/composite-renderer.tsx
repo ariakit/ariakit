@@ -206,7 +206,7 @@ export interface CompositeRendererOptions<T extends Item = any>
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [Composite](https://ariakit.org/components/composite) component's context
    * will be used.
    *

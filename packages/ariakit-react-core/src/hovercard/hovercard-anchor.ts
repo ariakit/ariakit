@@ -131,7 +131,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
  * [`Hovercard`](https://ariakit.org/reference/hovercard) popup on hover.
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {2}
  * <HovercardProvider>
  *   <HovercardAnchor>@username</HovercardAnchor>
  *   <Hovercard>Details</Hovercard>
@@ -160,10 +160,13 @@ export interface HovercardAnchorOptions<T extends As = "a">
    */
   store?: HovercardStore;
   /**
-   * Whether to show the hovercard on mouse move.
+   * Shows the content element based on the user's _hover intent_ over the
+   * anchor element. This behavior purposely ignores mobile touch and
+   * unintentional mouse enter events, like those that happen during scrolling.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    * @default true
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;

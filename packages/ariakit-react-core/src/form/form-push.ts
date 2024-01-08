@@ -121,14 +121,25 @@ export const useFormPush = createHook<FormPushOptions>(
 /**
  * Renders a button that will push items to an array value in the form store
  * when clicked.
+ *
+ * The [`name`](https://ariakit.org/reference/form-push#name) prop needs to be
+ * provided to identify the array field. The
+ * [`value`](https://ariakit.org/reference/form-push#value) prop is required to
+ * define the value that will be added to the array.
+ *
+ * By default, the newly added input will be automatically focused when the
+ * button is clicked unless the
+ * [`autoFocusOnClick`](https://ariakit.org/reference/form-push#autofocusonclick)
+ * prop is set to `false`.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {13-15}
  * const form = useFormStore({
  *   defaultValues: {
  *     languages: ["JavaScript", "PHP"],
  *   },
  * });
+ *
  * const values = form.useState("values");
  *
  * <Form store={form}>
@@ -162,11 +173,14 @@ export interface FormPushOptions<T extends As = "button">
    */
   store?: FormStore;
   /**
-   * Name of the array field.
+   * Name of the array field. This can either be a string or a reference to a
+   * field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, for type safety.
    */
   name: StringLike;
   /**
-   * Value that will be initially set to the item when it is pushed.
+   * Value that will initially be assigned to the array item when it's pushed.
    */
   value: unknown;
   /**

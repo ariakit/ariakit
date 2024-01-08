@@ -22,8 +22,9 @@ export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
 });
 
 /**
- * Renders a heading in a menu. This component must be wrapped with `Menu` so
- * the `aria-labelledby` prop is properly set on the menu element.
+ * Renders a heading in a menu. This component must be wrapped within
+ * [`Menu`](https://ariakit.org/reference/menu) so the `aria-labelledby` prop is
+ * properly set on the content element.
  * @see https://ariakit.org/components/menu
  * @example
  * ```jsx

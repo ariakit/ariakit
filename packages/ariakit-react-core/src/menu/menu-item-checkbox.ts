@@ -132,14 +132,43 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
 );
 
 /**
- * Renders a menu item checkbox inside a menu.
+ * Renders a [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox)
+ * element within a [`Menu`](https://ariakit.org/reference/menu) component. The
+ * [`name`](https://ariakit.org/reference/menu-item-checkbox#name) prop must be
+ * provided to identify the field in the
+ * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+ *
+ * A [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check) can be
+ * used to render a checkmark inside this component.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
- * <MenuProvider defaultValues={{ apple: false }}>
- *   <MenuButton>Fruits</MenuButton>
+ * The [`name`](https://ariakit.org/reference/menu-item-checkbox#name) prop can
+ * refer to a single value in the state:
+ * ```jsx {4-7}
+ * <MenuProvider defaultValues={{ warnBeforeQuitting: true }}>
+ *   <MenuButton>Chrome</MenuButton>
  *   <Menu>
- *     <MenuItemCheckbox name="apple">Apple</MenuItemCheckbox>
+ *     <MenuItemCheckbox name="warnBeforeQuitting">
+ *       <MenuItemCheck />
+ *       Warn Before Quitting
+ *     </MenuItemCheckbox>
+ *   </Menu>
+ * </MenuProvider>
+ * ```
+ * @example
+ * Or it can refer to an array of values, in which case the
+ * [`value`](https://ariakit.org/reference/menu-item-checkbox#value) prop must
+ * be provided:
+ * ```jsx {4-9}
+ * <MenuProvider defaultValues={{ watching: ["issues"] }}>
+ *   <MenuButton>Watch</MenuButton>
+ *   <Menu>
+ *     <MenuItemCheckbox name="watching" value="issues">
+ *       Issues
+ *     </MenuItemCheckbox>
+ *     <MenuItemCheckbox name="watching" value="pull-requests">
+ *       Pull Requests
+ *     </MenuItemCheckbox>
  *   </Menu>
  * </MenuProvider>
  * ```
@@ -167,8 +196,11 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
    */
   store?: MenuStore;
   /**
-   * MenuItemCheckbox's name as specified in the
+   * The name of the field in the
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   *
+   * Live examples:
+   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
    */
   name: string;
   /**

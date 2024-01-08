@@ -101,7 +101,9 @@ ${
 
 ${prop.examples
   .map((example) =>
-    `\`\`\`${example.language}
+    `${example.description ? `${example.description}\n\n` : ""}\`\`\`${
+      example.language
+    }
 ${example.code}
 \`\`\``.trim(),
   )
@@ -131,7 +133,9 @@ ${
 
 ${examples
   .map((example) =>
-    `\`\`\`${example.language}
+    `${example.description ? `${example.description}\n\n` : ""}\`\`\`${
+      example.language
+    }
 ${example.code}
 \`\`\``.trim(),
   )

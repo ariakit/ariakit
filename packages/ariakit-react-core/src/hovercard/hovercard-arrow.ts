@@ -28,10 +28,12 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>(
 );
 
 /**
- * Renders an arrow element in a hovercard.
+ * Renders an arrow element inside a
+ * [`Hovercard`](https://ariakit.org/reference/hovercard) component that points
+ * to the anchor element.
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {4}
  * <HovercardProvider>
  *   <HovercardAnchor>@username</HovercardAnchor>
  *   <Hovercard>

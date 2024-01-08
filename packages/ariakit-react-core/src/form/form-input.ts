@@ -67,15 +67,16 @@ export const useFormInput = createHook<FormInputOptions>(
  * Renders a form input. Unlike
  * [`FormField`](https://ariakit.org/reference/form-field), this component
  * passes the `value` and `onChange` props down to the underlying element that
- * can be a native input, select or textarea elements.
+ * can be native input, select or textarea elements.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {9}
  * const form = useFormStore({
  *   defaultValues: {
  *     email: "",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormLabel name={form.names.email}>Email</FormLabel>
  *   <FormInput name={form.names.email} />

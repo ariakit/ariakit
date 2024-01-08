@@ -22,12 +22,12 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
 });
 
 /**
- * Renders a label in a menu group. This component must be wrapped with
- * `MenuGroup` so the `aria-labelledby` prop is properly set on the menu group
- * element.
+ * Renders a label in a menu group. This component should be wrapped with
+ * [`MenuGroup`](https://ariakit.org/reference/menu-group) so the
+ * `aria-labelledby` is correctly set on the group element.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {5}
  * <MenuProvider>
  *   <MenuButton>Recent Items</MenuButton>
  *   <Menu>

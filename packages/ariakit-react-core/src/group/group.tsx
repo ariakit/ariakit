@@ -36,7 +36,9 @@ export const useGroup = createHook<GroupOptions>((props) => {
 });
 
 /**
- * Renders a group element.
+ * Renders a group element. Optionally, a
+ * [`GroupLabel`](https://ariakit.org/reference/group-label) can be rendered as
+ * a child to provide a label for the group.
  * @see https://ariakit.org/components/group
  * @example
  * ```jsx

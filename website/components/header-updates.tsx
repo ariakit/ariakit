@@ -77,7 +77,7 @@ export function HeaderUpdates({
         {!!unreadLength && (
           <span
             data-bignum={unreadLength > 9 || undefined}
-            className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[11px] tabular-nums text-white animate-in zoom-in data-[bignum]:right-[2px] data-[bignum]:top-[2px] data-[bignum]:h-3 data-[bignum]:w-3 data-[bignum]:dark:bg-blue-500"
+            className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[11px] text-white animate-in zoom-in data-[bignum]:right-[2px] data-[bignum]:top-[2px] data-[bignum]:h-3 data-[bignum]:w-3 data-[bignum]:dark:bg-blue-500"
           >
             {unreadLength > 9 ? null : unreadLength}
           </span>

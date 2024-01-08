@@ -66,8 +66,10 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
 );
 
 /**
- * Renders a focus trap region element.
- * @see https://ariakit.org/components/focus-trap-region
+ * Renders a wrapper element that traps the focus inside it when the
+ * [`enabled`](https://ariakit.org/reference/focus-trap-region#enabled) prop is
+ * `true`.
+ * @see https://ariakit.org/components/focus-trap
  * @example
  * ```jsx
  * <FocusTrapRegion>

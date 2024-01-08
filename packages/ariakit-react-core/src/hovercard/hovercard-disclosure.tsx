@@ -150,7 +150,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
  * hovercard when using the keyboard.
  * @see https://ariakit.org/components/hovercard
  * @example
- * ```jsx
+ * ```jsx {3}
  * <HovercardProvider>
  *   <HovercardAnchor>@username</HovercardAnchor>
  *   <HovercardDisclosure />

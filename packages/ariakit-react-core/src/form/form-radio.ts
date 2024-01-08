@@ -77,15 +77,19 @@ export const useFormRadio = createHook<FormRadioOptions>(
 );
 
 /**
- * Renders a radio button in a form.
+ * Renders a radio button as a form field. This component must be wrapped in a
+ * [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) along with
+ * other radio buttons sharing the same
+ * [`name`](https://ariakit.org/reference/form-radio#name).
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {10-12}
  * const form = useFormStore({
  *   defaultValues: {
  *     char: "a",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormRadioGroup>
  *     <FormGroupLabel>Favorite character</FormGroupLabel>

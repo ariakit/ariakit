@@ -570,6 +570,9 @@ export function PageA({
         currentCategory &&
         currentPage &&
         url.hash &&
+        ((!page.endsWith("provider") && !page.endsWith("store")) ||
+          currentPage.endsWith("provider") ||
+          currentPage.endsWith("store")) &&
         isValidHref(`/${currentCategory}/${currentPage}${url.hash}`, pageLinks)
       ) {
         href = `/${currentCategory}/${currentPage}${url.hash}`;

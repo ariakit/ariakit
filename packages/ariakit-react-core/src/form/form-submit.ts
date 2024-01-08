@@ -42,11 +42,17 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
 );
 
 /**
- * Renders a submit buttom in a form.
+ * Renders a native submit button inside a form. The button will be
+ * [`disabled`](https://ariakit.org/reference/form-submit#disabled) while the
+ * form is submitting, but it will remain accessible to keyboard and screen
+ * reader users thanks to the
+ * [`accessibleWhenDisabled`](https://ariakit.org/reference/form-submit#accessiblewhendisabled)
+ * prop that's enabled by default.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {4}
  * const form = useFormStore();
+ *
  * <Form store={form}>
  *   <FormSubmit>Submit</FormSubmit>
  * </Form>

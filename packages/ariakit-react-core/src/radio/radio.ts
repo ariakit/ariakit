@@ -195,6 +195,10 @@ export interface RadioOptions<T extends As = "input">
   name?: string;
   /**
    * The value of the radio button.
+   *
+   * Live examples:
+   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
    */
   value: string | number;
   /**
@@ -202,7 +206,7 @@ export interface RadioOptions<T extends As = "input">
    */
   checked?: boolean;
   /**
-   * Callback function that is called when the radio button store changes.
+   * Callback function that is called when the radio button state changes.
    */
   onChange?: BivariantCallback<
     (event: SyntheticEvent<HTMLInputElement>) => void

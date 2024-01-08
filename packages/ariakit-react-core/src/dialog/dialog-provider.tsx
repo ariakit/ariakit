@@ -4,7 +4,8 @@ import { useDialogStore } from "./dialog-store.js";
 import type { DialogStoreProps } from "./dialog-store.js";
 
 /**
- * Provides a dialog store to Dialog components.
+ * Provides a dialog store to [Dialog](https://ariakit.org/components/dialog)
+ * components.
  * @see https://ariakit.org/components/dialog
  * @example
  * ```jsx

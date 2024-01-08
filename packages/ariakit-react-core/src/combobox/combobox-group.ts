@@ -83,7 +83,7 @@ export interface ComboboxGroupOptions<T extends As = "div">
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.

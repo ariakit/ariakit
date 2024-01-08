@@ -44,9 +44,10 @@ export const useHeading = createHook<HeadingOptions>((props) => {
 });
 
 /**
- * Renders a heading element. The element type (or the `aria-level` prop, if the
- * element type is not a native heading) is determined by the context level
- * provided by the parent `HeadingLevel` component.
+ * Renders a heading element. The element type (or the `aria-level` attribute,
+ * if the element type is not a native heading) is determined by the context
+ * level provided by the closest
+ * [`HeadingLevel`](https://ariakit.org/reference/heading-level) ancestor.
  * @see https://ariakit.org/components/heading
  * @example
  * ```jsx

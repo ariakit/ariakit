@@ -130,7 +130,7 @@ export interface SelectRendererOptions<T extends Item = any>
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the parent [Select](https://ariakit.org/components/select)
+   * not provided, the closest [Select](https://ariakit.org/components/select)
    * component's context will be used.
    *
    * The store [`items`](https://ariakit.org/reference/use-select-store#items)

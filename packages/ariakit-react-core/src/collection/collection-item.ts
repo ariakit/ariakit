@@ -84,7 +84,7 @@ export interface CollectionItemOptions<T extends As = "div">
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
-   * hook. If not provided, the parent
+   * hook. If not provided, the closest
    * [`Collection`](https://ariakit.org/reference/collection) or
    * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
    * components' context will be used.

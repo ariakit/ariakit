@@ -31,10 +31,13 @@ export const useMenuSeparator = createHook<MenuSeparatorOptions>(
 );
 
 /**
- * Renders a separator for menu items.
+ * Renders a divider between
+ * [`MenuItem`](https://ariakit.org/reference/menu-item),
+ * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox), and
+ * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) elements.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {6}
  * <MenuProvider>
  *   <MenuButton>Edit</MenuButton>
  *   <Menu>

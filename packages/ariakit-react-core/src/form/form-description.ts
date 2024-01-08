@@ -71,15 +71,17 @@ export const useFormDescription = createHook<FormDescriptionOptions>(
 );
 
 /**
- * Renders a description element for a form field.
+ * Renders a description element for a form field, which will automatically
+ * receive an `aria-describedby` attribute pointing to this element.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {10-12}
  * const form = useFormStore({
  *   defaultValues: {
  *     password: "",
  *   },
  * });
+ *
  * <Form store={form}>
  *   <FormLabel name={form.names.password}>Password</FormLabel>
  *   <FormInput name={form.names.password} type="password" />
@@ -111,7 +113,16 @@ export interface FormDescriptionOptions<T extends As = "div">
    */
   store?: FormStore;
   /**
-   * Name of the field.
+   * Name of the field described by this element. This can either be a string or
+   * a reference to a field name from the
+   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * store, for type safety.
+   * @example
+   * ```jsx
+   * <FormDescription name="password">
+   *   Password with at least 8 characters.
+   * </FormDescription>
+   * ```
    */
   name: StringLike;
 }

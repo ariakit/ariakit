@@ -8,7 +8,8 @@ import type { FormStoreProps } from "./form-store.js";
 type Values = FormStoreValues;
 
 /**
- * Provides a form store to Form components.
+ * Provides a form store to [Form](https://ariakit.org/components/form)
+ * components.
  * @see https://ariakit.org/components/form
  * @example
  * ```jsx

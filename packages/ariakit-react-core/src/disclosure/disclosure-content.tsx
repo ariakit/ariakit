@@ -171,10 +171,11 @@ const DisclosureContentImpl = createComponent<DisclosureContentOptions>(
 );
 
 /**
- * Renders an element that can be shown or hidden.
+ * Renders an element that can be shown or hidden by a
+ * [`Disclosure`](https://ariakit.org/components/disclosure) component.
  * @see https://ariakit.org/components/disclosure
  * @example
- * ```jsx
+ * ```jsx {3}
  * <DisclosureProvider>
  *   <Disclosure>Disclosure</Disclosure>
  *   <DisclosureContent>Content</DisclosureContent>
@@ -210,9 +211,9 @@ export interface DisclosureContentOptions<T extends As = "div">
   store?: DisclosureStore;
   /**
    * Determines whether the content element should remain visible even when the
-   * `open` state is `false`. If this prop is set to `true`, the `hidden` prop
-   * and the `display: none` style will not be applied, unless explicitly set
-   * otherwise.
+   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state is
+   * `false`. If this prop is set to `true`, the `hidden` prop and the `display:
+   * none` style will not be applied, unless explicitly set otherwise.
    *
    * This prop is particularly useful when using third-party animation libraries
    * such as Framer Motion or React Spring, where the element needs to be

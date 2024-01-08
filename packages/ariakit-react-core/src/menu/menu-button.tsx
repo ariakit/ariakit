@@ -247,13 +247,12 @@ export const useMenuButton = createHook<MenuButtonOptions>(
 );
 
 /**
- * Renders a menu button that triggers a
- * [`Menu`](https://ariakit.org/reference/menu) component. Usually, this is
- * rendered as a native `button` element, but if it's a submenu button rendered
- * as a menu item inside another menu, it'll be rendered as a `div`.
+ * Renders a menu button that toggles the visibility of a
+ * [`Menu`](https://ariakit.org/reference/menu) component when clicked or when
+ * using arrow keys.
  * @see https://ariakit.org/components/menu
  * @example
- * ```jsx
+ * ```jsx {2}
  * <MenuProvider>
  *   <MenuButton>Edit</MenuButton>
  *   <Menu>
@@ -288,8 +287,10 @@ export interface MenuButtonOptions<T extends As = "button" | "div">
    * Determines whether pressing a character key while focusing on the
    * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
    * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
-   * that character. By default, it's `true` for menu buttons in a
-   * [Menubar](https://ariakit.org/components/menubar), but `false` for other
+   * that character.
+   *
+   * By default, it's `true` for menu buttons in a
+   * [`Menubar`](https://ariakit.org/reference/menubar), but `false` for other
    * menu buttons.
    */
   typeahead?: boolean;

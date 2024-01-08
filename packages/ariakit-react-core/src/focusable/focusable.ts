@@ -466,6 +466,7 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * Live examples:
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
    * @default false
    */
   disabled?: boolean;
@@ -529,8 +530,10 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
   accessibleWhenDisabled?: boolean;
   /**
    * Custom event handler invoked when the element gains focus through keyboard
-   * interaction or a key press occurs while the element is in focus. This is a
-   * programmatic equivalent of the `data-focus-visible` attribute.
+   * interaction or a key press occurs while the element is in focus. This is
+   * the programmatic equivalent of the
+   * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+   * attribute.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)

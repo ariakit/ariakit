@@ -59,15 +59,17 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
 );
 
 /**
- * Renders a checkbox as a form field.
+ * Renders a checkbox input as a form field, representing a boolean, string,
+ * number, or array value.
  * @see https://ariakit.org/components/form
  * @example
- * ```jsx
+ * ```jsx {9}
  * const form = useFormStore({
  *   defaultValues: {
  *     acceptTerms: false,
  *   },
  * });
+ *
  * <Form store={form}>
  *   <label>
  *     <FormCheckbox name={form.names.acceptTerms} />

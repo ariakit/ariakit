@@ -239,8 +239,8 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
    */
   parent?: MenuStore | null;
   /**
-   * A reference to a menu bar store. This is used when rendering menus inside a
-   * menu bar.
+   * A reference to a menubar store. This is used when rendering menus inside a
+   * menubar.
    */
   menubar?: MenuBarStore | null;
   /**

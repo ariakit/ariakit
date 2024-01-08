@@ -8,7 +8,8 @@ import type {
 } from "./composite-store.js";
 
 /**
- * Provides a composite store to CompositeItem components.
+ * Provides a composite store to
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) components.
  * @see https://ariakit.org/components/composite
  * @example
  * ```jsx

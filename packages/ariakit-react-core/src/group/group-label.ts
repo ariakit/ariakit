@@ -34,8 +34,9 @@ export const useGroupLabel = createHook<GroupLabelOptions>((props) => {
 });
 
 /**
- * Renders a label in a group. This component must be wrapped with `Group` so
- * the `aria-labelledby` prop is properly set on the group element.
+ * Renders a label in a group. This component should be wrapped with a
+ * [`Group`](https://ariakit.org/reference/group) so the `aria-labelledby`
+ * prop is correctly set on the group element.
  * @see https://ariakit.org/components/group
  * @example
  * ```jsx

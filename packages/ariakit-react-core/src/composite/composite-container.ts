@@ -219,17 +219,20 @@ export const useCompositeContainer = createHook<CompositeContainerOptions>(
 
 /**
  * Renders a container for interactive widgets inside composite items. This
- * should be used in conjunction with the `CompositeItem` component or a
- * component that uses `CompositeItem` underneath.
+ * should be used in conjunction with the
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) component or
+ * a component that uses
+ * [`CompositeItem`](https://ariakit.org/reference/composite-item) underneath.
  * @see https://ariakit.org/components/composite
  * @example
- * ```jsx
- * const composite = useCompositeStore();
- * <Composite store={composite}>
- *   <CompositeItem render={<CompositeContainer />}>
- *     <input type="text" />
- *   </CompositeItem>
- * </Composite>
+ * ```jsx {3-5}
+ * <CompositeProvider>
+ *   <Composite>
+ *     <CompositeItem render={<CompositeContainer />}>
+ *       <input type="text" />
+ *     </CompositeItem>
+ *   </Composite>
+ * </CompositeProvider>
  * ```
  */
 export const CompositeContainer =
@@ -245,8 +248,12 @@ if (process.env.NODE_ENV !== "production") {
 export interface CompositeContainerOptions<T extends As = "div">
   extends Options<T> {
   /**
-   * Object returned by the `useCompositeStore` hook. If not provided, the
-   * parent `Composite` component's context will be used.
+   * Object returned by the
+   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * hook. If not provided, the closest
+   * [`Composite`](https://ariakit.org/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * components' context will be used.
    */
   store?: CompositeStore;
 }
