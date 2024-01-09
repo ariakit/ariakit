@@ -21,7 +21,8 @@ export function usePopoverStoreProps<T extends Core.PopoverStore>(
 }
 
 /**
- * Creates a popover store.
+ * Creates a popover store to control the state of
+ * [Popover](https://ariakit.org/components/popover) components.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx

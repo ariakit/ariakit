@@ -48,9 +48,9 @@ export const useRole = createHook<RoleOptions>((props) => {
 });
 
 /**
- * Renders an abstract element that supports the `render` prop a `wrapElement`
- * prop that can be used to wrap the underlying element with React Portal,
- * Context or other component types.
+ * Renders an abstract element that supports the `render` prop and a
+ * `wrapElement` prop that can be used to wrap the underlying element with React
+ * Portal, Context or other component types.
  * @see https://ariakit.org/components/role
  * @example
  * ```jsx

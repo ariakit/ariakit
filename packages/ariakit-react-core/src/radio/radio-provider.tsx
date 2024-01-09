@@ -4,7 +4,8 @@ import { useRadioStore } from "./radio-store.js";
 import type { RadioStoreProps } from "./radio-store.js";
 
 /**
- * Provides a radio store to Radio components.
+ * Provides a radio store to [Radio](https://ariakit.org/components/radio)
+ * components.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx

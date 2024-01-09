@@ -237,7 +237,7 @@ export interface SelectItemOptions<T extends As = "div">
    * - [Form with Select](https://ariakit.org/examples/form-select)
    * - [Animated Select](https://ariakit.org/examples/select-animated)
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
-   * - [Select grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
    * - [SelectGroup](https://ariakit.org/examples/select-group)
    * - [Select with custom
    *   item](https://ariakit.org/examples/select-item-custom)
@@ -260,10 +260,6 @@ export interface SelectItemOptions<T extends As = "div">
    * provided.
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-  /**
-   * @default true
-   */
-  preventScrollOnKeyDown?: CompositeItemOptions["preventScrollOnKeyDown"];
 }
 
 export type SelectItemProps<T extends As = "div"> = Props<SelectItemOptions<T>>;

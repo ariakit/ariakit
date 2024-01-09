@@ -453,10 +453,11 @@ export const usePopover = createHook<PopoverOptions>(
 );
 
 /**
- * Renders a popover element.
+ * Renders a popover element that's automatically positioned relative to an
+ * anchor element.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {3}
  * <PopoverProvider>
  *   <PopoverDisclosure>Disclosure</PopoverDisclosure>
  *   <Popover>Popover</Popover>
@@ -490,6 +491,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    */
   wrapperProps?: HTMLAttributes<HTMLDivElement>;
   /**
@@ -515,6 +517,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * negative values to make the popover shift to the opposite side.
    *
    * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    * - [Menubar](https://ariakit.org/components/menubar)
@@ -580,6 +583,9 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    * The minimum padding between the popover and the viewport edge. This will be
    * exposed to CSS as
    * [`--popover-overflow-padding`](https://ariakit.org/guide/styling#--popover-overflow-padding).
+   *
+   * Live examples:
+   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
    * @default 8
    */
   overflowPadding?: number;
@@ -592,7 +598,6 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    *  - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
    *  - [Context menu](https://ariakit.org/examples/menu-context-menu)
    *  - [Selection Popover](https://ariakit.org/examples/popover-selection)
-   * @param anchor The anchor element.
    */
   getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
   /**

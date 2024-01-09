@@ -104,11 +104,12 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
 
 /**
  * Renders an arrow inside a [`Popover`](https://ariakit.org/reference/popover)
- * component.
+ * component pointing to the anchor element.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {4}
  * <PopoverProvider>
+ *   <PopoverAnchor />
  *   <Popover>
  *     <PopoverArrow />
  *     Popover
@@ -137,6 +138,9 @@ export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   store?: PopoverStore;
   /**
    * The size of the arrow.
+   *
+   * Live examples:
+   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
    * @default 30
    */
   size?: number;

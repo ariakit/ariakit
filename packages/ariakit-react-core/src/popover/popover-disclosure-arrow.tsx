@@ -85,7 +85,7 @@ export const usePopoverDisclosureArrow =
  * component.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {4}
  * <PopoverProvider>
  *   <PopoverDisclosure>
  *     Disclosure

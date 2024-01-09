@@ -31,7 +31,7 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>(
  * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {3}
  * <PopoverProvider>
  *   <Popover>
  *     <PopoverDismiss />

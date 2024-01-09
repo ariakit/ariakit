@@ -30,7 +30,8 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
 );
 
 /**
- * Renders a separator element for select items.
+ * Renders a divider between
+ * [`SelectItem`](https://ariakit.org/reference/select-item) elements.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {5}

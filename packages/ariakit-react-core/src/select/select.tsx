@@ -303,7 +303,15 @@ export const useSelect = createHook<SelectOptions>(
 );
 
 /**
- * Renders a select button.
+ * Renders a custom select element that controls the visibility of either a
+ * [`SelectList`](https://ariakit.org/reference/select-list) or a
+ * [`SelectPopover`](https://ariakit.org/reference/select-popover) component.
+ *
+ * By default, the
+ * [`value`](https://ariakit.org/reference/select-provider#value) state is
+ * rendered as the children, followed by a
+ * [`SelectArrow`](https://ariakit.org/reference/select-arrow) component. This
+ * can be customized by passing different children to the component.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {2}
@@ -341,14 +349,14 @@ export interface SelectOptions<T extends As = "button">
    */
   store?: SelectStore;
   /**
-   * Determines whether the
+   * Determines if the
    * [`SelectList`](https://ariakit.org/reference/select-list) or
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * will be shown when the user presses arrow keys while the select element is
-   * focused.
+   * will appear when the user uses arrow keys while the select element is
+   * in focus.
    *
    * Live examples:
-   * - [Select grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
@@ -356,28 +364,30 @@ export interface SelectOptions<T extends As = "button">
    * Determines whether pressing arrow keys will move the active item even when
    * the [`SelectList`](https://ariakit.org/reference/select-list) or
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * is hidden.
+   * are hidden.
    * @default false
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Determines whether
-   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) will be
-   * called on click. By default, the
+   * Determines if
+   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) should be
+   * invoked on click. By default, the
    * [`SelectList`](https://ariakit.org/reference/select-list) or
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * will be shown on press (on mouse down and on key down). If this prop is set
-   * to `true`, the [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * will be shown on click instead.
+   * are displayed on press (on mouse/key down).
+   *
+   * **Note**: When set to `true`, this prop supersedes the
+   * [`toggleOnPress`](https://ariakit.org/reference/select#toggleonpress) prop.
    * @default false
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Determines whether pressing space, enter or mouse down will toggle the
+   * Determines whether pressing Space, Enter, or a mouse down event will
+   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) the
    * [`SelectList`](https://ariakit.org/reference/select-list) or
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components.
-   * This prop will be ignored if
+   *
+   * **Note**: This prop is disregarded if
    * [`toggleOnClick`](https://ariakit.org/reference/select#toggleonclick) is
    * set to `true`.
    * @default true

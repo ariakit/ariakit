@@ -25,8 +25,8 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
 
 /**
  * Renders a label in a select group. This component must be wrapped with
- * `SelectGroup` so the `aria-labelledby` prop is properly set on the select
- * group element.
+ * [`SelectGroup`](https://ariakit.org/reference/select-group) so the
+ * `aria-labelledby` prop is properly set on the select group element.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {5,10}

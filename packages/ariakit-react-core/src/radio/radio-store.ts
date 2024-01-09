@@ -19,11 +19,13 @@ export function useRadioStoreProps<T extends Core.RadioStore>(
 }
 
 /**
- * Creates a radio store.
+ * Creates a radio store to control the state of
+ * [Radio](https://ariakit.org/components/radio) components.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
  * const radio = useRadioStore();
+ *
  * <RadioGroup store={radio}>
  *   <Radio value="Apple" />
  *   <Radio value="Orange" />
@@ -47,7 +49,9 @@ export interface RadioStoreOptions
   extends Core.RadioStoreOptions,
     CompositeStoreOptions {
   /**
-   * Function that will be called when the `value` state changes.
+   * Function that will be called when the
+   * [`value`](https://ariakit.org/reference/radio-provider#value) state
+   * changes.
    */
   setValue?: (value: RadioStoreState["value"]) => void;
 }

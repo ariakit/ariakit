@@ -56,15 +56,17 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
 );
 
 /**
- * Renders a radio group element.
+ * Renders a [`radiogroup`](https://w3c.github.io/aria/#radiogroup) element that
+ * manages a group of [`Radio`](https://ariakit.org/reference/radio) elements.
  * @see https://ariakit.org/components/radio
  * @example
  * ```jsx
- * const radio = useRadioStore();
- * <RadioGroup store={radio}>
- *   <Radio value="Apple" />
- *   <Radio value="Orange" />
- * </RadioGroup>
+ * <RadioProvider>
+ *   <RadioGroup>
+ *     <Radio value="Apple" />
+ *     <Radio value="Orange" />
+ *   </RadioGroup>
+ * </RadioProvider>
  * ```
  */
 export const RadioGroup = createComponent<RadioGroupOptions>((props) => {

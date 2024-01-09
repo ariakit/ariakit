@@ -46,7 +46,10 @@ export const useSelectRow = createHook<SelectRowOptions>(
 );
 
 /**
- * Renders a select row.
+ * Renders a select row that allows two-dimensional arrow key navigation.
+ * [`SelectItem`](https://ariakit.org/reference/select-item) elements wrapped
+ * within this component will automatically receive a
+ * [`rowId`](https://ariakit.org/reference/select-item#rowid) prop.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {4-11}

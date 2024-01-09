@@ -7,7 +7,8 @@ import type { SelectStoreProps, SelectStoreValue } from "./select-store.js";
 type Value = SelectStoreValue;
 
 /**
- * Provides a select store to Select components.
+ * Provides a select store to [Select](https://ariakit.org/components/select)
+ * components.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx

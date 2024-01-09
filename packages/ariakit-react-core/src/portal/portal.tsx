@@ -317,7 +317,21 @@ export const usePortal = createHook<PortalOptions>(
 );
 
 /**
- * Renders an element using `ReactDOM.createPortal`.
+ * Renders an element using [React
+ * Portal](https://react.dev/reference/react-dom/createPortal).
+ *
+ * By default, the portal element is a `div` element appended to the
+ * `document.body` element. You can customize this with the
+ * [`portalElement`](https://ariakit.org/reference/portal#portalelement) prop.
+ *
+ * The
+ * [`preserveTabOrder`](https://ariakit.org/reference/portal#preservetaborder)
+ * prop allows this component to manage the tab order of the elements. It
+ * ensures the tab order remains consistent with the original location where the
+ * portal was rendered in the React tree, instead of the final location in the
+ * DOM. The
+ * [`preserveTabOrderAnchor`](https://ariakit.org/reference/portal#preservetaborderanchor)
+ * prop can specify a different location from which the tab order is preserved.
  * @see https://ariakit.org/components/portal
  * @example
  * ```jsx
@@ -385,6 +399,9 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
    * `portalRef` is similar to `ref` but is scoped to the portal node. It's
    * useful when you need to be informed when the portal element is appended to
    * the DOM or removed from the DOM.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.org/examples/form-select)
    * @example
    * ```jsx
    * const [portalElement, setPortalElement] = useState(null);

@@ -35,11 +35,13 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
 }
 
 /**
- * Creates a select store.
+ * Creates a select store to control the state of
+ * [Select](https://ariakit.org/components/select) components.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
  * const select = useSelectStore({ defaultValue: "Apple" });
+ *
  * <Select store={select} />
  * <SelectPopover store={select}>
  *   <SelectItem value="Apple" />
@@ -85,18 +87,23 @@ export interface SelectStoreOptions<
     CompositeStoreOptions<SelectStoreItem>,
     PopoverStoreOptions {
   /**
-   * Function that will be called when the `value` state changes.
-   * @param value The new value.
+   * Function that will be called when the
+   * [`value`](https://ariakit.org/reference/select-provider#value) state
+   * changes.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select with custom items](https://ariakit.org/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**
-   * A reference to a combobox store. This is used when combining the combobox
-   * with a select (e.g., select with a search input). The stores will share the
-   * same state.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * A reference to a [combobox
+   * store](https://ariakit.org/reference/use-combobox-store). It's
+   * automatically set when composing [Select with
+   * Combobox](https://ariakit.org/examples/select-combobox).
    */
   combobox?: ComboboxStore | null;
 }

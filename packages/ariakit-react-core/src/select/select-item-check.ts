@@ -27,9 +27,14 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
 );
 
 /**
- * Renders a checkmark inside a `SelectItem` component. This component must be
- * wrapped with `SelectItem` or the `checked` prop must be explicitly passed to
- * the component.
+ * Renders a checkmark icon when the
+ * [`checked`](https://ariakit.org/reference/select-item-check#checked) prop is
+ * `true`. The icon can be overridden by providing a different one as children.
+ *
+ * When rendered inside a
+ * [`SelectItem`](https://ariakit.org/reference/select-item) component, the
+ * [`checked`](https://ariakit.org/reference/select-item-check#checked) prop is
+ * automatically derived from the context.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {5,9}
@@ -63,20 +68,9 @@ export interface SelectItemCheckOptions<T extends As = "span">
   extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
-   * context will be used.
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
    */
   store?: SelectStore;
-  /**
-   * Whether the check mark should be shown. This value is automatically
-   * inferred from the parent
-   * [`SelectItem`](https://ariakit.org/reference/select-item) component.
-   * Manually setting this prop will override the inferred value.
-   */
-  checked?: boolean;
 }
 
 export type SelectItemCheckProps<T extends As = "span"> = Props<

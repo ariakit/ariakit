@@ -4,7 +4,8 @@ import { usePopoverStore } from "./popover-store.js";
 import type { PopoverStoreProps } from "./popover-store.js";
 
 /**
- * Provides a popover store to Popover components.
+ * Provides a popover store to [Popover](https://ariakit.org/components/popover)
+ * components.
  * @see https://ariakit.org/components/popover
  * @example
  * ```jsx
