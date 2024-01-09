@@ -200,6 +200,10 @@ export interface RadioOptions<T extends As = "input">
    */
   value: string | number;
   /**
+   * The native `name` attribute.
+   */
+  name?: string;
+  /**
    * Determines if the radio button is checked. Using this prop will make the
    * radio button controlled and override the
    * [`value`](https://ariakit.org/reference/radio-provider#value) state.
