@@ -202,7 +202,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
         }
         return nextItem;
       },
-      [id, rowId, trulyDisabled, getItemProp],
+      [id, rowId, trulyDisabled, getItemProp, typeaheadText],
     );
 
     const onFocusProp = props.onFocus;
