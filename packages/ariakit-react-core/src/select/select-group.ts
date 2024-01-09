@@ -27,7 +27,10 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
 });
 
 /**
- * Renders a select group.
+ * Renders a group for [`SelectItem`](https://ariakit.org/reference/select-item)
+ * elements. Optionally, a
+ * [`SelectGroupLabel`](https://ariakit.org/reference/select-group-label) can be
+ * rendered as a child to provide a label for the group.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {4-8}

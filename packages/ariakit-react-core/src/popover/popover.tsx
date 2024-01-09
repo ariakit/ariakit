@@ -598,7 +598,6 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
    *  - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
    *  - [Context menu](https://ariakit.org/examples/menu-context-menu)
    *  - [Selection Popover](https://ariakit.org/examples/popover-selection)
-   * @param anchor The anchor element.
    */
   getAnchorRect?: (anchor: HTMLElement | null) => AnchorRect | null;
   /**

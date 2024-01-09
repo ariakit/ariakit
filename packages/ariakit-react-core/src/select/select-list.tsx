@@ -140,11 +140,14 @@ export const useSelectList = createHook<SelectListOptions>(
 );
 
 /**
- * Renders a select list. The `role` attribute is set to `listbox` by default,
- * but can be overriden by any other valid select popup role (`listbox`, `menu`,
- * `tree`, `grid` or `dialog`).
+ * Renders a select list element. This is the primitive component used by the
+ * [`SelectPopover`](https://ariakit.org/reference/select-popover) component.
  *
- * The `aria-labelledby` attribute is set to the
+ * Unlike [`SelectPopover`](https://ariakit.org/reference/select-popover), this
+ * component doesn't render a popover and therefore doesn't automatically focus
+ * on items when opened.
+ *
+ * The `aria-labelledby` prop is set to the
  * [`Select`](https://ariakit.org/reference/select) element's `id` by default.
  * @see https://ariakit.org/components/select
  * @example

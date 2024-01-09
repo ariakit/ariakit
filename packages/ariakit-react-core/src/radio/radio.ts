@@ -158,15 +158,17 @@ export const useRadio = createHook<RadioOptions>(
 );
 
 /**
- * Renders a radio button element.
+ * Renders a radio button element that's typically wrapped in a
+ * [`RadioGroup`](https://ariakit.org/reference/radio-group) component.
  * @see https://ariakit.org/components/radio
  * @example
- * ```jsx
- * const radio = useRadioStore();
- * <RadioGroup store={radio}>
- *   <Radio value="Apple" />
- *   <Radio value="Orange" />
- * </RadioGroup>
+ * ```jsx {3-4}
+ * <RadioProvider>
+ *   <RadioGroup>
+ *     <Radio value="Apple" />
+ *     <Radio value="Orange" />
+ *   </RadioGroup>
+ * </RadioProvider>
  * ```
  */
 export const Radio = createMemoComponent<RadioOptions>((props) => {
@@ -190,10 +192,6 @@ export interface RadioOptions<T extends As = "input">
    */
   store?: RadioStore;
   /**
-   * The native `name` attribute.
-   */
-  name?: string;
-  /**
    * The value of the radio button.
    *
    * Live examples:
@@ -202,7 +200,9 @@ export interface RadioOptions<T extends As = "input">
    */
   value: string | number;
   /**
-   * Whether the radio button is checked.
+   * Determines if the radio button is checked. Using this prop will make the
+   * radio button controlled and override the
+   * [`value`](https://ariakit.org/reference/radio-provider#value) state.
    */
   checked?: boolean;
   /**
