@@ -28,11 +28,12 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
 );
 
 /**
- * Renders an element that will serve as the popover's anchor. The popover will
- * be positioned relative to this element.
+ * Renders an element that acts as the anchor for the popover. The
+ * [`Popover`](https://ariakit.org/reference/popover) component will be
+ * positioned in relation to this element.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {2}
  * <PopoverProvider>
  *   <PopoverAnchor>Anchor</PopoverAnchor>
  *   <Popover>Popover</Popover>

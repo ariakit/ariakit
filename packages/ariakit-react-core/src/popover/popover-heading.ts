@@ -27,7 +27,7 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
  * prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {3}
  * <PopoverProvider>
  *   <Popover>
  *     <PopoverHeading>Heading</PopoverHeading>

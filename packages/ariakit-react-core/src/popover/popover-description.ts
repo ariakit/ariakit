@@ -29,7 +29,7 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
  * prop is properly set on the popover element.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {3}
  * <PopoverProvider>
  *   <Popover>
  *     <PopoverDescription>Description</PopoverDescription>

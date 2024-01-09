@@ -64,10 +64,11 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
 );
 
 /**
- * Renders a button that controls the visibility of the popover when clicked.
+ * Renders a button that controls the visibility of the
+ * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
  * @see https://ariakit.org/components/popover
  * @example
- * ```jsx
+ * ```jsx {2}
  * <PopoverProvider>
  *   <PopoverDisclosure>Disclosure</PopoverDisclosure>
  *   <Popover>Popover</Popover>
