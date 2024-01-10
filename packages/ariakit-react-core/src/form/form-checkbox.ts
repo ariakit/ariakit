@@ -9,8 +9,8 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
-import type { FormFieldOptions } from "./form-field.js";
-import { useFormField } from "./form-field.js";
+import type { FormControlOptions } from "./form-control.js";
+import { useFormControl } from "./form-control.js";
 
 /**
  * Returns props to create a `FormCheckbox` component.
@@ -47,7 +47,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
 
     props = useCheckbox({ store: checkboxStore, value, checked, ...props });
 
-    props = useFormField({
+    props = useFormControl({
       store,
       name,
       "aria-labelledby": undefined,
@@ -59,7 +59,7 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
 );
 
 /**
- * Renders a checkbox input as a form field, representing a boolean, string,
+ * Renders a checkbox input as a form control, representing a boolean, string,
  * number, or array value.
  * @see https://ariakit.org/components/form
  * @example
@@ -90,7 +90,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface FormCheckboxOptions<T extends As = "input">
-  extends FormFieldOptions<T>,
+  extends FormControlOptions<T>,
     Omit<CheckboxOptions<T>, "store" | "name"> {}
 
 export type FormCheckboxProps<T extends As = "input"> = Props<

@@ -10,11 +10,11 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
-import type { FormFieldOptions } from "./form-field.js";
-import { useFormField } from "./form-field.js";
+import type { FormControlOptions } from "./form-control.js";
+import { useFormControl } from "./form-control.js";
 
 /**
- * Returns props to create a `FormInput` component. Unlike `useFormField`, this
+ * Returns props to create a `FormInput` component. Unlike `useFormControl`, this
  * hook returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
  * @see https://ariakit.org/components/form
@@ -57,7 +57,7 @@ export const useFormInput = createHook<FormInputOptions>(
     };
 
     props = useFocusable(props);
-    props = useFormField({ store, name, ...props });
+    props = useFormControl({ store, name, ...props });
 
     return props;
   },
@@ -65,7 +65,7 @@ export const useFormInput = createHook<FormInputOptions>(
 
 /**
  * Renders a form input. Unlike
- * [`FormField`](https://ariakit.org/reference/form-field), this component
+ * [`FormControl`](https://ariakit.org/reference/form-control), this component
  * passes the `value` and `onChange` props down to the underlying element that
  * can be native input, select or textarea elements.
  * @see https://ariakit.org/components/form
@@ -93,7 +93,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface FormInputOptions<T extends As = "input">
-  extends FormFieldOptions<T>,
+  extends FormControlOptions<T>,
     FocusableOptions<T> {}
 
 export type FormInputProps<T extends As = "input"> = Props<FormInputOptions<T>>;

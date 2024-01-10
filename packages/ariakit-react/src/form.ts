@@ -2,6 +2,7 @@ export { useFormStore } from "@ariakit/react-core/form/form-store";
 export { useFormContext } from "@ariakit/react-core/form/form-context";
 export { Form } from "@ariakit/react-core/form/form";
 export { FormProvider } from "@ariakit/react-core/form/form-provider";
+export { FormControl } from "@ariakit/react-core/form/form-control";
 export { FormCheckbox } from "@ariakit/react-core/form/form-checkbox";
 export { FormDescription } from "@ariakit/react-core/form/form-description";
 export { FormError } from "@ariakit/react-core/form/form-error";
@@ -26,6 +27,11 @@ export type {
 export type { FormOptions, FormProps } from "@ariakit/react-core/form/form";
 
 export type { FormProviderProps } from "@ariakit/react-core/form/form-provider";
+
+export type {
+  FormControlOptions,
+  FormControlProps,
+} from "@ariakit/react-core/form/form-control";
 
 export type {
   FormCheckboxOptions,

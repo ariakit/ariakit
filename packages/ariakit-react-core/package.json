@@ -162,6 +162,7 @@
     "./form/form-field": "./src/form/form-field.ts",
     "./form/form-error": "./src/form/form-error.ts",
     "./form/form-description": "./src/form/form-description.ts",
+    "./form/form-control": "./src/form/form-control.ts",
     "./form/form-context": "./src/form/form-context.tsx",
     "./form/form-checkbox": "./src/form/form-checkbox.ts",
     "./focusable/focusable": "./src/focusable/focusable.ts",
