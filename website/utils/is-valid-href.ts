@@ -1,7 +1,9 @@
 import type { PageLink } from "build-pages/links.js";
 import invariant from "tiny-invariant";
+import { getTagSlug, getTags } from "./tag.js";
 
 const cache = new WeakMap<PageLink[], Map<string, boolean>>();
+const tags = getTags().map(getTagSlug);
 
 export function isValidHref(href: string, links: PageLink[]) {
   if (!cache.has(links)) {
@@ -23,7 +25,13 @@ export function isValidHref(href: string, links: PageLink[]) {
   const url = new URL(href, "https://ariakit.org");
   const link = links.find((link) => link.path === url.pathname);
   const hash = url.hash.replace("#", "");
-  if (!link) return setResult(false);
+  if (!link) {
+    if (url.pathname === "/plus") return setResult(true);
+    if (tags.some((tag) => url.pathname === `/tags/${tag}`)) {
+      return setResult(true);
+    }
+    return setResult(false);
+  }
   if (hash && !link.hashes.includes(hash)) return setResult(false);
   return setResult(true);
 }
