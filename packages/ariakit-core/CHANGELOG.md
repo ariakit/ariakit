@@ -1,5 +1,15 @@
 # @ariakit/core
 
+## 0.3.11
+
+### Improved performance of large collections
+
+Components like [`MenuItem`](https://ariakit.org/reference/menu-item), [`ComboboxItem`](https://ariakit.org/reference/combobox-item), and [`SelectItem`](https://ariakit.org/reference/select-item) should now offer improved performance when rendering large collections.
+
+### Other updates
+
+- Improved JSDocs.
+
 ## 0.3.10
 
 - Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) triggering blur on focus.

@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.3.8
+
+- Updated dependencies: `@ariakit/core@0.3.11`
+
 ## 0.3.7
 
 - Added missing properties to dispatched events.

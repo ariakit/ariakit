@@ -1,5 +1,21 @@
 # @ariakit/react
 
+## 0.3.13
+
+### Improved performance of large collections
+
+Components like [`MenuItem`](https://ariakit.org/reference/menu-item), [`ComboboxItem`](https://ariakit.org/reference/combobox-item), and [`SelectItem`](https://ariakit.org/reference/select-item) should now offer improved performance when rendering large collections.
+
+### New `FormControl` component
+
+This version introduces a new [`FormControl`](https://ariakit.org/reference/form-control) component. In future versions, this will replace the [`FormField`](https://ariakit.org/reference/form-field) component.
+
+### Other updates
+
+- Adjusted the focus behavior in Safari to occur prior to the `pointerup` event instead of `mouseup`.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.3.13`
+
 ## 0.3.12
 
 - The auto-select feature on [Combobox](https://ariakit.org/components/combobox) now resets with each keystroke.
