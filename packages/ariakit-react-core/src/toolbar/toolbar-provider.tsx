@@ -4,7 +4,8 @@ import { useToolbarStore } from "./toolbar-store.js";
 import type { ToolbarStoreProps } from "./toolbar-store.js";
 
 /**
- * Provides a toolbar store to Toolbar components.
+ * Provides a toolbar store to [Toolbar](https://ariakit.org/components/toolbar)
+ * components.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx

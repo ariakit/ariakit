@@ -40,7 +40,7 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
 
 /**
  * Renders an arrow inside a [`Tooltip`](https://ariakit.org/reference/tooltip)
- * component.
+ * pointing to the anchor element.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx {4}

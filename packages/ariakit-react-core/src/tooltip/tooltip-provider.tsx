@@ -4,7 +4,8 @@ import { useTooltipStore } from "./tooltip-store.js";
 import type { TooltipStoreProps } from "./tooltip-store.js";
 
 /**
- * Provides a tooltip store to Tooltip components.
+ * Provides a tooltip store to [Tooltip](https://ariakit.org/components/tooltip)
+ * components.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx

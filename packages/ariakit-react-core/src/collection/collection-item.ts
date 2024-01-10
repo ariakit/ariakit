@@ -94,6 +94,16 @@ export interface CollectionItemOptions<T extends As = "div">
    */
   store?: CollectionStore;
   /**
+   * The unique ID of the item. This will be used to register the item in the
+   * store and for the element's `id` attribute. If not provided, a unique ID
+   * will be automatically generated.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   */
+  id?: string;
+  /**
    * Whether the item should be registered as part of the collection.
    *
    * Live examples:

@@ -140,9 +140,9 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 );
 
 /**
- * Renders an element that will be described by a
- * [`Tooltip`](https://ariakit.org/reference/tooltip) component. This component
- * will also be used as the reference to position the tooltip on the screen.
+ * Renders a reference element for a
+ * [`Tooltip`](https://ariakit.org/reference/tooltip), which is triggered by
+ * focusing or hovering over the anchor.
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx {2}

@@ -29,7 +29,8 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
 );
 
 /**
- * Renders a separator for toolbar items.
+ * Renders a divider between
+ * [`ToolbarItem`](https://ariakit.org/reference/toolbar-item) elements.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx {3}

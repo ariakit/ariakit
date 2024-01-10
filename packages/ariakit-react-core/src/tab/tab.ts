@@ -95,8 +95,8 @@ export const useTab = createHook<TabOptions>(
 );
 
 /**
- * Renders a tab element. The underlying element must be wrapped in a `TabList`
- * component.
+ * Renders a tab element inside a
+ * [`TabList`](https://ariakit.org/reference/tab-list) wrapper.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx {3,4}

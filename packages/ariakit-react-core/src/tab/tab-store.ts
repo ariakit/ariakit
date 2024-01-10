@@ -26,11 +26,13 @@ export function useTabStoreProps<T extends Core.TabStore>(
 }
 
 /**
- * Creates a tab store.
+ * Creates a tab store to control the state of
+ * [Tab](https://ariakit.org/components/tab) components.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx
  * const tab = useTabStore();
+ *
  * <TabList store={tab}>
  *   <Tab>Tab 1</Tab>
  *   <Tab>Tab 2</Tab>

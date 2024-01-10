@@ -104,7 +104,15 @@ export const useTabPanel = createHook<TabPanelOptions>(
 );
 
 /**
- * Renders a tab panel element.
+ * Renders a tab panel element that's controlled by a
+ * [`Tab`](https://ariakit.org/reference/tab) component.
+ *
+ * If the [`tabId`](https://ariakit.org/reference/tab-panel#tabid) prop isn't
+ * provided, the tab panel will automatically associate with a
+ * [`Tab`](https://ariakit.org/reference/tab) based on its position in the DOM.
+ * Alternatively, you can render a single tab panel with a dynamic
+ * [`tabId`](https://ariakit.org/reference/tab-panel#tabid) value pointing to
+ * the selected tab.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx {6,7}
@@ -140,8 +148,16 @@ export interface TabPanelOptions<T extends As = "div">
    */
   store?: TabStore;
   /**
-   * The `id` of the tab controlling this panel is set by default. Typically,
-   * this value is inferred from the sequence of the tabs and panels.
+   * The [`id`](https://ariakit.org/reference/tab#id) of the tab controlling
+   * this panel. This connection is used to assign the `aria-labelledby`
+   * attribute to the tab panel and to determine if the tab panel should be
+   * visible.
+   *
+   * This link is automatically established by matching the order of
+   * [`Tab`](https://ariakit.org/reference/tab) and
+   * [`TabPanel`](https://ariakit.org/reference/tab-panel) elements in the DOM.
+   * If you're rendering a single tab panel, this can be set to a dynamic value
+   * that refers to the selected tab.
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)

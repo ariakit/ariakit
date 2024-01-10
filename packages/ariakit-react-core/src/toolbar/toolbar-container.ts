@@ -35,7 +35,7 @@ export const useToolbarContainer = createHook<ToolbarContainerOptions>(
 );
 
 /**
- * Renders a container for interactive widgets inside toolbar items.
+ * Renders a toolbar item that may contain interactive widgets inside.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx {2-4}

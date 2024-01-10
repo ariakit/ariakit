@@ -4,7 +4,7 @@ import { useTabStore } from "./tab-store.js";
 import type { TabStoreProps } from "./tab-store.js";
 
 /**
- * Provides a tab store to Tab components.
+ * Provides a tab store to [Tab](https://ariakit.org/components/tab) components.
  * @see https://ariakit.org/components/tab
  * @example
  * ```jsx

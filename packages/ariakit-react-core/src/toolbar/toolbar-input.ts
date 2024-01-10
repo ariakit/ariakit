@@ -33,7 +33,8 @@ export const useToolbarInput = createHook<ToolbarInputOptions>(
 );
 
 /**
- * Renders an input as a toolbar item.
+ * Renders a text input as a toolbar item, maintaining arrow key navigation on
+ * the toolbar.
  * @see https://ariakit.org/components/toolbar
  * @example
  * ```jsx {2}
