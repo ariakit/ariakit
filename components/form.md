@@ -27,7 +27,7 @@ useFormContext()
     <FormGroup>
       <FormGroupLabel />
       <FormLabel />
-      <FormField />
+      <FormControl />
       <FormInput />
       <FormCheckbox />
       <FormDescription />
@@ -75,7 +75,7 @@ Ariakit supports the [browser's built-in validation](https://developer.mozilla.o
 
 This method has a great advantage: the error messages are automatically localized to the user's language by the browser. However, the default UI doesn't necessarily follow accessibility standards. Also, the style of the error messages is not customizable, and we can't control when they are displayed.
 
-Thankfully, JavaScript allows us to hook into this validation process using the [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/API/Constraint_validation), which [`FormField`](/reference/form-field) uses internally. This way, we can display the error messages in a way that is accessible and customizable.
+Thankfully, JavaScript allows us to hook into this validation process using the [Constraint Validation API](https://developer.mozilla.org/en-US/docs/Web/API/Constraint_validation), which [`FormControl`](/reference/form-control) uses internally. This way, we can display the error messages in a way that is accessible and customizable.
 
 ### Custom validation
 
@@ -108,7 +108,7 @@ function NameInput({ store, name, ...props }) {
 
 ### Styling the invalid state
 
-The [`FormField`](/reference/form-field) component — which is used by [`FormInput`](/reference/form-input), [`FormCheckbox`](/reference/form-checkbox), [`FormRadio`](/reference/form-radio), and other form components — sets the `aria-invalid` attribute to `true` when the field is invalid. You can use this attribute to style the invalid state:
+The [`FormControl`](/reference/form-control) component — which is used by [`FormInput`](/reference/form-input), [`FormCheckbox`](/reference/form-checkbox), [`FormRadio`](/reference/form-radio), and other form components — sets the `aria-invalid` attribute to `true` when the field is invalid. You can use this attribute to style the invalid state:
 
 ```css
 .field[aria-invalid="true"] {

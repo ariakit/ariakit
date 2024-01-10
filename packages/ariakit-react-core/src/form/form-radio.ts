@@ -10,8 +10,8 @@ import {
 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
-import type { FormFieldOptions } from "./form-field.js";
-import { useFormField } from "./form-field.js";
+import type { FormControlOptions } from "./form-control.js";
+import { useFormControl } from "./form-control.js";
 
 /**
  * Returns props to create a `FormRadio` component.
@@ -65,7 +65,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
 
     props = useRadio({ value, ...props });
 
-    props = useFormField({
+    props = useFormControl({
       store,
       name,
       "aria-labelledby": undefined,
@@ -77,7 +77,7 @@ export const useFormRadio = createHook<FormRadioOptions>(
 );
 
 /**
- * Renders a radio button as a form field. This component must be wrapped in a
+ * Renders a radio button as a form control. This component must be wrapped in a
  * [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) along with
  * other radio buttons sharing the same
  * [`name`](https://ariakit.org/reference/form-radio#name).
@@ -110,7 +110,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export interface FormRadioOptions<T extends As = "input">
-  extends FormFieldOptions<T>,
+  extends FormControlOptions<T>,
     Omit<RadioOptions<T>, "store" | "name"> {}
 
 export type FormRadioProps<T extends As = "input"> = Props<FormRadioOptions<T>>;

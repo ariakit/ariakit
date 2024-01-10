@@ -21,7 +21,7 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(
 );
 
 export interface FormFieldProps extends React.ComponentPropsWithoutRef<"div"> {
-  name: Ariakit.FormFieldProps["name"];
+  name: Ariakit.FormControlProps["name"];
   label: React.ReactNode;
 }
 
@@ -66,8 +66,8 @@ export const FormSubmit = React.forwardRef<HTMLButtonElement, FormSubmitProps>(
 );
 
 export interface FormSelectProps
-  extends Ariakit.FormFieldProps<"button">,
-    Omit<SelectProps, keyof Ariakit.FormFieldProps<"button">> {}
+  extends Ariakit.FormControlProps<"button">,
+    Omit<SelectProps, keyof Ariakit.FormControlProps<"button">> {}
 
 export const FormSelect = React.forwardRef<HTMLButtonElement, FormSelectProps>(
   function FormSelect({ name, ...props }, ref) {
@@ -84,7 +84,7 @@ export const FormSelect = React.forwardRef<HTMLButtonElement, FormSelectProps>(
         render={props.render}
       />
     );
-    const field = <Ariakit.FormField name={name} render={select} />;
+    const field = <Ariakit.FormControl name={name} render={select} />;
     return <Ariakit.Role.button {...props} render={field} />;
   },
 );

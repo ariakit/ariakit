@@ -5,8 +5,7 @@ import type { As, Props } from "../utils/types.js";
 
 /**
  * Returns props to create a `MenuBar` component.
- * @deprecated
- * Use [`useMenubar`](https://ariakit.org/reference/use-menubar) instead.
+ * @deprecated Use `useMenubar` instead.
  * @example
  * ```jsx
  * const store = useMenuBarStore();
