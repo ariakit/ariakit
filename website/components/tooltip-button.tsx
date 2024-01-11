@@ -20,13 +20,12 @@ export interface TooltipButtonOptions<T extends ElementType = "button">
   title: ReactNode;
   tooltipProps?: TooltipProps;
   fixed?: boolean;
-  isLabel?: boolean;
 }
 
 export const TooltipButton = createComponent<TooltipButtonOptions>(
-  ({ title, tooltipProps, fixed, isLabel, store, ...props }) => {
+  ({ title, tooltipProps, fixed, store, ...props }) => {
     return (
-      <TooltipProvider store={store} type={isLabel ? "label" : "description"}>
+      <TooltipProvider store={store}>
         <Role.button
           {...props}
           render={<TooltipAnchor render={<Button render={props.render} />} />}

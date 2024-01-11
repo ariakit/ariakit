@@ -113,7 +113,6 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 
     props = {
       "aria-labelledby": type === "label" ? contentId : undefined,
-      "aria-describedby": type === "description" ? contentId : undefined,
       ...props,
       onMouseEnter,
       onFocusVisible,
@@ -143,6 +142,11 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
  * Renders a reference element for a
  * [`Tooltip`](https://ariakit.org/reference/tooltip), which is triggered by
  * focusing or hovering over the anchor.
+ *
+ * The tooltip is strictly for visual purposes. It's your responsibility to
+ * ensure the anchor element has an accessible name. See [Tooltip anchors must
+ * have accessible
+ * names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names)
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx {2}

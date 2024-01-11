@@ -5,8 +5,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("tooltip does not appear on mobile click", async ({ page }) => {
-  await expect(page.getByRole("tooltip")).not.toBeVisible();
+  await expect(
+    page.getByRole("presentation", { name: "Bold" }),
+  ).not.toBeVisible();
   await page.getByRole("button").click();
   await page.waitForTimeout(600);
-  await expect(page.getByRole("tooltip")).not.toBeVisible();
+  await expect(
+    page.getByRole("presentation", { name: "Bold" }),
+  ).not.toBeVisible();
 });
