@@ -106,7 +106,6 @@ export const useDialog = createHook<DialogOptions>(
     modal = true,
     portal = !!modal,
     backdrop = !!modal,
-    backdropProps,
     hideOnEscape = true,
     hideOnInteractOutside = true,
     getPersistentElements,
@@ -159,16 +158,6 @@ export const useDialog = createHook<DialogOptions>(
 
     const { wrapElement, nestedDialogs } = useNestedDialogs(store);
     props = useWrapElement(props, wrapElement, [wrapElement]);
-
-    if (process.env.NODE_ENV !== "production") {
-      useEffect(() => {
-        if (!backdropProps) return;
-        console.warn(
-          "The `backdropProps` prop is deprecated. Use the `backdrop` prop instead.",
-          "See https://ariakit.org/reference/dialog#backdrop",
-        );
-      }, [backdropProps]);
-    }
 
     // Sets disclosure element using the current active element right after the
     // dialog is opened.
@@ -486,7 +475,6 @@ export const useDialog = createHook<DialogOptions>(
             <DialogBackdrop
               store={store}
               backdrop={backdrop}
-              backdropProps={backdropProps}
               hidden={hiddenProp}
               alwaysVisible={alwaysVisible}
             />
@@ -494,7 +482,7 @@ export const useDialog = createHook<DialogOptions>(
           </>
         );
       },
-      [store, backdrop, backdropProps, hiddenProp, alwaysVisible],
+      [store, backdrop, hiddenProp, alwaysVisible],
     );
 
     const [headingId, setHeadingId] = useState<string>();
@@ -692,14 +680,6 @@ export interface DialogOptions<T extends As = "div">
     | boolean
     | ReactElement<ComponentPropsWithRef<"div">>
     | ElementType<ComponentPropsWithRef<"div">>;
-  /**
-   * Props that will be passed to the backdrop element if
-   * [`backdrop`](https://ariakit.org/reference/dialog#backdrop) is `true`.
-   * @deprecated
-   * Use the [`backdrop`](https://ariakit.org/reference/dialog#backdrop) prop
-   * instead.
-   */
-  backdropProps?: ComponentPropsWithRef<"div">;
   /**
    * Determines if the dialog will hide when the user presses the Escape key.
    *

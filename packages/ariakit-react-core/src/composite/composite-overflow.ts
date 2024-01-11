@@ -27,13 +27,7 @@ const hiddenStyle: CSSProperties = {
  * ```
  */
 export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
-  ({
-    store,
-    backdropProps: backdropPropsProp,
-    wrapperProps: wrapperPropsProp,
-    portal = false,
-    ...props
-  }) => {
+  ({ store, wrapperProps: wrapperPropsProp, portal = false, ...props }) => {
     const onFocusProp = props.onFocus;
 
     const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
@@ -47,12 +41,6 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
     const getStyle = (styleProp?: CSSProperties) =>
       mounted ? styleProp : { ...hiddenStyle, ...styleProp };
 
-    const backdropProps = {
-      hidden: false,
-      ...backdropPropsProp,
-      style: getStyle(backdropPropsProp?.style),
-    };
-
     const wrapperProps = {
       ...wrapperPropsProp,
       style: getStyle(wrapperPropsProp?.style),
@@ -60,15 +48,14 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
 
     props = {
       role: "presentation",
-      hidden: false,
-      focusable: false,
       ...props,
       onFocus,
     };
 
     props = usePopover({
       store,
-      backdropProps,
+      focusable: false,
+      alwaysVisible: true,
       wrapperProps,
       portal,
       ...props,
