@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
 import { createComponent, createElement, createHook } from "../utils/system.js";
@@ -24,6 +25,12 @@ import type { As, Props } from "../utils/types.js";
  * ```
  */
 export const useMenuBar = createHook<MenuBarOptions>((props) => {
+  useEffect(() => {
+    console.warn(
+      "MenuBar is deprecated. Use Menubar instead.",
+      "See https://ariakit.org/reference/menubar",
+    );
+  }, []);
   return useMenubar(props);
 });
 

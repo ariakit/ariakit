@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { MenubarProvider } from "../menubar/menubar-provider.js";
 import type { MenubarProviderProps } from "../menubar/menubar-provider.js";
 
@@ -29,6 +30,12 @@ import type { MenubarProviderProps } from "../menubar/menubar-provider.js";
  * ```
  */
 export function MenuBarProvider(props: MenuBarProviderProps = {}) {
+  useEffect(() => {
+    console.warn(
+      "MenuBarProvider is deprecated. Use MenubarProvider instead.",
+      "See https://ariakit.org/reference/menubar-provider",
+    );
+  }, []);
   return <MenubarProvider {...props} />;
 }
 
