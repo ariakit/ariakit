@@ -9,6 +9,7 @@ export default function Example() {
 
   const renderItem = (value: string) => (
     <Ariakit.SelectItem
+      role="gridcell"
       value={value}
       className="select-item"
       focusOnHover={(event) => {
