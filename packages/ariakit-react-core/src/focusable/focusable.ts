@@ -495,10 +495,10 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * features should be active on non-native focusable elements.
    *
    * **Note**: This prop only turns off the additional features provided by the
-   * [Focusable](https://ariakit.org/components/focusable) component. Non-native
-   * focusable elements will lose their focusability entirely. However, native
-   * focusable elements will retain their inherent focusability, but without
-   * added features such as improved
+   * [`Focusable`](https://ariakit.org/reference/focusable) component.
+   * Non-native focusable elements will lose their focusability entirely.
+   * However, native focusable elements will retain their inherent focusability,
+   * but without added features such as improved
    * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus),
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
    * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
