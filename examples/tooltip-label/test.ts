@@ -7,18 +7,18 @@ const hoverOutside = async () => {
 };
 
 test("show tooltip on hover", async () => {
-  expect(q.presentation("Bold")).not.toBeInTheDocument();
+  expect(q.tooltip("Bold")).not.toBeInTheDocument();
   await hover(q.button("Bold"));
-  await waitFor(() => expect(q.presentation("Bold")).toBeVisible());
+  await waitFor(() => expect(q.tooltip("Bold")).toBeVisible());
   await hoverOutside();
-  expect(q.presentation("Bold")).not.toBeInTheDocument();
+  expect(q.tooltip("Bold")).not.toBeInTheDocument();
 });
 
 test("do not hide tooltip on click", async () => {
   await hover(q.button("Bold"));
-  await waitFor(() => expect(q.presentation("Bold")).toBeVisible());
+  await waitFor(() => expect(q.tooltip("Bold")).toBeVisible());
   await click(q.button("Bold"));
-  expect(q.presentation("Bold")).toBeVisible();
+  expect(q.tooltip("Bold")).toBeVisible();
   await hoverOutside();
-  expect(q.presentation("Bold")).not.toBeInTheDocument();
+  expect(q.tooltip("Bold")).not.toBeInTheDocument();
 });

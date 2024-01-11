@@ -11,16 +11,16 @@ afterEach(async () => {
 
 test("show/hide tooltip on hover", async () => {
   await hover(q.button("Accessibility Shortcuts"));
-  expect(await q.presentation.wait("Accessibility Shortcuts")).toBeVisible();
+  expect(await q.tooltip.wait("Accessibility Shortcuts")).toBeVisible();
   await hoverOutside();
-  expect(q.presentation("Accessibility Shortcuts")).not.toBeInTheDocument();
+  expect(q.tooltip("Accessibility Shortcuts")).not.toBeInTheDocument();
 });
 
 test("hide tooltip by clicking on menu button", async () => {
   await hover(q.button("Accessibility Shortcuts"));
-  expect(await q.presentation.wait("Accessibility Shortcuts")).toBeVisible();
+  expect(await q.tooltip.wait("Accessibility Shortcuts")).toBeVisible();
   await click(q.button("Accessibility Shortcuts"));
   expect(q.menu()).toBeVisible();
   expect(q.menu()).toHaveFocus();
-  expect(q.presentation("Accessibility Shortcuts")).not.toBeInTheDocument();
+  expect(q.tooltip("Accessibility Shortcuts")).not.toBeInTheDocument();
 });

@@ -52,7 +52,11 @@ export const useTooltip = createHook<TooltipOptions>(
       [store],
     );
 
-    props = { role: "presentation", ...props };
+    const role = store.useState((state) =>
+      state.type === "description" ? "tooltip" : "none",
+    );
+
+    props = { role, ...props };
 
     props = useHovercard({
       ...props,
