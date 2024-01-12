@@ -1,4 +1,4 @@
-import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
+import type { ChangeEvent, FocusEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { disabledFromProps } from "@ariakit/core/utils/misc";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
@@ -97,7 +97,7 @@ export const useRadio = createHook<RadioOptions>(
       }
     }, [propertyUpdated, nativeRadio, isChecked, name, value]);
 
-    const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       if (disabled) {
         event.preventDefault();
         event.stopPropagation();
@@ -118,6 +118,8 @@ export const useRadio = createHook<RadioOptions>(
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (nativeRadio) return;
+      // @ts-expect-error The onChange event expects a ChangeEvent, but here we
+      // need to pass a MouseEvent.
       onChange(event);
     });
 
@@ -212,9 +214,7 @@ export interface RadioOptions<T extends As = "input">
   /**
    * Callback function that is called when the radio button state changes.
    */
-  onChange?: BivariantCallback<
-    (event: SyntheticEvent<HTMLInputElement>) => void
-  >;
+  onChange?: BivariantCallback<(event: ChangeEvent<HTMLInputElement>) => void>;
 }
 
 export type RadioProps<T extends As = "input"> = Props<RadioOptions<T>>;
