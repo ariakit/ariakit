@@ -286,7 +286,7 @@ export const useSelect = createHook<SelectOptions>(
       "aria-autocomplete": "none",
       "aria-labelledby": labelId,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
-      "data-autofill": autofill ? "" : undefined,
+      "data-autofill": autofill || undefined,
       "data-name": name,
       children,
       ...props,

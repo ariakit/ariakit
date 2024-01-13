@@ -149,7 +149,7 @@ export const useCommand = createHook<CommandOptions>(
     });
 
     props = {
-      "data-active": active ? "" : undefined,
+      "data-active": active || undefined,
       type: isNativeButton ? "button" : undefined,
       ...metadataProps,
       ...props,

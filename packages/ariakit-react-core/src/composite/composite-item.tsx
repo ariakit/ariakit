@@ -402,7 +402,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     props = {
       id,
       "aria-selected": ariaSelected,
-      "data-active-item": isActiveItem ? "" : undefined,
+      "data-active-item": isActiveItem || undefined,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,

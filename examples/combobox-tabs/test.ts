@@ -34,7 +34,7 @@ test("move through items and tabs with the keyboard", async () => {
   expect(q.tab("Components 16")).not.toHaveAttribute("data-active-item");
   await press.ArrowDown();
   expect(q.tab("Components 16")).toHaveFocus();
-  expect(q.tab("Components 16")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Components 16")).toHaveAttribute("data-active-item", "true");
   expect(q.combobox()).not.toHaveAttribute("data-active-item");
   expect(q.combobox()).toHaveFocus();
   await press.ArrowRight();
@@ -42,7 +42,7 @@ test("move through items and tabs with the keyboard", async () => {
   expect(q.tab("Components 16")).not.toHaveAttribute("data-active-item");
   expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "false");
   expect(q.tab("Examples 31")).toHaveFocus();
-  expect(q.tab("Examples 31")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Examples 31")).toHaveAttribute("data-active-item", "true");
   expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
   await press.ArrowRight();
   expect(q.combobox()).toHaveFocus();
@@ -64,9 +64,9 @@ test("move through items and tabs with a mouse", async () => {
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveAttribute("data-active-item", "true");
   await hover(await q.option.wait("Button"));
-  expect(q.option("Button")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Button")).toHaveAttribute("data-active-item", "true");
   await hover(q.tab("Guide 6"));
-  expect(q.option("Button")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Button")).toHaveAttribute("data-active-item", "true");
   expect(q.option("Button")).toHaveFocus();
   await click(q.tab("Guide 6"));
   expect(q.tab("Guide 6")).toHaveAttribute("aria-selected", "true");
@@ -93,7 +93,7 @@ test("filter items until there are no results and change tabs", async () => {
   expect(q.tab("Guide 0")).not.toBeDisabled();
   expect(q.tab("Guide 0")).toHaveFocus();
   expect(q.tab("Guide 0")).toHaveAttribute("aria-selected", "true");
-  expect(q.tab("Guide 0")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Guide 0")).toHaveAttribute("data-active-item", "true");
   expect(q.tabpanel("Guide 0")).toBeVisible();
   expect(q.text('No pages found for ""')).toBeVisible();
   await press.ArrowLeft();

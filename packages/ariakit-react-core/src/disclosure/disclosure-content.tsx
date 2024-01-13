@@ -151,8 +151,8 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
 
     props = {
       id,
-      "data-enter": transition === "enter" ? "" : undefined,
-      "data-leave": transition === "leave" ? "" : undefined,
+      "data-enter": transition === "enter" || undefined,
+      "data-leave": transition === "leave" || undefined,
       hidden,
       ...props,
       ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
