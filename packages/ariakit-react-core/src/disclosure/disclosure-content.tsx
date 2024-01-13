@@ -83,7 +83,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     const animatedRef = useRef(false);
 
     useSafeLayoutEffect(() => {
-      // if (!animated) return;
+      if (!animated) return;
       // When the disclosure content element is rendered in a portal, we need to
       // wait for the portal to be mounted and connected to the DOM before we
       // can start the animation.
@@ -97,16 +97,11 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       return afterPaint(() => {
         setTransition(open ? "enter" : mounted ? "leave" : null);
       });
-    }, [
-      // animated,
-      contentElement,
-      mounted,
-      open,
-    ]);
+    }, [animated, contentElement, open, mounted]);
 
     useSafeLayoutEffect(() => {
       if (!store) return;
-      // if (!animated) return;
+      if (!animated) return;
       if (!contentElement) return;
       if (!transition) return;
       if (transition === "enter" && !open) return;
@@ -143,6 +138,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       if (!timeoutMs) {
         if (transition === "enter") {
           animatedRef.current = false;
+          // store.setState("animated", false);
         }
         store.setState("animating", false);
         return;
@@ -150,13 +146,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // TODO: We should probably warn if this hasn't been called after X
       // seconds.
       return afterTimeout(timeoutMs, () => store?.setState("animating", false));
-    }, [
-      store,
-      // animated,
-      contentElement,
-      open,
-      transition,
-    ]);
+    }, [store, animated, contentElement, open, transition]);
 
     props = useWrapElement(
       props,

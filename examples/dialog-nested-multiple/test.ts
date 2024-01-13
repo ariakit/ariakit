@@ -230,7 +230,9 @@ test.each(["nested", "sibling"])(
     expect(q.dialog("Dialog")).not.toBeInTheDocument();
     expectModalStyle(true);
     await click(q.button(`${name} dismiss ${name}`));
-    expect(q.dialog.includesHidden(`${name} dismiss`)).not.toBeVisible();
+    await waitFor(() =>
+      expect(q.dialog.includesHidden(`${name} dismiss`)).not.toBeVisible(),
+    );
     await waitFor(() => expect(q.button("Close")).toHaveFocus());
     expect(q.dialog(`${name} dismiss ${name}`)).toBeVisible();
     expectModalStyle(true);

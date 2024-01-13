@@ -33,12 +33,12 @@ export function createDisclosureStore(
     false,
   );
 
-  const animated = defaultValue(props.animated, syncState?.animated, false);
+  const animated = defaultValue(props.animated, syncState?.animated, true);
 
   const initialState: DisclosureStoreState = {
     open,
     animated,
-    animating: open,
+    animating: !!animated && open,
     mounted: open,
     contentElement: defaultValue(syncState?.contentElement, null),
     disclosureElement: defaultValue(syncState?.disclosureElement, null),
@@ -46,18 +46,19 @@ export function createDisclosureStore(
 
   const disclosure = createStore(initialState, store);
 
-  // setup(disclosure, () =>
-  //   sync(disclosure, ["animated", "animating"], (state) => {
-  //     if (state.animated) return;
-  //     // Reset animating to false when animation is disabled.
-  //     disclosure.setState("animating", false);
-  //   }),
-  // );
+  setup(disclosure, () =>
+    sync(disclosure, ["animated", "animating"], (state) => {
+      if (state.animated) return;
+      // Reset animating to false when animation is disabled.
+      disclosure.setState("animating", false);
+    }),
+  );
 
   setup(disclosure, () =>
     subscribe(disclosure, ["open"], () => {
-      // if (!disclosure.getState().animated) return;
+      if (!disclosure.getState().animated) return;
       disclosure.setState("animating", true);
+      // return () => disclosure.setState("animating", false);
     }),
   );
 
@@ -114,7 +115,7 @@ export interface DisclosureStoreState {
    * - If it's set to a number, the `animating` state will be `true` when the
    *   content is shown or hidden and it will wait for the number of
    *   milliseconds to pass before becoming `false`.
-   * @default false
+   * @default true
    */
   animated: boolean | number;
   /**
@@ -193,7 +194,13 @@ export interface DisclosureStoreFunctions {
 }
 
 export interface DisclosureStoreOptions
-  extends StoreOptions<DisclosureStoreState, "open" | "animated"> {
+  extends StoreOptions<DisclosureStoreState, "open"> {
+  /**
+   * @deprecated Manually setting the `animated` prop is no longer necessary.
+   * This prop will be removed in a future release.
+   * @default true
+   */
+  animated?: DisclosureStoreState["animated"];
   /**
    * Whether the content should be visible by default.
    * @default false
