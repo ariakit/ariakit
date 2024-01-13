@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
 import {
@@ -80,9 +80,10 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
     const mounted = store.useState("mounted");
     const animated = store.useState("animated");
     const contentElement = store.useState("contentElement");
+    const animatedRef = useRef(false);
 
     useSafeLayoutEffect(() => {
-      if (!animated) return;
+      // if (!animated) return;
       // When the disclosure content element is rendered in a portal, we need to
       // wait for the portal to be mounted and connected to the DOM before we
       // can start the animation.
@@ -94,22 +95,35 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       // when the data attribute is added before the element is fully rendered
       // in the DOM, which wouldn't trigger the animation.
       return afterPaint(() => {
-        setTransition(open ? "enter" : "leave");
+        setTransition(open ? "enter" : mounted ? "leave" : null);
       });
-    }, [animated, contentElement, open]);
+    }, [
+      // animated,
+      contentElement,
+      mounted,
+      open,
+    ]);
 
     useSafeLayoutEffect(() => {
       if (!store) return;
-      if (!animated) return;
+      // if (!animated) return;
       if (!contentElement) return;
       if (!transition) return;
       if (transition === "enter" && !open) return;
       if (transition === "leave" && open) return;
+      if (transition === "leave" && !animatedRef.current) {
+        store.setState("animating", false);
+        return;
+      }
+      animatedRef.current = true;
       // When the animated state is a number, the user has manually set the
       // animation timeout, so we just respect it.
       if (typeof animated === "number") {
         const timeoutMs = animated;
-        return afterTimeout(timeoutMs, store.stopAnimation);
+        return afterTimeout(
+          timeoutMs,
+          () => store?.setState("animating", false),
+        );
       }
       // Otherwise, we need to parse the CSS transition/animation duration and
       // delay to know when the animation ends. This is safer than relying on
@@ -126,15 +140,23 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       const delay = parseCSSTime(transitionDelay, animationDelay);
       const duration = parseCSSTime(transitionDuration, animationDuration);
       const timeoutMs = delay + duration;
-      // If the animation/transition delay and duration are 0, this means the
-      // element is not animated with CSS (they may be using framer-motion,
-      // react-spring, or something else). In this case, the user is responsible
-      // for calling `stopAnimation` when the animation ends.
-      if (!timeoutMs) return;
-      // TODO: We should probably warn if `stopAnimation` hasn't been called
-      // after X seconds.
-      return afterTimeout(timeoutMs, store.stopAnimation);
-    }, [store, animated, contentElement, open, transition]);
+      if (!timeoutMs) {
+        if (transition === "enter") {
+          animatedRef.current = false;
+        }
+        store.setState("animating", false);
+        return;
+      }
+      // TODO: We should probably warn if this hasn't been called after X
+      // seconds.
+      return afterTimeout(timeoutMs, () => store?.setState("animating", false));
+    }, [
+      store,
+      // animated,
+      contentElement,
+      open,
+      transition,
+    ]);
 
     props = useWrapElement(
       props,
@@ -151,6 +173,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
 
     props = {
       id,
+      "data-open": open || undefined,
       "data-enter": transition === "enter" ? "" : undefined,
       "data-leave": transition === "leave" ? "" : undefined,
       hidden,

@@ -38,7 +38,7 @@ export function createDisclosureStore(
   const initialState: DisclosureStoreState = {
     open,
     animated,
-    animating: !!animated && open,
+    animating: open,
     mounted: open,
     contentElement: defaultValue(syncState?.contentElement, null),
     disclosureElement: defaultValue(syncState?.disclosureElement, null),
@@ -46,17 +46,17 @@ export function createDisclosureStore(
 
   const disclosure = createStore(initialState, store);
 
-  setup(disclosure, () =>
-    sync(disclosure, ["animated", "animating"], (state) => {
-      if (state.animated) return;
-      // Reset animating to false when animation is disabled.
-      disclosure.setState("animating", false);
-    }),
-  );
+  // setup(disclosure, () =>
+  //   sync(disclosure, ["animated", "animating"], (state) => {
+  //     if (state.animated) return;
+  //     // Reset animating to false when animation is disabled.
+  //     disclosure.setState("animating", false);
+  //   }),
+  // );
 
   setup(disclosure, () =>
     subscribe(disclosure, ["open"], () => {
-      if (!disclosure.getState().animated) return;
+      // if (!disclosure.getState().animated) return;
       disclosure.setState("animating", true);
     }),
   );

@@ -42,6 +42,19 @@
     dark:bg-gray-700
     dark:text-white
     shadow-2xl
+    /* opacity-0
+    transition-opacity
+    duration-1000
+    data-[enter]:opacity-100 */
+    /* data-[open]:animate-in
+    data-[open]:fade-in
+    data-[open]:duration-1000 */
+    /* animate-in
+    fade-in
+    duration-1000
+    data-[leave]:animate-out
+    data-[leave]:fade-out
+    data-[leave]:duration-500 */
   ;
 }
 
