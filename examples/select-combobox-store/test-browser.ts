@@ -9,7 +9,7 @@ const getOption = (page: Page, name: string) =>
 
 async function expectSelected(page: Page, name: string) {
   await expect(getOption(page, name)).toBeInViewport();
-  await expect(getOption(page, name)).toHaveAttribute("data-active-item", "");
+  await expect(getOption(page, name)).toHaveAttribute("data-active-item");
 }
 
 test.beforeEach(async ({ page }) => {

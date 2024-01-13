@@ -52,11 +52,11 @@ test("search and select", async () => {
   expect(q.combobox("Search languages")).toHaveFocus();
   await type("po");
   expect(q.option("Polish")).toHaveFocus();
-  expect(q.option("Polish")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("Polish")).toHaveAttribute("data-active-item");
   await press.ArrowDown();
   expect(q.option("Portuguese")).toHaveFocus();
   expect(q.option("Polish")).not.toHaveAttribute("data-active-item");
-  expect(q.option("Portuguese")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("Portuguese")).toHaveAttribute("data-active-item");
   await press.Enter();
   expect(q.dialog()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveFocus();
@@ -70,15 +70,15 @@ test("search and select, then search again", async () => {
   expect(q.combobox("Language")).toHaveTextContent("Russian");
   await click(q.combobox());
   expect(q.option("Russian")).toHaveFocus();
-  expect(q.option("Russian")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("Russian")).toHaveAttribute("data-active-item");
   await type("chi");
   expect(q.option("Chinese")).toHaveFocus();
-  expect(q.option("Chinese")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("Chinese")).toHaveAttribute("data-active-item");
   expect(q.option("Russian")).not.toHaveAttribute("data-active-item");
   expect(q.option("Russian")).toHaveAttribute("aria-selected", "true");
   await type("\b\b\b\b");
   expect(q.option("English")).toHaveFocus();
-  expect(q.option("English")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("English")).toHaveAttribute("data-active-item");
   expect(q.option("Russian")).toHaveAttribute("aria-selected", "true");
 });
 
@@ -87,11 +87,11 @@ test("hover over option", async () => {
   await hover(q.option("German"));
   expect(q.combobox()).toHaveFocus();
   expect(q.option("German")).toHaveFocus();
-  expect(q.option("German")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("German")).toHaveAttribute("data-active-item");
   await hover(document.body);
   expect(q.option("German")).toHaveFocus();
-  expect(q.option("German")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("German")).toHaveAttribute("data-active-item");
   await press.ArrowDown();
   expect(q.option("Spanish")).toHaveFocus();
-  expect(q.option("Spanish")).toHaveAttribute("data-active-item", "true");
+  expect(q.option("Spanish")).toHaveAttribute("data-active-item");
 });

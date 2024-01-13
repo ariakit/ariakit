@@ -25,7 +25,7 @@ test("scroll offscreen item into view after selecting it", async ({ page }) => {
   await expect(q.option("Hot dog")).not.toBeInViewport();
   await expect(q.option("Pasta")).toBeInViewport();
   await expect(q.option("Pineapple")).toBeInViewport();
-  await expect(q.option("Pineapple")).toHaveAttribute("data-active-item", "");
+  await expect(q.option("Pineapple")).toHaveAttribute("data-active-item");
   await expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
 });
 
