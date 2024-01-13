@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.3.14
+
+- Fixed a regression introduced in `v0.3.13` where dialogs wouldn't close when clicking outside on iOS.
+
 ## 0.3.13
 
 ### Improved performance of large collections
