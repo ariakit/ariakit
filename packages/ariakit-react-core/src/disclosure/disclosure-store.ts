@@ -12,7 +12,8 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "mounted", "setMounted");
   useStoreProps(store, props, "animated");
-  return store;
+
+  return Object.assign(store, { disclosure: props.disclosure });
 }
 
 /**
@@ -37,7 +38,8 @@ export function useDisclosureStore(
 export interface DisclosureStoreState extends Core.DisclosureStoreState {}
 
 export interface DisclosureStoreFunctions
-  extends Core.DisclosureStoreFunctions {}
+  extends Pick<DisclosureStoreOptions, "disclosure">,
+    Omit<Core.DisclosureStoreFunctions, "disclosure"> {}
 
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   /**
@@ -56,12 +58,20 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * const disclosure = useDisclosureStore({ setMounted });
    */
   setMounted?: (mounted: DisclosureStoreState["mounted"]) => void;
+  /**
+   * A reference to another disclosure store that controls another disclosure
+   * component to keep them in sync. Element states like `contentElement` and
+   * `disclosureElement` won't be synced. For that, use the
+   * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
+   * instead.
+   */
+  disclosure?: DisclosureStore | null;
 }
 
 export interface DisclosureStoreProps
   extends DisclosureStoreOptions,
-    Core.DisclosureStoreProps {}
+    Omit<Core.DisclosureStoreProps, "disclosure"> {}
 
 export interface DisclosureStore
   extends DisclosureStoreFunctions,
-    Store<Core.DisclosureStore> {}
+    Omit<Store<Core.DisclosureStore>, "disclosure"> {}

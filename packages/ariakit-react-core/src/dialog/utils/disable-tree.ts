@@ -40,10 +40,19 @@ export function disableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
-  walkTreeOutside(id, elements, (element) => {
-    if (isBackdrop(element, ...ids)) return;
-    cleanups.unshift(disableTree(element, elements));
-  });
+  walkTreeOutside(
+    id,
+    elements,
+    (element) => {
+      if (isBackdrop(element, ...ids)) return;
+      cleanups.unshift(disableTree(element, elements));
+    },
+    (element) => {
+      if (element.hasAttribute("role")) {
+        cleanups.unshift(setAttribute(element, "role", "none"));
+      }
+    },
+  );
 
   const restoreTreeOutside = () => {
     cleanups.forEach((fn) => fn());

@@ -38,17 +38,17 @@ export interface DialogStoreState
     DisclosureStoreState {}
 
 export interface DialogStoreFunctions
-  extends Core.DialogStoreFunctions,
+  extends Omit<Core.DialogStoreFunctions, "disclosure">,
     DisclosureStoreFunctions {}
 
 export interface DialogStoreOptions
-  extends Core.DialogStoreOptions,
+  extends Omit<Core.DialogStoreOptions, "disclosure">,
     DisclosureStoreOptions {}
 
 export interface DialogStoreProps
   extends DialogStoreOptions,
-    Core.DialogStoreProps {}
+    Omit<Core.DialogStoreProps, "disclosure"> {}
 
 export interface DialogStore
   extends DialogStoreFunctions,
-    Store<Core.DialogStore> {}
+    Omit<Store<Core.DialogStore>, "disclosure"> {}

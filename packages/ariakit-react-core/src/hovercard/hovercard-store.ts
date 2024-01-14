@@ -13,11 +13,10 @@ export function useHovercardStoreProps<T extends Core.HovercardStore>(
   update: () => void,
   props: HovercardStoreProps,
 ) {
-  store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "timeout");
   useStoreProps(store, props, "showTimeout");
   useStoreProps(store, props, "hideTimeout");
-  return store;
+  return usePopoverStoreProps(store, update, props);
 }
 
 /**
@@ -44,17 +43,17 @@ export interface HovercardStoreState
     PopoverStoreState {}
 
 export interface HovercardStoreFunctions
-  extends Core.HovercardStoreFunctions,
+  extends Omit<Core.HovercardStoreFunctions, "disclosure">,
     PopoverStoreFunctions {}
 
 export interface HovercardStoreOptions
-  extends Core.HovercardStoreOptions,
+  extends Omit<Core.HovercardStoreOptions, "disclosure">,
     PopoverStoreOptions {}
 
 export interface HovercardStoreProps
   extends HovercardStoreOptions,
-    Core.HovercardStoreProps {}
+    Omit<Core.HovercardStoreProps, "disclosure"> {}
 
 export interface HovercardStore
   extends HovercardStoreFunctions,
-    Store<Core.HovercardStore> {}
+    Omit<Store<Core.HovercardStore>, "disclosure"> {}

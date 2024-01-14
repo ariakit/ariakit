@@ -110,8 +110,10 @@ function matchName(name: string | RegExp, accessibleName: string | null) {
   return name.test(accessibleName);
 }
 
-function getNameOption(name: string | RegExp) {
+function getNameOption(name?: string | RegExp) {
   return (accessibleName: string, element: Element | HTMLInputElement) => {
+    if (element.closest("[inert]")) return false;
+    if (!name) return true;
     if (matchName(name, accessibleName)) return true;
     if (element.getAttribute("aria-label")) return false;
     const labeledBy = element.getAttribute("aria-labelledby");
@@ -133,9 +135,6 @@ function createRoleQuery(role: AriaRole) {
 
   const createQuery = <T extends GenericQuery>(query: T) => {
     return (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> => {
-      if (!name) {
-        return query(role, options);
-      }
       return query(role, { name: getNameOption(name), ...options });
     };
   };

@@ -8,15 +8,14 @@ import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
 
-export function useTooltipStoreProps<T extends TooltipStore>(
+export function useTooltipStoreProps<T extends Core.TooltipStore>(
   store: T,
   update: () => void,
   props: TooltipStoreProps,
 ) {
-  store = useHovercardStoreProps(store, update, props);
   useStoreProps(store, props, "type");
   useStoreProps(store, props, "skipTimeout");
-  return store;
+  return useHovercardStoreProps(store, update, props);
 }
 
 /**
@@ -41,17 +40,17 @@ export interface TooltipStoreState
     HovercardStoreState {}
 
 export interface TooltipStoreFunctions
-  extends Core.TooltipStoreFunctions,
+  extends Omit<Core.TooltipStoreFunctions, "disclosure">,
     HovercardStoreFunctions {}
 
 export interface TooltipStoreOptions
-  extends Core.TooltipStoreOptions,
+  extends Omit<Core.TooltipStoreOptions, "disclosure">,
     HovercardStoreOptions {}
 
 export interface TooltipStoreProps
   extends TooltipStoreOptions,
-    Core.TooltipStoreProps {}
+    Omit<Core.TooltipStoreProps, "disclosure"> {}
 
 export interface TooltipStore
   extends TooltipStoreFunctions,
-    Store<Core.TooltipStore> {}
+    Omit<Store<Core.TooltipStore>, "disclosure"> {}

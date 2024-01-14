@@ -27,11 +27,16 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
   props: SelectStoreProps,
 ) {
   useUpdateEffect(update, [props.combobox]);
-  store = useCompositeStoreProps(store, update, props);
-  store = usePopoverStoreProps(store, update, props);
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "setValueOnMove");
-  return Object.assign(store, { combobox: props.combobox });
+  return Object.assign(
+    usePopoverStoreProps(
+      useCompositeStoreProps(store, update, props),
+      update,
+      props,
+    ),
+    { combobox: props.combobox },
+  );
 }
 
 /**
@@ -76,14 +81,14 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
 
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Pick<SelectStoreOptions<T>, "combobox">,
-    Omit<Core.SelectStoreFunctions<T>, "combobox">,
+> extends Pick<SelectStoreOptions<T>, "combobox" | "disclosure">,
+    Omit<Core.SelectStoreFunctions<T>, "combobox" | "disclosure">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {}
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Core.SelectStoreOptions<T>,
+> extends Omit<Core.SelectStoreOptions<T>, "combobox" | "disclosure">,
     CompositeStoreOptions<SelectStoreItem>,
     PopoverStoreOptions {
   /**
@@ -110,8 +115,8 @@ export interface SelectStoreOptions<
 
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreOptions<T>,
-    Omit<Core.SelectStoreProps<T>, "combobox"> {}
+    Omit<Core.SelectStoreProps<T>, "combobox" | "disclosure"> {}
 
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreFunctions<T>,
-    Omit<Store<Core.SelectStore<T>>, "combobox"> {}
+    Omit<Store<Core.SelectStore<T>>, "combobox" | "disclosure"> {}

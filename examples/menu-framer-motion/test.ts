@@ -7,7 +7,7 @@ test("show/hide on click", async () => {
   expect(q.menu()).toHaveFocus();
   await click(q.button("Options"));
   expect(q.button("Options")).toHaveFocus();
-  expect(q.menu()).toBeVisible();
+  expect(q.menu.includesHidden()).toBeVisible();
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });
 
@@ -33,7 +33,7 @@ test("show/hide on space", async () => {
   await press.ShiftTab();
   await press.Space();
   expect(q.button("Options")).toHaveFocus();
-  expect(q.menu()).toBeVisible();
+  expect(q.menu.includesHidden()).toBeVisible();
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });
 
@@ -51,6 +51,6 @@ test("hide on click outside", async () => {
   await click(q.button("Options"));
   await click(document.body);
   expect(q.button("Options")).toHaveFocus();
-  expect(q.menu()).toBeVisible();
+  expect(q.menu.includesHidden()).toBeVisible();
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });

@@ -61,6 +61,7 @@ import type { DialogStore } from "./dialog-store.js";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
+import { supportsInert } from "./utils/supports-inert.js";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
@@ -235,6 +236,7 @@ export const useDialog = createHook<DialogOptions>(
     // TODO: We should probably do this in a more generic way in the
     // DisclosureContent component.
     useSafeLayoutEffect(() => {
+      if (!supportsInert()) return;
       if (open) return;
       if (!mounted) return;
       if (!domReady) return;

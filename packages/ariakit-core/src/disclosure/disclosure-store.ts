@@ -33,7 +33,7 @@ export function createDisclosureStore(
     false,
   );
 
-  const animated = defaultValue(props.animated, syncState?.animated, true);
+  const animated = defaultValue(props.animated, syncState?.animated, false);
 
   const initialState: DisclosureStoreState = {
     open,
@@ -58,7 +58,6 @@ export function createDisclosureStore(
     subscribe(disclosure, ["open"], () => {
       if (!disclosure.getState().animated) return;
       disclosure.setState("animating", true);
-      // return () => disclosure.setState("animating", false);
     }),
   );
 
@@ -70,6 +69,7 @@ export function createDisclosureStore(
 
   return {
     ...disclosure,
+    disclosure: props.disclosure,
     setOpen: (value) => disclosure.setState("open", value),
     show: () => disclosure.setState("open", true),
     hide: () => disclosure.setState("open", false),
@@ -132,7 +132,8 @@ export interface DisclosureStoreState {
   disclosureElement: HTMLElement | null;
 }
 
-export interface DisclosureStoreFunctions {
+export interface DisclosureStoreFunctions
+  extends Pick<DisclosureStoreOptions, "disclosure"> {
   /**
    * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
    * state.
@@ -197,7 +198,7 @@ export interface DisclosureStoreOptions
   extends StoreOptions<DisclosureStoreState, "open"> {
   /**
    * @deprecated Manually setting the `animated` prop is no longer necessary.
-   * This prop will be removed in a future release.
+   * This will be removed in a future release.
    * @default true
    */
   animated?: DisclosureStoreState["animated"];

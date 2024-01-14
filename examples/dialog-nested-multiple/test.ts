@@ -108,25 +108,27 @@ test.each(["nested", "sibling"])(
 test.each(["nested", "sibling"])(
   "show %s no portal dialog and hide with escape",
   async (name) => {
+    const maybeNoRole =
+      name === "nested" ? q.none.includesHidden : q.dialog.includesHidden;
     await click(q.button("Open dialog"));
     await click(q.button(`${name} no portal`));
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
     expect(q.button("Close")).toHaveFocus();
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal`)).toBeVisible();
     expectModalStyle(true);
     await click(q.button(`${name} no portal ${name}`));
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
-    expect(q.dialog.includesHidden(`${name} no portal`)).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
+    expect(maybeNoRole(`${name} no portal`)).toBeVisible();
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
     expect(q.button("Close")).toHaveFocus();
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
-    expect(q.dialog.includesHidden(`${name} no portal`)).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
+    expect(maybeNoRole(`${name} no portal`)).toBeVisible();
     expect(q.dialog(`${name} no portal ${name}`)).toBeVisible();
     expectModalStyle(true);
     await press.Escape();
@@ -135,7 +137,7 @@ test.each(["nested", "sibling"])(
     ).not.toBeVisible();
     expect(q.button(`${name} no portal ${name}`)).toHaveFocus();
     expect(getBackdrop(`${name} no portal ${name}`)).not.toBeVisible();
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal`)).toBeVisible();
     expectModalStyle(true);
     await press.Escape();
@@ -155,17 +157,19 @@ test.each(["nested", "sibling"])(
 test.each(["nested", "sibling"])(
   "show %s no portal portal dialog and hide with escape",
   async (name) => {
+    const maybeNoRole =
+      name === "nested" ? q.none.includesHidden : q.dialog.includesHidden;
     await click(q.button("Open dialog"));
     await click(q.button(`${name} no portal portal`));
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
     expect(q.button("Close")).toHaveFocus();
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal portal`)).toBeVisible();
     expectModalStyle(true);
     await click(q.button(`${name} no portal portal ${name}`));
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog.includesHidden(`${name} no portal portal`)).toBeVisible();
     expect(q.button("Close")).toHaveFocus();
     expect(q.dialog(`${name} no portal portal ${name}`)).toBeVisible();
@@ -175,7 +179,7 @@ test.each(["nested", "sibling"])(
       q.dialog.includesHidden(`${name} no portal portal ${name}`),
     ).not.toBeVisible();
     expect(q.button(`${name} no portal portal ${name}`)).toHaveFocus();
-    expect(q.dialog.includesHidden("Dialog")).toBeVisible();
+    expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal portal`)).toBeVisible();
     expectModalStyle(true);
     await press.Escape();
@@ -186,7 +190,7 @@ test.each(["nested", "sibling"])(
     expect(q.dialog("Dialog")).toBeVisible();
     expectModalStyle(true);
     await press.Escape();
-    expect(q.dialog.includesHidden("Dialog")).not.toBeInTheDocument();
+    expect(maybeNoRole("Dialog")).not.toBeInTheDocument();
     expect(q.button("Open dialog")).toHaveFocus();
     expectModalStyle(false);
   },
