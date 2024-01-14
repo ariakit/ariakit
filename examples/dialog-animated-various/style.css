@@ -1,7 +1,47 @@
 @import url("../dialog/style.css");
 
-.dialog {
+.dialog-transition {
   @apply
-    fixed
+    opacity-0
+    transition-opacity
+    duration-500
+    data-[enter]:opacity-100
+  ;
+}
+
+.backdrop-transition {
+  @apply
+    opacity-0
+    transition-opacity
+    data-[enter]:opacity-100
+  ;
+}
+
+.dialog-transition-no-leave {
+  @apply
+    opacity-0
+    transition-opacity
+    duration-500
+    data-[enter]:opacity-100
+    data-[leave]:duration-0
+  ;
+}
+
+.dialog-animation {
+  @apply
+    data-[open]:animate-in
+    data-[open]:fade-in
+    data-[open]:duration-500
+  ;
+}
+
+.dialog-animation-leave {
+  @apply
+    data-[open]:animate-in
+    data-[open]:fade-in
+    data-[open]:duration-500
+    data-[leave]:animate-out
+    data-[leave]:fade-out
+    data-[leave]:duration-500
   ;
 }

@@ -36,7 +36,8 @@ function parseCSSTime(...times: string[]) {
     .join(", ")
     .split(", ")
     .reduce((longestTime, currentTimeString) => {
-      const currentTime = parseFloat(currentTimeString || "0s") * 1000;
+      const multiplier = currentTimeString.endsWith("ms") ? 1 : 1000;
+      const currentTime = parseFloat(currentTimeString || "0s") * multiplier;
       // When multiple times are specified, we want to use the longest one so we
       // wait until the longest transition has finished.
       if (currentTime > longestTime) return currentTime;
@@ -91,7 +92,7 @@ export const useDisclosureContent = createHook<DisclosureContentOptions>(
       });
       return () => {
         if (previousAnimated === undefined) return;
-        store?.setState("animated", previousAnimated);
+        // store?.setState("animated", previousAnimated);
       };
     }, [store]);
 
