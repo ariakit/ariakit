@@ -56,10 +56,12 @@ export const useMenuBar = createHook2<TagName, MenuBarOptions>((props) => {
  */
 export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   const htmlProps = useMenuBar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuBarOptions<T extends As = "div">
+export interface MenuBarOptions<T extends ElementType = TagName>
   extends MenubarOptions<T> {}
 
-export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;
+export type MenuBarProps<T extends ElementType = TagName> = Props<
+  MenuBarOptions<T>
+>;

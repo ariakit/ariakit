@@ -161,10 +161,10 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   props: HovercardDisclosureProps,
 ) {
   const htmlProps = useHovercardDisclosure(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDisclosureOptions<T extends As = "button">
+export interface HovercardDisclosureOptions<T extends ElementType = TagName>
   extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
@@ -176,6 +176,6 @@ export interface HovercardDisclosureOptions<T extends As = "button">
   store?: HovercardStore;
 }
 
-export type HovercardDisclosureProps<T extends As = "button"> = Props<
+export type HovercardDisclosureProps<T extends ElementType = TagName> = Props<
   HovercardDisclosureOptions<T>
 >;

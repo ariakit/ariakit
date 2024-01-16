@@ -146,10 +146,10 @@ export const FormRemove = forwardRef(function FormRemove(
   props: FormRemoveProps,
 ) {
   const htmlProps = useFormRemove(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormRemoveOptions<T extends As = "button">
+export interface FormRemoveOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -178,6 +178,6 @@ export interface FormRemoveOptions<T extends As = "button">
   autoFocusOnClick?: boolean;
 }
 
-export type FormRemoveProps<T extends As = "button"> = Props<
+export type FormRemoveProps<T extends ElementType = TagName> = Props<
   FormRemoveOptions<T>
 >;

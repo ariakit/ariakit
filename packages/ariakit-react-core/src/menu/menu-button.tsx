@@ -266,10 +266,10 @@ export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
 ) {
   const htmlProps = useMenuButton(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuButtonOptions<T extends As = "button" | "div">
+export interface MenuButtonOptions<T extends ElementType = TagName | "div">
   extends HovercardAnchorOptions<T>,
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
@@ -294,6 +294,6 @@ export interface MenuButtonOptions<T extends As = "button" | "div">
   typeahead?: boolean;
 }
 
-export type MenuButtonProps<T extends As = "button" | "div"> = Props<
+export type MenuButtonProps<T extends ElementType = TagName | "div"> = Props<
   MenuButtonOptions<T>
 >;

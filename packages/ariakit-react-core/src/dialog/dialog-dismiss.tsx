@@ -84,10 +84,10 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   props: DialogDismissProps,
 ) {
   const htmlProps = useDialogDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface DialogDismissOptions<T extends As = "button">
+export interface DialogDismissOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -98,6 +98,6 @@ export interface DialogDismissOptions<T extends As = "button">
   store?: DialogStore;
 }
 
-export type DialogDismissProps<T extends As = "button"> = Props<
+export type DialogDismissProps<T extends ElementType = TagName> = Props<
   DialogDismissOptions<T>
 >;

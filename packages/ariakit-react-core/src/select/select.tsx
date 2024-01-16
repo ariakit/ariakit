@@ -326,10 +326,10 @@ export const useSelect = createHook2<TagName, SelectOptions>(
  */
 export const Select = forwardRef(function Select(props: SelectProps) {
   const htmlProps = useSelect(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectOptions<T extends As = "button">
+export interface SelectOptions<T extends ElementType = TagName>
   extends PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<
@@ -393,4 +393,6 @@ export interface SelectOptions<T extends As = "button">
   >;
 }
 
-export type SelectProps<T extends As = "button"> = Props<SelectOptions<T>>;
+export type SelectProps<T extends ElementType = TagName> = Props<
+  SelectOptions<T>
+>;

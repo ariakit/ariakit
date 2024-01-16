@@ -108,10 +108,10 @@ export const useMenubar = createHook2<TagName, MenubarOptions>(
  */
 export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
   const htmlProps = useMenubar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenubarOptions<T extends As = "div">
+export interface MenubarOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     Pick<
       MenubarStoreProps,
@@ -129,4 +129,6 @@ export interface MenubarOptions<T extends As = "div">
   store?: MenubarStore;
 }
 
-export type MenubarProps<T extends As = "div"> = Props<MenubarOptions<T>>;
+export type MenubarProps<T extends ElementType = TagName> = Props<
+  MenubarOptions<T>
+>;

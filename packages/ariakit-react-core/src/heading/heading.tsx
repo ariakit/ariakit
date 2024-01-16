@@ -61,7 +61,7 @@ export const useHeading = createHook2<TagName, HeadingOptions>((props) => {
  */
 export const Heading = forwardRef(function Heading(props: HeadingProps) {
   const htmlProps = useHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export type HeadingOptions<T extends As = HeadingElements> = Options<T>;

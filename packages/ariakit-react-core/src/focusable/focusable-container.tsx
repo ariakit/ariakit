@@ -45,20 +45,21 @@ export const FocusableContainer = forwardRef(function FocusableContainer(
   props: FocusableContainerProps,
 ) {
   const htmlProps = useFocusableContainer(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export type FocusableContainerOptions<T extends As = "div"> = Options<T> & {
-  /**
-   * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
-   * elements inside the container should be automatically focused when the
-   * container is shown and they have the
-   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
-   * @default true
-   */
-  autoFocusOnShow?: boolean;
-};
+export type FocusableContainerOptions<T extends ElementType = TagName> =
+  Options<T> & {
+    /**
+     * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
+     * elements inside the container should be automatically focused when the
+     * container is shown and they have the
+     * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
+     * @default true
+     */
+    autoFocusOnShow?: boolean;
+  };
 
-export type FocusableContainerProps<T extends As = "div"> = Props<
+export type FocusableContainerProps<T extends ElementType = TagName> = Props<
   FocusableContainerOptions<T>
 >;

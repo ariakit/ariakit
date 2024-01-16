@@ -41,10 +41,10 @@ export const MenuDescription = forwardRef(function MenuDescription(
   props: MenuDescriptionProps,
 ) {
   const htmlProps = useMenuDescription(props);
-  return createElement("p", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuDescriptionOptions<T extends As = "p">
+export interface MenuDescriptionOptions<T extends ElementType = TagName>
   extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -56,6 +56,6 @@ export interface MenuDescriptionOptions<T extends As = "p">
   store?: MenuStore;
 }
 
-export type MenuDescriptionProps<T extends As = "p"> = Props<
+export type MenuDescriptionProps<T extends ElementType = TagName> = Props<
   MenuDescriptionOptions<T>
 >;

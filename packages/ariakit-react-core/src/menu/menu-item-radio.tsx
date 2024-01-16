@@ -143,11 +143,11 @@ export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
 export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
   (props) => {
     const htmlProps = useMenuItemRadio(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface MenuItemRadioOptions<T extends As = "div">
+export interface MenuItemRadioOptions<T extends ElementType = TagName>
   extends MenuItemOptions<T>,
     Omit<RadioOptions<T>, "store"> {
   /**
@@ -184,6 +184,6 @@ export interface MenuItemRadioOptions<T extends As = "div">
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemRadioProps<T extends As = "div"> = Props<
+export type MenuItemRadioProps<T extends ElementType = TagName> = Props<
   MenuItemRadioOptions<T>
 >;

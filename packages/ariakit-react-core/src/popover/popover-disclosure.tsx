@@ -78,13 +78,13 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
   props: PopoverDisclosureProps,
 ) {
   const htmlProps = usePopoverDisclosure(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDisclosureOptions<T extends As = "button">
+export interface PopoverDisclosureOptions<T extends ElementType = TagName>
   extends PopoverAnchorOptions<T>,
     Omit<DialogDisclosureOptions<T>, "store"> {}
 
-export type PopoverDisclosureProps<T extends As = "button"> = Props<
+export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   PopoverDisclosureOptions<T>
 >;

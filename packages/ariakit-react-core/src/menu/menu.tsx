@@ -253,13 +253,13 @@ export const useMenu = createHook2<TagName, MenuOptions>(
 export const Menu = createDialogComponent(
   createComponent<MenuOptions>((props) => {
     const htmlProps = useMenu(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useMenuProviderContext,
 );
 
-export interface MenuOptions<T extends As = "div">
+export interface MenuOptions<T extends ElementType = TagName>
   extends MenuListOptions<T>,
     Omit<HovercardOptions<T>, "store"> {}
 
-export type MenuProps<T extends As = "div"> = Props<MenuOptions<T>>;
+export type MenuProps<T extends ElementType = TagName> = Props<MenuOptions<T>>;

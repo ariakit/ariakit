@@ -40,10 +40,10 @@ export const PopoverDescription = forwardRef(function PopoverDescription(
   props: PopoverDescriptionProps,
 ) {
   const htmlProps = usePopoverDescription(props);
-  return createElement("p", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDescriptionOptions<T extends As = "p">
+export interface PopoverDescriptionOptions<T extends ElementType = TagName>
   extends DialogDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -56,6 +56,6 @@ export interface PopoverDescriptionOptions<T extends As = "p">
   store?: PopoverStore;
 }
 
-export type PopoverDescriptionProps<T extends As = "p"> = Props<
+export type PopoverDescriptionProps<T extends ElementType = TagName> = Props<
   PopoverDescriptionOptions<T>
 >;

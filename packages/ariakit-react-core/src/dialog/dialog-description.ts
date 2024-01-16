@@ -53,10 +53,10 @@ export const DialogDescription = forwardRef(function DialogDescription(
   props: DialogDescriptionProps,
 ) {
   const htmlProps = useDialogDescription(props);
-  return createElement("p", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface DialogDescriptionOptions<T extends As = "p">
+export interface DialogDescriptionOptions<T extends ElementType = TagName>
   extends Options<T> {
   /**
    * Object returned by the
@@ -67,6 +67,6 @@ export interface DialogDescriptionOptions<T extends As = "p">
   store?: DialogStore;
 }
 
-export type DialogDescriptionProps<T extends As = "p"> = Props<
+export type DialogDescriptionProps<T extends ElementType = TagName> = Props<
   DialogDescriptionOptions<T>
 >;

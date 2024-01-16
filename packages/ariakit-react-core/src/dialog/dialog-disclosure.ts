@@ -59,10 +59,10 @@ export const DialogDisclosure = forwardRef(function DialogDisclosure(
   props: DialogDisclosureProps,
 ) {
   const htmlProps = useDialogDisclosure(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface DialogDisclosureOptions<T extends As = "button">
+export interface DialogDisclosureOptions<T extends ElementType = TagName>
   extends DisclosureOptions<T> {
   /**
    * Object returned by the
@@ -74,6 +74,6 @@ export interface DialogDisclosureOptions<T extends As = "button">
   store?: DialogStore;
 }
 
-export type DialogDisclosureProps<T extends As = "button"> = Props<
+export type DialogDisclosureProps<T extends ElementType = TagName> = Props<
   DialogDisclosureOptions<T>
 >;

@@ -47,10 +47,10 @@ export const HovercardArrow = forwardRef(function HovercardArrow(
   props: HovercardArrowProps,
 ) {
   const htmlProps = useHovercardArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface HovercardArrowOptions<T extends As = "div">
+export interface HovercardArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -63,6 +63,6 @@ export interface HovercardArrowOptions<T extends As = "div">
   store?: HovercardStore;
 }
 
-export type HovercardArrowProps<T extends As = "div"> = Props<
+export type HovercardArrowProps<T extends ElementType = TagName> = Props<
   HovercardArrowOptions<T>
 >;

@@ -49,15 +49,15 @@ export const useSelectPopover = createHook2<TagName, SelectPopoverOptions>(
 export const SelectPopover = createDialogComponent(
   createComponent<SelectPopoverOptions>((props) => {
     const htmlProps = useSelectPopover(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useSelectProviderContext,
 );
 
-export interface SelectPopoverOptions<T extends As = "div">
+export interface SelectPopoverOptions<T extends ElementType = TagName>
   extends SelectListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type SelectPopoverProps<T extends As = "div"> = Props<
+export type SelectPopoverProps<T extends ElementType = TagName> = Props<
   SelectPopoverOptions<T>
 >;

@@ -169,10 +169,10 @@ export const useMenuItem = createHook2<TagName, MenuItemOptions>(
  */
 export const MenuItem = createMemoComponent<MenuItemOptions>((props) => {
   const htmlProps = useMenuItem(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuItemOptions<T extends As = "div">
+export interface MenuItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
@@ -201,4 +201,6 @@ export interface MenuItemOptions<T extends As = "div">
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type MenuItemProps<T extends As = "div"> = Props<MenuItemOptions<T>>;
+export type MenuItemProps<T extends ElementType = TagName> = Props<
+  MenuItemOptions<T>
+>;

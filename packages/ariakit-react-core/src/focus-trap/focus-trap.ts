@@ -42,9 +42,12 @@ export const useFocusTrap = createHook2<TagName, FocusTrapOptions>((props) => {
  */
 export const FocusTrap = forwardRef(function FocusTrap(props: FocusTrapProps) {
   const htmlProps = useFocusTrap(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export type FocusTrapOptions<T extends As = "span"> = VisuallyHiddenOptions<T>;
+export type FocusTrapOptions<T extends ElementType = TagName> =
+  VisuallyHiddenOptions<T>;
 
-export type FocusTrapProps<T extends As = "span"> = Props<FocusTrapOptions<T>>;
+export type FocusTrapProps<T extends ElementType = TagName> = Props<
+  FocusTrapOptions<T>
+>;

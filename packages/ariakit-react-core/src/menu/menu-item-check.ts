@@ -56,10 +56,10 @@ export const MenuItemCheck = forwardRef(function MenuItemCheck(
   props: MenuItemCheckProps,
 ) {
   const htmlProps = useMenuItemCheck(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuItemCheckOptions<T extends As = "span">
+export interface MenuItemCheckOptions<T extends ElementType = TagName>
   extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
    * Object returned by the
@@ -68,6 +68,6 @@ export interface MenuItemCheckOptions<T extends As = "span">
   store?: MenuStore;
 }
 
-export type MenuItemCheckProps<T extends As = "span"> = Props<
+export type MenuItemCheckProps<T extends ElementType = TagName> = Props<
   MenuItemCheckOptions<T>
 >;

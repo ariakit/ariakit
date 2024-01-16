@@ -73,10 +73,10 @@ export const RadioGroup = forwardRef(function RadioGroup(
   props: RadioGroupProps,
 ) {
   const htmlProps = useRadioGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface RadioGroupOptions<T extends As = "div">
+export interface RadioGroupOptions<T extends ElementType = TagName>
   extends CompositeOptions<T> {
   /**
    * Object returned by the
@@ -88,4 +88,6 @@ export interface RadioGroupOptions<T extends As = "div">
   store?: RadioStore;
 }
 
-export type RadioGroupProps<T extends As = "div"> = Props<RadioGroupOptions<T>>;
+export type RadioGroupProps<T extends ElementType = TagName> = Props<
+  RadioGroupOptions<T>
+>;

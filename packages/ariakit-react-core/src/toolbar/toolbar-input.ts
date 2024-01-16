@@ -46,14 +46,14 @@ export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
 export const ToolbarInput = createMemoComponent<ToolbarInputOptions>(
   (props) => {
     const htmlProps = useToolbarInput(props);
-    return createElement("input", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface ToolbarInputOptions<T extends As = "input">
+export interface ToolbarInputOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeInputOptions<T>, "store"> {}
 
-export type ToolbarInputProps<T extends As = "input"> = Props<
+export type ToolbarInputProps<T extends ElementType = TagName> = Props<
   ToolbarInputOptions<T>
 >;

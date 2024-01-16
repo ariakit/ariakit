@@ -50,11 +50,11 @@ export const VisuallyHidden = forwardRef(function VisuallyHidden(
   props: VisuallyHiddenProps,
 ) {
   const htmlProps = useVisuallyHidden(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export type VisuallyHiddenOptions<T extends As = "span"> = Options<T>;
+export type VisuallyHiddenOptions<T extends ElementType = TagName> = Options<T>;
 
-export type VisuallyHiddenProps<T extends As = "span"> = Props<
+export type VisuallyHiddenProps<T extends ElementType = TagName> = Props<
   VisuallyHiddenOptions<T>
 >;

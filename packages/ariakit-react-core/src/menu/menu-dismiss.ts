@@ -43,10 +43,10 @@ export const MenuDismiss = forwardRef(function MenuDismiss(
   props: MenuDismissProps,
 ) {
   const htmlProps = useMenuDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuDismissOptions<T extends As = "button">
+export interface MenuDismissOptions<T extends ElementType = TagName>
   extends HovercardDismissOptions<T> {
   /**
    * Object returned by the
@@ -58,6 +58,6 @@ export interface MenuDismissOptions<T extends As = "button">
   store?: MenuStore;
 }
 
-export type MenuDismissProps<T extends As = "button"> = Props<
+export type MenuDismissProps<T extends ElementType = TagName> = Props<
   MenuDismissOptions<T>
 >;

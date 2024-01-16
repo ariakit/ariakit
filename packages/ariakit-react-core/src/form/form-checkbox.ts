@@ -81,14 +81,14 @@ export const useFormCheckbox = createHook2<TagName, FormCheckboxOptions>(
 export const FormCheckbox = createMemoComponent<FormCheckboxOptions>(
   (props) => {
     const htmlProps = useFormCheckbox(props);
-    return createElement("input", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface FormCheckboxOptions<T extends As = "input">
+export interface FormCheckboxOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<CheckboxOptions<T>, "store" | "name"> {}
 
-export type FormCheckboxProps<T extends As = "input"> = Props<
+export type FormCheckboxProps<T extends ElementType = TagName> = Props<
   FormCheckboxOptions<T>
 >;

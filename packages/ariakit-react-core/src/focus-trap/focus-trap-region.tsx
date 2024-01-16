@@ -83,10 +83,10 @@ export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
   props: FocusTrapRegionProps,
 ) {
   const htmlProps = useFocusTrapRegion(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FocusTrapRegionOptions<T extends As = "div">
+export interface FocusTrapRegionOptions<T extends ElementType = TagName>
   extends Options<T> {
   /**
    * If true, it will trap the focus in the region.
@@ -95,6 +95,6 @@ export interface FocusTrapRegionOptions<T extends As = "div">
   enabled?: boolean;
 }
 
-export type FocusTrapRegionProps<T extends As = "div"> = Props<
+export type FocusTrapRegionProps<T extends ElementType = TagName> = Props<
   FocusTrapRegionOptions<T>
 >;

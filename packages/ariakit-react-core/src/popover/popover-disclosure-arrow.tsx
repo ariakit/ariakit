@@ -98,10 +98,10 @@ export const usePopoverDisclosureArrow =
 export const PopoverDisclosureArrow =
   createComponent<PopoverDisclosureArrowOptions>((props) => {
     const htmlProps = usePopoverDisclosureArrow(props);
-    return createElement("span", htmlProps);
+    return createElement(TagName, htmlProps);
   });
 
-export interface PopoverDisclosureArrowOptions<T extends As = "span">
+export interface PopoverDisclosureArrowOptions<T extends ElementType = TagName>
   extends Options<T> {
   /**
    * Object returned by the
@@ -122,6 +122,5 @@ export interface PopoverDisclosureArrowOptions<T extends As = "span">
   placement?: PopoverStoreState["placement"];
 }
 
-export type PopoverDisclosureArrowProps<T extends As = "span"> = Props<
-  PopoverDisclosureArrowOptions<T>
->;
+export type PopoverDisclosureArrowProps<T extends ElementType = TagName> =
+  Props<PopoverDisclosureArrowOptions<T>>;

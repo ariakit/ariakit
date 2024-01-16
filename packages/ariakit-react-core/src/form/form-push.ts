@@ -154,10 +154,10 @@ export const useFormPush = createHook2<TagName, FormPushOptions>(
  */
 export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
   const htmlProps = useFormPush(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormPushOptions<T extends As = "button">
+export interface FormPushOptions<T extends ElementType = TagName>
   extends ButtonOptions<T>,
     CollectionItemOptions<T> {
   /**
@@ -187,4 +187,6 @@ export interface FormPushOptions<T extends As = "button">
   autoFocusOnClick?: boolean;
 }
 
-export type FormPushProps<T extends As = "button"> = Props<FormPushOptions<T>>;
+export type FormPushProps<T extends ElementType = TagName> = Props<
+  FormPushOptions<T>
+>;

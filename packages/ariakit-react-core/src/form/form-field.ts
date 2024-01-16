@@ -72,10 +72,12 @@ export const useFormField = createHook2<TagName, FormFieldOptions>((props) => {
  */
 export const FormField = createMemoComponent<FormFieldOptions>((props) => {
   const htmlProps = useFormField(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormFieldOptions<T extends As = "input">
+export interface FormFieldOptions<T extends ElementType = TagName>
   extends FormControlOptions<T> {}
 
-export type FormFieldProps<T extends As = "input"> = Props<FormFieldOptions<T>>;
+export type FormFieldProps<T extends ElementType = TagName> = Props<
+  FormFieldOptions<T>
+>;

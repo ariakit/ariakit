@@ -87,10 +87,11 @@ export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
  */
 export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
   const htmlProps = useSelectLabel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
+export interface SelectLabelOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
@@ -101,6 +102,6 @@ export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
   store?: SelectStore;
 }
 
-export type SelectLabelProps<T extends As = "div"> = Props<
+export type SelectLabelProps<T extends ElementType = TagName> = Props<
   SelectLabelOptions<T>
 >;

@@ -44,10 +44,10 @@ export const HovercardDismiss = forwardRef(function HovercardDismiss(
   props: HovercardDismissProps,
 ) {
   const htmlProps = useHovercardDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDismissOptions<T extends As = "button">
+export interface HovercardDismissOptions<T extends ElementType = TagName>
   extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
@@ -60,6 +60,6 @@ export interface HovercardDismissOptions<T extends As = "button">
   store?: HovercardStore;
 }
 
-export type HovercardDismissProps<T extends As = "button"> = Props<
+export type HovercardDismissProps<T extends ElementType = TagName> = Props<
   HovercardDismissOptions<T>
 >;

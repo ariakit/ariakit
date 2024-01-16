@@ -80,10 +80,10 @@ export const useTabList = createHook2<TagName, TabListOptions>(
  */
 export const TabList = forwardRef(function TabList(props: TabListProps) {
   const htmlProps = useTabList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface TabListOptions<T extends As = "div">
+export interface TabListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T> {
   /**
    * Object returned by the
@@ -95,4 +95,6 @@ export interface TabListOptions<T extends As = "div">
   store?: TabStore;
 }
 
-export type TabListProps<T extends As = "div"> = Props<TabListOptions<T>>;
+export type TabListProps<T extends ElementType = TagName> = Props<
+  TabListOptions<T>
+>;

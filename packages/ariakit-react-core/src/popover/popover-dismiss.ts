@@ -43,10 +43,10 @@ export const PopoverDismiss = forwardRef(function PopoverDismiss(
   props: PopoverDismissProps,
 ) {
   const htmlProps = usePopoverDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDismissOptions<T extends As = "button">
+export interface PopoverDismissOptions<T extends ElementType = TagName>
   extends DialogDismissOptions<T> {
   /**
    * Object returned by the
@@ -59,6 +59,6 @@ export interface PopoverDismissOptions<T extends As = "button">
   store?: PopoverStore;
 }
 
-export type PopoverDismissProps<T extends As = "button"> = Props<
+export type PopoverDismissProps<T extends ElementType = TagName> = Props<
   PopoverDismissOptions<T>
 >;

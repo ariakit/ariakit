@@ -46,10 +46,10 @@ export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
   props: MenuGroupLabelProps,
 ) {
   const htmlProps = useMenuGroupLabel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuGroupLabelOptions<T extends As = "div">
+export interface MenuGroupLabelOptions<T extends ElementType = TagName>
   extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -61,6 +61,6 @@ export interface MenuGroupLabelOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuGroupLabelProps<T extends As = "div"> = Props<
+export type MenuGroupLabelProps<T extends ElementType = TagName> = Props<
   MenuGroupLabelOptions<T>
 >;

@@ -53,10 +53,10 @@ export const MenuSeparator = forwardRef(function MenuSeparator(
   props: MenuSeparatorProps,
 ) {
   const htmlProps = useMenuSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuSeparatorOptions<T extends As = "hr">
+export interface MenuSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -68,6 +68,6 @@ export interface MenuSeparatorOptions<T extends As = "hr">
   store?: MenuStore;
 }
 
-export type MenuSeparatorProps<T extends As = "hr"> = Props<
+export type MenuSeparatorProps<T extends ElementType = TagName> = Props<
   MenuSeparatorOptions<T>
 >;

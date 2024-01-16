@@ -43,10 +43,10 @@ export const useMenuArrow = createHook2<TagName, MenuArrowOptions>(
  */
 export const MenuArrow = forwardRef(function MenuArrow(props: MenuArrowProps) {
   const htmlProps = useMenuArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuArrowOptions<T extends As = "div">
+export interface MenuArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -58,4 +58,6 @@ export interface MenuArrowOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuArrowProps<T extends As = "div"> = Props<MenuArrowOptions<T>>;
+export type MenuArrowProps<T extends ElementType = TagName> = Props<
+  MenuArrowOptions<T>
+>;

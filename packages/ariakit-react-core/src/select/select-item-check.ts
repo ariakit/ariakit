@@ -57,10 +57,10 @@ export const SelectItemCheck = forwardRef(function SelectItemCheck(
   props: SelectItemCheckProps,
 ) {
   const htmlProps = useSelectItemCheck(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectItemCheckOptions<T extends As = "span">
+export interface SelectItemCheckOptions<T extends ElementType = TagName>
   extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
@@ -69,6 +69,6 @@ export interface SelectItemCheckOptions<T extends As = "span">
   store?: SelectStore;
 }
 
-export type SelectItemCheckProps<T extends As = "span"> = Props<
+export type SelectItemCheckProps<T extends ElementType = TagName> = Props<
   SelectItemCheckOptions<T>
 >;

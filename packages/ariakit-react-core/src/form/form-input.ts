@@ -85,11 +85,13 @@ export const useFormInput = createHook2<TagName, FormInputOptions>(
  */
 export const FormInput = createMemoComponent<FormInputOptions>((props) => {
   const htmlProps = useFormInput(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormInputOptions<T extends As = "input">
+export interface FormInputOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     FocusableOptions<T> {}
 
-export type FormInputProps<T extends As = "input"> = Props<FormInputOptions<T>>;
+export type FormInputProps<T extends ElementType = TagName> = Props<
+  FormInputOptions<T>
+>;

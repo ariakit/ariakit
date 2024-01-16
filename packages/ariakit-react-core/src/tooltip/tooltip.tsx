@@ -108,12 +108,12 @@ export const useTooltip = createHook2<TagName, TooltipOptions>(
 export const Tooltip = createDialogComponent(
   createComponent<TooltipOptions>((props) => {
     const htmlProps = useTooltip(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useTooltipProviderContext,
 );
 
-export interface TooltipOptions<T extends As = "div">
+export interface TooltipOptions<T extends ElementType = TagName>
   extends HovercardOptions<T> {
   /**
    * Object returned by the
@@ -129,4 +129,6 @@ export interface TooltipOptions<T extends As = "div">
   gutter?: HovercardOptions<T>["gutter"];
 }
 
-export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;
+export type TooltipProps<T extends ElementType = TagName> = Props<
+  TooltipOptions<T>
+>;

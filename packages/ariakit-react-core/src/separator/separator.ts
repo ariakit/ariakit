@@ -31,10 +31,11 @@ export const useSeparator = createHook2<TagName, SeparatorOptions>(
  */
 export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   const htmlProps = useSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
+export interface SeparatorOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * The orientation of the separator.
    * @default "horizontal"
@@ -42,4 +43,6 @@ export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
   orientation?: "horizontal" | "vertical";
 }
 
-export type SeparatorProps<T extends As = "hr"> = Props<SeparatorOptions<T>>;
+export type SeparatorProps<T extends ElementType = TagName> = Props<
+  SeparatorOptions<T>
+>;

@@ -43,10 +43,10 @@ export const useToolbarItem = createHook2<TagName, ToolbarItemOptions>(
  */
 export const ToolbarItem = createMemoComponent<ToolbarItemOptions>((props) => {
   const htmlProps = useToolbarItem(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface ToolbarItemOptions<T extends As = "button">
+export interface ToolbarItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
   /**
    * Object returned by the
@@ -58,6 +58,6 @@ export interface ToolbarItemOptions<T extends As = "button">
   store?: ToolbarStore;
 }
 
-export type ToolbarItemProps<T extends As = "button"> = Props<
+export type ToolbarItemProps<T extends ElementType = TagName> = Props<
   ToolbarItemOptions<T>
 >;

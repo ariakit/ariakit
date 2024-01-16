@@ -140,10 +140,10 @@ export const useFormLabel = createHook2<TagName, FormLabelOptions>(
  */
 export const FormLabel = createMemoComponent<FormLabelOptions>((props) => {
   const htmlProps = useFormLabel(props);
-  return createElement("label", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormLabelOptions<T extends As = "label">
+export interface FormLabelOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -166,4 +166,6 @@ export interface FormLabelOptions<T extends As = "label">
   name: StringLike;
 }
 
-export type FormLabelProps<T extends As = "label"> = Props<FormLabelOptions<T>>;
+export type FormLabelProps<T extends ElementType = TagName> = Props<
+  FormLabelOptions<T>
+>;

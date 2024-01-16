@@ -121,10 +121,11 @@ export const PopoverArrow = forwardRef(function PopoverArrow(
   props: PopoverArrowProps,
 ) {
   const htmlProps = usePopoverArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
+export interface PopoverArrowOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -144,6 +145,6 @@ export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   size?: number;
 }
 
-export type PopoverArrowProps<T extends As = "div"> = Props<
+export type PopoverArrowProps<T extends ElementType = TagName> = Props<
   PopoverArrowOptions<T>
 >;

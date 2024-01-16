@@ -94,11 +94,11 @@ export const useFormDescription = createHook2<TagName, FormDescriptionOptions>(
 export const FormDescription = createMemoComponent<FormDescriptionOptions>(
   (props) => {
     const htmlProps = useFormDescription(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface FormDescriptionOptions<T extends As = "div">
+export interface FormDescriptionOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -123,6 +123,6 @@ export interface FormDescriptionOptions<T extends As = "div">
   name: StringLike;
 }
 
-export type FormDescriptionProps<T extends As = "div"> = Props<
+export type FormDescriptionProps<T extends ElementType = TagName> = Props<
   FormDescriptionOptions<T>
 >;

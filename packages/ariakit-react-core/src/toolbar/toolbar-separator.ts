@@ -46,10 +46,10 @@ export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
   props: ToolbarSeparatorProps,
 ) {
   const htmlProps = useToolbarSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface ToolbarSeparatorOptions<T extends As = "hr">
+export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -61,6 +61,6 @@ export interface ToolbarSeparatorOptions<T extends As = "hr">
   store?: ToolbarStore;
 }
 
-export type ToolbarSeparatorProps<T extends As = "hr"> = Props<
+export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<
   ToolbarSeparatorOptions<T>
 >;

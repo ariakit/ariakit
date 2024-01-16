@@ -58,10 +58,10 @@ export const MenuButtonArrow = forwardRef(function MenuButtonArrow(
   props: MenuButtonArrowProps,
 ) {
   const htmlProps = useMenuButtonArrow(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuButtonArrowOptions<T extends As = "span">
+export interface MenuButtonArrowOptions<T extends ElementType = TagName>
   extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
@@ -74,6 +74,6 @@ export interface MenuButtonArrowOptions<T extends As = "span">
   store?: MenuStore;
 }
 
-export type MenuButtonArrowProps<T extends As = "span"> = Props<
+export type MenuButtonArrowProps<T extends ElementType = TagName> = Props<
   MenuButtonArrowOptions<T>
 >;

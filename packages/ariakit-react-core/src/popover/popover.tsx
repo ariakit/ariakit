@@ -467,12 +467,13 @@ export const usePopover = createHook2<TagName, PopoverOptions>(
 export const Popover = createDialogComponent(
   createComponent<PopoverOptions>((props) => {
     const htmlProps = usePopover(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   usePopoverProviderContext,
 );
 
-export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
+export interface PopoverOptions<T extends ElementType = TagName>
+  extends DialogOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -610,4 +611,6 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   }) => void | Promise<void>;
 }
 
-export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;
+export type PopoverProps<T extends ElementType = TagName> = Props<
+  PopoverOptions<T>
+>;

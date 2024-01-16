@@ -53,10 +53,10 @@ export const useFormGroup = createHook2<TagName, FormGroupOptions>(
  */
 export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   const htmlProps = useFormGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupOptions<T extends As = "div">
+export interface FormGroupOptions<T extends ElementType = TagName>
   extends GroupOptions<T> {
   /**
    * Object returned by the
@@ -68,4 +68,6 @@ export interface FormGroupOptions<T extends As = "div">
   store?: FormStore;
 }
 
-export type FormGroupProps<T extends As = "div"> = Props<FormGroupOptions<T>>;
+export type FormGroupProps<T extends ElementType = TagName> = Props<
+  FormGroupOptions<T>
+>;

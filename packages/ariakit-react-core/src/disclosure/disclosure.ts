@@ -104,10 +104,10 @@ export const Disclosure = forwardRef(function Disclosure(
   props: DisclosureProps,
 ) {
   const htmlProps = useDisclosure(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface DisclosureOptions<T extends As = "button">
+export interface DisclosureOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -130,6 +130,6 @@ export interface DisclosureOptions<T extends As = "button">
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type DisclosureProps<T extends As = "button"> = Props<
+export type DisclosureProps<T extends ElementType = TagName> = Props<
   DisclosureOptions<T>
 >;

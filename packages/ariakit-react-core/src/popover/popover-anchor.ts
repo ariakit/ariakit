@@ -44,10 +44,11 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
   props: PopoverAnchorProps,
 ) {
   const htmlProps = usePopoverAnchor(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
+export interface PopoverAnchorOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -58,6 +59,6 @@ export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
   store?: PopoverStore;
 }
 
-export type PopoverAnchorProps<T extends As = "div"> = Props<
+export type PopoverAnchorProps<T extends ElementType = TagName> = Props<
   PopoverAnchorOptions<T>
 >;

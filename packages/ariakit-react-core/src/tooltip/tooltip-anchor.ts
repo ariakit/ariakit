@@ -156,10 +156,10 @@ export const TooltipAnchor = forwardRef(function TooltipAnchor(
   props: TooltipAnchorProps,
 ) {
   const htmlProps = useTooltipAnchor(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface TooltipAnchorOptions<T extends As = "div">
+export interface TooltipAnchorOptions<T extends ElementType = TagName>
   extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
@@ -171,6 +171,6 @@ export interface TooltipAnchorOptions<T extends As = "div">
   store?: TooltipStore;
 }
 
-export type TooltipAnchorProps<T extends As = "div"> = Props<
+export type TooltipAnchorProps<T extends ElementType = TagName> = Props<
   TooltipAnchorOptions<T>
 >;

@@ -109,7 +109,7 @@ export const SelectRenderer = forwardRef(function SelectRenderer<
   T extends Item = any,
 >(props: SelectRendererProps<T>) {
   const htmlProps = useSelectRenderer(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export {

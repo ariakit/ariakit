@@ -103,7 +103,7 @@ export function createMemoComponent<O extends Options>(
  *     render: (htmlProps) => <button {...htmlProps} />,
  *     wrapElement: (element) => <div>{element}</div>,
  *   };
- *   return createElement("div", props);
+ *   return createElement(TagName, props);
  * }
  */
 export function createElement(

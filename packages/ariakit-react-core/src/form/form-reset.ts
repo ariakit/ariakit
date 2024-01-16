@@ -58,10 +58,10 @@ export const useFormReset = createHook2<TagName, FormResetOptions>(
  */
 export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   const htmlProps = useFormReset(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormResetOptions<T extends As = "button">
+export interface FormResetOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -73,6 +73,6 @@ export interface FormResetOptions<T extends As = "button">
   store?: FormStore;
 }
 
-export type FormResetProps<T extends As = "button"> = Props<
+export type FormResetProps<T extends ElementType = TagName> = Props<
   FormResetOptions<T>
 >;

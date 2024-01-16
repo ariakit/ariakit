@@ -186,10 +186,11 @@ export const useForm = createHook2<TagName, FormOptions>(
  */
 export const Form = forwardRef(function Form(props: FormProps) {
   const htmlProps = useForm(props);
-  return createElement("form", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormOptions<T extends As = "form"> extends Options<T> {
+export interface FormOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
@@ -238,4 +239,4 @@ export interface FormOptions<T extends As = "form"> extends Options<T> {
   autoFocusOnSubmit?: boolean;
 }
 
-export type FormProps<T extends As = "form"> = Props<FormOptions<T>>;
+export type FormProps<T extends ElementType = TagName> = Props<FormOptions<T>>;

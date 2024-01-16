@@ -50,14 +50,14 @@ export const useToolbarContainer = createHook2<
 export const ToolbarContainer = createMemoComponent<ToolbarContainerOptions>(
   (props) => {
     const htmlProps = useToolbarContainer(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface ToolbarContainerOptions<T extends As = "div">
+export interface ToolbarContainerOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeContainerOptions<T>, "store"> {}
 
-export type ToolbarContainerProps<T extends As = "div"> = Props<
+export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
   ToolbarContainerOptions<T>
 >;

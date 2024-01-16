@@ -168,7 +168,7 @@ const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
   props: DisclosureContentImplProps,
 ) {
   const htmlProps = useDisclosureContent(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 /**
@@ -194,7 +194,7 @@ export const DisclosureContent = forwardRef(({ unmountOnHide, ...props }) => {
   return <DisclosureContentImpl {...props} />;
 });
 
-export interface DisclosureContentOptions<T extends As = "div">
+export interface DisclosureContentOptions<T extends ElementType = TagName>
   extends Options<T> {
   /**
    * Object returned by the
@@ -244,6 +244,6 @@ export interface DisclosureContentOptions<T extends As = "div">
   unmountOnHide?: boolean;
 }
 
-export type DisclosureContentProps<T extends As = "div"> = Props<
+export type DisclosureContentProps<T extends ElementType = TagName> = Props<
   DisclosureContentOptions<T>
 >;

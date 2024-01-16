@@ -53,10 +53,10 @@ export const FormGroupLabel = forwardRef(function FormGroupLabel(
   props: FormGroupLabelProps,
 ) {
   const htmlProps = useFormGroupLabel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupLabelOptions<T extends As = "div">
+export interface FormGroupLabelOptions<T extends ElementType = TagName>
   extends GroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -68,6 +68,6 @@ export interface FormGroupLabelOptions<T extends As = "div">
   store?: FormStore;
 }
 
-export type FormGroupLabelProps<T extends As = "div"> = Props<
+export type FormGroupLabelProps<T extends ElementType = TagName> = Props<
   FormGroupLabelOptions<T>
 >;

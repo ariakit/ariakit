@@ -62,10 +62,10 @@ export const FormSubmit = forwardRef(function FormSubmit(
   props: FormSubmitProps,
 ) {
   const htmlProps = useFormSubmit(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormSubmitOptions<T extends As = "button">
+export interface FormSubmitOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -81,6 +81,6 @@ export interface FormSubmitOptions<T extends As = "button">
   accessibleWhenDisabled?: ButtonOptions<T>["accessibleWhenDisabled"];
 }
 
-export type FormSubmitProps<T extends As = "button"> = Props<
+export type FormSubmitProps<T extends ElementType = TagName> = Props<
   FormSubmitOptions<T>
 >;

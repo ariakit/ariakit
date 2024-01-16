@@ -58,10 +58,10 @@ export const DialogHeading = forwardRef(function DialogHeading(
   props: DialogHeadingProps,
 ) {
   const htmlProps = useDialogHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface DialogHeadingOptions<T extends As = "h1">
+export interface DialogHeadingOptions<T extends ElementType = TagName>
   extends HeadingOptions<T> {
   /**
    * Object returned by the
@@ -72,6 +72,6 @@ export interface DialogHeadingOptions<T extends As = "h1">
   store?: DialogStore;
 }
 
-export type DialogHeadingProps<T extends As = "h1"> = Props<
+export type DialogHeadingProps<T extends ElementType = TagName> = Props<
   DialogHeadingOptions<T>
 >;

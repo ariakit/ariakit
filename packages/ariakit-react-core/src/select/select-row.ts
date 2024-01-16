@@ -70,10 +70,10 @@ export const useSelectRow = createHook2<TagName, SelectRowOptions>(
  */
 export const SelectRow = forwardRef(function SelectRow(props: SelectRowProps) {
   const htmlProps = useSelectRow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectRowOptions<T extends As = "div">
+export interface SelectRowOptions<T extends ElementType = TagName>
   extends CompositeRowOptions<T> {
   /**
    * Object returned by the
@@ -86,4 +86,6 @@ export interface SelectRowOptions<T extends As = "div">
   store?: SelectStore;
 }
 
-export type SelectRowProps<T extends As = "div"> = Props<SelectRowOptions<T>>;
+export type SelectRowProps<T extends ElementType = TagName> = Props<
+  SelectRowOptions<T>
+>;

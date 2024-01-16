@@ -50,10 +50,10 @@ export const SelectSeparator = forwardRef(function SelectSeparator(
   props: SelectSeparatorProps,
 ) {
   const htmlProps = useSelectSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectSeparatorOptions<T extends As = "hr">
+export interface SelectSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -66,6 +66,6 @@ export interface SelectSeparatorOptions<T extends As = "hr">
   store?: SelectStore;
 }
 
-export type SelectSeparatorProps<T extends As = "hr"> = Props<
+export type SelectSeparatorProps<T extends ElementType = TagName> = Props<
   SelectSeparatorOptions<T>
 >;

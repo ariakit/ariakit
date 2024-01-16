@@ -200,10 +200,10 @@ export const useMenuList = createHook2<TagName, MenuListOptions>(
  */
 export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
   const htmlProps = useMenuList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuListOptions<T extends As = "div">
+export interface MenuListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
@@ -217,4 +217,6 @@ export interface MenuListOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuListProps<T extends As = "div"> = Props<MenuListOptions<T>>;
+export type MenuListProps<T extends ElementType = TagName> = Props<
+  MenuListOptions<T>
+>;

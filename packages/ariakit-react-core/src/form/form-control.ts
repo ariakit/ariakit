@@ -179,10 +179,10 @@ export const useFormControl = createHook2<TagName, FormControlOptions>(
  */
 export const FormControl = createMemoComponent<FormControlOptions>((props) => {
   const htmlProps = useFormControl(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormControlOptions<T extends As = "input">
+export interface FormControlOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -212,6 +212,6 @@ export interface FormControlOptions<T extends As = "input">
   touchOnBlur?: BooleanOrCallback<FocusEvent>;
 }
 
-export type FormControlProps<T extends As = "input"> = Props<
+export type FormControlProps<T extends ElementType = TagName> = Props<
   FormControlOptions<T>
 >;

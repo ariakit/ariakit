@@ -57,10 +57,10 @@ export const TooltipArrow = forwardRef(function TooltipArrow(
   props: TooltipArrowProps,
 ) {
   const htmlProps = useTooltipArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface TooltipArrowOptions<T extends As = "div">
+export interface TooltipArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -73,6 +73,6 @@ export interface TooltipArrowOptions<T extends As = "div">
   store?: TooltipStore;
 }
 
-export type TooltipArrowProps<T extends As = "div"> = Props<
+export type TooltipArrowProps<T extends ElementType = TagName> = Props<
   TooltipArrowOptions<T>
 >;

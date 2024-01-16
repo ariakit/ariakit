@@ -102,11 +102,13 @@ export const useFormRadio = createHook2<TagName, FormRadioOptions>(
  */
 export const FormRadio = createMemoComponent<FormRadioOptions>((props) => {
   const htmlProps = useFormRadio(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormRadioOptions<T extends As = "input">
+export interface FormRadioOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<RadioOptions<T>, "store" | "name"> {}
 
-export type FormRadioProps<T extends As = "input"> = Props<FormRadioOptions<T>>;
+export type FormRadioProps<T extends ElementType = TagName> = Props<
+  FormRadioOptions<T>
+>;

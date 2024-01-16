@@ -128,10 +128,10 @@ export const useTabPanel = createHook2<TagName, TabPanelOptions>(
  */
 export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
   const htmlProps = useTabPanel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface TabPanelOptions<T extends As = "div">
+export interface TabPanelOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,
     Omit<DisclosureContentOptions<T>, "store" | "unmountOnHide"> {
@@ -162,4 +162,6 @@ export interface TabPanelOptions<T extends As = "div">
   tabId?: string | null;
 }
 
-export type TabPanelProps<T extends As = "div"> = Props<TabPanelOptions<T>>;
+export type TabPanelProps<T extends ElementType = TagName> = Props<
+  TabPanelOptions<T>
+>;

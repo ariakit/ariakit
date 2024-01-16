@@ -108,10 +108,10 @@ export const useFormError = createHook2<TagName, FormErrorOptions>(
  */
 export const FormError = createMemoComponent<FormErrorOptions>((props) => {
   const htmlProps = useFormError(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface FormErrorOptions<T extends As = "div">
+export interface FormErrorOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -134,4 +134,6 @@ export interface FormErrorOptions<T extends As = "div">
   name: StringLike;
 }
 
-export type FormErrorProps<T extends As = "div"> = Props<FormErrorOptions<T>>;
+export type FormErrorProps<T extends ElementType = TagName> = Props<
+  FormErrorOptions<T>
+>;

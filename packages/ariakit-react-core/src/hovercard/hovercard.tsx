@@ -373,12 +373,12 @@ export const useHovercard = createHook2<TagName, HovercardOptions>(
 export const Hovercard = createDialogComponent(
   createComponent<HovercardOptions>((props) => {
     const htmlProps = useHovercard(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useHovercardProviderContext,
 );
 
-export interface HovercardOptions<T extends As = "div">
+export interface HovercardOptions<T extends ElementType = TagName>
   extends PopoverOptions<T> {
   /**
    * Object returned by the
@@ -421,4 +421,6 @@ export interface HovercardOptions<T extends As = "div">
   modal?: PopoverOptions<T>["modal"];
 }
 
-export type HovercardProps<T extends As = "div"> = Props<HovercardOptions<T>>;
+export type HovercardProps<T extends ElementType = TagName> = Props<
+  HovercardOptions<T>
+>;

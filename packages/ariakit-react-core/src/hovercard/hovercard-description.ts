@@ -39,10 +39,10 @@ export const useHovercardDescription =
 export const HovercardDescription =
   createComponent<HovercardDescriptionOptions>((props) => {
     const htmlProps = useHovercardDescription(props);
-    return createElement("p", htmlProps);
+    return createElement(TagName, htmlProps);
   });
 
-export interface HovercardDescriptionOptions<T extends As = "p">
+export interface HovercardDescriptionOptions<T extends ElementType = TagName>
   extends PopoverDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -55,6 +55,6 @@ export interface HovercardDescriptionOptions<T extends As = "p">
   store?: HovercardStore;
 }
 
-export type HovercardDescriptionProps<T extends As = "p"> = Props<
+export type HovercardDescriptionProps<T extends ElementType = TagName> = Props<
   HovercardDescriptionOptions<T>
 >;

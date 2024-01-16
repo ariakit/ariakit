@@ -165,10 +165,10 @@ export const SelectList = forwardRef(function SelectList(
   props: SelectListProps,
 ) {
   const htmlProps = useSelectList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectListOptions<T extends As = "div">
+export interface SelectListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
@@ -198,4 +198,6 @@ export interface SelectListOptions<T extends As = "div">
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
-export type SelectListProps<T extends As = "div"> = Props<SelectListOptions<T>>;
+export type SelectListProps<T extends ElementType = TagName> = Props<
+  SelectListOptions<T>
+>;

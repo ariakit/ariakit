@@ -67,10 +67,10 @@ export const ComboboxSeparator = forwardRef(function ComboboxSeparator(
   props: ComboboxSeparatorProps,
 ) {
   const htmlProps = useComboboxSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxSeparatorOptions<T extends As = "hr">
+export interface ComboboxSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -83,6 +83,6 @@ export interface ComboboxSeparatorOptions<T extends As = "hr">
   store?: ComboboxStore;
 }
 
-export type ComboboxSeparatorProps<T extends As = "hr"> = Props<
+export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props<
   ComboboxSeparatorOptions<T>
 >;

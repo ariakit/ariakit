@@ -112,10 +112,10 @@ export const useTab = createHook2<TagName, TabOptions>(
  */
 export const Tab = createMemoComponent<TabOptions>((props) => {
   const htmlProps = useTab(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface TabOptions<T extends As = "button">
+export interface TabOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
   /**
    * Object returned by the
@@ -130,4 +130,4 @@ export interface TabOptions<T extends As = "button">
   accessibleWhenDisabled?: CompositeItemOptions["accessibleWhenDisabled"];
 }
 
-export type TabProps<T extends As = "button"> = Props<TabOptions<T>>;
+export type TabProps<T extends ElementType = TagName> = Props<TabOptions<T>>;

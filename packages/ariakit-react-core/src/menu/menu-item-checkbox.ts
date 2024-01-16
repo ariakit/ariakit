@@ -179,11 +179,11 @@ export const useMenuItemCheckbox = createHook2<
 export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
   (props) => {
     const htmlProps = useMenuItemCheckbox(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   },
 );
 
-export interface MenuItemCheckboxOptions<T extends As = "div">
+export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
   extends MenuItemOptions<T>,
     Omit<CheckboxOptions<T>, "store"> {
   /**
@@ -220,6 +220,6 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemCheckboxProps<T extends As = "div"> = Props<
+export type MenuItemCheckboxProps<T extends ElementType = TagName> = Props<
   MenuItemCheckboxOptions<T>
 >;

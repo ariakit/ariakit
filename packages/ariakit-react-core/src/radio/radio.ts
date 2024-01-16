@@ -173,10 +173,10 @@ export const useRadio = createHook2<TagName, RadioOptions>(
  */
 export const Radio = createMemoComponent<RadioOptions>((props) => {
   const htmlProps = useRadio(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface RadioOptions<T extends As = "input">
+export interface RadioOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
   /**
    * Object returned by the
@@ -213,4 +213,6 @@ export interface RadioOptions<T extends As = "input">
   >;
 }
 
-export type RadioProps<T extends As = "input"> = Props<RadioOptions<T>>;
+export type RadioProps<T extends ElementType = TagName> = Props<
+  RadioOptions<T>
+>;

@@ -48,10 +48,10 @@ export const useMenuGroup = createHook2<TagName, MenuGroupOptions>((props) => {
  */
 export const MenuGroup = forwardRef(function MenuGroup(props: MenuGroupProps) {
   const htmlProps = useMenuGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuGroupOptions<T extends As = "div">
+export interface MenuGroupOptions<T extends ElementType = TagName>
   extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
@@ -63,4 +63,6 @@ export interface MenuGroupOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuGroupProps<T extends As = "div"> = Props<MenuGroupOptions<T>>;
+export type MenuGroupProps<T extends ElementType = TagName> = Props<
+  MenuGroupOptions<T>
+>;

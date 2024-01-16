@@ -58,7 +58,7 @@ export const useRole = createHook2<TagName, RoleOptions>((props) => {
  * ```
  */
 export const Role = forwardRef(function Role(props: RoleProps) {
-  return createElement("div", props);
+  return createElement(TagName, props);
 }) as Component<RoleOptions<"div">> & RoleElements;
 
 Object.assign(
@@ -73,6 +73,6 @@ Object.assign(
   }, {} as RoleElements),
 );
 
-export type RoleOptions<T extends As = "div"> = Options<T>;
+export type RoleOptions<T extends ElementType = TagName> = Options<T>;
 
-export type RoleProps<T extends As = "div"> = Props<RoleOptions<T>>;
+export type RoleProps<T extends ElementType = TagName> = Props<RoleOptions<T>>;

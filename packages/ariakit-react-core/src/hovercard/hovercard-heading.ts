@@ -42,10 +42,10 @@ export const HovercardHeading = forwardRef(function HovercardHeading(
   props: HovercardHeadingProps,
 ) {
   const htmlProps = useHovercardHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface HovercardHeadingOptions<T extends As = "h1">
+export interface HovercardHeadingOptions<T extends ElementType = TagName>
   extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
@@ -58,6 +58,6 @@ export interface HovercardHeadingOptions<T extends As = "h1">
   store?: HovercardStore;
 }
 
-export type HovercardHeadingProps<T extends As = "h1"> = Props<
+export type HovercardHeadingProps<T extends ElementType = TagName> = Props<
   HovercardHeadingOptions<T>
 >;

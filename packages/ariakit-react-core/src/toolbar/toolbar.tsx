@@ -82,10 +82,10 @@ export const useToolbar = createHook2<TagName, ToolbarOptions>(
  */
 export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
   const htmlProps = useToolbar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface ToolbarOptions<T extends As = "div">
+export interface ToolbarOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     Pick<
       ToolbarStoreProps,
@@ -103,4 +103,6 @@ export interface ToolbarOptions<T extends As = "div">
   store?: ToolbarStore;
 }
 
-export type ToolbarProps<T extends As = "div"> = Props<ToolbarOptions<T>>;
+export type ToolbarProps<T extends ElementType = TagName> = Props<
+  ToolbarOptions<T>
+>;

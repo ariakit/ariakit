@@ -52,10 +52,10 @@ export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
   props: SelectGroupLabelProps,
 ) {
   const htmlProps = useSelectGroupLabel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectGroupLabelOptions<T extends As = "div">
+export interface SelectGroupLabelOptions<T extends ElementType = TagName>
   extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -68,6 +68,6 @@ export interface SelectGroupLabelOptions<T extends As = "div">
   store?: SelectStore;
 }
 
-export type SelectGroupLabelProps<T extends As = "div"> = Props<
+export type SelectGroupLabelProps<T extends ElementType = TagName> = Props<
   SelectGroupLabelOptions<T>
 >;

@@ -200,10 +200,10 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
  */
 export const SelectItem = createMemoComponent<SelectItemOptions>((props) => {
   const htmlProps = useSelectItem(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectItemOptions<T extends As = "div">
+export interface SelectItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
@@ -258,4 +258,6 @@ export interface SelectItemOptions<T extends As = "div">
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type SelectItemProps<T extends As = "div"> = Props<SelectItemOptions<T>>;
+export type SelectItemProps<T extends ElementType = TagName> = Props<
+  SelectItemOptions<T>
+>;

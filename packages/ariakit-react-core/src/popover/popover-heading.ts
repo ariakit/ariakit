@@ -41,10 +41,10 @@ export const PopoverHeading = forwardRef(function PopoverHeading(
   props: PopoverHeadingProps,
 ) {
   const htmlProps = usePopoverHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface PopoverHeadingOptions<T extends As = "h1">
+export interface PopoverHeadingOptions<T extends ElementType = TagName>
   extends DialogHeadingOptions<T> {
   /**
    * Object returned by the
@@ -57,6 +57,6 @@ export interface PopoverHeadingOptions<T extends As = "h1">
   store?: PopoverStore;
 }
 
-export type PopoverHeadingProps<T extends As = "h1"> = Props<
+export type PopoverHeadingProps<T extends ElementType = TagName> = Props<
   PopoverHeadingOptions<T>
 >;

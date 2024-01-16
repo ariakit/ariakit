@@ -142,10 +142,10 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
   props: HovercardAnchorProps,
 ) {
   const htmlProps = useHovercardAnchor(props);
-  return createElement("a", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface HovercardAnchorOptions<T extends As = "a">
+export interface HovercardAnchorOptions<T extends ElementType = TagName>
   extends FocusableOptions<T> {
   /**
    * Object returned by the
@@ -168,6 +168,6 @@ export interface HovercardAnchorOptions<T extends As = "a">
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type HovercardAnchorProps<T extends As = "a"> = Props<
+export type HovercardAnchorProps<T extends ElementType = TagName> = Props<
   HovercardAnchorOptions<T>
 >;

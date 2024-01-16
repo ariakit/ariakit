@@ -41,10 +41,10 @@ export const MenuHeading = forwardRef(function MenuHeading(
   props: MenuHeadingProps,
 ) {
   const htmlProps = useMenuHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface MenuHeadingOptions<T extends As = "h1">
+export interface MenuHeadingOptions<T extends ElementType = TagName>
   extends HovercardHeadingOptions<T> {
   /**
    * Object returned by the
@@ -56,6 +56,6 @@ export interface MenuHeadingOptions<T extends As = "h1">
   store?: MenuStore;
 }
 
-export type MenuHeadingProps<T extends As = "h1"> = Props<
+export type MenuHeadingProps<T extends ElementType = TagName> = Props<
   MenuHeadingOptions<T>
 >;

@@ -54,10 +54,10 @@ export const SelectArrow = forwardRef(function SelectArrow(
   props: SelectArrowProps,
 ) {
   const htmlProps = useSelectArrow(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface SelectArrowOptions<T extends As = "span">
+export interface SelectArrowOptions<T extends ElementType = TagName>
   extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
@@ -69,6 +69,6 @@ export interface SelectArrowOptions<T extends As = "span">
   store?: SelectStore;
 }
 
-export type SelectArrowProps<T extends As = "span"> = Props<
+export type SelectArrowProps<T extends ElementType = TagName> = Props<
   SelectArrowOptions<T>
 >;

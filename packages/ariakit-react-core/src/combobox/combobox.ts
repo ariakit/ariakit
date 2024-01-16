@@ -542,10 +542,10 @@ export const useCombobox = createHook2<TagName, ComboboxOptions>(
  */
 export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   const htmlProps = useCombobox(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxOptions<T extends As = "input">
+export interface ComboboxOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     PopoverAnchorOptions<T> {
   /**
@@ -720,4 +720,6 @@ export interface ComboboxOptions<T extends As = "input">
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type ComboboxProps<T extends As = "input"> = Props<ComboboxOptions<T>>;
+export type ComboboxProps<T extends ElementType = TagName> = Props<
+  ComboboxOptions<T>
+>;

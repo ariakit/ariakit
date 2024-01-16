@@ -57,11 +57,12 @@ export const FormRadioGroup = forwardRef(function FormRadioGroup(
   props: FormRadioGroupProps,
 ) {
   const htmlProps = useFormRadioGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-export type FormRadioGroupOptions<T extends As = "div"> = FormGroupOptions<T>;
+export type FormRadioGroupOptions<T extends ElementType = TagName> =
+  FormGroupOptions<T>;
 
-export type FormRadioGroupProps<T extends As = "div"> = Props<
+export type FormRadioGroupProps<T extends ElementType = TagName> = Props<
   FormRadioGroupOptions<T>
 >;

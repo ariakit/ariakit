@@ -582,12 +582,12 @@ export function createDialogComponent<T extends DialogOptions>(
 export const Dialog = createDialogComponent(
   createComponent<DialogOptions>((props) => {
     const htmlProps = useDialog(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useDialogProviderContext,
 );
 
-export interface DialogOptions<T extends As = "div">
+export interface DialogOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>,
     PortalOptions<T>,
     DisclosureContentOptions<T> {
@@ -817,4 +817,6 @@ export interface DialogOptions<T extends As = "div">
   finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
 }
 
-export type DialogProps<T extends As = "div"> = Props<DialogOptions<T>>;
+export type DialogProps<T extends ElementType = TagName> = Props<
+  DialogOptions<T>
+>;
