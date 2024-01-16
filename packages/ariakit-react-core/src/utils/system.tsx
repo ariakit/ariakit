@@ -167,7 +167,7 @@ export function createElement(
  *   customProp?: boolean;
  * };
  *
- * const useComponent = createHook2<TagName, Props>(({ customProp, ...props }) => {
+ * const useComponent = createHook2<TagName, Props>(function useComponent({ customProp, ...props }) {
  *   return props;
  * });
  *

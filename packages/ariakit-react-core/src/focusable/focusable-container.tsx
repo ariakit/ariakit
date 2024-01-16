@@ -1,6 +1,6 @@
 import { useWrapElement } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
 
 /**
@@ -12,22 +12,22 @@ import { FocusableContext } from "./focusable-context.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusableContainer =
-  createHook2<TagNameFocusableContainerOptions>(
-    ({ autoFocusOnShow = true, ...props }) => {
-      props = useWrapElement(
-        props,
-        (element) => (
-          <FocusableContext.Provider value={autoFocusOnShow}>
-            {element}
-          </FocusableContext.Provider>
-        ),
-        [autoFocusOnShow],
-      );
-
-      return props;
-    },
+export const useFocusableContainer = createHook2<
+  TagName,
+  FocusableContainerOptions
+>(function useFocusableContainer({ autoFocusOnShow = true, ...props }) {
+  props = useWrapElement(
+    props,
+    (element) => (
+      <FocusableContext.Provider value={autoFocusOnShow}>
+        {element}
+      </FocusableContext.Provider>
+    ),
+    [autoFocusOnShow],
   );
+
+  return props;
+});
 
 /**
  * Renders a div that wraps

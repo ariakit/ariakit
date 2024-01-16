@@ -16,11 +16,13 @@ import type { PopoverStore } from "./popover-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const usePopoverDescription =
-  createHook2<TagNamePopoverDescriptionOptions>((props) => {
-    props = useDialogDescription(props);
-    return props;
-  });
+export const usePopoverDescription = createHook2<
+  TagName,
+  PopoverDescriptionOptions
+>(function usePopoverDescription(props) {
+  props = useDialogDescription(props);
+  return props;
+});
 
 /**
  * Renders a description in a popover. This component must be wrapped with

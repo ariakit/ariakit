@@ -3,7 +3,7 @@ import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
@@ -125,7 +125,7 @@ export const PopoverArrow = forwardRef(function PopoverArrow(
 });
 
 export interface PopoverArrowOptions<T extends ElementType = TagName>
-  extends Options<T> {
+  extends Options2 {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

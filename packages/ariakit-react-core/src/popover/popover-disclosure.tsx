@@ -23,44 +23,46 @@ import {
  * <Popover store={store}>Popover</Popover>
  * ```
  */
-export const usePopoverDisclosure =
-  createHook2<TagNamePopoverDisclosureOptions>(({ store, ...props }) => {
-    const context = usePopoverProviderContext();
-    store = store || context;
+export const usePopoverDisclosure = createHook2<
+  TagName,
+  PopoverDisclosureOptions
+>(function usePopoverDisclosure({ store, ...props }) {
+  const context = usePopoverProviderContext();
+  store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "PopoverDisclosure must receive a `store` prop or be wrapped in a PopoverProvider component.",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "PopoverDisclosure must receive a `store` prop or be wrapped in a PopoverProvider component.",
+  );
 
-    const onClickProp = props.onClick;
+  const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      store?.setAnchorElement(event.currentTarget);
-      onClickProp?.(event);
-    });
-
-    props = useWrapElement(
-      props,
-      (element) => (
-        <PopoverScopedContextProvider value={store}>
-          {element}
-        </PopoverScopedContextProvider>
-      ),
-      [store],
-    );
-
-    props = {
-      ...props,
-      onClick,
-    };
-
-    props = usePopoverAnchor({ store, ...props });
-    props = useDialogDisclosure({ store, ...props });
-
-    return props;
+  const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    store?.setAnchorElement(event.currentTarget);
+    onClickProp?.(event);
   });
+
+  props = useWrapElement(
+    props,
+    (element) => (
+      <PopoverScopedContextProvider value={store}>
+        {element}
+      </PopoverScopedContextProvider>
+    ),
+    [store],
+  );
+
+  props = {
+    ...props,
+    onClick,
+  };
+
+  props = usePopoverAnchor({ store, ...props });
+  props = useDialogDisclosure({ store, ...props });
+
+  return props;
+});
 
 /**
  * Renders a button that controls the visibility of the

@@ -19,7 +19,7 @@ import type { SelectStore } from "./select-store.js";
 export const useSelectGroupLabel = createHook2<
   TagName,
   SelectGroupLabelOptions
->((props) => {
+>(function useSelectGroupLabel(props) {
   props = useCompositeGroupLabel(props);
   return props;
 });

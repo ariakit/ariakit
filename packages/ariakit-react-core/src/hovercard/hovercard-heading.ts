@@ -19,7 +19,7 @@ import type { HovercardStore } from "./hovercard-store.js";
 export const useHovercardHeading = createHook2<
   TagName,
   HovercardHeadingOptions
->((props) => {
+>(function useHovercardHeading(props) {
   props = usePopoverHeading(props);
   return props;
 });

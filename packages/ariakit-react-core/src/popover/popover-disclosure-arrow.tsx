@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
@@ -102,7 +102,7 @@ export const PopoverDisclosureArrow =
   });
 
 export interface PopoverDisclosureArrowOptions<T extends ElementType = TagName>
-  extends Options<T> {
+  extends Options2 {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

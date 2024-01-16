@@ -1,9 +1,13 @@
 import { useContext } from "react";
+import type { ElementType } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { DialogDescriptionContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `DialogDescription` component. This hook must be
@@ -17,23 +21,25 @@ import type { DialogStore } from "./dialog-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useDialogDescription =
-  createHook2<TagNameDialogDescriptionOptions>(({ store, ...props }) => {
-    const setDescriptionId = useContext(DialogDescriptionContext);
-    const id = useId(props.id);
+export const useDialogDescription = createHook2<
+  TagName,
+  DialogDescriptionOptions
+>(function useDialogDescription({ store, ...props }) {
+  const setDescriptionId = useContext(DialogDescriptionContext);
+  const id = useId(props.id);
 
-    useSafeLayoutEffect(() => {
-      setDescriptionId?.(id);
-      return () => setDescriptionId?.(undefined);
-    }, [setDescriptionId, id]);
+  useSafeLayoutEffect(() => {
+    setDescriptionId?.(id);
+    return () => setDescriptionId?.(undefined);
+  }, [setDescriptionId, id]);
 
-    props = {
-      id,
-      ...props,
-    };
+  props = {
+    id,
+    ...props,
+  };
 
-    return props;
-  });
+  return props;
+});
 
 /**
  * Renders a description in a dialog. This component must be wrapped with
@@ -56,8 +62,8 @@ export const DialogDescription = forwardRef(function DialogDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDescriptionOptions<T extends ElementType = TagName>
-  extends Options<T> {
+export interface DialogDescriptionOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

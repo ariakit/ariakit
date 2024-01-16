@@ -1,5 +1,5 @@
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 
 /**
  * Returns props to create a `VisuallyHidden` component. When applying the props

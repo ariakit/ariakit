@@ -23,9 +23,11 @@ import type { Props2 } from "../utils/types.js";
  * </Role>
  * ```
  */
-export const useMenuBar = createHook2<TagName, MenuBarOptions>((props) => {
-  return useMenubar(props);
-});
+export const useMenuBar = createHook2<TagName, MenuBarOptions>(
+  function useMenuBar(props) {
+    return useMenubar(props);
+  },
+);
 
 /**
  * Renders a menu bar that may contain a group of menu items that control other

@@ -11,7 +11,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
@@ -189,8 +189,7 @@ export const Form = forwardRef(function Form(props: FormProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormOptions<T extends ElementType = TagName>
-  extends Options<T> {
+export interface FormOptions<T extends ElementType = TagName> extends Options2 {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

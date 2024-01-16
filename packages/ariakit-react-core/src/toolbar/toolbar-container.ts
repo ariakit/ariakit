@@ -27,7 +27,7 @@ import { useToolbarItem } from "./toolbar-item.js";
 export const useToolbarContainer = createHook2<
   TagName,
   ToolbarContainerOptions
->(({ store, ...props }) => {
+>(function useToolbarContainer({ store, ...props }) {
   const context = useToolbarContext();
   store = store || context;
   props = useCompositeContainer({ store, ...props });

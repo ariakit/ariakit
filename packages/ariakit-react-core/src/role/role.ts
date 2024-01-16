@@ -43,9 +43,11 @@ type RoleElements = {
  * <Role {...props} />
  * ```
  */
-export const useRole = createHook2<TagName, RoleOptions>((props) => {
-  return props;
-});
+export const useRole = createHook2<TagName, RoleOptions>(
+  function useRole(props) {
+    return props;
+  },
+);
 
 /**
  * Renders an abstract element that supports the `render` prop and a

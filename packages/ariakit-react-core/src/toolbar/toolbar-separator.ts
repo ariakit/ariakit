@@ -22,7 +22,7 @@ import type { ToolbarStore } from "./toolbar-store.js";
 export const useToolbarSeparator = createHook2<
   TagName,
   ToolbarSeparatorOptions
->(({ store, ...props }) => {
+>(function useToolbarSeparator({ store, ...props }) {
   const context = useToolbarContext();
   store = store || context;
   props = useCompositeSeparator({ store, ...props });

@@ -31,9 +31,11 @@ import type { FormControlOptions } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormField = createHook2<TagName, FormFieldOptions>((props) => {
-  return useFormControl(props);
-});
+export const useFormField = createHook2<TagName, FormFieldOptions>(
+  function useFormField(props) {
+    return useFormControl(props);
+  },
+);
 
 /**
  * Abstract component that renders a form field. Unlike

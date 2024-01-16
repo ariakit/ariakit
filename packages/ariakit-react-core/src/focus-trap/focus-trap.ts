@@ -12,25 +12,27 @@ import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusTrap = createHook2<TagName, FocusTrapOptions>((props) => {
-  props = {
-    "data-focus-trap": "",
-    tabIndex: 0,
-    "aria-hidden": true,
-    ...props,
-    style: {
-      // Prevents unintended scroll jumps.
-      position: "fixed",
-      top: 0,
-      left: 0,
-      ...props.style,
-    },
-  };
+export const useFocusTrap = createHook2<TagName, FocusTrapOptions>(
+  function useFocusTrap(props) {
+    props = {
+      "data-focus-trap": "",
+      tabIndex: 0,
+      "aria-hidden": true,
+      ...props,
+      style: {
+        // Prevents unintended scroll jumps.
+        position: "fixed",
+        top: 0,
+        left: 0,
+        ...props.style,
+      },
+    };
 
-  props = useVisuallyHidden(props);
+    props = useVisuallyHidden(props);
 
-  return props;
-});
+    return props;
+  },
+);
 
 /**
  * Renders a focus trap element.

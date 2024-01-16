@@ -5,7 +5,7 @@ import {
   createElement,
   createHook,
 } from "../utils/system.jsx";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { HeadingContext } from "./heading-context.js";
 import type { HeadingLevels } from "./utils.js";
 
@@ -22,26 +22,28 @@ type HeadingElements = `h${HeadingLevels}`;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHeading = createHook2<TagName, HeadingOptions>((props) => {
-  const ref = useRef<HTMLHeadingElement>(null);
-  const level: HeadingLevels = useContext(HeadingContext) || 1;
-  const Element = `h${level}` as const;
-  const tagName = useTagName(ref, Element);
-  const isNativeHeading = useMemo(
-    () => !!tagName && /^h\d$/.test(tagName),
-    [tagName],
-  );
+export const useHeading = createHook2<TagName, HeadingOptions>(
+  function useHeading(props) {
+    const ref = useRef<HTMLHeadingElement>(null);
+    const level: HeadingLevels = useContext(HeadingContext) || 1;
+    const Element = `h${level}` as const;
+    const tagName = useTagName(ref, Element);
+    const isNativeHeading = useMemo(
+      () => !!tagName && /^h\d$/.test(tagName),
+      [tagName],
+    );
 
-  props = {
-    render: <Element />,
-    role: !isNativeHeading ? "heading" : undefined,
-    "aria-level": !isNativeHeading ? level : undefined,
-    ...props,
-    ref: useMergeRefs(ref, props.ref),
-  };
+    props = {
+      render: <Element />,
+      role: !isNativeHeading ? "heading" : undefined,
+      "aria-level": !isNativeHeading ? level : undefined,
+      ...props,
+      ref: useMergeRefs(ref, props.ref),
+    };
 
-  return props;
-});
+    return props;
+  },
+);
 
 /**
  * Renders a heading element. The element type (or the `aria-level` attribute,

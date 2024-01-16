@@ -6,7 +6,7 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -91,7 +91,7 @@ export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
 });
 
 export interface SelectLabelOptions<T extends ElementType = TagName>
-  extends Options<T> {
+  extends Options2 {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

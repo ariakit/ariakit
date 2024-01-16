@@ -17,7 +17,7 @@ import {
 } from "../utils/hooks.js";
 import { setRef } from "../utils/misc.js";
 import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { PortalContext } from "./portal-context.js";
 
 function getRootElement(element?: Element | null) {
@@ -344,7 +344,7 @@ export const Portal = forwardRef(function Portal(props: PortalProps) {
 });
 
 export interface PortalOptions<T extends ElementType = TagName>
-  extends Options<T> {
+  extends Options2 {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
    * same as the order in which the underlying

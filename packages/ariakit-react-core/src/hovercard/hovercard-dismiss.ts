@@ -20,7 +20,7 @@ import type { HovercardStore } from "./hovercard-store.js";
 export const useHovercardDismiss = createHook2<
   TagName,
   HovercardDismissOptions
->(({ store, ...props }) => {
+>(function useHovercardDismiss({ store, ...props }) {
   const context = useHovercardScopedContext();
   store = store || context;
   props = usePopoverDismiss({ store, ...props });

@@ -21,10 +21,12 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuGroup = createHook2<TagName, MenuGroupOptions>((props) => {
-  props = useCompositeGroup(props);
-  return props;
-});
+export const useMenuGroup = createHook2<TagName, MenuGroupOptions>(
+  function useMenuGroup(props) {
+    props = useCompositeGroup(props);
+    return props;
+  },
+);
 
 /**
  * Renders a group for [`MenuItem`](https://ariakit.org/reference/menu-item)

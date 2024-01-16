@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
 
 /**
@@ -87,7 +87,7 @@ export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
 });
 
 export interface FocusTrapRegionOptions<T extends ElementType = TagName>
-  extends Options<T> {
+  extends Options2 {
   /**
    * If true, it will trap the focus in the region.
    * @default false
