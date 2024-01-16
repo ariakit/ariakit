@@ -21,7 +21,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectSeparator = createHook2<TagName, SelectSeparatorOptions>(
-  ({ store, ...props }) => {
+  function useSelectSeparator({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
     props = useCompositeSeparator({ store, ...props });

@@ -18,7 +18,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuDismiss = createHook2<TagName, MenuDismissOptions>(
-  ({ store, ...props }) => {
+  function useMenuDismiss({ store, ...props }) {
     const context = useMenuScopedContext();
     store = store || context;
     props = useHovercardDismiss({ store, ...props });

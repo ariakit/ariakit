@@ -18,7 +18,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectItemCheck = createHook2<TagName, SelectItemCheckOptions>(
-  ({ store, checked, ...props }) => {
+  function useSelectItemCheck({ store, checked, ...props }) {
     const context = useContext(SelectItemCheckedContext);
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });

@@ -19,7 +19,7 @@ import type { FormStore } from "./form-store.js";
  * ```
  */
 export const useFormReset = createHook2<TagName, FormResetOptions>(
-  ({ store, ...props }) => {
+  function useFormReset({ store, ...props }) {
     const context = useFormContext();
     store = store || context;
 

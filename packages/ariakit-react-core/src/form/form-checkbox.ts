@@ -28,7 +28,14 @@ import { useFormControl } from "./form-control.js";
  * ```
  */
 export const useFormCheckbox = createHook2<TagName, FormCheckboxOptions>(
-  ({ store, name: nameProp, value, checked, defaultChecked, ...props }) => {
+  function useFormCheckbox({
+    store,
+    name: nameProp,
+    value,
+    checked,
+    defaultChecked,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 

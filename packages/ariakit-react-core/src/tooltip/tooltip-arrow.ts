@@ -21,7 +21,7 @@ import type { TooltipStore } from "./tooltip-store.js";
  * ```
  */
 export const useTooltipArrow = createHook2<TagName, TooltipArrowOptions>(
-  ({ store, size = 16, ...props }) => {
+  function useTooltipArrow({ store, size = 16, ...props }) {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
     const context = useTooltipContext();

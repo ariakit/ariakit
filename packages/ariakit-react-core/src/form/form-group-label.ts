@@ -17,7 +17,7 @@ import type { FormStore } from "./form-store.js";
  * ```
  */
 export const useFormGroupLabel = createHook2<TagName, FormGroupLabelOptions>(
-  ({ store, ...props }) => {
+  function useFormGroupLabel({ store, ...props }) {
     props = useGroupLabel(props);
     return props;
   },

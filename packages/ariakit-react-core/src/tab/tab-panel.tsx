@@ -35,7 +35,12 @@ import type { TabStore } from "./tab-store.js";
  * ```
  */
 export const useTabPanel = createHook2<TagName, TabPanelOptions>(
-  ({ store, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
+  function useTabPanel({
+    store,
+    tabId: tabIdProp,
+    getItem: getItemProp,
+    ...props
+  }) {
     const context = useTabProviderContext();
     store = store || context;
 

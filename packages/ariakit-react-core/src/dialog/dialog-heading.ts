@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { forwardRef, useContext } from "react";
+import type { ElementType } from "react";
 import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
@@ -6,6 +7,9 @@ import { createElement, createHook2 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { DialogHeadingContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
+
+const TagName = "h1" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `DialogHeading` component. This hook must be used
@@ -20,7 +24,7 @@ import type { DialogStore } from "./dialog-store.js";
  * ```
  */
 export const useDialogHeading = createHook2<TagName, DialogHeadingOptions>(
-  ({ store, ...props }) => {
+  function useDialogHeading({ store, ...props }) {
     const setHeadingId = useContext(DialogHeadingContext);
     const id = useId(props.id);
 

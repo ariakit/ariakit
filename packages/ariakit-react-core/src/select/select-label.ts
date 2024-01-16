@@ -25,7 +25,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
-  ({ store, ...props }) => {
+  function useSelectLabel({ store, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
 
@@ -90,7 +90,7 @@ export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectLabelOptions<T extends ElementType = TagName>
+export interface SelectLabelOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * Object returned by the

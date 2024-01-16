@@ -28,7 +28,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```
  */
 export const useHovercardAnchor = createHook2<TagName, HovercardAnchorOptions>(
-  ({ store, showOnHover = true, ...props }) => {
+  function useHovercardAnchor({ store, showOnHover = true, ...props }) {
     const context = useHovercardProviderContext();
     store = store || context;
 

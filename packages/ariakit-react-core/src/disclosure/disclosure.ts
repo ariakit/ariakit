@@ -29,7 +29,7 @@ const symbol = Symbol("disclosure");
  * ```
  */
 export const useDisclosure = createHook2<TagName, DisclosureOptions>(
-  ({ store, toggleOnClick = true, ...props }) => {
+  function useDisclosure({ store, toggleOnClick = true, ...props }) {
     const context = useDisclosureProviderContext();
     store = store || context;
 

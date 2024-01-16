@@ -22,7 +22,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectGroup = createHook2<TagName, SelectGroupOptions>(
-  (props) => {
+  function useSelectGroup(props) {
     props = useCompositeGroup(props);
     return props;
   },

@@ -22,7 +22,7 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * ```
  */
 export const useToolbarItem = createHook2<TagName, ToolbarItemOptions>(
-  ({ store, ...props }) => {
+  function useToolbarItem({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeItem({ store, ...props });

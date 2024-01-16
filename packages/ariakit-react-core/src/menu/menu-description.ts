@@ -17,7 +17,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuDescription = createHook2<TagName, MenuDescriptionOptions>(
-  (props) => {
+  function useMenuDescription(props) {
     props = useHovercardDescription(props);
     return props;
   },

@@ -1,5 +1,5 @@
-import type { MouseEvent } from "react";
-import { useMemo } from "react";
+import type { ElementType, MouseEvent } from "react";
+import { forwardRef, useMemo } from "react";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
@@ -7,6 +7,10 @@ import { createElement, createHook2 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useDialogScopedContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `DialogDismiss` component.
@@ -21,13 +25,13 @@ import type { DialogStore } from "./dialog-store.js";
  * ```
  */
 export const useDialogDismiss = createHook2<TagName, DialogDismissOptions>(
-  ({ store, ...props }) => {
+  function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
     store = store || context;
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.hide();

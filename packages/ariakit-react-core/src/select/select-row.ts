@@ -23,7 +23,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectRow = createHook2<TagName, SelectRowOptions>(
-  ({ store, ...props }) => {
+  function useSelectRow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
 

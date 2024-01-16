@@ -28,7 +28,12 @@ import type { FormStore } from "./form-store.js";
  * ```
  */
 export const useFormDescription = createHook2<TagName, FormDescriptionOptions>(
-  ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
+  function useFormDescription({
+    store,
+    name: nameProp,
+    getItem: getItemProp,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 

@@ -19,7 +19,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * ```
  */
 export const useHovercardArrow = createHook2<TagName, HovercardArrowOptions>(
-  ({ store, ...props }) => {
+  function useHovercardArrow({ store, ...props }) {
     const context = useHovercardContext();
     store = store || context;
     props = usePopoverArrow({ store, ...props });

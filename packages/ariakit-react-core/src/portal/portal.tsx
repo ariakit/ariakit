@@ -343,7 +343,7 @@ export const Portal = forwardRef(function Portal(props: PortalProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface PortalOptions<T extends ElementType = TagName>
+export interface PortalOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the

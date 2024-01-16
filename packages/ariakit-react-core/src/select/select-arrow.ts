@@ -23,7 +23,7 @@ import type { SelectStore } from "./select-store.js";
  * ```
  */
 export const useSelectArrow = createHook2<TagName, SelectArrowOptions>(
-  ({ store, ...props }) => {
+  function useSelectArrow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });

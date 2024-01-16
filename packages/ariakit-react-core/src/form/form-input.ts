@@ -29,7 +29,7 @@ import { useFormControl } from "./form-control.js";
  * ```
  */
 export const useFormInput = createHook2<TagName, FormInputOptions>(
-  ({ store, name: nameProp, ...props }) => {
+  function useFormInput({ store, name: nameProp, ...props }) {
     const context = useFormContext();
     store = store || context;
 

@@ -62,7 +62,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * ```
  */
 export const useMenuList = createHook2<TagName, MenuListOptions>(
-  ({ store, alwaysVisible, composite, ...props }) => {
+  function useMenuList({ store, alwaysVisible, composite, ...props }) {
     const context = useMenuProviderContext();
     store = store || context;
 

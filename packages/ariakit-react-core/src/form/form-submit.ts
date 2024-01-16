@@ -19,7 +19,7 @@ import type { FormStore } from "./form-store.js";
  * ```
  */
 export const useFormSubmit = createHook2<TagName, FormSubmitOptions>(
-  ({ store, accessibleWhenDisabled = true, ...props }) => {
+  function useFormSubmit({ store, accessibleWhenDisabled = true, ...props }) {
     const context = useFormContext();
     store = store || context;
 

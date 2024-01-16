@@ -26,7 +26,7 @@ import type { TabStore } from "./tab-store.js";
  * ```
  */
 export const useTabList = createHook2<TagName, TabListOptions>(
-  ({ store, ...props }) => {
+  function useTabList({ store, ...props }) {
     const context = useTabProviderContext();
     store = store || context;
 

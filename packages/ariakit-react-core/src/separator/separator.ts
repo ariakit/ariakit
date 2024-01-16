@@ -11,7 +11,7 @@ import type { Options2, Props2 } from "../utils/types.js";
  * ```
  */
 export const useSeparator = createHook2<TagName, SeparatorOptions>(
-  ({ orientation = "horizontal", ...props }) => {
+  function useSeparator({ orientation = "horizontal", ...props }) {
     props = {
       role: "separator",
       "aria-orientation": orientation,
@@ -34,7 +34,7 @@ export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface SeparatorOptions<T extends ElementType = TagName>
+export interface SeparatorOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * The orientation of the separator.

@@ -16,7 +16,7 @@ import type { PopoverStore } from "./popover-store.js";
  * ```
  */
 export const usePopoverAnchor = createHook2<TagName, PopoverAnchorOptions>(
-  ({ store, ...props }) => {
+  function usePopoverAnchor({ store, ...props }) {
     const context = usePopoverProviderContext();
     store = store || context;
     props = {
@@ -47,7 +47,7 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverAnchorOptions<T extends ElementType = TagName>
+export interface PopoverAnchorOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * Object returned by the

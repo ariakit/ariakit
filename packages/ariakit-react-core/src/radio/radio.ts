@@ -49,113 +49,117 @@ function isNativeRadio(tagName?: string, type?: string) {
  * </RadioGroup>
  * ```
  */
-export const useRadio = createHook2<TagName, RadioOptions>(
-  ({ store, name, value, checked, ...props }) => {
-    const context = useRadioContext();
-    store = store || context;
+export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
+  store,
+  name,
+  value,
+  checked,
+  ...props
+}) {
+  const context = useRadioContext();
+  store = store || context;
 
-    const id = useId(props.id);
+  const id = useId(props.id);
 
-    const ref = useRef<HTMLInputElement>(null);
-    const isChecked = useStoreState(
-      store,
-      (state) => checked ?? getIsChecked(value, state?.value),
-    );
+  const ref = useRef<HTMLInputElement>(null);
+  const isChecked = useStoreState(
+    store,
+    (state) => checked ?? getIsChecked(value, state?.value),
+  );
 
-    // When the radio store has a default value, we need to update the active id
-    // to point to the checked element, otherwise it'll be the first item in the
-    // list. TODO: Maybe this could be done in the radio store directly?
-    useEffect(() => {
-      if (!id) return;
-      if (!isChecked) return;
-      const isActiveItem = store?.getState().activeId === id;
-      if (isActiveItem) return;
-      store?.setActiveId(id);
-    }, [store, isChecked, id]);
+  // When the radio store has a default value, we need to update the active id
+  // to point to the checked element, otherwise it'll be the first item in the
+  // list. TODO: Maybe this could be done in the radio store directly?
+  useEffect(() => {
+    if (!id) return;
+    if (!isChecked) return;
+    const isActiveItem = store?.getState().activeId === id;
+    if (isActiveItem) return;
+    store?.setActiveId(id);
+  }, [store, isChecked, id]);
 
-    const onChangeProp = props.onChange;
-    const tagName = useTagName(ref, props.as || "input");
-    const nativeRadio = isNativeRadio(tagName, props.type);
-    const disabled = disabledFromProps(props);
-    // When the checked property is programmatically set on the change event, we
-    // need to schedule the element's property update, so the controlled
-    // isChecked state can be taken into account.
-    const [propertyUpdated, schedulePropertyUpdate] = useForceUpdate();
+  const onChangeProp = props.onChange;
+  const tagName = useTagName(ref, props.as || "input");
+  const nativeRadio = isNativeRadio(tagName, props.type);
+  const disabled = disabledFromProps(props);
+  // When the checked property is programmatically set on the change event, we
+  // need to schedule the element's property update, so the controlled
+  // isChecked state can be taken into account.
+  const [propertyUpdated, schedulePropertyUpdate] = useForceUpdate();
 
-    useEffect(() => {
-      const element = ref.current;
-      if (!element) return;
-      if (nativeRadio) return;
-      if (isChecked !== undefined) {
-        element.checked = isChecked;
-      }
-      if (name !== undefined) {
-        element.name = name;
-      }
-      if (value !== undefined) {
-        element.value = `${value}`;
-      }
-    }, [propertyUpdated, nativeRadio, isChecked, name, value]);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (nativeRadio) return;
+    if (isChecked !== undefined) {
+      element.checked = isChecked;
+    }
+    if (name !== undefined) {
+      element.name = name;
+    }
+    if (value !== undefined) {
+      element.value = `${value}`;
+    }
+  }, [propertyUpdated, nativeRadio, isChecked, name, value]);
 
-    const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
-      if (disabled) {
-        event.preventDefault();
-        event.stopPropagation();
-        return;
-      }
-      if (!nativeRadio) {
-        event.currentTarget.checked = true;
-        schedulePropertyUpdate();
-      }
-      onChangeProp?.(event);
-      if (event.defaultPrevented) return;
-      store?.setValue(value);
-    });
+  const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
+    if (disabled) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    if (!nativeRadio) {
+      event.currentTarget.checked = true;
+      schedulePropertyUpdate();
+    }
+    onChangeProp?.(event);
+    if (event.defaultPrevented) return;
+    store?.setValue(value);
+  });
 
-    const onClickProp = props.onClick;
+  const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
-      onClickProp?.(event);
-      if (event.defaultPrevented) return;
-      if (nativeRadio) return;
-      onChange(event);
-    });
+  const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+    onClickProp?.(event);
+    if (event.defaultPrevented) return;
+    if (nativeRadio) return;
+    onChange(event);
+  });
 
-    const onFocusProp = props.onFocus;
+  const onFocusProp = props.onFocus;
 
-    const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
-      onFocusProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!nativeRadio) return;
-      if (!store) return;
-      const { moves, activeId } = store.getState();
-      if (!moves) return;
-      if (id && activeId !== id) return;
-      onChange(event);
-    });
+  const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
+    onFocusProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!nativeRadio) return;
+    if (!store) return;
+    const { moves, activeId } = store.getState();
+    if (!moves) return;
+    if (id && activeId !== id) return;
+    onChange(event);
+  });
 
-    props = {
-      id,
-      role: !nativeRadio ? "radio" : undefined,
-      type: nativeRadio ? "radio" : undefined,
-      "aria-checked": isChecked,
-      ...props,
-      ref: useMergeRefs(ref, props.ref),
-      onChange,
-      onClick,
-      onFocus,
-    };
+  props = {
+    id,
+    role: !nativeRadio ? "radio" : undefined,
+    type: nativeRadio ? "radio" : undefined,
+    "aria-checked": isChecked,
+    ...props,
+    ref: useMergeRefs(ref, props.ref),
+    onChange,
+    onClick,
+    onFocus,
+  };
 
-    props = useCompositeItem({ store, clickOnEnter: !nativeRadio, ...props });
+  props = useCompositeItem({ store, clickOnEnter: !nativeRadio, ...props });
 
-    return {
-      name: nativeRadio ? name : undefined,
-      value: nativeRadio ? value : undefined,
-      checked: isChecked,
-      ...props,
-    };
-  },
-);
+  return {
+    name: nativeRadio ? name : undefined,
+    value: nativeRadio ? value : undefined,
+    checked: isChecked,
+    ...props,
+  };
+});
 
 /**
  * Renders a radio button element that's typically wrapped in a

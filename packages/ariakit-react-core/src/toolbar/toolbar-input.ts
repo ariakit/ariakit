@@ -23,7 +23,7 @@ import { useToolbarItem } from "./toolbar-item.js";
  * ```
  */
 export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
-  ({ store, ...props }) => {
+  function useToolbarInput({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeInput({ store, ...props });

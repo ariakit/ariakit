@@ -24,7 +24,7 @@ import type { RadioStore } from "./radio-store.js";
  * ```
  */
 export const useRadioGroup = createHook2<TagName, RadioGroupOptions>(
-  ({ store, ...props }) => {
+  function useRadioGroup({ store, ...props }) {
     const context = useRadioProviderContext();
     store = store || context;
 

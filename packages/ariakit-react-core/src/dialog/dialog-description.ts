@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
@@ -38,7 +39,7 @@ export const useDialogDescription = createHook2<
     ...props,
   };
 
-  return props;
+  return removeUndefinedValues(props);
 });
 
 /**

@@ -19,7 +19,7 @@ import type { FormStore } from "./form-store.js";
  * ```
  */
 export const useFormGroup = createHook2<TagName, FormGroupOptions>(
-  ({ store, ...props }) => {
+  function useFormGroup({ store, ...props }) {
     props = useGroup(props);
     return props;
   },

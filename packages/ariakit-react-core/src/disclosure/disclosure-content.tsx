@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
 import {
@@ -8,14 +9,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createElement, createHook2 } from "../utils/system.jsx";
 import type { Options2, Props2 } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.jsx";
 import type { DisclosureStore } from "./disclosure-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 type TransitionState = "enter" | "leave" | null;
 
@@ -165,7 +165,7 @@ export const useDisclosureContent = createHook2<
 });
 
 const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
-  props: DisclosureContentImplProps,
+  props: DisclosureContentProps,
 ) {
   const htmlProps = useDisclosureContent(props);
   return createElement(TagName, htmlProps);
@@ -183,18 +183,20 @@ const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
  * </DisclosureProvider>
  * ```
  */
-export const DisclosureContent = forwardRef(({ unmountOnHide, ...props }) => {
-  const context = useDisclosureProviderContext();
-  const store = props.store || context;
-  const mounted = useStoreState(
-    store,
-    (state) => !unmountOnHide || state?.mounted,
-  );
-  if (mounted === false) return null;
-  return <DisclosureContentImpl {...props} />;
-});
+export const DisclosureContent = forwardRef(
+  ({ unmountOnHide, ...props }: DisclosureContentProps) => {
+    const context = useDisclosureProviderContext();
+    const store = props.store || context;
+    const mounted = useStoreState(
+      store,
+      (state) => !unmountOnHide || state?.mounted,
+    );
+    if (mounted === false) return null;
+    return <DisclosureContentImpl {...props} />;
+  },
+);
 
-export interface DisclosureContentOptions<T extends ElementType = TagName>
+export interface DisclosureContentOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * Object returned by the

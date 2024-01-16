@@ -21,7 +21,7 @@ import { useFormGroup } from "./form-group.js";
  * ```
  */
 export const useFormRadioGroup = createHook2<TagName, FormRadioGroupOptions>(
-  ({ store, ...props }) => {
+  function useFormRadioGroup({ store, ...props }) {
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
     return props;

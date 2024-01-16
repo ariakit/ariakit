@@ -17,7 +17,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuGroupLabel = createHook2<TagName, MenuGroupLabelOptions>(
-  (props) => {
+  function useMenuGroupLabel(props) {
     props = useCompositeGroupLabel(props);
     return props;
   },

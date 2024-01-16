@@ -21,7 +21,7 @@ import { useSelectList } from "./select-list.js";
  * ```
  */
 export const useSelectPopover = createHook2<TagName, SelectPopoverOptions>(
-  ({ store, alwaysVisible, ...props }) => {
+  function useSelectPopover({ store, alwaysVisible, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
     props = useSelectList({ store, alwaysVisible, ...props });

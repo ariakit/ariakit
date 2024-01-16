@@ -18,7 +18,7 @@ import type { PopoverStore } from "./popover-store.js";
  * ```
  */
 export const usePopoverDismiss = createHook2<TagName, PopoverDismissOptions>(
-  ({ store, ...props }) => {
+  function usePopoverDismiss({ store, ...props }) {
     const context = usePopoverScopedContext();
     store = store || context;
     props = useDialogDismiss({ store, ...props });

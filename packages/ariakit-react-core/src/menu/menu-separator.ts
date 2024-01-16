@@ -22,7 +22,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuSeparator = createHook2<TagName, MenuSeparatorOptions>(
-  ({ store, ...props }) => {
+  function useMenuSeparator({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
     props = useCompositeSeparator({ store, ...props });

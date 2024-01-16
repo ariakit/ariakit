@@ -17,7 +17,7 @@ import type { PopoverStore } from "./popover-store.js";
  * ```
  */
 export const usePopoverHeading = createHook2<TagName, PopoverHeadingOptions>(
-  (props) => {
+  function usePopoverHeading(props) {
     props = useDialogHeading(props);
     return props;
   },

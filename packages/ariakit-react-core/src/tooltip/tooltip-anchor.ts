@@ -28,7 +28,7 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  * ```
  */
 export const useTooltipAnchor = createHook2<TagName, TooltipAnchorOptions>(
-  ({ store, showOnHover = true, ...props }) => {
+  function useTooltipAnchor({ store, showOnHover = true, ...props }) {
     const context = useTooltipProviderContext();
     store = store || context;
 

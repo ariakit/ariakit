@@ -15,7 +15,7 @@ import { FocusTrap } from "./focus-trap.js";
  * ```
  */
 export const useFocusTrapRegion = createHook2<TagName, FocusTrapRegionOptions>(
-  ({ enabled = false, ...props }) => {
+  function useFocusTrapRegion({ enabled = false, ...props }) {
     const ref = useRef<HTMLDivElement>(null);
 
     props = useWrapElement(
@@ -86,7 +86,7 @@ export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusTrapRegionOptions<T extends ElementType = TagName>
+export interface FocusTrapRegionOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * If true, it will trap the focus in the region.

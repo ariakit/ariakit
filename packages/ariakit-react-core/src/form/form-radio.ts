@@ -33,7 +33,7 @@ import { useFormControl } from "./form-control.js";
  * ```
  */
 export const useFormRadio = createHook2<TagName, FormRadioOptions>(
-  ({ store, name: nameProp, value, ...props }) => {
+  function useFormRadio({ store, name: nameProp, value, ...props }) {
     const context = useFormContext();
     store = store || context;
 

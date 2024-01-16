@@ -48,12 +48,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-  forwardRef,
-} from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
@@ -71,6 +66,10 @@ import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.j
 import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 
@@ -104,7 +103,7 @@ function getElementFromProp(
  * ```
  */
 export const useDialog = createHook2<TagName, DialogOptions>(
-  ({
+  function useDialog({
     store: storeProp,
     open: openProp,
     onClose,
@@ -123,9 +122,9 @@ export const useDialog = createHook2<TagName, DialogOptions>(
     finalFocus,
     unmountOnHide,
     ...props
-  }) => {
+  }) {
     const context = useDialogProviderContext();
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
 
     const store = useDialogStore({
       store: storeProp || context,
@@ -536,7 +535,7 @@ export const useDialog = createHook2<TagName, DialogOptions>(
       autoFocusOnShow: autoFocusEnabled,
     });
     props = useDisclosureContent({ store, ...props });
-    props = useFocusable({ ...props, focusable });
+    props = useFocusable<TagName>({ ...props, focusable });
     props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
 
     return props;
@@ -580,7 +579,7 @@ export function createDialogComponent<T extends DialogOptions>(
  * ```
  */
 export const Dialog = createDialogComponent(
-  createComponent<DialogOptions>((props) => {
+  forwardRef(function Dialog(props: DialogProps) {
     const htmlProps = useDialog(props);
     return createElement(TagName, htmlProps);
   }),

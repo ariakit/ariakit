@@ -16,7 +16,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuItemCheck = createHook2<TagName, MenuItemCheckOptions>(
-  ({ store, checked, ...props }) => {
+  function useMenuItemCheck({ store, checked, ...props }) {
     const context = useContext(MenuItemCheckedContext);
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });

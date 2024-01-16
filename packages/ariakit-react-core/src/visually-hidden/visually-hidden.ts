@@ -15,7 +15,7 @@ import type { Options2, Props2 } from "../utils/types.js";
  * ```
  */
 export const useVisuallyHidden = createHook2<TagName, VisuallyHiddenOptions>(
-  (props) => {
+  function useVisuallyHidden(props) {
     props = {
       ...props,
       style: {

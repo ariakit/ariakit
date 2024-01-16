@@ -63,7 +63,13 @@ function findPushButton(
  * ```
  */
 export const useFormRemove = createHook2<TagName, FormRemoveOptions>(
-  ({ store, name: nameProp, index, autoFocusOnClick = true, ...props }) => {
+  function useFormRemove({
+    store,
+    name: nameProp,
+    index,
+    autoFocusOnClick = true,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 

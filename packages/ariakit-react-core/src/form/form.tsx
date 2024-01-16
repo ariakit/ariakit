@@ -189,7 +189,8 @@ export const Form = forwardRef(function Form(props: FormProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormOptions<T extends ElementType = TagName> extends Options2 {
+export interface FormOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

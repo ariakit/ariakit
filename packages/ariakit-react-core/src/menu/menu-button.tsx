@@ -59,7 +59,13 @@ function hasActiveItem(
  * ```
  */
 export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
-  ({ store, focusable, accessibleWhenDisabled, showOnHover, ...props }) => {
+  function useMenuButton({
+    store,
+    focusable,
+    accessibleWhenDisabled,
+    showOnHover,
+    ...props
+  }) {
     const context = useMenuProviderContext();
     store = store || context;
 

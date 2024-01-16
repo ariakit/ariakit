@@ -101,7 +101,7 @@ export const PopoverDisclosureArrow =
     return createElement(TagName, htmlProps);
   });
 
-export interface PopoverDisclosureArrowOptions<T extends ElementType = TagName>
+export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * Object returned by the

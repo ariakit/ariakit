@@ -23,7 +23,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuButtonArrow = createHook2<TagName, MenuButtonArrowOptions>(
-  ({ store, ...props }) => {
+  function useMenuButtonArrow({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });

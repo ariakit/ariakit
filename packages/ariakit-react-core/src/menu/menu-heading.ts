@@ -17,7 +17,7 @@ import type { MenuStore } from "./menu-store.js";
  * ```
  */
 export const useMenuHeading = createHook2<TagName, MenuHeadingOptions>(
-  (props) => {
+  function useMenuHeading(props) {
     props = useHovercardHeading(props);
     return props;
   },

@@ -46,7 +46,7 @@ function useComputedStyle(store: PopoverStore) {
  * ```
  */
 export const usePopoverArrow = createHook2<TagName, PopoverArrowOptions>(
-  ({ store, size = defaultSize, ...props }) => {
+  function usePopoverArrow({ store, size = defaultSize, ...props }) {
     const context = usePopoverContext();
     store = store || context;
 
@@ -124,7 +124,7 @@ export const PopoverArrow = forwardRef(function PopoverArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverArrowOptions<T extends ElementType = TagName>
+export interface PopoverArrowOptions<_T extends ElementType = TagName>
   extends Options2 {
   /**
    * Object returned by the
