@@ -1,7 +1,7 @@
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
 
 /**

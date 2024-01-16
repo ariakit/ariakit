@@ -1,7 +1,7 @@
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
 /**

@@ -13,7 +13,7 @@ import {
   createElement,
   createHook,
 } from "../utils/system.jsx";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useMenuProviderContext } from "./menu-context.js";
 import type { MenuListOptions } from "./menu-list.jsx";
 import { useMenuList } from "./menu-list.jsx";

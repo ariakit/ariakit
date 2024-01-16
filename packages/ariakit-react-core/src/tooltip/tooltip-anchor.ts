@@ -6,7 +6,7 @@ import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useTooltipProviderContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 

@@ -3,7 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
 import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 

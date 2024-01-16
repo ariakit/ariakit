@@ -9,7 +9,7 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";

@@ -340,7 +340,7 @@ export const usePortal = createHook2<TagName, PortalOptions>(
  */
 export const Portal = forwardRef(function Portal(props: PortalProps) {
   const htmlProps = usePortal(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export interface PortalOptions<T extends ElementType = TagName>

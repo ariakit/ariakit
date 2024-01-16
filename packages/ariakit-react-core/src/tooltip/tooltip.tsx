@@ -5,7 +5,7 @@ import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,

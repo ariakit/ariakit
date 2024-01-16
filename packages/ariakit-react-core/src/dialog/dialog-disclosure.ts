@@ -3,7 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useDialogProviderContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 

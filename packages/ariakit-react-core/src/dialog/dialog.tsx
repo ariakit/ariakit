@@ -54,7 +54,7 @@ import {
   createHook,
   forwardRef,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogDescriptionContext,

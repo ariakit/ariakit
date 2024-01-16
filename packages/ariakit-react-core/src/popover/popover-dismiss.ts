@@ -1,7 +1,7 @@
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { usePopoverScopedContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 

@@ -3,7 +3,7 @@ import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { DialogHeadingContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 

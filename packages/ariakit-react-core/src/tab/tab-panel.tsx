@@ -14,7 +14,7 @@ import {
   createElement,
   createHook,
 } from "../utils/system.jsx";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,

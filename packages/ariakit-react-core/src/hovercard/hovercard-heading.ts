@@ -1,7 +1,7 @@
 import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
 import { usePopoverHeading } from "../popover/popover-heading.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 /**

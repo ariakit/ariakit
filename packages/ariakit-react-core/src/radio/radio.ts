@@ -17,7 +17,7 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useRadioContext } from "./radio-context.js";
 import type { RadioStore, RadioStoreState } from "./radio-store.js";
 

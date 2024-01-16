@@ -5,7 +5,7 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";

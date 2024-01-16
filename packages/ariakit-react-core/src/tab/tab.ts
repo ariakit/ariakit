@@ -9,7 +9,7 @@ import {
   createHook,
   createMemoComponent,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import { useTabScopedContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 

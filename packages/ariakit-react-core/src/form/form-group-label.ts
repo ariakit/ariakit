@@ -1,7 +1,7 @@
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
 
 /**

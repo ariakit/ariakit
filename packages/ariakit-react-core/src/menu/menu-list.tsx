@@ -15,7 +15,7 @@ import {
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props2 } from "../utils/types.js";
 import {
   MenuScopedContextProvider,
   useMenuProviderContext,
