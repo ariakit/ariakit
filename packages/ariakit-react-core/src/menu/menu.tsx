@@ -262,4 +262,7 @@ export interface MenuOptions<T extends ElementType = TagName>
   extends MenuListOptions<T>,
     Omit<HovercardOptions<T>, "store"> {}
 
-export type MenuProps<T extends ElementType = TagName> = Props<MenuOptions<T>>;
+export type MenuProps<T extends ElementType = TagName> = Props2<
+  T,
+  MenuOptions<T>
+>;

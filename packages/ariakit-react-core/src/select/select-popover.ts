@@ -58,6 +58,7 @@ export interface SelectPopoverOptions<T extends ElementType = TagName>
   extends SelectListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type SelectPopoverProps<T extends ElementType = TagName> = Props<
+export type SelectPopoverProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectPopoverOptions<T>
 >;

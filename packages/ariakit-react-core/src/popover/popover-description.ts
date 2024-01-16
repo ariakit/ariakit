@@ -56,6 +56,7 @@ export interface PopoverDescriptionOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverDescriptionProps<T extends ElementType = TagName> = Props<
+export type PopoverDescriptionProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverDescriptionOptions<T>
 >;

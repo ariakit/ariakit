@@ -393,6 +393,7 @@ export interface SelectOptions<T extends ElementType = TagName>
   >;
 }
 
-export type SelectProps<T extends ElementType = TagName> = Props<
+export type SelectProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectOptions<T>
 >;

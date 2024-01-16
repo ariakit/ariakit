@@ -212,6 +212,7 @@ export interface FormControlOptions<T extends ElementType = TagName>
   touchOnBlur?: BooleanOrCallback<FocusEvent>;
 }
 
-export type FormControlProps<T extends ElementType = TagName> = Props<
+export type FormControlProps<T extends ElementType = TagName> = Props2<
+  T,
   FormControlOptions<T>
 >;

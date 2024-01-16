@@ -73,6 +73,7 @@ export interface TooltipArrowOptions<T extends ElementType = TagName>
   store?: TooltipStore;
 }
 
-export type TooltipArrowProps<T extends ElementType = TagName> = Props<
+export type TooltipArrowProps<T extends ElementType = TagName> = Props2<
+  T,
   TooltipArrowOptions<T>
 >;

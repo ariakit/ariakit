@@ -81,6 +81,7 @@ export interface FormSubmitOptions<T extends ElementType = TagName>
   accessibleWhenDisabled?: ButtonOptions<T>["accessibleWhenDisabled"];
 }
 
-export type FormSubmitProps<T extends ElementType = TagName> = Props<
+export type FormSubmitProps<T extends ElementType = TagName> = Props2<
+  T,
   FormSubmitOptions<T>
 >;

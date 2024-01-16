@@ -83,6 +83,7 @@ export interface ComboboxSeparatorOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props<
+export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props2<
+  T,
   ComboboxSeparatorOptions<T>
 >;

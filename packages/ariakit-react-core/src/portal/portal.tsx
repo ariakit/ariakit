@@ -1,4 +1,4 @@
-import type { MutableRefObject, RefCallback } from "react";
+import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";
@@ -16,7 +16,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { setRef } from "../utils/misc.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { PortalContext } from "./portal-context.js";
 
@@ -343,7 +343,8 @@ export const Portal = forwardRef(function Portal(props: PortalProps) {
   return createElement("div", htmlProps);
 });
 
-export interface PortalOptions<T extends As = "div"> extends Options<T> {
+export interface PortalOptions<T extends ElementType = TagName>
+  extends Options<T> {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
    * same as the order in which the underlying
@@ -453,4 +454,7 @@ export interface PortalOptions<T extends As = "div"> extends Options<T> {
     | null;
 }
 
-export type PortalProps<T extends As = "div"> = Props<PortalOptions<T>>;
+export type PortalProps<T extends ElementType = TagName> = Props2<
+  T,
+  PortalOptions<T>
+>;

@@ -62,6 +62,7 @@ export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
 export interface MenuBarOptions<T extends ElementType = TagName>
   extends MenubarOptions<T> {}
 
-export type MenuBarProps<T extends ElementType = TagName> = Props<
+export type MenuBarProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuBarOptions<T>
 >;

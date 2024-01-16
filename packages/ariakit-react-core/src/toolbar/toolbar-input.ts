@@ -54,6 +54,7 @@ export interface ToolbarInputOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeInputOptions<T>, "store"> {}
 
-export type ToolbarInputProps<T extends ElementType = TagName> = Props<
+export type ToolbarInputProps<T extends ElementType = TagName> = Props2<
+  T,
   ToolbarInputOptions<T>
 >;

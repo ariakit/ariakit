@@ -72,6 +72,7 @@ export interface DialogHeadingOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogHeadingProps<T extends ElementType = TagName> = Props<
+export type DialogHeadingProps<T extends ElementType = TagName> = Props2<
+  T,
   DialogHeadingOptions<T>
 >;

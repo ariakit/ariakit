@@ -187,6 +187,7 @@ export interface FormPushOptions<T extends ElementType = TagName>
   autoFocusOnClick?: boolean;
 }
 
-export type FormPushProps<T extends ElementType = TagName> = Props<
+export type FormPushProps<T extends ElementType = TagName> = Props2<
+  T,
   FormPushOptions<T>
 >;

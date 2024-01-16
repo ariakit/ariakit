@@ -720,6 +720,7 @@ export interface ComboboxOptions<T extends ElementType = TagName>
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type ComboboxProps<T extends ElementType = TagName> = Props<
+export type ComboboxProps<T extends ElementType = TagName> = Props2<
+  T,
   ComboboxOptions<T>
 >;

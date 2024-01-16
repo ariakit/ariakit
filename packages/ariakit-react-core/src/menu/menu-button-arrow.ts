@@ -74,6 +74,7 @@ export interface MenuButtonArrowOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuButtonArrowProps<T extends ElementType = TagName> = Props<
+export type MenuButtonArrowProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuButtonArrowOptions<T>
 >;

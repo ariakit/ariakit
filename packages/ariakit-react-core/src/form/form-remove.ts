@@ -178,6 +178,7 @@ export interface FormRemoveOptions<T extends ElementType = TagName>
   autoFocusOnClick?: boolean;
 }
 
-export type FormRemoveProps<T extends ElementType = TagName> = Props<
+export type FormRemoveProps<T extends ElementType = TagName> = Props2<
+  T,
   FormRemoveOptions<T>
 >;

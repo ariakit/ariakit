@@ -75,4 +75,7 @@ Object.assign(
 
 export type RoleOptions<T extends ElementType = TagName> = Options<T>;
 
-export type RoleProps<T extends ElementType = TagName> = Props<RoleOptions<T>>;
+export type RoleProps<T extends ElementType = TagName> = Props2<
+  T,
+  RoleOptions<T>
+>;

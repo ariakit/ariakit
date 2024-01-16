@@ -59,6 +59,7 @@ export interface PopoverAnchorOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverAnchorProps<T extends ElementType = TagName> = Props<
+export type PopoverAnchorProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverAnchorOptions<T>
 >;

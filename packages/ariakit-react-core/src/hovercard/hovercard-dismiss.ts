@@ -60,6 +60,7 @@ export interface HovercardDismissOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardDismissProps<T extends ElementType = TagName> = Props<
+export type HovercardDismissProps<T extends ElementType = TagName> = Props2<
+  T,
   HovercardDismissOptions<T>
 >;

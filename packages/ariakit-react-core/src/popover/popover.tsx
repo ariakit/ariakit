@@ -611,6 +611,7 @@ export interface PopoverOptions<T extends ElementType = TagName>
   }) => void | Promise<void>;
 }
 
-export type PopoverProps<T extends ElementType = TagName> = Props<
+export type PopoverProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverOptions<T>
 >;

@@ -59,6 +59,7 @@ export interface PopoverDismissOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverDismissProps<T extends ElementType = TagName> = Props<
+export type PopoverDismissProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverDismissOptions<T>
 >;

@@ -78,6 +78,7 @@ export const FormField = createMemoComponent<FormFieldOptions>((props) => {
 export interface FormFieldOptions<T extends ElementType = TagName>
   extends FormControlOptions<T> {}
 
-export type FormFieldProps<T extends ElementType = TagName> = Props<
+export type FormFieldProps<T extends ElementType = TagName> = Props2<
+  T,
   FormFieldOptions<T>
 >;

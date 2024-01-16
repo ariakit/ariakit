@@ -220,6 +220,7 @@ export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemCheckboxProps<T extends ElementType = TagName> = Props<
+export type MenuItemCheckboxProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuItemCheckboxOptions<T>
 >;

@@ -98,6 +98,7 @@ export interface DialogDismissOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogDismissProps<T extends ElementType = TagName> = Props<
+export type DialogDismissProps<T extends ElementType = TagName> = Props2<
+  T,
   DialogDismissOptions<T>
 >;

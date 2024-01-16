@@ -60,6 +60,7 @@ export type FocusableContainerOptions<T extends ElementType = TagName> =
     autoFocusOnShow?: boolean;
   };
 
-export type FocusableContainerProps<T extends ElementType = TagName> = Props<
+export type FocusableContainerProps<T extends ElementType = TagName> = Props2<
+  T,
   FocusableContainerOptions<T>
 >;

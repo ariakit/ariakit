@@ -55,6 +55,7 @@ export const VisuallyHidden = forwardRef(function VisuallyHidden(
 
 export type VisuallyHiddenOptions<T extends ElementType = TagName> = Options<T>;
 
-export type VisuallyHiddenProps<T extends ElementType = TagName> = Props<
+export type VisuallyHiddenProps<T extends ElementType = TagName> = Props2<
+  T,
   VisuallyHiddenOptions<T>
 >;

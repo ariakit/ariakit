@@ -68,6 +68,7 @@ export interface SelectGroupLabelOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectGroupLabelProps<T extends ElementType = TagName> = Props<
+export type SelectGroupLabelProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectGroupLabelOptions<T>
 >;

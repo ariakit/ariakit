@@ -258,6 +258,7 @@ export interface SelectItemOptions<T extends ElementType = TagName>
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type SelectItemProps<T extends ElementType = TagName> = Props<
+export type SelectItemProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectItemOptions<T>
 >;

@@ -168,6 +168,7 @@ export interface HovercardAnchorOptions<T extends ElementType = TagName>
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type HovercardAnchorProps<T extends ElementType = TagName> = Props<
+export type HovercardAnchorProps<T extends ElementType = TagName> = Props2<
+  T,
   HovercardAnchorOptions<T>
 >;

@@ -92,6 +92,7 @@ export interface FormInputOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     FocusableOptions<T> {}
 
-export type FormInputProps<T extends ElementType = TagName> = Props<
+export type FormInputProps<T extends ElementType = TagName> = Props2<
+  T,
   FormInputOptions<T>
 >;

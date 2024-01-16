@@ -68,6 +68,7 @@ export interface MenuItemCheckOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuItemCheckProps<T extends ElementType = TagName> = Props<
+export type MenuItemCheckProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuItemCheckOptions<T>
 >;

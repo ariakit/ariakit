@@ -63,6 +63,7 @@ export const FormRadioGroup = forwardRef(function FormRadioGroup(
 export type FormRadioGroupOptions<T extends ElementType = TagName> =
   FormGroupOptions<T>;
 
-export type FormRadioGroupProps<T extends ElementType = TagName> = Props<
+export type FormRadioGroupProps<T extends ElementType = TagName> = Props2<
+  T,
   FormRadioGroupOptions<T>
 >;

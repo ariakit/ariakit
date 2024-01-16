@@ -171,6 +171,7 @@ export interface TooltipAnchorOptions<T extends ElementType = TagName>
   store?: TooltipStore;
 }
 
-export type TooltipAnchorProps<T extends ElementType = TagName> = Props<
+export type TooltipAnchorProps<T extends ElementType = TagName> = Props2<
+  T,
   TooltipAnchorOptions<T>
 >;

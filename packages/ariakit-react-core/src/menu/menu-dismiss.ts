@@ -58,6 +58,7 @@ export interface MenuDismissOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuDismissProps<T extends ElementType = TagName> = Props<
+export type MenuDismissProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuDismissOptions<T>
 >;

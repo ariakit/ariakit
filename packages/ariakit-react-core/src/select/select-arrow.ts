@@ -69,6 +69,7 @@ export interface SelectArrowOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectArrowProps<T extends ElementType = TagName> = Props<
+export type SelectArrowProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectArrowOptions<T>
 >;

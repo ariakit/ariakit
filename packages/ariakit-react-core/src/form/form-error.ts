@@ -134,6 +134,7 @@ export interface FormErrorOptions<T extends ElementType = TagName>
   name: StringLike;
 }
 
-export type FormErrorProps<T extends ElementType = TagName> = Props<
+export type FormErrorProps<T extends ElementType = TagName> = Props2<
+  T,
   FormErrorOptions<T>
 >;

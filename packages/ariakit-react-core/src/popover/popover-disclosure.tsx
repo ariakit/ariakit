@@ -85,6 +85,7 @@ export interface PopoverDisclosureOptions<T extends ElementType = TagName>
   extends PopoverAnchorOptions<T>,
     Omit<DialogDisclosureOptions<T>, "store"> {}
 
-export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
+export type PopoverDisclosureProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverDisclosureOptions<T>
 >;

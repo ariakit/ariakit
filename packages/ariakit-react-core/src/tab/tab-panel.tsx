@@ -162,6 +162,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
   tabId?: string | null;
 }
 
-export type TabPanelProps<T extends ElementType = TagName> = Props<
+export type TabPanelProps<T extends ElementType = TagName> = Props2<
+  T,
   TabPanelOptions<T>
 >;

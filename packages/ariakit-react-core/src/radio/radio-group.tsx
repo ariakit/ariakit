@@ -88,6 +88,7 @@ export interface RadioGroupOptions<T extends ElementType = TagName>
   store?: RadioStore;
 }
 
-export type RadioGroupProps<T extends ElementType = TagName> = Props<
+export type RadioGroupProps<T extends ElementType = TagName> = Props2<
+  T,
   RadioGroupOptions<T>
 >;

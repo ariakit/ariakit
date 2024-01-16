@@ -123,6 +123,7 @@ export interface FormDescriptionOptions<T extends ElementType = TagName>
   name: StringLike;
 }
 
-export type FormDescriptionProps<T extends ElementType = TagName> = Props<
+export type FormDescriptionProps<T extends ElementType = TagName> = Props2<
+  T,
   FormDescriptionOptions<T>
 >;

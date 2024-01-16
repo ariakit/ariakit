@@ -244,6 +244,7 @@ export interface DisclosureContentOptions<T extends ElementType = TagName>
   unmountOnHide?: boolean;
 }
 
-export type DisclosureContentProps<T extends ElementType = TagName> = Props<
+export type DisclosureContentProps<T extends ElementType = TagName> = Props2<
+  T,
   DisclosureContentOptions<T>
 >;

@@ -68,6 +68,7 @@ export interface MenuSeparatorOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuSeparatorProps<T extends ElementType = TagName> = Props<
+export type MenuSeparatorProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuSeparatorOptions<T>
 >;

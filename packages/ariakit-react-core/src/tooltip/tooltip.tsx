@@ -129,6 +129,7 @@ export interface TooltipOptions<T extends ElementType = TagName>
   gutter?: HovercardOptions<T>["gutter"];
 }
 
-export type TooltipProps<T extends ElementType = TagName> = Props<
+export type TooltipProps<T extends ElementType = TagName> = Props2<
+  T,
   TooltipOptions<T>
 >;

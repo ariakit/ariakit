@@ -130,6 +130,7 @@ export interface DisclosureOptions<T extends ElementType = TagName>
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type DisclosureProps<T extends ElementType = TagName> = Props<
+export type DisclosureProps<T extends ElementType = TagName> = Props2<
+  T,
   DisclosureOptions<T>
 >;

@@ -61,6 +61,7 @@ export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
   store?: ToolbarStore;
 }
 
-export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<
+export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props2<
+  T,
   ToolbarSeparatorOptions<T>
 >;

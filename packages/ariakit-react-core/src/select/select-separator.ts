@@ -66,6 +66,7 @@ export interface SelectSeparatorOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectSeparatorProps<T extends ElementType = TagName> = Props<
+export type SelectSeparatorProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectSeparatorOptions<T>
 >;

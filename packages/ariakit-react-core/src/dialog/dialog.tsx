@@ -817,6 +817,7 @@ export interface DialogOptions<T extends ElementType = TagName>
   finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
 }
 
-export type DialogProps<T extends ElementType = TagName> = Props<
+export type DialogProps<T extends ElementType = TagName> = Props2<
+  T,
   DialogOptions<T>
 >;

@@ -89,6 +89,7 @@ export interface FormCheckboxOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<CheckboxOptions<T>, "store" | "name"> {}
 
-export type FormCheckboxProps<T extends ElementType = TagName> = Props<
+export type FormCheckboxProps<T extends ElementType = TagName> = Props2<
+  T,
   FormCheckboxOptions<T>
 >;

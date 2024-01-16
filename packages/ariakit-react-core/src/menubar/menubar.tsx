@@ -129,6 +129,7 @@ export interface MenubarOptions<T extends ElementType = TagName>
   store?: MenubarStore;
 }
 
-export type MenubarProps<T extends ElementType = TagName> = Props<
+export type MenubarProps<T extends ElementType = TagName> = Props2<
+  T,
   MenubarOptions<T>
 >;

@@ -95,6 +95,7 @@ export interface TabListOptions<T extends ElementType = TagName>
   store?: TabStore;
 }
 
-export type TabListProps<T extends ElementType = TagName> = Props<
+export type TabListProps<T extends ElementType = TagName> = Props2<
+  T,
   TabListOptions<T>
 >;

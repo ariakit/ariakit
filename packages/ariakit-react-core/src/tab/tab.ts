@@ -130,4 +130,7 @@ export interface TabOptions<T extends ElementType = TagName>
   accessibleWhenDisabled?: CompositeItemOptions["accessibleWhenDisabled"];
 }
 
-export type TabProps<T extends ElementType = TagName> = Props<TabOptions<T>>;
+export type TabProps<T extends ElementType = TagName> = Props2<
+  T,
+  TabOptions<T>
+>;

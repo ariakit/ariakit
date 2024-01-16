@@ -213,6 +213,7 @@ export interface RadioOptions<T extends ElementType = TagName>
   >;
 }
 
-export type RadioProps<T extends ElementType = TagName> = Props<
+export type RadioProps<T extends ElementType = TagName> = Props2<
+  T,
   RadioOptions<T>
 >;

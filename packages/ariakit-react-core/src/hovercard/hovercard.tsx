@@ -421,6 +421,7 @@ export interface HovercardOptions<T extends ElementType = TagName>
   modal?: PopoverOptions<T>["modal"];
 }
 
-export type HovercardProps<T extends ElementType = TagName> = Props<
+export type HovercardProps<T extends ElementType = TagName> = Props2<
+  T,
   HovercardOptions<T>
 >;

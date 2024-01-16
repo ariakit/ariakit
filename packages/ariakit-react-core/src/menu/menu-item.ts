@@ -201,6 +201,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type MenuItemProps<T extends ElementType = TagName> = Props<
+export type MenuItemProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuItemOptions<T>
 >;

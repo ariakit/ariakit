@@ -48,6 +48,7 @@ export const FocusTrap = forwardRef(function FocusTrap(props: FocusTrapProps) {
 export type FocusTrapOptions<T extends ElementType = TagName> =
   VisuallyHiddenOptions<T>;
 
-export type FocusTrapProps<T extends ElementType = TagName> = Props<
+export type FocusTrapProps<T extends ElementType = TagName> = Props2<
+  T,
   FocusTrapOptions<T>
 >;

@@ -73,6 +73,7 @@ export interface FormResetOptions<T extends ElementType = TagName>
   store?: FormStore;
 }
 
-export type FormResetProps<T extends ElementType = TagName> = Props<
+export type FormResetProps<T extends ElementType = TagName> = Props2<
+  T,
   FormResetOptions<T>
 >;

@@ -63,6 +63,7 @@ export interface MenuGroupOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuGroupProps<T extends ElementType = TagName> = Props<
+export type MenuGroupProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuGroupOptions<T>
 >;

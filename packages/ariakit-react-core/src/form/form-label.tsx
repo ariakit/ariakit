@@ -166,6 +166,7 @@ export interface FormLabelOptions<T extends ElementType = TagName>
   name: StringLike;
 }
 
-export type FormLabelProps<T extends ElementType = TagName> = Props<
+export type FormLabelProps<T extends ElementType = TagName> = Props2<
+  T,
   FormLabelOptions<T>
 >;

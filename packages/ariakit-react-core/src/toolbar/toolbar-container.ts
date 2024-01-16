@@ -58,6 +58,7 @@ export interface ToolbarContainerOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeContainerOptions<T>, "store"> {}
 
-export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
+export type ToolbarContainerProps<T extends ElementType = TagName> = Props2<
+  T,
   ToolbarContainerOptions<T>
 >;

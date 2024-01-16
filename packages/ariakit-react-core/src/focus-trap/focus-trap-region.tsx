@@ -95,6 +95,7 @@ export interface FocusTrapRegionOptions<T extends ElementType = TagName>
   enabled?: boolean;
 }
 
-export type FocusTrapRegionProps<T extends ElementType = TagName> = Props<
+export type FocusTrapRegionProps<T extends ElementType = TagName> = Props2<
+  T,
   FocusTrapRegionOptions<T>
 >;

@@ -109,6 +109,7 @@ export interface FormRadioOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<RadioOptions<T>, "store" | "name"> {}
 
-export type FormRadioProps<T extends ElementType = TagName> = Props<
+export type FormRadioProps<T extends ElementType = TagName> = Props2<
+  T,
   FormRadioOptions<T>
 >;

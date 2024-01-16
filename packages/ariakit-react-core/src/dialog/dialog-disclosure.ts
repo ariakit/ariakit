@@ -74,6 +74,7 @@ export interface DialogDisclosureOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogDisclosureProps<T extends ElementType = TagName> = Props<
+export type DialogDisclosureProps<T extends ElementType = TagName> = Props2<
+  T,
   DialogDisclosureOptions<T>
 >;

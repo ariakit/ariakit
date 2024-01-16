@@ -184,6 +184,7 @@ export interface MenuItemRadioOptions<T extends ElementType = TagName>
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemRadioProps<T extends ElementType = TagName> = Props<
+export type MenuItemRadioProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuItemRadioOptions<T>
 >;

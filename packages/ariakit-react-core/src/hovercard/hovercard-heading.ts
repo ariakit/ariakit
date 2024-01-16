@@ -58,6 +58,7 @@ export interface HovercardHeadingOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardHeadingProps<T extends ElementType = TagName> = Props<
+export type HovercardHeadingProps<T extends ElementType = TagName> = Props2<
+  T,
   HovercardHeadingOptions<T>
 >;

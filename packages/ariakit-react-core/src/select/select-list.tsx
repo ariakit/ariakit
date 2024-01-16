@@ -198,6 +198,7 @@ export interface SelectListOptions<T extends ElementType = TagName>
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
-export type SelectListProps<T extends ElementType = TagName> = Props<
+export type SelectListProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectListOptions<T>
 >;

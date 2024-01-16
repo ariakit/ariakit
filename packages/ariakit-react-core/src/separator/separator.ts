@@ -43,6 +43,7 @@ export interface SeparatorOptions<T extends ElementType = TagName>
   orientation?: "horizontal" | "vertical";
 }
 
-export type SeparatorProps<T extends ElementType = TagName> = Props<
+export type SeparatorProps<T extends ElementType = TagName> = Props2<
+  T,
   SeparatorOptions<T>
 >;

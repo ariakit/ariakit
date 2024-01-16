@@ -68,6 +68,7 @@ export interface FormGroupLabelOptions<T extends ElementType = TagName>
   store?: FormStore;
 }
 
-export type FormGroupLabelProps<T extends ElementType = TagName> = Props<
+export type FormGroupLabelProps<T extends ElementType = TagName> = Props2<
+  T,
   FormGroupLabelOptions<T>
 >;

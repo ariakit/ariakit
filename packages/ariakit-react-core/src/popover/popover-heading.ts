@@ -57,6 +57,7 @@ export interface PopoverHeadingOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverHeadingProps<T extends ElementType = TagName> = Props<
+export type PopoverHeadingProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverHeadingOptions<T>
 >;

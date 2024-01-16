@@ -103,6 +103,7 @@ export interface ToolbarOptions<T extends ElementType = TagName>
   store?: ToolbarStore;
 }
 
-export type ToolbarProps<T extends ElementType = TagName> = Props<
+export type ToolbarProps<T extends ElementType = TagName> = Props2<
+  T,
   ToolbarOptions<T>
 >;

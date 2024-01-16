@@ -56,6 +56,7 @@ export interface MenuHeadingOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuHeadingProps<T extends ElementType = TagName> = Props<
+export type MenuHeadingProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuHeadingOptions<T>
 >;

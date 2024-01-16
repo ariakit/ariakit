@@ -239,4 +239,7 @@ export interface FormOptions<T extends ElementType = TagName>
   autoFocusOnSubmit?: boolean;
 }
 
-export type FormProps<T extends ElementType = TagName> = Props<FormOptions<T>>;
+export type FormProps<T extends ElementType = TagName> = Props2<
+  T,
+  FormOptions<T>
+>;

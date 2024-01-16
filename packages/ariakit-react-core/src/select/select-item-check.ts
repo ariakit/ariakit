@@ -69,6 +69,7 @@ export interface SelectItemCheckOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectItemCheckProps<T extends ElementType = TagName> = Props<
+export type SelectItemCheckProps<T extends ElementType = TagName> = Props2<
+  T,
   SelectItemCheckOptions<T>
 >;

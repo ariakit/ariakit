@@ -145,6 +145,7 @@ export interface PopoverArrowOptions<T extends ElementType = TagName>
   size?: number;
 }
 
-export type PopoverArrowProps<T extends ElementType = TagName> = Props<
+export type PopoverArrowProps<T extends ElementType = TagName> = Props2<
+  T,
   PopoverArrowOptions<T>
 >;
