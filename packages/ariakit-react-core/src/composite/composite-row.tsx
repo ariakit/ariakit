@@ -1,13 +1,17 @@
 import { useMemo } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import {
   CompositeRowContext,
   useCompositeContext,
 } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `CompositeRow` component. Wrapping `CompositeItem`
@@ -27,13 +31,13 @@ import type { CompositeStore } from "./composite-store.js";
  * </Composite>
  * ```
  */
-export const useCompositeRow = createHook<CompositeRowOptions>(
-  ({
+export const useCompositeRow = createHook2<TagName, CompositeRowOptions>(
+  function useCompositeRow({
     store,
     "aria-setsize": ariaSetSize,
     "aria-posinset": ariaPosInSet,
     ...props
-  }) => {
+  }) {
     const context = useCompositeContext();
     store = store || context;
 
@@ -66,7 +70,7 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
 
     props = { id, ...props };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -95,16 +99,15 @@ export const useCompositeRow = createHook<CompositeRowOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeRow = createComponent<CompositeRowOptions>((props) => {
+export const CompositeRow = forwardRef(function CompositeRow(
+  props: CompositeRowProps,
+) {
   const htmlProps = useCompositeRow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeRow.displayName = "CompositeRow";
-}
-
-export interface CompositeRowOptions<T extends As = "div"> extends Options<T> {
+export interface CompositeRowOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -116,6 +119,7 @@ export interface CompositeRowOptions<T extends As = "div"> extends Options<T> {
   store?: CompositeStore;
 }
 
-export type CompositeRowProps<T extends As = "div"> = Props<
+export type CompositeRowProps<T extends ElementType = TagName> = Props2<
+  T,
   CompositeRowOptions<T>
 >;

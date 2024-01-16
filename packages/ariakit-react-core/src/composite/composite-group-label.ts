@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Props2 } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `CompositeGroupLabel` component. This hook must be
@@ -16,12 +20,13 @@ import type { CompositeStore } from "./composite-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
-  ({ store, ...props }) => {
-    props = useGroupLabel(props);
-    return props;
-  },
-);
+export const useCompositeGroupLabel = createHook2<
+  TagName,
+  CompositeGroupLabelOptions
+>(function useCompositeGroupLabel({ store, ...props }) {
+  props = useGroupLabel(props);
+  return props;
+});
 
 /**
  * Renders a label in a composite group. This component must be wrapped with
@@ -41,18 +46,14 @@ export const useCompositeGroupLabel = createHook<CompositeGroupLabelOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeGroupLabel = createComponent<CompositeGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useCompositeGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const CompositeGroupLabel = forwardRef(function CompositeGroupLabel(
+  props: CompositeGroupLabelProps,
+) {
+  const htmlProps = useCompositeGroupLabel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeGroupLabel.displayName = "CompositeGroupLabel";
-}
-
-export interface CompositeGroupLabelOptions<T extends As = "div">
+export interface CompositeGroupLabelOptions<T extends ElementType = TagName>
   extends GroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -65,6 +66,7 @@ export interface CompositeGroupLabelOptions<T extends As = "div">
   store?: CompositeStore;
 }
 
-export type CompositeGroupLabelProps<T extends As = "div"> = Props<
+export type CompositeGroupLabelProps<T extends ElementType = TagName> = Props2<
+  T,
   CompositeGroupLabelOptions<T>
 >;

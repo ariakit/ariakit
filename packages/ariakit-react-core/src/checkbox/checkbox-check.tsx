@@ -1,8 +1,13 @@
 import { useContext } from "react";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 const checkmark = (
   <svg
@@ -40,8 +45,8 @@ function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
  * <Role {...props} />
  * ```
  */
-export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
-  ({ store, checked, ...props }) => {
+export const useCheckboxCheck = createHook2<TagName, CheckboxCheckOptions>(
+  function useCheckboxCheck({ store, checked, ...props }) {
     const context = useContext(CheckboxCheckedContext);
     checked = checked ?? context;
     const children = getChildren({ checked, children: props.children });
@@ -58,7 +63,7 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
       },
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -77,17 +82,15 @@ export const useCheckboxCheck = createHook<CheckboxCheckOptions>(
  * <CheckboxCheck checked />
  * ```
  */
-export const CheckboxCheck = createComponent<CheckboxCheckOptions>((props) => {
+export const CheckboxCheck = forwardRef(function CheckboxCheck(
+  props: CheckboxCheckProps,
+) {
   const htmlProps = useCheckboxCheck(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  CheckboxCheck.displayName = "CheckboxCheck";
-}
-
-export interface CheckboxCheckOptions<T extends As = "span">
-  extends Options<T> {
+export interface CheckboxCheckOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
@@ -106,6 +109,7 @@ export interface CheckboxCheckOptions<T extends As = "span">
   checked?: boolean;
 }
 
-export type CheckboxCheckProps<T extends As = "span"> = Props<
+export type CheckboxCheckProps<T extends ElementType = TagName> = Props2<
+  T,
   CheckboxCheckOptions<T>
 >;

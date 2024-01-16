@@ -1,14 +1,24 @@
-import type { FocusEvent, KeyboardEvent } from "react";
+import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import {
   getDocument,
   getTextboxSelection,
   isTextField,
 } from "@ariakit/core/utils/dom";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import {
+  createElement,
+  createHook2,
+  forwardRef,
+  memo,
+} from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getValueLength(element: HTMLElement) {
   if (isTextField(element)) {
@@ -35,32 +45,30 @@ function getValueLength(element: HTMLElement) {
  * </Composite>
  * ```
  */
-export const useCompositeInput = createHook<CompositeInputOptions>(
-  ({ store, ...props }) => {
+export const useCompositeInput = createHook2<TagName, CompositeInputOptions>(
+  function useCompositeInput({ store, ...props }) {
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useEvent(
-      (event: KeyboardEvent<HTMLInputElement>) => {
-        onKeyDownCaptureProp?.(event);
-        if (event.defaultPrevented) return;
-        const element = event.currentTarget;
-        if (!element.isContentEditable && !isTextField(element)) return;
-        const selection = getTextboxSelection(element);
-        if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-          if (selection.end !== getValueLength(element)) {
-            event.stopPropagation();
-          }
-        } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-          if (selection.start !== 0) {
-            event.stopPropagation();
-          }
+    const onKeyDownCapture = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      const element = event.currentTarget;
+      if (!element.isContentEditable && !isTextField(element)) return;
+      const selection = getTextboxSelection(element);
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        if (selection.end !== getValueLength(element)) {
+          event.stopPropagation();
         }
-      },
-    );
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        if (selection.start !== 0) {
+          event.stopPropagation();
+        }
+      }
+    });
 
     const onFocusProp = props.onFocus;
 
-    const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
       selectTextField(event.currentTarget);
@@ -72,7 +80,7 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
       onFocus,
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -91,19 +99,15 @@ export const useCompositeInput = createHook<CompositeInputOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeInput = createComponent<CompositeInputOptions>(
-  (props) => {
+export const CompositeInput = memo(
+  forwardRef(function CompositeInput(props: CompositeInputProps) {
     const htmlProps = useCompositeInput(props);
-    return createElement("input", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeInput.displayName = "CompositeInput";
-}
-
-export interface CompositeInputOptions<T extends As = "input">
-  extends Options<T> {
+export interface CompositeInputOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -115,6 +119,7 @@ export interface CompositeInputOptions<T extends As = "input">
   store?: CompositeStore;
 }
 
-export type CompositeInputProps<T extends As = "input"> = Props<
+export type CompositeInputProps<T extends ElementType = TagName> = Props2<
+  T,
   CompositeInputOptions<T>
 >;

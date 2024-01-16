@@ -1,10 +1,14 @@
-import type { CSSProperties, FocusEvent } from "react";
+import type { CSSProperties, ElementType, FocusEvent } from "react";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Props2 } from "../utils/types.js";
 import type { CompositeOverflowStore } from "./composite-overflow-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 // Hiding the popover with `display: none` would prevent the hidden items to be
 // focused, so we just make it transparent and disable pointer events.
@@ -26,57 +30,58 @@ const hiddenStyle: CSSProperties = {
  * </Role>
  * ```
  */
-export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
-  ({
+export const useCompositeOverflow = createHook2<
+  TagName,
+  CompositeOverflowOptions
+>(function useCompositeOverflow({
+  store,
+  backdropProps: backdropPropsProp,
+  wrapperProps: wrapperPropsProp,
+  portal = false,
+  ...props
+}) {
+  const onFocusProp = props.onFocus;
+
+  const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
+    onFocusProp?.(event);
+    if (event.defaultPrevented) return;
+    store.show();
+  });
+
+  const mounted = store.useState("mounted");
+
+  const getStyle = (styleProp?: CSSProperties) =>
+    mounted ? styleProp : { ...hiddenStyle, ...styleProp };
+
+  const backdropProps = {
+    hidden: false,
+    ...backdropPropsProp,
+    style: getStyle(backdropPropsProp?.style),
+  };
+
+  const wrapperProps = {
+    ...wrapperPropsProp,
+    style: getStyle(wrapperPropsProp?.style),
+  };
+
+  props = {
+    role: "presentation",
+    hidden: false,
+    focusable: false,
+    ...props,
+    onFocus,
+  };
+
+  props = usePopover({
     store,
-    backdropProps: backdropPropsProp,
-    wrapperProps: wrapperPropsProp,
-    portal = false,
-    ...props
-  }) => {
-    const onFocusProp = props.onFocus;
+    backdropProps,
+    wrapperProps,
+    portal,
+    ...props,
+  });
 
-    const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
-      onFocusProp?.(event);
-      if (event.defaultPrevented) return;
-      store.show();
-    });
-
-    const mounted = store.useState("mounted");
-
-    const getStyle = (styleProp?: CSSProperties) =>
-      mounted ? styleProp : { ...hiddenStyle, ...styleProp };
-
-    const backdropProps = {
-      hidden: false,
-      ...backdropPropsProp,
-      style: getStyle(backdropPropsProp?.style),
-    };
-
-    const wrapperProps = {
-      ...wrapperPropsProp,
-      style: getStyle(wrapperPropsProp?.style),
-    };
-
-    props = {
-      role: "presentation",
-      hidden: false,
-      focusable: false,
-      ...props,
-      onFocus,
-    };
-
-    props = usePopover({
-      store,
-      backdropProps,
-      wrapperProps,
-      portal,
-      ...props,
-    });
-
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a popover that will contain the overflow items in a composite
@@ -99,18 +104,14 @@ export const useCompositeOverflow = createHook<CompositeOverflowOptions>(
  * </Composite>
  * ```
  */
-export const CompositeOverflow = createComponent<CompositeOverflowOptions>(
-  (props) => {
-    const htmlProps = useCompositeOverflow(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const CompositeOverflow = forwardRef(function CompositeOverflow(
+  props: CompositeOverflowProps,
+) {
+  const htmlProps = useCompositeOverflow(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeOverflow.displayName = "CompositeOverflow";
-}
-
-export interface CompositeOverflowOptions<T extends As = "div">
+export interface CompositeOverflowOptions<T extends ElementType = TagName>
   extends PopoverOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
@@ -118,6 +119,7 @@ export interface CompositeOverflowOptions<T extends As = "div">
   store: CompositeOverflowStore;
 }
 
-export type CompositeOverflowProps<T extends As = "div"> = Props<
+export type CompositeOverflowProps<T extends ElementType = TagName> = Props2<
+  T,
   CompositeOverflowOptions<T>
 >;

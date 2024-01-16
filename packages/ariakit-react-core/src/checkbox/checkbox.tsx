@@ -1,6 +1,14 @@
-import type { ChangeEvent, InputHTMLAttributes, MouseEvent } from "react";
+import type {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  ElementType,
+  MouseEvent,
+} from "react";
 import { useEffect, useRef, useState } from "react";
-import { disabledFromProps } from "@ariakit/core/utils/misc";
+import {
+  disabledFromProps,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
 import {
@@ -11,13 +19,17 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Props2 } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
 import { useCheckboxContext } from "./checkbox-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
 
-function setMixed(element: HTMLInputElement, mixed?: boolean) {
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
+
+function setMixed(element: HTMLType, mixed?: boolean) {
   if (mixed) {
     element.indeterminate = true;
   } else if (element.indeterminate) {
@@ -47,15 +59,15 @@ function getPrimitiveValue<T>(value: T) {
  * <Role {...props}>Accessible checkbox</Role>
  * ```
  */
-export const useCheckbox = createHook<CheckboxOptions>(
-  ({
+export const useCheckbox = createHook2<TagName, CheckboxOptions>(
+  function useCheckbox({
     store,
     name,
     value: valueProp,
     checked: checkedProp,
     defaultChecked,
     ...props
-  }) => {
+  }) {
     const context = useCheckboxContext();
     store = store || context;
 
@@ -76,8 +88,8 @@ export const useCheckbox = createHook<CheckboxOptions>(
       return false;
     });
 
-    const ref = useRef<HTMLInputElement>(null);
-    const tagName = useTagName(ref, props.as || "input");
+    const ref = useRef<HTMLType>(null);
+    const tagName = useTagName(ref, TagName);
     const nativeCheckbox = isNativeCheckbox(tagName, props.type);
     const mixed = checked ? checked === "mixed" : undefined;
     const isChecked = checked === "mixed" ? false : checked;
@@ -103,7 +115,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
 
     const onChangeProp = props.onChange;
 
-    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       if (disabled) {
         event.stopPropagation();
         event.preventDefault();
@@ -140,7 +152,7 @@ export const useCheckbox = createHook<CheckboxOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (nativeCheckbox) return;
@@ -169,14 +181,14 @@ export const useCheckbox = createHook<CheckboxOptions>(
       onClick,
     };
 
-    props = useCommand({ clickOnEnter: !nativeCheckbox, ...props });
+    props = useCommand<TagName>({ clickOnEnter: !nativeCheckbox, ...props });
 
-    return {
+    return removeUndefinedValues({
       name: nativeCheckbox ? name : undefined,
       value: nativeCheckbox ? valueProp : undefined,
       checked: isChecked,
       ...props,
-    };
+    });
   },
 );
 
@@ -190,16 +202,12 @@ export const useCheckbox = createHook<CheckboxOptions>(
  * <Checkbox render={<div />}>Accessible checkbox</Checkbox>
  * ```
  */
-export const Checkbox = createComponent<CheckboxOptions>((props) => {
+export const Checkbox = forwardRef(function Checkbox(props: CheckboxProps) {
   const htmlProps = useCheckbox(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Checkbox.displayName = "Checkbox";
-}
-
-export interface CheckboxOptions<T extends As = "input">
+export interface CheckboxOptions<T extends ElementType = TagName>
   extends CommandOptions<T> {
   /**
    * Object returned by the
@@ -237,7 +245,7 @@ export interface CheckboxOptions<T extends As = "input">
    * </CheckboxProvider>
    * ```
    */
-  value?: InputHTMLAttributes<HTMLInputElement>["value"];
+  value?: ComponentPropsWithoutRef<TagName>["value"];
   /**
    * The default checked state of the checkbox. This prop is ignored if the
    * [`checked`](https://ariakit.org/reference/checkbox#checked) or the
@@ -254,7 +262,10 @@ export interface CheckboxOptions<T extends As = "input">
   /**
    * A function that is called when the checkbox's checked state changes.
    */
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: ComponentPropsWithoutRef<TagName>["onChange"];
 }
 
-export type CheckboxProps<T extends As = "input"> = Props<CheckboxOptions<T>>;
+export type CheckboxProps<T extends ElementType = TagName> = Props2<
+  T,
+  CheckboxOptions<T>
+>;

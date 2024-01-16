@@ -1,15 +1,18 @@
 import * as React from "react";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
-import type { AnyObject } from "@ariakit/core/utils/types";
+import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import { useMergeRefs } from "./hooks.js";
 import { getRefProperty, mergeProps } from "./misc.js";
 import type { Store } from "./store.js";
 import type {
   Component,
   HTMLProps,
+  HTMLProps2,
   Hook,
+  Hook2,
   Options,
   Props,
+  Props2,
   RenderProp,
 } from "./types.js";
 
@@ -21,8 +24,8 @@ function isRenderProp(children: any): children is RenderProp {
  * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
  * component with the same generic type.
  */
-export function forwardRef<T extends React.FC>(render: T) {
-  const Role = React.forwardRef<any>((props, ref) => render({ ...props, ref }));
+export function forwardRef<T extends React.FC<any>>(render: T) {
+  const Role = React.forwardRef((props, ref) => render({ ...props, ref }));
   Role.displayName = render.displayName || render.name;
   return Role as unknown as T;
 }
@@ -30,9 +33,12 @@ export function forwardRef<T extends React.FC>(render: T) {
 /**
  * The same as `React.memo` but returns a component with the same generic type.
  */
-export function memo<P, T extends React.FC<P>>(
+export function memo<T extends React.FC<any>>(
   Component: T,
-  propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean,
+  propsAreEqual?: (
+    prevProps: Readonly<React.ComponentPropsWithoutRef<T>>,
+    nextProps: Readonly<React.ComponentPropsWithoutRef<T>>,
+  ) => boolean,
 ) {
   const Role = React.memo(Component, propsAreEqual);
   Role.displayName = Component.displayName || Component.name;
@@ -184,6 +190,17 @@ export function createHook<O extends Options>(
     return copy;
   };
   return useRole as Hook<O>;
+}
+
+export function createHook2<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+>(useProps: (props: Props2<T, P>) => HTMLProps2<T, P>) {
+  const useRole = (props: Props2<T, P> = {} as Props2<T, P>) => {
+    return useProps(props);
+  };
+  useRole.displayName = useProps.name;
+  return useProps as Hook2<T, P>;
 }
 
 type StoreProvider<T extends Store> = React.ComponentType<{

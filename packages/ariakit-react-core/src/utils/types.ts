@@ -1,4 +1,5 @@
 import type * as React from "react";
+import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 
 /**
  * Render prop type.
@@ -22,14 +23,6 @@ export type As<P = any> = React.ElementType<P>;
 export type WrapElement = (element: React.ReactElement) => React.ReactElement;
 
 /**
- * The `children` prop that supports a function.
- * @template T Element type.
- */
-export type Children<T = any> =
-  | React.ReactNode
-  | RenderProp<React.HTMLAttributes<T> & React.RefAttributes<T>>;
-
-/**
  * Props with the `as` prop.
  * @template T The `as` prop
  * @example
@@ -51,13 +44,9 @@ export type Options<T extends As = any> = {
  */
 export type HTMLProps<O extends Options> = {
   wrapElement?: WrapElement;
-  children?: Children;
   render?: RenderProp | React.ReactElement;
   [index: `data-${string}`]: unknown;
-} & Omit<
-  React.ComponentPropsWithRef<NonNullable<O["as"]>>,
-  keyof O | "children"
->;
+} & Omit<React.ComponentPropsWithRef<NonNullable<O["as"]>>, keyof O>;
 
 /**
  * Options & HTMLProps
@@ -66,6 +55,32 @@ export type HTMLProps<O extends Options> = {
  * type ButtonProps = Props<Options<"button">>;
  */
 export type Props<O extends Options> = O & HTMLProps<O>;
+
+export type Options2 = {
+  wrapElement?: WrapElement;
+  render?: RenderProp | React.ReactElement;
+};
+
+export type HTMLProps2<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+> = Omit<React.ComponentPropsWithRef<T>, keyof P> & {
+  [index: `data-${string}`]: unknown;
+};
+
+export type Props2<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+> = P & HTMLProps2<T, P>;
+
+export interface Hook2<
+  T extends React.ElementType,
+  O extends AnyObject = EmptyObject,
+> {
+  <ElementType extends React.ElementType = T>(
+    props?: Props2<ElementType, O>,
+  ): Props2<ElementType, O>;
+}
 
 /**
  * A component that supports the `as` prop and the `children` prop as a

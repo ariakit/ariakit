@@ -1,14 +1,22 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useRef } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { isSelfTarget } from "@ariakit/core/utils/events";
-import { invariant, normalizeString } from "@ariakit/core/utils/misc";
+import {
+  invariant,
+  normalizeString,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 import { flipItems } from "./utils.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 let chars = "";
 
@@ -87,68 +95,65 @@ function getSameInitialItems(
  * </Composite>
  * ```
  */
-export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
-  ({ store, typeahead = true, ...props }) => {
-    const context = useCompositeContext();
-    store = store || context;
+export const useCompositeTypeahead = createHook2<
+  TagName,
+  CompositeTypeaheadOptions
+>(function useCompositeTypeahead({ store, typeahead = true, ...props }) {
+  const context = useCompositeContext();
+  store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "CompositeTypeahead must be a Composite component",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "CompositeTypeahead must be a Composite component",
+  );
 
-    const onKeyDownCaptureProp = props.onKeyDownCapture;
-    const cleanupTimeoutRef = useRef(0);
+  const onKeyDownCaptureProp = props.onKeyDownCapture;
+  const cleanupTimeoutRef = useRef(0);
 
-    // We have to listen to the event in the capture phase because the event
-    // might be handled by a child component. For example, the space key may
-    // trigger a click event on a child component. We need to prevent this
-    // behavior if the character is a valid typeahead key.
-    const onKeyDownCapture = useEvent(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        onKeyDownCaptureProp?.(event);
-        if (event.defaultPrevented) return;
-        if (!typeahead) return;
-        if (!store) return;
-        const { items, activeId } = store.getState();
-        if (!isValidTypeaheadEvent(event)) return clearChars();
-        let enabledItems = getEnabledItems(items);
-        if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
-        event.preventDefault();
-        // We need to clear the previous cleanup timeout so we can append the
-        // pressed char to the existing one.
-        window.clearTimeout(cleanupTimeoutRef.current);
-        // Schedule a new cleanup timeout. After a short delay we'll reset the
-        // characters so the next one counts as a new start character.
-        cleanupTimeoutRef.current = window.setTimeout(() => {
-          chars = "";
-        }, 500);
-        // Always consider the lowercase version of the key.
-        const char = event.key.toLowerCase();
-        chars += char;
-        enabledItems = getSameInitialItems(enabledItems, char, activeId);
-        const item = enabledItems.find((item) =>
-          itemTextStartsWith(item, chars),
-        );
-        if (item) {
-          store.move(item.id);
-        } else {
-          // Immediately clear the characters so the next keypress starts a new
-          // search.
-          clearChars();
-        }
-      },
-    );
+  // We have to listen to the event in the capture phase because the event
+  // might be handled by a child component. For example, the space key may
+  // trigger a click event on a child component. We need to prevent this
+  // behavior if the character is a valid typeahead key.
+  const onKeyDownCapture = useEvent((event: KeyboardEvent<HTMLType>) => {
+    onKeyDownCaptureProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!typeahead) return;
+    if (!store) return;
+    const { items, activeId } = store.getState();
+    if (!isValidTypeaheadEvent(event)) return clearChars();
+    let enabledItems = getEnabledItems(items);
+    if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
+    event.preventDefault();
+    // We need to clear the previous cleanup timeout so we can append the
+    // pressed char to the existing one.
+    window.clearTimeout(cleanupTimeoutRef.current);
+    // Schedule a new cleanup timeout. After a short delay we'll reset the
+    // characters so the next one counts as a new start character.
+    cleanupTimeoutRef.current = window.setTimeout(() => {
+      chars = "";
+    }, 500);
+    // Always consider the lowercase version of the key.
+    const char = event.key.toLowerCase();
+    chars += char;
+    enabledItems = getSameInitialItems(enabledItems, char, activeId);
+    const item = enabledItems.find((item) => itemTextStartsWith(item, chars));
+    if (item) {
+      store.move(item.id);
+    } else {
+      // Immediately clear the characters so the next keypress starts a new
+      // search.
+      clearChars();
+    }
+  });
 
-    props = {
-      ...props,
-      onKeyDownCapture,
-    };
+  props = {
+    ...props,
+    onKeyDownCapture,
+  };
 
-    return props;
-  },
-);
+  return removeUndefinedValues(props);
+});
 
 /**
  * Renders a component that adds typeahead functionality to composite
@@ -170,19 +175,15 @@ export const useCompositeTypeahead = createHook<CompositeTypeaheadOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeTypeahead = createComponent<CompositeTypeaheadOptions>(
-  (props) => {
-    const htmlProps = useCompositeTypeahead(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const CompositeTypeahead = forwardRef(function CompositeTypeahead(
+  props: CompositeTypeaheadProps,
+) {
+  const htmlProps = useCompositeTypeahead(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeTypeahead.displayName = "CompositeTypeahead";
-}
-
-export interface CompositeTypeaheadOptions<T extends As = "div">
-  extends Options<T> {
+export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -200,6 +201,7 @@ export interface CompositeTypeaheadOptions<T extends As = "div">
   typeahead?: boolean;
 }
 
-export type CompositeTypeaheadProps<T extends As = "div"> = Props<
+export type CompositeTypeaheadProps<T extends ElementType = TagName> = Props2<
+  T,
   CompositeTypeaheadOptions<T>
 >;

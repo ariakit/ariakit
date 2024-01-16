@@ -1,7 +1,6 @@
 import type {
   CSSProperties,
-  ComponentPropsWithRef,
-  ReactElement,
+  ElementType,
   ReactNode,
   RefCallback,
   RefObject,
@@ -33,12 +32,16 @@ import {
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.jsx";
-import type { RenderProp } from "../utils/types.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { useCollectionContext } from "./collection-context.js";
 import type {
   CollectionStore,
   CollectionStoreItem,
 } from "./collection-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 type NestedRendererItemProps = Pick<
   CollectionRendererOptions,
@@ -445,7 +448,7 @@ export function useCollectionRenderer<T extends Item = any>({
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
   const overscan = overscanProp ?? parent?.overscan ?? 1;
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
   const horizontal = orientation === "horizontal";
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
@@ -843,7 +846,7 @@ export const CollectionRenderer = forwardRef(function CollectionRenderer<
   T extends Item = any,
 >(props: CollectionRendererProps<T>) {
   const htmlProps = useCollectionRenderer(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export const getCollectionRendererItem = getItem;
@@ -857,7 +860,8 @@ export type CollectionRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface CollectionRendererOptions<T extends Item = any> {
+export interface CollectionRendererOptions<T extends Item = any>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -977,9 +981,7 @@ export interface CollectionRendererOptions<T extends Item = any> {
    * renders the item.
    */
   children?: (item: ItemProps<T>) => ReactNode;
-  render?: RenderProp | ReactElement;
 }
 
 export interface CollectionRendererProps<T extends Item = any>
-  extends Omit<ComponentPropsWithRef<"div">, "children">,
-    CollectionRendererOptions<T> {}
+  extends Props2<TagName, CollectionRendererOptions<T>> {}

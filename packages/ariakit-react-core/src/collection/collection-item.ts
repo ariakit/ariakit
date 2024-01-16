@@ -1,11 +1,16 @@
 import { useEffect, useRef } from "react";
+import type { ElementType } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
-import { identity } from "@ariakit/core/utils/misc";
+import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useMergeRefs } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
 import { useCollectionContext } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `CollectionItem` component. This hook will register
@@ -20,20 +25,20 @@ import type { CollectionStore } from "./collection-store.js";
  * <Role {...props}>Item</Role>
  * ```
  */
-export const useCollectionItem = createHook<CollectionItemOptions>(
-  ({
+export const useCollectionItem = createHook2<TagName, CollectionItemOptions>(
+  function useCollectionItem({
     store,
     shouldRegisterItem = true,
     getItem = identity,
     // @ts-expect-error This prop may come from a collection renderer.
     element,
     ...props
-  }) => {
+  }) {
     const context = useCollectionContext();
     store = store || context;
 
     const id = useId(props.id);
-    const ref = useRef<HTMLDivElement>(element);
+    const ref = useRef<HTMLType>(element);
 
     useEffect(() => {
       const element = ref.current;
@@ -49,7 +54,7 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -68,19 +73,15 @@ export const useCollectionItem = createHook<CollectionItemOptions>(
  * <CollectionItem store={store}>Item 3</CollectionItem>
  * ```
  */
-export const CollectionItem = createComponent<CollectionItemOptions>(
-  (props) => {
-    const htmlProps = useCollectionItem(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const CollectionItem = forwardRef(function CollectionItem(
+  props: CollectionItemProps,
+) {
+  const htmlProps = useCollectionItem(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CollectionItem.displayName = "CollectionItem";
-}
-
-export interface CollectionItemOptions<T extends As = "div">
-  extends Options<T> {
+export interface CollectionItemOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -123,6 +124,7 @@ export interface CollectionItemOptions<T extends As = "div">
   getItem?: (props: CollectionStoreItem) => CollectionStoreItem;
 }
 
-export type CollectionItemProps<T extends As = "div"> = Props<
+export type CollectionItemProps<T extends ElementType = TagName> = Props2<
+  T,
   CollectionItemOptions<T>
 >;

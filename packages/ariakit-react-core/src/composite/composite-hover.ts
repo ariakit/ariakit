@@ -1,8 +1,12 @@
 import { useCallback } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
+import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
-import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
+import {
+  hasOwnProperty,
+  invariant,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import {
   useBooleanEvent,
@@ -12,12 +16,17 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { As, Options2, Props2 } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
   const relatedTarget = event.relatedTarget as Node | null;
@@ -60,13 +69,13 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  * <CompositeItem store={store} {...props}>Item</CompositeItem>
  * ```
  */
-export const useCompositeHover = createHook<CompositeHoverOptions>(
-  ({
+export const useCompositeHover = createHook2<TagName, CompositeHoverOptions>(
+  function useCompositeHover({
     store,
     focusOnHover = true,
     blurOnHoverEnd = !!focusOnHover,
     ...props
-  }) => {
+  }) {
     const context = useCompositeContext();
     store = store || context;
 
@@ -81,7 +90,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseMoveProp = props.onMouseMove;
     const focusOnHoverProp = useBooleanEvent(focusOnHover);
 
-    const onMouseMove = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+    const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
       onMouseMoveProp?.(event);
       if (event.defaultPrevented) return;
       if (!isMouseMoving()) return;
@@ -102,7 +111,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
     const onMouseLeaveProp = props.onMouseLeave;
     const blurOnHoverEndProp = useBooleanEvent(blurOnHoverEnd);
 
-    const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+    const onMouseLeave = useEvent((event: ReactMouseEvent<HTMLType>) => {
       onMouseLeaveProp?.(event);
       if (event.defaultPrevented) return;
       if (!isMouseMoving()) return;
@@ -127,7 +136,7 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
       onMouseLeave,
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -154,19 +163,15 @@ export const useCompositeHover = createHook<CompositeHoverOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeHover = createMemoComponent<CompositeHoverOptions>(
-  (props) => {
+export const CompositeHover = memo(
+  forwardRef(function CompositeHover(props: CompositeHoverProps) {
     const htmlProps = useCompositeHover(props);
-    return createElement("div", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeHover.displayName = "CompositeHover";
-}
-
-export interface CompositeHoverOptions<T extends As = "div">
-  extends Options<T> {
+export interface CompositeHoverOptions<_T extends ElementType = TagName>
+  extends Options2 {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -215,6 +220,7 @@ export interface CompositeHoverOptions<T extends As = "div">
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type CompositeHoverProps<T extends As = "div"> = Props<
+export type CompositeHoverProps<T extends As = TagName> = Props2<
+  T,
   CompositeHoverOptions<T>
 >;
