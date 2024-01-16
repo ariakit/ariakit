@@ -43,10 +43,6 @@ export const PopoverDescription = forwardRef(function PopoverDescription(
   return createElement("p", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDescription.displayName = "PopoverDescription";
-}
-
 export interface PopoverDescriptionOptions<T extends As = "p">
   extends DialogDescriptionOptions<T> {
   /**

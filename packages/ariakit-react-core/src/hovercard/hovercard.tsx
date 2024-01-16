@@ -378,10 +378,6 @@ export const Hovercard = createDialogComponent(
   useHovercardProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Hovercard.displayName = "Hovercard";
-}
-
 export interface HovercardOptions<T extends As = "div">
   extends PopoverOptions<T> {
   /**

@@ -59,10 +59,6 @@ export const MenuItemCheck = forwardRef(function MenuItemCheck(
   return createElement("span", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItemCheck.displayName = "MenuItemCheck";
-}
-
 export interface MenuItemCheckOptions<T extends As = "span">
   extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**

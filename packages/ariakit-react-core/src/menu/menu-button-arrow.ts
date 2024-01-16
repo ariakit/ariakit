@@ -61,10 +61,6 @@ export const MenuButtonArrow = forwardRef(function MenuButtonArrow(
   return createElement("span", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuButtonArrow.displayName = "MenuButtonArrow";
-}
-
 export interface MenuButtonArrowOptions<T extends As = "span">
   extends PopoverDisclosureArrowOptions<T> {
   /**

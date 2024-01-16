@@ -62,10 +62,6 @@ export const DialogDisclosure = forwardRef(function DialogDisclosure(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DialogDisclosure.displayName = "DialogDisclosure";
-}
-
 export interface DialogDisclosureOptions<T extends As = "button">
   extends DisclosureOptions<T> {
   /**

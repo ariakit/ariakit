@@ -60,10 +60,6 @@ export const TooltipArrow = forwardRef(function TooltipArrow(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TooltipArrow.displayName = "TooltipArrow";
-}
-
 export interface TooltipArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**

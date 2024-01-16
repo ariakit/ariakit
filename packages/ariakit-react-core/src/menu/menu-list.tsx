@@ -203,10 +203,6 @@ export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuList.displayName = "MenuList";
-}
-
 export interface MenuListOptions<T extends As = "div">
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,

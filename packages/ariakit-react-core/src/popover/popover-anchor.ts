@@ -47,10 +47,6 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverAnchor.displayName = "PopoverAnchor";
-}
-
 export interface PopoverAnchorOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the

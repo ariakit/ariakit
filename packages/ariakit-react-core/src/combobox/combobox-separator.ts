@@ -2,11 +2,7 @@ import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import {
-  createComponent,
-  createElement,
-  createHook2,
-} from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
@@ -33,7 +29,7 @@ type TagName = typeof TagName;
 export const useComboboxSeparator = createHook2<
   TagName,
   ComboboxSeparatorOptions
->(({ store, ...props }) => {
+>(function useComboboxSeparator({ store, ...props }) {
   const context = useComboboxScopedContext();
   store = store || context;
 
@@ -73,10 +69,6 @@ export const ComboboxSeparator = forwardRef(function ComboboxSeparator(
   const htmlProps = useComboboxSeparator(props);
   return createElement("hr", htmlProps);
 });
-
-if (process.env.NODE_ENV !== "production") {
-  ComboboxSeparator.displayName = "ComboboxSeparator";
-}
 
 export interface ComboboxSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {

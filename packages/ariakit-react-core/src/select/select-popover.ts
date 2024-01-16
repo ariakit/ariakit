@@ -54,10 +54,6 @@ export const SelectPopover = createDialogComponent(
   useSelectProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  SelectPopover.displayName = "SelectPopover";
-}
-
 export interface SelectPopoverOptions<T extends As = "div">
   extends SelectListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}

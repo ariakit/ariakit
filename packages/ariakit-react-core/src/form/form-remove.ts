@@ -149,10 +149,6 @@ export const FormRemove = forwardRef(function FormRemove(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormRemove.displayName = "FormRemove";
-}
-
 export interface FormRemoveOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**

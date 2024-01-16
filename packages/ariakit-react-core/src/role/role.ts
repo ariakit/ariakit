@@ -61,10 +61,6 @@ export const Role = forwardRef(function Role(props: RoleProps) {
   return createElement("div", props);
 }) as Component<RoleOptions<"div">> & RoleElements;
 
-if (process.env.NODE_ENV !== "production") {
-  Role.displayName = "Role";
-}
-
 Object.assign(
   Role,
   elements.reduce((acc, element) => {

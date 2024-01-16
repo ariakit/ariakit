@@ -56,10 +56,6 @@ export const DialogDescription = forwardRef(function DialogDescription(
   return createElement("p", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DialogDescription.displayName = "DialogDescription";
-}
-
 export interface DialogDescriptionOptions<T extends As = "p">
   extends Options<T> {
   /**

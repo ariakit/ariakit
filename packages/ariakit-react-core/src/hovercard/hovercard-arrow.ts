@@ -50,10 +50,6 @@ export const HovercardArrow = forwardRef(function HovercardArrow(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardArrow.displayName = "HovercardArrow";
-}
-
 export interface HovercardArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**

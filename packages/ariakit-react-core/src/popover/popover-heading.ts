@@ -44,10 +44,6 @@ export const PopoverHeading = forwardRef(function PopoverHeading(
   return createElement("h1", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverHeading.displayName = "PopoverHeading";
-}
-
 export interface PopoverHeadingOptions<T extends As = "h1">
   extends DialogHeadingOptions<T> {
   /**

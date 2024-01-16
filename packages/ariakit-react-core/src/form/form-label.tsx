@@ -143,10 +143,6 @@ export const FormLabel = createMemoComponent<FormLabelOptions>((props) => {
   return createElement("label", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormLabel.displayName = "FormLabel";
-}
-
 export interface FormLabelOptions<T extends As = "label">
   extends CollectionItemOptions<T> {
   /**

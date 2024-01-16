@@ -107,10 +107,6 @@ export const Disclosure = forwardRef(function Disclosure(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Disclosure.displayName = "Disclosure";
-}
-
 export interface DisclosureOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**

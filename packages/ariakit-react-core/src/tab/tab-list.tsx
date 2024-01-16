@@ -83,10 +83,6 @@ export const TabList = forwardRef(function TabList(props: TabListProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TabList.displayName = "TabList";
-}
-
 export interface TabListOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**

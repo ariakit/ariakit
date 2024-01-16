@@ -113,10 +113,6 @@ export const Tooltip = createDialogComponent(
   useTooltipProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Tooltip.displayName = "Tooltip";
-}
-
 export interface TooltipOptions<T extends As = "div">
   extends HovercardOptions<T> {
   /**

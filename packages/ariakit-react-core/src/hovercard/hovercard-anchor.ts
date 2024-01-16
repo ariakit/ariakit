@@ -145,10 +145,6 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
   return createElement("a", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardAnchor.displayName = "HovercardAnchor";
-}
-
 export interface HovercardAnchorOptions<T extends As = "a">
   extends FocusableOptions<T> {
   /**

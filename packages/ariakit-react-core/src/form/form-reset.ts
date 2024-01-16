@@ -61,10 +61,6 @@ export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormReset.displayName = "FormReset";
-}
-
 export interface FormResetOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**

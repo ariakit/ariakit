@@ -147,10 +147,6 @@ export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
   },
 );
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItemRadio.displayName = "MenuItemRadio";
-}
-
 export interface MenuItemRadioOptions<T extends As = "div">
   extends MenuItemOptions<T>,
     Omit<RadioOptions<T>, "store"> {

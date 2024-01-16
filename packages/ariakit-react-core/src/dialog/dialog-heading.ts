@@ -61,10 +61,6 @@ export const DialogHeading = forwardRef(function DialogHeading(
   return createElement("h1", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DialogHeading.displayName = "DialogHeading";
-}
-
 export interface DialogHeadingOptions<T extends As = "h1">
   extends HeadingOptions<T> {
   /**

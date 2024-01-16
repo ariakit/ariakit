@@ -45,10 +45,6 @@ export const HovercardHeading = forwardRef(function HovercardHeading(
   return createElement("h1", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardHeading.displayName = "HovercardHeading";
-}
-
 export interface HovercardHeadingOptions<T extends As = "h1">
   extends PopoverHeadingOptions<T> {
   /**

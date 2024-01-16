@@ -73,10 +73,6 @@ export const SelectRow = forwardRef(function SelectRow(props: SelectRowProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectRow.displayName = "SelectRow";
-}
-
 export interface SelectRowOptions<T extends As = "div">
   extends CompositeRowOptions<T> {
   /**

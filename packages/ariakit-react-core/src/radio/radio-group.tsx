@@ -76,10 +76,6 @@ export const RadioGroup = forwardRef(function RadioGroup(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  RadioGroup.displayName = "RadioGroup";
-}
-
 export interface RadioGroupOptions<T extends As = "div">
   extends CompositeOptions<T> {
   /**

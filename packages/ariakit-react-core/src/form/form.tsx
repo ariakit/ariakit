@@ -189,10 +189,6 @@ export const Form = forwardRef(function Form(props: FormProps) {
   return createElement("form", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Form.displayName = "Form";
-}
-
 export interface FormOptions<T extends As = "form"> extends Options<T> {
   /**
    * Object returned by the

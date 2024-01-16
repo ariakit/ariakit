@@ -111,10 +111,6 @@ export const FormError = createMemoComponent<FormErrorOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormError.displayName = "FormError";
-}
-
 export interface FormErrorOptions<T extends As = "div">
   extends CollectionItemOptions<T> {
   /**

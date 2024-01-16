@@ -55,10 +55,6 @@ export const SelectGroup = forwardRef(function SelectGroup(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectGroup.displayName = "SelectGroup";
-}
-
 export interface SelectGroupOptions<T extends As = "div">
   extends CompositeGroupOptions<T> {
   /**

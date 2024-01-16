@@ -157,10 +157,6 @@ export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormPush.displayName = "FormPush";
-}
-
 export interface FormPushOptions<T extends As = "button">
   extends ButtonOptions<T>,
     CollectionItemOptions<T> {

@@ -54,10 +54,6 @@ export const ToolbarContainer = createMemoComponent<ToolbarContainerOptions>(
   },
 );
 
-if (process.env.NODE_ENV !== "production") {
-  ToolbarContainer.displayName = "ToolbarContainer";
-}
-
 export interface ToolbarContainerOptions<T extends As = "div">
   extends ToolbarItemOptions<T>,
     Omit<CompositeContainerOptions<T>, "store"> {}

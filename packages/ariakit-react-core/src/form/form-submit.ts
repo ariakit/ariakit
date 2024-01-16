@@ -65,10 +65,6 @@ export const FormSubmit = forwardRef(function FormSubmit(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormSubmit.displayName = "FormSubmit";
-}
-
 export interface FormSubmitOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**

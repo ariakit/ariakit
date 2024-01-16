@@ -111,10 +111,6 @@ export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Menubar.displayName = "Menubar";
-}
-
 export interface MenubarOptions<T extends As = "div">
   extends CompositeOptions<T>,
     Pick<

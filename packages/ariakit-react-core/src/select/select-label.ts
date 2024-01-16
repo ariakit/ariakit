@@ -90,10 +90,6 @@ export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectLabel.displayName = "SelectLabel";
-}
-
 export interface SelectLabelOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the

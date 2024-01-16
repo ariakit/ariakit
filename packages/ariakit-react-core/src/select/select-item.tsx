@@ -203,10 +203,6 @@ export const SelectItem = createMemoComponent<SelectItemOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectItem.displayName = "SelectItem";
-}
-
 export interface SelectItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {

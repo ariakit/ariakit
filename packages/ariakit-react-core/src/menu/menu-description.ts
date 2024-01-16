@@ -44,10 +44,6 @@ export const MenuDescription = forwardRef(function MenuDescription(
   return createElement("p", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuDescription.displayName = "MenuDescription";
-}
-
 export interface MenuDescriptionOptions<T extends As = "p">
   extends HovercardDescriptionOptions<T> {
   /**

@@ -75,10 +75,6 @@ export const FormField = createMemoComponent<FormFieldOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormField.displayName = "FormField";
-}
-
 export interface FormFieldOptions<T extends As = "input">
   extends FormControlOptions<T> {}
 

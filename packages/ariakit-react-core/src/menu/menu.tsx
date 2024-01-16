@@ -258,10 +258,6 @@ export const Menu = createDialogComponent(
   useMenuProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Menu.displayName = "Menu";
-}
-
 export interface MenuOptions<T extends As = "div">
   extends MenuListOptions<T>,
     Omit<HovercardOptions<T>, "store"> {}

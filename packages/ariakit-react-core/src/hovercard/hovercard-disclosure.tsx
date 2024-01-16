@@ -164,10 +164,6 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardDisclosure.displayName = "HovercardDisclosure";
-}
-
 export interface HovercardDisclosureOptions<T extends As = "button">
   extends DialogDisclosureOptions<T> {
   /**

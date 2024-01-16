@@ -86,10 +86,6 @@ export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FocusTrapRegion.displayName = "FocusTrapRegion";
-}
-
 export interface FocusTrapRegionOptions<T extends As = "div">
   extends Options<T> {
   /**

@@ -85,10 +85,6 @@ export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Toolbar.displayName = "Toolbar";
-}
-
 export interface ToolbarOptions<T extends As = "div">
   extends CompositeOptions<T>,
     Pick<

@@ -159,10 +159,6 @@ export const TooltipAnchor = forwardRef(function TooltipAnchor(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TooltipAnchor.displayName = "TooltipAnchor";
-}
-
 export interface TooltipAnchorOptions<T extends As = "div">
   extends HovercardAnchorOptions<T> {
   /**

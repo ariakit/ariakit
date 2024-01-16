@@ -172,10 +172,6 @@ export const MenuItem = createMemoComponent<MenuItemOptions>((props) => {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItem.displayName = "MenuItem";
-}
-
 export interface MenuItemOptions<T extends As = "div">
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {

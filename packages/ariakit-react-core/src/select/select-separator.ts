@@ -53,10 +53,6 @@ export const SelectSeparator = forwardRef(function SelectSeparator(
   return createElement("hr", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectSeparator.displayName = "SelectSeparator";
-}
-
 export interface SelectSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {
   /**

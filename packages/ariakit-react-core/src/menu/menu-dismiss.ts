@@ -46,10 +46,6 @@ export const MenuDismiss = forwardRef(function MenuDismiss(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuDismiss.displayName = "MenuDismiss";
-}
-
 export interface MenuDismissOptions<T extends As = "button">
   extends HovercardDismissOptions<T> {
   /**

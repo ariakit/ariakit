@@ -98,10 +98,6 @@ export const FormDescription = createMemoComponent<FormDescriptionOptions>(
   },
 );
 
-if (process.env.NODE_ENV !== "production") {
-  FormDescription.displayName = "FormDescription";
-}
-
 export interface FormDescriptionOptions<T extends As = "div">
   extends CollectionItemOptions<T> {
   /**

@@ -124,10 +124,6 @@ export const PopoverArrow = forwardRef(function PopoverArrow(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverArrow.displayName = "PopoverArrow";
-}
-
 export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   /**
    * Object returned by the

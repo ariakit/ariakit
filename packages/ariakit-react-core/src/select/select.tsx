@@ -329,10 +329,6 @@ export const Select = forwardRef(function Select(props: SelectProps) {
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Select.displayName = "Select";
-}
-
 export interface SelectOptions<T extends As = "button">
   extends PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T>,

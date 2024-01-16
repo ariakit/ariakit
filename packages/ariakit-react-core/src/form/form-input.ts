@@ -88,10 +88,6 @@ export const FormInput = createMemoComponent<FormInputOptions>((props) => {
   return createElement("input", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormInput.displayName = "FormInput";
-}
-
 export interface FormInputOptions<T extends As = "input">
   extends FormControlOptions<T>,
     FocusableOptions<T> {}

@@ -60,10 +60,6 @@ export const FormRadioGroup = forwardRef(function FormRadioGroup(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormRadioGroup.displayName = "FormRadioGroup";
-}
-
 export type FormRadioGroupOptions<T extends As = "div"> = FormGroupOptions<T>;
 
 export type FormRadioGroupProps<T extends As = "div"> = Props<

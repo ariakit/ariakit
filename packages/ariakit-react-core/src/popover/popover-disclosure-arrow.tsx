@@ -101,10 +101,6 @@ export const PopoverDisclosureArrow =
     return createElement("span", htmlProps);
   });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDisclosureArrow.displayName = "PopoverDisclosureArrow";
-}
-
 export interface PopoverDisclosureArrowOptions<T extends As = "span">
   extends Options<T> {
   /**

@@ -472,10 +472,6 @@ export const Popover = createDialogComponent(
   usePopoverProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Popover.displayName = "Popover";
-}
-
 export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   /**
    * Object returned by the

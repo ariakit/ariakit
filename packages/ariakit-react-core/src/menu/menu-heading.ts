@@ -44,10 +44,6 @@ export const MenuHeading = forwardRef(function MenuHeading(
   return createElement("h1", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuHeading.displayName = "MenuHeading";
-}
-
 export interface MenuHeadingOptions<T extends As = "h1">
   extends HovercardHeadingOptions<T> {
   /**

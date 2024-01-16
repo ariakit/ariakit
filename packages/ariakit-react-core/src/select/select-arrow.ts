@@ -57,10 +57,6 @@ export const SelectArrow = forwardRef(function SelectArrow(
   return createElement("span", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectArrow.displayName = "SelectArrow";
-}
-
 export interface SelectArrowOptions<T extends As = "span">
   extends PopoverDisclosureArrowOptions<T> {
   /**

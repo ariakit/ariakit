@@ -56,10 +56,6 @@ export const MenuSeparator = forwardRef(function MenuSeparator(
   return createElement("hr", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuSeparator.displayName = "MenuSeparator";
-}
-
 export interface MenuSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {
   /**

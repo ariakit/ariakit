@@ -51,10 +51,6 @@ export const MenuGroup = forwardRef(function MenuGroup(props: MenuGroupProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuGroup.displayName = "MenuGroup";
-}
-
 export interface MenuGroupOptions<T extends As = "div">
   extends CompositeGroupOptions<T> {
   /**

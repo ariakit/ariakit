@@ -81,10 +81,6 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDisclosure.displayName = "PopoverDisclosure";
-}
-
 export interface PopoverDisclosureOptions<T extends As = "button">
   extends PopoverAnchorOptions<T>,
     Omit<DialogDisclosureOptions<T>, "store"> {}

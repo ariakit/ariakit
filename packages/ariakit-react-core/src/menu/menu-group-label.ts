@@ -49,10 +49,6 @@ export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuGroupLabel.displayName = "MenuGroupLabel";
-}
-
 export interface MenuGroupLabelOptions<T extends As = "div">
   extends CompositeGroupLabelOptions<T> {
   /**

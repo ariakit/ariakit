@@ -60,10 +60,6 @@ export const SelectItemCheck = forwardRef(function SelectItemCheck(
   return createElement("span", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectItemCheck.displayName = "SelectItemCheck";
-}
-
 export interface SelectItemCheckOptions<T extends As = "span">
   extends CheckboxCheckOptions<T> {
   /**

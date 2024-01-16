@@ -87,10 +87,6 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DialogDismiss.displayName = "DialogDismiss";
-}
-
 export interface DialogDismissOptions<T extends As = "button">
   extends ButtonOptions<T> {
   /**

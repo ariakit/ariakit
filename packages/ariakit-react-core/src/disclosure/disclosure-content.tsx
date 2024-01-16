@@ -194,10 +194,6 @@ export const DisclosureContent = forwardRef(({ unmountOnHide, ...props }) => {
   return <DisclosureContentImpl {...props} />;
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DisclosureContent.displayName = "DisclosureContent";
-}
-
 export interface DisclosureContentOptions<T extends As = "div">
   extends Options<T> {
   /**

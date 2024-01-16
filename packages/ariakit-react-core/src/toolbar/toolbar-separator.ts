@@ -49,10 +49,6 @@ export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
   return createElement("hr", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  ToolbarSeparator.displayName = "ToolbarSeparator";
-}
-
 export interface ToolbarSeparatorOptions<T extends As = "hr">
   extends CompositeSeparatorOptions<T> {
   /**

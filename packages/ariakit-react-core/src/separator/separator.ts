@@ -34,10 +34,6 @@ export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   return createElement("hr", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Separator.displayName = "Separator";
-}
-
 export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
   /**
    * The orientation of the separator.

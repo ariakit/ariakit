@@ -269,10 +269,6 @@ export const MenuButton = forwardRef(function MenuButton(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuButton.displayName = "MenuButton";
-}
-
 export interface MenuButtonOptions<T extends As = "button" | "div">
   extends HovercardAnchorOptions<T>,
     PopoverDisclosureOptions<T>,

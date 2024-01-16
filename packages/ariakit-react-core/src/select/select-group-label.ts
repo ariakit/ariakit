@@ -55,10 +55,6 @@ export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectGroupLabel.displayName = "SelectGroupLabel";
-}
-
 export interface SelectGroupLabelOptions<T extends As = "div">
   extends CompositeGroupLabelOptions<T> {
   /**

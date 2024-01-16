@@ -47,10 +47,6 @@ export const HovercardDismiss = forwardRef(function HovercardDismiss(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardDismiss.displayName = "HovercardDismiss";
-}
-
 export interface HovercardDismissOptions<T extends As = "button">
   extends PopoverDismissOptions<T> {
   /**

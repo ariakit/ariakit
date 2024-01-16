@@ -56,10 +56,6 @@ export const FormGroupLabel = forwardRef(function FormGroupLabel(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormGroupLabel.displayName = "FormGroupLabel";
-}
-
 export interface FormGroupLabelOptions<T extends As = "div">
   extends GroupLabelOptions<T> {
   /**

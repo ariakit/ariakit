@@ -343,10 +343,6 @@ export const Portal = forwardRef(function Portal(props: PortalProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Portal.displayName = "Portal";
-}
-
 export interface PortalOptions<T extends As = "div"> extends Options<T> {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the

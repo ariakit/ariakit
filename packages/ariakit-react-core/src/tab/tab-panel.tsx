@@ -131,10 +131,6 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TabPanel.displayName = "TabPanel";
-}
-
 export interface TabPanelOptions<T extends As = "div">
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,

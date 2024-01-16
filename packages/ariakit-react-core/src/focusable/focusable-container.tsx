@@ -48,10 +48,6 @@ export const FocusableContainer = forwardRef(function FocusableContainer(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FocusableContainer.displayName = "FocusableContainer";
-}
-
 export type FocusableContainerOptions<T extends As = "div"> = Options<T> & {
   /**
    * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)

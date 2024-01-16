@@ -168,10 +168,6 @@ export const SelectList = forwardRef(function SelectList(
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectList.displayName = "SelectList";
-}
-
 export interface SelectListOptions<T extends As = "div">
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,

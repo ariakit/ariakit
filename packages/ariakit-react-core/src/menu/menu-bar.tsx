@@ -59,10 +59,6 @@ export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuBar.displayName = "MenuBar";
-}
-
 export interface MenuBarOptions<T extends As = "div">
   extends MenubarOptions<T> {}
 

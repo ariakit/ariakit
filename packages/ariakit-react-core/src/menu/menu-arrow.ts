@@ -46,10 +46,6 @@ export const MenuArrow = forwardRef(function MenuArrow(props: MenuArrowProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuArrow.displayName = "MenuArrow";
-}
-
 export interface MenuArrowOptions<T extends As = "div">
   extends PopoverArrowOptions<T> {
   /**

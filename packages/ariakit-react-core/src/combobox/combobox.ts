@@ -545,10 +545,6 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   return createElement("input", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Combobox.displayName = "Combobox";
-}
-
 export interface ComboboxOptions<T extends As = "input">
   extends CompositeOptions<T>,
     PopoverAnchorOptions<T> {

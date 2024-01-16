@@ -56,10 +56,6 @@ export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   return createElement("div", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormGroup.displayName = "FormGroup";
-}
-
 export interface FormGroupOptions<T extends As = "div">
   extends GroupOptions<T> {
   /**

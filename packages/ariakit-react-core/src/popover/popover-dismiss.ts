@@ -46,10 +46,6 @@ export const PopoverDismiss = forwardRef(function PopoverDismiss(
   return createElement("button", htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDismiss.displayName = "PopoverDismiss";
-}
-
 export interface PopoverDismissOptions<T extends As = "button">
   extends DialogDismissOptions<T> {
   /**
