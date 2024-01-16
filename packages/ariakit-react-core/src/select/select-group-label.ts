@@ -1,6 +1,6 @@
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -16,12 +16,13 @@ import type { SelectStore } from "./select-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
-  (props) => {
-    props = useCompositeGroupLabel(props);
-    return props;
-  },
-);
+export const useSelectGroupLabel = createHook2<
+  TagName,
+  SelectGroupLabelOptions
+>((props) => {
+  props = useCompositeGroupLabel(props);
+  return props;
+});
 
 /**
  * Renders a label in a select group. This component must be wrapped with
@@ -47,12 +48,12 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useSelectGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
+  props: SelectGroupLabelProps,
+) {
+  const htmlProps = useSelectGroupLabel(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   SelectGroupLabel.displayName = "SelectGroupLabel";

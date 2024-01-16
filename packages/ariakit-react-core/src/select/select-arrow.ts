@@ -1,6 +1,6 @@
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
@@ -22,7 +22,7 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectArrow = createHook<SelectArrowOptions>(
+export const useSelectArrow = createHook2<TagName, SelectArrowOptions>(
   ({ store, ...props }) => {
     const context = useSelectContext();
     store = store || context;
@@ -50,7 +50,9 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectArrow = createComponent<SelectArrowOptions>((props) => {
+export const SelectArrow = forwardRef(function SelectArrow(
+  props: SelectArrowProps,
+) {
   const htmlProps = useSelectArrow(props);
   return createElement("span", htmlProps);
 });

@@ -1,4 +1,4 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
@@ -12,7 +12,7 @@ import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusTrap = createHook<FocusTrapOptions>((props) => {
+export const useFocusTrap = createHook2<TagName, FocusTrapOptions>((props) => {
   props = {
     "data-focus-trap": "",
     tabIndex: 0,
@@ -40,7 +40,7 @@ export const useFocusTrap = createHook<FocusTrapOptions>((props) => {
  * <FocusTrap onFocus={focusSomethingElse} />
  * ```
  */
-export const FocusTrap = createComponent<FocusTrapOptions>((props) => {
+export const FocusTrap = forwardRef(function FocusTrap(props: FocusTrapProps) {
   const htmlProps = useFocusTrap(props);
   return createElement("span", htmlProps);
 });

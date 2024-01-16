@@ -114,8 +114,12 @@ To make a new component, create a file with the following contents:
 `packages/ariakit-react-core/src/my-component/my-component.ts`
 
 ````tsx
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Description for my component hook.
@@ -126,8 +130,8 @@ import type { As, Options, Props } from "../utils/types.js";
  * <Role {...props} />
  * ```
  */
-export const useMyComponent = createHook<MyComponentOptions>(
-  ({ customProp = "My component", ...props }) => {
+export const useMyComponent = createHook<TagName, MyComponentOptions>(
+  function useMyComponent({ customProp = "My component", ...props }) {
     props = { children: customProp, ...props };
     return props;
   }
@@ -141,23 +145,23 @@ export const useMyComponent = createHook<MyComponentOptions>(
  * <MyComponent />
  * ```
  */
-export const MyComponent = createComponent<MyComponentOptions>((props) => {
+export const MyComponent = forwardRef(function MyComponent(
+  props: MyComponentProps,
+) {
   const htmlProps = useMyComponent(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MyComponent.displayName = "MyComponent";
-}
-
-export type MyComponentOptions<T extends As = "div"> = Options<T> & {
+export interface MyComponentOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Description for custom prop.
    */
   customProp?: string;
 };
 
-export type MyComponentProps<T extends As = "div"> = Props<
+export type MyComponentProps<T extends ElementType = TagName> = Props<
+  T,
   MyComponentOptions<T>
 >;
 ````
@@ -218,8 +222,8 @@ Now we need to import the CSS file on the example's `index.tsx` file and add the
 `examples/my-component/index.tsx`
 
 ```tsx
-import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 import "./style.css";
+import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 
 export default function Example() {
   return <MyComponent className="my-component" />;
@@ -273,8 +277,8 @@ Let's create another example for our component:
 `examples/my-component-custom-prop/index.tsx`
 
 ```tsx
-import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 import "./style.css";
+import { MyComponent } from "@ariakit/react-core/my-component/my-component";
 
 export default function Example() {
   return <MyComponent className="my-component" customProp="Hello world" />;
@@ -346,8 +350,8 @@ Now that we've promoted our component to the `@ariakit/react` package, we need t
 `examples/my-component/index.tsx`
 
 ```tsx
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
   return <Ariakit.MyComponent className="my-component" />;
@@ -357,8 +361,8 @@ export default function Example() {
 `examples/my-component-custom-prop/index.tsx`
 
 ```tsx
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
   return (

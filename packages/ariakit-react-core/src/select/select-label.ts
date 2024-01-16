@@ -24,7 +24,7 @@ import type { SelectStore } from "./select-store.js";
  * <Select store={store} />
  * ```
  */
-export const useSelectLabel = createHook<SelectLabelOptions>(
+export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
   ({ store, ...props }) => {
     const context = useSelectProviderContext();
     store = store || context;

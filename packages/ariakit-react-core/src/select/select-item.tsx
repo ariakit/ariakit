@@ -45,7 +45,7 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
  * <Role {...props} />
  * ```
  */
-export const useSelectItem = createHook<SelectItemOptions>(
+export const useSelectItem = createHook2<TagName, SelectItemOptions>(
   ({
     store,
     value,

@@ -1,6 +1,7 @@
 import type {
   ComponentPropsWithRef,
   ElementType,
+  FC,
   ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
@@ -47,8 +48,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Component, Props } from "../utils/types.js";
+import {
+  createComponent,
+  createElement,
+  createHook,
+  forwardRef,
+} from "../utils/system.js";
+import type { As, Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogDescriptionContext,
@@ -97,7 +103,7 @@ function getElementFromProp(
  * <Role {...props}>Dialog</Role>
  * ```
  */
-export const useDialog = createHook<DialogOptions>(
+export const useDialog = createHook2<TagName, DialogOptions>(
   ({
     store: storeProp,
     open: openProp,
@@ -538,10 +544,10 @@ export const useDialog = createHook<DialogOptions>(
 );
 
 export function createDialogComponent<T extends DialogOptions>(
-  Component: Component<T>,
+  Component: FC<T>,
   useProviderContext = useDialogProviderContext,
 ) {
-  return createComponent<T>((props) => {
+  return forwardRef(function DialogComponent(props: T) {
     const context = useProviderContext();
     const store = props.store || context;
     const mounted = useStoreState(
@@ -580,10 +586,6 @@ export const Dialog = createDialogComponent(
   }),
   useDialogProviderContext,
 );
-
-if (process.env.NODE_ENV !== "production") {
-  Dialog.displayName = "Dialog";
-}
 
 export interface DialogOptions<T extends As = "div">
   extends FocusableOptions<T>,

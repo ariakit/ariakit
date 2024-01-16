@@ -3,7 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
@@ -23,8 +23,8 @@ import {
  * <Popover store={store}>Popover</Popover>
  * ```
  */
-export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
-  ({ store, ...props }) => {
+export const usePopoverDisclosure =
+  createHook2<TagNamePopoverDisclosureOptions>(({ store, ...props }) => {
     const context = usePopoverProviderContext();
     store = store || context;
 
@@ -60,8 +60,7 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
     props = useDialogDisclosure({ store, ...props });
 
     return props;
-  },
-);
+  });
 
 /**
  * Renders a button that controls the visibility of the
@@ -75,12 +74,12 @@ export const usePopoverDisclosure = createHook<PopoverDisclosureOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverDisclosure = createComponent<PopoverDisclosureOptions>(
-  (props) => {
-    const htmlProps = usePopoverDisclosure(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
+  props: PopoverDisclosureProps,
+) {
+  const htmlProps = usePopoverDisclosure(props);
+  return createElement("button", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   PopoverDisclosure.displayName = "PopoverDisclosure";

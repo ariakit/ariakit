@@ -15,7 +15,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { SelectArrow } from "./select-arrow.js";
 import {
@@ -60,7 +60,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
  * <Role {...props} />
  * ```
  */
-export const useSelect = createHook<SelectOptions>(
+export const useSelect = createHook2<TagName, SelectOptions>(
   ({
     store,
     name,
@@ -324,7 +324,7 @@ export const useSelect = createHook<SelectOptions>(
  * </SelectProvider>
  * ```
  */
-export const Select = createComponent<SelectOptions>((props) => {
+export const Select = forwardRef(function Select(props: SelectProps) {
   const htmlProps = useSelect(props);
   return createElement("button", htmlProps);
 });

@@ -1,6 +1,6 @@
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
 import { useDialogDescription } from "../dialog/dialog-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
 
@@ -16,12 +16,11 @@ import type { PopoverStore } from "./popover-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
-  (props) => {
+export const usePopoverDescription =
+  createHook2<TagNamePopoverDescriptionOptions>((props) => {
     props = useDialogDescription(props);
     return props;
-  },
-);
+  });
 
 /**
  * Renders a description in a popover. This component must be wrapped with
@@ -37,12 +36,12 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverDescription = createComponent<PopoverDescriptionOptions>(
-  (props) => {
-    const htmlProps = usePopoverDescription(props);
-    return createElement("p", htmlProps);
-  },
-);
+export const PopoverDescription = forwardRef(function PopoverDescription(
+  props: PopoverDescriptionProps,
+) {
+  const htmlProps = usePopoverDescription(props);
+  return createElement("p", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   PopoverDescription.displayName = "PopoverDescription";

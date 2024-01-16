@@ -16,7 +16,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
@@ -58,7 +58,7 @@ function hasActiveItem(
  * </Menu>
  * ```
  */
-export const useMenuButton = createHook<MenuButtonOptions>(
+export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
   ({ store, focusable, accessibleWhenDisabled, showOnHover, ...props }) => {
     const context = useMenuProviderContext();
     store = store || context;
@@ -262,7 +262,9 @@ export const useMenuButton = createHook<MenuButtonOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuButton = createComponent<MenuButtonOptions>((props) => {
+export const MenuButton = forwardRef(function MenuButton(
+  props: MenuButtonProps,
+) {
   const htmlProps = useMenuButton(props);
   return createElement("button", htmlProps);
 });

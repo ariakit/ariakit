@@ -26,7 +26,7 @@ import type { TabStore } from "./tab-store.js";
  * <TabPanel store={store}>Panel 1</TabPanel>
  * ```
  */
-export const useTab = createHook<TabOptions>(
+export const useTab = createHook2<TagName, TabOptions>(
   ({
     store,
     accessibleWhenDisabled = true,

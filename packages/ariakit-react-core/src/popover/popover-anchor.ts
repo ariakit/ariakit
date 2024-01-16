@@ -1,5 +1,5 @@
 import { useMergeRefs } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { usePopoverProviderContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
@@ -15,7 +15,7 @@ import type { PopoverStore } from "./popover-store.js";
  * <Popover store={store}>Popover</Popover>
  * ```
  */
-export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
+export const usePopoverAnchor = createHook2<TagName, PopoverAnchorOptions>(
   ({ store, ...props }) => {
     const context = usePopoverProviderContext();
     store = store || context;
@@ -40,7 +40,9 @@ export const usePopoverAnchor = createHook<PopoverAnchorOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverAnchor = createComponent<PopoverAnchorOptions>((props) => {
+export const PopoverAnchor = forwardRef(function PopoverAnchor(
+  props: PopoverAnchorProps,
+) {
   const htmlProps = usePopoverAnchor(props);
   return createElement("div", htmlProps);
 });

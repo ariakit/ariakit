@@ -62,7 +62,10 @@ function getValue(
  * </Menu>
  * ```
  */
-export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
+export const useMenuItemCheckbox = createHook2<
+  TagName,
+  MenuItemCheckboxOptions
+>(
   ({
     store,
     name,

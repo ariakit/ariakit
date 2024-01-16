@@ -1,6 +1,6 @@
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
 
@@ -18,7 +18,7 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormGroup = createHook<FormGroupOptions>(
+export const useFormGroup = createHook2<TagName, FormGroupOptions>(
   ({ store, ...props }) => {
     props = useGroup(props);
     return props;
@@ -51,7 +51,7 @@ export const useFormGroup = createHook<FormGroupOptions>(
  * </Form>
  * ```
  */
-export const FormGroup = createComponent<FormGroupOptions>((props) => {
+export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   const htmlProps = useFormGroup(props);
   return createElement("div", htmlProps);
 });

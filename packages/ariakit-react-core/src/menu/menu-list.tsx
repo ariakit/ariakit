@@ -14,7 +14,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   MenuScopedContextProvider,
@@ -61,7 +61,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * </Role>
  * ```
  */
-export const useMenuList = createHook<MenuListOptions>(
+export const useMenuList = createHook2<TagName, MenuListOptions>(
   ({ store, alwaysVisible, composite, ...props }) => {
     const context = useMenuProviderContext();
     store = store || context;
@@ -198,7 +198,7 @@ export const useMenuList = createHook<MenuListOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuList = createComponent<MenuListOptions>((props) => {
+export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
   const htmlProps = useMenuList(props);
   return createElement("div", htmlProps);
 });

@@ -34,7 +34,7 @@ import type { TabStore } from "./tab-store.js";
  * <Role {...props}>Panel 1</Role>
  * ```
  */
-export const useTabPanel = createHook<TabPanelOptions>(
+export const useTabPanel = createHook2<TagName, TabPanelOptions>(
   ({ store, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
     const context = useTabProviderContext();
     store = store || context;
@@ -126,7 +126,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
  * </TabProvider>
  * ```
  */
-export const TabPanel = createComponent<TabPanelOptions>((props) => {
+export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
   const htmlProps = useTabPanel(props);
   return createElement("div", htmlProps);
 });

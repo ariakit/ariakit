@@ -10,7 +10,7 @@ import {
   useUpdateEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
@@ -39,7 +39,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
  * <Role {...props} />
  * ```
  */
-export const useForm = createHook<FormOptions>(
+export const useForm = createHook2<TagName, FormOptions>(
   ({
     store,
     validateOnChange = true,
@@ -184,7 +184,7 @@ export const useForm = createHook<FormOptions>(
  * </Form>
  * ```
  */
-export const Form = createComponent<FormOptions>((props) => {
+export const Form = forwardRef(function Form(props: FormProps) {
   const htmlProps = useForm(props);
   return createElement("form", htmlProps);
 });

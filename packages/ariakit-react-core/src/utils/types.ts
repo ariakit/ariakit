@@ -79,7 +79,7 @@ export interface Hook2<
 > {
   <ElementType extends React.ElementType = T>(
     props?: Props2<ElementType, O>,
-  ): Props2<ElementType, O>;
+  ): HTMLProps2<ElementType, O>;
 }
 
 /**

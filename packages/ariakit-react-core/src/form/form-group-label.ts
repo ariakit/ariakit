@@ -1,6 +1,6 @@
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
 
@@ -16,7 +16,7 @@ import type { FormStore } from "./form-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
+export const useFormGroupLabel = createHook2<TagName, FormGroupLabelOptions>(
   ({ store, ...props }) => {
     props = useGroupLabel(props);
     return props;
@@ -49,12 +49,12 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
  * </Form>
  * ```
  */
-export const FormGroupLabel = createComponent<FormGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useFormGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FormGroupLabel = forwardRef(function FormGroupLabel(
+  props: FormGroupLabelProps,
+) {
+  const htmlProps = useFormGroupLabel(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   FormGroupLabel.displayName = "FormGroupLabel";

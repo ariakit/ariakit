@@ -1,6 +1,6 @@
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -21,10 +21,12 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
-  props = useCompositeGroup(props);
-  return props;
-});
+export const useSelectGroup = createHook2<TagName, SelectGroupOptions>(
+  (props) => {
+    props = useCompositeGroup(props);
+    return props;
+  },
+);
 
 /**
  * Renders a group for [`SelectItem`](https://ariakit.org/reference/select-item)
@@ -46,7 +48,9 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
  * </SelectProvider>
  * ```
  */
-export const SelectGroup = createComponent<SelectGroupOptions>((props) => {
+export const SelectGroup = forwardRef(function SelectGroup(
+  props: SelectGroupProps,
+) {
   const htmlProps = useSelectGroup(props);
   return createElement("div", htmlProps);
 });

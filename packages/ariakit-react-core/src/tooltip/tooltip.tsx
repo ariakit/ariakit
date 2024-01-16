@@ -4,7 +4,7 @@ import { createDialogComponent } from "../dialog/dialog.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   TooltipScopedContextProvider,
@@ -23,7 +23,7 @@ import type { TooltipStore } from "./tooltip-store.js";
  * <Role {...props}>Tooltip</Role>
  * ```
  */
-export const useTooltip = createHook<TooltipOptions>(
+export const useTooltip = createHook2<TagName, TooltipOptions>(
   ({
     store,
     portal = true,

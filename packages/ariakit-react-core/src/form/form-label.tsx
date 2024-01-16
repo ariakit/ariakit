@@ -42,7 +42,7 @@ function supportsNativeLabel(tagName?: string) {
  * </Form>
  * ```
  */
-export const useFormLabel = createHook<FormLabelOptions>(
+export const useFormLabel = createHook2<TagName, FormLabelOptions>(
   ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
     const context = useFormContext();
     store = store || context;

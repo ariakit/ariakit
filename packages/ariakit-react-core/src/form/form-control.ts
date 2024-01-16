@@ -64,7 +64,7 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * </Form>
  * ```
  */
-export const useFormControl = createHook<FormControlOptions>(
+export const useFormControl = createHook2<TagName, FormControlOptions>(
   ({
     store,
     name: nameProp,

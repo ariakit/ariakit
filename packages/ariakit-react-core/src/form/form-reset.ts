@@ -1,7 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
@@ -18,7 +18,7 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormReset = createHook<FormResetOptions>(
+export const useFormReset = createHook2<TagName, FormResetOptions>(
   ({ store, ...props }) => {
     const context = useFormContext();
     store = store || context;
@@ -56,7 +56,7 @@ export const useFormReset = createHook<FormResetOptions>(
  * </Form>
  * ```
  */
-export const FormReset = createComponent<FormResetOptions>((props) => {
+export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   const htmlProps = useFormReset(props);
   return createElement("button", htmlProps);
 });

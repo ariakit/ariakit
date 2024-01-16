@@ -7,7 +7,7 @@ import { useButton } from "../button/button.js";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
@@ -55,7 +55,7 @@ function getFirstFieldsByName(
  * </Form>
  * ```
  */
-export const useFormPush = createHook<FormPushOptions>(
+export const useFormPush = createHook2<TagName, FormPushOptions>(
   ({
     store,
     value,
@@ -152,7 +152,7 @@ export const useFormPush = createHook<FormPushOptions>(
  * </Form>
  * ```
  */
-export const FormPush = createComponent<FormPushOptions>((props) => {
+export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
   const htmlProps = useFormPush(props);
   return createElement("button", htmlProps);
 });

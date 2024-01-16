@@ -1,7 +1,7 @@
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   ToolbarScopedContextProvider,
@@ -23,7 +23,7 @@ import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
  * </Role>
  * ```
  */
-export const useToolbar = createHook<ToolbarOptions>(
+export const useToolbar = createHook2<TagName, ToolbarOptions>(
   ({
     store: storeProp,
     orientation: orientationProp,
@@ -80,7 +80,7 @@ export const useToolbar = createHook<ToolbarOptions>(
  * </Toolbar>
  * ```
  */
-export const Toolbar = createComponent<ToolbarOptions>((props) => {
+export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
   const htmlProps = useToolbar(props);
   return createElement("div", htmlProps);
 });

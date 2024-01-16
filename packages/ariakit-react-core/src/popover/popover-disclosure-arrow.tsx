@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";

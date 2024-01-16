@@ -39,7 +39,7 @@ function getValue<T>(prevValue: T, value: T, checked?: boolean) {
  * </Menu>
  * ```
  */
-export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
+export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
   ({
     store,
     name,

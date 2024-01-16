@@ -22,7 +22,7 @@ import { useToolbarItem } from "./toolbar-item.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarInput = createHook<ToolbarInputOptions>(
+export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
   ({ store, ...props }) => {
     const context = useToolbarContext();
     store = store || context;

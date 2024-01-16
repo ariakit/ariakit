@@ -28,7 +28,7 @@ import { useFormControl } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormInput = createHook<FormInputOptions>(
+export const useFormInput = createHook2<TagName, FormInputOptions>(
   ({ store, name: nameProp, ...props }) => {
     const context = useFormContext();
     store = store || context;

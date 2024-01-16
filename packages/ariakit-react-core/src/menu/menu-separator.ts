@@ -1,6 +1,6 @@
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
@@ -21,7 +21,7 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuSeparator = createHook<MenuSeparatorOptions>(
+export const useMenuSeparator = createHook2<TagName, MenuSeparatorOptions>(
   ({ store, ...props }) => {
     const context = useMenuContext();
     store = store || context;
@@ -49,7 +49,9 @@ export const useMenuSeparator = createHook<MenuSeparatorOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuSeparator = createComponent<MenuSeparatorOptions>((props) => {
+export const MenuSeparator = forwardRef(function MenuSeparator(
+  props: MenuSeparatorProps,
+) {
   const htmlProps = useMenuSeparator(props);
   return createElement("hr", htmlProps);
 });

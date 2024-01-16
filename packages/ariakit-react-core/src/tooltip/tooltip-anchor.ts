@@ -5,7 +5,7 @@ import { createStore, sync } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useTooltipProviderContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
@@ -27,7 +27,7 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  * <Tooltip store={store}>Tooltip</Tooltip>
  * ```
  */
-export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
+export const useTooltipAnchor = createHook2<TagName, TooltipAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
     const context = useTooltipProviderContext();
     store = store || context;
@@ -152,7 +152,9 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
  * </TooltipProvider>
  * ```
  */
-export const TooltipAnchor = createComponent<TooltipAnchorOptions>((props) => {
+export const TooltipAnchor = forwardRef(function TooltipAnchor(
+  props: TooltipAnchorProps,
+) {
   const htmlProps = useTooltipAnchor(props);
   return createElement("div", htmlProps);
 });

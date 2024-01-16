@@ -1,4 +1,4 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Component, Options, Props } from "../utils/types.js";
 
 const elements = [
@@ -43,7 +43,7 @@ type RoleElements = {
  * <Role {...props} />
  * ```
  */
-export const useRole = createHook<RoleOptions>((props) => {
+export const useRole = createHook2<TagName, RoleOptions>((props) => {
   return props;
 });
 
@@ -57,7 +57,7 @@ export const useRole = createHook<RoleOptions>((props) => {
  * <Role render={<div />} />
  * ```
  */
-export const Role = createComponent<RoleOptions>((props) => {
+export const Role = forwardRef(function Role(props: RoleProps) {
   return createElement("div", props);
 }) as Component<RoleOptions<"div">> & RoleElements;
 
@@ -68,9 +68,11 @@ if (process.env.NODE_ENV !== "production") {
 Object.assign(
   Role,
   elements.reduce((acc, element) => {
-    acc[element] = createComponent<RoleOptions<typeof element>>((props) => {
-      return createElement(element, props);
-    });
+    acc[element] =
+      forwardRef >
+      ((props) => {
+        return createElement(element, props);
+      });
     return acc;
   }, {} as RoleElements),
 );

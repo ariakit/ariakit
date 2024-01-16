@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
 
@@ -14,7 +14,7 @@ import { FocusTrap } from "./focus-trap.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
+export const useFocusTrapRegion = createHook2<TagName, FocusTrapRegionOptions>(
   ({ enabled = false, ...props }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -79,12 +79,12 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
  * </FocusTrapRegion>
  * ```
  */
-export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
-  (props) => {
-    const htmlProps = useFocusTrapRegion(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
+  props: FocusTrapRegionProps,
+) {
+  const htmlProps = useFocusTrapRegion(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   FocusTrapRegion.displayName = "FocusTrapRegion";

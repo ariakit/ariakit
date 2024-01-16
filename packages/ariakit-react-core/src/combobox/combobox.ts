@@ -41,7 +41,7 @@ import {
   useUpdateEffect,
   useUpdateLayoutEffect,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
@@ -96,7 +96,7 @@ function isAriaAutoCompleteValue(
  * </ComboboxPopover>
  * ```
  */
-export const useCombobox = createHook<ComboboxOptions>(
+export const useCombobox = createHook2<TagName, ComboboxOptions>(
   ({
     store,
     focusable = true,
@@ -540,7 +540,7 @@ export const useCombobox = createHook<ComboboxOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const Combobox = createComponent<ComboboxOptions>((props) => {
+export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   const htmlProps = useCombobox(props);
   return createElement("input", htmlProps);
 });

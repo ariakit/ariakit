@@ -1,4 +1,4 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 
 /**
@@ -10,7 +10,7 @@ import type { As, Options, Props } from "../utils/types.js";
  * <Role {...props} />
  * ```
  */
-export const useSeparator = createHook<SeparatorOptions>(
+export const useSeparator = createHook2<TagName, SeparatorOptions>(
   ({ orientation = "horizontal", ...props }) => {
     props = {
       role: "separator",
@@ -29,7 +29,7 @@ export const useSeparator = createHook<SeparatorOptions>(
  * <Separator orientation="horizontal" />
  * ```
  */
-export const Separator = createComponent<SeparatorOptions>((props) => {
+export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   const htmlProps = useSeparator(props);
   return createElement("hr", htmlProps);
 });

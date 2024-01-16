@@ -1,6 +1,6 @@
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useHovercardScopedContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
@@ -17,14 +17,15 @@ import type { HovercardStore } from "./hovercard-store.js";
  * </Hovercard>
  * ```
  */
-export const useHovercardDismiss = createHook<HovercardDismissOptions>(
-  ({ store, ...props }) => {
-    const context = useHovercardScopedContext();
-    store = store || context;
-    props = usePopoverDismiss({ store, ...props });
-    return props;
-  },
-);
+export const useHovercardDismiss = createHook2<
+  TagName,
+  HovercardDismissOptions
+>(({ store, ...props }) => {
+  const context = useHovercardScopedContext();
+  store = store || context;
+  props = usePopoverDismiss({ store, ...props });
+  return props;
+});
 
 /**
  * Renders a button that hides a
@@ -39,12 +40,12 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardDismiss = createComponent<HovercardDismissOptions>(
-  (props) => {
-    const htmlProps = useHovercardDismiss(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const HovercardDismiss = forwardRef(function HovercardDismiss(
+  props: HovercardDismissProps,
+) {
+  const htmlProps = useHovercardDismiss(props);
+  return createElement("button", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   HovercardDismiss.displayName = "HovercardDismiss";

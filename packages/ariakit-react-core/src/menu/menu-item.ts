@@ -56,7 +56,7 @@ function menuHasFocus(
  * </Menu>
  * ```
  */
-export const useMenuItem = createHook<MenuItemOptions>(
+export const useMenuItem = createHook2<TagName, MenuItemOptions>(
   ({
     store,
     hideOnClick = true,

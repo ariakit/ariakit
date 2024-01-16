@@ -27,7 +27,7 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormDescription = createHook<FormDescriptionOptions>(
+export const useFormDescription = createHook2<TagName, FormDescriptionOptions>(
   ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
     const context = useFormContext();
     store = store || context;

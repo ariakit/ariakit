@@ -11,7 +11,7 @@ import {
   useIsMouseMoving,
   useMergeRefs,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
@@ -27,7 +27,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
-export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
+export const useHovercardAnchor = createHook2<TagName, HovercardAnchorOptions>(
   ({ store, showOnHover = true, ...props }) => {
     const context = useHovercardProviderContext();
     store = store || context;
@@ -138,12 +138,12 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardAnchor = createComponent<HovercardAnchorOptions>(
-  (props) => {
-    const htmlProps = useHovercardAnchor(props);
-    return createElement("a", htmlProps);
-  },
-);
+export const HovercardAnchor = forwardRef(function HovercardAnchor(
+  props: HovercardAnchorProps,
+) {
+  const htmlProps = useHovercardAnchor(props);
+  return createElement("a", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   HovercardAnchor.displayName = "HovercardAnchor";

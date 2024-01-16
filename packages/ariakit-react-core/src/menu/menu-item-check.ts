@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { MenuItemCheckedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
@@ -15,7 +15,7 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props} />
  * ```
  */
-export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
+export const useMenuItemCheck = createHook2<TagName, MenuItemCheckOptions>(
   ({ store, checked, ...props }) => {
     const context = useContext(MenuItemCheckedContext);
     checked = checked ?? context;
@@ -52,7 +52,9 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItemCheck = createComponent<MenuItemCheckOptions>((props) => {
+export const MenuItemCheck = forwardRef(function MenuItemCheck(
+  props: MenuItemCheckProps,
+) {
   const htmlProps = useMenuItemCheck(props);
   return createElement("span", htmlProps);
 });

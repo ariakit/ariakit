@@ -1,6 +1,6 @@
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { usePopoverScopedContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
@@ -17,7 +17,7 @@ import type { PopoverStore } from "./popover-store.js";
  * </Popover>
  * ```
  */
-export const usePopoverDismiss = createHook<PopoverDismissOptions>(
+export const usePopoverDismiss = createHook2<TagName, PopoverDismissOptions>(
   ({ store, ...props }) => {
     const context = usePopoverScopedContext();
     store = store || context;
@@ -39,12 +39,12 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverDismiss = createComponent<PopoverDismissOptions>(
-  (props) => {
-    const htmlProps = usePopoverDismiss(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const PopoverDismiss = forwardRef(function PopoverDismiss(
+  props: PopoverDismissProps,
+) {
+  const htmlProps = usePopoverDismiss(props);
+  return createElement("button", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   PopoverDismiss.displayName = "PopoverDismiss";

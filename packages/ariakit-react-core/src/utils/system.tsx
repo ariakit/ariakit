@@ -40,9 +40,7 @@ export function memo<T extends React.FC<any>>(
     nextProps: Readonly<React.ComponentPropsWithoutRef<T>>,
   ) => boolean,
 ) {
-  const Role = React.memo(Component, propsAreEqual);
-  Role.displayName = Component.displayName || Component.name;
-  return Role as unknown as T;
+  return React.memo(Component, propsAreEqual) as unknown as T;
 }
 
 /**
@@ -56,7 +54,7 @@ export function memo<T extends React.FC<any>>(
  *   customProp?: boolean;
  * };
  *
- * const Component = createComponent<Props>(({ customProp, ...props }) => {
+ * const Component = forwardRef(({ customProp, ...props }) => {
  *   return <div {...props} />;
  * });
  *
@@ -169,7 +167,7 @@ export function createElement(
  *   customProp?: boolean;
  * };
  *
- * const useComponent = createHook<Props>(({ customProp, ...props }) => {
+ * const useComponent = createHook2<TagName, Props>(({ customProp, ...props }) => {
  *   return props;
  * });
  *

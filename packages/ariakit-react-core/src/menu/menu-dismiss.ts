@@ -1,6 +1,6 @@
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
@@ -17,7 +17,7 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuDismiss = createHook<MenuDismissOptions>(
+export const useMenuDismiss = createHook2<TagName, MenuDismissOptions>(
   ({ store, ...props }) => {
     const context = useMenuScopedContext();
     store = store || context;
@@ -39,7 +39,9 @@ export const useMenuDismiss = createHook<MenuDismissOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuDismiss = createComponent<MenuDismissOptions>((props) => {
+export const MenuDismiss = forwardRef(function MenuDismiss(
+  props: MenuDismissProps,
+) {
   const htmlProps = useMenuDismiss(props);
   return createElement("button", htmlProps);
 });

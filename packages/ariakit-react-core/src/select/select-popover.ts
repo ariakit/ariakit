@@ -1,7 +1,7 @@
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
@@ -20,7 +20,7 @@ import { useSelectList } from "./select-list.js";
  * </Role>
  * ```
  */
-export const useSelectPopover = createHook<SelectPopoverOptions>(
+export const useSelectPopover = createHook2<TagName, SelectPopoverOptions>(
   ({ store, alwaysVisible, ...props }) => {
     const context = useSelectProviderContext();
     store = store || context;

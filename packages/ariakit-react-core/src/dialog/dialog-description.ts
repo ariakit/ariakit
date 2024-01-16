@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { DialogDescriptionContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
@@ -17,8 +17,8 @@ import type { DialogStore } from "./dialog-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useDialogDescription = createHook<DialogDescriptionOptions>(
-  ({ store, ...props }) => {
+export const useDialogDescription =
+  createHook2<TagNameDialogDescriptionOptions>(({ store, ...props }) => {
     const setDescriptionId = useContext(DialogDescriptionContext);
     const id = useId(props.id);
 
@@ -33,8 +33,7 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
     };
 
     return props;
-  },
-);
+  });
 
 /**
  * Renders a description in a dialog. This component must be wrapped with
@@ -50,12 +49,12 @@ export const useDialogDescription = createHook<DialogDescriptionOptions>(
  * </Dialog>
  * ```
  */
-export const DialogDescription = createComponent<DialogDescriptionOptions>(
-  (props) => {
-    const htmlProps = useDialogDescription(props);
-    return createElement("p", htmlProps);
-  },
-);
+export const DialogDescription = forwardRef(function DialogDescription(
+  props: DialogDescriptionProps,
+) {
+  const htmlProps = useDialogDescription(props);
+  return createElement("p", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   DialogDescription.displayName = "DialogDescription";

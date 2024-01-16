@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Props2 } from "../utils/types.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxGroupLabel` component. This hook should be
@@ -16,12 +20,13 @@ import type { ComboboxStore } from "./combobox-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
-  (props) => {
-    props = useCompositeGroupLabel(props);
-    return props;
-  },
-);
+export const useComboboxGroupLabel = createHook2<
+  TagName,
+  ComboboxGroupLabelOptions
+>(function useComboboxGroupLabel(props) {
+  props = useCompositeGroupLabel(props);
+  return props;
+});
 
 /**
  * Renders a label in a combobox group. This component should be wrapped with
@@ -42,18 +47,14 @@ export const useComboboxGroupLabel = createHook<ComboboxGroupLabelOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxGroupLabel = createComponent<ComboboxGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useComboboxGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const ComboboxGroupLabel = forwardRef(function ComboboxGroupLabel(
+  props: ComboboxGroupLabelProps,
+) {
+  const htmlProps = useComboboxGroupLabel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxGroupLabel.displayName = "ComboboxGroupLabel";
-}
-
-export interface ComboboxGroupLabelOptions<T extends As = "div">
+export interface ComboboxGroupLabelOptions<T extends ElementType = TagName>
   extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -66,6 +67,7 @@ export interface ComboboxGroupLabelOptions<T extends As = "div">
   store?: ComboboxStore;
 }
 
-export type ComboboxGroupLabelProps<T extends As = "div"> = Props<
+export type ComboboxGroupLabelProps<T extends ElementType = TagName> = Props2<
+  T,
   ComboboxGroupLabelOptions<T>
 >;

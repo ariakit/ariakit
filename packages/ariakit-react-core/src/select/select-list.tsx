@@ -17,7 +17,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   SelectScopedContextProvider,
@@ -38,7 +38,7 @@ import type { SelectStore } from "./select-store.js";
  * </Role>
  * ```
  */
-export const useSelectList = createHook<SelectListOptions>(
+export const useSelectList = createHook2<TagName, SelectListOptions>(
   ({
     store,
     resetOnEscape = true,
@@ -161,7 +161,9 @@ export const useSelectList = createHook<SelectListOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectList = createComponent<SelectListOptions>((props) => {
+export const SelectList = forwardRef(function SelectList(
+  props: SelectListProps,
+) {
   const htmlProps = useSelectList(props);
   return createElement("div", htmlProps);
 });

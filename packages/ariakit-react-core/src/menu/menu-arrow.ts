@@ -1,6 +1,6 @@
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
@@ -18,7 +18,7 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuArrow = createHook<MenuArrowOptions>(
+export const useMenuArrow = createHook2<TagName, MenuArrowOptions>(
   ({ store, ...props }) => {
     const context = useMenuContext();
     store = store || context;
@@ -41,7 +41,7 @@ export const useMenuArrow = createHook<MenuArrowOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuArrow = createComponent<MenuArrowOptions>((props) => {
+export const MenuArrow = forwardRef(function MenuArrow(props: MenuArrowProps) {
   const htmlProps = useMenuArrow(props);
   return createElement("div", htmlProps);
 });

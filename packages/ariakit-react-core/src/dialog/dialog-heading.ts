@@ -2,7 +2,7 @@ import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { DialogHeadingContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
@@ -19,7 +19,7 @@ import type { DialogStore } from "./dialog-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useDialogHeading = createHook<DialogHeadingOptions>(
+export const useDialogHeading = createHook2<TagName, DialogHeadingOptions>(
   ({ store, ...props }) => {
     const setHeadingId = useContext(DialogHeadingContext);
     const id = useId(props.id);
@@ -54,7 +54,9 @@ export const useDialogHeading = createHook<DialogHeadingOptions>(
  * </Dialog>
  * ```
  */
-export const DialogHeading = createComponent<DialogHeadingOptions>((props) => {
+export const DialogHeading = forwardRef(function DialogHeading(
+  props: DialogHeadingProps,
+) {
   const htmlProps = useDialogHeading(props);
   return createElement("h1", htmlProps);
 });

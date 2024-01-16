@@ -1,6 +1,6 @@
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -16,10 +16,12 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
-  props = useCompositeGroupLabel(props);
-  return props;
-});
+export const useMenuGroupLabel = createHook2<TagName, MenuGroupLabelOptions>(
+  (props) => {
+    props = useCompositeGroupLabel(props);
+    return props;
+  },
+);
 
 /**
  * Renders a label in a menu group. This component should be wrapped with
@@ -40,12 +42,12 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuGroupLabel = createComponent<MenuGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useMenuGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
+  props: MenuGroupLabelProps,
+) {
+  const htmlProps = useMenuGroupLabel(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   MenuGroupLabel.displayName = "MenuGroupLabel";

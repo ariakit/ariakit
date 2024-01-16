@@ -49,7 +49,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  * </RadioGroup>
  * ```
  */
-export const useRadio = createHook<RadioOptions>(
+export const useRadio = createHook2<TagName, RadioOptions>(
   ({ store, name, value, checked, ...props }) => {
     const context = useRadioContext();
     store = store || context;

@@ -1,6 +1,6 @@
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
@@ -18,7 +18,7 @@ import type { HovercardStore } from "./hovercard-store.js";
  * </Hovercard>
  * ```
  */
-export const useHovercardArrow = createHook<HovercardArrowOptions>(
+export const useHovercardArrow = createHook2<TagName, HovercardArrowOptions>(
   ({ store, ...props }) => {
     const context = useHovercardContext();
     store = store || context;
@@ -43,12 +43,12 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardArrow = createComponent<HovercardArrowOptions>(
-  (props) => {
-    const htmlProps = useHovercardArrow(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const HovercardArrow = forwardRef(function HovercardArrow(
+  props: HovercardArrowProps,
+) {
+  const htmlProps = useHovercardArrow(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   HovercardArrow.displayName = "HovercardArrow";

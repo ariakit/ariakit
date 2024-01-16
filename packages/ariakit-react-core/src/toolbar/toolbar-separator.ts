@@ -1,6 +1,6 @@
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
@@ -19,14 +19,15 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
-  ({ store, ...props }) => {
-    const context = useToolbarContext();
-    store = store || context;
-    props = useCompositeSeparator({ store, ...props });
-    return props;
-  },
-);
+export const useToolbarSeparator = createHook2<
+  TagName,
+  ToolbarSeparatorOptions
+>(({ store, ...props }) => {
+  const context = useToolbarContext();
+  store = store || context;
+  props = useCompositeSeparator({ store, ...props });
+  return props;
+});
 
 /**
  * Renders a divider between
@@ -41,12 +42,12 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarSeparator = createComponent<ToolbarSeparatorOptions>(
-  (props) => {
-    const htmlProps = useToolbarSeparator(props);
-    return createElement("hr", htmlProps);
-  },
-);
+export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
+  props: ToolbarSeparatorProps,
+) {
+  const htmlProps = useToolbarSeparator(props);
+  return createElement("hr", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   ToolbarSeparator.displayName = "ToolbarSeparator";

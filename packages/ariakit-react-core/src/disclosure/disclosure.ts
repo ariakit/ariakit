@@ -10,7 +10,7 @@ import {
   useMergeRefs,
   useMetadataProps,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
@@ -28,7 +28,7 @@ const symbol = Symbol("disclosure");
  * <DisclosureContent store={store}>Content</DisclosureContent>
  * ```
  */
-export const useDisclosure = createHook<DisclosureOptions>(
+export const useDisclosure = createHook2<TagName, DisclosureOptions>(
   ({ store, toggleOnClick = true, ...props }) => {
     const context = useDisclosureProviderContext();
     store = store || context;
@@ -100,7 +100,9 @@ export const useDisclosure = createHook<DisclosureOptions>(
  * </DisclosureProvider>
  * ```
  */
-export const Disclosure = createComponent<DisclosureOptions>((props) => {
+export const Disclosure = forwardRef(function Disclosure(
+  props: DisclosureProps,
+) {
   const htmlProps = useDisclosure(props);
   return createElement("button", htmlProps);
 });

@@ -1,6 +1,6 @@
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -21,7 +21,7 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
+export const useMenuGroup = createHook2<TagName, MenuGroupOptions>((props) => {
   props = useCompositeGroup(props);
   return props;
 });
@@ -46,7 +46,7 @@ export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuGroup = createComponent<MenuGroupOptions>((props) => {
+export const MenuGroup = forwardRef(function MenuGroup(props: MenuGroupProps) {
   const htmlProps = useMenuGroup(props);
   return createElement("div", htmlProps);
 });

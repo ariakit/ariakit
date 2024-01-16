@@ -21,7 +21,7 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarItem = createHook<ToolbarItemOptions>(
+export const useToolbarItem = createHook2<TagName, ToolbarItemOptions>(
   ({ store, ...props }) => {
     const context = useToolbarContext();
     store = store || context;

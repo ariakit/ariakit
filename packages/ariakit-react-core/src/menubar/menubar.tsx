@@ -1,7 +1,7 @@
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import {
   MenubarScopedContextProvider,
@@ -30,7 +30,7 @@ import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
  * </Role>
  * ```
  */
-export const useMenubar = createHook<MenubarOptions>(
+export const useMenubar = createHook2<TagName, MenubarOptions>(
   ({
     store: storeProp,
     composite = true,
@@ -106,7 +106,7 @@ export const useMenubar = createHook<MenubarOptions>(
  * </Menubar>
  * ```
  */
-export const Menubar = createComponent<MenubarOptions>((props) => {
+export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
   const htmlProps = useMenubar(props);
   return createElement("div", htmlProps);
 });

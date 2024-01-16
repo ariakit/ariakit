@@ -1,6 +1,6 @@
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
@@ -22,7 +22,7 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
+export const useMenuButtonArrow = createHook2<TagName, MenuButtonArrowOptions>(
   ({ store, ...props }) => {
     const context = useMenuContext();
     store = store || context;
@@ -54,12 +54,12 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuButtonArrow = createComponent<MenuButtonArrowOptions>(
-  (props) => {
-    const htmlProps = useMenuButtonArrow(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const MenuButtonArrow = forwardRef(function MenuButtonArrow(
+  props: MenuButtonArrowProps,
+) {
+  const htmlProps = useMenuButtonArrow(props);
+  return createElement("span", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   MenuButtonArrow.displayName = "MenuButtonArrow";

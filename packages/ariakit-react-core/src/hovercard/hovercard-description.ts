@@ -1,6 +1,6 @@
 import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
 import { usePopoverDescription } from "../popover/popover-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
@@ -16,12 +16,11 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
-  (props) => {
+export const useHovercardDescription =
+  createHook2<TagNameHovercardDescriptionOptions>((props) => {
     props = usePopoverDescription(props);
     return props;
-  },
-);
+  });
 
 /**
  * Renders a description in a hovercard. This component must be wrapped within

@@ -22,7 +22,7 @@ type HeadingElements = `h${HeadingLevels}`;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHeading = createHook<HeadingOptions>((props) => {
+export const useHeading = createHook2<TagName, HeadingOptions>((props) => {
   const ref = useRef<HTMLHeadingElement>(null);
   const level: HeadingLevels = useContext(HeadingContext) || 1;
   const Element = `h${level}` as const;
@@ -59,7 +59,7 @@ export const useHeading = createHook<HeadingOptions>((props) => {
  * </HeadingLevel>
  * ```
  */
-export const Heading = createComponent<HeadingOptions>((props) => {
+export const Heading = forwardRef(function Heading(props: HeadingProps) {
   const htmlProps = useHeading(props);
   return createElement("h1", htmlProps);
 });

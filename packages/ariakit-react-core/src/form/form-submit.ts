@@ -1,7 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
@@ -18,7 +18,7 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormSubmit = createHook<FormSubmitOptions>(
+export const useFormSubmit = createHook2<TagName, FormSubmitOptions>(
   ({ store, accessibleWhenDisabled = true, ...props }) => {
     const context = useFormContext();
     store = store || context;
@@ -58,7 +58,9 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
  * </Form>
  * ```
  */
-export const FormSubmit = createComponent<FormSubmitOptions>((props) => {
+export const FormSubmit = forwardRef(function FormSubmit(
+  props: FormSubmitProps,
+) {
   const htmlProps = useFormSubmit(props);
   return createElement("button", htmlProps);
 });

@@ -1,4 +1,4 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { FormGroupOptions } from "./form-group.js";
 import { useFormGroup } from "./form-group.js";
@@ -20,7 +20,7 @@ import { useFormGroup } from "./form-group.js";
  * </Form>
  * ```
  */
-export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
+export const useFormRadioGroup = createHook2<TagName, FormRadioGroupOptions>(
   ({ store, ...props }) => {
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
@@ -53,12 +53,12 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
  * </Form>
  * ```
  */
-export const FormRadioGroup = createComponent<FormRadioGroupOptions>(
-  (props) => {
-    const htmlProps = useFormRadioGroup(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FormRadioGroup = forwardRef(function FormRadioGroup(
+  props: FormRadioGroupProps,
+) {
+  const htmlProps = useFormRadioGroup(props);
+  return createElement("div", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   FormRadioGroup.displayName = "FormRadioGroup";

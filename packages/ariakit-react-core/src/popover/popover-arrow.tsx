@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { usePopoverContext } from "./popover-context.js";
@@ -45,7 +45,7 @@ function useComputedStyle(store: PopoverStore) {
  * </Popover>
  * ```
  */
-export const usePopoverArrow = createHook<PopoverArrowOptions>(
+export const usePopoverArrow = createHook2<TagName, PopoverArrowOptions>(
   ({ store, size = defaultSize, ...props }) => {
     const context = usePopoverContext();
     store = store || context;
@@ -117,7 +117,9 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverArrow = createComponent<PopoverArrowOptions>((props) => {
+export const PopoverArrow = forwardRef(function PopoverArrow(
+  props: PopoverArrowProps,
+) {
   const htmlProps = usePopoverArrow(props);
   return createElement("div", htmlProps);
 });

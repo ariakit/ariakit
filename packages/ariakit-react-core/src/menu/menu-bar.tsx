@@ -1,6 +1,6 @@
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 
 /**
@@ -23,7 +23,7 @@ import type { As, Props } from "../utils/types.js";
  * </Role>
  * ```
  */
-export const useMenuBar = createHook<MenuBarOptions>((props) => {
+export const useMenuBar = createHook2<TagName, MenuBarOptions>((props) => {
   return useMenubar(props);
 });
 
@@ -54,7 +54,7 @@ export const useMenuBar = createHook<MenuBarOptions>((props) => {
  * </MenuBarProvider>
  * ```
  */
-export const MenuBar = createComponent<MenuBarOptions>((props) => {
+export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   const htmlProps = useMenuBar(props);
   return createElement("div", htmlProps);
 });

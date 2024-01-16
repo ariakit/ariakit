@@ -1,6 +1,6 @@
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
 import { useDialogHeading } from "../dialog/dialog-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
 
@@ -16,10 +16,12 @@ import type { PopoverStore } from "./popover-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
-  props = useDialogHeading(props);
-  return props;
-});
+export const usePopoverHeading = createHook2<TagName, PopoverHeadingOptions>(
+  (props) => {
+    props = useDialogHeading(props);
+    return props;
+  },
+);
 
 /**
  * Renders a heading in a popover. This component must be wrapped with
@@ -35,12 +37,12 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
  * </PopoverProvider>
  * ```
  */
-export const PopoverHeading = createComponent<PopoverHeadingOptions>(
-  (props) => {
-    const htmlProps = usePopoverHeading(props);
-    return createElement("h1", htmlProps);
-  },
-);
+export const PopoverHeading = forwardRef(function PopoverHeading(
+  props: PopoverHeadingProps,
+) {
+  const htmlProps = usePopoverHeading(props);
+  return createElement("h1", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   PopoverHeading.displayName = "PopoverHeading";

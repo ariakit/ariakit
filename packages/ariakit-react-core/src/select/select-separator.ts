@@ -1,6 +1,6 @@
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
@@ -20,7 +20,7 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectSeparator = createHook<SelectSeparatorOptions>(
+export const useSelectSeparator = createHook2<TagName, SelectSeparatorOptions>(
   ({ store, ...props }) => {
     const context = useSelectContext();
     store = store || context;
@@ -46,12 +46,12 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectSeparator = createComponent<SelectSeparatorOptions>(
-  (props) => {
-    const htmlProps = useSelectSeparator(props);
-    return createElement("hr", htmlProps);
-  },
-);
+export const SelectSeparator = forwardRef(function SelectSeparator(
+  props: SelectSeparatorProps,
+) {
+  const htmlProps = useSelectSeparator(props);
+  return createElement("hr", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   SelectSeparator.displayName = "SelectSeparator";

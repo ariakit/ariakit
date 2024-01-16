@@ -32,7 +32,7 @@ import { useMenuList } from "./menu-list.jsx";
  * </Role>
  * ```
  */
-export const useMenu = createHook<MenuOptions>(
+export const useMenu = createHook2<TagName, MenuOptions>(
   ({
     store,
     modal: modalProp = false,

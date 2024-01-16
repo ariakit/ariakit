@@ -1,7 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
@@ -20,7 +20,7 @@ import type { TooltipStore } from "./tooltip-store.js";
  * </Tooltip>
  * ```
  */
-export const useTooltipArrow = createHook<TooltipArrowOptions>(
+export const useTooltipArrow = createHook2<TagName, TooltipArrowOptions>(
   ({ store, size = 16, ...props }) => {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
@@ -53,7 +53,9 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
  * </TooltipProvider>
  * ```
  */
-export const TooltipArrow = createComponent<TooltipArrowOptions>((props) => {
+export const TooltipArrow = forwardRef(function TooltipArrow(
+  props: TooltipArrowProps,
+) {
   const htmlProps = useTooltipArrow(props);
   return createElement("div", htmlProps);
 });

@@ -1,6 +1,6 @@
 import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
 import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -16,10 +16,12 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
-  props = useHovercardHeading(props);
-  return props;
-});
+export const useMenuHeading = createHook2<TagName, MenuHeadingOptions>(
+  (props) => {
+    props = useHovercardHeading(props);
+    return props;
+  },
+);
 
 /**
  * Renders a heading in a menu. This component must be wrapped within
@@ -35,7 +37,9 @@ export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuHeading = createComponent<MenuHeadingOptions>((props) => {
+export const MenuHeading = forwardRef(function MenuHeading(
+  props: MenuHeadingProps,
+) {
   const htmlProps = useMenuHeading(props);
   return createElement("h1", htmlProps);
 });

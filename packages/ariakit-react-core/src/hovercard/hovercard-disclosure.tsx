@@ -7,7 +7,7 @@ import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
@@ -25,8 +25,8 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
-export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
-  ({ store, ...props }) => {
+export const useHovercardDisclosure =
+  createHook2<TagNameHovercardDisclosureOptions>(({ store, ...props }) => {
     const context = useHovercardProviderContext();
     store = store || context;
 
@@ -140,8 +140,7 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
     props = useDialogDisclosure({ store, ...props });
 
     return props;
-  },
-);
+  });
 
 /**
  * Renders a hidden disclosure button that will be visible when the
@@ -158,12 +157,12 @@ export const useHovercardDisclosure = createHook<HovercardDisclosureOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardDisclosure = createComponent<HovercardDisclosureOptions>(
-  (props) => {
-    const htmlProps = useHovercardDisclosure(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
+  props: HovercardDisclosureProps,
+) {
+  const htmlProps = useHovercardDisclosure(props);
+  return createElement("button", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   HovercardDisclosure.displayName = "HovercardDisclosure";

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { SelectItemCheckedContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
@@ -17,7 +17,7 @@ import type { SelectStore } from "./select-store.js";
  * <Role {...props} />
  * ```
  */
-export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
+export const useSelectItemCheck = createHook2<TagName, SelectItemCheckOptions>(
   ({ store, checked, ...props }) => {
     const context = useContext(SelectItemCheckedContext);
     checked = checked ?? context;
@@ -53,12 +53,12 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
-  (props) => {
-    const htmlProps = useSelectItemCheck(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const SelectItemCheck = forwardRef(function SelectItemCheck(
+  props: SelectItemCheckProps,
+) {
+  const htmlProps = useSelectItemCheck(props);
+  return createElement("span", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   SelectItemCheck.displayName = "SelectItemCheck";

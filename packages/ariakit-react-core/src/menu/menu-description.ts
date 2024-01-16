@@ -1,6 +1,6 @@
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -16,7 +16,7 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useMenuDescription = createHook<MenuDescriptionOptions>(
+export const useMenuDescription = createHook2<TagName, MenuDescriptionOptions>(
   (props) => {
     props = useHovercardDescription(props);
     return props;
@@ -37,12 +37,12 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuDescription = createComponent<MenuDescriptionOptions>(
-  (props) => {
-    const htmlProps = useMenuDescription(props);
-    return createElement("p", htmlProps);
-  },
-);
+export const MenuDescription = forwardRef(function MenuDescription(
+  props: MenuDescriptionProps,
+) {
+  const htmlProps = useMenuDescription(props);
+  return createElement("p", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   MenuDescription.displayName = "MenuDescription";

@@ -1,6 +1,6 @@
 import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
 import { usePopoverHeading } from "../popover/popover-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
@@ -16,12 +16,13 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHovercardHeading = createHook<HovercardHeadingOptions>(
-  (props) => {
-    props = usePopoverHeading(props);
-    return props;
-  },
-);
+export const useHovercardHeading = createHook2<
+  TagName,
+  HovercardHeadingOptions
+>((props) => {
+  props = usePopoverHeading(props);
+  return props;
+});
 
 /**
  * Renders a heading in a hovercard. This component must be wrapped within
@@ -37,12 +38,12 @@ export const useHovercardHeading = createHook<HovercardHeadingOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardHeading = createComponent<HovercardHeadingOptions>(
-  (props) => {
-    const htmlProps = useHovercardHeading(props);
-    return createElement("h1", htmlProps);
-  },
-);
+export const HovercardHeading = forwardRef(function HovercardHeading(
+  props: HovercardHeadingProps,
+) {
+  const htmlProps = useHovercardHeading(props);
+  return createElement("h1", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   HovercardHeading.displayName = "HovercardHeading";

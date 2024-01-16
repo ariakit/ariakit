@@ -16,7 +16,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { setRef } from "../utils/misc.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Options, Props } from "../utils/types.js";
 import { PortalContext } from "./portal-context.js";
 
@@ -58,7 +58,7 @@ function queueFocus(element?: HTMLElement | null) {
  * <Role {...props}>Content</Role>
  * ```
  */
-export const usePortal = createHook<PortalOptions>(
+export const usePortal = createHook2<TagName, PortalOptions>(
   ({
     preserveTabOrder,
     preserveTabOrderAnchor,
@@ -338,7 +338,7 @@ export const usePortal = createHook<PortalOptions>(
  * <Portal>Content</Portal>
  * ```
  */
-export const Portal = createComponent<PortalOptions>((props) => {
+export const Portal = forwardRef(function Portal(props: PortalProps) {
   const htmlProps = usePortal(props);
   return createElement("div", htmlProps);
 });

@@ -24,15 +24,16 @@ import { useToolbarItem } from "./toolbar-item.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarContainer = createHook<ToolbarContainerOptions>(
-  ({ store, ...props }) => {
-    const context = useToolbarContext();
-    store = store || context;
-    props = useCompositeContainer({ store, ...props });
-    props = useToolbarItem({ store, ...props });
-    return props;
-  },
-);
+export const useToolbarContainer = createHook2<
+  TagName,
+  ToolbarContainerOptions
+>(({ store, ...props }) => {
+  const context = useToolbarContext();
+  store = store || context;
+  props = useCompositeContainer({ store, ...props });
+  props = useToolbarItem({ store, ...props });
+  return props;
+});
 
 /**
  * Renders a toolbar item that may contain interactive widgets inside.

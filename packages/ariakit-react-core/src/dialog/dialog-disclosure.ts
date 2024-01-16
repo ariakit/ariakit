@@ -2,7 +2,7 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useDialogProviderContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
@@ -18,29 +18,30 @@ import type { DialogStore } from "./dialog-store.js";
  * <Dialog store={store}>Content</Dialog>
  * ```
  */
-export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
-  ({ store, ...props }) => {
-    const context = useDialogProviderContext();
-    store = store || context;
+export const useDialogDisclosure = createHook2<
+  TagName,
+  DialogDisclosureOptions
+>(({ store, ...props }) => {
+  const context = useDialogProviderContext();
+  store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
+  );
 
-    const contentElement = store.useState("contentElement");
+  const contentElement = store.useState("contentElement");
 
-    props = {
-      "aria-haspopup": getPopupRole(contentElement, "dialog"),
-      ...props,
-    };
+  props = {
+    "aria-haspopup": getPopupRole(contentElement, "dialog"),
+    ...props,
+  };
 
-    props = useDisclosure({ store, ...props });
+  props = useDisclosure({ store, ...props });
 
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a button that toggles the visibility of a
@@ -54,12 +55,12 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
  * </DialogProvider>
  * ```
  */
-export const DialogDisclosure = createComponent<DialogDisclosureOptions>(
-  (props) => {
-    const htmlProps = useDialogDisclosure(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const DialogDisclosure = forwardRef(function DialogDisclosure(
+  props: DialogDisclosureProps,
+) {
+  const htmlProps = useDialogDisclosure(props);
+  return createElement("button", htmlProps);
+});
 
 if (process.env.NODE_ENV !== "production") {
   DialogDisclosure.displayName = "DialogDisclosure";

@@ -34,7 +34,7 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormError = createHook<FormErrorOptions>(
+export const useFormError = createHook2<TagName, FormErrorOptions>(
   ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
     const context = useFormContext();
     store = store || context;

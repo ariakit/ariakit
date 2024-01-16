@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
+import { createElement, createHook2 } from "../utils/system.js";
 import type { As, Props } from "../utils/types.js";
 import { useDialogScopedContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
@@ -20,7 +20,7 @@ import type { DialogStore } from "./dialog-store.js";
  * </Dialog>
  * ```
  */
-export const useDialogDismiss = createHook<DialogDismissOptions>(
+export const useDialogDismiss = createHook2<TagName, DialogDismissOptions>(
   ({ store, ...props }) => {
     const context = useDialogScopedContext();
     store = store || context;
@@ -80,7 +80,9 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
  * </Dialog>
  * ```
  */
-export const DialogDismiss = createComponent<DialogDismissOptions>((props) => {
+export const DialogDismiss = forwardRef(function DialogDismiss(
+  props: DialogDismissProps,
+) {
   const htmlProps = useDialogDismiss(props);
   return createElement("button", htmlProps);
 });
