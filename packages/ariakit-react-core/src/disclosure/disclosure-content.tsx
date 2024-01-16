@@ -16,7 +16,6 @@ import type { DisclosureStore } from "./disclosure-store.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-
 type TransitionState = "enter" | "leave" | null;
 
 function afterTimeout(timeoutMs: number, cb: () => void) {

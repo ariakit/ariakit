@@ -1,9 +1,15 @@
 import { useRef } from "react";
+import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FocusTrapRegion` component.
@@ -16,7 +22,7 @@ import { FocusTrap } from "./focus-trap.js";
  */
 export const useFocusTrapRegion = createHook2<TagName, FocusTrapRegionOptions>(
   function useFocusTrapRegion({ enabled = false, ...props }) {
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
 
     props = useWrapElement(
       props,
@@ -61,7 +67,7 @@ export const useFocusTrapRegion = createHook2<TagName, FocusTrapRegionOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 

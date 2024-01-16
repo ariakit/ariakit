@@ -1,7 +1,11 @@
-import { createElement, createHook2 } from "../utils/system.js";
+import type { ElementType } from "react";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FocusTrap` component.

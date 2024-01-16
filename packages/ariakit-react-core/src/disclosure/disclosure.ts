@@ -1,5 +1,5 @@
-import type { MouseEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { ElementType, MouseEvent } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
@@ -14,6 +14,10 @@ import { createElement, createHook2 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const symbol = Symbol("disclosure");
 
@@ -39,7 +43,7 @@ export const useDisclosure = createHook2<TagName, DisclosureOptions>(
         "Disclosure must receive a `store` prop or be wrapped in a DisclosureProvider component.",
     );
 
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLType>(null);
     const [expanded, setExpanded] = useState(false);
     const disclosureElement = store.useState("disclosureElement");
     const open = store.useState("open");
@@ -61,7 +65,7 @@ export const useDisclosure = createHook2<TagName, DisclosureOptions>(
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
     const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDuplicate) return;

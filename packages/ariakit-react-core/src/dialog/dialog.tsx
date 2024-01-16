@@ -67,7 +67,7 @@ import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
 import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
 
-const TagName = "button" satisfies ElementType;
+const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 

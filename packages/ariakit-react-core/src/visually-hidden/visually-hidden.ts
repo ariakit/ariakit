@@ -1,5 +1,9 @@
-import { createElement, createHook2 } from "../utils/system.js";
+import type { ElementType } from "react";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `VisuallyHidden` component. When applying the props
@@ -53,7 +57,8 @@ export const VisuallyHidden = forwardRef(function VisuallyHidden(
   return createElement(TagName, htmlProps);
 });
 
-export type VisuallyHiddenOptions<T extends ElementType = TagName> = Options<T>;
+export interface VisuallyHiddenOptions<_T extends ElementType = TagName>
+  extends Options2 {}
 
 export type VisuallyHiddenProps<T extends ElementType = TagName> = Props2<
   T,
