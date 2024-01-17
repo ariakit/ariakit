@@ -35,7 +35,6 @@ export const useCompositeOverflow = createHook<
   CompositeOverflowOptions
 >(function useCompositeOverflow({
   store,
-  backdropProps: backdropPropsProp,
   wrapperProps: wrapperPropsProp,
   portal = false,
   ...props
@@ -53,12 +52,6 @@ export const useCompositeOverflow = createHook<
   const getStyle = (styleProp?: CSSProperties) =>
     mounted ? styleProp : { ...hiddenStyle, ...styleProp };
 
-  const backdropProps = {
-    hidden: false,
-    ...backdropPropsProp,
-    style: getStyle(backdropPropsProp?.style),
-  };
-
   const wrapperProps = {
     ...wrapperPropsProp,
     style: getStyle(wrapperPropsProp?.style),
@@ -66,15 +59,14 @@ export const useCompositeOverflow = createHook<
 
   props = {
     role: "presentation",
-    hidden: false,
-    focusable: false,
     ...props,
     onFocus,
   };
 
   props = usePopover({
     store,
-    backdropProps,
+    focusable: false,
+    alwaysVisible: true,
     wrapperProps,
     portal,
     ...props,
