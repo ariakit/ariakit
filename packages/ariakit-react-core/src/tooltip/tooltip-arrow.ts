@@ -1,10 +1,14 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TooltipArrow` component.

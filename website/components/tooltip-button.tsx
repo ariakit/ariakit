@@ -1,13 +1,10 @@
 "use client";
 
-import type { ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { Role } from "@ariakit/react";
 import { Button } from "@ariakit/react/button";
-import type {
-  TooltipAnchorOptions,
-  TooltipProps,
-} from "@ariakit/react/tooltip";
+import type { TooltipAnchorProps, TooltipProps } from "@ariakit/react/tooltip";
 import {
   Tooltip,
   TooltipAnchor,
@@ -15,8 +12,8 @@ import {
 } from "@ariakit/react/tooltip";
 import { forwardRef } from "@ariakit/react-core/utils/system";
 
-export interface TooltipButtonOptions<T extends ElementType = "button">
-  extends TooltipAnchorOptions<T> {
+export interface TooltipButtonProps
+  extends Omit<TooltipAnchorProps<"button">, "title"> {
   title: ReactNode;
   tooltipProps?: TooltipProps;
   fixed?: boolean;
@@ -30,7 +27,7 @@ export const TooltipButton = forwardRef(function TooltipButton({
   isLabel,
   store,
   ...props
-}) {
+}: TooltipButtonProps) {
   return (
     <TooltipProvider store={store} type={isLabel ? "label" : "description"}>
       <Role.button

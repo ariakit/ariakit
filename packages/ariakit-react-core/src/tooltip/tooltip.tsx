@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+import type { ElementType } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
@@ -11,6 +13,9 @@ import {
   useTooltipProviderContext,
 } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Tooltip` component.
@@ -64,7 +69,7 @@ export const useTooltip = createHook2<TagName, TooltipOptions>(
       portal,
       gutter,
       preserveTabOrder,
-      hideOnHoverOutside: (event) => {
+      hideOnHoverOutside(event) {
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
         const anchorElement = store?.getState().anchorElement;
         if (!anchorElement) return true;
@@ -106,7 +111,7 @@ export const useTooltip = createHook2<TagName, TooltipOptions>(
  * ```
  */
 export const Tooltip = createDialogComponent(
-  createComponent<TooltipOptions>((props) => {
+  forwardRef(function Tooltip(props: TooltipProps) {
     const htmlProps = useTooltip(props);
     return createElement(TagName, htmlProps);
   }),
