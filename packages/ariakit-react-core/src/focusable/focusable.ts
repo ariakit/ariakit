@@ -405,9 +405,9 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     }, [trulyDisabled, props.style]);
 
     props = {
-      "data-focus-visible": focusable && focusVisible ? "" : undefined,
-      "data-autofocus": autoFocus ? true : undefined,
-      "aria-disabled": disabled ? true : undefined,
+      "data-focus-visible": (focusable && focusVisible) || undefined,
+      "data-autofocus": autoFocus || undefined,
+      "aria-disabled": disabled || undefined,
       ...props,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,

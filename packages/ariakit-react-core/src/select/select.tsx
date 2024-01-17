@@ -291,7 +291,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     "aria-autocomplete": "none",
     "aria-labelledby": labelId,
     "aria-haspopup": getPopupRole(contentElement, "listbox"),
-    "data-autofill": autofill ? "" : undefined,
+    "data-autofill": autofill || undefined,
     "data-name": name,
     children,
     ...props,

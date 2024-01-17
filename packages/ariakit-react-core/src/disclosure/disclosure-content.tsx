@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ElementType } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
 import {
   useId,
@@ -152,15 +152,15 @@ export const useDisclosureContent = createHook<
 
   props = {
     id,
-    "data-enter": transition === "enter" ? "" : undefined,
-    "data-leave": transition === "leave" ? "" : undefined,
+    "data-enter": transition === "enter" || undefined,
+    "data-leave": transition === "leave" || undefined,
     hidden,
     ...props,
     ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
     style,
   };
 
-  return props;
+  return removeUndefinedValues(props);
 });
 
 const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(

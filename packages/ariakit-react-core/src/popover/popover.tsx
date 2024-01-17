@@ -431,7 +431,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // we can wait for the popover to be positioned before other components
       // move focus into it. For example, this attribute is observed by the
       // Combobox component with the autoSelect behavior.
-      "data-placing": !positioned ? "" : undefined,
+      "data-placing": !positioned || undefined,
       ...props,
       style: {
         position: "relative",
