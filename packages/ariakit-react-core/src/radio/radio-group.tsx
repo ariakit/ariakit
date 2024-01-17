@@ -1,14 +1,18 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   RadioScopedContextProvider,
   useRadioProviderContext,
 } from "./radio-context.js";
 import type { RadioStore } from "./radio-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `RadioGroup` component.

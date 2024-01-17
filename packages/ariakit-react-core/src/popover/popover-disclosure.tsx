@@ -1,9 +1,9 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
@@ -11,6 +11,10 @@ import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
 } from "./popover-context.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `PopoverDisclosure` component.
@@ -38,7 +42,7 @@ export const usePopoverDisclosure = createHook2<
 
   const onClickProp = props.onClick;
 
-  const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
     store?.setAnchorElement(event.currentTarget);
     onClickProp?.(event);
   });
@@ -58,7 +62,7 @@ export const usePopoverDisclosure = createHook2<
     onClick,
   };
 
-  props = usePopoverAnchor({ store, ...props });
+  props = usePopoverAnchor<TagName>({ store, ...props });
   props = useDialogDisclosure({ store, ...props });
 
   return props;

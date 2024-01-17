@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
+import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const defaultSize = 30;
@@ -98,7 +101,7 @@ export const usePopoverArrow = createHook2<TagName, PopoverArrowOptions>(
       },
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 

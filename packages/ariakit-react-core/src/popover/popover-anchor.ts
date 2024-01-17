@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import { useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { usePopoverProviderContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "a" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverAnchor` component.

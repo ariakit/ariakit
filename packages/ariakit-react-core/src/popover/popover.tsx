@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import type { ElementType, HTMLAttributes } from "react";
 import { useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import {
@@ -19,7 +19,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   PopoverScopedContextProvider,
@@ -27,6 +27,8 @@ import {
 } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 type Placement =
@@ -214,7 +216,7 @@ function getArrowMiddleware(
  * ```
  */
 export const usePopover = createHook2<TagName, PopoverOptions>(
-  ({
+  function usePopover({
     store,
     modal = false,
     portal = !!modal,
@@ -234,7 +236,7 @@ export const usePopover = createHook2<TagName, PopoverOptions>(
     getAnchorRect,
     updatePosition,
     ...props
-  }) => {
+  }) {
     const context = usePopoverProviderContext();
     store = store || context;
 
@@ -465,7 +467,7 @@ export const usePopover = createHook2<TagName, PopoverOptions>(
  * ```
  */
 export const Popover = createDialogComponent(
-  createComponent<PopoverOptions>((props) => {
+  forwardRef(function Popover(props: PopoverProps) {
     const htmlProps = usePopover(props);
     return createElement(TagName, htmlProps);
   }),

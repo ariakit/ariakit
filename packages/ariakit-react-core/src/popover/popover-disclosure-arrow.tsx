@@ -1,10 +1,13 @@
 import { useMemo } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
-import { createElement, createHook2 } from "../utils/system.js";
+import type { ElementType } from "react";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const pointsMap = {
@@ -27,56 +30,56 @@ const pointsMap = {
  * </PopoverDisclosure>
  * ```
  */
-export const usePopoverDisclosureArrow =
-  createHook<PopoverDisclosureArrowOptions>(
-    ({ store, placement, ...props }) => {
-      const context = usePopoverContext();
-      store = store || context;
+export const usePopoverDisclosureArrow = createHook2<
+  TagName,
+  PopoverDisclosureArrowOptions
+>(function usePopoverDisclosureArrow({ store, placement, ...props }) {
+  const context = usePopoverContext();
+  store = store || context;
 
-      invariant(
-        store,
-        process.env.NODE_ENV !== "production" &&
-          "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component.",
-      );
-
-      const position = store.useState((state) => placement || state.placement);
-      const dir = position.split("-")[0] as BasePlacement;
-      const points = pointsMap[dir];
-
-      const children = useMemo(
-        () => (
-          <svg
-            display="block"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5pt"
-            viewBox="0 0 16 16"
-            height="1em"
-            width="1em"
-          >
-            <polyline points={points} />
-          </svg>
-        ),
-        [points],
-      );
-
-      props = {
-        children,
-        "aria-hidden": true,
-        ...props,
-        style: {
-          width: "1em",
-          height: "1em",
-          pointerEvents: "none",
-          ...props.style,
-        },
-      };
-
-      return props;
-    },
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component.",
   );
+
+  const position = store.useState((state) => placement || state.placement);
+  const dir = position.split("-")[0] as BasePlacement;
+  const points = pointsMap[dir];
+
+  const children = useMemo(
+    () => (
+      <svg
+        display="block"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5pt"
+        viewBox="0 0 16 16"
+        height="1em"
+        width="1em"
+      >
+        <polyline points={points} />
+      </svg>
+    ),
+    [points],
+  );
+
+  props = {
+    children,
+    "aria-hidden": true,
+    ...props,
+    style: {
+      width: "1em",
+      height: "1em",
+      pointerEvents: "none",
+      ...props.style,
+    },
+  };
+
+  return removeUndefinedValues(props);
+});
 
 /**
  * Renders an arrow pointing to the popover position. It's usually rendered
@@ -95,11 +98,12 @@ export const usePopoverDisclosureArrow =
  * </PopoverProvider>
  * ```
  */
-export const PopoverDisclosureArrow =
-  createComponent<PopoverDisclosureArrowOptions>((props) => {
+export const PopoverDisclosureArrow = forwardRef(
+  function PopoverDisclosureArrow(props: PopoverDisclosureArrowProps) {
     const htmlProps = usePopoverDisclosureArrow(props);
     return createElement(TagName, htmlProps);
-  });
+  },
+);
 
 export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
   extends Options2 {
@@ -123,4 +127,4 @@ export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
 }
 
 export type PopoverDisclosureArrowProps<T extends ElementType = TagName> =
-  Props<PopoverDisclosureArrowOptions<T>>;
+  Props2<T, PopoverDisclosureArrowOptions<T>>;

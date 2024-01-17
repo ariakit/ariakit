@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
 import { useDialogHeading } from "../dialog/dialog-heading.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "h1" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverHeading` component. This hook must be used

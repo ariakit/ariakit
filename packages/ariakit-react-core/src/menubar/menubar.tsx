@@ -1,7 +1,8 @@
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   MenubarScopedContextProvider,
@@ -9,6 +10,9 @@ import {
 } from "./menubar-context.js";
 import { useMenubarStore } from "./menubar-store.js";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Menubar` component.
@@ -31,7 +35,7 @@ import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
  * ```
  */
 export const useMenubar = createHook2<TagName, MenubarOptions>(
-  ({
+  function useMenubar({
     store: storeProp,
     composite = true,
     orientation: orientationProp,
@@ -39,7 +43,7 @@ export const useMenubar = createHook2<TagName, MenubarOptions>(
     focusLoop,
     rtl,
     ...props
-  }) => {
+  }) {
     const context = useMenubarProviderContext();
     storeProp = storeProp || context;
 

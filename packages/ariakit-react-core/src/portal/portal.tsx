@@ -20,6 +20,10 @@ import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { PortalContext } from "./portal-context.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
+
 function getRootElement(element?: Element | null) {
   return getDocument(element).body;
 }
@@ -59,25 +63,25 @@ function queueFocus(element?: HTMLElement | null) {
  * ```
  */
 export const usePortal = createHook2<TagName, PortalOptions>(
-  ({
+  function usePortal({
     preserveTabOrder,
     preserveTabOrderAnchor,
     portalElement,
     portalRef,
     portal = true,
     ...props
-  }) => {
-    const ref = useRef<HTMLDivElement>(null);
+  }) {
+    const ref = useRef<HTMLType>(null);
     const refProp = useMergeRefs(ref, props.ref);
     const context = useContext(PortalContext);
     const [portalNode, setPortalNode] = useState<HTMLElement | null>(null);
     const [anchorPortalNode, setAnchorPortalNode] =
       useState<HTMLElement | null>(null);
 
-    const outerBeforeRef = useRef<HTMLButtonElement>(null);
+    const outerBeforeRef = useRef<HTMLSpanElement>(null);
     const innerBeforeRef = useRef<HTMLSpanElement>(null);
-    const innerAfterRef = useRef<HTMLButtonElement>(null);
-    const outerAfterRef = useRef<HTMLButtonElement>(null);
+    const innerAfterRef = useRef<HTMLSpanElement>(null);
+    const outerAfterRef = useRef<HTMLSpanElement>(null);
 
     // Create the portal node and attach it to the DOM.
     useSafeLayoutEffect(() => {

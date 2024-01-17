@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
 import { useDialogDescription } from "../dialog/dialog-description.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverDescription` component. This hook must be
