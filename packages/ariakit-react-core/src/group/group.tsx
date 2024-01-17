@@ -1,8 +1,13 @@
 import { useState } from "react";
+import type { ElementType } from "react";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { GroupLabelContext } from "./group-label-context.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Group` component.
@@ -13,27 +18,29 @@ import { GroupLabelContext } from "./group-label-context.js";
  * <Role {...props}>Group</Role>
  * ```
  */
-export const useGroup = createHook<GroupOptions>((props) => {
-  const [labelId, setLabelId] = useState<string>();
+export const useGroup = createHook<TagName, GroupOptions>(
+  function useGroup(props) {
+    const [labelId, setLabelId] = useState<string>();
 
-  props = useWrapElement(
-    props,
-    (element) => (
-      <GroupLabelContext.Provider value={setLabelId}>
-        {element}
-      </GroupLabelContext.Provider>
-    ),
-    [],
-  );
+    props = useWrapElement(
+      props,
+      (element) => (
+        <GroupLabelContext.Provider value={setLabelId}>
+          {element}
+        </GroupLabelContext.Provider>
+      ),
+      [],
+    );
 
-  props = {
-    role: "group",
-    "aria-labelledby": labelId,
-    ...props,
-  };
+    props = {
+      role: "group",
+      "aria-labelledby": labelId,
+      ...props,
+    };
 
-  return props;
-});
+    return removeUndefinedValues(props);
+  },
+);
 
 /**
  * Renders a group element. Optionally, a
@@ -45,15 +52,14 @@ export const useGroup = createHook<GroupOptions>((props) => {
  * <Group>Group</Group>
  * ```
  */
-export const Group = createComponent<GroupOptions>((props) => {
+export const Group = forwardRef(function Group(props: GroupProps) {
   const htmlProps = useGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Group.displayName = "Group";
-}
+export type GroupOptions<_T extends ElementType = TagName> = Options;
 
-export type GroupOptions<T extends As = "div"> = Options<T>;
-
-export type GroupProps<T extends As = "div"> = Props<GroupOptions<T>>;
+export type GroupProps<T extends ElementType = TagName> = Props<
+  T,
+  GroupOptions<T>
+>;

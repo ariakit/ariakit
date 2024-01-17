@@ -29,7 +29,7 @@ Rendering nested [Menu](/components/menu) components to create a dropdown menu w
 
 In this example, we created a higher-level abstraction of the [Menu](/components/menu) component that automatically renders a [`MenuButton`](/reference/menu-button) as a [`MenuItem`](/reference/menu-item) if there's a [`parent`](/reference/use-menu-store#parent) menu store. This way, you can easily copy and paste it into your project.
 
-However, in practice, creating submenus with Ariakit is as straightforward as nesting `Menu` components and merging [`MenuButton`](/reference/menu-button) and [`MenuItem`](/reference/menu-item) into a single element using the [`render`](/apis/menu-item#render) prop:
+However, in practice, creating submenus with Ariakit is as straightforward as nesting `Menu` components and merging [`MenuButton`](/reference/menu-button) and [`MenuItem`](/reference/menu-item) into a single element using the [`render`](/reference/menu-item#render) prop:
 
 ```jsx {6-12} "render"
 <MenuProvider>

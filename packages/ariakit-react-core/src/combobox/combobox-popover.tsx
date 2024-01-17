@@ -1,13 +1,17 @@
+import type { ElementType } from "react";
 import { getDocument, matches } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxListOptions } from "./combobox-list.js";
 import { useComboboxList } from "./combobox-list.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 function isController(
   target: EventTarget | Element | null,
@@ -39,15 +43,15 @@ function isController(
  * </Role>
  * ```
  */
-export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
-  ({
+export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
+  function useComboboxPopover({
     store,
     modal,
     tabIndex,
     alwaysVisible,
     hideOnInteractOutside = true,
     ...props
-  }) => {
+  }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -133,21 +137,18 @@ export const useComboboxPopover = createHook<ComboboxPopoverOptions>(
  * ```
  */
 export const ComboboxPopover = createDialogComponent(
-  createComponent<ComboboxPopoverOptions>((props) => {
+  forwardRef(function ComboboxPopover(props: ComboboxPopoverProps) {
     const htmlProps = useComboboxPopover(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useComboboxProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxPopover.displayName = "ComboboxPopover";
-}
-
-export interface ComboboxPopoverOptions<T extends As = "div">
+export interface ComboboxPopoverOptions<T extends ElementType = TagName>
   extends ComboboxListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type ComboboxPopoverProps<T extends As = "div"> = Props<
+export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxPopoverOptions<T>
 >;

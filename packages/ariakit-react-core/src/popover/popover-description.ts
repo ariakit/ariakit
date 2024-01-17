@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
 import { useDialogDescription } from "../dialog/dialog-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverDescription` component. This hook must be
@@ -16,12 +20,13 @@ import type { PopoverStore } from "./popover-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
-  (props) => {
-    props = useDialogDescription(props);
-    return props;
-  },
-);
+export const usePopoverDescription = createHook<
+  TagName,
+  PopoverDescriptionOptions
+>(function usePopoverDescription(props) {
+  props = useDialogDescription(props);
+  return props;
+});
 
 /**
  * Renders a description in a popover. This component must be wrapped with
@@ -37,18 +42,14 @@ export const usePopoverDescription = createHook<PopoverDescriptionOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverDescription = createComponent<PopoverDescriptionOptions>(
-  (props) => {
-    const htmlProps = usePopoverDescription(props);
-    return createElement("p", htmlProps);
-  },
-);
+export const PopoverDescription = forwardRef(function PopoverDescription(
+  props: PopoverDescriptionProps,
+) {
+  const htmlProps = usePopoverDescription(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDescription.displayName = "PopoverDescription";
-}
-
-export interface PopoverDescriptionOptions<T extends As = "p">
+export interface PopoverDescriptionOptions<T extends ElementType = TagName>
   extends DialogDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -61,6 +62,7 @@ export interface PopoverDescriptionOptions<T extends As = "p">
   store?: PopoverStore;
 }
 
-export type PopoverDescriptionProps<T extends As = "p"> = Props<
+export type PopoverDescriptionProps<T extends ElementType = TagName> = Props<
+  T,
   PopoverDescriptionOptions<T>
 >;

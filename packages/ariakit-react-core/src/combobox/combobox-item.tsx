@@ -1,4 +1,4 @@
-import type { KeyboardEvent, MouseEvent } from "react";
+import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 import { useCallback } from "react";
 import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
@@ -13,15 +13,20 @@ import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
   if (itemValue == null) return;
@@ -42,8 +47,8 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
  * <Role {...props} />
  * ```
  */
-export const useComboboxItem = createHook<ComboboxItemOptions>(
-  ({
+export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
+  function useComboboxItem({
     store,
     value,
     hideOnClick,
@@ -53,7 +58,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     moveOnKeyPress = true,
     getItem: getItemProp,
     ...props
-  }) => {
+  }) {
     const context = useComboboxScopedContext();
     store = store || context;
 
@@ -86,7 +91,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
-    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDownloading(event)) return;
@@ -116,7 +121,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 
     const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       const baseElement = store?.getState().baseElement;
@@ -175,7 +180,7 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
-    props = useCompositeItem({
+    props = useCompositeItem<TagName>({
       store,
       ...props,
       getItem,
@@ -218,18 +223,14 @@ export const useComboboxItem = createHook<ComboboxItemOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxItem = createMemoComponent<ComboboxItemOptions>(
-  (props) => {
+export const ComboboxItem = memo(
+  forwardRef(function ComboboxItem(props: ComboboxItemProps) {
     const htmlProps = useComboboxItem(props);
-    return createElement("div", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxItem.displayName = "ComboboxItem";
-}
-
-export interface ComboboxItemOptions<T extends As = "div">
+export interface ComboboxItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>,
     CompositeHoverOptions<T> {
   /**
@@ -318,6 +319,7 @@ export interface ComboboxItemOptions<T extends As = "div">
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }
 
-export type ComboboxItemProps<T extends As = "div"> = Props<
+export type ComboboxItemProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxItemOptions<T>
 >;

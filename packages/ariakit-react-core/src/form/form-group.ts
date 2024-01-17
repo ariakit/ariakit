@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormGroup` component.
@@ -18,8 +22,8 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormGroup = createHook<FormGroupOptions>(
-  ({ store, ...props }) => {
+export const useFormGroup = createHook<TagName, FormGroupOptions>(
+  function useFormGroup({ store, ...props }) {
     props = useGroup(props);
     return props;
   },
@@ -51,16 +55,12 @@ export const useFormGroup = createHook<FormGroupOptions>(
  * </Form>
  * ```
  */
-export const FormGroup = createComponent<FormGroupOptions>((props) => {
+export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   const htmlProps = useFormGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormGroup.displayName = "FormGroup";
-}
-
-export interface FormGroupOptions<T extends As = "div">
+export interface FormGroupOptions<T extends ElementType = TagName>
   extends GroupOptions<T> {
   /**
    * Object returned by the
@@ -72,4 +72,7 @@ export interface FormGroupOptions<T extends As = "div">
   store?: FormStore;
 }
 
-export type FormGroupProps<T extends As = "div"> = Props<FormGroupOptions<T>>;
+export type FormGroupProps<T extends ElementType = TagName> = Props<
+  T,
+  FormGroupOptions<T>
+>;

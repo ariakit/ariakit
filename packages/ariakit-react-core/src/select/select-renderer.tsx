@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from "react";
+import type { ElementType } from "react";
 import { useMemo } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import {
@@ -15,8 +15,12 @@ import type {
 } from "../composite/composite-renderer.js";
 import { useStoreState } from "../utils/store.js";
 import { createElement, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 interface ItemObject extends CompositeRendererItemObject {
   value?: string;
@@ -109,7 +113,7 @@ export const SelectRenderer = forwardRef(function SelectRenderer<
   T extends Item = any,
 >(props: SelectRendererProps<T>) {
   const htmlProps = useSelectRenderer(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export {
@@ -149,5 +153,4 @@ export interface SelectRendererOptions<T extends Item = any>
 }
 
 export interface SelectRendererProps<T extends Item = any>
-  extends Omit<ComponentPropsWithRef<"div">, "children">,
-    SelectRendererOptions<T> {}
+  extends Props<TagName, SelectRendererOptions<T>> {}

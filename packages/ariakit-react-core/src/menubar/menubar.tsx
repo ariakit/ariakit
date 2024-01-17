@@ -1,14 +1,18 @@
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   MenubarScopedContextProvider,
   useMenubarProviderContext,
 } from "./menubar-context.js";
 import { useMenubarStore } from "./menubar-store.js";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Menubar` component.
@@ -30,8 +34,8 @@ import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
  * </Role>
  * ```
  */
-export const useMenubar = createHook<MenubarOptions>(
-  ({
+export const useMenubar = createHook<TagName, MenubarOptions>(
+  function useMenubar({
     store: storeProp,
     composite = true,
     orientation: orientationProp,
@@ -39,7 +43,7 @@ export const useMenubar = createHook<MenubarOptions>(
     focusLoop,
     rtl,
     ...props
-  }) => {
+  }) {
     const context = useMenubarProviderContext();
     storeProp = storeProp || context;
 
@@ -106,16 +110,12 @@ export const useMenubar = createHook<MenubarOptions>(
  * </Menubar>
  * ```
  */
-export const Menubar = createComponent<MenubarOptions>((props) => {
+export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
   const htmlProps = useMenubar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Menubar.displayName = "Menubar";
-}
-
-export interface MenubarOptions<T extends As = "div">
+export interface MenubarOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     Pick<
       MenubarStoreProps,
@@ -133,4 +133,7 @@ export interface MenubarOptions<T extends As = "div">
   store?: MenubarStore;
 }
 
-export type MenubarProps<T extends As = "div"> = Props<MenubarOptions<T>>;
+export type MenubarProps<T extends ElementType = TagName> = Props<
+  T,
+  MenubarOptions<T>
+>;

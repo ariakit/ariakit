@@ -27,7 +27,7 @@ Abstracting [Tooltip](/components/tooltip) into a reusable custom component that
 
 ## Composing with other components
 
-In the custom `TooltipAnchor` component we've created in this example, we're exposing the [`render`](/apis/tooltip-anchor#render) prop to allow the user to render the anchor element however they want.
+In the custom `TooltipAnchor` component we've created in this example, we're exposing the [`render`](/reference/tooltip-anchor#render) prop to allow the user to render the anchor element however they want.
 
 ```jsx
 <TooltipAnchor render={<a />} />

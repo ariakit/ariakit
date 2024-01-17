@@ -105,7 +105,6 @@ export function PlusProvider(props: PlusProviderProps) {
 export interface PlusFeatureProps extends HovercardAnchorProps<"div"> {
   feature: string;
   icon?: "heart" | "check";
-  children?: React.ReactNode;
 }
 
 export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
@@ -189,7 +188,6 @@ export const PlusFeaturePreviewContainer = forwardRef<
 export interface PlusFeaturePreviewProps extends RoleProps<"div"> {
   feature: string;
   heading?: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 export const PlusFeaturePreview = forwardRef<
