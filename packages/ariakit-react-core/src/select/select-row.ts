@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectRow` component.
@@ -22,8 +26,8 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectRow = createHook<SelectRowOptions>(
-  ({ store, ...props }) => {
+export const useSelectRow = createHook<TagName, SelectRowOptions>(
+  function useSelectRow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
 
@@ -68,16 +72,12 @@ export const useSelectRow = createHook<SelectRowOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectRow = createComponent<SelectRowOptions>((props) => {
+export const SelectRow = forwardRef(function SelectRow(props: SelectRowProps) {
   const htmlProps = useSelectRow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectRow.displayName = "SelectRow";
-}
-
-export interface SelectRowOptions<T extends As = "div">
+export interface SelectRowOptions<T extends ElementType = TagName>
   extends CompositeRowOptions<T> {
   /**
    * Object returned by the
@@ -90,4 +90,7 @@ export interface SelectRowOptions<T extends As = "div">
   store?: SelectStore;
 }
 
-export type SelectRowProps<T extends As = "div"> = Props<SelectRowOptions<T>>;
+export type SelectRowProps<T extends ElementType = TagName> = Props<
+  T,
+  SelectRowOptions<T>
+>;

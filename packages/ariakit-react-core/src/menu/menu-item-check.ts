@@ -1,10 +1,14 @@
 import { useContext } from "react";
+import type { ElementType } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { MenuItemCheckedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuItemCheck` component.
@@ -15,8 +19,8 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props} />
  * ```
  */
-export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
-  ({ store, checked, ...props }) => {
+export const useMenuItemCheck = createHook<TagName, MenuItemCheckOptions>(
+  function useMenuItemCheck({ store, checked, ...props }) {
     const context = useContext(MenuItemCheckedContext);
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });
@@ -52,16 +56,14 @@ export const useMenuItemCheck = createHook<MenuItemCheckOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItemCheck = createComponent<MenuItemCheckOptions>((props) => {
+export const MenuItemCheck = forwardRef(function MenuItemCheck(
+  props: MenuItemCheckProps,
+) {
   const htmlProps = useMenuItemCheck(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItemCheck.displayName = "MenuItemCheck";
-}
-
-export interface MenuItemCheckOptions<T extends As = "span">
+export interface MenuItemCheckOptions<T extends ElementType = TagName>
   extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
    * Object returned by the
@@ -70,6 +72,7 @@ export interface MenuItemCheckOptions<T extends As = "span">
   store?: MenuStore;
 }
 
-export type MenuItemCheckProps<T extends As = "span"> = Props<
+export type MenuItemCheckProps<T extends ElementType = TagName> = Props<
+  T,
   MenuItemCheckOptions<T>
 >;

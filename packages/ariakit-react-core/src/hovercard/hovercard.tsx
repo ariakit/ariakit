@@ -1,4 +1,4 @@
-import type { FocusEvent } from "react";
+import type { ElementType, FocusEvent } from "react";
 import {
   createContext,
   useCallback,
@@ -29,8 +29,8 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,
@@ -42,6 +42,10 @@ import {
   getEventPoint,
   isPointInPolygon,
 } from "./utils/polygon.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isMovingOnHovercard(
   target: Node | null | undefined,
@@ -81,7 +85,7 @@ function useAutoFocusOnHide({
 
   const onFocusProp = props.onFocus;
 
-  const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
+  const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
     onFocusProp?.(event);
     if (event.defaultPrevented) return;
     setAutoFocusOnHide(true);
@@ -121,8 +125,8 @@ const NestedHovercardContext = createContext<
  * <Role {...props}>Details</Role>
  * ```
  */
-export const useHovercard = createHook<HovercardOptions>(
-  ({
+export const useHovercard = createHook<TagName, HovercardOptions>(
+  function useHovercard({
     store,
     modal = false,
     portal = !!modal,
@@ -130,7 +134,7 @@ export const useHovercard = createHook<HovercardOptions>(
     hideOnHoverOutside = true,
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
-  }) => {
+  }) {
     const context = useHovercardProviderContext();
     store = store || context;
 
@@ -140,7 +144,7 @@ export const useHovercard = createHook<HovercardOptions>(
         "Hovercard must receive a `store` prop or be wrapped in a HovercardProvider component.",
     );
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
     const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
@@ -371,18 +375,14 @@ export const useHovercard = createHook<HovercardOptions>(
  * ```
  */
 export const Hovercard = createDialogComponent(
-  createComponent<HovercardOptions>((props) => {
+  forwardRef(function Hovercard(props: HovercardProps) {
     const htmlProps = useHovercard(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useHovercardProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Hovercard.displayName = "Hovercard";
-}
-
-export interface HovercardOptions<T extends As = "div">
+export interface HovercardOptions<T extends ElementType = TagName>
   extends PopoverOptions<T> {
   /**
    * Object returned by the
@@ -425,4 +425,7 @@ export interface HovercardOptions<T extends As = "div">
   modal?: PopoverOptions<T>["modal"];
 }
 
-export type HovercardProps<T extends As = "div"> = Props<HovercardOptions<T>>;
+export type HovercardProps<T extends ElementType = TagName> = Props<
+  T,
+  HovercardOptions<T>
+>;

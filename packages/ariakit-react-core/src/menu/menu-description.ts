@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuDescription` component. This hook must be used
@@ -16,8 +20,8 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useMenuDescription = createHook<MenuDescriptionOptions>(
-  (props) => {
+export const useMenuDescription = createHook<TagName, MenuDescriptionOptions>(
+  function useMenuDescription(props) {
     props = useHovercardDescription(props);
     return props;
   },
@@ -37,18 +41,14 @@ export const useMenuDescription = createHook<MenuDescriptionOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuDescription = createComponent<MenuDescriptionOptions>(
-  (props) => {
-    const htmlProps = useMenuDescription(props);
-    return createElement("p", htmlProps);
-  },
-);
+export const MenuDescription = forwardRef(function MenuDescription(
+  props: MenuDescriptionProps,
+) {
+  const htmlProps = useMenuDescription(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  MenuDescription.displayName = "MenuDescription";
-}
-
-export interface MenuDescriptionOptions<T extends As = "p">
+export interface MenuDescriptionOptions<T extends ElementType = TagName>
   extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -60,6 +60,7 @@ export interface MenuDescriptionOptions<T extends As = "p">
   store?: MenuStore;
 }
 
-export type MenuDescriptionProps<T extends As = "p"> = Props<
+export type MenuDescriptionProps<T extends ElementType = TagName> = Props<
+  T,
   MenuDescriptionOptions<T>
 >;

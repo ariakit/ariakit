@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuButtonArrow` component.
@@ -22,8 +26,8 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
-  ({ store, ...props }) => {
+export const useMenuButtonArrow = createHook<TagName, MenuButtonArrowOptions>(
+  function useMenuButtonArrow({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });
@@ -54,18 +58,14 @@ export const useMenuButtonArrow = createHook<MenuButtonArrowOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuButtonArrow = createComponent<MenuButtonArrowOptions>(
-  (props) => {
-    const htmlProps = useMenuButtonArrow(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const MenuButtonArrow = forwardRef(function MenuButtonArrow(
+  props: MenuButtonArrowProps,
+) {
+  const htmlProps = useMenuButtonArrow(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  MenuButtonArrow.displayName = "MenuButtonArrow";
-}
-
-export interface MenuButtonArrowOptions<T extends As = "span">
+export interface MenuButtonArrowOptions<T extends ElementType = TagName>
   extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
@@ -78,6 +78,7 @@ export interface MenuButtonArrowOptions<T extends As = "span">
   store?: MenuStore;
 }
 
-export type MenuButtonArrowProps<T extends As = "span"> = Props<
+export type MenuButtonArrowProps<T extends ElementType = TagName> = Props<
+  T,
   MenuButtonArrowOptions<T>
 >;

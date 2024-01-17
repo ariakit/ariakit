@@ -1,11 +1,16 @@
+import type { ElementType } from "react";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormControl } from "./form-control.js";
 import type { FormControlOptions } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormField` component. Unlike `useFormInput`, this
@@ -31,9 +36,11 @@ import type { FormControlOptions } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormField = createHook<FormFieldOptions>((props) => {
-  return useFormControl(props);
-});
+export const useFormField = createHook<TagName, FormFieldOptions>(
+  function useFormField(props) {
+    return useFormControl(props);
+  },
+);
 
 /**
  * Abstract component that renders a form field. Unlike
@@ -70,16 +77,17 @@ export const useFormField = createHook<FormFieldOptions>((props) => {
  * </Form>
  * ```
  */
-export const FormField = createMemoComponent<FormFieldOptions>((props) => {
-  const htmlProps = useFormField(props);
-  return createElement("input", htmlProps);
-});
+export const FormField = memo(
+  forwardRef(function FormField(props: FormFieldProps) {
+    const htmlProps = useFormField(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormField.displayName = "FormField";
-}
-
-export interface FormFieldOptions<T extends As = "input">
+export interface FormFieldOptions<T extends ElementType = TagName>
   extends FormControlOptions<T> {}
 
-export type FormFieldProps<T extends As = "input"> = Props<FormFieldOptions<T>>;
+export type FormFieldProps<T extends ElementType = TagName> = Props<
+  T,
+  FormFieldOptions<T>
+>;

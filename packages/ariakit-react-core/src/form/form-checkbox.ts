@@ -1,3 +1,4 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
@@ -5,12 +6,16 @@ import { useCheckbox } from "../checkbox/checkbox.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormCheckbox` component.
@@ -27,8 +32,15 @@ import { useFormControl } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormCheckbox = createHook<FormCheckboxOptions>(
-  ({ store, name: nameProp, value, checked, defaultChecked, ...props }) => {
+export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
+  function useFormCheckbox({
+    store,
+    name: nameProp,
+    value,
+    checked,
+    defaultChecked,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -78,21 +90,18 @@ export const useFormCheckbox = createHook<FormCheckboxOptions>(
  * </Form>
  * ```
  */
-export const FormCheckbox = createMemoComponent<FormCheckboxOptions>(
-  (props) => {
+export const FormCheckbox = memo(
+  forwardRef(function FormCheckbox(props: FormCheckboxProps) {
     const htmlProps = useFormCheckbox(props);
-    return createElement("input", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  FormCheckbox.displayName = "FormCheckbox";
-}
-
-export interface FormCheckboxOptions<T extends As = "input">
+export interface FormCheckboxOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<CheckboxOptions<T>, "store" | "name"> {}
 
-export type FormCheckboxProps<T extends As = "input"> = Props<
+export type FormCheckboxProps<T extends ElementType = TagName> = Props<
+  T,
   FormCheckboxOptions<T>
 >;

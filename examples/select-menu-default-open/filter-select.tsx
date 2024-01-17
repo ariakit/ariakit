@@ -83,9 +83,7 @@ export const FilterSelect = React.forwardRef<
   );
 });
 
-interface FilterSelectItemProps extends Ariakit.SelectItemProps {
-  children?: React.ReactNode;
-}
+interface FilterSelectItemProps extends Ariakit.SelectItemProps {}
 
 export const FilterSelectItem = React.forwardRef<
   HTMLDivElement,

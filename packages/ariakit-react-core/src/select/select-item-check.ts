@@ -1,10 +1,14 @@
 import { useContext } from "react";
+import type { ElementType } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { SelectItemCheckedContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectItemCheck` component. This hook must be used
@@ -17,8 +21,8 @@ import type { SelectStore } from "./select-store.js";
  * <Role {...props} />
  * ```
  */
-export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
-  ({ store, checked, ...props }) => {
+export const useSelectItemCheck = createHook<TagName, SelectItemCheckOptions>(
+  function useSelectItemCheck({ store, checked, ...props }) {
     const context = useContext(SelectItemCheckedContext);
     checked = checked ?? context;
     props = useCheckboxCheck({ ...props, checked });
@@ -53,18 +57,14 @@ export const useSelectItemCheck = createHook<SelectItemCheckOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectItemCheck = createComponent<SelectItemCheckOptions>(
-  (props) => {
-    const htmlProps = useSelectItemCheck(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const SelectItemCheck = forwardRef(function SelectItemCheck(
+  props: SelectItemCheckProps,
+) {
+  const htmlProps = useSelectItemCheck(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  SelectItemCheck.displayName = "SelectItemCheck";
-}
-
-export interface SelectItemCheckOptions<T extends As = "span">
+export interface SelectItemCheckOptions<T extends ElementType = TagName>
   extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
@@ -73,6 +73,7 @@ export interface SelectItemCheckOptions<T extends As = "span">
   store?: SelectStore;
 }
 
-export type SelectItemCheckProps<T extends As = "span"> = Props<
+export type SelectItemCheckProps<T extends ElementType = TagName> = Props<
+  T,
   SelectItemCheckOptions<T>
 >;

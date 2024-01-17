@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectGroupLabel` component. This hook must be
@@ -16,8 +20,8 @@ import type { SelectStore } from "./select-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
-  (props) => {
+export const useSelectGroupLabel = createHook<TagName, SelectGroupLabelOptions>(
+  function useSelectGroupLabel(props) {
     props = useCompositeGroupLabel(props);
     return props;
   },
@@ -47,18 +51,14 @@ export const useSelectGroupLabel = createHook<SelectGroupLabelOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectGroupLabel = createComponent<SelectGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useSelectGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
+  props: SelectGroupLabelProps,
+) {
+  const htmlProps = useSelectGroupLabel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  SelectGroupLabel.displayName = "SelectGroupLabel";
-}
-
-export interface SelectGroupLabelOptions<T extends As = "div">
+export interface SelectGroupLabelOptions<T extends ElementType = TagName>
   extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -71,6 +71,7 @@ export interface SelectGroupLabelOptions<T extends As = "div">
   store?: SelectStore;
 }
 
-export type SelectGroupLabelProps<T extends As = "div"> = Props<
+export type SelectGroupLabelProps<T extends ElementType = TagName> = Props<
+  T,
   SelectGroupLabelOptions<T>
 >;

@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
@@ -6,12 +6,16 @@ import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadio` component.
@@ -32,8 +36,8 @@ import { useFormControl } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormRadio = createHook<FormRadioOptions>(
-  ({ store, name: nameProp, value, ...props }) => {
+export const useFormRadio = createHook<TagName, FormRadioOptions>(
+  function useFormRadio({ store, name: nameProp, value, ...props }) {
     const context = useFormContext();
     store = store || context;
 
@@ -100,17 +104,18 @@ export const useFormRadio = createHook<FormRadioOptions>(
  * </Form>
  * ```
  */
-export const FormRadio = createMemoComponent<FormRadioOptions>((props) => {
-  const htmlProps = useFormRadio(props);
-  return createElement("input", htmlProps);
-});
+export const FormRadio = memo(
+  forwardRef(function FormRadio(props: FormRadioProps) {
+    const htmlProps = useFormRadio(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormRadio.displayName = "FormRadio";
-}
-
-export interface FormRadioOptions<T extends As = "input">
+export interface FormRadioOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<RadioOptions<T>, "store" | "name"> {}
 
-export type FormRadioProps<T extends As = "input"> = Props<FormRadioOptions<T>>;
+export type FormRadioProps<T extends ElementType = TagName> = Props<
+  T,
+  FormRadioOptions<T>
+>;

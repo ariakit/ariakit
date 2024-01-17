@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardArrow` component.
@@ -18,8 +22,8 @@ import type { HovercardStore } from "./hovercard-store.js";
  * </Hovercard>
  * ```
  */
-export const useHovercardArrow = createHook<HovercardArrowOptions>(
-  ({ store, ...props }) => {
+export const useHovercardArrow = createHook<TagName, HovercardArrowOptions>(
+  function useHovercardArrow({ store, ...props }) {
     const context = useHovercardContext();
     store = store || context;
     props = usePopoverArrow({ store, ...props });
@@ -43,18 +47,14 @@ export const useHovercardArrow = createHook<HovercardArrowOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardArrow = createComponent<HovercardArrowOptions>(
-  (props) => {
-    const htmlProps = useHovercardArrow(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const HovercardArrow = forwardRef(function HovercardArrow(
+  props: HovercardArrowProps,
+) {
+  const htmlProps = useHovercardArrow(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardArrow.displayName = "HovercardArrow";
-}
-
-export interface HovercardArrowOptions<T extends As = "div">
+export interface HovercardArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -67,6 +67,7 @@ export interface HovercardArrowOptions<T extends As = "div">
   store?: HovercardStore;
 }
 
-export type HovercardArrowProps<T extends As = "div"> = Props<
+export type HovercardArrowProps<T extends ElementType = TagName> = Props<
+  T,
   HovercardArrowOptions<T>
 >;

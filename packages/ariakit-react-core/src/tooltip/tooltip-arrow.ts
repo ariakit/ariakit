@@ -1,10 +1,14 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TooltipArrow` component.
@@ -20,8 +24,8 @@ import type { TooltipStore } from "./tooltip-store.js";
  * </Tooltip>
  * ```
  */
-export const useTooltipArrow = createHook<TooltipArrowOptions>(
-  ({ store, size = 16, ...props }) => {
+export const useTooltipArrow = createHook<TagName, TooltipArrowOptions>(
+  function useTooltipArrow({ store, size = 16, ...props }) {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
     const context = useTooltipContext();
@@ -53,16 +57,14 @@ export const useTooltipArrow = createHook<TooltipArrowOptions>(
  * </TooltipProvider>
  * ```
  */
-export const TooltipArrow = createComponent<TooltipArrowOptions>((props) => {
+export const TooltipArrow = forwardRef(function TooltipArrow(
+  props: TooltipArrowProps,
+) {
   const htmlProps = useTooltipArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TooltipArrow.displayName = "TooltipArrow";
-}
-
-export interface TooltipArrowOptions<T extends As = "div">
+export interface TooltipArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -75,6 +77,7 @@ export interface TooltipArrowOptions<T extends As = "div">
   store?: TooltipStore;
 }
 
-export type TooltipArrowProps<T extends As = "div"> = Props<
+export type TooltipArrowProps<T extends ElementType = TagName> = Props<
+  T,
   TooltipArrowOptions<T>
 >;

@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuGroup` component.
@@ -21,10 +25,12 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
-  props = useCompositeGroup(props);
-  return props;
-});
+export const useMenuGroup = createHook<TagName, MenuGroupOptions>(
+  function useMenuGroup(props) {
+    props = useCompositeGroup(props);
+    return props;
+  },
+);
 
 /**
  * Renders a group for [`MenuItem`](https://ariakit.org/reference/menu-item)
@@ -46,16 +52,12 @@ export const useMenuGroup = createHook<MenuGroupOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuGroup = createComponent<MenuGroupOptions>((props) => {
+export const MenuGroup = forwardRef(function MenuGroup(props: MenuGroupProps) {
   const htmlProps = useMenuGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuGroup.displayName = "MenuGroup";
-}
-
-export interface MenuGroupOptions<T extends As = "div">
+export interface MenuGroupOptions<T extends ElementType = TagName>
   extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
@@ -67,4 +69,7 @@ export interface MenuGroupOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuGroupProps<T extends As = "div"> = Props<MenuGroupOptions<T>>;
+export type MenuGroupProps<T extends ElementType = TagName> = Props<
+  T,
+  MenuGroupOptions<T>
+>;

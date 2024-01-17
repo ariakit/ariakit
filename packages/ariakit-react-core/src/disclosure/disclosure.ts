@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
@@ -10,10 +10,14 @@ import {
   useMergeRefs,
   useMetadataProps,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const symbol = Symbol("disclosure");
 
@@ -28,8 +32,8 @@ const symbol = Symbol("disclosure");
  * <DisclosureContent store={store}>Content</DisclosureContent>
  * ```
  */
-export const useDisclosure = createHook<DisclosureOptions>(
-  ({ store, toggleOnClick = true, ...props }) => {
+export const useDisclosure = createHook<TagName, DisclosureOptions>(
+  function useDisclosure({ store, toggleOnClick = true, ...props }) {
     const context = useDisclosureProviderContext();
     store = store || context;
 
@@ -39,7 +43,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
         "Disclosure must receive a `store` prop or be wrapped in a DisclosureProvider component.",
     );
 
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLType>(null);
     const [expanded, setExpanded] = useState(false);
     const disclosureElement = store.useState("disclosureElement");
     const open = store.useState("open");
@@ -61,7 +65,7 @@ export const useDisclosure = createHook<DisclosureOptions>(
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
     const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
@@ -100,16 +104,14 @@ export const useDisclosure = createHook<DisclosureOptions>(
  * </DisclosureProvider>
  * ```
  */
-export const Disclosure = createComponent<DisclosureOptions>((props) => {
+export const Disclosure = forwardRef(function Disclosure(
+  props: DisclosureProps,
+) {
   const htmlProps = useDisclosure(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Disclosure.displayName = "Disclosure";
-}
-
-export interface DisclosureOptions<T extends As = "button">
+export interface DisclosureOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -132,6 +134,7 @@ export interface DisclosureOptions<T extends As = "button">
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type DisclosureProps<T extends As = "button"> = Props<
+export type DisclosureProps<T extends ElementType = TagName> = Props<
+  T,
   DisclosureOptions<T>
 >;

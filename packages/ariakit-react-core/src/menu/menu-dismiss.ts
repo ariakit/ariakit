@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuDismiss` component.
@@ -17,8 +21,8 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuDismiss = createHook<MenuDismissOptions>(
-  ({ store, ...props }) => {
+export const useMenuDismiss = createHook<TagName, MenuDismissOptions>(
+  function useMenuDismiss({ store, ...props }) {
     const context = useMenuScopedContext();
     store = store || context;
     props = useHovercardDismiss({ store, ...props });
@@ -39,16 +43,14 @@ export const useMenuDismiss = createHook<MenuDismissOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuDismiss = createComponent<MenuDismissOptions>((props) => {
+export const MenuDismiss = forwardRef(function MenuDismiss(
+  props: MenuDismissProps,
+) {
   const htmlProps = useMenuDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuDismiss.displayName = "MenuDismiss";
-}
-
-export interface MenuDismissOptions<T extends As = "button">
+export interface MenuDismissOptions<T extends ElementType = TagName>
   extends HovercardDismissOptions<T> {
   /**
    * Object returned by the
@@ -60,6 +62,7 @@ export interface MenuDismissOptions<T extends As = "button">
   store?: MenuStore;
 }
 
-export type MenuDismissProps<T extends As = "button"> = Props<
+export type MenuDismissProps<T extends ElementType = TagName> = Props<
+  T,
   MenuDismissOptions<T>
 >;

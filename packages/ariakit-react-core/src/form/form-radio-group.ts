@@ -1,7 +1,11 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormGroupOptions } from "./form-group.js";
 import { useFormGroup } from "./form-group.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadioGroup` component.
@@ -20,8 +24,8 @@ import { useFormGroup } from "./form-group.js";
  * </Form>
  * ```
  */
-export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
-  ({ store, ...props }) => {
+export const useFormRadioGroup = createHook<TagName, FormRadioGroupOptions>(
+  function useFormRadioGroup({ store, ...props }) {
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
     return props;
@@ -53,19 +57,17 @@ export const useFormRadioGroup = createHook<FormRadioGroupOptions>(
  * </Form>
  * ```
  */
-export const FormRadioGroup = createComponent<FormRadioGroupOptions>(
-  (props) => {
-    const htmlProps = useFormRadioGroup(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FormRadioGroup = forwardRef(function FormRadioGroup(
+  props: FormRadioGroupProps,
+) {
+  const htmlProps = useFormRadioGroup(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  FormRadioGroup.displayName = "FormRadioGroup";
-}
+export type FormRadioGroupOptions<T extends ElementType = TagName> =
+  FormGroupOptions<T>;
 
-export type FormRadioGroupOptions<T extends As = "div"> = FormGroupOptions<T>;
-
-export type FormRadioGroupProps<T extends As = "div"> = Props<
+export type FormRadioGroupProps<T extends ElementType = TagName> = Props<
+  T,
   FormRadioGroupOptions<T>
 >;

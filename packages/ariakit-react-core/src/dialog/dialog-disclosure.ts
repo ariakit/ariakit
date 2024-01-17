@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useDialogProviderContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `DialogDisclosure` component.
@@ -18,8 +22,8 @@ import type { DialogStore } from "./dialog-store.js";
  * <Dialog store={store}>Content</Dialog>
  * ```
  */
-export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
-  ({ store, ...props }) => {
+export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
+  function useDialogDisclosure({ store, ...props }) {
     const context = useDialogProviderContext();
     store = store || context;
 
@@ -54,18 +58,14 @@ export const useDialogDisclosure = createHook<DialogDisclosureOptions>(
  * </DialogProvider>
  * ```
  */
-export const DialogDisclosure = createComponent<DialogDisclosureOptions>(
-  (props) => {
-    const htmlProps = useDialogDisclosure(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const DialogDisclosure = forwardRef(function DialogDisclosure(
+  props: DialogDisclosureProps,
+) {
+  const htmlProps = useDialogDisclosure(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  DialogDisclosure.displayName = "DialogDisclosure";
-}
-
-export interface DialogDisclosureOptions<T extends As = "button">
+export interface DialogDisclosureOptions<T extends ElementType = TagName>
   extends DisclosureOptions<T> {
   /**
    * Object returned by the
@@ -77,6 +77,7 @@ export interface DialogDisclosureOptions<T extends As = "button">
   store?: DialogStore;
 }
 
-export type DialogDisclosureProps<T extends As = "button"> = Props<
+export type DialogDisclosureProps<T extends ElementType = TagName> = Props<
+  T,
   DialogDisclosureOptions<T>
 >;

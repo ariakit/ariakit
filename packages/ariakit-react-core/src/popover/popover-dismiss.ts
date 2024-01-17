@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { usePopoverScopedContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverDismiss` component.
@@ -17,8 +21,8 @@ import type { PopoverStore } from "./popover-store.js";
  * </Popover>
  * ```
  */
-export const usePopoverDismiss = createHook<PopoverDismissOptions>(
-  ({ store, ...props }) => {
+export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
+  function usePopoverDismiss({ store, ...props }) {
     const context = usePopoverScopedContext();
     store = store || context;
     props = useDialogDismiss({ store, ...props });
@@ -39,18 +43,14 @@ export const usePopoverDismiss = createHook<PopoverDismissOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverDismiss = createComponent<PopoverDismissOptions>(
-  (props) => {
-    const htmlProps = usePopoverDismiss(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const PopoverDismiss = forwardRef(function PopoverDismiss(
+  props: PopoverDismissProps,
+) {
+  const htmlProps = usePopoverDismiss(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverDismiss.displayName = "PopoverDismiss";
-}
-
-export interface PopoverDismissOptions<T extends As = "button">
+export interface PopoverDismissOptions<T extends ElementType = TagName>
   extends DialogDismissOptions<T> {
   /**
    * Object returned by the
@@ -63,6 +63,7 @@ export interface PopoverDismissOptions<T extends As = "button">
   store?: PopoverStore;
 }
 
-export type PopoverDismissProps<T extends As = "button"> = Props<
+export type PopoverDismissProps<T extends ElementType = TagName> = Props<
+  T,
   PopoverDismissOptions<T>
 >;

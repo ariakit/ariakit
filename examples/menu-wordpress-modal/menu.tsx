@@ -26,7 +26,6 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
 
 export interface MenuProps extends Ariakit.MenuButtonProps {
   label: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(

@@ -269,6 +269,19 @@ export function disabledFromProps(props: {
 }
 
 /**
+ * Removes undefined values from an object.
+ */
+export function removeUndefinedValues<T extends AnyObject>(obj: T) {
+  const result = {} as T;
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+
+/**
  * Returns the first value that is not `undefined`.
  */
 export function defaultValue<T extends readonly any[]>(...values: T) {

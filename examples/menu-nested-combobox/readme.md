@@ -171,7 +171,7 @@ The [`MenuItem`](/reference/menu-item) component automatically hides all parent 
 
 ## Rendering nested menus
 
-In the [Anatomy of nested menus](/examples/menu-nested#anatomy-of-nested-menus), it's explained that creating submenus with Ariakit is as straightforward as nesting [Menu](/components/menu) components. You can merge [`MenuButton`](/reference/menu-button) and [`MenuItem`](/reference/menu-item) into one element by using the `render` prop:
+In the [Anatomy of nested menus](/examples/menu-nested#anatomy-of-nested-menus), it's explained that creating submenus with Ariakit is as straightforward as nesting [Menu](/components/menu) components. You can merge [`MenuButton`](/reference/menu-button) and [`MenuItem`](/reference/menu-item) into one element by using the [`render`](/reference/menu-item#render) prop:
 
 ```jsx {5-10} "render"
 <MenuProvider>

@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuSeparator` component.
@@ -21,8 +25,8 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuSeparator = createHook<MenuSeparatorOptions>(
-  ({ store, ...props }) => {
+export const useMenuSeparator = createHook<TagName, MenuSeparatorOptions>(
+  function useMenuSeparator({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
     props = useCompositeSeparator({ store, ...props });
@@ -49,16 +53,14 @@ export const useMenuSeparator = createHook<MenuSeparatorOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuSeparator = createComponent<MenuSeparatorOptions>((props) => {
+export const MenuSeparator = forwardRef(function MenuSeparator(
+  props: MenuSeparatorProps,
+) {
   const htmlProps = useMenuSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuSeparator.displayName = "MenuSeparator";
-}
-
-export interface MenuSeparatorOptions<T extends As = "hr">
+export interface MenuSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -70,6 +72,7 @@ export interface MenuSeparatorOptions<T extends As = "hr">
   store?: MenuStore;
 }
 
-export type MenuSeparatorProps<T extends As = "hr"> = Props<
+export type MenuSeparatorProps<T extends ElementType = TagName> = Props<
+  T,
   MenuSeparatorOptions<T>
 >;

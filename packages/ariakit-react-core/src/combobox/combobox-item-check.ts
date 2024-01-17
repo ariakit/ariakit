@@ -1,14 +1,14 @@
 import { useContext } from "react";
+import type { ElementType } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.jsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.jsx";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Props } from "../utils/types.js";
 import { ComboboxItemCheckedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxItemCheck` component. This hook must be
@@ -21,14 +21,15 @@ import type { ComboboxStore } from "./combobox-store.js";
  * <Role {...props} />
  * ```
  */
-export const useComboboxItemCheck = createHook<ComboboxItemCheckOptions>(
-  ({ store, checked, ...props }) => {
-    const context = useContext(ComboboxItemCheckedContext);
-    checked = checked ?? context;
-    props = useCheckboxCheck({ ...props, checked });
-    return props;
-  },
-);
+export const useComboboxItemCheck = createHook<
+  TagName,
+  ComboboxItemCheckOptions
+>(function useComboboxItemCheck({ store, checked, ...props }) {
+  const context = useContext(ComboboxItemCheckedContext);
+  checked = checked ?? context;
+  props = useCheckboxCheck({ ...props, checked });
+  return props;
+});
 
 /**
  * Renders a checkmark icon when the
@@ -58,18 +59,14 @@ export const useComboboxItemCheck = createHook<ComboboxItemCheckOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxItemCheck = createComponent<ComboboxItemCheckOptions>(
-  (props) => {
-    const htmlProps = useComboboxItemCheck(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const ComboboxItemCheck = forwardRef(function ComboboxItemCheck(
+  props: ComboboxItemCheckProps,
+) {
+  const htmlProps = useComboboxItemCheck(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxItemCheck.displayName = "ComboboxItemCheck";
-}
-
-export interface ComboboxItemCheckOptions<T extends As = "span">
+export interface ComboboxItemCheckOptions<T extends ElementType = TagName>
   extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
@@ -79,6 +76,7 @@ export interface ComboboxItemCheckOptions<T extends As = "span">
   store?: ComboboxStore;
 }
 
-export type ComboboxItemCheckProps<T extends As = "span"> = Props<
+export type ComboboxItemCheckProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxItemCheckOptions<T>
 >;

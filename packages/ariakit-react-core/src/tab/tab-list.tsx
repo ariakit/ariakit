@@ -1,14 +1,18 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
 } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TabList` component.
@@ -25,40 +29,42 @@ import type { TabStore } from "./tab-store.js";
  * <TabPanel store={store}>Panel 2</TabPanel>
  * ```
  */
-export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
-  const context = useTabProviderContext();
-  store = store || context;
+export const useTabList = createHook<TagName, TabListOptions>(
+  function useTabList({ store, ...props }) {
+    const context = useTabProviderContext();
+    store = store || context;
 
-  invariant(
-    store,
-    process.env.NODE_ENV !== "production" &&
-      "TabList must receive a `store` prop or be wrapped in a TabProvider component.",
-  );
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "TabList must receive a `store` prop or be wrapped in a TabProvider component.",
+    );
 
-  const orientation = store.useState((state) =>
-    state.orientation === "both" ? undefined : state.orientation,
-  );
+    const orientation = store.useState((state) =>
+      state.orientation === "both" ? undefined : state.orientation,
+    );
 
-  props = useWrapElement(
-    props,
-    (element) => (
-      <TabScopedContextProvider value={store}>
-        {element}
-      </TabScopedContextProvider>
-    ),
-    [store],
-  );
+    props = useWrapElement(
+      props,
+      (element) => (
+        <TabScopedContextProvider value={store}>
+          {element}
+        </TabScopedContextProvider>
+      ),
+      [store],
+    );
 
-  props = {
-    role: "tablist",
-    "aria-orientation": orientation,
-    ...props,
-  };
+    props = {
+      role: "tablist",
+      "aria-orientation": orientation,
+      ...props,
+    };
 
-  props = useComposite({ store, ...props });
+    props = useComposite({ store, ...props });
 
-  return props;
-});
+    return props;
+  },
+);
 
 /**
  * Renders a composite tab list wrapper for
@@ -76,16 +82,12 @@ export const useTabList = createHook<TabListOptions>(({ store, ...props }) => {
  * </TabProvider>
  * ```
  */
-export const TabList = createComponent<TabListOptions>((props) => {
+export const TabList = forwardRef(function TabList(props: TabListProps) {
   const htmlProps = useTabList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TabList.displayName = "TabList";
-}
-
-export interface TabListOptions<T extends As = "div">
+export interface TabListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T> {
   /**
    * Object returned by the
@@ -97,4 +99,7 @@ export interface TabListOptions<T extends As = "div">
   store?: TabStore;
 }
 
-export type TabListProps<T extends As = "div"> = Props<TabListOptions<T>>;
+export type TabListProps<T extends ElementType = TagName> = Props<
+  T,
+  TabListOptions<T>
+>;

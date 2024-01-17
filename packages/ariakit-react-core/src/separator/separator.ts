@@ -1,5 +1,9 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Separator` component.
@@ -10,8 +14,8 @@ import type { As, Options, Props } from "../utils/types.js";
  * <Role {...props} />
  * ```
  */
-export const useSeparator = createHook<SeparatorOptions>(
-  ({ orientation = "horizontal", ...props }) => {
+export const useSeparator = createHook<TagName, SeparatorOptions>(
+  function useSeparator({ orientation = "horizontal", ...props }) {
     props = {
       role: "separator",
       "aria-orientation": orientation,
@@ -29,16 +33,13 @@ export const useSeparator = createHook<SeparatorOptions>(
  * <Separator orientation="horizontal" />
  * ```
  */
-export const Separator = createComponent<SeparatorOptions>((props) => {
+export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   const htmlProps = useSeparator(props);
-  return createElement("hr", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Separator.displayName = "Separator";
-}
-
-export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
+export interface SeparatorOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * The orientation of the separator.
    * @default "horizontal"
@@ -46,4 +47,7 @@ export interface SeparatorOptions<T extends As = "hr"> extends Options<T> {
   orientation?: "horizontal" | "vertical";
 }
 
-export type SeparatorProps<T extends As = "hr"> = Props<SeparatorOptions<T>>;
+export type SeparatorProps<T extends ElementType = TagName> = Props<
+  T,
+  SeparatorOptions<T>
+>;
