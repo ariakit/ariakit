@@ -1,13 +1,18 @@
+import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarItem` component.
@@ -21,8 +26,8 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarItem = createHook<ToolbarItemOptions>(
-  ({ store, ...props }) => {
+export const useToolbarItem = createHook<TagName, ToolbarItemOptions>(
+  function useToolbarItem({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeItem({ store, ...props });
@@ -41,16 +46,14 @@ export const useToolbarItem = createHook<ToolbarItemOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarItem = createMemoComponent<ToolbarItemOptions>((props) => {
-  const htmlProps = useToolbarItem(props);
-  return createElement("button", htmlProps);
-});
+export const ToolbarItem = memo(
+  forwardRef(function ToolbarItem(props: ToolbarItemProps) {
+    const htmlProps = useToolbarItem(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  ToolbarItem.displayName = "ToolbarItem";
-}
-
-export interface ToolbarItemOptions<T extends As = "button">
+export interface ToolbarItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
   /**
    * Object returned by the
@@ -62,6 +65,7 @@ export interface ToolbarItemOptions<T extends As = "button">
   store?: ToolbarStore;
 }
 
-export type ToolbarItemProps<T extends As = "button"> = Props<
+export type ToolbarItemProps<T extends ElementType = TagName> = Props<
+  T,
   ToolbarItemOptions<T>
 >;

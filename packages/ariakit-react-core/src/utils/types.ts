@@ -1,4 +1,5 @@
 import type * as React from "react";
+import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 
 /**
  * Render prop type.
@@ -11,87 +12,64 @@ export type RenderProp<
 > = (props: P) => React.ReactNode;
 
 /**
- * The `as` prop.
- * @template P Props
- */
-export type As<P = any> = React.ElementType<P>;
-
-/**
  * The `wrapElement` prop.
  */
 export type WrapElement = (element: React.ReactElement) => React.ReactElement;
 
 /**
- * The `children` prop that supports a function.
- * @template T Element type.
+ * Custom props including the `render` prop.
  */
-export type Children<T = any> =
-  | React.ReactNode
-  | RenderProp<React.HTMLAttributes<T> & React.RefAttributes<T>>;
-
-/**
- * Props with the `as` prop.
- * @template T The `as` prop
- * @example
- * type ButtonOptions = Options<"button">;
- */
-export type Options<T extends As = any> = {
-  /**
-   * @deprecated
-   * Use the [`render`](https://ariakit.org/guide/composition) prop instead.
-   */
-  as?: T;
-};
-
-/**
- * Props that automatically includes HTML props based on the `as` prop.
- * @template O Options
- * @example
- * type ButtonHTMLProps = HTMLProps<Options<"button">>;
- */
-export type HTMLProps<O extends Options> = {
+export interface Options {
   wrapElement?: WrapElement;
-  children?: Children;
+  /**
+   * Allows the component to be rendered as a different HTML element or React
+   * component. The value can be a React element or a function that takes in the
+   * original component props and gives back a React element with the props
+   * merged.
+   *
+   * Check out the [Composition](https://ariakit.org/guide/composition) guide
+   * for more details.
+   */
   render?: RenderProp | React.ReactElement;
-  [index: `data-${string}`]: unknown;
-} & Omit<
-  React.ComponentPropsWithRef<NonNullable<O["as"]>>,
-  keyof O | "children"
->;
-
-/**
- * Options & HTMLProps
- * @template O Options
- * @example
- * type ButtonProps = Props<Options<"button">>;
- */
-export type Props<O extends Options> = O & HTMLProps<O>;
-
-/**
- * A component that supports the `as` prop and the `children` prop as a
- * function.
- * @template O Options
- * @example
- * type ButtonComponent = Component<Options<"button">>;
- */
-export interface Component<O extends Options> {
-  <T extends As>(
-    props: Props<{ as: T } & Omit<O, "as">>,
-  ): React.ReactElement | null;
-  (props: Props<O>): React.ReactElement | null;
-  displayName?: string;
 }
 
 /**
- * A component hook that supports the `as` prop and the `children` prop as a
- * function.
- * @template O Options
+ * HTML props based on the element type, excluding custom props.
+ * @template T The element type.
+ * @template P Custom props.
  * @example
- * type ButtonHook = Hook<Options<"button">>;
+ * type ButtonHTMLProps = HTMLProps<"button", { custom?: boolean }>;
  */
-export interface Hook<O extends Options> {
-  <T extends As = NonNullable<O["as"]>>(
-    props?: Props<Options<T> & Omit<O, "as">>,
-  ): HTMLProps<Options<T>>;
-  displayName?: string;
+export type HTMLProps<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+> = Omit<React.ComponentPropsWithRef<T>, keyof P> & {
+  [index: `data-${string}`]: unknown;
+};
+
+/**
+ * Props based on the element type, including custom props.
+ * @template T The element type.
+ * @template P Custom props.
+ */
+export type Props<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+> = P & HTMLProps<T, P>;
+
+/**
+ * A component hook that supports the `render` prop and returns HTML props based
+ * on the element type.
+ * @template T The element type.
+ * @template P Custom props.
+ * @example
+ * type UseButton = Hook<"button", { custom?: boolean }>;
+ */
+export interface Hook<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+> {
+  <ElementType extends React.ElementType = T>(
+    props?: Props<ElementType, P>,
+  ): HTMLProps<ElementType, P>;
 }

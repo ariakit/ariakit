@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectArrow` component.
@@ -22,8 +26,8 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectArrow = createHook<SelectArrowOptions>(
-  ({ store, ...props }) => {
+export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
+  function useSelectArrow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
     props = usePopoverDisclosureArrow({ store, ...props });
@@ -50,16 +54,14 @@ export const useSelectArrow = createHook<SelectArrowOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectArrow = createComponent<SelectArrowOptions>((props) => {
+export const SelectArrow = forwardRef(function SelectArrow(
+  props: SelectArrowProps,
+) {
   const htmlProps = useSelectArrow(props);
-  return createElement("span", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectArrow.displayName = "SelectArrow";
-}
-
-export interface SelectArrowOptions<T extends As = "span">
+export interface SelectArrowOptions<T extends ElementType = TagName>
   extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
@@ -71,6 +73,7 @@ export interface SelectArrowOptions<T extends As = "span">
   store?: SelectStore;
 }
 
-export type SelectArrowProps<T extends As = "span"> = Props<
+export type SelectArrowProps<T extends ElementType = TagName> = Props<
+  T,
   SelectArrowOptions<T>
 >;

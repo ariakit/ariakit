@@ -1,14 +1,19 @@
+import type { ElementType } from "react";
 import type { CompositeContainerOptions } from "../composite/composite-container.js";
 import { useCompositeContainer } from "../composite/composite-container.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarContainer` component.
@@ -24,12 +29,12 @@ import { useToolbarItem } from "./toolbar-item.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarContainer = createHook<ToolbarContainerOptions>(
-  ({ store, ...props }) => {
+export const useToolbarContainer = createHook<TagName, ToolbarContainerOptions>(
+  function useToolbarContainer({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeContainer({ store, ...props });
-    props = useToolbarItem({ store, ...props });
+    props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },
 );
@@ -46,21 +51,18 @@ export const useToolbarContainer = createHook<ToolbarContainerOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarContainer = createMemoComponent<ToolbarContainerOptions>(
-  (props) => {
+export const ToolbarContainer = memo(
+  forwardRef(function ToolbarContainer(props: ToolbarContainerProps) {
     const htmlProps = useToolbarContainer(props);
-    return createElement("div", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  ToolbarContainer.displayName = "ToolbarContainer";
-}
-
-export interface ToolbarContainerOptions<T extends As = "div">
+export interface ToolbarContainerOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeContainerOptions<T>, "store"> {}
 
-export type ToolbarContainerProps<T extends As = "div"> = Props<
+export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
+  T,
   ToolbarContainerOptions<T>
 >;

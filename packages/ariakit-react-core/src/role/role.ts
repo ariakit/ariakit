@@ -1,5 +1,9 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Component, Options, Props } from "../utils/types.js";
+import type { ElementType, FC } from "react";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 const elements = [
   "a",
@@ -31,7 +35,7 @@ const elements = [
 ] as const;
 
 type RoleElements = {
-  [K in (typeof elements)[number]]: Component<RoleOptions<K>>;
+  [K in (typeof elements)[number]]: FC<RoleProps<K>>;
 };
 
 /**
@@ -43,9 +47,11 @@ type RoleElements = {
  * <Role {...props} />
  * ```
  */
-export const useRole = createHook<RoleOptions>((props) => {
-  return props;
-});
+export const useRole = createHook<TagName, RoleOptions>(
+  function useRole(props) {
+    return props;
+  },
+);
 
 /**
  * Renders an abstract element that supports the `render` prop and a
@@ -57,24 +63,27 @@ export const useRole = createHook<RoleOptions>((props) => {
  * <Role render={<div />} />
  * ```
  */
-export const Role = createComponent<RoleOptions>((props) => {
-  return createElement("div", props);
-}) as Component<RoleOptions<"div">> & RoleElements;
-
-if (process.env.NODE_ENV !== "production") {
-  Role.displayName = "Role";
-}
+export const Role = forwardRef(
+  // @ts-expect-error
+  function Role(props: RoleProps) {
+    return createElement(TagName, props);
+  },
+) as FC<RoleProps<"div">> & RoleElements;
 
 Object.assign(
   Role,
   elements.reduce((acc, element) => {
-    acc[element] = createComponent<RoleOptions<typeof element>>((props) => {
+    acc[element] = forwardRef(function Role(props: RoleProps<typeof element>) {
       return createElement(element, props);
     });
     return acc;
   }, {} as RoleElements),
 );
 
-export type RoleOptions<T extends As = "div"> = Options<T>;
+export interface RoleOptions<_T extends ElementType = TagName>
+  extends Options {}
 
-export type RoleProps<T extends As = "div"> = Props<RoleOptions<T>>;
+export type RoleProps<T extends ElementType = TagName> = Props<
+  T,
+  RoleOptions<T>
+>;

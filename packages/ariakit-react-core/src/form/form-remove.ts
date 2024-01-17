@@ -1,14 +1,18 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function findNextOrPreviousField(
   items: FormStoreState["items"] | undefined,
@@ -62,8 +66,14 @@ function findPushButton(
  * </Form>
  * ```
  */
-export const useFormRemove = createHook<FormRemoveOptions>(
-  ({ store, name: nameProp, index, autoFocusOnClick = true, ...props }) => {
+export const useFormRemove = createHook<TagName, FormRemoveOptions>(
+  function useFormRemove({
+    store,
+    name: nameProp,
+    index,
+    autoFocusOnClick = true,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -76,7 +86,7 @@ export const useFormRemove = createHook<FormRemoveOptions>(
     const name = `${nameProp}`;
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -142,16 +152,14 @@ export const useFormRemove = createHook<FormRemoveOptions>(
  * </Form>
  * ```
  */
-export const FormRemove = createComponent<FormRemoveOptions>((props) => {
+export const FormRemove = forwardRef(function FormRemove(
+  props: FormRemoveProps,
+) {
   const htmlProps = useFormRemove(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormRemove.displayName = "FormRemove";
-}
-
-export interface FormRemoveOptions<T extends As = "button">
+export interface FormRemoveOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -180,6 +188,7 @@ export interface FormRemoveOptions<T extends As = "button">
   autoFocusOnClick?: boolean;
 }
 
-export type FormRemoveProps<T extends As = "button"> = Props<
+export type FormRemoveProps<T extends ElementType = TagName> = Props<
+  T,
   FormRemoveOptions<T>
 >;

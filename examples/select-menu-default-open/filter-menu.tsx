@@ -4,7 +4,6 @@ import * as Ariakit from "@ariakit/react";
 
 interface FilterMenuProps extends Omit<Ariakit.MenuButtonProps, "store"> {
   label: ReactNode;
-  children?: ReactNode;
   defaultValues?: Ariakit.MenuStoreProps["defaultValues"];
   values?: Ariakit.MenuStoreProps["values"];
   onValuesChange?: Ariakit.MenuStoreProps["setValues"];
@@ -39,9 +38,7 @@ export const FilterMenu = forwardRef<HTMLButtonElement, FilterMenuProps>(
   },
 );
 
-interface FilterMenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {
-  children?: ReactNode;
-}
+interface FilterMenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {}
 
 export const FilterMenuItemCheckbox = forwardRef<
   HTMLDivElement,

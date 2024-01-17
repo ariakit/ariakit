@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardScopedContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardDismiss` component.
@@ -17,8 +21,8 @@ import type { HovercardStore } from "./hovercard-store.js";
  * </Hovercard>
  * ```
  */
-export const useHovercardDismiss = createHook<HovercardDismissOptions>(
-  ({ store, ...props }) => {
+export const useHovercardDismiss = createHook<TagName, HovercardDismissOptions>(
+  function useHovercardDismiss({ store, ...props }) {
     const context = useHovercardScopedContext();
     store = store || context;
     props = usePopoverDismiss({ store, ...props });
@@ -39,18 +43,14 @@ export const useHovercardDismiss = createHook<HovercardDismissOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardDismiss = createComponent<HovercardDismissOptions>(
-  (props) => {
-    const htmlProps = useHovercardDismiss(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const HovercardDismiss = forwardRef(function HovercardDismiss(
+  props: HovercardDismissProps,
+) {
+  const htmlProps = useHovercardDismiss(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardDismiss.displayName = "HovercardDismiss";
-}
-
-export interface HovercardDismissOptions<T extends As = "button">
+export interface HovercardDismissOptions<T extends ElementType = TagName>
   extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
@@ -63,6 +63,7 @@ export interface HovercardDismissOptions<T extends As = "button">
   store?: HovercardStore;
 }
 
-export type HovercardDismissProps<T extends As = "button"> = Props<
+export type HovercardDismissProps<T extends ElementType = TagName> = Props<
+  T,
   HovercardDismissOptions<T>
 >;

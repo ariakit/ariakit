@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
 import { useSelectList } from "./select-list.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectPopover` component.
@@ -20,8 +24,8 @@ import { useSelectList } from "./select-list.js";
  * </Role>
  * ```
  */
-export const useSelectPopover = createHook<SelectPopoverOptions>(
-  ({ store, alwaysVisible, ...props }) => {
+export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
+  function useSelectPopover({ store, alwaysVisible, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
     props = useSelectList({ store, alwaysVisible, ...props });
@@ -47,21 +51,18 @@ export const useSelectPopover = createHook<SelectPopoverOptions>(
  * ```
  */
 export const SelectPopover = createDialogComponent(
-  createComponent<SelectPopoverOptions>((props) => {
+  forwardRef(function SelectPopover(props: SelectPopoverProps) {
     const htmlProps = useSelectPopover(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useSelectProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  SelectPopover.displayName = "SelectPopover";
-}
-
-export interface SelectPopoverOptions<T extends As = "div">
+export interface SelectPopoverOptions<T extends ElementType = TagName>
   extends SelectListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type SelectPopoverProps<T extends As = "div"> = Props<
+export type SelectPopoverProps<T extends ElementType = TagName> = Props<
+  T,
   SelectPopoverOptions<T>
 >;
