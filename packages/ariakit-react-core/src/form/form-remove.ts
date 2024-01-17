@@ -1,14 +1,18 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function findNextOrPreviousField(
   items: FormStoreState["items"] | undefined,
@@ -82,7 +86,7 @@ export const useFormRemove = createHook2<TagName, FormRemoveOptions>(
     const name = `${nameProp}`;
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;

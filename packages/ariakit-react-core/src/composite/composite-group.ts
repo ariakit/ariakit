@@ -50,7 +50,9 @@ export const useCompositeGroup = createHook2<TagName, CompositeGroupOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeGroup = forwardRef(function CompositeGroup(props) {
+export const CompositeGroup = forwardRef(function CompositeGroup(
+  props: CompositeGroupProps,
+) {
   const htmlProps = useCompositeGroup(props);
   return createElement(TagName, htmlProps);
 });

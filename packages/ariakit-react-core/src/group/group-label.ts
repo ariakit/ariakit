@@ -53,7 +53,9 @@ export const useGroupLabel = createHook2<TagName, GroupLabelOptions>(
  * </Group>
  * ```
  */
-export const GroupLabel = forwardRef(function GroupLabel(props) {
+export const GroupLabel = forwardRef(function GroupLabel(
+  props: GroupLabelProps,
+) {
   const htmlProps = useGroupLabel(props);
   return createElement(TagName, htmlProps);
 });

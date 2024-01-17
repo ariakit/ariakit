@@ -240,12 +240,12 @@ export const useCompositeContainer = createHook2<
  * </CompositeProvider>
  * ```
  */
-export const CompositeContainer = forwardRef(
-  function CompositeContainer(props) {
-    const htmlProps = useCompositeContainer(props);
-    return createElement(TagName, htmlProps);
-  },
-);
+export const CompositeContainer = forwardRef(function CompositeContainer(
+  props: CompositeContainerProps,
+) {
+  const htmlProps = useCompositeContainer(props);
+  return createElement(TagName, htmlProps);
+});
 
 export interface CompositeContainerOptions<_T extends ElementType = TagName>
   extends Options2 {

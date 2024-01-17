@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
@@ -8,12 +8,17 @@ import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "label" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function supportsNativeLabel(tagName?: string) {
   return (
@@ -59,7 +64,7 @@ export const useFormLabel = createHook2<TagName, FormLabelOptions>(
     );
 
     const id = useId(props.id);
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
     const name = `${nameProp}`;
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
@@ -113,7 +118,7 @@ export const useFormLabel = createHook2<TagName, FormLabelOptions>(
       };
     }
 
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, getItem });
 
     return props;
   },
@@ -143,10 +148,12 @@ export const useFormLabel = createHook2<TagName, FormLabelOptions>(
  * </Form>
  * ```
  */
-export const FormLabel = createMemoComponent<FormLabelOptions>((props) => {
-  const htmlProps = useFormLabel(props);
-  return createElement(TagName, htmlProps);
-});
+export const FormLabel = memo(
+  forwardRef(function FormLabel(props: FormLabelProps) {
+    const htmlProps = useFormLabel(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface FormLabelOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {

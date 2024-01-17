@@ -1,17 +1,22 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
 import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FormInput` component. Unlike `useFormControl`, this
@@ -42,7 +47,7 @@ export const useFormInput = createHook2<TagName, FormInputOptions>(
     const name = `${nameProp}`;
     const onChangeProp = props.onChange;
 
-    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       store?.setValue(name, event.target.value);
@@ -56,7 +61,7 @@ export const useFormInput = createHook2<TagName, FormInputOptions>(
       onChange,
     };
 
-    props = useFocusable(props);
+    props = useFocusable<TagName>(props);
     props = useFormControl({ store, name, ...props });
 
     return props;
@@ -83,10 +88,12 @@ export const useFormInput = createHook2<TagName, FormInputOptions>(
  * </Form>
  * ```
  */
-export const FormInput = createMemoComponent<FormInputOptions>((props) => {
-  const htmlProps = useFormInput(props);
-  return createElement(TagName, htmlProps);
-});
+export const FormInput = memo(
+  forwardRef(function FormInput(props: FormInputProps) {
+    const htmlProps = useFormInput(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface FormInputOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,

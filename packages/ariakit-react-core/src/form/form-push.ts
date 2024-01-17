@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -7,10 +7,14 @@ import { useButton } from "../button/button.js";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getFirstFieldsByName(
   items: FormStoreState["items"] | undefined,
@@ -56,14 +60,14 @@ function getFirstFieldsByName(
  * ```
  */
 export const useFormPush = createHook2<TagName, FormPushOptions>(
-  ({
+  function useFormPush({
     store,
     value,
     name: nameProp,
     getItem: getItemProp,
     autoFocusOnClick = true,
     ...props
-  }) => {
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -98,7 +102,7 @@ export const useFormPush = createHook2<TagName, FormPushOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.pushValue(name, value);
@@ -112,7 +116,7 @@ export const useFormPush = createHook2<TagName, FormPushOptions>(
     };
 
     props = useButton(props);
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, getItem });
 
     return props;
   },

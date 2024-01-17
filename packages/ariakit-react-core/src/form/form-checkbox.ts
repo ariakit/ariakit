@@ -1,16 +1,21 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
 import { useCheckbox } from "../checkbox/checkbox.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormCheckbox` component.
@@ -85,11 +90,11 @@ export const useFormCheckbox = createHook2<TagName, FormCheckboxOptions>(
  * </Form>
  * ```
  */
-export const FormCheckbox = createMemoComponent<FormCheckboxOptions>(
-  (props) => {
+export const FormCheckbox = memo(
+  forwardRef(function FormCheckbox(props: FormCheckboxProps) {
     const htmlProps = useFormCheckbox(props);
     return createElement(TagName, htmlProps);
-  },
+  }),
 );
 
 export interface FormCheckboxOptions<T extends ElementType = TagName>

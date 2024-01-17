@@ -1,11 +1,16 @@
+import type { ElementType } from "react";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormControl } from "./form-control.js";
 import type { FormControlOptions } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormField` component. Unlike `useFormInput`, this
@@ -72,10 +77,12 @@ export const useFormField = createHook2<TagName, FormFieldOptions>(
  * </Form>
  * ```
  */
-export const FormField = createMemoComponent<FormFieldOptions>((props) => {
-  const htmlProps = useFormField(props);
-  return createElement(TagName, htmlProps);
-});
+export const FormField = memo(
+  forwardRef(function FormField(props: FormFieldProps) {
+    const htmlProps = useFormField(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface FormFieldOptions<T extends ElementType = TagName>
   extends FormControlOptions<T> {}

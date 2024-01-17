@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
@@ -9,7 +9,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2 } from "../utils/system.jsx";
+import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
 import type { Options2, Props2 } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.jsx";
 import type { DisclosureStore } from "./disclosure-store.js";

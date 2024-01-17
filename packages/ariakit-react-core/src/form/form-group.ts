@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormGroup` component.

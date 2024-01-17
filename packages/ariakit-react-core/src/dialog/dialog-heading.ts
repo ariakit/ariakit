@@ -1,9 +1,9 @@
-import { forwardRef, useContext } from "react";
+import { useContext } from "react";
 import type { ElementType } from "react";
 import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { DialogHeadingContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";

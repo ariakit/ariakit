@@ -1,4 +1,4 @@
-import type { FocusEvent, RefObject } from "react";
+import type { ElementType, FocusEvent, RefObject } from "react";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getDocument } from "@ariakit/core/utils/dom";
@@ -14,13 +14,17 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type ItemType = "label" | "error" | "description";
 
 function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
@@ -83,7 +87,7 @@ export const useFormControl = createHook2<TagName, FormControlOptions>(
 
     const name = `${nameProp}`;
     const id = useId(props.id);
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
 
     store.useValidate(async () => {
       const element = getNamedElement(ref, name);
@@ -109,7 +113,7 @@ export const useFormControl = createHook2<TagName, FormControlOptions>(
     const onBlurProp = props.onBlur;
     const touchOnBlurProp = useBooleanEvent(touchOnBlur);
 
-    const onBlur = useEvent((event: FocusEvent<HTMLInputElement>) => {
+    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!touchOnBlurProp(event)) return;
@@ -139,7 +143,7 @@ export const useFormControl = createHook2<TagName, FormControlOptions>(
       onBlur,
     };
 
-    props = useCollectionItem({ store, ...props, name, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, name, getItem });
 
     return props;
   },
@@ -177,10 +181,12 @@ export const useFormControl = createHook2<TagName, FormControlOptions>(
  * </Form>
  * ```
  */
-export const FormControl = createMemoComponent<FormControlOptions>((props) => {
-  const htmlProps = useFormControl(props);
-  return createElement(TagName, htmlProps);
-});
+export const FormControl = memo(
+  forwardRef(function FormControl(props: FormControlProps) {
+    const htmlProps = useFormControl(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface FormControlOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {

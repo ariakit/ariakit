@@ -1,5 +1,5 @@
 import type { ElementType, MouseEvent } from "react";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
@@ -10,7 +10,7 @@ import {
   useMergeRefs,
   useMetadataProps,
 } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";

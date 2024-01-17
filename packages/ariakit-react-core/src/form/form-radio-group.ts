@@ -1,7 +1,11 @@
-import { createElement, createHook2 } from "../utils/system.js";
+import type { ElementType } from "react";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { FormGroupOptions } from "./form-group.js";
 import { useFormGroup } from "./form-group.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadioGroup` component.
