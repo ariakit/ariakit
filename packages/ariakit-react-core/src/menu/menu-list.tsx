@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
@@ -14,14 +14,17 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   MenuScopedContextProvider,
   useMenuProviderContext,
 } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function useAriaLabelledBy({ store, ...props }: MenuListProps) {
@@ -61,8 +64,8 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  * </Role>
  * ```
  */
-export const useMenuList = createHook<MenuListOptions>(
-  ({ store, alwaysVisible, composite, ...props }) => {
+export const useMenuList = createHook<TagName, MenuListOptions>(
+  function useMenuList({ store, alwaysVisible, composite, ...props }) {
     const context = useMenuProviderContext();
     store = store || context;
 
@@ -90,7 +93,7 @@ export const useMenuList = createHook<MenuListOptions>(
       (state) => !!state && state.orientation !== "vertical",
     );
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (hasParentMenu || (parentMenubar && !isHorizontal)) {
@@ -198,16 +201,12 @@ export const useMenuList = createHook<MenuListOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuList = createComponent<MenuListOptions>((props) => {
+export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
   const htmlProps = useMenuList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuList.displayName = "MenuList";
-}
-
-export interface MenuListOptions<T extends As = "div">
+export interface MenuListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
@@ -221,4 +220,7 @@ export interface MenuListOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuListProps<T extends As = "div"> = Props<MenuListOptions<T>>;
+export type MenuListProps<T extends ElementType = TagName> = Props<
+  T,
+  MenuListOptions<T>
+>;

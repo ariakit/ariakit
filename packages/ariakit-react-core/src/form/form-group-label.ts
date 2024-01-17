@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormGroupLabel` component. This hook must be used
@@ -16,8 +20,8 @@ import type { FormStore } from "./form-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
-  ({ store, ...props }) => {
+export const useFormGroupLabel = createHook<TagName, FormGroupLabelOptions>(
+  function useFormGroupLabel({ store, ...props }) {
     props = useGroupLabel(props);
     return props;
   },
@@ -49,18 +53,14 @@ export const useFormGroupLabel = createHook<FormGroupLabelOptions>(
  * </Form>
  * ```
  */
-export const FormGroupLabel = createComponent<FormGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useFormGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FormGroupLabel = forwardRef(function FormGroupLabel(
+  props: FormGroupLabelProps,
+) {
+  const htmlProps = useFormGroupLabel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  FormGroupLabel.displayName = "FormGroupLabel";
-}
-
-export interface FormGroupLabelOptions<T extends As = "div">
+export interface FormGroupLabelOptions<T extends ElementType = TagName>
   extends GroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -72,6 +72,7 @@ export interface FormGroupLabelOptions<T extends As = "div">
   store?: FormStore;
 }
 
-export type FormGroupLabelProps<T extends As = "div"> = Props<
+export type FormGroupLabelProps<T extends ElementType = TagName> = Props<
+  T,
   FormGroupLabelOptions<T>
 >;

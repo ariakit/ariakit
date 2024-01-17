@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuGroupLabel` component. This hook must be used
@@ -16,10 +20,12 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
-  props = useCompositeGroupLabel(props);
-  return props;
-});
+export const useMenuGroupLabel = createHook<TagName, MenuGroupLabelOptions>(
+  function useMenuGroupLabel(props) {
+    props = useCompositeGroupLabel(props);
+    return props;
+  },
+);
 
 /**
  * Renders a label in a menu group. This component should be wrapped with
@@ -40,18 +46,14 @@ export const useMenuGroupLabel = createHook<MenuGroupLabelOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuGroupLabel = createComponent<MenuGroupLabelOptions>(
-  (props) => {
-    const htmlProps = useMenuGroupLabel(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
+  props: MenuGroupLabelProps,
+) {
+  const htmlProps = useMenuGroupLabel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  MenuGroupLabel.displayName = "MenuGroupLabel";
-}
-
-export interface MenuGroupLabelOptions<T extends As = "div">
+export interface MenuGroupLabelOptions<T extends ElementType = TagName>
   extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
@@ -63,6 +65,7 @@ export interface MenuGroupLabelOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuGroupLabelProps<T extends As = "div"> = Props<
+export type MenuGroupLabelProps<T extends ElementType = TagName> = Props<
+  T,
   MenuGroupLabelOptions<T>
 >;

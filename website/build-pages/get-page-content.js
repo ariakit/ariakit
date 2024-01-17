@@ -60,9 +60,7 @@ export function createReferencePageContent(reference) {
   };
 
   const requiredProps = props.filter((prop) => !prop.optional).sort(sortProp);
-  const optionalProps = props
-    .filter((prop) => prop.optional && prop.name !== "as")
-    .sort(sortProp);
+  const optionalProps = props.filter((prop) => prop.optional).sort(sortProp);
 
   /** @param {string | boolean} [deprecated] */
   const renderDeprecated = (deprecated, warn = false) => {

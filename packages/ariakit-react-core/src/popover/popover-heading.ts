@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
 import { useDialogHeading } from "../dialog/dialog-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
+
+const TagName = "h1" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverHeading` component. This hook must be used
@@ -16,10 +20,12 @@ import type { PopoverStore } from "./popover-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
-  props = useDialogHeading(props);
-  return props;
-});
+export const usePopoverHeading = createHook<TagName, PopoverHeadingOptions>(
+  function usePopoverHeading(props) {
+    props = useDialogHeading(props);
+    return props;
+  },
+);
 
 /**
  * Renders a heading in a popover. This component must be wrapped with
@@ -35,18 +41,14 @@ export const usePopoverHeading = createHook<PopoverHeadingOptions>((props) => {
  * </PopoverProvider>
  * ```
  */
-export const PopoverHeading = createComponent<PopoverHeadingOptions>(
-  (props) => {
-    const htmlProps = usePopoverHeading(props);
-    return createElement("h1", htmlProps);
-  },
-);
+export const PopoverHeading = forwardRef(function PopoverHeading(
+  props: PopoverHeadingProps,
+) {
+  const htmlProps = usePopoverHeading(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverHeading.displayName = "PopoverHeading";
-}
-
-export interface PopoverHeadingOptions<T extends As = "h1">
+export interface PopoverHeadingOptions<T extends ElementType = TagName>
   extends DialogHeadingOptions<T> {
   /**
    * Object returned by the
@@ -59,6 +61,7 @@ export interface PopoverHeadingOptions<T extends As = "h1">
   store?: PopoverStore;
 }
 
-export type PopoverHeadingProps<T extends As = "h1"> = Props<
+export type PopoverHeadingProps<T extends ElementType = TagName> = Props<
+  T,
   PopoverHeadingOptions<T>
 >;

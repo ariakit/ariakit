@@ -28,7 +28,7 @@ Rendering [Select](/components/select) as a [`ToolbarItem`](/reference/toolbar-i
 
 ## Composing `Select` and `ToolbarItem`
 
-In this example, we use the [`render`](/apis/select#render) prop to combine [`Select`](/reference/select) and [`ToolbarItem`](/reference/toolbar-item) into a single element:
+In this example, we use the [`render`](/reference/select#render) prop to combine [`Select`](/reference/select) and [`ToolbarItem`](/reference/toolbar-item) into a single element:
 
 ```jsx
 <Select render={<ToolbarItem />}>

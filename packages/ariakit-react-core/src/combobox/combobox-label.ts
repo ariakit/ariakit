@@ -1,12 +1,17 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.jsx";
-import type { As, Options, Props } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "label" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxLabel` component.
@@ -19,8 +24,8 @@ import type { ComboboxStore } from "./combobox-store.js";
  * <Combobox store={store} />
  * ```
  */
-export const useComboboxLabel = createHook<ComboboxLabelOptions>(
-  ({ store, ...props }) => {
+export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
+  function useComboboxLabel({ store, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -37,7 +42,7 @@ export const useComboboxLabel = createHook<ComboboxLabelOptions>(
       ...props,
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -57,19 +62,15 @@ export const useComboboxLabel = createHook<ComboboxLabelOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxLabel = createMemoComponent<ComboboxLabelOptions>(
-  (props) => {
+export const ComboboxLabel = memo(
+  forwardRef(function ComboboxLabel(props: ComboboxLabelProps) {
     const htmlProps = useComboboxLabel(props);
-    return createElement("label", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxLabel.displayName = "ComboboxLabel";
-}
-
-export interface ComboboxLabelOptions<T extends As = "label">
-  extends Options<T> {
+export interface ComboboxLabelOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
@@ -80,6 +81,7 @@ export interface ComboboxLabelOptions<T extends As = "label">
   store?: ComboboxStore;
 }
 
-export type ComboboxLabelProps<T extends As = "label"> = Props<
+export type ComboboxLabelProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxLabelOptions<T>
 >;

@@ -1,12 +1,16 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useDialogScopedContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `DialogDismiss` component.
@@ -20,14 +24,14 @@ import type { DialogStore } from "./dialog-store.js";
  * </Dialog>
  * ```
  */
-export const useDialogDismiss = createHook<DialogDismissOptions>(
-  ({ store, ...props }) => {
+export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
+  function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
     store = store || context;
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.hide();
@@ -80,16 +84,14 @@ export const useDialogDismiss = createHook<DialogDismissOptions>(
  * </Dialog>
  * ```
  */
-export const DialogDismiss = createComponent<DialogDismissOptions>((props) => {
+export const DialogDismiss = forwardRef(function DialogDismiss(
+  props: DialogDismissProps,
+) {
   const htmlProps = useDialogDismiss(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  DialogDismiss.displayName = "DialogDismiss";
-}
-
-export interface DialogDismissOptions<T extends As = "button">
+export interface DialogDismissOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -100,6 +102,7 @@ export interface DialogDismissOptions<T extends As = "button">
   store?: DialogStore;
 }
 
-export type DialogDismissProps<T extends As = "button"> = Props<
+export type DialogDismissProps<T extends ElementType = TagName> = Props<
+  T,
   DialogDismissOptions<T>
 >;

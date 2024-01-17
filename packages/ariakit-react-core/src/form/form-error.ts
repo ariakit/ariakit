@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import type { ElementType } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -7,11 +8,16 @@ import { useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FormDescription` component.
@@ -34,8 +40,13 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormError = createHook<FormErrorOptions>(
-  ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
+export const useFormError = createHook<TagName, FormErrorOptions>(
+  function useFormError({
+    store,
+    name: nameProp,
+    getItem: getItemProp,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -46,7 +57,7 @@ export const useFormError = createHook<FormErrorOptions>(
     );
 
     const id = useId(props.id);
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
     const name = `${nameProp}`;
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
@@ -106,16 +117,14 @@ export const useFormError = createHook<FormErrorOptions>(
  * </Form>
  * ```
  */
-export const FormError = createMemoComponent<FormErrorOptions>((props) => {
-  const htmlProps = useFormError(props);
-  return createElement("div", htmlProps);
-});
+export const FormError = memo(
+  forwardRef(function FormError(props: FormErrorProps) {
+    const htmlProps = useFormError(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormError.displayName = "FormError";
-}
-
-export interface FormErrorOptions<T extends As = "div">
+export interface FormErrorOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -138,4 +147,7 @@ export interface FormErrorOptions<T extends As = "div">
   name: StringLike;
 }
 
-export type FormErrorProps<T extends As = "div"> = Props<FormErrorOptions<T>>;
+export type FormErrorProps<T extends ElementType = TagName> = Props<
+  T,
+  FormErrorOptions<T>
+>;

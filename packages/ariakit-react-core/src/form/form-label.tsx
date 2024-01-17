@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
@@ -9,11 +9,16 @@ import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "label" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function supportsNativeLabel(tagName?: string) {
   return (
@@ -42,8 +47,13 @@ function supportsNativeLabel(tagName?: string) {
  * </Form>
  * ```
  */
-export const useFormLabel = createHook<FormLabelOptions>(
-  ({ store, name: nameProp, getItem: getItemProp, ...props }) => {
+export const useFormLabel = createHook<TagName, FormLabelOptions>(
+  function useFormLabel({
+    store,
+    name: nameProp,
+    getItem: getItemProp,
+    ...props
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -54,7 +64,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
     );
 
     const id = useId(props.id);
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
     const name = `${nameProp}`;
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
@@ -108,7 +118,7 @@ export const useFormLabel = createHook<FormLabelOptions>(
       };
     }
 
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, getItem });
 
     return props;
   },
@@ -138,16 +148,14 @@ export const useFormLabel = createHook<FormLabelOptions>(
  * </Form>
  * ```
  */
-export const FormLabel = createMemoComponent<FormLabelOptions>((props) => {
-  const htmlProps = useFormLabel(props);
-  return createElement("label", htmlProps);
-});
+export const FormLabel = memo(
+  forwardRef(function FormLabel(props: FormLabelProps) {
+    const htmlProps = useFormLabel(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormLabel.displayName = "FormLabel";
-}
-
-export interface FormLabelOptions<T extends As = "label">
+export interface FormLabelOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -170,4 +178,7 @@ export interface FormLabelOptions<T extends As = "label">
   name: StringLike;
 }
 
-export type FormLabelProps<T extends As = "label"> = Props<FormLabelOptions<T>>;
+export type FormLabelProps<T extends ElementType = TagName> = Props<
+  T,
+  FormLabelOptions<T>
+>;

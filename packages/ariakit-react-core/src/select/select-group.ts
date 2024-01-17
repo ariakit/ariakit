@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectGroup` component.
@@ -21,10 +25,12 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
-  props = useCompositeGroup(props);
-  return props;
-});
+export const useSelectGroup = createHook<TagName, SelectGroupOptions>(
+  function useSelectGroup(props) {
+    props = useCompositeGroup(props);
+    return props;
+  },
+);
 
 /**
  * Renders a group for [`SelectItem`](https://ariakit.org/reference/select-item)
@@ -46,16 +52,14 @@ export const useSelectGroup = createHook<SelectGroupOptions>((props) => {
  * </SelectProvider>
  * ```
  */
-export const SelectGroup = createComponent<SelectGroupOptions>((props) => {
+export const SelectGroup = forwardRef(function SelectGroup(
+  props: SelectGroupProps,
+) {
   const htmlProps = useSelectGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectGroup.displayName = "SelectGroup";
-}
-
-export interface SelectGroupOptions<T extends As = "div">
+export interface SelectGroupOptions<T extends ElementType = TagName>
   extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
@@ -68,6 +72,7 @@ export interface SelectGroupOptions<T extends As = "div">
   store?: SelectStore;
 }
 
-export type SelectGroupProps<T extends As = "div"> = Props<
+export type SelectGroupProps<T extends ElementType = TagName> = Props<
+  T,
   SelectGroupOptions<T>
 >;

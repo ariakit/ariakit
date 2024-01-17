@@ -71,9 +71,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
   },
 );
 
-export interface ComboboxItemProps extends Ariakit.SelectItemProps {
-  children?: React.ReactNode;
-}
+export interface ComboboxItemProps extends Ariakit.SelectItemProps {}
 
 export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {

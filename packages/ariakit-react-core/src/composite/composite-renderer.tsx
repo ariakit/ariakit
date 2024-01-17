@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
 import {
   getCollectionRendererItem,
@@ -16,8 +16,12 @@ import type { CollectionStoreItem } from "../collection/collection-store.js";
 import { useId } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 interface ItemObject extends CollectionRendererItemObject {
   disabled?: boolean;
@@ -198,7 +202,7 @@ export const CompositeRenderer = forwardRef(function CompositeRenderer<
   T extends Item = any,
 >(props: CompositeRendererProps<T>) {
   const htmlProps = useCompositeRenderer(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
 export interface CompositeRendererOptions<T extends Item = any>
@@ -228,5 +232,4 @@ export interface CompositeRendererOptions<T extends Item = any>
 }
 
 export interface CompositeRendererProps<T extends Item = any>
-  extends Omit<ComponentPropsWithRef<"div">, "children">,
-    CompositeRendererOptions<T> {}
+  extends Props<TagName, CompositeRendererOptions<T>> {}

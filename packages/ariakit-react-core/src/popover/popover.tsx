@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import type { ElementType, HTMLAttributes } from "react";
 import { useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import {
@@ -19,14 +19,16 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
 } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 type Placement =
@@ -213,8 +215,8 @@ function getArrowMiddleware(
  * <Role {...props}>Popover</Role>
  * ```
  */
-export const usePopover = createHook<PopoverOptions>(
-  ({
+export const usePopover = createHook<TagName, PopoverOptions>(
+  function usePopover({
     store,
     modal = false,
     portal = !!modal,
@@ -234,7 +236,7 @@ export const usePopover = createHook<PopoverOptions>(
     getAnchorRect,
     updatePosition,
     ...props
-  }) => {
+  }) {
     const context = usePopoverProviderContext();
     store = store || context;
 
@@ -465,18 +467,15 @@ export const usePopover = createHook<PopoverOptions>(
  * ```
  */
 export const Popover = createDialogComponent(
-  createComponent<PopoverOptions>((props) => {
+  forwardRef(function Popover(props: PopoverProps) {
     const htmlProps = usePopover(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   usePopoverProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Popover.displayName = "Popover";
-}
-
-export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
+export interface PopoverOptions<T extends ElementType = TagName>
+  extends DialogOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -614,4 +613,7 @@ export interface PopoverOptions<T extends As = "div"> extends DialogOptions<T> {
   }) => void | Promise<void>;
 }
 
-export type PopoverProps<T extends As = "div"> = Props<PopoverOptions<T>>;
+export type PopoverProps<T extends ElementType = TagName> = Props<
+  T,
+  PopoverOptions<T>
+>;

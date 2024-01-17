@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { ElementType } from "react";
 import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.js";
 import type { CheckboxOptions } from "../checkbox/checkbox.js";
@@ -7,14 +8,17 @@ import { useInitialValue } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore, MenuStoreValues } from "./menu-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type ValueState = MenuStoreValues[string];
 
 function getPrimitiveValue<T>(value: T) {
@@ -62,8 +66,8 @@ function getValue(
  * </Menu>
  * ```
  */
-export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
-  ({
+export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
+  function useMenuItemCheckbox({
     store,
     name,
     value,
@@ -71,7 +75,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
     defaultChecked: defaultCheckedProp,
     hideOnClick = false,
     ...props
-  }) => {
+  }) {
     const context = useMenuScopedContext();
     store = store || context;
 
@@ -118,7 +122,7 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
       ...props,
     };
 
-    props = useCheckbox({
+    props = useCheckbox<TagName>({
       store: checkboxStore,
       name,
       value,
@@ -173,18 +177,14 @@ export const useMenuItemCheckbox = createHook<MenuItemCheckboxOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItemCheckbox = createMemoComponent<MenuItemCheckboxOptions>(
-  (props) => {
+export const MenuItemCheckbox = memo(
+  forwardRef(function MenuItemCheckbox(props: MenuItemCheckboxProps) {
     const htmlProps = useMenuItemCheckbox(props);
-    return createElement("div", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItemCheckbox.displayName = "MenuItemCheckbox";
-}
-
-export interface MenuItemCheckboxOptions<T extends As = "div">
+export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
   extends MenuItemOptions<T>,
     Omit<CheckboxOptions<T>, "store"> {
   /**
@@ -221,6 +221,7 @@ export interface MenuItemCheckboxOptions<T extends As = "div">
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemCheckboxProps<T extends As = "div"> = Props<
+export type MenuItemCheckboxProps<T extends ElementType = TagName> = Props<
+  T,
   MenuItemCheckboxOptions<T>
 >;

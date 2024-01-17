@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -9,17 +10,17 @@ import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
 import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Props } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
 } from "./tab-context.jsx";
 import type { TabStore } from "./tab-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TabPanel` component.
@@ -34,8 +35,13 @@ import type { TabStore } from "./tab-store.js";
  * <Role {...props}>Panel 1</Role>
  * ```
  */
-export const useTabPanel = createHook<TabPanelOptions>(
-  ({ store, tabId: tabIdProp, getItem: getItemProp, ...props }) => {
+export const useTabPanel = createHook<TagName, TabPanelOptions>(
+  function useTabPanel({
+    store,
+    tabId: tabIdProp,
+    getItem: getItemProp,
+    ...props
+  }) {
     const context = useTabProviderContext();
     store = store || context;
 
@@ -45,7 +51,7 @@ export const useTabPanel = createHook<TabPanelOptions>(
         "TabPanel must receive a `store` prop or be wrapped in a TabProvider component.",
     );
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
@@ -126,16 +132,12 @@ export const useTabPanel = createHook<TabPanelOptions>(
  * </TabProvider>
  * ```
  */
-export const TabPanel = createComponent<TabPanelOptions>((props) => {
+export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
   const htmlProps = useTabPanel(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TabPanel.displayName = "TabPanel";
-}
-
-export interface TabPanelOptions<T extends As = "div">
+export interface TabPanelOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,
     Omit<DisclosureContentOptions<T>, "store" | "unmountOnHide"> {
@@ -166,4 +168,7 @@ export interface TabPanelOptions<T extends As = "div">
   tabId?: string | null;
 }
 
-export type TabPanelProps<T extends As = "div"> = Props<TabPanelOptions<T>>;
+export type TabPanelProps<T extends ElementType = TagName> = Props<
+  T,
+  TabPanelOptions<T>
+>;

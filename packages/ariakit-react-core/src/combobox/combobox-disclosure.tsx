@@ -1,12 +1,16 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const children = (
   <svg
@@ -43,57 +47,58 @@ const children = (
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
-  ({ store, ...props }) => {
-    const context = useComboboxProviderContext();
-    store = store || context;
+export const useComboboxDisclosure = createHook<
+  TagName,
+  ComboboxDisclosureOptions
+>(function useComboboxDisclosure({ store, ...props }) {
+  const context = useComboboxProviderContext();
+  store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "ComboboxDisclosure must receive a `store` prop or be wrapped in a ComboboxProvider component.",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "ComboboxDisclosure must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+  );
 
-    const onMouseDownProp = props.onMouseDown;
+  const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      onMouseDownProp?.(event);
-      // We have to prevent the element from getting focused on mousedown.
-      event.preventDefault();
-      // This will immediately move focus to the combobox input.
-      store?.move(null);
-    });
+  const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
+    onMouseDownProp?.(event);
+    // We have to prevent the element from getting focused on mousedown.
+    event.preventDefault();
+    // This will immediately move focus to the combobox input.
+    store?.move(null);
+  });
 
-    const onClickProp = props.onClick;
+  const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
-      onClickProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!store) return;
-      const { baseElement } = store.getState();
-      store.setDisclosureElement(baseElement);
-    });
+  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
+    onClickProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!store) return;
+    const { baseElement } = store.getState();
+    store.setDisclosureElement(baseElement);
+  });
 
-    const open = store.useState("open");
+  const open = store.useState("open");
 
-    props = {
-      children,
-      tabIndex: -1,
-      "aria-label": open ? "Hide popup" : "Show popup",
-      "aria-expanded": open,
-      ...props,
-      onMouseDown,
-      onClick,
-    };
+  props = {
+    children,
+    tabIndex: -1,
+    "aria-label": open ? "Hide popup" : "Show popup",
+    "aria-expanded": open,
+    ...props,
+    onMouseDown,
+    onClick,
+  };
 
-    // We're using DialogDisclosure, and not PopoverDisclosure, because
-    // PopoverDisclosure will also update the `store.anchorRef` with the
-    // disclosure element. We need to keep the combobox input as the anchorRef.
-    props = useDialogDisclosure({ store, ...props });
+  // We're using DialogDisclosure, and not PopoverDisclosure, because
+  // PopoverDisclosure will also update the `store.anchorRef` with the
+  // disclosure element. We need to keep the combobox input as the anchorRef.
+  props = useDialogDisclosure({ store, ...props });
 
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a combobox disclosure button that toggles the
@@ -117,18 +122,14 @@ export const useComboboxDisclosure = createHook<ComboboxDisclosureOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxDisclosure = createComponent<ComboboxDisclosureOptions>(
-  (props) => {
-    const htmlProps = useComboboxDisclosure(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
+  props: ComboboxDisclosureProps,
+) {
+  const htmlProps = useComboboxDisclosure(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxDisclosure.displayName = "ComboboxDisclosure";
-}
-
-export interface ComboboxDisclosureOptions<T extends As = "button">
+export interface ComboboxDisclosureOptions<T extends ElementType = TagName>
   extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
@@ -140,6 +141,7 @@ export interface ComboboxDisclosureOptions<T extends As = "button">
   store?: ComboboxStore;
 }
 
-export type ComboboxDisclosureProps<T extends As = "button"> = Props<
+export type ComboboxDisclosureProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxDisclosureOptions<T>
 >;

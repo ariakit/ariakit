@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `CompositeGroup` component.
@@ -20,8 +24,8 @@ import type { CompositeStore } from "./composite-store.js";
  * </Composite>
  * ```
  */
-export const useCompositeGroup = createHook<CompositeGroupOptions>(
-  ({ store, ...props }) => {
+export const useCompositeGroup = createHook<TagName, CompositeGroupOptions>(
+  function useCompositeGroup({ store, ...props }) {
     props = useGroup(props);
     return props;
   },
@@ -46,18 +50,14 @@ export const useCompositeGroup = createHook<CompositeGroupOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeGroup = createComponent<CompositeGroupOptions>(
-  (props) => {
-    const htmlProps = useCompositeGroup(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const CompositeGroup = forwardRef(function CompositeGroup(
+  props: CompositeGroupProps,
+) {
+  const htmlProps = useCompositeGroup(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeGroup.displayName = "CompositeGroup";
-}
-
-export interface CompositeGroupOptions<T extends As = "div">
+export interface CompositeGroupOptions<T extends ElementType = TagName>
   extends GroupOptions<T> {
   /**
    * Object returned by the
@@ -70,6 +70,7 @@ export interface CompositeGroupOptions<T extends As = "div">
   store?: CompositeStore;
 }
 
-export type CompositeGroupProps<T extends As = "div"> = Props<
+export type CompositeGroupProps<T extends ElementType = TagName> = Props<
+  T,
   CompositeGroupOptions<T>
 >;
