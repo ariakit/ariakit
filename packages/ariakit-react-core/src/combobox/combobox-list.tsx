@@ -1,11 +1,8 @@
-import type { ElementType, FocusEvent, KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useRef } from "react";
-import { isFocusEventOutside } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
-import { useFocusable } from "../focusable/focusable.js";
-import type { FocusableOptions } from "../focusable/focusable.js";
 import {
   useAttribute,
   useEvent,
@@ -14,7 +11,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
@@ -40,12 +37,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({
-    store,
-    focusable = true,
-    alwaysVisible,
-    ...props
-  }) {
+  function useComboboxList({ store, alwaysVisible, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -66,38 +58,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (event.key === "Escape") {
         store?.move(null);
       }
-    });
-
-    // VoiceOver on Safari doesn't work well with combobox widgets using the
-    // aria-activedescedant attribute. So, when the list receives keyboard
-    // focus, which usually happens when using VO keys to navigate to the
-    // listbox, we temporarily disable virtual focus until the listbox loses
-    // focus.
-    const restoreVirtualFocus = useRef(false);
-    const onFocusVisibleProp = props.onFocusVisible;
-
-    const onFocusVisible = useEvent((event: FocusEvent<HTMLType>) => {
-      onFocusVisibleProp?.(event);
-      if (event.defaultPrevented) return;
-      if (event.type !== "focus") return;
-      if (!store) return;
-      const { virtualFocus } = store.getState();
-      if (!virtualFocus) return;
-      const { relatedTarget, currentTarget } = event;
-      if (relatedTarget && currentTarget.contains(relatedTarget)) return;
-      restoreVirtualFocus.current = true;
-      store.setState("virtualFocus", false);
-    });
-
-    const onBlurProp = props.onBlur;
-
-    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
-      onBlurProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!restoreVirtualFocus.current) return;
-      if (!isFocusEventOutside(event)) return;
-      restoreVirtualFocus.current = false;
-      store?.setState("virtualFocus", true);
     });
 
     props = useWrapElement(
@@ -128,19 +88,14 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       id,
       hidden,
       role: "listbox",
-      tabIndex: focusable ? -1 : undefined,
       "aria-multiselectable": ariaMultiSelectable,
       ...props,
       ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
       style,
       onKeyDown,
-      onFocusVisible,
-      onBlur,
     };
 
-    props = useFocusable({ focusable, ...props });
-
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -169,8 +124,8 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
-    Pick<DisclosureContentOptions, "alwaysVisible"> {
+  extends Options,
+    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
