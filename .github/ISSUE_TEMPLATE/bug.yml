@@ -14,11 +14,12 @@ body:
     attributes:
       label: Steps to reproduce the bug
       description: >
-        Provide a repository link or CodeSandbox with the bug and describe the
-        steps to reproduce it. Bug reports without a reproduction may be
-        ignored.
+        Provide a repository or
+        [StackBlitz](https://stackblitz.com/edit/ariakit?devToolsHeight=33&file=src%2FApp.tsx)
+        link with the bug and describe the steps to reproduce it. _Bug reports
+        without a reproduction may be ignored_.
       value: |
-        1. Open sandbox: https://codesandbox.io/s/m4n32vjkoj
+        1. Open https://stackblitz.com/edit/ariakit?devToolsHeight=33&file=src%2FApp.tsx
         2. Remove any line
         3. See console logs
   - type: textarea
