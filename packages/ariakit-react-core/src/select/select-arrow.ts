@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectArrow` component.

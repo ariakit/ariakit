@@ -1,4 +1,9 @@
-import type { KeyboardEvent, MouseEvent, SelectHTMLAttributes } from "react";
+import type {
+  ElementType,
+  KeyboardEvent,
+  MouseEvent,
+  SelectHTMLAttributes,
+} from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import { getPopupRole } from "@ariakit/core/utils/dom";
@@ -15,7 +20,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { SelectArrow } from "./select-arrow.js";
 import {
@@ -24,6 +29,9 @@ import {
 } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
@@ -61,7 +69,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
  * ```
  */
 export const useSelect = createHook2<TagName, SelectOptions>(
-  ({
+  function useSelect({
     store,
     name,
     form,
@@ -71,7 +79,7 @@ export const useSelect = createHook2<TagName, SelectOptions>(
     toggleOnClick = false,
     toggleOnPress = !toggleOnClick,
     ...props
-  }) => {
+  }) {
     const context = useSelectProviderContext();
     store = store || context;
 
@@ -92,7 +100,7 @@ export const useSelect = createHook2<TagName, SelectOptions>(
     const value = store.useState("value");
     const multiSelectable = Array.isArray(value);
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -146,7 +154,7 @@ export const useSelect = createHook2<TagName, SelectOptions>(
 
     const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.button) return;
@@ -296,7 +304,7 @@ export const useSelect = createHook2<TagName, SelectOptions>(
     };
 
     props = usePopoverDisclosure({ store, toggleOnClick, ...props });
-    props = useCompositeTypeahead({ store, ...props });
+    props = useCompositeTypeahead<TagName>({ store, ...props });
 
     return props;
   },

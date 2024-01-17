@@ -1,14 +1,19 @@
-import type { MouseEvent } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType, MouseEvent } from "react";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `SelectLabel` component. Since it's not a native
@@ -39,7 +44,7 @@ export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       // queueMicrotask will guarantee that the focus and click events will be
@@ -63,7 +68,7 @@ export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
       },
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -85,10 +90,12 @@ export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectLabel = createMemoComponent<SelectLabelOptions>((props) => {
-  const htmlProps = useSelectLabel(props);
-  return createElement(TagName, htmlProps);
-});
+export const SelectLabel = memo(
+  forwardRef(function SelectLabel(props: SelectLabelProps) {
+    const htmlProps = useSelectLabel(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface SelectLabelOptions<_T extends ElementType = TagName>
   extends Options2 {

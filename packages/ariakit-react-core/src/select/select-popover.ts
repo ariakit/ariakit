@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
 import { useSelectList } from "./select-list.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectPopover` component.
@@ -47,7 +51,7 @@ export const useSelectPopover = createHook2<TagName, SelectPopoverOptions>(
  * ```
  */
 export const SelectPopover = createDialogComponent(
-  createComponent<SelectPopoverOptions>((props) => {
+  forwardRef(function SelectPopover(props: SelectPopoverProps) {
     const htmlProps = useSelectPopover(props);
     return createElement(TagName, htmlProps);
   }),

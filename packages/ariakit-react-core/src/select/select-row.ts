@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectRow` component.

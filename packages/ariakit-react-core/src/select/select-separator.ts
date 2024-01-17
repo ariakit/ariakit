@@ -1,12 +1,17 @@
+import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
+
 /**
  * Returns props to create a `SelectSeparator` component.
+ * @deprecated Use `useSelectGroup` with CSS borders instead.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -32,6 +37,8 @@ export const useSelectSeparator = createHook2<TagName, SelectSeparatorOptions>(
 /**
  * Renders a divider between
  * [`SelectItem`](https://ariakit.org/reference/select-item) elements.
+ * @deprecated Use [`SelectGroup`](https://ariakit.org/reference/select-group)
+ * with CSS borders instead.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {5}

@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
@@ -16,8 +16,9 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
@@ -25,6 +26,10 @@ import {
   useSelectScopedContext,
 } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isSelected(storeValue?: string | string[], itemValue?: string) {
   if (itemValue == null) return;
@@ -46,7 +51,7 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
  * ```
  */
 export const useSelectItem = createHook2<TagName, SelectItemOptions>(
-  ({
+  function useSelectItem({
     store,
     value,
     getItem: getItemProp,
@@ -55,7 +60,7 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
     preventScrollOnKeyDown = true,
     focusOnHover = true,
     ...props
-  }) => {
+  }) {
     const context = useSelectScopedContext();
     store = store || context;
 
@@ -94,7 +99,7 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
-    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDownloading(event)) return;
@@ -146,7 +151,7 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
       onClick,
     };
 
-    props = useCompositeItem({
+    props = useCompositeItem<TagName>({
       store,
       getItem,
       preventScrollOnKeyDown,
@@ -161,7 +166,7 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
       // We have to disable focusOnHover when the popup is closed, otherwise
       // the active item will change to null (the container) when the popup is
       // closed by clicking on an item.
-      focusOnHover: (event) => {
+      focusOnHover(event) {
         if (!focusOnHoverProp(event)) return false;
         const state = store?.getState();
         return !!state?.open;
@@ -198,10 +203,12 @@ export const useSelectItem = createHook2<TagName, SelectItemOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectItem = createMemoComponent<SelectItemOptions>((props) => {
-  const htmlProps = useSelectItem(props);
-  return createElement(TagName, htmlProps);
-});
+export const SelectItem = memo(
+  forwardRef(function SelectItem(props: SelectItemProps) {
+    const htmlProps = useSelectItem(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface SelectItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>,

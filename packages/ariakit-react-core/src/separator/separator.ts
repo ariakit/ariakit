@@ -1,5 +1,9 @@
-import { createElement, createHook2 } from "../utils/system.js";
+import type { ElementType } from "react";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Options2, Props2 } from "../utils/types.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Separator` component.
