@@ -122,9 +122,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
             focusOnHover={false}
             className="menu-item"
             {...props}
-          >
-            {renderMenuButton}
-          </Ariakit.MenuItem>
+            render={renderMenuButton}
+          />
         ) : (
           // Otherwise, we just render the menu button.
           renderMenuButton({ ref, ...props })

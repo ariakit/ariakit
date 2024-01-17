@@ -1,6 +1,6 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useRef } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import {
@@ -10,13 +10,17 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxList` component.
@@ -32,8 +36,8 @@ import type { ComboboxStore } from "./combobox-store.js";
  * </Role>
  * ```
  */
-export const useComboboxList = createHook<ComboboxListOptions>(
-  ({ store, alwaysVisible, ...props }) => {
+export const useComboboxList = createHook<TagName, ComboboxListOptions>(
+  function useComboboxList({ store, alwaysVisible, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -43,12 +47,12 @@ export const useComboboxList = createHook<ComboboxListOptions>(
         "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
 
     const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape") {
@@ -91,7 +95,7 @@ export const useComboboxList = createHook<ComboboxListOptions>(
       onKeyDown,
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -112,18 +116,16 @@ export const useComboboxList = createHook<ComboboxListOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxList = createComponent<ComboboxListOptions>((props) => {
+export const ComboboxList = forwardRef(function ComboboxList(
+  props: ComboboxListProps,
+) {
   const htmlProps = useComboboxList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxList.displayName = "ComboboxList";
-}
-
-export interface ComboboxListOptions<T extends As = "div">
-  extends Options<T>,
-    Pick<DisclosureContentOptions, "alwaysVisible"> {
+export interface ComboboxListOptions<T extends ElementType = TagName>
+  extends Options,
+    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
@@ -134,6 +136,7 @@ export interface ComboboxListOptions<T extends As = "div">
   store?: ComboboxStore;
 }
 
-export type ComboboxListProps<T extends As = "div"> = Props<
+export type ComboboxListProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxListOptions<T>
 >;

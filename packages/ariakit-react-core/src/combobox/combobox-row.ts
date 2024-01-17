@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxRow` component.
@@ -23,8 +27,8 @@ import type { ComboboxStore } from "./combobox-store.js";
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxRow = createHook<ComboboxRowOptions>(
-  ({ store, ...props }) => {
+export const useComboboxRow = createHook<TagName, ComboboxRowOptions>(
+  function useComboboxRow({ store, ...props }) {
     const context = useComboboxScopedContext();
     store = store || context;
 
@@ -71,16 +75,14 @@ export const useComboboxRow = createHook<ComboboxRowOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxRow = createComponent<ComboboxRowOptions>((props) => {
+export const ComboboxRow = forwardRef(function ComboboxRow(
+  props: ComboboxRowProps,
+) {
   const htmlProps = useComboboxRow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxRow.displayName = "ComboboxRow";
-}
-
-export interface ComboboxRowOptions<T extends As = "div">
+export interface ComboboxRowOptions<T extends ElementType = TagName>
   extends CompositeRowOptions<T> {
   /**
    * Object returned by the
@@ -93,6 +95,7 @@ export interface ComboboxRowOptions<T extends As = "div">
   store?: ComboboxStore;
 }
 
-export type ComboboxRowProps<T extends As = "div"> = Props<
+export type ComboboxRowProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxRowOptions<T>
 >;

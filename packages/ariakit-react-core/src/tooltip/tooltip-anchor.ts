@@ -1,14 +1,18 @@
 import { useEffect, useRef } from "react";
-import type { FocusEvent, MouseEvent } from "react";
+import type { ElementType, FocusEvent, MouseEvent } from "react";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createStore, sync } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useTooltipProviderContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 // Create a global store to keep track of the active tooltip store so we can
 // show other tooltips without a delay when there's already an active tooltip.
@@ -27,8 +31,8 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
  * <Tooltip store={store}>Tooltip</Tooltip>
  * ```
  */
-export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
-  ({ store, showOnHover = true, ...props }) => {
+export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
+  function useTooltipAnchor({ store, showOnHover = true, ...props }) {
     const context = useTooltipProviderContext();
     store = store || context;
 
@@ -78,14 +82,14 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 
     const onMouseEnterProp = props.onMouseEnter;
 
-    const onMouseEnter = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    const onMouseEnter = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseEnterProp?.(event);
       canShowOnHoverRef.current = true;
     });
 
     const onFocusVisibleProp = props.onFocusVisible;
 
-    const onFocusVisible = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onFocusVisible = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
       store?.setAnchorElement(event.currentTarget);
@@ -94,7 +98,7 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
 
     const onBlurProp = props.onBlur;
 
-    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       const { activeStore } = globalStore.getState();
@@ -120,9 +124,9 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
       onBlur,
     };
 
-    props = useHovercardAnchor({
+    props = useHovercardAnchor<TagName>({
       store,
-      showOnHover: (event) => {
+      showOnHover(event) {
         if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
         const { activeStore } = globalStore.getState();
@@ -152,16 +156,14 @@ export const useTooltipAnchor = createHook<TooltipAnchorOptions>(
  * </TooltipProvider>
  * ```
  */
-export const TooltipAnchor = createComponent<TooltipAnchorOptions>((props) => {
+export const TooltipAnchor = forwardRef(function TooltipAnchor(
+  props: TooltipAnchorProps,
+) {
   const htmlProps = useTooltipAnchor(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  TooltipAnchor.displayName = "TooltipAnchor";
-}
-
-export interface TooltipAnchorOptions<T extends As = "div">
+export interface TooltipAnchorOptions<T extends ElementType = TagName>
   extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
@@ -173,6 +175,7 @@ export interface TooltipAnchorOptions<T extends As = "div">
   store?: TooltipStore;
 }
 
-export type TooltipAnchorProps<T extends As = "div"> = Props<
+export type TooltipAnchorProps<T extends ElementType = TagName> = Props<
+  T,
   TooltipAnchorOptions<T>
 >;

@@ -1,4 +1,4 @@
-import type { FocusEvent, RefObject } from "react";
+import type { ElementType, FocusEvent, RefObject } from "react";
 import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getDocument } from "@ariakit/core/utils/dom";
@@ -15,12 +15,16 @@ import {
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type ItemType = "label" | "error" | "description";
 
 function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
@@ -64,14 +68,14 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * </Form>
  * ```
  */
-export const useFormControl = createHook<FormControlOptions>(
-  ({
+export const useFormControl = createHook<TagName, FormControlOptions>(
+  function useFormControl({
     store,
     name: nameProp,
     getItem: getItemProp,
     touchOnBlur = true,
     ...props
-  }) => {
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -83,7 +87,7 @@ export const useFormControl = createHook<FormControlOptions>(
 
     const name = `${nameProp}`;
     const id = useId(props.id);
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
 
     store.useValidate(async () => {
       const element = getNamedElement(ref, name);
@@ -109,7 +113,7 @@ export const useFormControl = createHook<FormControlOptions>(
     const onBlurProp = props.onBlur;
     const touchOnBlurProp = useBooleanEvent(touchOnBlur);
 
-    const onBlur = useEvent((event: FocusEvent<HTMLInputElement>) => {
+    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!touchOnBlurProp(event)) return;
@@ -139,7 +143,7 @@ export const useFormControl = createHook<FormControlOptions>(
       onBlur,
     };
 
-    props = useCollectionItem({ store, ...props, name, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, name, getItem });
 
     return props;
   },
@@ -177,16 +181,14 @@ export const useFormControl = createHook<FormControlOptions>(
  * </Form>
  * ```
  */
-export const FormControl = createMemoComponent<FormControlOptions>((props) => {
-  const htmlProps = useFormControl(props);
-  return createElement("input", htmlProps);
-});
+export const FormControl = memo(
+  forwardRef(function FormControl(props: FormControlProps) {
+    const htmlProps = useFormControl(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormControl.displayName = "FormControl";
-}
-
-export interface FormControlOptions<T extends As = "input">
+export interface FormControlOptions<T extends ElementType = TagName>
   extends CollectionItemOptions<T> {
   /**
    * Object returned by the
@@ -216,6 +218,7 @@ export interface FormControlOptions<T extends As = "input">
   touchOnBlur?: BooleanOrCallback<FocusEvent>;
 }
 
-export type FormControlProps<T extends As = "input"> = Props<
+export type FormControlProps<T extends ElementType = TagName> = Props<
+  T,
   FormControlOptions<T>
 >;

@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
@@ -6,12 +6,17 @@ import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FormInput` component. Unlike `useFormControl`, this
@@ -28,8 +33,8 @@ import { useFormControl } from "./form-control.js";
  * </Form>
  * ```
  */
-export const useFormInput = createHook<FormInputOptions>(
-  ({ store, name: nameProp, ...props }) => {
+export const useFormInput = createHook<TagName, FormInputOptions>(
+  function useFormInput({ store, name: nameProp, ...props }) {
     const context = useFormContext();
     store = store || context;
 
@@ -42,7 +47,7 @@ export const useFormInput = createHook<FormInputOptions>(
     const name = `${nameProp}`;
     const onChangeProp = props.onChange;
 
-    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       store?.setValue(name, event.target.value);
@@ -56,7 +61,7 @@ export const useFormInput = createHook<FormInputOptions>(
       onChange,
     };
 
-    props = useFocusable(props);
+    props = useFocusable<TagName>(props);
     props = useFormControl({ store, name, ...props });
 
     return props;
@@ -83,17 +88,18 @@ export const useFormInput = createHook<FormInputOptions>(
  * </Form>
  * ```
  */
-export const FormInput = createMemoComponent<FormInputOptions>((props) => {
-  const htmlProps = useFormInput(props);
-  return createElement("input", htmlProps);
-});
+export const FormInput = memo(
+  forwardRef(function FormInput(props: FormInputProps) {
+    const htmlProps = useFormInput(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-if (process.env.NODE_ENV !== "production") {
-  FormInput.displayName = "FormInput";
-}
-
-export interface FormInputOptions<T extends As = "input">
+export interface FormInputOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     FocusableOptions<T> {}
 
-export type FormInputProps<T extends As = "input"> = Props<FormInputOptions<T>>;
+export type FormInputProps<T extends ElementType = TagName> = Props<
+  T,
+  FormInputOptions<T>
+>;

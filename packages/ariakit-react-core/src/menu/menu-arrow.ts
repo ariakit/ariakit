@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuArrow` component.
@@ -18,8 +22,8 @@ import type { MenuStore } from "./menu-store.js";
  * </Menu>
  * ```
  */
-export const useMenuArrow = createHook<MenuArrowOptions>(
-  ({ store, ...props }) => {
+export const useMenuArrow = createHook<TagName, MenuArrowOptions>(
+  function useMenuArrow({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
     return usePopoverArrow({ store, ...props });
@@ -41,16 +45,12 @@ export const useMenuArrow = createHook<MenuArrowOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuArrow = createComponent<MenuArrowOptions>((props) => {
+export const MenuArrow = forwardRef(function MenuArrow(props: MenuArrowProps) {
   const htmlProps = useMenuArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuArrow.displayName = "MenuArrow";
-}
-
-export interface MenuArrowOptions<T extends As = "div">
+export interface MenuArrowOptions<T extends ElementType = TagName>
   extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
@@ -62,4 +62,7 @@ export interface MenuArrowOptions<T extends As = "div">
   store?: MenuStore;
 }
 
-export type MenuArrowProps<T extends As = "div"> = Props<MenuArrowOptions<T>>;
+export type MenuArrowProps<T extends ElementType = TagName> = Props<
+  T,
+  MenuArrowOptions<T>
+>;

@@ -1,4 +1,4 @@
-import type { FocusEvent, FormEvent } from "react";
+import type { ElementType, FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -10,10 +10,14 @@ import {
   useUpdateEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
+
+const TagName = "form" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(
@@ -39,120 +43,118 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
  * <Role {...props} />
  * ```
  */
-export const useForm = createHook<FormOptions>(
-  ({
+export const useForm = createHook<TagName, FormOptions>(function useForm({
+  store,
+  validateOnChange = true,
+  validateOnBlur = true,
+  resetOnUnmount = false,
+  resetOnSubmit = true,
+  autoFocusOnSubmit = true,
+  ...props
+}) {
+  const context = useFormContext();
+  store = store || context;
+
+  invariant(
     store,
-    validateOnChange = true,
-    validateOnBlur = true,
-    resetOnUnmount = false,
-    resetOnSubmit = true,
-    autoFocusOnSubmit = true,
-    ...props
-  }) => {
-    const context = useFormContext();
-    store = store || context;
+    process.env.NODE_ENV !== "production" &&
+      "Form must receive a `store` prop or be wrapped in a FormProvider component.",
+  );
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "Form must receive a `store` prop or be wrapped in a FormProvider component.",
-    );
+  const ref = useRef<HTMLType>(null);
+  const values = store.useState("values");
+  const submitSucceed = store.useState("submitSucceed");
+  const submitFailed = store.useState("submitFailed");
+  const items = store.useState("items");
+  const defaultValues = useInitialValue(values);
 
-    const ref = useRef<HTMLFormElement>(null);
-    const values = store.useState("values");
-    const submitSucceed = store.useState("submitSucceed");
-    const submitFailed = store.useState("submitFailed");
-    const items = store.useState("items");
-    const defaultValues = useInitialValue(values);
+  useEffect(
+    () => (resetOnUnmount ? store?.reset : undefined),
+    [resetOnUnmount, store],
+  );
 
-    useEffect(
-      () => (resetOnUnmount ? store?.reset : undefined),
-      [resetOnUnmount, store],
-    );
+  useUpdateEffect(() => {
+    if (!validateOnChange) return;
+    if (values === defaultValues) return;
+    store?.validate();
+  }, [validateOnChange, values, defaultValues, store]);
 
-    useUpdateEffect(() => {
-      if (!validateOnChange) return;
-      if (values === defaultValues) return;
-      store?.validate();
-    }, [validateOnChange, values, defaultValues, store]);
+  useEffect(() => {
+    if (!resetOnSubmit) return;
+    if (!submitSucceed) return;
+    store?.reset();
+  }, [resetOnSubmit, submitSucceed, store]);
 
-    useEffect(() => {
-      if (!resetOnSubmit) return;
-      if (!submitSucceed) return;
-      store?.reset();
-    }, [resetOnSubmit, submitSucceed, store]);
+  const [shouldFocusOnSubmit, setShouldFocusOnSubmit] = useState(false);
 
-    const [shouldFocusOnSubmit, setShouldFocusOnSubmit] = useState(false);
+  useEffect(() => {
+    if (!shouldFocusOnSubmit) return;
+    if (!submitFailed) return;
+    const field = getFirstInvalidField(items);
+    const element = field?.element;
+    if (!element) return;
+    setShouldFocusOnSubmit(false);
+    element.focus();
+    if (isTextField(element)) {
+      element.select();
+    }
+  }, [autoFocusOnSubmit, submitFailed, items]);
 
-    useEffect(() => {
-      if (!shouldFocusOnSubmit) return;
-      if (!submitFailed) return;
-      const field = getFirstInvalidField(items);
-      const element = field?.element;
-      if (!element) return;
-      setShouldFocusOnSubmit(false);
-      element.focus();
-      if (isTextField(element)) {
-        element.select();
-      }
-    }, [autoFocusOnSubmit, submitFailed, items]);
+  const onSubmitProp = props.onSubmit;
 
-    const onSubmitProp = props.onSubmit;
+  const onSubmit = useEvent((event: FormEvent<HTMLType>) => {
+    onSubmitProp?.(event);
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    store?.submit();
+    if (!autoFocusOnSubmit) return;
+    setShouldFocusOnSubmit(true);
+  });
 
-    const onSubmit = useEvent((event: FormEvent<HTMLFormElement>) => {
-      onSubmitProp?.(event);
-      if (event.defaultPrevented) return;
-      event.preventDefault();
-      store?.submit();
-      if (!autoFocusOnSubmit) return;
-      setShouldFocusOnSubmit(true);
-    });
+  const onBlurProp = props.onBlur;
 
-    const onBlurProp = props.onBlur;
+  const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
+    onBlurProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!validateOnBlur) return;
+    if (!store) return;
+    if (!isField(event.target, store.getState().items)) return;
+    store.validate();
+  });
 
-    const onBlur = useEvent((event: FocusEvent<HTMLFormElement>) => {
-      onBlurProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!validateOnBlur) return;
-      if (!store) return;
-      if (!isField(event.target, store.getState().items)) return;
-      store.validate();
-    });
+  const onResetProp = props.onReset;
 
-    const onResetProp = props.onReset;
+  const onReset = useEvent((event: FormEvent<HTMLType>) => {
+    onResetProp?.(event);
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    store?.reset();
+  });
 
-    const onReset = useEvent((event: FormEvent<HTMLFormElement>) => {
-      onResetProp?.(event);
-      if (event.defaultPrevented) return;
-      event.preventDefault();
-      store?.reset();
-    });
+  props = useWrapElement(
+    props,
+    (element) => (
+      <FormScopedContextProvider value={store}>
+        {element}
+      </FormScopedContextProvider>
+    ),
+    [store],
+  );
 
-    props = useWrapElement(
-      props,
-      (element) => (
-        <FormScopedContextProvider value={store}>
-          {element}
-        </FormScopedContextProvider>
-      ),
-      [store],
-    );
+  const tagName = useTagName(ref, TagName);
 
-    const tagName = useTagName(ref, props.as || "form");
+  props = {
+    role: tagName !== "form" ? "form" : undefined,
+    noValidate: true,
+    ...props,
+    ref: useMergeRefs(ref, props.ref),
+    onSubmit,
+    onBlur,
+    onReset,
+  };
 
-    props = {
-      role: tagName !== "form" ? "form" : undefined,
-      noValidate: true,
-      ...props,
-      ref: useMergeRefs(ref, props.ref),
-      onSubmit,
-      onBlur,
-      onReset,
-    };
-
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a form element and provides a [form
@@ -184,16 +186,12 @@ export const useForm = createHook<FormOptions>(
  * </Form>
  * ```
  */
-export const Form = createComponent<FormOptions>((props) => {
+export const Form = forwardRef(function Form(props: FormProps) {
   const htmlProps = useForm(props);
-  return createElement("form", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Form.displayName = "Form";
-}
-
-export interface FormOptions<T extends As = "form"> extends Options<T> {
+export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
@@ -242,4 +240,7 @@ export interface FormOptions<T extends As = "form"> extends Options<T> {
   autoFocusOnSubmit?: boolean;
 }
 
-export type FormProps<T extends As = "form"> = Props<FormOptions<T>>;
+export type FormProps<T extends ElementType = TagName> = Props<
+  T,
+  FormOptions<T>
+>;

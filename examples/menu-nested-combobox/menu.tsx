@@ -6,7 +6,6 @@ const SearchableContext = React.createContext(false);
 
 export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
   label?: React.ReactNode;
-  children?: React.ReactNode;
   values?: Ariakit.MenuProviderProps["values"];
   onValuesChange?: Ariakit.MenuProviderProps["setValues"];
   searchValue?: string;
@@ -110,7 +109,6 @@ export const MenuSeparator = React.forwardRef<
 
 export interface MenuGroupProps extends Ariakit.MenuGroupProps {
   label?: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
@@ -135,7 +133,6 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
 export interface MenuItemProps
   extends Omit<Ariakit.ComboboxItemProps, "store"> {
   name?: string;
-  children?: React.ReactNode;
 }
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
