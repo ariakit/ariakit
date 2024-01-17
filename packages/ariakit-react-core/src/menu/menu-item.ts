@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { getDocument, getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
@@ -14,12 +14,17 @@ import { useBooleanEvent, useEvent } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function menuHasFocus(
   baseElement?: MenuStoreState["baseElement"],
@@ -57,14 +62,14 @@ function menuHasFocus(
  * ```
  */
 export const useMenuItem = createHook2<TagName, MenuItemOptions>(
-  ({
+  function useMenuItem({
     store,
     hideOnClick = true,
     preventScrollOnKeyDown = true,
     focusOnHover,
     blurOnHoverEnd,
     ...props
-  }) => {
+  }) {
     const menuContext = useMenuScopedContext(true);
     const menubarContext = useMenubarScopedContext();
     store = store || menuContext || (menubarContext as any);
@@ -80,7 +85,7 @@ export const useMenuItem = createHook2<TagName, MenuItemOptions>(
     const hideMenu = "hideAll" in store ? store.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
-    const onClick = useEvent((event: MouseEvent<HTMLDivElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (isDownloading(event)) return;
@@ -105,7 +110,11 @@ export const useMenuItem = createHook2<TagName, MenuItemOptions>(
       onClick,
     };
 
-    props = useCompositeItem({ store, preventScrollOnKeyDown, ...props });
+    props = useCompositeItem<TagName>({
+      store,
+      preventScrollOnKeyDown,
+      ...props,
+    });
 
     props = useCompositeHover({
       store,
@@ -167,10 +176,12 @@ export const useMenuItem = createHook2<TagName, MenuItemOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItem = createMemoComponent<MenuItemOptions>((props) => {
-  const htmlProps = useMenuItem(props);
-  return createElement(TagName, htmlProps);
-});
+export const MenuItem = memo(
+  forwardRef(function MenuItem(props: MenuItemProps) {
+    const htmlProps = useMenuItem(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface MenuItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>,

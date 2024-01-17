@@ -1,13 +1,14 @@
 import { useEffect } from "react";
-import type { ChangeEvent } from "react";
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
 import { useInitialValue, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
@@ -17,6 +18,9 @@ import {
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 function getValue<T>(prevValue: T, value: T, checked?: boolean) {
   if (checked === undefined) return prevValue;
@@ -40,7 +44,7 @@ function getValue<T>(prevValue: T, value: T, checked?: boolean) {
  * ```
  */
 export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
-  ({
+  function useMenuItemRadio({
     store,
     name,
     value,
@@ -48,7 +52,7 @@ export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
     onChange: onChangeProp,
     hideOnClick = false,
     ...props
-  }) => {
+  }) {
     const context = useMenuScopedContext();
     store = store || context;
 
@@ -92,11 +96,11 @@ export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
       ...props,
     };
 
-    props = useRadio({
+    props = useRadio<TagName>({
       name,
       value,
       checked: isChecked,
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      onChange(event) {
         onChangeProp?.(event);
         if (event.defaultPrevented) return;
         const element = event.currentTarget;
@@ -140,11 +144,11 @@ export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
-  (props) => {
+export const MenuItemRadio = memo(
+  forwardRef(function MenuItemRadio(props: MenuItemRadioProps) {
     const htmlProps = useMenuItemRadio(props);
     return createElement(TagName, htmlProps);
-  },
+  }),
 );
 
 export interface MenuItemRadioOptions<T extends ElementType = TagName>

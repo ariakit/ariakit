@@ -1,5 +1,9 @@
-import { createElement, createHook2 } from "../utils/system.js";
-import type { As, Component, Options, Props } from "../utils/types.js";
+import type { ElementType, FC } from "react";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
+import type { Options2, Props2 } from "../utils/types.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 const elements = [
   "a",
@@ -31,7 +35,7 @@ const elements = [
 ] as const;
 
 type RoleElements = {
-  [K in (typeof elements)[number]]: Component<RoleOptions<K>>;
+  [K in (typeof elements)[number]]: FC<RoleProps<K>>;
 };
 
 /**
@@ -59,23 +63,25 @@ export const useRole = createHook2<TagName, RoleOptions>(
  * <Role render={<div />} />
  * ```
  */
-export const Role = forwardRef(function Role(props: RoleProps) {
-  return createElement(TagName, props);
-}) as Component<RoleOptions<"div">> & RoleElements;
+export const Role = forwardRef(
+  // @ts-expect-error
+  function Role(props: RoleProps) {
+    return createElement(TagName, props);
+  },
+) as FC<RoleProps<"div">> & RoleElements;
 
 Object.assign(
   Role,
   elements.reduce((acc, element) => {
-    acc[element] =
-      forwardRef >
-      ((props) => {
-        return createElement(element, props);
-      });
+    acc[element] = forwardRef(function Role(props: RoleProps<typeof element>) {
+      return createElement(element, props);
+    });
     return acc;
   }, {} as RoleElements),
 );
 
-export type RoleOptions<T extends ElementType = TagName> = Options<T>;
+export interface RoleOptions<_T extends ElementType = TagName>
+  extends Options2 {}
 
 export type RoleProps<T extends ElementType = TagName> = Props2<
   T,

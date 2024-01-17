@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuDescription` component. This hook must be used

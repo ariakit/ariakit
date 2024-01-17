@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
@@ -14,7 +14,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   MenuScopedContextProvider,
@@ -22,6 +22,9 @@ import {
 } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function useAriaLabelledBy({ store, ...props }: MenuListProps) {
@@ -90,7 +93,7 @@ export const useMenuList = createHook2<TagName, MenuListOptions>(
       (state) => !!state && state.orientation !== "vertical",
     );
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (hasParentMenu || (parentMenubar && !isHorizontal)) {

@@ -1,6 +1,14 @@
-import type { FocusEvent, MouseEvent, SyntheticEvent } from "react";
+import type {
+  ElementType,
+  FocusEvent,
+  MouseEvent,
+  SyntheticEvent,
+} from "react";
 import { useEffect, useRef } from "react";
-import { disabledFromProps } from "@ariakit/core/utils/misc";
+import {
+  disabledFromProps,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -14,12 +22,17 @@ import {
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useRadioContext } from "./radio-context.js";
 import type { RadioStore, RadioStoreState } from "./radio-store.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getIsChecked(
   value: RadioOptions["value"],
@@ -61,7 +74,7 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
 
   const id = useId(props.id);
 
-  const ref = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLType>(null);
   const isChecked = useStoreState(
     store,
     (state) => checked ?? getIsChecked(value, state?.value),
@@ -79,7 +92,7 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
   }, [store, isChecked, id]);
 
   const onChangeProp = props.onChange;
-  const tagName = useTagName(ref, props.as || "input");
+  const tagName = useTagName(ref, "input");
   const nativeRadio = isNativeRadio(tagName, props.type);
   const disabled = disabledFromProps(props);
   // When the checked property is programmatically set on the change event, we
@@ -102,7 +115,7 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
     }
   }, [propertyUpdated, nativeRadio, isChecked, name, value]);
 
-  const onChange = useEvent((event: SyntheticEvent<HTMLInputElement>) => {
+  const onChange = useEvent((event: SyntheticEvent<HTMLType>) => {
     if (disabled) {
       event.preventDefault();
       event.stopPropagation();
@@ -119,7 +132,7 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
 
   const onClickProp = props.onClick;
 
-  const onClick = useEvent((event: MouseEvent<HTMLInputElement>) => {
+  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     if (nativeRadio) return;
@@ -128,7 +141,7 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
 
   const onFocusProp = props.onFocus;
 
-  const onFocus = useEvent((event: FocusEvent<HTMLInputElement>) => {
+  const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
     onFocusProp?.(event);
     if (event.defaultPrevented) return;
     if (!nativeRadio) return;
@@ -151,14 +164,18 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
     onFocus,
   };
 
-  props = useCompositeItem({ store, clickOnEnter: !nativeRadio, ...props });
+  props = useCompositeItem<TagName>({
+    store,
+    clickOnEnter: !nativeRadio,
+    ...props,
+  });
 
-  return {
+  return removeUndefinedValues({
     name: nativeRadio ? name : undefined,
     value: nativeRadio ? value : undefined,
     checked: isChecked,
     ...props,
-  };
+  });
 });
 
 /**
@@ -175,10 +192,12 @@ export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
  * </RadioProvider>
  * ```
  */
-export const Radio = createMemoComponent<RadioOptions>((props) => {
-  const htmlProps = useRadio(props);
-  return createElement(TagName, htmlProps);
-});
+export const Radio = memo(
+  forwardRef(function Radio(props: RadioProps) {
+    const htmlProps = useRadio(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface RadioOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
@@ -212,9 +231,7 @@ export interface RadioOptions<T extends ElementType = TagName>
   /**
    * Callback function that is called when the radio button state changes.
    */
-  onChange?: BivariantCallback<
-    (event: SyntheticEvent<HTMLInputElement>) => void
-  >;
+  onChange?: BivariantCallback<(event: SyntheticEvent<HTMLType>) => void>;
 }
 
 export type RadioProps<T extends ElementType = TagName> = Props2<

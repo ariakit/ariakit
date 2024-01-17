@@ -1,4 +1,4 @@
-import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
+import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
@@ -16,11 +16,14 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
@@ -92,7 +95,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
 
     const onFocusProp = props.onFocus;
 
-    const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event as any);
       if (disabled) return;
       if (event.defaultPrevented) return;
@@ -120,7 +123,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
 
     const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event as any);
       if (disabled) return;
       if (event.defaultPrevented) return;
@@ -135,7 +138,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event as any);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -206,7 +209,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
       onClick,
     };
 
-    props = useHovercardAnchor({
+    props = useHovercardAnchor<TagName>({
       store,
       focusable,
       accessibleWhenDisabled,
@@ -242,7 +245,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
       ...props,
     });
 
-    props = useCompositeTypeahead({
+    props = useCompositeTypeahead<TagName>({
       store,
       typeahead: parentIsMenubar,
       ...props,
@@ -275,7 +278,7 @@ export const MenuButton = forwardRef(function MenuButton(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuButtonOptions<T extends ElementType = TagName | "div">
+export interface MenuButtonOptions<T extends ElementType = TagName>
   extends HovercardAnchorOptions<T>,
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
@@ -300,6 +303,7 @@ export interface MenuButtonOptions<T extends ElementType = TagName | "div">
   typeahead?: boolean;
 }
 
-export type MenuButtonProps<T extends ElementType = TagName | "div"> = Props<
+export type MenuButtonProps<T extends ElementType = TagName> = Props2<
+  T,
   MenuButtonOptions<T>
 >;

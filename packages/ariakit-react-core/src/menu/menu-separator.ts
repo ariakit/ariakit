@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuSeparator` component.

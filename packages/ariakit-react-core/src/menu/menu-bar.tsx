@@ -1,7 +1,11 @@
+import type { ElementType } from "react";
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuBar` component.
