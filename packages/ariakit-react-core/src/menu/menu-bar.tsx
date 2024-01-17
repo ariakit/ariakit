@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ElementType } from "react";
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
@@ -29,6 +30,12 @@ type TagName = typeof TagName;
  */
 export const useMenuBar = createHook<TagName, MenuBarOptions>(
   function useMenuBar(props) {
+    useEffect(() => {
+      console.warn(
+        "MenuBar is deprecated. Use Menubar instead.",
+        "See https://ariakit.org/reference/menubar",
+      );
+    }, []);
     return useMenubar(props);
   },
 );
