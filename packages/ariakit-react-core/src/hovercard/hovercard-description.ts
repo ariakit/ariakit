@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
 import { usePopoverDescription } from "../popover/popover-description.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardDescription` component. This hook must be
@@ -38,11 +42,12 @@ export const useHovercardDescription = createHook2<
  * </HovercardProvider>
  * ```
  */
-export const HovercardDescription =
-  createComponent<HovercardDescriptionOptions>((props) => {
-    const htmlProps = useHovercardDescription(props);
-    return createElement(TagName, htmlProps);
-  });
+export const HovercardDescription = forwardRef(function HovercardDescription(
+  props: HovercardDescriptionProps,
+) {
+  const htmlProps = useHovercardDescription(props);
+  return createElement(TagName, htmlProps);
+});
 
 export interface HovercardDescriptionOptions<T extends ElementType = TagName>
   extends PopoverDescriptionOptions<T> {

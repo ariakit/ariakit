@@ -1,4 +1,8 @@
-import type { MouseEvent, FocusEvent as ReactFocusEvent } from "react";
+import type {
+  ElementType,
+  MouseEvent,
+  FocusEvent as ReactFocusEvent,
+} from "react";
 import { useEffect, useState } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
@@ -7,11 +11,15 @@ import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardDisclosure` component.
@@ -87,7 +95,7 @@ export const useHovercardDisclosure = createHook2<
   // By default, hovercards don't receive focus when they are shown. When the
   // disclosure element is clicked, though, we want it to behave like a
   // popover, so we set the autoFocusOnShow prop to true.
-  const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     store?.setAutoFocusOnShow(true);
@@ -97,7 +105,7 @@ export const useHovercardDisclosure = createHook2<
 
   // Since the disclosure button is only visually hidden, it may receive focus
   // when the user tabs to it. So we make sure it's visible when that happens.
-  const onFocus = useEvent((event: ReactFocusEvent<HTMLButtonElement>) => {
+  const onFocus = useEvent((event: ReactFocusEvent<HTMLType>) => {
     onFocusProp?.(event);
     if (event.defaultPrevented) return;
     setVisible(true);
