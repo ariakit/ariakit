@@ -1,13 +1,18 @@
+import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarItem` component.
@@ -41,10 +46,12 @@ export const useToolbarItem = createHook2<TagName, ToolbarItemOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarItem = createMemoComponent<ToolbarItemOptions>((props) => {
-  const htmlProps = useToolbarItem(props);
-  return createElement(TagName, htmlProps);
-});
+export const ToolbarItem = memo(
+  forwardRef(function ToolbarItem(props: ToolbarItemProps) {
+    const htmlProps = useToolbarItem(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface ToolbarItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {

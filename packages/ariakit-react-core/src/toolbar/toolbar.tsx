@@ -1,7 +1,8 @@
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   ToolbarScopedContextProvider,
@@ -9,6 +10,9 @@ import {
 } from "./toolbar-context.js";
 import { useToolbarStore } from "./toolbar-store.js";
 import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Toolbar` component.
@@ -24,14 +28,14 @@ import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
  * ```
  */
 export const useToolbar = createHook2<TagName, ToolbarOptions>(
-  ({
+  function useToolbar({
     store: storeProp,
     orientation: orientationProp,
     virtualFocus,
     focusLoop,
     rtl,
     ...props
-  }) => {
+  }) {
     const context = useToolbarProviderContext();
     storeProp = storeProp || context;
 

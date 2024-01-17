@@ -1,14 +1,19 @@
+import type { ElementType } from "react";
 import type { CompositeInputOptions } from "../composite/composite-input.js";
 import { useCompositeInput } from "../composite/composite-input.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarInput` component.
@@ -27,7 +32,7 @@ export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeInput({ store, ...props });
-    props = useToolbarItem({ store, ...props });
+    props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },
 );
@@ -43,11 +48,11 @@ export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarInput = createMemoComponent<ToolbarInputOptions>(
-  (props) => {
+export const ToolbarInput = memo(
+  forwardRef(function ToolbarInput(props: ToolbarInputProps) {
     const htmlProps = useToolbarInput(props);
     return createElement(TagName, htmlProps);
-  },
+  }),
 );
 
 export interface ToolbarInputOptions<T extends ElementType = TagName>

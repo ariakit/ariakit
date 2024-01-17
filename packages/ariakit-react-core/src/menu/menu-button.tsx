@@ -22,7 +22,7 @@ import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
 const TagName = "button" satisfies ElementType;
-type TagName = typeof TagName;
+type TagName = typeof TagName | "div";
 type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
@@ -237,7 +237,7 @@ export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
       },
     });
 
-    props = usePopoverDisclosure({
+    props = usePopoverDisclosure<TagName>({
       store,
       toggleOnClick: !hasParentMenu,
       focusable,

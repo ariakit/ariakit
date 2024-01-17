@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -9,17 +10,17 @@ import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
 import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import {
-  createComponent,
-  createElement,
-  createHook,
-} from "../utils/system.jsx";
+import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
 import type { Props2 } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
 } from "./tab-context.jsx";
 import type { TabStore } from "./tab-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TabPanel` component.
@@ -50,7 +51,7 @@ export const useTabPanel = createHook2<TagName, TabPanelOptions>(
         "TabPanel must receive a `store` prop or be wrapped in a TabProvider component.",
     );
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);

@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
@@ -6,12 +6,17 @@ import { useCompositeItem } from "../composite/composite-item.js";
 import { useEvent, useId } from "../utils/hooks.js";
 import {
   createElement,
-  createHook,
-  createMemoComponent,
+  createHook2,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import { useTabScopedContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Tab` component.
@@ -62,7 +67,7 @@ export const useTab = createHook2<TagName, TabOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.setSelectedId(id);
@@ -110,10 +115,12 @@ export const useTab = createHook2<TagName, TabOptions>(
  * </TabProvider>
  * ```
  */
-export const Tab = createMemoComponent<TabOptions>((props) => {
-  const htmlProps = useTab(props);
-  return createElement(TagName, htmlProps);
-});
+export const Tab = memo(
+  forwardRef(function Tab(props: TabProps) {
+    const htmlProps = useTab(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
 export interface TabOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T> {
