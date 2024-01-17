@@ -1,9 +1,4 @@
-import type {
-  ElementType,
-  FocusEvent,
-  MouseEvent,
-  SyntheticEvent,
-} from "react";
+import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import {
   disabledFromProps,
@@ -115,7 +110,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     }
   }, [propertyUpdated, nativeRadio, isChecked, name, value]);
 
-  const onChange = useEvent((event: SyntheticEvent<HTMLType>) => {
+  const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
     if (disabled) {
       event.preventDefault();
       event.stopPropagation();
@@ -136,6 +131,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     if (nativeRadio) return;
+    // @ts-expect-error The onChange event expects a ChangeEvent, but here we
+    // need to pass a MouseEvent.
     onChange(event);
   });
 
@@ -231,7 +228,7 @@ export interface RadioOptions<T extends ElementType = TagName>
   /**
    * Callback function that is called when the radio button state changes.
    */
-  onChange?: BivariantCallback<(event: SyntheticEvent<HTMLType>) => void>;
+  onChange?: BivariantCallback<(event: ChangeEvent<HTMLType>) => void>;
 }
 
 export type RadioProps<T extends ElementType = TagName> = Props<
