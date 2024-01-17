@@ -31,73 +31,71 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <TabPanel store={store}>Panel 1</TabPanel>
  * ```
  */
-export const useTab = createHook2<TagName, TabOptions>(
-  ({
+export const useTab = createHook2<TagName, TabOptions>(function useTab({
+  store,
+  accessibleWhenDisabled = true,
+  getItem: getItemProp,
+  ...props
+}) {
+  const context = useTabScopedContext();
+  store = store || context;
+
+  invariant(
     store,
-    accessibleWhenDisabled = true,
-    getItem: getItemProp,
-    ...props
-  }) => {
-    const context = useTabScopedContext();
-    store = store || context;
+    process.env.NODE_ENV !== "production" &&
+      "Tab must be wrapped in a TabList component.",
+  );
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "Tab must be wrapped in a TabList component.",
-    );
+  // Keep a reference to the default id so we can wait before all tabs have
+  // been assigned an id before registering them in the store. See
+  // https://github.com/ariakit/ariakit/issues/1721
+  const defaultId = useId();
+  const id = props.id || defaultId;
+  const dimmed = disabledFromProps(props);
 
-    // Keep a reference to the default id so we can wait before all tabs have
-    // been assigned an id before registering them in the store. See
-    // https://github.com/ariakit/ariakit/issues/1721
-    const defaultId = useId();
-    const id = props.id || defaultId;
-    const dimmed = disabledFromProps(props);
+  const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
+    (item) => {
+      const nextItem = { ...item, dimmed };
+      if (getItemProp) {
+        return getItemProp(nextItem);
+      }
+      return nextItem;
+    },
+    [dimmed, getItemProp],
+  );
 
-    const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = { ...item, dimmed };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [dimmed, getItemProp],
-    );
+  const onClickProp = props.onClick;
 
-    const onClickProp = props.onClick;
+  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
+    onClickProp?.(event);
+    if (event.defaultPrevented) return;
+    store?.setSelectedId(id);
+  });
 
-    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-      onClickProp?.(event);
-      if (event.defaultPrevented) return;
-      store?.setSelectedId(id);
-    });
+  const panelId = store.panels.useState(
+    (state) => state.items.find((item) => item.tabId === id)?.id,
+  );
+  const selected = store.useState((state) => !!id && state.selectedId === id);
 
-    const panelId = store.panels.useState(
-      (state) => state.items.find((item) => item.tabId === id)?.id,
-    );
-    const selected = store.useState((state) => !!id && state.selectedId === id);
+  props = {
+    id,
+    role: "tab",
+    "aria-selected": selected,
+    "aria-controls": panelId || undefined,
+    ...props,
+    onClick,
+  };
 
-    props = {
-      id,
-      role: "tab",
-      "aria-selected": selected,
-      "aria-controls": panelId || undefined,
-      ...props,
-      onClick,
-    };
+  props = useCompositeItem({
+    store,
+    ...props,
+    accessibleWhenDisabled,
+    getItem,
+    shouldRegisterItem: !!defaultId ? props.shouldRegisterItem : false,
+  });
 
-    props = useCompositeItem({
-      store,
-      ...props,
-      accessibleWhenDisabled,
-      getItem,
-      shouldRegisterItem: !!defaultId ? props.shouldRegisterItem : false,
-    });
-
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a tab element inside a

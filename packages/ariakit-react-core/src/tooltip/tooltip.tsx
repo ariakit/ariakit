@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import type { ElementType } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
@@ -6,7 +5,7 @@ import { createDialogComponent } from "../dialog/dialog.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2 } from "../utils/system.js";
+import { createElement, createHook2, forwardRef } from "../utils/system.js";
 import type { Props2 } from "../utils/types.js";
 import {
   TooltipScopedContextProvider,
@@ -29,7 +28,7 @@ type TagName = typeof TagName;
  * ```
  */
 export const useTooltip = createHook2<TagName, TooltipOptions>(
-  ({
+  function useTooltip({
     store,
     portal = true,
     gutter = 8,
@@ -37,7 +36,7 @@ export const useTooltip = createHook2<TagName, TooltipOptions>(
     hideOnHoverOutside = true,
     hideOnInteractOutside = true,
     ...props
-  }) => {
+  }) {
     const context = useTooltipProviderContext();
     store = store || context;
 

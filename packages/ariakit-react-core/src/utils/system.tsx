@@ -198,7 +198,7 @@ export function createHook2<
     return useProps(props);
   };
   useRole.displayName = useProps.name;
-  return useProps as Hook2<T, P>;
+  return useRole as Hook2<T, P>;
 }
 
 type StoreProvider<T extends Store> = React.ComponentType<{
