@@ -1,16 +1,20 @@
+import type { ElementType } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
 } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Tooltip` component.
@@ -23,8 +27,8 @@ import type { TooltipStore } from "./tooltip-store.js";
  * <Role {...props}>Tooltip</Role>
  * ```
  */
-export const useTooltip = createHook<TooltipOptions>(
-  ({
+export const useTooltip = createHook<TagName, TooltipOptions>(
+  function useTooltip({
     store,
     portal = true,
     gutter = 8,
@@ -32,7 +36,7 @@ export const useTooltip = createHook<TooltipOptions>(
     hideOnHoverOutside = true,
     hideOnInteractOutside = true,
     ...props
-  }) => {
+  }) {
     const context = useTooltipProviderContext();
     store = store || context;
 
@@ -64,7 +68,7 @@ export const useTooltip = createHook<TooltipOptions>(
       portal,
       gutter,
       preserveTabOrder,
-      hideOnHoverOutside: (event) => {
+      hideOnHoverOutside(event) {
         if (isFalsyBooleanCallback(hideOnHoverOutside, event)) return false;
         const anchorElement = store?.getState().anchorElement;
         if (!anchorElement) return true;
@@ -106,18 +110,14 @@ export const useTooltip = createHook<TooltipOptions>(
  * ```
  */
 export const Tooltip = createDialogComponent(
-  createComponent<TooltipOptions>((props) => {
+  forwardRef(function Tooltip(props: TooltipProps) {
     const htmlProps = useTooltip(props);
-    return createElement("div", htmlProps);
+    return createElement(TagName, htmlProps);
   }),
   useTooltipProviderContext,
 );
 
-if (process.env.NODE_ENV !== "production") {
-  Tooltip.displayName = "Tooltip";
-}
-
-export interface TooltipOptions<T extends As = "div">
+export interface TooltipOptions<T extends ElementType = TagName>
   extends HovercardOptions<T> {
   /**
    * Object returned by the
@@ -133,4 +133,7 @@ export interface TooltipOptions<T extends As = "div">
   gutter?: HovercardOptions<T>["gutter"];
 }
 
-export type TooltipProps<T extends As = "div"> = Props<TooltipOptions<T>>;
+export type TooltipProps<T extends ElementType = TagName> = Props<
+  T,
+  TooltipOptions<T>
+>;

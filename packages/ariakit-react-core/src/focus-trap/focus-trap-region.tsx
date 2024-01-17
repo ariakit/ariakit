@@ -1,9 +1,15 @@
 import { useRef } from "react";
+import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FocusTrapRegion` component.
@@ -14,9 +20,9 @@ import { FocusTrap } from "./focus-trap.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
-  ({ enabled = false, ...props }) => {
-    const ref = useRef<HTMLDivElement>(null);
+export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
+  function useFocusTrapRegion({ enabled = false, ...props }) {
+    const ref = useRef<HTMLType>(null);
 
     props = useWrapElement(
       props,
@@ -61,7 +67,7 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -79,19 +85,15 @@ export const useFocusTrapRegion = createHook<FocusTrapRegionOptions>(
  * </FocusTrapRegion>
  * ```
  */
-export const FocusTrapRegion = createComponent<FocusTrapRegionOptions>(
-  (props) => {
-    const htmlProps = useFocusTrapRegion(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
+  props: FocusTrapRegionProps,
+) {
+  const htmlProps = useFocusTrapRegion(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  FocusTrapRegion.displayName = "FocusTrapRegion";
-}
-
-export interface FocusTrapRegionOptions<T extends As = "div">
-  extends Options<T> {
+export interface FocusTrapRegionOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * If true, it will trap the focus in the region.
    * @default false
@@ -99,6 +101,7 @@ export interface FocusTrapRegionOptions<T extends As = "div">
   enabled?: boolean;
 }
 
-export type FocusTrapRegionProps<T extends As = "div"> = Props<
+export type FocusTrapRegionProps<T extends ElementType = TagName> = Props<
+  T,
   FocusTrapRegionOptions<T>
 >;

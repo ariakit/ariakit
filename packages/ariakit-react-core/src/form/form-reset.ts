@@ -1,10 +1,14 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormReset` component.
@@ -18,8 +22,8 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormReset = createHook<FormResetOptions>(
-  ({ store, ...props }) => {
+export const useFormReset = createHook<TagName, FormResetOptions>(
+  function useFormReset({ store, ...props }) {
     const context = useFormContext();
     store = store || context;
 
@@ -56,16 +60,12 @@ export const useFormReset = createHook<FormResetOptions>(
  * </Form>
  * ```
  */
-export const FormReset = createComponent<FormResetOptions>((props) => {
+export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   const htmlProps = useFormReset(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormReset.displayName = "FormReset";
-}
-
-export interface FormResetOptions<T extends As = "button">
+export interface FormResetOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -77,6 +77,7 @@ export interface FormResetOptions<T extends As = "button">
   store?: FormStore;
 }
 
-export type FormResetProps<T extends As = "button"> = Props<
+export type FormResetProps<T extends ElementType = TagName> = Props<
+  T,
   FormResetOptions<T>
 >;

@@ -1,14 +1,18 @@
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   ToolbarScopedContextProvider,
   useToolbarProviderContext,
 } from "./toolbar-context.js";
 import { useToolbarStore } from "./toolbar-store.js";
 import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Toolbar` component.
@@ -23,15 +27,15 @@ import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
  * </Role>
  * ```
  */
-export const useToolbar = createHook<ToolbarOptions>(
-  ({
+export const useToolbar = createHook<TagName, ToolbarOptions>(
+  function useToolbar({
     store: storeProp,
     orientation: orientationProp,
     virtualFocus,
     focusLoop,
     rtl,
     ...props
-  }) => {
+  }) {
     const context = useToolbarProviderContext();
     storeProp = storeProp || context;
 
@@ -80,16 +84,12 @@ export const useToolbar = createHook<ToolbarOptions>(
  * </Toolbar>
  * ```
  */
-export const Toolbar = createComponent<ToolbarOptions>((props) => {
+export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
   const htmlProps = useToolbar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Toolbar.displayName = "Toolbar";
-}
-
-export interface ToolbarOptions<T extends As = "div">
+export interface ToolbarOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     Pick<
       ToolbarStoreProps,
@@ -107,4 +107,7 @@ export interface ToolbarOptions<T extends As = "div">
   store?: ToolbarStore;
 }
 
-export type ToolbarProps<T extends As = "div"> = Props<ToolbarOptions<T>>;
+export type ToolbarProps<T extends ElementType = TagName> = Props<
+  T,
+  ToolbarOptions<T>
+>;

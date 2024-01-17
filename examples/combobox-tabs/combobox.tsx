@@ -100,9 +100,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   },
 );
 
-export interface ComboboxPopoverProps extends Ariakit.ComboboxPopoverProps {
-  children?: React.ReactNode;
-}
+export interface ComboboxPopoverProps extends Ariakit.ComboboxPopoverProps {}
 
 export const ComboboxPopover = React.forwardRef<
   HTMLDivElement,
@@ -218,9 +216,7 @@ export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
   },
 );
 
-export interface ComboboxPanelProps extends Ariakit.TabPanelProps {
-  children?: React.ReactNode;
-}
+export interface ComboboxPanelProps extends Ariakit.TabPanelProps {}
 
 export const ComboboxPanel = React.forwardRef<
   HTMLDivElement,

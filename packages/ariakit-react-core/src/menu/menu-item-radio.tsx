@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { ChangeEvent } from "react";
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { RadioOptions } from "../radio/radio.js";
 import { useRadio } from "../radio/radio.js";
@@ -7,9 +7,10 @@ import { useInitialValue, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   MenuItemCheckedContext,
   useMenuScopedContext,
@@ -17,6 +18,9 @@ import {
 import type { MenuItemOptions } from "./menu-item.js";
 import { useMenuItem } from "./menu-item.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 function getValue<T>(prevValue: T, value: T, checked?: boolean) {
   if (checked === undefined) return prevValue;
@@ -39,8 +43,8 @@ function getValue<T>(prevValue: T, value: T, checked?: boolean) {
  * </Menu>
  * ```
  */
-export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
-  ({
+export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
+  function useMenuItemRadio({
     store,
     name,
     value,
@@ -48,7 +52,7 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
     onChange: onChangeProp,
     hideOnClick = false,
     ...props
-  }) => {
+  }) {
     const context = useMenuScopedContext();
     store = store || context;
 
@@ -92,11 +96,11 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
       ...props,
     };
 
-    props = useRadio({
+    props = useRadio<TagName>({
       name,
       value,
       checked: isChecked,
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      onChange(event) {
         onChangeProp?.(event);
         if (event.defaultPrevented) return;
         const element = event.currentTarget;
@@ -140,18 +144,14 @@ export const useMenuItemRadio = createHook<MenuItemRadioOptions>(
  * </MenuProvider>
  * ```
  */
-export const MenuItemRadio = createMemoComponent<MenuItemRadioOptions>(
-  (props) => {
+export const MenuItemRadio = memo(
+  forwardRef(function MenuItemRadio(props: MenuItemRadioProps) {
     const htmlProps = useMenuItemRadio(props);
-    return createElement("div", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  MenuItemRadio.displayName = "MenuItemRadio";
-}
-
-export interface MenuItemRadioOptions<T extends As = "div">
+export interface MenuItemRadioOptions<T extends ElementType = TagName>
   extends MenuItemOptions<T>,
     Omit<RadioOptions<T>, "store"> {
   /**
@@ -188,6 +188,7 @@ export interface MenuItemRadioOptions<T extends As = "div">
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemRadioProps<T extends As = "div"> = Props<
+export type MenuItemRadioProps<T extends ElementType = TagName> = Props<
+  T,
   MenuItemRadioOptions<T>
 >;

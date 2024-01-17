@@ -1,10 +1,14 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormReset` component.
@@ -18,8 +22,8 @@ import type { FormStore } from "./form-store.js";
  * </Form>
  * ```
  */
-export const useFormSubmit = createHook<FormSubmitOptions>(
-  ({ store, accessibleWhenDisabled = true, ...props }) => {
+export const useFormSubmit = createHook<TagName, FormSubmitOptions>(
+  function useFormSubmit({ store, accessibleWhenDisabled = true, ...props }) {
     const context = useFormContext();
     store = store || context;
 
@@ -58,16 +62,14 @@ export const useFormSubmit = createHook<FormSubmitOptions>(
  * </Form>
  * ```
  */
-export const FormSubmit = createComponent<FormSubmitOptions>((props) => {
+export const FormSubmit = forwardRef(function FormSubmit(
+  props: FormSubmitProps,
+) {
   const htmlProps = useFormSubmit(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormSubmit.displayName = "FormSubmit";
-}
-
-export interface FormSubmitOptions<T extends As = "button">
+export interface FormSubmitOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -83,6 +85,7 @@ export interface FormSubmitOptions<T extends As = "button">
   accessibleWhenDisabled?: ButtonOptions<T>["accessibleWhenDisabled"];
 }
 
-export type FormSubmitProps<T extends As = "button"> = Props<
+export type FormSubmitProps<T extends ElementType = TagName> = Props<
+  T,
   FormSubmitOptions<T>
 >;

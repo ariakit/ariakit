@@ -1,14 +1,18 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   RadioScopedContextProvider,
   useRadioProviderContext,
 } from "./radio-context.js";
 import type { RadioStore } from "./radio-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `RadioGroup` component.
@@ -23,8 +27,8 @@ import type { RadioStore } from "./radio-store.js";
  * </Role>
  * ```
  */
-export const useRadioGroup = createHook<RadioGroupOptions>(
-  ({ store, ...props }) => {
+export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
+  function useRadioGroup({ store, ...props }) {
     const context = useRadioProviderContext();
     store = store || context;
 
@@ -69,16 +73,14 @@ export const useRadioGroup = createHook<RadioGroupOptions>(
  * </RadioProvider>
  * ```
  */
-export const RadioGroup = createComponent<RadioGroupOptions>((props) => {
+export const RadioGroup = forwardRef(function RadioGroup(
+  props: RadioGroupProps,
+) {
   const htmlProps = useRadioGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  RadioGroup.displayName = "RadioGroup";
-}
-
-export interface RadioGroupOptions<T extends As = "div">
+export interface RadioGroupOptions<T extends ElementType = TagName>
   extends CompositeOptions<T> {
   /**
    * Object returned by the
@@ -90,4 +92,7 @@ export interface RadioGroupOptions<T extends As = "div">
   store?: RadioStore;
 }
 
-export type RadioGroupProps<T extends As = "div"> = Props<RadioGroupOptions<T>>;
+export type RadioGroupProps<T extends ElementType = TagName> = Props<
+  T,
+  RadioGroupOptions<T>
+>;

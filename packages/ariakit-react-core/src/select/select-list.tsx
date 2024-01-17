@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -17,13 +17,17 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   SelectScopedContextProvider,
   useSelectProviderContext,
 } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `SelectList` component.
@@ -38,8 +42,8 @@ import type { SelectStore } from "./select-store.js";
  * </Role>
  * ```
  */
-export const useSelectList = createHook<SelectListOptions>(
-  ({
+export const useSelectList = createHook<TagName, SelectListOptions>(
+  function useSelectList({
     store,
     resetOnEscape = true,
     hideOnEnter = true,
@@ -47,7 +51,7 @@ export const useSelectList = createHook<SelectListOptions>(
     composite,
     alwaysVisible,
     ...props
-  }) => {
+  }) {
     const context = useSelectProviderContext();
     store = store || context;
 
@@ -57,7 +61,7 @@ export const useSelectList = createHook<SelectListOptions>(
         "SelectList must receive a `store` prop or be wrapped in a SelectProvider component.",
     );
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
     const value = store.useState("value");
     const multiSelectable = Array.isArray(value);
@@ -77,7 +81,7 @@ export const useSelectList = createHook<SelectListOptions>(
     const resetOnEscapeProp = useBooleanEvent(resetOnEscape);
     const hideOnEnterProp = useBooleanEvent(hideOnEnter);
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape" && resetOnEscapeProp(event)) {
@@ -161,16 +165,14 @@ export const useSelectList = createHook<SelectListOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectList = createComponent<SelectListOptions>((props) => {
+export const SelectList = forwardRef(function SelectList(
+  props: SelectListProps,
+) {
   const htmlProps = useSelectList(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  SelectList.displayName = "SelectList";
-}
-
-export interface SelectListOptions<T extends As = "div">
+export interface SelectListOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
@@ -200,4 +202,7 @@ export interface SelectListOptions<T extends As = "div">
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
-export type SelectListProps<T extends As = "div"> = Props<SelectListOptions<T>>;
+export type SelectListProps<T extends ElementType = TagName> = Props<
+  T,
+  SelectListOptions<T>
+>;

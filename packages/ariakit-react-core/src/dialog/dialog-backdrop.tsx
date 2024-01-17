@@ -2,23 +2,19 @@ import { isValidElement, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.js";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import { Role } from "../role/role.js";
-import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
+import { useSafeLayoutEffect } from "../utils/hooks.js";
 import type { DialogStore } from "./dialog-store.js";
 import type { DialogProps } from "./dialog.js";
 import { markAncestor } from "./utils/mark-tree-outside.js";
 
 interface DialogBackdropProps
-  extends Pick<
-    DialogProps,
-    "backdrop" | "backdropProps" | "alwaysVisible" | "hidden"
-  > {
+  extends Pick<DialogProps, "backdrop" | "alwaysVisible" | "hidden"> {
   store: DialogStore;
 }
 
 export function DialogBackdrop({
   store,
   backdrop,
-  backdropProps,
   alwaysVisible,
   hidden,
 }: DialogBackdropProps) {
@@ -45,24 +41,19 @@ export function DialogBackdrop({
     return markAncestor(backdrop, id);
   }, [contentElement]);
 
-  if (hidden != null) {
-    backdropProps = { ...backdropProps, hidden };
-  }
-
   const props = useDisclosureContent({
+    ref,
     store: disclosure,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
     alwaysVisible,
-    ...backdropProps,
-    ref: useMergeRefs(backdropProps?.ref, ref),
+    hidden: hidden != null ? hidden : undefined,
     style: {
       position: "fixed",
       top: 0,
       right: 0,
       bottom: 0,
       left: 0,
-      ...backdropProps?.style,
     },
   });
 

@@ -8,7 +8,6 @@ export interface MenuProps extends Ariakit.MenuButtonProps {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   label: React.ReactNode;
-  children?: React.ReactNode;
   animate?: MotionProps["animate"];
   transition?: MotionProps["transition"];
   variants?: MotionProps["variants"];
