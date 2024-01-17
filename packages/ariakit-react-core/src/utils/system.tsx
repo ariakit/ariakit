@@ -30,16 +30,6 @@ export function memo<T extends React.FC<any>>(
 
 /**
  * Creates a React element that supports the `render` and `wrapElement` props.
- * @example
- * import { createElement } from "@ariakit/react-core/utils/system";
- *
- * function Component() {
- *   const props = {
- *     render: (htmlProps) => <button {...htmlProps} />,
- *     wrapElement: (element) => <div>{element}</div>,
- *   };
- *   return createElement(TagName, props);
- * }
  */
 export function createElement(
   Type: React.ElementType,
@@ -66,6 +56,10 @@ export function createElement(
   return element;
 }
 
+/**
+ * Creates a component hook that accepts props and returns props so they can be
+ * passed to a React element.
+ */
 export function createHook<
   T extends React.ElementType,
   P extends AnyObject = EmptyObject,

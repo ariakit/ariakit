@@ -21,6 +21,15 @@ export type WrapElement = (element: React.ReactElement) => React.ReactElement;
  */
 export interface Options {
   wrapElement?: WrapElement;
+  /**
+   * Allows the component to be rendered as a different HTML element or React
+   * component. The value can be a React element or a function that takes in the
+   * original component props and gives back a React element with the props
+   * merged.
+   *
+   * Check out the [Composition](https://ariakit.org/guide/composition) guide
+   * for more details.
+   */
   render?: RenderProp | React.ReactElement;
 }
 

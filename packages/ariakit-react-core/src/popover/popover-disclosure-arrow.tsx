@@ -6,7 +6,7 @@ import type { Options, Props } from "../utils/types.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
-const TagName = "div" satisfies ElementType;
+const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

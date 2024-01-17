@@ -69,13 +69,13 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * ```
  */
 export const useFormControl = createHook<TagName, FormControlOptions>(
-  ({
+  function useFormControl({
     store,
     name: nameProp,
     getItem: getItemProp,
     touchOnBlur = true,
     ...props
-  }) => {
+  }) {
     const context = useFormContext();
     store = store || context;
 

@@ -28,7 +28,7 @@ taller than the viewport.
 
 ## Rendering a custom backdrop
 
-In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/reference/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/apis/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
+In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/reference/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/reference/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
 
 ```jsx {4-6} "dialogProps"
 <Dialog

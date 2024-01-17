@@ -6,7 +6,7 @@ import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
-const TagName = "div" satisfies ElementType;
+const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**

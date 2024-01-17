@@ -6,7 +6,7 @@ import type { Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
-const TagName = "div" satisfies ElementType;
+const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**

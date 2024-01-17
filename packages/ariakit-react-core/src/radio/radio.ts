@@ -92,7 +92,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   }, [store, isChecked, id]);
 
   const onChangeProp = props.onChange;
-  const tagName = useTagName(ref, "input");
+  const tagName = useTagName(ref, TagName);
   const nativeRadio = isNativeRadio(tagName, props.type);
   const disabled = disabledFromProps(props);
   // When the checked property is programmatically set on the change event, we

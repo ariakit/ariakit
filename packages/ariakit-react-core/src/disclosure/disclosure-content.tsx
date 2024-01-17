@@ -182,18 +182,19 @@ const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
  * </DisclosureProvider>
  * ```
  */
-export const DisclosureContent = forwardRef(
-  ({ unmountOnHide, ...props }: DisclosureContentProps) => {
-    const context = useDisclosureProviderContext();
-    const store = props.store || context;
-    const mounted = useStoreState(
-      store,
-      (state) => !unmountOnHide || state?.mounted,
-    );
-    if (mounted === false) return null;
-    return <DisclosureContentImpl {...props} />;
-  },
-);
+export const DisclosureContent = forwardRef(function DisclosureContent({
+  unmountOnHide,
+  ...props
+}: DisclosureContentProps) {
+  const context = useDisclosureProviderContext();
+  const store = props.store || context;
+  const mounted = useStoreState(
+    store,
+    (state) => !unmountOnHide || state?.mounted,
+  );
+  if (mounted === false) return null;
+  return <DisclosureContentImpl {...props} />;
+});
 
 export interface DisclosureContentOptions<_T extends ElementType = TagName>
   extends Options {
