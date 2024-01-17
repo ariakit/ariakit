@@ -3,11 +3,11 @@ import type { CompositeInputOptions } from "../composite/composite-input.js";
 import { useCompositeInput } from "../composite/composite-input.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";
@@ -27,7 +27,7 @@ type TagName = typeof TagName;
  * </Toolbar>
  * ```
  */
-export const useToolbarInput = createHook2<TagName, ToolbarInputOptions>(
+export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
   function useToolbarInput({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
@@ -59,7 +59,7 @@ export interface ToolbarInputOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeInputOptions<T>, "store"> {}
 
-export type ToolbarInputProps<T extends ElementType = TagName> = Props2<
+export type ToolbarInputProps<T extends ElementType = TagName> = Props<
   T,
   ToolbarInputOptions<T>
 >;

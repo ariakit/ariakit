@@ -29,8 +29,8 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,
@@ -125,7 +125,7 @@ const NestedHovercardContext = createContext<
  * <Role {...props}>Details</Role>
  * ```
  */
-export const useHovercard = createHook2<TagName, HovercardOptions>(
+export const useHovercard = createHook<TagName, HovercardOptions>(
   function useHovercard({
     store,
     modal = false,
@@ -425,7 +425,7 @@ export interface HovercardOptions<T extends ElementType = TagName>
   modal?: PopoverOptions<T>["modal"];
 }
 
-export type HovercardProps<T extends ElementType = TagName> = Props2<
+export type HovercardProps<T extends ElementType = TagName> = Props<
   T,
   HovercardOptions<T>
 >;

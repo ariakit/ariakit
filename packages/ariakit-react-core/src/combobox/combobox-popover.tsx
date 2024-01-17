@@ -4,8 +4,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxListOptions } from "./combobox-list.js";
 import { useComboboxList } from "./combobox-list.js";
@@ -43,7 +43,7 @@ function isController(
  * </Role>
  * ```
  */
-export const useComboboxPopover = createHook2<TagName, ComboboxPopoverOptions>(
+export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
   function useComboboxPopover({
     store,
     modal,
@@ -148,7 +148,7 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
   extends ComboboxListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type ComboboxPopoverProps<T extends ElementType = TagName> = Props2<
+export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxPopoverOptions<T>
 >;

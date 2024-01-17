@@ -11,8 +11,8 @@ import {
   useIsMouseMoving,
   useMergeRefs,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
@@ -31,7 +31,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
-export const useHovercardAnchor = createHook2<TagName, HovercardAnchorOptions>(
+export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
   function useHovercardAnchor({ store, showOnHover = true, ...props }) {
     const context = useHovercardProviderContext();
     store = store || context;
@@ -170,7 +170,7 @@ export interface HovercardAnchorOptions<T extends ElementType = TagName>
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type HovercardAnchorProps<T extends ElementType = TagName> = Props2<
+export type HovercardAnchorProps<T extends ElementType = TagName> = Props<
   T,
   HovercardAnchorOptions<T>
 >;

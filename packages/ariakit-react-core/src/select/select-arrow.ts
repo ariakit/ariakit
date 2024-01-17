@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.js";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -26,7 +26,7 @@ type TagName = typeof TagName;
  * </SelectPopover>
  * ```
  */
-export const useSelectArrow = createHook2<TagName, SelectArrowOptions>(
+export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
   function useSelectArrow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
@@ -73,7 +73,7 @@ export interface SelectArrowOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectArrowProps<T extends ElementType = TagName> = Props2<
+export type SelectArrowProps<T extends ElementType = TagName> = Props<
   T,
   SelectArrowOptions<T>
 >;

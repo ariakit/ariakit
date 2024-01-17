@@ -7,8 +7,8 @@ import { useButton } from "../button/button.js";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
@@ -59,7 +59,7 @@ function getFirstFieldsByName(
  * </Form>
  * ```
  */
-export const useFormPush = createHook2<TagName, FormPushOptions>(
+export const useFormPush = createHook<TagName, FormPushOptions>(
   function useFormPush({
     store,
     value,
@@ -191,7 +191,7 @@ export interface FormPushOptions<T extends ElementType = TagName>
   autoFocusOnClick?: boolean;
 }
 
-export type FormPushProps<T extends ElementType = TagName> = Props2<
+export type FormPushProps<T extends ElementType = TagName> = Props<
   T,
   FormPushOptions<T>
 >;

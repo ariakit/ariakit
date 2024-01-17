@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
@@ -22,7 +22,7 @@ type TagName = typeof TagName;
  * </Hovercard>
  * ```
  */
-export const useHovercardArrow = createHook2<TagName, HovercardArrowOptions>(
+export const useHovercardArrow = createHook<TagName, HovercardArrowOptions>(
   function useHovercardArrow({ store, ...props }) {
     const context = useHovercardContext();
     store = store || context;
@@ -67,7 +67,7 @@ export interface HovercardArrowOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardArrowProps<T extends ElementType = TagName> = Props2<
+export type HovercardArrowProps<T extends ElementType = TagName> = Props<
   T,
   HovercardArrowOptions<T>
 >;

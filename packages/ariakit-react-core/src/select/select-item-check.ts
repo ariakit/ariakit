@@ -2,8 +2,8 @@ import { useContext } from "react";
 import type { ElementType } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { SelectItemCheckedContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  * <Role {...props} />
  * ```
  */
-export const useSelectItemCheck = createHook2<TagName, SelectItemCheckOptions>(
+export const useSelectItemCheck = createHook<TagName, SelectItemCheckOptions>(
   function useSelectItemCheck({ store, checked, ...props }) {
     const context = useContext(SelectItemCheckedContext);
     checked = checked ?? context;
@@ -73,7 +73,7 @@ export interface SelectItemCheckOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectItemCheckProps<T extends ElementType = TagName> = Props2<
+export type SelectItemCheckProps<T extends ElementType = TagName> = Props<
   T,
   SelectItemCheckOptions<T>
 >;

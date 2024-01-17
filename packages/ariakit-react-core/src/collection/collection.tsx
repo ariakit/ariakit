@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   CollectionScopedContextProvider,
   useCollectionProviderContext,
@@ -28,7 +28,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useCollection = createHook2<TagName, CollectionOptions>(
+export const useCollection = createHook<TagName, CollectionOptions>(
   function useCollection({ store, ...props }) {
     const context = useCollectionProviderContext();
     store = store || context;
@@ -71,7 +71,7 @@ export const Collection = forwardRef(function Collection(
 });
 
 export interface CollectionOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -82,7 +82,7 @@ export interface CollectionOptions<_T extends ElementType = TagName>
   store?: CollectionStore;
 }
 
-export type CollectionProps<T extends ElementType = TagName> = Props2<
+export type CollectionProps<T extends ElementType = TagName> = Props<
   T,
   CollectionOptions<T>
 >;

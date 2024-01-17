@@ -13,8 +13,8 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
@@ -39,7 +39,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Role>
  * ```
  */
-export const useComboboxList = createHook2<TagName, ComboboxListOptions>(
+export const useComboboxList = createHook<TagName, ComboboxListOptions>(
   function useComboboxList({
     store,
     focusable = true,
@@ -181,7 +181,7 @@ export interface ComboboxListOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxListProps<T extends ElementType = TagName> = Props2<
+export type ComboboxListProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxListOptions<T>
 >;

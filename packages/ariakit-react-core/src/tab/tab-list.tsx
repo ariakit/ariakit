@@ -3,8 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
@@ -29,7 +29,7 @@ type TagName = typeof TagName;
  * <TabPanel store={store}>Panel 2</TabPanel>
  * ```
  */
-export const useTabList = createHook2<TagName, TabListOptions>(
+export const useTabList = createHook<TagName, TabListOptions>(
   function useTabList({ store, ...props }) {
     const context = useTabProviderContext();
     store = store || context;
@@ -99,7 +99,7 @@ export interface TabListOptions<T extends ElementType = TagName>
   store?: TabStore;
 }
 
-export type TabListProps<T extends ElementType = TagName> = Props2<
+export type TabListProps<T extends ElementType = TagName> = Props<
   T,
   TabListOptions<T>
 >;

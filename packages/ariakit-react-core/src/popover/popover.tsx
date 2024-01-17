@@ -19,8 +19,8 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
@@ -215,7 +215,7 @@ function getArrowMiddleware(
  * <Role {...props}>Popover</Role>
  * ```
  */
-export const usePopover = createHook2<TagName, PopoverOptions>(
+export const usePopover = createHook<TagName, PopoverOptions>(
   function usePopover({
     store,
     modal = false,
@@ -613,7 +613,7 @@ export interface PopoverOptions<T extends ElementType = TagName>
   }) => void | Promise<void>;
 }
 
-export type PopoverProps<T extends ElementType = TagName> = Props2<
+export type PopoverProps<T extends ElementType = TagName> = Props<
   T,
   PopoverOptions<T>
 >;

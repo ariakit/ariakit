@@ -3,8 +3,8 @@ import type { ElementType } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { useCollectionContext } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
 
@@ -25,7 +25,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Role {...props}>Item</Role>
  * ```
  */
-export const useCollectionItem = createHook2<TagName, CollectionItemOptions>(
+export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
   function useCollectionItem({
     store,
     shouldRegisterItem = true,
@@ -81,7 +81,7 @@ export const CollectionItem = forwardRef(function CollectionItem(
 });
 
 export interface CollectionItemOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -124,7 +124,7 @@ export interface CollectionItemOptions<_T extends ElementType = TagName>
   getItem?: (props: CollectionStoreItem) => CollectionStoreItem;
 }
 
-export type CollectionItemProps<T extends ElementType = TagName> = Props2<
+export type CollectionItemProps<T extends ElementType = TagName> = Props<
   T,
   CollectionItemOptions<T>
 >;

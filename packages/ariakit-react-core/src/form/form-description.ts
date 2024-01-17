@@ -7,11 +7,11 @@ import { useCollectionItem } from "../collection/collection-item.js";
 import { useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
@@ -33,7 +33,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Form>
  * ```
  */
-export const useFormDescription = createHook2<TagName, FormDescriptionOptions>(
+export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
   function useFormDescription({
     store,
     name: nameProp,
@@ -134,7 +134,7 @@ export interface FormDescriptionOptions<T extends ElementType = TagName>
   name: StringLike;
 }
 
-export type FormDescriptionProps<T extends ElementType = TagName> = Props2<
+export type FormDescriptionProps<T extends ElementType = TagName> = Props<
   T,
   FormDescriptionOptions<T>
 >;

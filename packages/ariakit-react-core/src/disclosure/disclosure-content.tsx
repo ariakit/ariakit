@@ -9,8 +9,8 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Options, Props } from "../utils/types.js";
 import { useDisclosureProviderContext } from "./disclosure-context.jsx";
 import type { DisclosureStore } from "./disclosure-store.js";
 
@@ -62,7 +62,7 @@ export function isHidden(
  * <Role {...props}>Content</Role>
  * ```
  */
-export const useDisclosureContent = createHook2<
+export const useDisclosureContent = createHook<
   TagName,
   DisclosureContentOptions
 >(function useDisclosureContent({ store, alwaysVisible, ...props }) {
@@ -196,7 +196,7 @@ export const DisclosureContent = forwardRef(
 );
 
 export interface DisclosureContentOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
@@ -245,7 +245,7 @@ export interface DisclosureContentOptions<_T extends ElementType = TagName>
   unmountOnHide?: boolean;
 }
 
-export type DisclosureContentProps<T extends ElementType = TagName> = Props2<
+export type DisclosureContentProps<T extends ElementType = TagName> = Props<
   T,
   DisclosureContentOptions<T>
 >;

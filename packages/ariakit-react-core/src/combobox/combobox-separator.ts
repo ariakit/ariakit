@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -26,7 +26,7 @@ type TagName = typeof TagName;
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxSeparator = createHook2<
+export const useComboboxSeparator = createHook<
   TagName,
   ComboboxSeparatorOptions
 >(function useComboboxSeparator({ store, ...props }) {
@@ -83,7 +83,7 @@ export interface ComboboxSeparatorOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props2<
+export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxSeparatorOptions<T>
 >;

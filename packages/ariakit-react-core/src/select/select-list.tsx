@@ -17,8 +17,8 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   SelectScopedContextProvider,
   useSelectProviderContext,
@@ -42,7 +42,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Role>
  * ```
  */
-export const useSelectList = createHook2<TagName, SelectListOptions>(
+export const useSelectList = createHook<TagName, SelectListOptions>(
   function useSelectList({
     store,
     resetOnEscape = true,
@@ -202,7 +202,7 @@ export interface SelectListOptions<T extends ElementType = TagName>
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
-export type SelectListProps<T extends ElementType = TagName> = Props2<
+export type SelectListProps<T extends ElementType = TagName> = Props<
   T,
   SelectListOptions<T>
 >;

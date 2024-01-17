@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useDialogScopedContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
@@ -24,7 +24,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Dialog>
  * ```
  */
-export const useDialogDismiss = createHook2<TagName, DialogDismissOptions>(
+export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
     store = store || context;
@@ -102,7 +102,7 @@ export interface DialogDismissOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogDismissProps<T extends ElementType = TagName> = Props2<
+export type DialogDismissProps<T extends ElementType = TagName> = Props<
   T,
   DialogDismissOptions<T>
 >;

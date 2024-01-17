@@ -12,11 +12,11 @@ import { useCompositeItem } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
@@ -47,7 +47,7 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
  * <Role {...props} />
  * ```
  */
-export const useComboboxItem = createHook2<TagName, ComboboxItemOptions>(
+export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
   function useComboboxItem({
     store,
     value,
@@ -319,7 +319,7 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }
 
-export type ComboboxItemProps<T extends ElementType = TagName> = Props2<
+export type ComboboxItemProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxItemOptions<T>
 >;

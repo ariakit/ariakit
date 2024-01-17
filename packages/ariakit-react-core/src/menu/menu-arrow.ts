@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -22,7 +22,7 @@ type TagName = typeof TagName;
  * </Menu>
  * ```
  */
-export const useMenuArrow = createHook2<TagName, MenuArrowOptions>(
+export const useMenuArrow = createHook<TagName, MenuArrowOptions>(
   function useMenuArrow({ store, ...props }) {
     const context = useMenuContext();
     store = store || context;
@@ -62,7 +62,7 @@ export interface MenuArrowOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuArrowProps<T extends ElementType = TagName> = Props2<
+export type MenuArrowProps<T extends ElementType = TagName> = Props<
   T,
   MenuArrowOptions<T>
 >;

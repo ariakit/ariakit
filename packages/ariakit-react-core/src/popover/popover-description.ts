@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.js";
 import { useDialogDescription } from "../dialog/dialog-description.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
 
 const TagName = "p" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Description</Role>
  * ```
  */
-export const usePopoverDescription = createHook2<
+export const usePopoverDescription = createHook<
   TagName,
   PopoverDescriptionOptions
 >(function usePopoverDescription(props) {
@@ -62,7 +62,7 @@ export interface PopoverDescriptionOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverDescriptionProps<T extends ElementType = TagName> = Props2<
+export type PopoverDescriptionProps<T extends ElementType = TagName> = Props<
   T,
   PopoverDescriptionOptions<T>
 >;

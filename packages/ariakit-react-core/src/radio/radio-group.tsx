@@ -3,8 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   RadioScopedContextProvider,
   useRadioProviderContext,
@@ -27,7 +27,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useRadioGroup = createHook2<TagName, RadioGroupOptions>(
+export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
   function useRadioGroup({ store, ...props }) {
     const context = useRadioProviderContext();
     store = store || context;
@@ -92,7 +92,7 @@ export interface RadioGroupOptions<T extends ElementType = TagName>
   store?: RadioStore;
 }
 
-export type RadioGroupProps<T extends ElementType = TagName> = Props2<
+export type RadioGroupProps<T extends ElementType = TagName> = Props<
   T,
   RadioGroupOptions<T>
 >;

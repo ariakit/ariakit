@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
 import { usePopoverHeading } from "../popover/popover-heading.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 const TagName = "h1" satisfies ElementType;
@@ -20,13 +20,12 @@ type TagName = typeof TagName;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHovercardHeading = createHook2<
-  TagName,
-  HovercardHeadingOptions
->(function useHovercardHeading(props) {
-  props = usePopoverHeading(props);
-  return props;
-});
+export const useHovercardHeading = createHook<TagName, HovercardHeadingOptions>(
+  function useHovercardHeading(props) {
+    props = usePopoverHeading(props);
+    return props;
+  },
+);
 
 /**
  * Renders a heading in a hovercard. This component must be wrapped within
@@ -62,7 +61,7 @@ export interface HovercardHeadingOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardHeadingProps<T extends ElementType = TagName> = Props2<
+export type HovercardHeadingProps<T extends ElementType = TagName> = Props<
   T,
   HovercardHeadingOptions<T>
 >;

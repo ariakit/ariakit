@@ -1,6 +1,6 @@
 import type { ElementType, FC } from "react";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -47,7 +47,7 @@ type RoleElements = {
  * <Role {...props} />
  * ```
  */
-export const useRole = createHook2<TagName, RoleOptions>(
+export const useRole = createHook<TagName, RoleOptions>(
   function useRole(props) {
     return props;
   },
@@ -81,9 +81,9 @@ Object.assign(
 );
 
 export interface RoleOptions<_T extends ElementType = TagName>
-  extends Options2 {}
+  extends Options {}
 
-export type RoleProps<T extends ElementType = TagName> = Props2<
+export type RoleProps<T extends ElementType = TagName> = Props<
   T,
   RoleOptions<T>
 >;

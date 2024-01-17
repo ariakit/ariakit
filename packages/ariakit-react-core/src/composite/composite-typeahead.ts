@@ -8,8 +8,8 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 import { flipItems } from "./utils.js";
@@ -95,7 +95,7 @@ function getSameInitialItems(
  * </Composite>
  * ```
  */
-export const useCompositeTypeahead = createHook2<
+export const useCompositeTypeahead = createHook<
   TagName,
   CompositeTypeaheadOptions
 >(function useCompositeTypeahead({ store, typeahead = true, ...props }) {
@@ -183,7 +183,7 @@ export const CompositeTypeahead = forwardRef(function CompositeTypeahead(
 });
 
 export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -201,7 +201,7 @@ export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
   typeahead?: boolean;
 }
 
-export type CompositeTypeaheadProps<T extends ElementType = TagName> = Props2<
+export type CompositeTypeaheadProps<T extends ElementType = TagName> = Props<
   T,
   CompositeTypeaheadOptions<T>
 >;

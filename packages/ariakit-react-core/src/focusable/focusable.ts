@@ -27,8 +27,8 @@ import {
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
 
 const TagName = "div" satisfies ElementType;
@@ -180,7 +180,7 @@ function onGlobalKeyDown(event: KeyboardEvent) {
  * <Role {...props}>Focusable</Role>
  * ```
  */
-export const useFocusable = createHook2<TagName, FocusableOptions>(
+export const useFocusable = createHook<TagName, FocusableOptions>(
   function useFocusable({
     focusable = true,
     accessibleWhenDisabled,
@@ -461,7 +461,7 @@ export const Focusable = forwardRef(function Focusable(props: FocusableProps) {
 });
 
 export interface FocusableOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Determines if the element is disabled. This sets the `aria-disabled`
    * attribute accordingly, enabling support for all elements, including those
@@ -552,7 +552,7 @@ export interface FocusableOptions<_T extends ElementType = TagName>
   >;
 }
 
-export type FocusableProps<T extends ElementType = TagName> = Props2<
+export type FocusableProps<T extends ElementType = TagName> = Props<
   T,
   FocusableOptions<T>
 >;

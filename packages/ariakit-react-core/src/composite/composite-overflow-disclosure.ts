@@ -4,8 +4,8 @@ import { sync } from "@ariakit/core/utils/store";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { CompositeItemOptions } from "./composite-item.js";
 import { useCompositeItem } from "./composite-item.js";
 import type { CompositeOverflowStore } from "./composite-overflow-store.js";
@@ -25,7 +25,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Role {...props}>+2 items</Role>
  * ```
  */
-export const useCompositeOverflowDisclosure = createHook2<
+export const useCompositeOverflowDisclosure = createHook<
   TagName,
   CompositeOverflowDisclosureOptions
 >(function useCompositeOverflowDisclosure({ store, ...props }) {
@@ -109,4 +109,4 @@ export interface CompositeOverflowDisclosureOptions<
 }
 
 export type CompositeOverflowDisclosureProps<T extends ElementType = TagName> =
-  Props2<T, CompositeOverflowDisclosureOptions<T>>;
+  Props<T, CompositeOverflowDisclosureOptions<T>>;

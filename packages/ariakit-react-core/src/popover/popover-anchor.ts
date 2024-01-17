@@ -1,7 +1,7 @@
 import type { ElementType } from "react";
 import { useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { usePopoverProviderContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
@@ -19,7 +19,7 @@ type TagName = typeof TagName;
  * <Popover store={store}>Popover</Popover>
  * ```
  */
-export const usePopoverAnchor = createHook2<TagName, PopoverAnchorOptions>(
+export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
   function usePopoverAnchor({ store, ...props }) {
     const context = usePopoverProviderContext();
     store = store || context;
@@ -52,7 +52,7 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
 });
 
 export interface PopoverAnchorOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -63,7 +63,7 @@ export interface PopoverAnchorOptions<_T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverAnchorProps<T extends ElementType = TagName> = Props2<
+export type PopoverAnchorProps<T extends ElementType = TagName> = Props<
   T,
   PopoverAnchorOptions<T>
 >;

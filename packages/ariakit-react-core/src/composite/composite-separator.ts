@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { SeparatorOptions } from "../separator/separator.js";
 import { useSeparator } from "../separator/separator.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 
@@ -24,7 +24,7 @@ type TagName = typeof TagName;
  * </Composite>
  * ```
  */
-export const useCompositeSeparator = createHook2<
+export const useCompositeSeparator = createHook<
   TagName,
   CompositeSeparatorOptions
 >(function useCompositeSeparator({ store, ...props }) {
@@ -88,7 +88,7 @@ export interface CompositeSeparatorOptions<T extends ElementType = TagName>
   orientation?: SeparatorOptions<T>["orientation"];
 }
 
-export type CompositeSeparatorProps<T extends ElementType = TagName> = Props2<
+export type CompositeSeparatorProps<T extends ElementType = TagName> = Props<
   T,
   CompositeSeparatorOptions<T>
 >;

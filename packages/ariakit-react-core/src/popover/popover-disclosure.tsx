@@ -3,8 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { PopoverAnchorOptions } from "./popover-anchor.js";
 import { usePopoverAnchor } from "./popover-anchor.js";
 import {
@@ -27,7 +27,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Popover store={store}>Popover</Popover>
  * ```
  */
-export const usePopoverDisclosure = createHook2<
+export const usePopoverDisclosure = createHook<
   TagName,
   PopoverDisclosureOptions
 >(function usePopoverDisclosure({ store, ...props }) {
@@ -91,7 +91,7 @@ export interface PopoverDisclosureOptions<T extends ElementType = TagName>
   extends PopoverAnchorOptions<T>,
     Omit<DialogDisclosureOptions<T>, "store"> {}
 
-export type PopoverDisclosureProps<T extends ElementType = TagName> = Props2<
+export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   T,
   PopoverDisclosureOptions<T>
 >;

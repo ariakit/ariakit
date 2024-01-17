@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -25,7 +25,7 @@ type TagName = typeof TagName;
  * </Menu>
  * ```
  */
-export const useMenuGroup = createHook2<TagName, MenuGroupOptions>(
+export const useMenuGroup = createHook<TagName, MenuGroupOptions>(
   function useMenuGroup(props) {
     props = useCompositeGroup(props);
     return props;
@@ -69,7 +69,7 @@ export interface MenuGroupOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuGroupProps<T extends ElementType = TagName> = Props2<
+export type MenuGroupProps<T extends ElementType = TagName> = Props<
   T,
   MenuGroupOptions<T>
 >;

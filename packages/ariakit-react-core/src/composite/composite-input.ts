@@ -8,11 +8,11 @@ import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";
 
@@ -45,7 +45,7 @@ function getValueLength(element: HTMLElement) {
  * </Composite>
  * ```
  */
-export const useCompositeInput = createHook2<TagName, CompositeInputOptions>(
+export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
   function useCompositeInput({ store, ...props }) {
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
@@ -107,7 +107,7 @@ export const CompositeInput = memo(
 );
 
 export interface CompositeInputOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -119,7 +119,7 @@ export interface CompositeInputOptions<_T extends ElementType = TagName>
   store?: CompositeStore;
 }
 
-export type CompositeInputProps<T extends ElementType = TagName> = Props2<
+export type CompositeInputProps<T extends ElementType = TagName> = Props<
   T,
   CompositeInputOptions<T>
 >;

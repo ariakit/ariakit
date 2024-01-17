@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 
 const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;
@@ -14,7 +14,7 @@ type TagName = typeof TagName;
  * <Role {...props} />
  * ```
  */
-export const useSeparator = createHook2<TagName, SeparatorOptions>(
+export const useSeparator = createHook<TagName, SeparatorOptions>(
   function useSeparator({ orientation = "horizontal", ...props }) {
     props = {
       role: "separator",
@@ -39,7 +39,7 @@ export const Separator = forwardRef(function Separator(props: SeparatorProps) {
 });
 
 export interface SeparatorOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * The orientation of the separator.
    * @default "horizontal"
@@ -47,7 +47,7 @@ export interface SeparatorOptions<_T extends ElementType = TagName>
   orientation?: "horizontal" | "vertical";
 }
 
-export type SeparatorProps<T extends ElementType = TagName> = Props2<
+export type SeparatorProps<T extends ElementType = TagName> = Props<
   T,
   SeparatorOptions<T>
 >;

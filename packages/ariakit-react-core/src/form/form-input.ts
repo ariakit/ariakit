@@ -5,11 +5,11 @@ import { useFocusable } from "../focusable/focusable.js";
 import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
@@ -33,7 +33,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Form>
  * ```
  */
-export const useFormInput = createHook2<TagName, FormInputOptions>(
+export const useFormInput = createHook<TagName, FormInputOptions>(
   function useFormInput({ store, name: nameProp, ...props }) {
     const context = useFormContext();
     store = store || context;
@@ -99,7 +99,7 @@ export interface FormInputOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     FocusableOptions<T> {}
 
-export type FormInputProps<T extends ElementType = TagName> = Props2<
+export type FormInputProps<T extends ElementType = TagName> = Props<
   T,
   FormInputOptions<T>
 >;

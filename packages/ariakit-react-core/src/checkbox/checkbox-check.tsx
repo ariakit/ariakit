@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
 
@@ -45,7 +45,7 @@ function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
  * <Role {...props} />
  * ```
  */
-export const useCheckboxCheck = createHook2<TagName, CheckboxCheckOptions>(
+export const useCheckboxCheck = createHook<TagName, CheckboxCheckOptions>(
   function useCheckboxCheck({ store, checked, ...props }) {
     const context = useContext(CheckboxCheckedContext);
     checked = checked ?? context;
@@ -90,7 +90,7 @@ export const CheckboxCheck = forwardRef(function CheckboxCheck(
 });
 
 export interface CheckboxCheckOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
@@ -109,7 +109,7 @@ export interface CheckboxCheckOptions<_T extends ElementType = TagName>
   checked?: boolean;
 }
 
-export type CheckboxCheckProps<T extends ElementType = TagName> = Props2<
+export type CheckboxCheckProps<T extends ElementType = TagName> = Props<
   T,
   CheckboxCheckOptions<T>
 >;

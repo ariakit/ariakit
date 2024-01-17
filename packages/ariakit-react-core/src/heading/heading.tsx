@@ -1,8 +1,8 @@
 import { useContext, useMemo, useRef } from "react";
 import type { ElementType } from "react";
 import { useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Options, Props } from "../utils/types.js";
 import { HeadingContext } from "./heading-context.js";
 import type { HeadingLevels } from "./utils.js";
 
@@ -22,7 +22,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHeading = createHook2<TagName, HeadingOptions>(
+export const useHeading = createHook<TagName, HeadingOptions>(
   function useHeading(props) {
     const ref = useRef<HTMLType>(null);
     const level: HeadingLevels = useContext(HeadingContext) || 1;
@@ -67,9 +67,9 @@ export const Heading = forwardRef(function Heading(props: HeadingProps) {
 });
 
 export interface HeadingOptions<_T extends ElementType = TagName>
-  extends Options2 {}
+  extends Options {}
 
-export type HeadingProps<T extends ElementType = TagName> = Props2<
+export type HeadingProps<T extends ElementType = TagName> = Props<
   T,
   HeadingOptions<T>
 >;

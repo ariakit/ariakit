@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { SelectStore } from "./select-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -25,7 +25,7 @@ type TagName = typeof TagName;
  * </SelectPopover>
  * ```
  */
-export const useSelectGroup = createHook2<TagName, SelectGroupOptions>(
+export const useSelectGroup = createHook<TagName, SelectGroupOptions>(
   function useSelectGroup(props) {
     props = useCompositeGroup(props);
     return props;
@@ -72,7 +72,7 @@ export interface SelectGroupOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectGroupProps<T extends ElementType = TagName> = Props2<
+export type SelectGroupProps<T extends ElementType = TagName> = Props<
   T,
   SelectGroupOptions<T>
 >;

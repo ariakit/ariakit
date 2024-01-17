@@ -15,7 +15,7 @@ import type {
 } from "../composite/composite-renderer.js";
 import { useStoreState } from "../utils/store.js";
 import { createElement, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore, SelectStoreValue } from "./select-store.js";
 
@@ -153,4 +153,4 @@ export interface SelectRendererOptions<T extends Item = any>
 }
 
 export interface SelectRendererProps<T extends Item = any>
-  extends Props2<TagName, SelectRendererOptions<T>> {}
+  extends Props<TagName, SelectRendererOptions<T>> {}

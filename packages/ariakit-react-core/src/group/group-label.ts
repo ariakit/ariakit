@@ -2,8 +2,8 @@ import { useContext } from "react";
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { As, Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { GroupLabelContext } from "./group-label-context.js";
 
 const TagName = "div" satisfies ElementType;
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useGroupLabel = createHook2<TagName, GroupLabelOptions>(
+export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
   function useGroupLabel(props) {
     const setLabelId = useContext(GroupLabelContext);
     const id = useId(props.id);
@@ -60,9 +60,10 @@ export const GroupLabel = forwardRef(function GroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export type GroupLabelOptions<_T extends As = TagName> = Options2;
+export interface GroupLabelOptions<_T extends ElementType = TagName>
+  extends Options {}
 
-export type GroupLabelProps<T extends As = TagName> = Props2<
+export type GroupLabelProps<T extends ElementType = TagName> = Props<
   T,
   GroupLabelOptions<T>
 >;

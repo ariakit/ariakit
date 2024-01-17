@@ -3,11 +3,11 @@ import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -29,7 +29,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Select store={store} />
  * ```
  */
-export const useSelectLabel = createHook2<TagName, SelectLabelOptions>(
+export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
   function useSelectLabel({ store, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
@@ -98,7 +98,7 @@ export const SelectLabel = memo(
 );
 
 export interface SelectLabelOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
@@ -109,7 +109,7 @@ export interface SelectLabelOptions<_T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectLabelProps<T extends ElementType = TagName> = Props2<
+export type SelectLabelProps<T extends ElementType = TagName> = Props<
   T,
   SelectLabelOptions<T>
 >;

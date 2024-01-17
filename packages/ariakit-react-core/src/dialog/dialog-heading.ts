@@ -3,8 +3,8 @@ import type { ElementType } from "react";
 import type { HeadingOptions } from "../heading/heading.js";
 import { useHeading } from "../heading/heading.js";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { DialogHeadingContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
@@ -23,7 +23,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useDialogHeading = createHook2<TagName, DialogHeadingOptions>(
+export const useDialogHeading = createHook<TagName, DialogHeadingOptions>(
   function useDialogHeading({ store, ...props }) {
     const setHeadingId = useContext(DialogHeadingContext);
     const id = useId(props.id);
@@ -76,7 +76,7 @@ export interface DialogHeadingOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogHeadingProps<T extends ElementType = TagName> = Props2<
+export type DialogHeadingProps<T extends ElementType = TagName> = Props<
   T,
   DialogHeadingOptions<T>
 >;

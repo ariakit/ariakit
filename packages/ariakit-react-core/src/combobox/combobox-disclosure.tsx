@@ -3,8 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -47,7 +47,7 @@ const children = (
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxDisclosure = createHook2<
+export const useComboboxDisclosure = createHook<
   TagName,
   ComboboxDisclosureOptions
 >(function useComboboxDisclosure({ store, ...props }) {
@@ -141,7 +141,7 @@ export interface ComboboxDisclosureOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxDisclosureProps<T extends ElementType = TagName> = Props2<
+export type ComboboxDisclosureProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxDisclosureOptions<T>
 >;

@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
 import { usePopoverDismiss } from "../popover/popover-dismiss.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardScopedContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
@@ -21,15 +21,14 @@ type TagName = typeof TagName;
  * </Hovercard>
  * ```
  */
-export const useHovercardDismiss = createHook2<
-  TagName,
-  HovercardDismissOptions
->(function useHovercardDismiss({ store, ...props }) {
-  const context = useHovercardScopedContext();
-  store = store || context;
-  props = usePopoverDismiss({ store, ...props });
-  return props;
-});
+export const useHovercardDismiss = createHook<TagName, HovercardDismissOptions>(
+  function useHovercardDismiss({ store, ...props }) {
+    const context = useHovercardScopedContext();
+    store = store || context;
+    props = usePopoverDismiss({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a button that hides a
@@ -64,7 +63,7 @@ export interface HovercardDismissOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardDismissProps<T extends ElementType = TagName> = Props2<
+export type HovercardDismissProps<T extends ElementType = TagName> = Props<
   T,
   HovercardDismissOptions<T>
 >;

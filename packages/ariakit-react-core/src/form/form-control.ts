@@ -14,11 +14,11 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
@@ -68,7 +68,7 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * </Form>
  * ```
  */
-export const useFormControl = createHook2<TagName, FormControlOptions>(
+export const useFormControl = createHook<TagName, FormControlOptions>(
   ({
     store,
     name: nameProp,
@@ -218,7 +218,7 @@ export interface FormControlOptions<T extends ElementType = TagName>
   touchOnBlur?: BooleanOrCallback<FocusEvent>;
 }
 
-export type FormControlProps<T extends ElementType = TagName> = Props2<
+export type FormControlProps<T extends ElementType = TagName> = Props<
   T,
   FormControlOptions<T>
 >;

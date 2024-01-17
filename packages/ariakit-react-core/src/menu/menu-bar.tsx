@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -27,7 +27,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useMenuBar = createHook2<TagName, MenuBarOptions>(
+export const useMenuBar = createHook<TagName, MenuBarOptions>(
   function useMenuBar(props) {
     return useMenubar(props);
   },
@@ -68,7 +68,7 @@ export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
 export interface MenuBarOptions<T extends ElementType = TagName>
   extends MenubarOptions<T> {}
 
-export type MenuBarProps<T extends ElementType = TagName> = Props2<
+export type MenuBarProps<T extends ElementType = TagName> = Props<
   T,
   MenuBarOptions<T>
 >;

@@ -16,11 +16,11 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { As, Options2, Props2 } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 
@@ -69,7 +69,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  * <CompositeItem store={store} {...props}>Item</CompositeItem>
  * ```
  */
-export const useCompositeHover = createHook2<TagName, CompositeHoverOptions>(
+export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
   function useCompositeHover({
     store,
     focusOnHover = true,
@@ -171,7 +171,7 @@ export const CompositeHover = memo(
 );
 
 export interface CompositeHoverOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -220,7 +220,7 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type CompositeHoverProps<T extends As = TagName> = Props2<
+export type CompositeHoverProps<T extends ElementType = TagName> = Props<
   T,
   CompositeHoverOptions<T>
 >;

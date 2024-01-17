@@ -16,7 +16,7 @@ import type { CollectionStoreItem } from "../collection/collection-store.js";
 import { useId } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
 
@@ -232,4 +232,4 @@ export interface CompositeRendererOptions<T extends Item = any>
 }
 
 export interface CompositeRendererProps<T extends Item = any>
-  extends Props2<TagName, CompositeRendererOptions<T>> {}
+  extends Props<TagName, CompositeRendererOptions<T>> {}

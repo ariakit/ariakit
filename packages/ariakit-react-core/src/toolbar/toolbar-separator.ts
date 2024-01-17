@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
 
@@ -23,15 +23,14 @@ type TagName = typeof TagName;
  * </Toolbar>
  * ```
  */
-export const useToolbarSeparator = createHook2<
-  TagName,
-  ToolbarSeparatorOptions
->(function useToolbarSeparator({ store, ...props }) {
-  const context = useToolbarContext();
-  store = store || context;
-  props = useCompositeSeparator({ store, ...props });
-  return props;
-});
+export const useToolbarSeparator = createHook<TagName, ToolbarSeparatorOptions>(
+  function useToolbarSeparator({ store, ...props }) {
+    const context = useToolbarContext();
+    store = store || context;
+    props = useCompositeSeparator({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a divider between
@@ -65,7 +64,7 @@ export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
   store?: ToolbarStore;
 }
 
-export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props2<
+export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<
   T,
   ToolbarSeparatorOptions<T>
 >;

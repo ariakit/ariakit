@@ -25,8 +25,8 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   CompositeContextProvider,
   useCompositeProviderContext,
@@ -133,7 +133,7 @@ function useScheduleFocus(store: CompositeStore) {
  * </Role>
  * ```
  */
-export const useComposite = createHook2<TagName, CompositeOptions>(
+export const useComposite = createHook<TagName, CompositeOptions>(
   function useComposite({
     store,
     composite = true,
@@ -546,7 +546,7 @@ export interface CompositeOptions<T extends ElementType = TagName>
   focusOnMove?: boolean;
 }
 
-export type CompositeProps<T extends ElementType = TagName> = Props2<
+export type CompositeProps<T extends ElementType = TagName> = Props<
   T,
   CompositeOptions<T>
 >;

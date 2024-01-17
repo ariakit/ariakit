@@ -10,8 +10,8 @@ import {
   useUpdateEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FormScopedContextProvider, useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
@@ -43,7 +43,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
  * <Role {...props} />
  * ```
  */
-export const useForm = createHook2<TagName, FormOptions>(function useForm({
+export const useForm = createHook<TagName, FormOptions>(function useForm({
   store,
   validateOnChange = true,
   validateOnBlur = true,
@@ -191,8 +191,7 @@ export const Form = forwardRef(function Form(props: FormProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormOptions<_T extends ElementType = TagName>
-  extends Options2 {
+export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
@@ -241,7 +240,7 @@ export interface FormOptions<_T extends ElementType = TagName>
   autoFocusOnSubmit?: boolean;
 }
 
-export type FormProps<T extends ElementType = TagName> = Props2<
+export type FormProps<T extends ElementType = TagName> = Props<
   T,
   FormOptions<T>
 >;

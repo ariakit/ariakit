@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -25,7 +25,7 @@ type TagName = typeof TagName;
  * </SelectPopover>
  * ```
  */
-export const useSelectSeparator = createHook2<TagName, SelectSeparatorOptions>(
+export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
   function useSelectSeparator({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
@@ -73,7 +73,7 @@ export interface SelectSeparatorOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectSeparatorProps<T extends ElementType = TagName> = Props2<
+export type SelectSeparatorProps<T extends ElementType = TagName> = Props<
   T,
   SelectSeparatorOptions<T>
 >;

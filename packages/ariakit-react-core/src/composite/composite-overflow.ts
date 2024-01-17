@@ -2,8 +2,8 @@ import type { CSSProperties, ElementType, FocusEvent } from "react";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { CompositeOverflowStore } from "./composite-overflow-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -30,7 +30,7 @@ const hiddenStyle: CSSProperties = {
  * </Role>
  * ```
  */
-export const useCompositeOverflow = createHook2<
+export const useCompositeOverflow = createHook<
   TagName,
   CompositeOverflowOptions
 >(function useCompositeOverflow({
@@ -119,7 +119,7 @@ export interface CompositeOverflowOptions<T extends ElementType = TagName>
   store: CompositeOverflowStore;
 }
 
-export type CompositeOverflowProps<T extends ElementType = TagName> = Props2<
+export type CompositeOverflowProps<T extends ElementType = TagName> = Props<
   T,
   CompositeOverflowOptions<T>
 >;

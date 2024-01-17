@@ -5,8 +5,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
 
@@ -66,7 +66,7 @@ function findPushButton(
  * </Form>
  * ```
  */
-export const useFormRemove = createHook2<TagName, FormRemoveOptions>(
+export const useFormRemove = createHook<TagName, FormRemoveOptions>(
   function useFormRemove({
     store,
     name: nameProp,
@@ -188,7 +188,7 @@ export interface FormRemoveOptions<T extends ElementType = TagName>
   autoFocusOnClick?: boolean;
 }
 
-export type FormRemoveProps<T extends ElementType = TagName> = Props2<
+export type FormRemoveProps<T extends ElementType = TagName> = Props<
   T,
   FormRemoveOptions<T>
 >;

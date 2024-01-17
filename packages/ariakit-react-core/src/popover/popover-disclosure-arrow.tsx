@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
 
@@ -30,7 +30,7 @@ const pointsMap = {
  * </PopoverDisclosure>
  * ```
  */
-export const usePopoverDisclosureArrow = createHook2<
+export const usePopoverDisclosureArrow = createHook<
   TagName,
   PopoverDisclosureArrowOptions
 >(function usePopoverDisclosureArrow({ store, placement, ...props }) {
@@ -106,7 +106,7 @@ export const PopoverDisclosureArrow = forwardRef(
 );
 
 export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -127,4 +127,4 @@ export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
 }
 
 export type PopoverDisclosureArrowProps<T extends ElementType = TagName> =
-  Props2<T, PopoverDisclosureArrowOptions<T>>;
+  Props<T, PopoverDisclosureArrowOptions<T>>;

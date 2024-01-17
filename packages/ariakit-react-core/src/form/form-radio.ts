@@ -5,11 +5,11 @@ import { useRadio } from "../radio/radio.js";
 import { useEvent } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
@@ -36,7 +36,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormRadio = createHook2<TagName, FormRadioOptions>(
+export const useFormRadio = createHook<TagName, FormRadioOptions>(
   function useFormRadio({ store, name: nameProp, value, ...props }) {
     const context = useFormContext();
     store = store || context;
@@ -115,7 +115,7 @@ export interface FormRadioOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<RadioOptions<T>, "store" | "name"> {}
 
-export type FormRadioProps<T extends ElementType = TagName> = Props2<
+export type FormRadioProps<T extends ElementType = TagName> = Props<
   T,
   FormRadioOptions<T>
 >;

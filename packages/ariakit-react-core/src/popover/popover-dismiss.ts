@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { usePopoverScopedContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  * </Popover>
  * ```
  */
-export const usePopoverDismiss = createHook2<TagName, PopoverDismissOptions>(
+export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
   function usePopoverDismiss({ store, ...props }) {
     const context = usePopoverScopedContext();
     store = store || context;
@@ -63,7 +63,7 @@ export interface PopoverDismissOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverDismissProps<T extends ElementType = TagName> = Props2<
+export type PopoverDismissProps<T extends ElementType = TagName> = Props<
   T,
   PopoverDismissOptions<T>
 >;

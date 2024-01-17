@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   CompositeRowContext,
   useCompositeContext,
@@ -31,7 +31,7 @@ type TagName = typeof TagName;
  * </Composite>
  * ```
  */
-export const useCompositeRow = createHook2<TagName, CompositeRowOptions>(
+export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
   function useCompositeRow({
     store,
     "aria-setsize": ariaSetSize,
@@ -107,7 +107,7 @@ export const CompositeRow = forwardRef(function CompositeRow(
 });
 
 export interface CompositeRowOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -119,7 +119,7 @@ export interface CompositeRowOptions<_T extends ElementType = TagName>
   store?: CompositeStore;
 }
 
-export type CompositeRowProps<T extends ElementType = TagName> = Props2<
+export type CompositeRowProps<T extends ElementType = TagName> = Props<
   T,
   CompositeRowOptions<T>
 >;

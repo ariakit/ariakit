@@ -3,8 +3,8 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { DisclosureOptions } from "../disclosure/disclosure.js";
 import { useDisclosure } from "../disclosure/disclosure.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useDialogProviderContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
@@ -22,30 +22,29 @@ type TagName = typeof TagName;
  * <Dialog store={store}>Content</Dialog>
  * ```
  */
-export const useDialogDisclosure = createHook2<
-  TagName,
-  DialogDisclosureOptions
->(function useDialogDisclosure({ store, ...props }) {
-  const context = useDialogProviderContext();
-  store = store || context;
+export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
+  function useDialogDisclosure({ store, ...props }) {
+    const context = useDialogProviderContext();
+    store = store || context;
 
-  invariant(
-    store,
-    process.env.NODE_ENV !== "production" &&
-      "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
-  );
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
+    );
 
-  const contentElement = store.useState("contentElement");
+    const contentElement = store.useState("contentElement");
 
-  props = {
-    "aria-haspopup": getPopupRole(contentElement, "dialog"),
-    ...props,
-  };
+    props = {
+      "aria-haspopup": getPopupRole(contentElement, "dialog"),
+      ...props,
+    };
 
-  props = useDisclosure({ store, ...props });
+    props = useDisclosure({ store, ...props });
 
-  return props;
-});
+    return props;
+  },
+);
 
 /**
  * Renders a button that toggles the visibility of a
@@ -78,7 +77,7 @@ export interface DialogDisclosureOptions<T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogDisclosureProps<T extends ElementType = TagName> = Props2<
+export type DialogDisclosureProps<T extends ElementType = TagName> = Props<
   T,
   DialogDisclosureOptions<T>
 >;

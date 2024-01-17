@@ -22,11 +22,11 @@ import {
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useRadioContext } from "./radio-context.js";
 import type { RadioStore, RadioStoreState } from "./radio-store.js";
 
@@ -62,7 +62,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  * </RadioGroup>
  * ```
  */
-export const useRadio = createHook2<TagName, RadioOptions>(function useRadio({
+export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   store,
   name,
   value,
@@ -234,7 +234,7 @@ export interface RadioOptions<T extends ElementType = TagName>
   onChange?: BivariantCallback<(event: SyntheticEvent<HTMLType>) => void>;
 }
 
-export type RadioProps<T extends ElementType = TagName> = Props2<
+export type RadioProps<T extends ElementType = TagName> = Props<
   T,
   RadioOptions<T>
 >;

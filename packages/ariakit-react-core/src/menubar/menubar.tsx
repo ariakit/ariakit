@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   MenubarScopedContextProvider,
   useMenubarProviderContext,
@@ -34,7 +34,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useMenubar = createHook2<TagName, MenubarOptions>(
+export const useMenubar = createHook<TagName, MenubarOptions>(
   function useMenubar({
     store: storeProp,
     composite = true,
@@ -133,7 +133,7 @@ export interface MenubarOptions<T extends ElementType = TagName>
   store?: MenubarStore;
 }
 
-export type MenubarProps<T extends ElementType = TagName> = Props2<
+export type MenubarProps<T extends ElementType = TagName> = Props<
   T,
   MenubarOptions<T>
 >;

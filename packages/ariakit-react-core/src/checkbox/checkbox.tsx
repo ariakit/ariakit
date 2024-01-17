@@ -19,8 +19,8 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
 import { useCheckboxContext } from "./checkbox-context.js";
 import type { CheckboxStore } from "./checkbox-store.js";
@@ -59,7 +59,7 @@ function getPrimitiveValue<T>(value: T) {
  * <Role {...props}>Accessible checkbox</Role>
  * ```
  */
-export const useCheckbox = createHook2<TagName, CheckboxOptions>(
+export const useCheckbox = createHook<TagName, CheckboxOptions>(
   function useCheckbox({
     store,
     name,
@@ -265,7 +265,7 @@ export interface CheckboxOptions<T extends ElementType = TagName>
   onChange?: ComponentPropsWithoutRef<TagName>["onChange"];
 }
 
-export type CheckboxProps<T extends ElementType = TagName> = Props2<
+export type CheckboxProps<T extends ElementType = TagName> = Props<
   T,
   CheckboxOptions<T>
 >;

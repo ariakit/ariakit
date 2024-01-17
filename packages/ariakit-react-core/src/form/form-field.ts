@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormControl } from "./form-control.js";
 import type { FormControlOptions } from "./form-control.js";
 
@@ -36,7 +36,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormField = createHook2<TagName, FormFieldOptions>(
+export const useFormField = createHook<TagName, FormFieldOptions>(
   function useFormField(props) {
     return useFormControl(props);
   },
@@ -87,7 +87,7 @@ export const FormField = memo(
 export interface FormFieldOptions<T extends ElementType = TagName>
   extends FormControlOptions<T> {}
 
-export type FormFieldProps<T extends ElementType = TagName> = Props2<
+export type FormFieldProps<T extends ElementType = TagName> = Props<
   T,
   FormFieldOptions<T>
 >;

@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   ToolbarScopedContextProvider,
   useToolbarProviderContext,
@@ -27,7 +27,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useToolbar = createHook2<TagName, ToolbarOptions>(
+export const useToolbar = createHook<TagName, ToolbarOptions>(
   function useToolbar({
     store: storeProp,
     orientation: orientationProp,
@@ -107,7 +107,7 @@ export interface ToolbarOptions<T extends ElementType = TagName>
   store?: ToolbarStore;
 }
 
-export type ToolbarProps<T extends ElementType = TagName> = Props2<
+export type ToolbarProps<T extends ElementType = TagName> = Props<
   T,
   ToolbarOptions<T>
 >;

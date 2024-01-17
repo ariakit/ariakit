@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
 import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
 const TagName = "h1" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useMenuHeading = createHook2<TagName, MenuHeadingOptions>(
+export const useMenuHeading = createHook<TagName, MenuHeadingOptions>(
   function useMenuHeading(props) {
     props = useHovercardHeading(props);
     return props;
@@ -60,7 +60,7 @@ export interface MenuHeadingOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuHeadingProps<T extends ElementType = TagName> = Props2<
+export type MenuHeadingProps<T extends ElementType = TagName> = Props<
   T,
   MenuHeadingOptions<T>
 >;

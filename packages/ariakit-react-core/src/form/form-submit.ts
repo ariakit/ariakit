@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
@@ -22,7 +22,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormSubmit = createHook2<TagName, FormSubmitOptions>(
+export const useFormSubmit = createHook<TagName, FormSubmitOptions>(
   function useFormSubmit({ store, accessibleWhenDisabled = true, ...props }) {
     const context = useFormContext();
     store = store || context;
@@ -85,7 +85,7 @@ export interface FormSubmitOptions<T extends ElementType = TagName>
   accessibleWhenDisabled?: ButtonOptions<T>["accessibleWhenDisabled"];
 }
 
-export type FormSubmitProps<T extends ElementType = TagName> = Props2<
+export type FormSubmitProps<T extends ElementType = TagName> = Props<
   T,
   FormSubmitOptions<T>
 >;

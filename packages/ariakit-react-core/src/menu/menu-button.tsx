@@ -16,8 +16,8 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
@@ -61,7 +61,7 @@ function hasActiveItem(
  * </Menu>
  * ```
  */
-export const useMenuButton = createHook2<TagName, MenuButtonOptions>(
+export const useMenuButton = createHook<TagName, MenuButtonOptions>(
   function useMenuButton({
     store,
     focusable,
@@ -303,7 +303,7 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
   typeahead?: boolean;
 }
 
-export type MenuButtonProps<T extends ElementType = TagName> = Props2<
+export type MenuButtonProps<T extends ElementType = TagName> = Props<
   T,
   MenuButtonOptions<T>
 >;

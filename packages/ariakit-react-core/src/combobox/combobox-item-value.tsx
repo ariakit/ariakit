@@ -5,8 +5,8 @@ import {
   normalizeString,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   ComboboxItemValueContext,
   useComboboxScopedContext,
@@ -71,7 +71,7 @@ function splitValue(itemValue: string, userValue: string) {
  * </span>
  * ```
  */
-export const useComboboxItemValue = createHook2<
+export const useComboboxItemValue = createHook<
   TagName,
   ComboboxItemValueOptions
 >(function useComboboxItemValue({ store, value, ...props }) {
@@ -142,7 +142,7 @@ export const ComboboxItemValue = forwardRef(function ComboboxItemValue(
 });
 
 export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
@@ -161,7 +161,7 @@ export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
   value?: string;
 }
 
-export type ComboboxItemValueProps<T extends ElementType = TagName> = Props2<
+export type ComboboxItemValueProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxItemValueOptions<T>
 >;

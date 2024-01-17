@@ -3,11 +3,11 @@ import type { CompositeContainerOptions } from "../composite/composite-container
 import { useCompositeContainer } from "../composite/composite-container.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarItemOptions } from "./toolbar-item.js";
 import { useToolbarItem } from "./toolbar-item.js";
@@ -29,16 +29,15 @@ type TagName = typeof TagName;
  * </Toolbar>
  * ```
  */
-export const useToolbarContainer = createHook2<
-  TagName,
-  ToolbarContainerOptions
->(function useToolbarContainer({ store, ...props }) {
-  const context = useToolbarContext();
-  store = store || context;
-  props = useCompositeContainer({ store, ...props });
-  props = useToolbarItem<TagName>({ store, ...props });
-  return props;
-});
+export const useToolbarContainer = createHook<TagName, ToolbarContainerOptions>(
+  function useToolbarContainer({ store, ...props }) {
+    const context = useToolbarContext();
+    store = store || context;
+    props = useCompositeContainer({ store, ...props });
+    props = useToolbarItem<TagName>({ store, ...props });
+    return props;
+  },
+);
 
 /**
  * Renders a toolbar item that may contain interactive widgets inside.
@@ -63,7 +62,7 @@ export interface ToolbarContainerOptions<T extends ElementType = TagName>
   extends ToolbarItemOptions<T>,
     Omit<CompositeContainerOptions<T>, "store"> {}
 
-export type ToolbarContainerProps<T extends ElementType = TagName> = Props2<
+export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
   T,
   ToolbarContainerOptions<T>
 >;

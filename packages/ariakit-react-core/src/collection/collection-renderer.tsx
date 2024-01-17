@@ -32,7 +32,7 @@ import {
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.jsx";
 import { createElement, forwardRef } from "../utils/system.jsx";
-import type { Options2, Props2 } from "../utils/types.js";
+import type { Options, Props } from "../utils/types.js";
 import { useCollectionContext } from "./collection-context.js";
 import type {
   CollectionStore,
@@ -861,7 +861,7 @@ export type CollectionRendererItemProps<
 > = ItemProps<T, P>;
 
 export interface CollectionRendererOptions<T extends Item = any>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -984,4 +984,4 @@ export interface CollectionRendererOptions<T extends Item = any>
 }
 
 export interface CollectionRendererProps<T extends Item = any>
-  extends Props2<TagName, CollectionRendererOptions<T>> {}
+  extends Props<TagName, CollectionRendererOptions<T>> {}

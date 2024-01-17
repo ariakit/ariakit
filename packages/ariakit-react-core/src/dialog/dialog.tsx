@@ -48,8 +48,8 @@ import {
   useWrapElement,
 } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { DialogBackdrop } from "./dialog-backdrop.js";
 import {
   DialogDescriptionContext,
@@ -102,445 +102,443 @@ function getElementFromProp(
  * <Role {...props}>Dialog</Role>
  * ```
  */
-export const useDialog = createHook2<TagName, DialogOptions>(
-  function useDialog({
-    store: storeProp,
+export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
+  store: storeProp,
+  open: openProp,
+  onClose,
+  focusable = true,
+  modal = true,
+  portal = !!modal,
+  backdrop = !!modal,
+  backdropProps,
+  hideOnEscape = true,
+  hideOnInteractOutside = true,
+  getPersistentElements,
+  preventBodyScroll = !!modal,
+  autoFocusOnShow = true,
+  autoFocusOnHide = true,
+  initialFocus,
+  finalFocus,
+  unmountOnHide,
+  ...props
+}) {
+  const context = useDialogProviderContext();
+  const ref = useRef<HTMLType>(null);
+
+  const store = useDialogStore({
+    store: storeProp || context,
     open: openProp,
-    onClose,
-    focusable = true,
-    modal = true,
-    portal = !!modal,
-    backdrop = !!modal,
-    backdropProps,
-    hideOnEscape = true,
-    hideOnInteractOutside = true,
-    getPersistentElements,
-    preventBodyScroll = !!modal,
-    autoFocusOnShow = true,
-    autoFocusOnHide = true,
-    initialFocus,
-    finalFocus,
-    unmountOnHide,
-    ...props
-  }) {
-    const context = useDialogProviderContext();
-    const ref = useRef<HTMLType>(null);
-
-    const store = useDialogStore({
-      store: storeProp || context,
-      open: openProp,
-      setOpen(open) {
-        if (open) return;
-        const dialog = ref.current;
-        if (!dialog) return;
-        const event = new Event("close", { bubbles: false, cancelable: true });
-        if (onClose) {
-          dialog.addEventListener("close", onClose, { once: true });
-        }
-        dialog.dispatchEvent(event);
-        if (!event.defaultPrevented) return;
-        store.setOpen(true);
-      },
-    });
-
-    // domReady can be also the portal node element so it's updated when the
-    // portal node changes (like in between re-renders), triggering effects
-    // again.
-    const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
-    // Sets preserveTabOrder to true only if the dialog is not a modal and is
-    // open.
-    const preserveTabOrderProp = props.preserveTabOrder;
-    const preserveTabOrder = store.useState(
-      (state) => preserveTabOrderProp && !modal && state.mounted,
-    );
-    const id = useId(props.id);
-    const open = store.useState("open");
-    const mounted = store.useState("mounted");
-    const contentElement = store.useState("contentElement");
-    const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
-
-    usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
-    useHideOnInteractOutside(store, hideOnInteractOutside, domReady);
-
-    const { wrapElement, nestedDialogs } = useNestedDialogs(store);
-    props = useWrapElement(props, wrapElement, [wrapElement]);
-
-    if (process.env.NODE_ENV !== "production") {
-      useEffect(() => {
-        if (!backdropProps) return;
-        console.warn(
-          "The `backdropProps` prop is deprecated. Use the `backdrop` prop instead.",
-          "See https://ariakit.org/reference/dialog#backdrop",
-        );
-      }, [backdropProps]);
-    }
-
-    // Sets disclosure element using the current active element right after the
-    // dialog is opened.
-    useSafeLayoutEffect(() => {
-      if (!open) return;
-      const dialog = ref.current;
-      const activeElement = getActiveElement(dialog, true);
-      if (!activeElement) return;
-      if (activeElement.tagName === "BODY") return;
-      // The disclosure element can't be inside the dialog.
-      if (dialog && contains(dialog, activeElement)) return;
-      store.setDisclosureElement(activeElement);
-    }, [store, open]);
-
-    // Safari does not focus on native buttons on mousedown. The
-    // DialogDisclosure component normalizes this behavior using the
-    // useFocusable hook, but the disclosure button may use a custom component,
-    // and not DialogDisclosure. In this case, we need to make sure the
-    // disclosure button gets focused here.
-    if (isSafariBrowser) {
-      useEffect(() => {
-        if (!mounted) return;
-        const { disclosureElement } = store.getState();
-        if (!disclosureElement) return;
-        if (!isButton(disclosureElement)) return;
-        const onMouseDown = () => {
-          let receivedFocus = false;
-          const onFocus = () => {
-            receivedFocus = true;
-          };
-          const options = { capture: true, once: true };
-          disclosureElement.addEventListener("focusin", onFocus, options);
-          queueBeforeEvent(disclosureElement, "mouseup", () => {
-            disclosureElement.removeEventListener("focusin", onFocus, true);
-            if (receivedFocus) return;
-            focusIfNeeded(disclosureElement);
-          });
-        };
-        disclosureElement.addEventListener("mousedown", onMouseDown);
-        return () => {
-          disclosureElement.removeEventListener("mousedown", onMouseDown);
-        };
-      }, [store, mounted]);
-    }
-
-    // Renders a hidden dismiss button at the top of the modal dialog element.
-    // So that screen reader users aren't trapped in the dialog when there's no
-    // visible dismiss button.
-    useEffect(() => {
-      if (!modal) return;
-      if (!mounted) return;
-      if (!domReady) return;
-      const dialog = ref.current;
-      if (!dialog) return;
-      // If there's already a DialogDismiss component, it does nothing.
-      const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
-      if (existingDismiss) return;
-      return prependHiddenDismiss(dialog, store.hide);
-    }, [store, modal, mounted, domReady]);
-
-    // When the dialog is animated, the open state will be false and the mounted
-    // state will be true. The dialog will still be visible until the animation
-    // is complete. We need to disable the dialog tree completely in this case.
-    // TODO: We should probably do this in a more generic way in the
-    // DisclosureContent component.
-    useSafeLayoutEffect(() => {
+    setOpen(open) {
       if (open) return;
-      if (!mounted) return;
-      if (!domReady) return;
       const dialog = ref.current;
       if (!dialog) return;
-      return disableTree(dialog);
-    }, [open, mounted, domReady]);
-
-    const canTakeTreeSnapshot = open && domReady;
-
-    useSafeLayoutEffect(() => {
-      if (!id) return;
-      if (!canTakeTreeSnapshot) return;
-      const dialog = ref.current;
-      // When the dialog opens, we capture a snapshot of the document. This
-      // snapshot is then used to disable elements outside the dialog in the
-      // subsequent effect. However, the issue arises as this next effect also
-      // relies on nested dialogs. Meaning, each time a nested dialog is
-      // rendered, we capture a new document snapshot, which might disable
-      // third-party dialogs. Hence, we take the snapshot here, independent of
-      // any nested dialogs.
-      return createWalkTreeSnapshot(id, [dialog]);
-    }, [id, canTakeTreeSnapshot]);
-
-    const getPersistentElementsProp = useEvent(getPersistentElements);
-
-    // Disables/enables the element tree around the modal dialog element.
-    useSafeLayoutEffect(() => {
-      if (!id) return;
-      if (!canTakeTreeSnapshot) return;
-      const { disclosureElement } = store.getState();
-      const dialog = ref.current;
-      const persistentElements = getPersistentElementsProp() || [];
-      const allElements = [
-        dialog,
-        ...persistentElements,
-        ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
-      ];
-      if (modal) {
-        return chain(
-          markTreeOutside(id, allElements),
-          disableTreeOutside(id, allElements),
-        );
+      const event = new Event("close", { bubbles: false, cancelable: true });
+      if (onClose) {
+        dialog.addEventListener("close", onClose, { once: true });
       }
-      return markTreeOutside(id, [disclosureElement, ...allElements]);
-    }, [
-      id,
-      store,
-      canTakeTreeSnapshot,
-      getPersistentElementsProp,
-      nestedDialogs,
-      modal,
-    ]);
+      dialog.dispatchEvent(event);
+      if (!event.defaultPrevented) return;
+      store.setOpen(true);
+    },
+  });
 
-    const mayAutoFocusOnShow = !!autoFocusOnShow;
-    const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
-    // We have to wait for the dialog to be mounted before allowing focusable
-    // elements to be auto focused. Otherwise, there could be unintended scroll
-    // jumps. See select-animated browser tests.
-    const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
+  // domReady can be also the portal node element so it's updated when the
+  // portal node changes (like in between re-renders), triggering effects
+  // again.
+  const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
+  // Sets preserveTabOrder to true only if the dialog is not a modal and is
+  // open.
+  const preserveTabOrderProp = props.preserveTabOrder;
+  const preserveTabOrder = store.useState(
+    (state) => preserveTabOrderProp && !modal && state.mounted,
+  );
+  const id = useId(props.id);
+  const open = store.useState("open");
+  const mounted = store.useState("mounted");
+  const contentElement = store.useState("contentElement");
+  const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
-    // Auto focus on show.
+  usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
+  useHideOnInteractOutside(store, hideOnInteractOutside, domReady);
+
+  const { wrapElement, nestedDialogs } = useNestedDialogs(store);
+  props = useWrapElement(props, wrapElement, [wrapElement]);
+
+  if (process.env.NODE_ENV !== "production") {
     useEffect(() => {
-      if (!open) return;
-      if (!mayAutoFocusOnShow) return;
-      // Makes sure to wait for the portalNode to be created before moving
-      // focus. This is useful for when the Dialog component is unmounted when
-      // hidden.
-      if (!domReady) return;
-      // The dialog element may change for different reasons. For example, when
-      // the modal or portal props change, the HTML structure will also change,
-      // which will affect the dialog element reference. That's why we're
-      // listening to contentElement state here instead of getting the
-      // ref.current value. This ensures this effect will re-run when the dialog
-      // element reference changes.
-      if (!contentElement?.isConnected) return;
-      const element =
-        getElementFromProp(initialFocus, true) ||
-        // If no initial focus is specified, we try to focus the first element
-        // with the autofocus attribute. If it's an Ariakit component, the
-        // Focusable component will consume the autoFocus prop and add the
-        // data-autofocus attribute to the element instead.
-        contentElement.querySelector<HTMLElement>(
-          "[data-autofocus=true],[autofocus]",
-        ) ||
-        // We have to fallback to the first focusable element otherwise portaled
-        // dialogs with preserveTabOrder set to true will not receive focus
-        // properly because the elements aren't tabbable until the dialog
-        // receives focus.
-        getFirstTabbableIn(contentElement, true, portal && preserveTabOrder) ||
-        // Finally, we fallback to the dialog element itself.
-        contentElement;
-      const isElementFocusable = isFocusable(element);
-      if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
-      setAutoFocusEnabled(true);
-      queueMicrotask(() => {
-        element.focus();
-        // Safari doesn't scroll to the element on focus, so we have to do it
-        // manually here.
-        if (!isSafariBrowser) return;
-        element.scrollIntoView({ block: "nearest", inline: "nearest" });
-      });
-    }, [
-      open,
-      mayAutoFocusOnShow,
-      domReady,
-      contentElement,
-      initialFocus,
-      portal,
-      preserveTabOrder,
-      autoFocusOnShowProp,
-    ]);
+      if (!backdropProps) return;
+      console.warn(
+        "The `backdropProps` prop is deprecated. Use the `backdrop` prop instead.",
+        "See https://ariakit.org/reference/dialog#backdrop",
+      );
+    }, [backdropProps]);
+  }
 
-    const mayAutoFocusOnHide = !!autoFocusOnHide;
-    const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
+  // Sets disclosure element using the current active element right after the
+  // dialog is opened.
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    const dialog = ref.current;
+    const activeElement = getActiveElement(dialog, true);
+    if (!activeElement) return;
+    if (activeElement.tagName === "BODY") return;
+    // The disclosure element can't be inside the dialog.
+    if (dialog && contains(dialog, activeElement)) return;
+    store.setDisclosureElement(activeElement);
+  }, [store, open]);
 
-    // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
-    // dialog was open before.
-    const [hasOpened, setHasOpened] = useState(false);
-
+  // Safari does not focus on native buttons on mousedown. The
+  // DialogDisclosure component normalizes this behavior using the
+  // useFocusable hook, but the disclosure button may use a custom component,
+  // and not DialogDisclosure. In this case, we need to make sure the
+  // disclosure button gets focused here.
+  if (isSafariBrowser) {
     useEffect(() => {
-      if (!open) return;
-      setHasOpened(true);
-      return () => setHasOpened(false);
-    }, [open]);
-
-    const focusOnHide = useCallback(
-      (dialog: HTMLElement | null, retry = true) => {
-        const { disclosureElement } = store.getState();
-        // Hide was triggered by a click/focus on a tabbable element outside the
-        // dialog. We won't change focus then.
-        if (isAlreadyFocusingAnotherElement(dialog)) return;
-        let element = getElementFromProp(finalFocus) || disclosureElement;
-        if (element?.id) {
-          const doc = getDocument(element);
-          const selector = `[aria-activedescendant="${element.id}"]`;
-          const composite = doc.querySelector<HTMLElement>(selector);
-          // If the element is an item in a composite widget that handles focus
-          // with the `aria-activedescendant` attribute, we want to focus on the
-          // composite element itself.
-          if (composite) {
-            element = composite;
-          }
-        }
-        // If the element is not focusable by the time the dialog is hidden,
-        // it's probably because it's an element inside another popover or menu
-        // that also got hidden when this dialog was shown. We'll try to focus
-        // on their disclosure element instead.
-        if (element && !isFocusable(element)) {
-          const maybeParentDialog = closest(element, "[data-dialog]");
-          if (maybeParentDialog && maybeParentDialog.id) {
-            const doc = getDocument(maybeParentDialog);
-            const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
-            const control = doc.querySelector<HTMLElement>(selector);
-            if (control) {
-              element = control;
-            }
-          }
-        }
-        const isElementFocusable = element && isFocusable(element);
-        if (!isElementFocusable && retry) {
-          // If the element is still not focusable by this time, we retry once
-          // again on the next frame. This is sometimes necessary because there
-          // may be nested dialogs that still need a tick to remove the inert
-          // attribute from elements outside.
-          requestAnimationFrame(() => focusOnHide(dialog, false));
-          return;
-        }
-        if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
-        if (!isElementFocusable) return;
-        element?.focus();
-      },
-      [store, finalFocus, autoFocusOnHideProp],
-    );
-
-    // Auto focus on hide with an always rendered dialog.
-    useSafeLayoutEffect(() => {
-      if (open) return;
-      if (!hasOpened) return;
-      if (!mayAutoFocusOnHide) return;
-      const dialog = ref.current;
-      focusOnHide(dialog);
-    }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
-
-    // Auto focus on hide with a dialog that gets unmounted when hidden.
-    useEffect(() => {
-      if (!hasOpened) return;
-      if (!mayAutoFocusOnHide) return;
-      const dialog = ref.current;
-      return () => focusOnHide(dialog);
-    }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
-
-    const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-
-    // Hide on Escape.
-    useEffect(() => {
-      if (!domReady) return;
       if (!mounted) return;
-      const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key !== "Escape") return;
-        if (event.defaultPrevented) return;
-        const dialog = ref.current;
-        if (!dialog) return;
-        // Ignore the event if the current dialog is marked by another dialog.
-        // This guarantees that only the topmost dialog will close on Escape.
-        if (isElementMarked(dialog)) return;
-        const target = event.target as Element | null;
-        if (!target) return;
-        const { disclosureElement } = store.getState();
-        // This considers valid targets only the disclosure element or
-        // descendants of the dialog element.
-        const isValidTarget = () => {
-          if (target.tagName === "BODY") return true;
-          if (contains(dialog, target)) return true;
-          if (!disclosureElement) return true;
-          if (contains(disclosureElement, target)) return true;
-          return false;
+      const { disclosureElement } = store.getState();
+      if (!disclosureElement) return;
+      if (!isButton(disclosureElement)) return;
+      const onMouseDown = () => {
+        let receivedFocus = false;
+        const onFocus = () => {
+          receivedFocus = true;
         };
-        if (!isValidTarget()) return;
-        if (!hideOnEscapeProp(event)) return;
-        store.hide();
+        const options = { capture: true, once: true };
+        disclosureElement.addEventListener("focusin", onFocus, options);
+        queueBeforeEvent(disclosureElement, "mouseup", () => {
+          disclosureElement.removeEventListener("focusin", onFocus, true);
+          if (receivedFocus) return;
+          focusIfNeeded(disclosureElement);
+        });
       };
-      // We're attatching the listener to the document instead of the dialog
-      // element so we can listen to the Escape key anywhere in the document,
-      // even when the dialog is not focused. By using the capture phase, users
-      // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
-      return addGlobalEventListener("keydown", onKeyDown, true);
-    }, [store, domReady, mounted, hideOnEscapeProp]);
+      disclosureElement.addEventListener("mousedown", onMouseDown);
+      return () => {
+        disclosureElement.removeEventListener("mousedown", onMouseDown);
+      };
+    }, [store, mounted]);
+  }
 
-    // Resets the heading levels inside the modal dialog so they start with h1.
-    props = useWrapElement(
-      props,
-      (element) => (
-        <HeadingLevel level={modal ? 1 : undefined}>{element}</HeadingLevel>
-      ),
-      [modal],
-    );
+  // Renders a hidden dismiss button at the top of the modal dialog element.
+  // So that screen reader users aren't trapped in the dialog when there's no
+  // visible dismiss button.
+  useEffect(() => {
+    if (!modal) return;
+    if (!mounted) return;
+    if (!domReady) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    // If there's already a DialogDismiss component, it does nothing.
+    const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
+    if (existingDismiss) return;
+    return prependHiddenDismiss(dialog, store.hide);
+  }, [store, modal, mounted, domReady]);
 
-    const hiddenProp = props.hidden;
-    const alwaysVisible = props.alwaysVisible;
+  // When the dialog is animated, the open state will be false and the mounted
+  // state will be true. The dialog will still be visible until the animation
+  // is complete. We need to disable the dialog tree completely in this case.
+  // TODO: We should probably do this in a more generic way in the
+  // DisclosureContent component.
+  useSafeLayoutEffect(() => {
+    if (open) return;
+    if (!mounted) return;
+    if (!domReady) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    return disableTree(dialog);
+  }, [open, mounted, domReady]);
 
-    // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
-    props = useWrapElement(
-      props,
-      (element) => {
-        if (!backdrop) return element;
-        return (
-          <>
-            <DialogBackdrop
-              store={store}
-              backdrop={backdrop}
-              backdropProps={backdropProps}
-              hidden={hiddenProp}
-              alwaysVisible={alwaysVisible}
-            />
-            {element}
-          </>
-        );
-      },
-      [store, backdrop, backdropProps, hiddenProp, alwaysVisible],
-    );
+  const canTakeTreeSnapshot = open && domReady;
 
-    const [headingId, setHeadingId] = useState<string>();
-    const [descriptionId, setDescriptionId] = useState<string>();
+  useSafeLayoutEffect(() => {
+    if (!id) return;
+    if (!canTakeTreeSnapshot) return;
+    const dialog = ref.current;
+    // When the dialog opens, we capture a snapshot of the document. This
+    // snapshot is then used to disable elements outside the dialog in the
+    // subsequent effect. However, the issue arises as this next effect also
+    // relies on nested dialogs. Meaning, each time a nested dialog is
+    // rendered, we capture a new document snapshot, which might disable
+    // third-party dialogs. Hence, we take the snapshot here, independent of
+    // any nested dialogs.
+    return createWalkTreeSnapshot(id, [dialog]);
+  }, [id, canTakeTreeSnapshot]);
 
-    props = useWrapElement(
-      props,
-      (element) => (
-        <DialogScopedContextProvider value={store}>
-          <DialogHeadingContext.Provider value={setHeadingId}>
-            <DialogDescriptionContext.Provider value={setDescriptionId}>
-              {element}
-            </DialogDescriptionContext.Provider>
-          </DialogHeadingContext.Provider>
-        </DialogScopedContextProvider>
-      ),
-      [store],
-    );
+  const getPersistentElementsProp = useEvent(getPersistentElements);
 
-    props = {
-      id,
-      "data-dialog": "",
-      role: "dialog",
-      tabIndex: focusable ? -1 : undefined,
-      "aria-labelledby": headingId,
-      "aria-describedby": descriptionId,
-      ...props,
-      ref: useMergeRefs(ref, props.ref),
-    };
+  // Disables/enables the element tree around the modal dialog element.
+  useSafeLayoutEffect(() => {
+    if (!id) return;
+    if (!canTakeTreeSnapshot) return;
+    const { disclosureElement } = store.getState();
+    const dialog = ref.current;
+    const persistentElements = getPersistentElementsProp() || [];
+    const allElements = [
+      dialog,
+      ...persistentElements,
+      ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
+    ];
+    if (modal) {
+      return chain(
+        markTreeOutside(id, allElements),
+        disableTreeOutside(id, allElements),
+      );
+    }
+    return markTreeOutside(id, [disclosureElement, ...allElements]);
+  }, [
+    id,
+    store,
+    canTakeTreeSnapshot,
+    getPersistentElementsProp,
+    nestedDialogs,
+    modal,
+  ]);
 
-    props = useFocusableContainer({
-      ...props,
-      autoFocusOnShow: autoFocusEnabled,
+  const mayAutoFocusOnShow = !!autoFocusOnShow;
+  const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
+  // We have to wait for the dialog to be mounted before allowing focusable
+  // elements to be auto focused. Otherwise, there could be unintended scroll
+  // jumps. See select-animated browser tests.
+  const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
+
+  // Auto focus on show.
+  useEffect(() => {
+    if (!open) return;
+    if (!mayAutoFocusOnShow) return;
+    // Makes sure to wait for the portalNode to be created before moving
+    // focus. This is useful for when the Dialog component is unmounted when
+    // hidden.
+    if (!domReady) return;
+    // The dialog element may change for different reasons. For example, when
+    // the modal or portal props change, the HTML structure will also change,
+    // which will affect the dialog element reference. That's why we're
+    // listening to contentElement state here instead of getting the
+    // ref.current value. This ensures this effect will re-run when the dialog
+    // element reference changes.
+    if (!contentElement?.isConnected) return;
+    const element =
+      getElementFromProp(initialFocus, true) ||
+      // If no initial focus is specified, we try to focus the first element
+      // with the autofocus attribute. If it's an Ariakit component, the
+      // Focusable component will consume the autoFocus prop and add the
+      // data-autofocus attribute to the element instead.
+      contentElement.querySelector<HTMLElement>(
+        "[data-autofocus=true],[autofocus]",
+      ) ||
+      // We have to fallback to the first focusable element otherwise portaled
+      // dialogs with preserveTabOrder set to true will not receive focus
+      // properly because the elements aren't tabbable until the dialog
+      // receives focus.
+      getFirstTabbableIn(contentElement, true, portal && preserveTabOrder) ||
+      // Finally, we fallback to the dialog element itself.
+      contentElement;
+    const isElementFocusable = isFocusable(element);
+    if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
+    setAutoFocusEnabled(true);
+    queueMicrotask(() => {
+      element.focus();
+      // Safari doesn't scroll to the element on focus, so we have to do it
+      // manually here.
+      if (!isSafariBrowser) return;
+      element.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
-    props = useDisclosureContent({ store, ...props });
-    props = useFocusable<TagName>({ ...props, focusable });
-    props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
+  }, [
+    open,
+    mayAutoFocusOnShow,
+    domReady,
+    contentElement,
+    initialFocus,
+    portal,
+    preserveTabOrder,
+    autoFocusOnShowProp,
+  ]);
 
-    return props;
-  },
-);
+  const mayAutoFocusOnHide = !!autoFocusOnHide;
+  const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
+
+  // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
+  // dialog was open before.
+  const [hasOpened, setHasOpened] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setHasOpened(true);
+    return () => setHasOpened(false);
+  }, [open]);
+
+  const focusOnHide = useCallback(
+    (dialog: HTMLElement | null, retry = true) => {
+      const { disclosureElement } = store.getState();
+      // Hide was triggered by a click/focus on a tabbable element outside the
+      // dialog. We won't change focus then.
+      if (isAlreadyFocusingAnotherElement(dialog)) return;
+      let element = getElementFromProp(finalFocus) || disclosureElement;
+      if (element?.id) {
+        const doc = getDocument(element);
+        const selector = `[aria-activedescendant="${element.id}"]`;
+        const composite = doc.querySelector<HTMLElement>(selector);
+        // If the element is an item in a composite widget that handles focus
+        // with the `aria-activedescendant` attribute, we want to focus on the
+        // composite element itself.
+        if (composite) {
+          element = composite;
+        }
+      }
+      // If the element is not focusable by the time the dialog is hidden,
+      // it's probably because it's an element inside another popover or menu
+      // that also got hidden when this dialog was shown. We'll try to focus
+      // on their disclosure element instead.
+      if (element && !isFocusable(element)) {
+        const maybeParentDialog = closest(element, "[data-dialog]");
+        if (maybeParentDialog && maybeParentDialog.id) {
+          const doc = getDocument(maybeParentDialog);
+          const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
+          const control = doc.querySelector<HTMLElement>(selector);
+          if (control) {
+            element = control;
+          }
+        }
+      }
+      const isElementFocusable = element && isFocusable(element);
+      if (!isElementFocusable && retry) {
+        // If the element is still not focusable by this time, we retry once
+        // again on the next frame. This is sometimes necessary because there
+        // may be nested dialogs that still need a tick to remove the inert
+        // attribute from elements outside.
+        requestAnimationFrame(() => focusOnHide(dialog, false));
+        return;
+      }
+      if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
+      if (!isElementFocusable) return;
+      element?.focus();
+    },
+    [store, finalFocus, autoFocusOnHideProp],
+  );
+
+  // Auto focus on hide with an always rendered dialog.
+  useSafeLayoutEffect(() => {
+    if (open) return;
+    if (!hasOpened) return;
+    if (!mayAutoFocusOnHide) return;
+    const dialog = ref.current;
+    focusOnHide(dialog);
+  }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
+
+  // Auto focus on hide with a dialog that gets unmounted when hidden.
+  useEffect(() => {
+    if (!hasOpened) return;
+    if (!mayAutoFocusOnHide) return;
+    const dialog = ref.current;
+    return () => focusOnHide(dialog);
+  }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
+
+  const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+
+  // Hide on Escape.
+  useEffect(() => {
+    if (!domReady) return;
+    if (!mounted) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (event.defaultPrevented) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      // Ignore the event if the current dialog is marked by another dialog.
+      // This guarantees that only the topmost dialog will close on Escape.
+      if (isElementMarked(dialog)) return;
+      const target = event.target as Element | null;
+      if (!target) return;
+      const { disclosureElement } = store.getState();
+      // This considers valid targets only the disclosure element or
+      // descendants of the dialog element.
+      const isValidTarget = () => {
+        if (target.tagName === "BODY") return true;
+        if (contains(dialog, target)) return true;
+        if (!disclosureElement) return true;
+        if (contains(disclosureElement, target)) return true;
+        return false;
+      };
+      if (!isValidTarget()) return;
+      if (!hideOnEscapeProp(event)) return;
+      store.hide();
+    };
+    // We're attatching the listener to the document instead of the dialog
+    // element so we can listen to the Escape key anywhere in the document,
+    // even when the dialog is not focused. By using the capture phase, users
+    // can call `event.stopPropagation()` on the `hideOnEscape` function prop.
+    return addGlobalEventListener("keydown", onKeyDown, true);
+  }, [store, domReady, mounted, hideOnEscapeProp]);
+
+  // Resets the heading levels inside the modal dialog so they start with h1.
+  props = useWrapElement(
+    props,
+    (element) => (
+      <HeadingLevel level={modal ? 1 : undefined}>{element}</HeadingLevel>
+    ),
+    [modal],
+  );
+
+  const hiddenProp = props.hidden;
+  const alwaysVisible = props.alwaysVisible;
+
+  // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!backdrop) return element;
+      return (
+        <>
+          <DialogBackdrop
+            store={store}
+            backdrop={backdrop}
+            backdropProps={backdropProps}
+            hidden={hiddenProp}
+            alwaysVisible={alwaysVisible}
+          />
+          {element}
+        </>
+      );
+    },
+    [store, backdrop, backdropProps, hiddenProp, alwaysVisible],
+  );
+
+  const [headingId, setHeadingId] = useState<string>();
+  const [descriptionId, setDescriptionId] = useState<string>();
+
+  props = useWrapElement(
+    props,
+    (element) => (
+      <DialogScopedContextProvider value={store}>
+        <DialogHeadingContext.Provider value={setHeadingId}>
+          <DialogDescriptionContext.Provider value={setDescriptionId}>
+            {element}
+          </DialogDescriptionContext.Provider>
+        </DialogHeadingContext.Provider>
+      </DialogScopedContextProvider>
+    ),
+    [store],
+  );
+
+  props = {
+    id,
+    "data-dialog": "",
+    role: "dialog",
+    tabIndex: focusable ? -1 : undefined,
+    "aria-labelledby": headingId,
+    "aria-describedby": descriptionId,
+    ...props,
+    ref: useMergeRefs(ref, props.ref),
+  };
+
+  props = useFocusableContainer({
+    ...props,
+    autoFocusOnShow: autoFocusEnabled,
+  });
+  props = useDisclosureContent({ store, ...props });
+  props = useFocusable<TagName>({ ...props, focusable });
+  props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
+
+  return props;
+});
 
 export function createDialogComponent<T extends DialogOptions>(
   Component: FC<T>,
@@ -816,7 +814,7 @@ export interface DialogOptions<T extends ElementType = TagName>
   finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
 }
 
-export type DialogProps<T extends ElementType = TagName> = Props2<
+export type DialogProps<T extends ElementType = TagName> = Props<
   T,
   DialogOptions<T>
 >;

@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
 
@@ -16,7 +16,7 @@ type TagName = typeof TagName;
  * <Role {...props} />
  * ```
  */
-export const useFocusTrap = createHook2<TagName, FocusTrapOptions>(
+export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
   function useFocusTrap(props) {
     props = {
       "data-focus-trap": "",
@@ -54,7 +54,7 @@ export const FocusTrap = forwardRef(function FocusTrap(props: FocusTrapProps) {
 export type FocusTrapOptions<T extends ElementType = TagName> =
   VisuallyHiddenOptions<T>;
 
-export type FocusTrapProps<T extends ElementType = TagName> = Props2<
+export type FocusTrapProps<T extends ElementType = TagName> = Props<
   T,
   FocusTrapOptions<T>
 >;

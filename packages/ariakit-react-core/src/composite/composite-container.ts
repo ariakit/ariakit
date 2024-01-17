@@ -11,8 +11,8 @@ import {
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 import { selectTextField } from "./utils.js";
@@ -45,7 +45,7 @@ function getFirstTabbable(container: HTMLElement) {
  * </Composite>
  * ```
  */
-export const useCompositeContainer = createHook2<
+export const useCompositeContainer = createHook<
   TagName,
   CompositeContainerOptions
 >(function useCompositeContainer({ store, ...props }) {
@@ -248,7 +248,7 @@ export const CompositeContainer = forwardRef(function CompositeContainer(
 });
 
 export interface CompositeContainerOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -260,7 +260,7 @@ export interface CompositeContainerOptions<_T extends ElementType = TagName>
   store?: CompositeStore;
 }
 
-export type CompositeContainerProps<T extends ElementType = TagName> = Props2<
+export type CompositeContainerProps<T extends ElementType = TagName> = Props<
   T,
   CompositeContainerOptions<T>
 >;

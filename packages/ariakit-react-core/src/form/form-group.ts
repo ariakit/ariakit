@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -22,7 +22,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormGroup = createHook2<TagName, FormGroupOptions>(
+export const useFormGroup = createHook<TagName, FormGroupOptions>(
   function useFormGroup({ store, ...props }) {
     props = useGroup(props);
     return props;
@@ -72,7 +72,7 @@ export interface FormGroupOptions<T extends ElementType = TagName>
   store?: FormStore;
 }
 
-export type FormGroupProps<T extends ElementType = TagName> = Props2<
+export type FormGroupProps<T extends ElementType = TagName> = Props<
   T,
   FormGroupOptions<T>
 >;

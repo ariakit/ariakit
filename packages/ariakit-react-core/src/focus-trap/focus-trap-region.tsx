@@ -3,8 +3,8 @@ import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FocusTrap } from "./focus-trap.js";
 
 const TagName = "div" satisfies ElementType;
@@ -20,7 +20,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Role {...props} />
  * ```
  */
-export const useFocusTrapRegion = createHook2<TagName, FocusTrapRegionOptions>(
+export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
   function useFocusTrapRegion({ enabled = false, ...props }) {
     const ref = useRef<HTMLType>(null);
 
@@ -93,7 +93,7 @@ export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
 });
 
 export interface FocusTrapRegionOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * If true, it will trap the focus in the region.
    * @default false
@@ -101,7 +101,7 @@ export interface FocusTrapRegionOptions<_T extends ElementType = TagName>
   enabled?: boolean;
 }
 
-export type FocusTrapRegionProps<T extends ElementType = TagName> = Props2<
+export type FocusTrapRegionProps<T extends ElementType = TagName> = Props<
   T,
   FocusTrapRegionOptions<T>
 >;

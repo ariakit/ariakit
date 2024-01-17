@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
 import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useTooltipContext } from "./tooltip-context.js";
 import type { TooltipStore } from "./tooltip-store.js";
 
@@ -24,7 +24,7 @@ type TagName = typeof TagName;
  * </Tooltip>
  * ```
  */
-export const useTooltipArrow = createHook2<TagName, TooltipArrowOptions>(
+export const useTooltipArrow = createHook<TagName, TooltipArrowOptions>(
   function useTooltipArrow({ store, size = 16, ...props }) {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
@@ -77,7 +77,7 @@ export interface TooltipArrowOptions<T extends ElementType = TagName>
   store?: TooltipStore;
 }
 
-export type TooltipArrowProps<T extends ElementType = TagName> = Props2<
+export type TooltipArrowProps<T extends ElementType = TagName> = Props<
   T,
   TooltipArrowOptions<T>
 >;

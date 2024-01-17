@@ -8,8 +8,8 @@ import type { HovercardOptions } from "../hovercard/hovercard.jsx";
 import { useHovercard } from "../hovercard/hovercard.jsx";
 import { useMergeRefs } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Props } from "../utils/types.js";
 import { useMenuProviderContext } from "./menu-context.js";
 import type { MenuListOptions } from "./menu-list.jsx";
 import { useMenuList } from "./menu-list.jsx";
@@ -32,7 +32,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * </Role>
  * ```
  */
-export const useMenu = createHook2<TagName, MenuOptions>(function useMenu({
+export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   store,
   modal: modalProp = false,
   portal = !!modalProp,
@@ -259,7 +259,7 @@ export interface MenuOptions<T extends ElementType = TagName>
   extends MenuListOptions<T>,
     Omit<HovercardOptions<T>, "store"> {}
 
-export type MenuProps<T extends ElementType = TagName> = Props2<
+export type MenuProps<T extends ElementType = TagName> = Props<
   T,
   MenuOptions<T>
 >;

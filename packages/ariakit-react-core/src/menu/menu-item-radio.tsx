@@ -6,11 +6,11 @@ import { useRadio } from "../radio/radio.js";
 import { useInitialValue, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   MenuItemCheckedContext,
   useMenuScopedContext,
@@ -43,7 +43,7 @@ function getValue<T>(prevValue: T, value: T, checked?: boolean) {
  * </Menu>
  * ```
  */
-export const useMenuItemRadio = createHook2<TagName, MenuItemRadioOptions>(
+export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
   function useMenuItemRadio({
     store,
     name,
@@ -188,7 +188,7 @@ export interface MenuItemRadioOptions<T extends ElementType = TagName>
   hideOnClick?: MenuItemOptions<T>["hideOnClick"];
 }
 
-export type MenuItemRadioProps<T extends ElementType = TagName> = Props2<
+export type MenuItemRadioProps<T extends ElementType = TagName> = Props<
   T,
   MenuItemRadioOptions<T>
 >;

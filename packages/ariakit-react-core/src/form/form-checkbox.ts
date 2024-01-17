@@ -5,11 +5,11 @@ import type { CheckboxOptions } from "../checkbox/checkbox.js";
 import { useCheckbox } from "../checkbox/checkbox.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormControlOptions } from "./form-control.js";
 import { useFormControl } from "./form-control.js";
@@ -32,7 +32,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormCheckbox = createHook2<TagName, FormCheckboxOptions>(
+export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
   function useFormCheckbox({
     store,
     name: nameProp,
@@ -101,7 +101,7 @@ export interface FormCheckboxOptions<T extends ElementType = TagName>
   extends FormControlOptions<T>,
     Omit<CheckboxOptions<T>, "store" | "name"> {}
 
-export type FormCheckboxProps<T extends ElementType = TagName> = Props2<
+export type FormCheckboxProps<T extends ElementType = TagName> = Props<
   T,
   FormCheckboxOptions<T>
 >;

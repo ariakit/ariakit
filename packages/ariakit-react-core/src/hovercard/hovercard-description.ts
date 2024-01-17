@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
 import { usePopoverDescription } from "../popover/popover-description.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
 
 const TagName = "p" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useHovercardDescription = createHook2<
+export const useHovercardDescription = createHook<
   TagName,
   HovercardDescriptionOptions
 >(function useHovercardDescription(props) {
@@ -62,7 +62,7 @@ export interface HovercardDescriptionOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardDescriptionProps<T extends ElementType = TagName> = Props2<
+export type HovercardDescriptionProps<T extends ElementType = TagName> = Props<
   T,
   HovercardDescriptionOptions<T>
 >;

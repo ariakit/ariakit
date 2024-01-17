@@ -32,11 +32,11 @@ import {
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   CompositeItemContext,
   CompositeRowContext,
@@ -168,7 +168,7 @@ function supportsAriaSelected(role?: string) {
  * <Role {...props}>Item 1</Role>
  * ```
  */
-export const useCompositeItem = createHook2<TagName, CompositeItemOptions>(
+export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
   function useCompositeItem({
     store,
     rowId: rowIdProp,
@@ -561,7 +561,7 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   tabbable?: boolean;
 }
 
-export type CompositeItemProps<T extends ElementType = TagName> = Props2<
+export type CompositeItemProps<T extends ElementType = TagName> = Props<
   T,
   CompositeItemOptions<T>
 >;

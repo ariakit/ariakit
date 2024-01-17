@@ -20,8 +20,8 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { SelectArrow } from "./select-arrow.js";
 import {
   SelectScopedContextProvider,
@@ -68,247 +68,243 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
  * <Role {...props} />
  * ```
  */
-export const useSelect = createHook2<TagName, SelectOptions>(
-  function useSelect({
+export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
+  store,
+  name,
+  form,
+  required,
+  showOnKeyDown = true,
+  moveOnKeyDown = true,
+  toggleOnClick = false,
+  toggleOnPress = !toggleOnClick,
+  ...props
+}) {
+  const context = useSelectProviderContext();
+  store = store || context;
+
+  invariant(
     store,
-    name,
-    form,
-    required,
-    showOnKeyDown = true,
-    moveOnKeyDown = true,
-    toggleOnClick = false,
-    toggleOnPress = !toggleOnClick,
-    ...props
-  }) {
-    const context = useSelectProviderContext();
-    store = store || context;
+    process.env.NODE_ENV !== "production" &&
+      "Select must receive a `store` prop or be wrapped in a SelectProvider component.",
+  );
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "Select must receive a `store` prop or be wrapped in a SelectProvider component.",
-    );
+  toggleOnPress = toggleOnClick ? false : toggleOnPress;
 
-    toggleOnPress = toggleOnClick ? false : toggleOnPress;
+  const onKeyDownProp = props.onKeyDown;
+  const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
+  const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
+  const toggleOnPressProp = useBooleanEvent(toggleOnPress);
+  const placement = store.useState("placement");
+  const dir = placement.split("-")[0] as BasePlacement;
+  const value = store.useState("value");
+  const multiSelectable = Array.isArray(value);
 
-    const onKeyDownProp = props.onKeyDown;
-    const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
-    const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
-    const toggleOnPressProp = useBooleanEvent(toggleOnPress);
-    const placement = store.useState("placement");
-    const dir = placement.split("-")[0] as BasePlacement;
-    const value = store.useState("value");
-    const multiSelectable = Array.isArray(value);
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!store) return;
-      const { orientation, items, activeId } = store.getState();
-      // toggleOnPress
-      if (event.key === " " || event.key === "Enter") {
-        if (toggleOnPressProp(event)) {
-          event.preventDefault();
-          store.toggle();
-        }
-      }
-      // moveOnKeyDown
-      const isVertical = orientation !== "horizontal";
-      const isHorizontal = orientation !== "vertical";
-      const isGrid = !!items.find(
-        (item) => !item.disabled && item.value != null,
-      )?.rowId;
-      const moveKeyMap = {
-        ArrowUp: (isGrid || isVertical) && nextWithValue(store, store.up),
-        ArrowRight:
-          (isGrid || isHorizontal) && nextWithValue(store, store.next),
-        ArrowDown: (isGrid || isVertical) && nextWithValue(store, store.down),
-        ArrowLeft:
-          (isGrid || isHorizontal) && nextWithValue(store, store.previous),
-      };
-      const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
-      if (getId && moveOnKeyDownProp(event)) {
+  const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+    onKeyDownProp?.(event);
+    if (event.defaultPrevented) return;
+    if (!store) return;
+    const { orientation, items, activeId } = store.getState();
+    // toggleOnPress
+    if (event.key === " " || event.key === "Enter") {
+      if (toggleOnPressProp(event)) {
         event.preventDefault();
-        store.move(getId());
+        store.toggle();
       }
-      // showOnKeyDown
-      const isTopOrBottom = dir === "top" || dir === "bottom";
-      const isLeft = dir === "left";
-      const isRight = dir === "right";
-      const canShowKeyMap = {
-        ArrowDown: isTopOrBottom,
-        ArrowUp: isTopOrBottom,
-        ArrowLeft: isLeft,
-        ArrowRight: isRight,
-      };
-      const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
-      if (canShow && showOnKeyDownProp(event)) {
-        event.preventDefault();
-        store.move(activeId);
-        // Schedule the show event to run after the key event has finished
-        // bubbling. This is necessary to avoid the page to scroll when the
-        // popover is shown.
-        queueBeforeEvent(event.currentTarget, "keyup", store.show);
-      }
+    }
+    // moveOnKeyDown
+    const isVertical = orientation !== "horizontal";
+    const isHorizontal = orientation !== "vertical";
+    const isGrid = !!items.find((item) => !item.disabled && item.value != null)
+      ?.rowId;
+    const moveKeyMap = {
+      ArrowUp: (isGrid || isVertical) && nextWithValue(store, store.up),
+      ArrowRight: (isGrid || isHorizontal) && nextWithValue(store, store.next),
+      ArrowDown: (isGrid || isVertical) && nextWithValue(store, store.down),
+      ArrowLeft:
+        (isGrid || isHorizontal) && nextWithValue(store, store.previous),
+    };
+    const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
+    if (getId && moveOnKeyDownProp(event)) {
+      event.preventDefault();
+      store.move(getId());
+    }
+    // showOnKeyDown
+    const isTopOrBottom = dir === "top" || dir === "bottom";
+    const isLeft = dir === "left";
+    const isRight = dir === "right";
+    const canShowKeyMap = {
+      ArrowDown: isTopOrBottom,
+      ArrowUp: isTopOrBottom,
+      ArrowLeft: isLeft,
+      ArrowRight: isRight,
+    };
+    const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
+    if (canShow && showOnKeyDownProp(event)) {
+      event.preventDefault();
+      store.move(activeId);
+      // Schedule the show event to run after the key event has finished
+      // bubbling. This is necessary to avoid the page to scroll when the
+      // popover is shown.
+      queueBeforeEvent(event.currentTarget, "keyup", store.show);
+    }
+  });
+
+  const onMouseDownProp = props.onMouseDown;
+
+  const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
+    onMouseDownProp?.(event);
+    if (event.defaultPrevented) return;
+    if (event.button) return;
+    if (event.ctrlKey) return;
+    if (!toggleOnPressProp(event)) return;
+    const element = event.currentTarget;
+    queueBeforeEvent(element, "focusin", () => {
+      store?.setDisclosureElement(element);
+      store?.toggle();
     });
+  });
 
-    const onMouseDownProp = props.onMouseDown;
+  props = useWrapElement(
+    props,
+    (element) => (
+      <SelectScopedContextProvider value={store}>
+        {element}
+      </SelectScopedContextProvider>
+    ),
+    [store],
+  );
 
-    const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
-      onMouseDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (event.button) return;
-      if (event.ctrlKey) return;
-      if (!toggleOnPressProp(event)) return;
-      const element = event.currentTarget;
-      queueBeforeEvent(element, "focusin", () => {
-        store?.setDisclosureElement(element);
-        store?.toggle();
-      });
-    });
+  const [autofill, setAutofill] = useState(false);
+  const nativeSelectChangedRef = useRef(false);
 
-    props = useWrapElement(
-      props,
-      (element) => (
-        <SelectScopedContextProvider value={store}>
-          {element}
-        </SelectScopedContextProvider>
-      ),
-      [store],
-    );
+  // Resets the autofilled state when the select value changes, but only if
+  // the change wasn't triggered by the native select element (which is an
+  // autofill).
+  useEffect(() => {
+    const nativeSelectChanged = nativeSelectChangedRef.current;
+    nativeSelectChangedRef.current = false;
+    if (nativeSelectChanged) return;
+    setAutofill(false);
+  }, [value]);
 
-    const [autofill, setAutofill] = useState(false);
-    const nativeSelectChangedRef = useRef(false);
+  const labelId = store.useState((state) => state.labelElement?.id);
+  const label = props["aria-label"];
+  const labelledBy = props["aria-labelledby"] || labelId;
+  const items = store.useState((state) => {
+    if (!name) return;
+    return state.items;
+  });
+  const values = useMemo(() => {
+    // Filter out items without value and duplicate values.
+    return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
+  }, [items]);
 
-    // Resets the autofilled state when the select value changes, but only if
-    // the change wasn't triggered by the native select element (which is an
-    // autofill).
-    useEffect(() => {
-      const nativeSelectChanged = nativeSelectChangedRef.current;
-      nativeSelectChangedRef.current = false;
-      if (nativeSelectChanged) return;
-      setAutofill(false);
-    }, [value]);
-
-    const labelId = store.useState((state) => state.labelElement?.id);
-    const label = props["aria-label"];
-    const labelledBy = props["aria-labelledby"] || labelId;
-    const items = store.useState((state) => {
-      if (!name) return;
-      return state.items;
-    });
-    const values = useMemo(() => {
-      // Filter out items without value and duplicate values.
-      return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
-    }, [items]);
-
-    // Renders a native select element with the same value as the select so we
-    // support browser autofill. When the native select value changes, the
-    // onChange event is triggered and we set the autofill state to true.
-    props = useWrapElement(
-      props,
-      (element) => {
-        if (!name) return element;
-        return (
-          <>
-            <select
-              style={{
-                border: 0,
-                clip: "rect(0 0 0 0)",
-                height: "1px",
-                margin: "-1px",
-                overflow: "hidden",
-                padding: 0,
-                position: "absolute",
-                whiteSpace: "nowrap",
-                width: "1px",
-              }}
-              tabIndex={-1}
-              aria-hidden
-              aria-label={label}
-              aria-labelledby={labelledBy}
-              name={name}
-              form={form}
-              required={required}
-              value={value}
-              multiple={multiSelectable}
-              // Even though this element is visually hidden and is not
-              // tabbable, it's still focusable. Some autofill extensions like
-              // 1password will move focus to the next form element on autofill.
-              // In this case, we want to move focus to our custom select
-              // element.
-              onFocus={() => store?.getState().selectElement?.focus()}
-              onChange={(event) => {
-                nativeSelectChangedRef.current = true;
-                setAutofill(true);
-                store?.setValue(
-                  multiSelectable
-                    ? getSelectedValues(event.target)
-                    : event.target.value,
-                );
-              }}
-            >
-              {toArray(value).map((value) => {
-                if (value == null) return null;
-                if (values.includes(value)) return null;
-                return (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                );
-              })}
-              {values.map((value) => (
+  // Renders a native select element with the same value as the select so we
+  // support browser autofill. When the native select value changes, the
+  // onChange event is triggered and we set the autofill state to true.
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!name) return element;
+      return (
+        <>
+          <select
+            style={{
+              border: 0,
+              clip: "rect(0 0 0 0)",
+              height: "1px",
+              margin: "-1px",
+              overflow: "hidden",
+              padding: 0,
+              position: "absolute",
+              whiteSpace: "nowrap",
+              width: "1px",
+            }}
+            tabIndex={-1}
+            aria-hidden
+            aria-label={label}
+            aria-labelledby={labelledBy}
+            name={name}
+            form={form}
+            required={required}
+            value={value}
+            multiple={multiSelectable}
+            // Even though this element is visually hidden and is not
+            // tabbable, it's still focusable. Some autofill extensions like
+            // 1password will move focus to the next form element on autofill.
+            // In this case, we want to move focus to our custom select
+            // element.
+            onFocus={() => store?.getState().selectElement?.focus()}
+            onChange={(event) => {
+              nativeSelectChangedRef.current = true;
+              setAutofill(true);
+              store?.setValue(
+                multiSelectable
+                  ? getSelectedValues(event.target)
+                  : event.target.value,
+              );
+            }}
+          >
+            {toArray(value).map((value) => {
+              if (value == null) return null;
+              if (values.includes(value)) return null;
+              return (
                 <option key={value} value={value}>
                   {value}
                 </option>
-              ))}
-            </select>
-            {element}
-          </>
-        );
-      },
-      [
-        store,
-        label,
-        labelledBy,
-        name,
-        form,
-        required,
-        value,
-        multiSelectable,
-        values,
-      ],
-    );
+              );
+            })}
+            {values.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          {element}
+        </>
+      );
+    },
+    [
+      store,
+      label,
+      labelledBy,
+      name,
+      form,
+      required,
+      value,
+      multiSelectable,
+      values,
+    ],
+  );
 
-    const children = (
-      <>
-        {value}
-        <SelectArrow />
-      </>
-    );
+  const children = (
+    <>
+      {value}
+      <SelectArrow />
+    </>
+  );
 
-    const contentElement = store.useState("contentElement");
+  const contentElement = store.useState("contentElement");
 
-    props = {
-      role: "combobox",
-      "aria-autocomplete": "none",
-      "aria-labelledby": labelId,
-      "aria-haspopup": getPopupRole(contentElement, "listbox"),
-      "data-autofill": autofill ? "" : undefined,
-      "data-name": name,
-      children,
-      ...props,
-      ref: useMergeRefs(store.setSelectElement, props.ref),
-      onKeyDown,
-      onMouseDown,
-    };
+  props = {
+    role: "combobox",
+    "aria-autocomplete": "none",
+    "aria-labelledby": labelId,
+    "aria-haspopup": getPopupRole(contentElement, "listbox"),
+    "data-autofill": autofill ? "" : undefined,
+    "data-name": name,
+    children,
+    ...props,
+    ref: useMergeRefs(store.setSelectElement, props.ref),
+    onKeyDown,
+    onMouseDown,
+  };
 
-    props = usePopoverDisclosure({ store, toggleOnClick, ...props });
-    props = useCompositeTypeahead<TagName>({ store, ...props });
+  props = usePopoverDisclosure({ store, toggleOnClick, ...props });
+  props = useCompositeTypeahead<TagName>({ store, ...props });
 
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a custom select element that controls the visibility of either a
@@ -401,7 +397,7 @@ export interface SelectOptions<T extends ElementType = TagName>
   >;
 }
 
-export type SelectProps<T extends ElementType = TagName> = Props2<
+export type SelectProps<T extends ElementType = TagName> = Props<
   T,
   SelectOptions<T>
 >;

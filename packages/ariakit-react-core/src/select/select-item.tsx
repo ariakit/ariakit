@@ -16,11 +16,11 @@ import {
 } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   SelectItemCheckedContext,
   useSelectScopedContext,
@@ -50,7 +50,7 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
  * <Role {...props} />
  * ```
  */
-export const useSelectItem = createHook2<TagName, SelectItemOptions>(
+export const useSelectItem = createHook<TagName, SelectItemOptions>(
   function useSelectItem({
     store,
     value,
@@ -265,7 +265,7 @@ export interface SelectItemOptions<T extends ElementType = TagName>
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type SelectItemProps<T extends ElementType = TagName> = Props2<
+export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,
   SelectItemOptions<T>
 >;

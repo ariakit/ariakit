@@ -6,11 +6,11 @@ import { useCompositeItem } from "../composite/composite-item.js";
 import { useEvent, useId } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useTabScopedContext } from "./tab-context.js";
 import type { TabStore } from "./tab-store.js";
 
@@ -31,7 +31,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <TabPanel store={store}>Panel 1</TabPanel>
  * ```
  */
-export const useTab = createHook2<TagName, TabOptions>(function useTab({
+export const useTab = createHook<TagName, TabOptions>(function useTab({
   store,
   accessibleWhenDisabled = true,
   getItem: getItemProp,
@@ -135,7 +135,4 @@ export interface TabOptions<T extends ElementType = TagName>
   accessibleWhenDisabled?: CompositeItemOptions["accessibleWhenDisabled"];
 }
 
-export type TabProps<T extends ElementType = TagName> = Props2<
-  T,
-  TabOptions<T>
->;
+export type TabProps<T extends ElementType = TagName> = Props<T, TabOptions<T>>;

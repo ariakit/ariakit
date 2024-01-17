@@ -3,8 +3,8 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeRowOptions } from "../composite/composite-row.js";
 import { useCompositeRow } from "../composite/composite-row.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
@@ -26,7 +26,7 @@ type TagName = typeof TagName;
  * </SelectPopover>
  * ```
  */
-export const useSelectRow = createHook2<TagName, SelectRowOptions>(
+export const useSelectRow = createHook<TagName, SelectRowOptions>(
   function useSelectRow({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
@@ -90,7 +90,7 @@ export interface SelectRowOptions<T extends ElementType = TagName>
   store?: SelectStore;
 }
 
-export type SelectRowProps<T extends ElementType = TagName> = Props2<
+export type SelectRowProps<T extends ElementType = TagName> = Props<
   T,
   SelectRowOptions<T>
 >;

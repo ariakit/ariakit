@@ -3,8 +3,8 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -28,7 +28,7 @@ type TagName = typeof TagName;
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxGroup = createHook2<TagName, ComboboxGroupOptions>(
+export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
   function useComboboxGroup({ store, ...props }) {
     const context = useComboboxScopedContext();
     store = store || context;
@@ -93,7 +93,7 @@ export interface ComboboxGroupOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxGroupProps<T extends ElementType = TagName> = Props2<
+export type ComboboxGroupProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxGroupOptions<T>
 >;

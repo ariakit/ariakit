@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormGroupOptions } from "./form-group.js";
 import { useFormGroup } from "./form-group.js";
 
@@ -24,7 +24,7 @@ type TagName = typeof TagName;
  * </Form>
  * ```
  */
-export const useFormRadioGroup = createHook2<TagName, FormRadioGroupOptions>(
+export const useFormRadioGroup = createHook<TagName, FormRadioGroupOptions>(
   function useFormRadioGroup({ store, ...props }) {
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
@@ -67,7 +67,7 @@ export const FormRadioGroup = forwardRef(function FormRadioGroup(
 export type FormRadioGroupOptions<T extends ElementType = TagName> =
   FormGroupOptions<T>;
 
-export type FormRadioGroupProps<T extends ElementType = TagName> = Props2<
+export type FormRadioGroupProps<T extends ElementType = TagName> = Props<
   T,
   FormRadioGroupOptions<T>
 >;

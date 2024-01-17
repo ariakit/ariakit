@@ -16,8 +16,8 @@ import {
   useMetadataProps,
   useTagName,
 } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -58,7 +58,7 @@ const symbol = Symbol("command");
  * <Role {...props}>Accessible button</Role>
  * ```
  */
-export const useCommand = createHook2<TagName, CommandOptions>(
+export const useCommand = createHook<TagName, CommandOptions>(
   function useCommand({ clickOnEnter = true, clickOnSpace = true, ...props }) {
     const ref = useRef<HTMLType>(null);
     const tagName = useTagName(ref);
@@ -210,7 +210,7 @@ export interface CommandOptions<T extends ElementType = TagName>
   clickOnSpace?: boolean;
 }
 
-export type CommandProps<T extends ElementType = TagName> = Props2<
+export type CommandProps<T extends ElementType = TagName> = Props<
   T,
   CommandOptions<T>
 >;

@@ -5,8 +5,8 @@ import { createDialogComponent } from "../dialog/dialog.js";
 import { useHovercard } from "../hovercard/hovercard.js";
 import type { HovercardOptions } from "../hovercard/hovercard.js";
 import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
@@ -27,7 +27,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Tooltip</Role>
  * ```
  */
-export const useTooltip = createHook2<TagName, TooltipOptions>(
+export const useTooltip = createHook<TagName, TooltipOptions>(
   function useTooltip({
     store,
     portal = true,
@@ -133,7 +133,7 @@ export interface TooltipOptions<T extends ElementType = TagName>
   gutter?: HovercardOptions<T>["gutter"];
 }
 
-export type TooltipProps<T extends ElementType = TagName> = Props2<
+export type TooltipProps<T extends ElementType = TagName> = Props<
   T,
   TooltipOptions<T>
 >;

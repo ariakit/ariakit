@@ -3,8 +3,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -43,7 +43,7 @@ const children = (
  * <Role {...props} />
  * ```
  */
-export const useComboboxCancel = createHook2<TagName, ComboboxCancelOptions>(
+export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
   function useComboboxCancel({ store, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
@@ -119,7 +119,7 @@ export interface ComboboxCancelOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxCancelProps<T extends ElementType = TagName> = Props2<
+export type ComboboxCancelProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxCancelOptions<T>
 >;

@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
 import { useDialogHeading } from "../dialog/dialog-heading.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { PopoverStore } from "./popover-store.js";
 
 const TagName = "h1" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const usePopoverHeading = createHook2<TagName, PopoverHeadingOptions>(
+export const usePopoverHeading = createHook<TagName, PopoverHeadingOptions>(
   function usePopoverHeading(props) {
     props = useDialogHeading(props);
     return props;
@@ -61,7 +61,7 @@ export interface PopoverHeadingOptions<T extends ElementType = TagName>
   store?: PopoverStore;
 }
 
-export type PopoverHeadingProps<T extends ElementType = TagName> = Props2<
+export type PopoverHeadingProps<T extends ElementType = TagName> = Props<
   T,
   PopoverHeadingOptions<T>
 >;

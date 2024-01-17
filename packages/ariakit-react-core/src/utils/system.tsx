@@ -1,24 +1,9 @@
 import * as React from "react";
-import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import { useMergeRefs } from "./hooks.js";
 import { getRefProperty, mergeProps } from "./misc.js";
 import type { Store } from "./store.js";
-import type {
-  Component,
-  HTMLProps,
-  HTMLProps2,
-  Hook,
-  Hook2,
-  Options,
-  Props,
-  Props2,
-  RenderProp,
-} from "./types.js";
-
-function isRenderProp(children: any): children is RenderProp {
-  return typeof children === "function";
-}
+import type { HTMLProps, Hook, Options, Props } from "./types.js";
 
 /**
  * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
@@ -44,56 +29,6 @@ export function memo<T extends React.FC<any>>(
 }
 
 /**
- * Creates a type-safe component with the `as` prop and `React.forwardRef`.
- *
- * @example
- * import { createComponent } from "@ariakit/react-core/utils/system";
- *
- * type Props = {
- *   as?: "div";
- *   customProp?: boolean;
- * };
- *
- * const Component = forwardRef(({ customProp, ...props }) => {
- *   return <div {...props} />;
- * });
- *
- * <Component customProp render={<button />} />
- */
-export function createComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactElement | null,
-) {
-  const Role = (props: Props<O>, ref: React.Ref<any>) =>
-    render({ ref, ...props });
-  return React.forwardRef(Role) as unknown as Component<O>;
-}
-
-/**
- * Creates a type-safe component with the `as` prop, `React.forwardRef` and
- * `React.memo`.
- *
- * @example
- * import { createMemoComponent } from "@ariakit/react-core/utils/system";
- *
- * type Props = {
- *   as?: "div";
- *   customProp?: boolean;
- * };
- *
- * const Component = createMemoComponent<Props>(({ customProp, ...props }) => {
- *   return <div {...props} />;
- * });
- *
- * <Component customProp render={<button />} />
- */
-export function createMemoComponent<O extends Options>(
-  render: (props: Props<O>) => React.ReactElement | null,
-) {
-  const Role = createComponent(render);
-  return React.memo(Role) as unknown as typeof Role;
-}
-
-/**
  * Creates a React element that supports the `render` and `wrapElement` props.
  * @example
  * import { createElement } from "@ariakit/react-core/utils/system";
@@ -108,43 +43,18 @@ export function createMemoComponent<O extends Options>(
  */
 export function createElement(
   Type: React.ElementType,
-  props: HTMLProps<Options>,
+  props: Props<React.ElementType, Options>,
 ) {
-  const { as: As, wrapElement, render, ...rest } = props;
-  let element: React.ReactElement;
+  const { wrapElement, render, ...rest } = props;
   const mergedRef = useMergeRefs(props.ref, getRefProperty(render));
 
-  if (process.env.NODE_ENV !== "production") {
-    React.useEffect(() => {
-      if (!As) return;
-      console.warn(
-        "The `as` prop is deprecated. Use the `render` prop instead.",
-        "See https://ariakit.org/guide/composition",
-      );
-    }, [As]);
-  }
+  let element: React.ReactElement;
 
-  if (As && typeof As !== "string") {
-    element = <As {...rest} render={render} />;
-  } else if (React.isValidElement<AnyObject>(render)) {
-    const renderProps: AnyObject = { ...render.props, ref: mergedRef };
+  if (React.isValidElement<any>(render)) {
+    const renderProps = { ...render.props, ref: mergedRef };
     element = React.cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
-    // @ts-expect-error
     element = render(rest) as React.ReactElement;
-  } else if (isRenderProp(props.children)) {
-    if (process.env.NODE_ENV !== "production") {
-      React.useEffect(() => {
-        console.warn(
-          "The `children` prop as a function is deprecated. Use the `render` prop instead.",
-          "See https://ariakit.org/guide/composition",
-        );
-      }, []);
-    }
-    const { children, ...otherProps } = rest;
-    element = props.children(otherProps) as React.ReactElement;
-  } else if (As) {
-    element = <As {...rest} />;
   } else {
     element = <Type {...rest} />;
   }
@@ -156,49 +66,15 @@ export function createElement(
   return element;
 }
 
-/**
- * Creates a component hook that accepts props and returns props so they can be
- * passed to a React element.
- *
- * @example
- * import { Options, createHook } from "@ariakit/react-core/utils/system";
- *
- * type Props = Options<"div"> & {
- *   customProp?: boolean;
- * };
- *
- * const useComponent = createHook2<TagName, Props>(function useComponent({ customProp, ...props }) {
- *   return props;
- * });
- *
- * const props = useComponent({ as: "button", customProp: true });
- */
-export function createHook<O extends Options>(
-  useProps: (props: Props<O>) => HTMLProps<O>,
-) {
-  const useRole = (props: Props<O> = {} as Props<O>) => {
-    const htmlProps = useProps(props);
-    const copy = {} as typeof htmlProps;
-    for (const prop in htmlProps) {
-      if (hasOwnProperty(htmlProps, prop) && htmlProps[prop] !== undefined) {
-        // @ts-expect-error
-        copy[prop] = htmlProps[prop];
-      }
-    }
-    return copy;
-  };
-  return useRole as Hook<O>;
-}
-
-export function createHook2<
+export function createHook<
   T extends React.ElementType,
   P extends AnyObject = EmptyObject,
->(useProps: (props: Props2<T, P>) => HTMLProps2<T, P>) {
-  const useRole = (props: Props2<T, P> = {} as Props2<T, P>) => {
+>(useProps: (props: Props<T, P>) => HTMLProps<T, P>) {
+  const useRole = (props: Props<T, P> = {} as Props<T, P>) => {
     return useProps(props);
   };
   useRole.displayName = useProps.name;
-  return useRole as Hook2<T, P>;
+  return useRole as Hook<T, P>;
 }
 
 type StoreProvider<T extends Store> = React.ComponentType<{

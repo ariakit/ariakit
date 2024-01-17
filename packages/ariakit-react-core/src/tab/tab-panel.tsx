@@ -10,8 +10,8 @@ import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
 import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Props } from "../utils/types.js";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
@@ -35,7 +35,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Role {...props}>Panel 1</Role>
  * ```
  */
-export const useTabPanel = createHook2<TagName, TabPanelOptions>(
+export const useTabPanel = createHook<TagName, TabPanelOptions>(
   function useTabPanel({
     store,
     tabId: tabIdProp,
@@ -168,7 +168,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
   tabId?: string | null;
 }
 
-export type TabPanelProps<T extends ElementType = TagName> = Props2<
+export type TabPanelProps<T extends ElementType = TagName> = Props<
   T,
   TabPanelOptions<T>
 >;

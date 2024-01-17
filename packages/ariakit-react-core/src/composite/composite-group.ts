@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.js";
 import { useGroup } from "../group/group.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -24,7 +24,7 @@ type TagName = typeof TagName;
  * </Composite>
  * ```
  */
-export const useCompositeGroup = createHook2<TagName, CompositeGroupOptions>(
+export const useCompositeGroup = createHook<TagName, CompositeGroupOptions>(
   function useCompositeGroup({ store, ...props }) {
     props = useGroup(props);
     return props;
@@ -70,7 +70,7 @@ export interface CompositeGroupOptions<T extends ElementType = TagName>
   store?: CompositeStore;
 }
 
-export type CompositeGroupProps<T extends ElementType = TagName> = Props2<
+export type CompositeGroupProps<T extends ElementType = TagName> = Props<
   T,
   CompositeGroupOptions<T>
 >;

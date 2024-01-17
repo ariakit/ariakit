@@ -8,11 +8,11 @@ import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore } from "./form-store.js";
 
@@ -47,7 +47,7 @@ function supportsNativeLabel(tagName?: string) {
  * </Form>
  * ```
  */
-export const useFormLabel = createHook2<TagName, FormLabelOptions>(
+export const useFormLabel = createHook<TagName, FormLabelOptions>(
   function useFormLabel({
     store,
     name: nameProp,
@@ -178,7 +178,7 @@ export interface FormLabelOptions<T extends ElementType = TagName>
   name: StringLike;
 }
 
-export type FormLabelProps<T extends ElementType = TagName> = Props2<
+export type FormLabelProps<T extends ElementType = TagName> = Props<
   T,
   FormLabelOptions<T>
 >;

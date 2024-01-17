@@ -2,8 +2,8 @@ import { useContext } from "react";
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { DialogDescriptionContext } from "./dialog-context.js";
 import type { DialogStore } from "./dialog-store.js";
 
@@ -22,7 +22,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useDialogDescription = createHook2<
+export const useDialogDescription = createHook<
   TagName,
   DialogDescriptionOptions
 >(function useDialogDescription({ store, ...props }) {
@@ -64,7 +64,7 @@ export const DialogDescription = forwardRef(function DialogDescription(
 });
 
 export interface DialogDescriptionOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
@@ -74,7 +74,7 @@ export interface DialogDescriptionOptions<_T extends ElementType = TagName>
   store?: DialogStore;
 }
 
-export type DialogDescriptionProps<T extends ElementType = TagName> = Props2<
+export type DialogDescriptionProps<T extends ElementType = TagName> = Props<
   T,
   DialogDescriptionOptions<T>
 >;

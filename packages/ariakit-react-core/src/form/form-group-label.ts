@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { FormStore } from "./form-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useFormGroupLabel = createHook2<TagName, FormGroupLabelOptions>(
+export const useFormGroupLabel = createHook<TagName, FormGroupLabelOptions>(
   function useFormGroupLabel({ store, ...props }) {
     props = useGroupLabel(props);
     return props;
@@ -72,7 +72,7 @@ export interface FormGroupLabelOptions<T extends ElementType = TagName>
   store?: FormStore;
 }
 
-export type FormGroupLabelProps<T extends ElementType = TagName> = Props2<
+export type FormGroupLabelProps<T extends ElementType = TagName> = Props<
   T,
   FormGroupLabelOptions<T>
 >;

@@ -3,8 +3,8 @@ import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Options2, Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
@@ -48,7 +48,7 @@ function useComputedStyle(store: PopoverStore) {
  * </Popover>
  * ```
  */
-export const usePopoverArrow = createHook2<TagName, PopoverArrowOptions>(
+export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
   function usePopoverArrow({ store, size = defaultSize, ...props }) {
     const context = usePopoverContext();
     store = store || context;
@@ -128,7 +128,7 @@ export const PopoverArrow = forwardRef(function PopoverArrow(
 });
 
 export interface PopoverArrowOptions<_T extends ElementType = TagName>
-  extends Options2 {
+  extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -148,7 +148,7 @@ export interface PopoverArrowOptions<_T extends ElementType = TagName>
   size?: number;
 }
 
-export type PopoverArrowProps<T extends ElementType = TagName> = Props2<
+export type PopoverArrowProps<T extends ElementType = TagName> = Props<
   T,
   PopoverArrowOptions<T>
 >;

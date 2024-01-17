@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
 import { useHovercardDescription } from "../hovercard/hovercard-description.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
 
 const TagName = "p" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useMenuDescription = createHook2<TagName, MenuDescriptionOptions>(
+export const useMenuDescription = createHook<TagName, MenuDescriptionOptions>(
   function useMenuDescription(props) {
     props = useHovercardDescription(props);
     return props;
@@ -60,7 +60,7 @@ export interface MenuDescriptionOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuDescriptionProps<T extends ElementType = TagName> = Props2<
+export type MenuDescriptionProps<T extends ElementType = TagName> = Props<
   T,
   MenuDescriptionOptions<T>
 >;

@@ -14,11 +14,11 @@ import { useBooleanEvent, useEvent } from "../utils/hooks.js";
 import { useStoreState } from "../utils/store.js";
 import {
   createElement,
-  createHook2,
+  createHook,
   forwardRef,
   memo,
 } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore, MenuStoreState } from "./menu-store.js";
 
@@ -61,7 +61,7 @@ function menuHasFocus(
  * </Menu>
  * ```
  */
-export const useMenuItem = createHook2<TagName, MenuItemOptions>(
+export const useMenuItem = createHook<TagName, MenuItemOptions>(
   function useMenuItem({
     store,
     hideOnClick = true,
@@ -212,7 +212,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type MenuItemProps<T extends ElementType = TagName> = Props2<
+export type MenuItemProps<T extends ElementType = TagName> = Props<
   T,
   MenuItemOptions<T>
 >;

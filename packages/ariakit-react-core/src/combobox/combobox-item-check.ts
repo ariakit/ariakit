@@ -2,8 +2,8 @@ import { useContext } from "react";
 import type { ElementType } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.jsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.jsx";
-import { createElement, createHook2, forwardRef } from "../utils/system.jsx";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Props } from "../utils/types.js";
 import { ComboboxItemCheckedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  * <Role {...props} />
  * ```
  */
-export const useComboboxItemCheck = createHook2<
+export const useComboboxItemCheck = createHook<
   TagName,
   ComboboxItemCheckOptions
 >(function useComboboxItemCheck({ store, checked, ...props }) {
@@ -76,7 +76,7 @@ export interface ComboboxItemCheckOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
 }
 
-export type ComboboxItemCheckProps<T extends ElementType = TagName> = Props2<
+export type ComboboxItemCheckProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxItemCheckOptions<T>
 >;

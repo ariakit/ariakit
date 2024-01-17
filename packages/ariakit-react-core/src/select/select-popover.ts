@@ -2,8 +2,8 @@ import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectProviderContext } from "./select-context.js";
 import type { SelectListOptions } from "./select-list.js";
 import { useSelectList } from "./select-list.js";
@@ -24,7 +24,7 @@ type TagName = typeof TagName;
  * </Role>
  * ```
  */
-export const useSelectPopover = createHook2<TagName, SelectPopoverOptions>(
+export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
   function useSelectPopover({ store, alwaysVisible, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
@@ -62,7 +62,7 @@ export interface SelectPopoverOptions<T extends ElementType = TagName>
   extends SelectListOptions<T>,
     Omit<PopoverOptions<T>, "store"> {}
 
-export type SelectPopoverProps<T extends ElementType = TagName> = Props2<
+export type SelectPopoverProps<T extends ElementType = TagName> = Props<
   T,
   SelectPopoverOptions<T>
 >;

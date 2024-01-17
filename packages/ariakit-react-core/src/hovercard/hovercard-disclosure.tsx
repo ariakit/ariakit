@@ -11,8 +11,8 @@ import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
 import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
@@ -33,7 +33,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
-export const useHovercardDisclosure = createHook2<
+export const useHovercardDisclosure = createHook<
   TagName,
   HovercardDisclosureOptions
 >(function useHovercardDisclosure({ store, ...props }) {
@@ -186,7 +186,7 @@ export interface HovercardDisclosureOptions<T extends ElementType = TagName>
   store?: HovercardStore;
 }
 
-export type HovercardDisclosureProps<T extends ElementType = TagName> = Props2<
+export type HovercardDisclosureProps<T extends ElementType = TagName> = Props<
   T,
   HovercardDisclosureOptions<T>
 >;

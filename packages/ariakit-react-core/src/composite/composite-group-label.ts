@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.js";
 import { useGroupLabel } from "../group/group-label.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { CompositeStore } from "./composite-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -20,7 +20,7 @@ type TagName = typeof TagName;
  * <Role {...props}>Label</Role>
  * ```
  */
-export const useCompositeGroupLabel = createHook2<
+export const useCompositeGroupLabel = createHook<
   TagName,
   CompositeGroupLabelOptions
 >(function useCompositeGroupLabel({ store, ...props }) {
@@ -66,7 +66,7 @@ export interface CompositeGroupLabelOptions<T extends ElementType = TagName>
   store?: CompositeStore;
 }
 
-export type CompositeGroupLabelProps<T extends ElementType = TagName> = Props2<
+export type CompositeGroupLabelProps<T extends ElementType = TagName> = Props<
   T,
   CompositeGroupLabelOptions<T>
 >;

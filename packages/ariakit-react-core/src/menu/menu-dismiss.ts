@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
-import { createElement, createHook2, forwardRef } from "../utils/system.js";
-import type { Props2 } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useMenuScopedContext } from "./menu-context.js";
 import type { MenuStore } from "./menu-store.js";
 
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  * </Menu>
  * ```
  */
-export const useMenuDismiss = createHook2<TagName, MenuDismissOptions>(
+export const useMenuDismiss = createHook<TagName, MenuDismissOptions>(
   function useMenuDismiss({ store, ...props }) {
     const context = useMenuScopedContext();
     store = store || context;
@@ -62,7 +62,7 @@ export interface MenuDismissOptions<T extends ElementType = TagName>
   store?: MenuStore;
 }
 
-export type MenuDismissProps<T extends ElementType = TagName> = Props2<
+export type MenuDismissProps<T extends ElementType = TagName> = Props<
   T,
   MenuDismissOptions<T>
 >;
