@@ -21,12 +21,24 @@ async function getReleaseLine(changeset) {
 /**
  * @param {Array<Promise<string>} changelogLines
  */
-async function getTextForType(changelogLines) {
+async function getChangelogText(changelogLines) {
   const lines = await Promise.all(changelogLines);
   if (!lines.length) return "";
 
-  const headingLines = lines.filter((l) => l.startsWith("###"));
-  const otherLines = lines.filter((l) => !l.startsWith("###"));
+  const isOverviewLine = (l) => l.startsWith("### Overview\n");
+  const isHeadingLine = (l) => l.startsWith("###");
+  const isOtherLine = (l) => !l.startsWith("###");
+
+  const headingLines = lines
+    .filter(isHeadingLine)
+    .sort((a, b) => {
+      if (isOverviewLine(a)) return -1;
+      if (isOverviewLine(b)) return 1;
+      return 0;
+    })
+    .map((l) => l.replace("### Overview\n\n", ""));
+
+  const otherLines = lines.filter(isOtherLine);
   if (!headingLines.length && !otherLines.length) return "";
 
   const other = otherLines.join("\n");
@@ -43,28 +55,13 @@ async function getTextForType(changelogLines) {
  * @param {Record<"major" | "minor" | "patch", Array<Promise<string>>} changelogLines
  */
 async function getChangelogEntry(release, changelogLines) {
-  const v0 = release.newVersion.startsWith("0.");
-
   // const date = new Date().toLocaleDateString("en-US", {
   //   month: "long",
   //   day: "numeric",
   //   year: "numeric",
   // });
-
-  const major = await getTextForType(changelogLines["major"]);
-  const minor = await getTextForType(changelogLines["minor"]);
-  const patch = await getTextForType(changelogLines["patch"]);
-
-  return [
-    `## ${release.newVersion}`,
-    major || (v0 && minor),
-    v0 && patch,
-    !v0 && minor,
-    !v0 && patch,
-  ]
-    .flat()
-    .filter(Boolean)
-    .join("\n\n");
+  const text = await getChangelogText(Object.values(changelogLines).flat());
+  return `## ${release.newVersion}\n\n${text}`;
 }
 
 module.exports = {
