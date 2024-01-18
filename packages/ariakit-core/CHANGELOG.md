@@ -1,5 +1,55 @@
 # @ariakit/core
 
+## 0.4.0
+
+### Improved animation support
+
+This version enhances support for CSS animations and transitions on Ariakit components that use [Disclosure](https://ariakit.org/component/disclosure). This includes [Dialog](https://ariakit.org/components/dialog), [Popover](https://ariakit.org/components/popover), [Combobox](https://ariakit.org/components/combobox), [Select](https://ariakit.org/components/select), [Hovercard](https://ariakit.org/components/hovercard), [Menu](https://ariakit.org/components/menu), and [Tooltip](https://ariakit.org/components/tooltip).
+
+These components now support _enter_ and _leave_ transitions and animations right out of the box, eliminating the need to provide an explicit `animated` prop. If an enter animation is detected, the component will automatically wait for a leave animation to complete before unmounting or hiding itself.
+
+Use the [`[data-enter]`](https://ariakit.org/guide/styling#data-enter) selector for CSS transitions. For CSS animations, use the newly introduced [`[data-open]`](https://ariakit.org/guide/styling#data-open) selector. The [`[data-leave]`](https://ariakit.org/guide/styling#data-leave) selector can be used for both transitions and animations.
+
+### Composite widgets with `grid` role
+
+**BREAKING** if you're manually setting the `role="grid"` prop on a composite widget.
+
+Ariakit automatically assigns the `role` prop to all composite items to align with the container `role`. For example, if [`SelectPopover`](https://ariakit.org/reference/select-popover) has its role set to `listbox` (which is the default value), its owned [`SelectItem`](https://ariakit.org/reference/select-item) elements will automatically get their role set to `option`.
+
+In previous versions, this was also valid for composite widgets with a `grid` role, where the composite item element would automatically be given `role="gridcell"`. This is no longer the case, and you're now required to manually pass `role="gridcell"` to the composite item element if you're rendering a container with `role="grid"`.
+
+Before:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow> {/* Automatically gets role="row" */}
+    <SelectItem> {/* Automatically gets role="gridcell" */}
+```
+
+After:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow> {/* Still gets role="row" */}
+    <SelectItem role="gridcell">
+```
+
+This change is due to the possibility of rendering a composite item element with a different role as a child of a static `div` with `role="gridcell"`, which is a valid and frequently used practice when using the `grid` role. As a result, you no longer have to manually adjust the `role` prop on the composite item:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow>
+    <div role="gridcell">
+      <SelectItem render={<button />}>
+```
+
+Previously, you had to explicitly pass `role="button"` to the [`SelectItem`](https://ariakit.org/reference/select-item) component above, otherwise it would automatically receive `role="gridcell"`, leading to an invalid accessibility tree.
+
+### Other updates
+
+- Added `removeUndefinedValues` utility function.
+- Added new [`disclosure`](https://ariakit.org/reference/use-disclosure-store#disclosure-1) property to disclosure stores.
+
 ## 0.3.11
 
 ### Improved performance of large collections
