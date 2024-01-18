@@ -14,15 +14,6 @@ function query(locator: Page | Locator) {
   };
 }
 
-// const getButton = (page: Page | Locator, name: string) =>
-//   page.getByRole("button", { name, exact: true });
-
-// const getAccessibleDialog = (page: Page | Locator, name: string) =>
-//   page.getByRole("dialog", { name, exact: true });
-
-// const getDialog = (page: Page | Locator, name: string) =>
-//   page.getByRole("dialog", { includeHidden: true, name, exact: true });
-
 async function expectAccessibleDialog(
   page: Page | Locator,
   name: string,
