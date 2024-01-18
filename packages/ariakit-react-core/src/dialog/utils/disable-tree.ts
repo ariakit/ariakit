@@ -40,10 +40,22 @@ export function disableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
-  walkTreeOutside(id, elements, (element) => {
-    if (isBackdrop(element, ...ids)) return;
-    cleanups.unshift(disableTree(element, elements));
-  });
+  walkTreeOutside(
+    id,
+    elements,
+    (element) => {
+      if (isBackdrop(element, ...ids)) return;
+      cleanups.unshift(disableTree(element, elements));
+    },
+    (element) => {
+      // Parent accessible elements that are not part of the modal context
+      // should have their role set to "none" so that they are not exposed to
+      // screen readers.
+      if (!element.hasAttribute("role")) return;
+      if (elements.some((el) => el && contains(el, element))) return;
+      cleanups.unshift(setAttribute(element, "role", "none"));
+    },
+  );
 
   const restoreTreeOutside = () => {
     cleanups.forEach((fn) => fn());

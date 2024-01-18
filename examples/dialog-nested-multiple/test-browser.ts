@@ -1,25 +1,38 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
-const getButton = (page: Page | Locator, name: string) =>
-  page.getByRole("button", { name, exact: true });
+function query(locator: Page | Locator) {
+  return {
+    button: (name: string) =>
+      locator.getByRole("button", { name, exact: true }),
+    dialog: (name: string) =>
+      locator
+        .getByRole("dialog", { name, exact: true, includeHidden: true })
+        .or(locator.getByRole("none", { name, exact: true })),
+    accDialog: (name: string) =>
+      locator.getByRole("dialog", { name, exact: true }),
+  };
+}
 
-const getAccessibleDialog = (page: Page | Locator, name: string) =>
-  page.getByRole("dialog", { name, exact: true });
-
-const getDialog = (page: Page | Locator, name: string) =>
-  page.getByRole("dialog", { includeHidden: true, name, exact: true });
-
-function expectAccessibleDialog(
+async function expectAccessibleDialog(
   page: Page | Locator,
   name: string,
   toBeVisible: boolean,
 ) {
-  const dialog = getAccessibleDialog(page, name);
+  const q = query(page);
+  const dialog = q.accDialog(name);
   if (toBeVisible) {
     return expect(dialog).toBeVisible();
   }
-  return expect(dialog).not.toBeVisible({ visible: false });
+  try {
+    await expect(dialog).not.toBeVisible({ timeout: 500 });
+  } catch {
+    const inert = await dialog.evaluate(
+      (dialog) => !!dialog.closest("[inert]"),
+      { timeout: 500 },
+    );
+    expect(inert).toBeTruthy();
+  }
 }
 
 async function canScrollBody(page: Page) {
@@ -52,30 +65,31 @@ for (const { name, type } of [
   { name: "sibling", type: " no backdrop" },
 ]) {
   test(`hide ${name}${type} dialog by pressing Escape`, async ({ page }) => {
-    await getButton(page, "Open dialog").click();
-    await getButton(page, `${name}${type}`).click();
-    await getButton(page, `${name}${type} ${name}`).click();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name}${type}`)).toBeVisible();
-    await expect(getDialog(page, `${name}${type} ${name}`)).toBeVisible();
+    const q = query(page);
+    await q.button("Open dialog").click();
+    await q.button(`${name}${type}`).click();
+    await q.button(`${name}${type} ${name}`).click();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).toBeVisible();
+    await expect(q.dialog(`${name}${type} ${name}`)).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", false);
     await expectAccessibleDialog(page, `${name}${type}`, false);
     await expectAccessibleDialog(page, `${name}${type} ${name}`, true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.keyboard.press("Escape");
-    await expect(getDialog(page, `${name}${type} ${name}`)).not.toBeVisible();
-    await expect(getDialog(page, `${name}${type}`)).toBeVisible();
+    await expect(q.dialog(`${name}${type} ${name}`)).not.toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", false);
     await expectAccessibleDialog(page, `${name}${type}`, true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.keyboard.press("Escape");
-    await expect(getDialog(page, `${name}${type}`)).not.toBeVisible();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).not.toBeVisible();
+    await expect(q.dialog("Dialog")).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.keyboard.press("Escape");
-    await expect(getButton(page, "Open dialog")).toBeFocused();
-    await expect(getDialog(page, "Dialog")).not.toBeVisible();
+    await expect(q.button("Open dialog")).toBeFocused();
+    await expect(q.dialog("Dialog")).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(true);
   });
 }
@@ -93,30 +107,31 @@ for (const { name, type } of [
   { name: "sibling", type: " no portal portal" },
 ]) {
   test(`hide ${name}${type} dialog by clicking outside`, async ({ page }) => {
-    await getButton(page, "Open dialog").click();
-    await getButton(page, `${name}${type}`).click();
-    await getButton(page, `${name}${type} ${name}`).click();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name}${type}`)).toBeVisible();
-    await expect(getDialog(page, `${name}${type} ${name}`)).toBeVisible();
+    const q = query(page);
+    await q.button("Open dialog").click();
+    await q.button(`${name}${type}`).click();
+    await q.button(`${name}${type} ${name}`).click();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).toBeVisible();
+    await expect(q.dialog(`${name}${type} ${name}`)).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", false);
     await expectAccessibleDialog(page, `${name}${type}`, false);
     await expectAccessibleDialog(page, `${name}${type} ${name}`, true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.mouse.click(1, 1);
-    await expect(getDialog(page, `${name}${type} ${name}`)).not.toBeVisible();
-    await expect(getDialog(page, `${name}${type}`)).toBeVisible();
+    await expect(q.dialog(`${name}${type} ${name}`)).not.toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", false);
     await expectAccessibleDialog(page, `${name}${type}`, true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.mouse.click(1, 1);
-    await expect(getDialog(page, `${name}${type}`)).not.toBeVisible();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).not.toBeVisible();
+    await expect(q.dialog("Dialog")).toBeVisible();
     await expectAccessibleDialog(page, "Dialog", true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.mouse.click(1, 1);
-    await expect(getButton(page, "Open dialog")).toBeFocused();
-    await expect(getDialog(page, "Dialog")).not.toBeVisible();
+    await expect(q.button("Open dialog")).toBeFocused();
+    await expect(q.dialog("Dialog")).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(true);
   });
 }
@@ -125,19 +140,18 @@ for (const name of ["nested", "sibling"]) {
   test(`hide all ${name} no backdrop dialogs by clicking outside`, async ({
     page,
   }) => {
-    await getButton(page, "Open dialog").click();
-    await getButton(page, `${name} no backdrop`).click();
-    await getButton(page, `${name} no backdrop ${name}`).click();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop`)).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop ${name}`)).toBeVisible();
+    const q = query(page);
+    await q.button("Open dialog").click();
+    await q.button(`${name} no backdrop`).click();
+    await q.button(`${name} no backdrop ${name}`).click();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop`)).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop ${name}`)).toBeVisible();
     await page.mouse.click(1, 1);
-    await expect(getDialog(page, "Dialog")).not.toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop`)).not.toBeVisible();
-    await expect(
-      getDialog(page, `${name} no backdrop ${name}`),
-    ).not.toBeVisible();
-    await expect(getButton(page, "Open dialog")).toBeFocused();
+    await expect(q.dialog("Dialog")).not.toBeVisible();
+    await expect(q.dialog(`${name} no backdrop`)).not.toBeVisible();
+    await expect(q.dialog(`${name} no backdrop ${name}`)).not.toBeVisible();
+    await expect(q.button("Open dialog")).toBeFocused();
   });
 }
 
@@ -145,21 +159,20 @@ for (const name of ["nested", "sibling"]) {
   test(`hide only the topmost ${name} no backdrop dialog by on the parent dialog`, async ({
     page,
   }) => {
-    await getButton(page, "Open dialog").click();
-    await getButton(page, `${name} no backdrop`).click();
-    await getButton(page, `${name} no backdrop ${name}`).click();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop`)).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop ${name}`)).toBeVisible();
+    const q = query(page);
+    await q.button("Open dialog").click();
+    await q.button(`${name} no backdrop`).click();
+    await q.button(`${name} no backdrop ${name}`).click();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop`)).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop ${name}`)).toBeVisible();
     await page.mouse.click(500, 220);
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop`)).toBeVisible();
-    await expect(
-      getDialog(page, `${name} no backdrop ${name}`),
-    ).not.toBeVisible();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop`)).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop ${name}`)).not.toBeVisible();
     await page.mouse.click(500, 280);
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await expect(getDialog(page, `${name} no backdrop`)).not.toBeVisible();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await expect(q.dialog(`${name} no backdrop`)).not.toBeVisible();
   });
 }
 
@@ -169,19 +182,20 @@ for (const { name, type } of [
   { name: "sibling", type: " dismiss animated unmount" },
 ]) {
   test(`${name}${type}`, async ({ page }) => {
-    await getButton(page, "Open dialog").click();
-    await expect(getDialog(page, "Dialog")).toBeVisible();
-    await getButton(page, `${name}${type}`).click();
-    await expect(getDialog(page, `${name}${type}`)).toBeVisible();
-    await expect(getDialog(page, "Dialog")).not.toBeVisible();
+    const q = query(page);
+    await q.button("Open dialog").click();
+    await expect(q.dialog("Dialog")).toBeVisible();
+    await q.button(`${name}${type}`).click();
+    await expect(q.dialog(`${name}${type}`)).toBeVisible();
+    await expect(q.dialog("Dialog")).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(false);
-    await getButton(page, `${name}${type} ${name}`).click();
-    await expect(getDialog(page, `${name}${type} ${name}`)).toBeVisible();
-    await expect(getDialog(page, `${name}${type}`)).not.toBeVisible();
+    await q.button(`${name}${type} ${name}`).click();
+    await expect(q.dialog(`${name}${type} ${name}`)).toBeVisible();
+    await expect(q.dialog(`${name}${type}`)).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.keyboard.press("Escape");
-    await expect(getButton(page, "Open dialog")).toBeFocused();
-    await expect(getDialog(page, `${name}${type} ${name}`)).not.toBeVisible();
+    await expect(q.button("Open dialog")).toBeFocused();
+    await expect(q.dialog(`${name}${type} ${name}`)).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(true);
   });
 }
