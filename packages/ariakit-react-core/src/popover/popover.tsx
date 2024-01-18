@@ -398,7 +398,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       props,
       (element) => (
         <div
-          role="presentation"
           {...wrapperProps}
           style={{
             // https://floating-ui.com/docs/computeposition#initial-layout

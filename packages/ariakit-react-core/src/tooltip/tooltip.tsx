@@ -100,6 +100,11 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
  * Renders a tooltip element that visually describes a
  * [`TooltipAnchor`](https://ariakit.org/reference/tooltip-anchor) when it
  * receives focus or is hovered.
+ *
+ * The tooltip is strictly for visual purposes. It's your responsibility to
+ * ensure the anchor element has an accessible name. See [Tooltip anchors must
+ * have accessible
+ * names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names)
  * @see https://ariakit.org/components/tooltip
  * @example
  * ```jsx {3}

@@ -14,6 +14,16 @@ import { createStore } from "../utils/store.js";
 export function createTooltipStore(
   props: TooltipStoreProps = {},
 ): TooltipStore {
+  if (process.env.NODE_ENV !== "production") {
+    if (props.type === "label") {
+      console.warn(
+        "The `type` option on the tooltip store is deprecated.",
+        "Render a visually hidden label or use the `aria-label` or `aria-labelledby` attributes on the anchor element instead.",
+        "See https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names",
+      );
+    }
+  }
+
   const syncState = props.store?.getState();
 
   const hovercard = createHovercardStore({

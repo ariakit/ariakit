@@ -17,19 +17,17 @@ export interface TooltipButtonProps
   title: ReactNode;
   tooltipProps?: TooltipProps;
   fixed?: boolean;
-  isLabel?: boolean;
 }
 
 export const TooltipButton = forwardRef(function TooltipButton({
   title,
   tooltipProps,
   fixed,
-  isLabel,
   store,
   ...props
 }: TooltipButtonProps) {
   return (
-    <TooltipProvider store={store} type={isLabel ? "label" : "description"}>
+    <TooltipProvider store={store}>
       <Role.button
         {...props}
         render={<TooltipAnchor render={<Button render={props.render} />} />}
