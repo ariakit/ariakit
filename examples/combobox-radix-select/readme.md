@@ -37,8 +37,8 @@ Explore the Ariakit components used in this example:
 ## Basic structure
 
 ```jsx "ComboboxProvider" "Combobox" "ComboboxList" "ComboboxItem"
-<ComboboxProvider>
-  <RadixSelect.Root>
+<RadixSelect.Root>
+  <ComboboxProvider>
     <RadixSelect.Trigger />
     <RadixSelect.Content>
       <Combobox />
@@ -48,8 +48,8 @@ Explore the Ariakit components used in this example:
         </RadixSelect.Item>
       </ComboboxList>
     </RadixSelect.Content>
-  </RadixSelect.Root>
-</ComboboxProvider>
+  </ComboboxProvider>
+</RadixSelect.Root>
 ```
 
 ## Sharing state between Ariakit and Radix UI
