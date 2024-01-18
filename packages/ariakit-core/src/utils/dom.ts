@@ -215,7 +215,6 @@ export function getPopupItemRole(
     menu: "menuitem",
     listbox: "option",
     tree: "treeitem",
-    grid: "gridcell",
   };
   const popupRole = getPopupRole(element);
   if (!popupRole) return fallback;

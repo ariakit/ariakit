@@ -11,7 +11,7 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 const expectActiveOption = (page: Page, name: string) =>
-  expect(getOption(page, name)).toHaveAttribute("data-active-item", "");
+  expect(getOption(page, name)).toHaveAttribute("data-active-item");
 
 const expectSelectedOption = (page: Page, name: string) =>
   expect(getOption(page, name)).toHaveAttribute("aria-selected", "true");

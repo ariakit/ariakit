@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
 import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { MenuStore } from "./menu-store.js";
+
+const TagName = "h1" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuHeading` component. This hook must be used in
@@ -16,10 +20,12 @@ import type { MenuStore } from "./menu-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
-  props = useHovercardHeading(props);
-  return props;
-});
+export const useMenuHeading = createHook<TagName, MenuHeadingOptions>(
+  function useMenuHeading(props) {
+    props = useHovercardHeading(props);
+    return props;
+  },
+);
 
 /**
  * Renders a heading in a menu. This component must be wrapped within
@@ -35,16 +41,14 @@ export const useMenuHeading = createHook<MenuHeadingOptions>((props) => {
  * </MenuProvider>
  * ```
  */
-export const MenuHeading = createComponent<MenuHeadingOptions>((props) => {
+export const MenuHeading = forwardRef(function MenuHeading(
+  props: MenuHeadingProps,
+) {
   const htmlProps = useMenuHeading(props);
-  return createElement("h1", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuHeading.displayName = "MenuHeading";
-}
-
-export interface MenuHeadingOptions<T extends As = "h1">
+export interface MenuHeadingOptions<T extends ElementType = TagName>
   extends HovercardHeadingOptions<T> {
   /**
    * Object returned by the
@@ -56,6 +60,7 @@ export interface MenuHeadingOptions<T extends As = "h1">
   store?: MenuStore;
 }
 
-export type MenuHeadingProps<T extends As = "h1"> = Props<
+export type MenuHeadingProps<T extends ElementType = TagName> = Props<
+  T,
   MenuHeadingOptions<T>
 >;

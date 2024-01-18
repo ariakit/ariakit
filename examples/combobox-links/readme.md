@@ -29,7 +29,7 @@ Using a [Combobox](/components/combobox) with items rendered as links that can b
 
 ## Rendering a link
 
-The [`ComboboxItem`](/reference/combobox-item) component can be rendered as a link using the [`render`](/apis/combobox-item#render) prop:
+The [`ComboboxItem`](/reference/combobox-item) component can be rendered as a link using the [`render`](/reference/combobox-item#render) prop:
 
 ```jsx "render"
 <ComboboxItem

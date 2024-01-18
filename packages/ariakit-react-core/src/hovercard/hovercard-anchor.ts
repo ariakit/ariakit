@@ -1,4 +1,4 @@
-import type { MouseEvent as ReactMouseEvent } from "react";
+import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
@@ -11,10 +11,14 @@ import {
   useIsMouseMoving,
   useMergeRefs,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useHovercardProviderContext } from "./hovercard-context.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "a" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardAnchor` component.
@@ -27,8 +31,8 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Hovercard store={store}>Details</Hovercard>
  * ```
  */
-export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
-  ({ store, showOnHover = true, ...props }) => {
+export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
+  function useHovercardAnchor({ store, showOnHover = true, ...props }) {
     const context = useHovercardProviderContext();
     store = store || context;
 
@@ -64,41 +68,39 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
     const showOnHoverProp = useBooleanEvent(showOnHover);
     const isMouseMoving = useIsMouseMoving();
 
-    const onMouseMove = useEvent(
-      (event: ReactMouseEvent<HTMLAnchorElement>) => {
-        onMouseMoveProp?.(event);
-        if (disabled) return;
-        if (!store) return;
-        if (event.defaultPrevented) return;
-        if (showTimeoutRef.current) return;
+    const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
+      onMouseMoveProp?.(event);
+      if (disabled) return;
+      if (!store) return;
+      if (event.defaultPrevented) return;
+      if (showTimeoutRef.current) return;
+      if (!isMouseMoving()) return;
+      if (!showOnHoverProp(event)) return;
+      const element = event.currentTarget;
+      store.setAnchorElement(element);
+      store.setDisclosureElement(element);
+      const { showTimeout, timeout } = store.getState();
+      const showHovercard = () => {
+        showTimeoutRef.current = 0;
+        // Let's check again if the mouse is moving. This is to avoid showing
+        // the hovercard on mobile clicks or after clicking on the anchor.
         if (!isMouseMoving()) return;
-        if (!showOnHoverProp(event)) return;
-        const element = event.currentTarget;
-        store.setAnchorElement(element);
-        store.setDisclosureElement(element);
-        const { showTimeout, timeout } = store.getState();
-        const showHovercard = () => {
-          showTimeoutRef.current = 0;
-          // Let's check again if the mouse is moving. This is to avoid showing
-          // the hovercard on mobile clicks or after clicking on the anchor.
-          if (!isMouseMoving()) return;
-          store?.setAnchorElement(element);
-          store?.show();
-          queueMicrotask(() => {
-            // We need to set the anchor element as the hovercard disclosure
-            // element only when the hovercard is shown so it doesn't get
-            // assigned an arbitrary element by the dialog component.
-            store?.setDisclosureElement(element);
-          });
-        };
-        const timeoutMs = showTimeout ?? timeout;
-        if (timeoutMs === 0) {
-          showHovercard();
-        } else {
-          showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
-        }
-      },
-    );
+        store?.setAnchorElement(element);
+        store?.show();
+        queueMicrotask(() => {
+          // We need to set the anchor element as the hovercard disclosure
+          // element only when the hovercard is shown so it doesn't get
+          // assigned an arbitrary element by the dialog component.
+          store?.setDisclosureElement(element);
+        });
+      };
+      const timeoutMs = showTimeout ?? timeout;
+      if (timeoutMs === 0) {
+        showHovercard();
+      } else {
+        showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
+      }
+    });
 
     const ref = useCallback(
       (element: HTMLElement | null) => {
@@ -120,7 +122,7 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
       onMouseMove,
     };
 
-    props = useFocusable(props);
+    props = useFocusable<TagName>(props);
 
     return props;
   },
@@ -138,18 +140,14 @@ export const useHovercardAnchor = createHook<HovercardAnchorOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardAnchor = createComponent<HovercardAnchorOptions>(
-  (props) => {
-    const htmlProps = useHovercardAnchor(props);
-    return createElement("a", htmlProps);
-  },
-);
+export const HovercardAnchor = forwardRef(function HovercardAnchor(
+  props: HovercardAnchorProps,
+) {
+  const htmlProps = useHovercardAnchor(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardAnchor.displayName = "HovercardAnchor";
-}
-
-export interface HovercardAnchorOptions<T extends As = "a">
+export interface HovercardAnchorOptions<T extends ElementType = TagName>
   extends FocusableOptions<T> {
   /**
    * Object returned by the
@@ -172,6 +170,7 @@ export interface HovercardAnchorOptions<T extends As = "a">
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
-export type HovercardAnchorProps<T extends As = "a"> = Props<
+export type HovercardAnchorProps<T extends ElementType = TagName> = Props<
+  T,
   HovercardAnchorOptions<T>
 >;

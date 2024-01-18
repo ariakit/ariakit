@@ -16,6 +16,23 @@ Using just the necessary Ariakit components to build a [Combobox](/components/co
 
 <div data-tags></div>
 
+<aside data-type="note" title="Additional Combobox features">
+
+If you're searching for extra features such as filtering, multiple selections, and more, take a look at other examples:
+
+<div data-cards>
+
+- [](/examples/combobox-filtering)
+- [](/examples/combobox-multiple)
+- [](/examples/menu-combobox)
+- [](/examples/select-combobox)
+
+</div>
+
+</aside>
+
+## Live example
+
 <a href="./index.tsx" data-playground>Example</a>
 
 ## Components
@@ -94,33 +111,14 @@ Here are a few things to keep in mind when assembling these components:
 
 3. Finally, we must explicitly set `role="listbox"` on the [`ComboboxList`](/reference/combobox-list) component, otherwise Radix will overwrite it with `role="dialog"`.
 
-## Additional features
-
-Explore more examples to learn how to:
-
-- Dynamically filter combobox options with the [`setValue`](/reference/combobox-provider#setvalue) prop.
-- Automatically select the first item upon typing with the [`autoSelect`](/reference/combobox#autoselect) prop.
-- Group items using the [`ComboboxGroup`](/reference/combobox-group) component.
-- Allow multiple selections via the [`selectedValue`](/reference/combobox-provider#selectedvalue) prop.
-- Filter items inside a menu or select widget.
-
-<div data-cards>
-
-- [](/examples/combobox-filtering)
-- [](/examples/combobox-filtering-integrated)
-- [](/examples/combobox-group)
-- [](/examples/combobox-multiple)
-- [](/examples/menu-combobox)
-- [](/examples/select-combobox)
-
-</div>
-
 ## More examples
 
 <div data-cards="examples">
 
 - [](/examples/combobox-radix-select)
 - [](/examples/dialog-radix)
+- [](/examples/combobox-group)
+- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-links)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)

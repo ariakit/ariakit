@@ -34,10 +34,7 @@ test("maintain completion string while typing", async ({ page }) => {
   await expect(getCombobox(page)).toHaveValue("avocao");
   expect(await getSelectionValue(page)).toBe("");
   await expect(getOption(page, "Avocado")).toBeVisible();
-  await expect(getOption(page, "Avocado")).toHaveAttribute(
-    "data-active-item",
-    "",
-  );
+  await expect(getOption(page, "Avocado")).toHaveAttribute("data-active-item");
 });
 
 test("do not scroll when hovering over an item", async ({ page }) => {
@@ -134,9 +131,6 @@ test.describe("Non-flacky", () => {
     await page.keyboard.down("Backspace");
     await page.keyboard.down("Backspace");
     await page.keyboard.down("Backspace");
-    await expect(getOption(page, "Apple")).toHaveAttribute(
-      "data-active-item",
-      "",
-    );
+    await expect(getOption(page, "Apple")).toHaveAttribute("data-active-item");
   });
 });

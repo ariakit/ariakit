@@ -1,11 +1,12 @@
 import type {
+  ElementType,
   EventHandler,
   FocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   SyntheticEvent,
 } from "react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
@@ -19,13 +20,20 @@ import {
   hasFocus,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { disabledFromProps } from "@ariakit/core/utils/misc";
+import {
+  disabledFromProps,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 
@@ -172,15 +180,15 @@ function onGlobalKeyDown(event: KeyboardEvent) {
  * <Role {...props}>Focusable</Role>
  * ```
  */
-export const useFocusable = createHook<FocusableOptions>(
-  ({
+export const useFocusable = createHook<TagName, FocusableOptions>(
+  function useFocusable({
     focusable = true,
     accessibleWhenDisabled,
     autoFocus,
     onFocusVisible,
     ...props
-  }) => {
-    const ref = useRef<HTMLDivElement>(null);
+  }) {
+    const ref = useRef<HTMLType>(null);
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
@@ -215,9 +223,9 @@ export const useFocusable = createHook<FocusableOptions>(
     const trulyDisabled = !!disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
-    // When the focusable element is disabled, it doesn't trigger a blur event
-    // so we can't set focusVisible to false there. Instead, we have to do it
-    // here by checking the element's disabled attribute.
+    // When the focusable element is disabled, it doesn't trigger a blur event so
+    // we can't set focusVisible to false there. Instead, we have to do it here by
+    // checking the element's disabled attribute.
     useEffect(() => {
       if (!focusable) return;
       if (trulyDisabled && focusVisible) {
@@ -257,34 +265,35 @@ export const useFocusable = createHook<FocusableOptions>(
 
     const onMouseDownProp = props.onMouseDown;
 
-    const onMouseDown = useEvent((event: ReactMouseEvent<HTMLDivElement>) => {
+    const onMouseDown = useEvent((event: ReactMouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!focusable) return;
       const element = event.currentTarget;
       // Safari doesn't focus on buttons on mouse down like other
-      // browsers/platforms. Instead, it focuses on the closest focusable
-      // ancestor element, which is ultimately the body element. So we make sure
-      // to give focus to this Focusable element on mouse down so it works
-      // consistently across browsers.
+      // browsers/platforms. Instead, it focuses on the closest focusable ancestor
+      // element, which is ultimately the body element. So we make sure to give
+      // focus to this Focusable element on mouse down so it works consistently
+      // across browsers.
       if (!isSafariBrowser) return;
       if (isPortalEvent(event)) return;
       if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
       // In future versions of Safari, it may change this behavior and start
-      // focusing on buttons on mouse down. To account for that, we must check
-      // if the element has received focus before.
+      // focusing on buttons on mouse down. To account for that, we must check if
+      // the element has received focus before.
       let receivedFocus = false;
       const onFocus = () => {
         receivedFocus = true;
       };
       const options = { capture: true, once: true };
       element.addEventListener("focusin", onFocus, options);
-      // We can't focus right away after on mouse down, otherwise it would
-      // prevent drag events from happening. So we queue the focus to the next
-      // animation frame, but always before the next pointerup event. The
-      // pointerup event might happen before the next animation frame on touch
-      // devices or by tapping on a MacBook's trackpad, for example.
-      queueBeforeEvent(element, "pointerup", () => {
+      // We can't focus right away after on mouse down, otherwise it would prevent
+      // drag events from happening. So we queue the focus to the next animation
+      // frame, but always before the next mouseup event. The mouseup event might
+      // happen before the next animation frame on touch devices or by tapping on
+      // a MacBook's trackpad, for example. We can't use pointerup otherwise it
+      // breaks on mobile Safari. See dialog-menu/test-mobile test.
+      queueBeforeEvent(element, "mouseup", () => {
         element.removeEventListener("focusin", onFocus, true);
         if (receivedFocus) return;
         focusIfNeeded(element);
@@ -292,8 +301,8 @@ export const useFocusable = createHook<FocusableOptions>(
     });
 
     const handleFocusVisible = (
-      event: SyntheticEvent<HTMLDivElement>,
-      currentTarget?: HTMLDivElement,
+      event: SyntheticEvent<HTMLType>,
+      currentTarget?: HTMLType,
     ) => {
       if (currentTarget) {
         event.currentTarget = currentTarget;
@@ -312,24 +321,22 @@ export const useFocusable = createHook<FocusableOptions>(
 
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useEvent(
-      (event: ReactKeyboardEvent<HTMLDivElement>) => {
-        onKeyDownCaptureProp?.(event);
-        if (event.defaultPrevented) return;
-        if (!focusable) return;
-        if (focusVisible) return;
-        if (event.metaKey) return;
-        if (event.altKey) return;
-        if (event.ctrlKey) return;
-        if (!isSelfTarget(event)) return;
-        const element = event.currentTarget;
-        queueMicrotask(() => handleFocusVisible(event, element));
-      },
-    );
+    const onKeyDownCapture = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
+      onKeyDownCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!focusable) return;
+      if (focusVisible) return;
+      if (event.metaKey) return;
+      if (event.altKey) return;
+      if (event.ctrlKey) return;
+      if (!isSelfTarget(event)) return;
+      const element = event.currentTarget;
+      queueMicrotask(() => handleFocusVisible(event, element));
+    });
 
     const onFocusCaptureProp = props.onFocusCapture;
 
-    const onFocusCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onFocusCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!focusable) return;
@@ -354,7 +361,7 @@ export const useFocusable = createHook<FocusableOptions>(
 
     // Note: Can't use onBlurCapture here otherwise it will not work with
     // CompositeItem's with the virtualFocus state set to true.
-    const onBlur = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurProp?.(event);
       if (!focusable) return;
       if (!isFocusEventOutside(event)) return;
@@ -386,17 +393,21 @@ export const useFocusable = createHook<FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref, props.as);
+    const tagName = useTagName(ref);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
-    const style = trulyDisabled
-      ? { pointerEvents: "none" as const, ...props.style }
-      : props.style;
+
+    const style = useMemo(() => {
+      if (trulyDisabled) {
+        return { pointerEvents: "none" as const, ...props.style };
+      }
+      return props.style;
+    }, [trulyDisabled, props.style]);
 
     props = {
-      "data-focus-visible": focusable && focusVisible ? "" : undefined,
-      "data-autofocus": autoFocus ? true : undefined,
-      "aria-disabled": disabled ? true : undefined,
+      "data-focus-visible": (focusable && focusVisible) || undefined,
+      "data-autofocus": autoFocus || undefined,
+      "aria-disabled": disabled || undefined,
       ...props,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
@@ -419,7 +430,7 @@ export const useFocusable = createHook<FocusableOptions>(
       onBlur,
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -444,16 +455,13 @@ export const useFocusable = createHook<FocusableOptions>(
  * <Focusable>Focusable</Focusable>
  * ```
  */
-export const Focusable = createComponent<FocusableOptions>((props) => {
-  props = useFocusable(props);
-  return createElement("div", props);
+export const Focusable = forwardRef(function Focusable(props: FocusableProps) {
+  const htmlProps = useFocusable(props);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Focusable.displayName = "Focusable";
-}
-
-export interface FocusableOptions<T extends As = "div"> extends Options<T> {
+export interface FocusableOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Determines if the element is disabled. This sets the `aria-disabled`
    * attribute accordingly, enabling support for all elements, including those
@@ -495,10 +503,10 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
    * features should be active on non-native focusable elements.
    *
    * **Note**: This prop only turns off the additional features provided by the
-   * [Focusable](https://ariakit.org/components/focusable) component. Non-native
-   * focusable elements will lose their focusability entirely. However, native
-   * focusable elements will retain their inherent focusability, but without
-   * added features such as improved
+   * [`Focusable`](https://ariakit.org/reference/focusable) component.
+   * Non-native focusable elements will lose their focusability entirely.
+   * However, native focusable elements will retain their inherent focusability,
+   * but without added features such as improved
    * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus),
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
    * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
@@ -544,4 +552,7 @@ export interface FocusableOptions<T extends As = "div"> extends Options<T> {
   >;
 }
 
-export type FocusableProps<T extends As = "div"> = Props<FocusableOptions<T>>;
+export type FocusableProps<T extends ElementType = TagName> = Props<
+  T,
+  FocusableOptions<T>
+>;

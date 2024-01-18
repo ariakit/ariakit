@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
+import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
 import { usePopoverContext } from "./popover-context.js";
 import type { PopoverStore } from "./popover-store.js";
 
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const defaultSize = 30;
@@ -45,8 +48,8 @@ function useComputedStyle(store: PopoverStore) {
  * </Popover>
  * ```
  */
-export const usePopoverArrow = createHook<PopoverArrowOptions>(
-  ({ store, size = defaultSize, ...props }) => {
+export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
+  function usePopoverArrow({ store, size = defaultSize, ...props }) {
     const context = usePopoverContext();
     store = store || context;
 
@@ -98,7 +101,7 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
       },
     };
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -117,16 +120,15 @@ export const usePopoverArrow = createHook<PopoverArrowOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverArrow = createComponent<PopoverArrowOptions>((props) => {
+export const PopoverArrow = forwardRef(function PopoverArrow(
+  props: PopoverArrowProps,
+) {
   const htmlProps = usePopoverArrow(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  PopoverArrow.displayName = "PopoverArrow";
-}
-
-export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
+export interface PopoverArrowOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
@@ -146,6 +148,7 @@ export interface PopoverArrowOptions<T extends As = "div"> extends Options<T> {
   size?: number;
 }
 
-export type PopoverArrowProps<T extends As = "div"> = Props<
+export type PopoverArrowProps<T extends ElementType = TagName> = Props<
+  T,
   PopoverArrowOptions<T>
 >;

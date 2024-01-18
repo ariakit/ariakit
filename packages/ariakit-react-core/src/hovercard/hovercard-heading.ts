@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
 import { usePopoverHeading } from "../popover/popover-heading.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "h1" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardHeading` component. This hook must be
@@ -16,8 +20,8 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Role {...props}>Heading</Role>
  * ```
  */
-export const useHovercardHeading = createHook<HovercardHeadingOptions>(
-  (props) => {
+export const useHovercardHeading = createHook<TagName, HovercardHeadingOptions>(
+  function useHovercardHeading(props) {
     props = usePopoverHeading(props);
     return props;
   },
@@ -37,18 +41,14 @@ export const useHovercardHeading = createHook<HovercardHeadingOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardHeading = createComponent<HovercardHeadingOptions>(
-  (props) => {
-    const htmlProps = useHovercardHeading(props);
-    return createElement("h1", htmlProps);
-  },
-);
+export const HovercardHeading = forwardRef(function HovercardHeading(
+  props: HovercardHeadingProps,
+) {
+  const htmlProps = useHovercardHeading(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardHeading.displayName = "HovercardHeading";
-}
-
-export interface HovercardHeadingOptions<T extends As = "h1">
+export interface HovercardHeadingOptions<T extends ElementType = TagName>
   extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
@@ -61,6 +61,7 @@ export interface HovercardHeadingOptions<T extends As = "h1">
   store?: HovercardStore;
 }
 
-export type HovercardHeadingProps<T extends As = "h1"> = Props<
+export type HovercardHeadingProps<T extends ElementType = TagName> = Props<
+  T,
   HovercardHeadingOptions<T>
 >;
