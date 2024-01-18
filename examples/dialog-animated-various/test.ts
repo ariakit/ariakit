@@ -11,6 +11,7 @@ test.each([
   "AnimationUnmount",
   "AnimationNoModal",
   "AnimationLeave",
+  "AnimationUnmountLeave",
 ])("%s", async (name) => {
   await click(q.button(name));
   expect(q.dialog(name)).toBeVisible();

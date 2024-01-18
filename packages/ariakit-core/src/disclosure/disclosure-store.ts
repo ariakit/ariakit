@@ -115,7 +115,6 @@ export interface DisclosureStoreState {
    * - If it's set to a number, the `animating` state will be `true` when the
    *   content is shown or hidden and it will wait for the number of
    *   milliseconds to pass before becoming `false`.
-   * @default true
    */
   animated: boolean | number;
   /**
@@ -195,11 +194,10 @@ export interface DisclosureStoreFunctions
 }
 
 export interface DisclosureStoreOptions
-  extends StoreOptions<DisclosureStoreState, "open"> {
+  extends StoreOptions<DisclosureStoreState, "open" | "animated"> {
   /**
    * @deprecated Manually setting the `animated` prop is no longer necessary.
    * This will be removed in a future release.
-   * @default true
    */
   animated?: DisclosureStoreState["animated"];
   /**

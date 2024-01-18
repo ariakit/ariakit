@@ -13,6 +13,7 @@ export default function Example() {
   const [animationBackdrop, setAnimationBackdrop] = useState(false);
   const [animationNoModal, setAnimationNoModal] = useState(false);
   const [animationLeave, setAnimationLeave] = useState(false);
+  const [animationUnmountLeave, setAnimationUnmountLeave] = useState(false);
   return (
     <div className="wrapper">
       <Ariakit.Button onClick={() => setTransition(true)} className="button">
@@ -186,6 +187,26 @@ export default function Example() {
         </Ariakit.DialogHeading>
         <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
+
+      <Ariakit.DialogProvider
+        open={animationUnmountLeave}
+        setOpen={setAnimationUnmountLeave}
+      >
+        <Ariakit.Button
+          onClick={() => setAnimationUnmountLeave(true)}
+          className="button"
+        >
+          AnimationUnmountLeave
+        </Ariakit.Button>
+        <Ariakit.Dialog unmountOnHide className="dialog dialog-animation-leave">
+          <Ariakit.DialogHeading className="heading">
+            AnimationUnmountLeave
+          </Ariakit.DialogHeading>
+          <Ariakit.DialogDismiss className="button">
+            Close
+          </Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </Ariakit.DialogProvider>
     </div>
   );
 }

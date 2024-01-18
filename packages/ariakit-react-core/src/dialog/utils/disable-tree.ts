@@ -48,9 +48,12 @@ export function disableTreeOutside(id: string, elements: Elements) {
       cleanups.unshift(disableTree(element, elements));
     },
     (element) => {
-      if (element.hasAttribute("role")) {
-        cleanups.unshift(setAttribute(element, "role", "none"));
-      }
+      // Parent accessible elements that are not part of the modal context
+      // should have their role set to "none" so that they are not exposed to
+      // screen readers.
+      if (!element.hasAttribute("role")) return;
+      if (elements.some((el) => el && contains(el, element))) return;
+      cleanups.unshift(setAttribute(element, "role", "none"));
     },
   );
 
