@@ -9,7 +9,7 @@ import type { Store } from "../utils/store.js";
 import { useStore } from "../utils/store.js";
 
 export function useCompositeOverflowStoreProps<
-  T extends CompositeOverflowStore,
+  T extends Core.CompositeOverflowStore,
 >(store: T, update: () => void, props: CompositeOverflowStoreProps) {
   return usePopoverStoreProps(store, update, props);
 }
@@ -46,15 +46,15 @@ export interface CompositeOverflowStoreState
     PopoverStoreState {}
 
 export interface CompositeOverflowStoreFunctions
-  extends Core.CompositeOverflowStoreFunctions,
+  extends Omit<Core.CompositeOverflowStoreFunctions, "disclosure">,
     PopoverStoreFunctions {}
 
 export interface CompositeOverflowStoreOptions
-  extends Core.CompositeOverflowStoreOptions,
+  extends Omit<Core.CompositeOverflowStoreOptions, "disclosure">,
     PopoverStoreOptions {}
 
 export type CompositeOverflowStoreProps = CompositeOverflowStoreOptions &
-  Core.CompositeOverflowStoreProps;
+  Omit<Core.CompositeOverflowStoreProps, "disclosure">;
 
 export type CompositeOverflowStore = CompositeOverflowStoreFunctions &
-  Store<Core.CompositeOverflowStore>;
+  Omit<Store<Core.CompositeOverflowStore>, "disclosure">;

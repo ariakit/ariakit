@@ -69,6 +69,7 @@ export function createDisclosureStore(
 
   return {
     ...disclosure,
+    disclosure: props.disclosure,
     setOpen: (value) => disclosure.setState("open", value),
     show: () => disclosure.setState("open", true),
     hide: () => disclosure.setState("open", false),
@@ -114,7 +115,6 @@ export interface DisclosureStoreState {
    * - If it's set to a number, the `animating` state will be `true` when the
    *   content is shown or hidden and it will wait for the number of
    *   milliseconds to pass before becoming `false`.
-   * @default false
    */
   animated: boolean | number;
   /**
@@ -131,7 +131,8 @@ export interface DisclosureStoreState {
   disclosureElement: HTMLElement | null;
 }
 
-export interface DisclosureStoreFunctions {
+export interface DisclosureStoreFunctions
+  extends Pick<DisclosureStoreOptions, "disclosure"> {
   /**
    * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
    * state.
@@ -194,6 +195,11 @@ export interface DisclosureStoreFunctions {
 
 export interface DisclosureStoreOptions
   extends StoreOptions<DisclosureStoreState, "open" | "animated"> {
+  /**
+   * @deprecated Manually setting the `animated` prop is no longer necessary.
+   * This will be removed in a future release.
+   */
+  animated?: DisclosureStoreState["animated"];
   /**
    * Whether the content should be visible by default.
    * @default false

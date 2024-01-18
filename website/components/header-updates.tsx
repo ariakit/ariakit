@@ -87,7 +87,7 @@ export function HeaderUpdates({
         store={popover}
         unmountOnHide
         shift={-8}
-        className="max-w-[min(var(--popover-available-width),480px)] origin-top-right animate-in fade-in zoom-in-95 data-[leave]:animate-out data-[leave]:fade-out data-[leave]:zoom-out-95"
+        className="max-w-[min(var(--popover-available-width),480px)] origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
         onClick={(event) => {
           if (!(event.target instanceof Element)) return;
           const closestAnchor = event.target.closest("a");

@@ -55,7 +55,7 @@ export function HeaderAriakitPlus() {
         )}
       </SignedOut>
       <SignedIn>
-        <MenuProvider placement="bottom-end" animated>
+        <MenuProvider placement="bottom-end">
           <MenuButton
             className="px-3 text-sm"
             render={<Command variant="plus" />}
@@ -67,7 +67,7 @@ export function HeaderAriakitPlus() {
             gutter={4}
             shift={-8}
             unmountOnHide
-            className="origin-top-right animate-in fade-in zoom-in-95 data-[leave]:animate-out data-[leave]:fade-out data-[leave]:zoom-out-95"
+            className="origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
             render={<Popup />}
           >
             <MenuItem

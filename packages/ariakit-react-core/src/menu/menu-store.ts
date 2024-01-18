@@ -30,17 +30,19 @@ export function useMenuStoreProps<T extends Core.MenuStore>(
   props: MenuStoreProps,
 ) {
   useUpdateEffect(update, [props.combobox, props.parent, props.menubar]);
-
-  store = useCompositeStoreProps(store, update, props);
-  store = useHovercardStoreProps(store, update, props);
-
   useStoreProps(store, props, "values", "setValues");
-
-  return Object.assign(store, {
-    combobox: props.combobox,
-    parent: props.parent,
-    menubar: props.menubar,
-  });
+  return Object.assign(
+    useHovercardStoreProps(
+      useCompositeStoreProps(store, update, props),
+      update,
+      props,
+    ),
+    {
+      combobox: props.combobox,
+      parent: props.parent,
+      menubar: props.menubar,
+    },
+  );
 }
 
 /**
@@ -86,13 +88,19 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
     HovercardStoreState {}
 
 export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
-  extends Pick<MenuStoreOptions, "combobox" | "parent" | "menubar">,
-    Omit<Core.MenuStoreFunctions<T>, "combobox" | "parent" | "menubar">,
+  extends Pick<
+      MenuStoreOptions,
+      "combobox" | "parent" | "menubar" | "disclosure"
+    >,
+    Omit<
+      Core.MenuStoreFunctions<T>,
+      "combobox" | "parent" | "menubar" | "disclosure"
+    >,
     CompositeStoreFunctions,
     HovercardStoreFunctions {}
 
 export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
-  extends Core.MenuStoreOptions<T>,
+  extends Omit<Core.MenuStoreOptions<T>, "disclosure">,
     CompositeStoreOptions,
     HovercardStoreOptions {
   /**
@@ -138,8 +146,14 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
 
 export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
   extends MenuStoreOptions<T>,
-    Omit<Core.MenuStoreProps<T>, "combobox" | "parent" | "menubar"> {}
+    Omit<
+      Core.MenuStoreProps<T>,
+      "combobox" | "parent" | "menubar" | "disclosure"
+    > {}
 
 export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
   extends MenuStoreFunctions<T>,
-    Omit<Store<Core.MenuStore<T>>, "combobox" | "parent" | "menubar"> {}
+    Omit<
+      Store<Core.MenuStore<T>>,
+      "combobox" | "parent" | "menubar" | "disclosure"
+    > {}

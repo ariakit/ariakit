@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { flushSync } from "react-dom";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
 import {
   useId,
@@ -35,7 +36,8 @@ function parseCSSTime(...times: string[]) {
     .join(", ")
     .split(", ")
     .reduce((longestTime, currentTimeString) => {
-      const currentTime = parseFloat(currentTimeString || "0s") * 1000;
+      const multiplier = currentTimeString.endsWith("ms") ? 1 : 1000;
+      const currentTime = parseFloat(currentTimeString || "0s") * multiplier;
       // When multiple times are specified, we want to use the longest one so we
       // wait until the longest transition has finished.
       if (currentTime > longestTime) return currentTime;
@@ -81,6 +83,22 @@ export const useDisclosureContent = createHook<
   const mounted = store.useState("mounted");
   const animated = store.useState("animated");
   const contentElement = store.useState("contentElement");
+  const otherElement = useStoreState(store.disclosure, "contentElement");
+
+  // When the disclosure content element is rendered, we automatically set the
+  // animated state to true. If there's no enter animation, the animated state
+  // will be set to false later on.
+  useSafeLayoutEffect(() => {
+    let previousAnimated: boolean | number | undefined;
+    store?.setState("animated", (animated) => {
+      previousAnimated = animated;
+      return true;
+    });
+    return () => {
+      if (previousAnimated === undefined) return;
+      store?.setState("animated", previousAnimated);
+    };
+  }, [store]);
 
   useSafeLayoutEffect(() => {
     if (!animated) return;
@@ -95,47 +113,86 @@ export const useDisclosureContent = createHook<
     // when the data attribute is added before the element is fully rendered
     // in the DOM, which wouldn't trigger the animation.
     return afterPaint(() => {
-      setTransition(open ? "enter" : "leave");
+      setTransition(open ? "enter" : mounted ? "leave" : null);
     });
-  }, [animated, contentElement, open]);
+  }, [animated, contentElement, open, mounted]);
 
   useSafeLayoutEffect(() => {
     if (!store) return;
     if (!animated) return;
-    if (!contentElement) return;
-    if (!transition) return;
-    if (transition === "enter" && !open) return;
+    const stopAnimation = () => store?.setState("animating", false);
+    const stopAnimationSync = () => flushSync(stopAnimation);
+    if (!transition || !contentElement) {
+      stopAnimation();
+      return;
+    }
+    // Ignore transition states that don't match the current open state. This
+    // may happen because transitions are updated asynchronously using
+    // requestAnimationFrame.
     if (transition === "leave" && open) return;
+    if (transition === "enter" && !open) return;
     // When the animated state is a number, the user has manually set the
     // animation timeout, so we just respect it.
     if (typeof animated === "number") {
-      const timeoutMs = animated;
-      return afterTimeout(timeoutMs, store.stopAnimation);
+      const timeout = animated;
+      return afterTimeout(timeout, stopAnimationSync);
     }
-    // Otherwise, we need to parse the CSS transition/animation duration and
-    // delay to know when the animation ends. This is safer than relying on
-    // the transitionend/animationend events because it's not guaranteed that
-    // these events will fire. For example, if the element is removed from the
-    // DOM before the animation ends or if the animation wasn't triggered in
-    // the first place, the events won't fire.
+    // We need to parse the CSS transition/animation duration and delay to know
+    // when the animation ends. This is safer than relying on the
+    // transitionend/animationend events because it's not guaranteed that these
+    // events will fire. For example, if the element is removed from the DOM
+    // before the animation ends or if the animation wasn't triggered in the
+    // first place, the events won't fire. Besides, there may be multiple
+    // transitions or animations with different durations and delays, and we
+    // need to consider the longest one.
     const {
       transitionDuration,
       animationDuration,
       transitionDelay,
       animationDelay,
     } = getComputedStyle(contentElement);
-    const delay = parseCSSTime(transitionDelay, animationDelay);
-    const duration = parseCSSTime(transitionDuration, animationDuration);
-    const timeoutMs = delay + duration;
-    // If the animation/transition delay and duration are 0, this means the
-    // element is not animated with CSS (they may be using framer-motion,
-    // react-spring, or something else). In this case, the user is responsible
-    // for calling `stopAnimation` when the animation ends.
-    if (!timeoutMs) return;
-    // TODO: We should probably warn if `stopAnimation` hasn't been called
-    // after X seconds.
-    return afterTimeout(timeoutMs, store.stopAnimation);
-  }, [store, animated, contentElement, open, transition]);
+    // If we're rendering a dialog backdrop, otherElement will be the dialog
+    // element itself. We need to consider both the backdrop and the dialog
+    // animation/transition durations and delays because the dialog may be
+    // animated while the backdrop is not.
+    const {
+      transitionDuration: transitionDuration2 = "0",
+      animationDuration: animationDuration2 = "0",
+      transitionDelay: transitionDelay2 = "0",
+      animationDelay: animationDelay2 = "0",
+    } = otherElement ? getComputedStyle(otherElement) : {};
+    const delay = parseCSSTime(
+      transitionDelay,
+      animationDelay,
+      transitionDelay2,
+      animationDelay2,
+    );
+    const duration = parseCSSTime(
+      transitionDuration,
+      animationDuration,
+      transitionDuration2,
+      animationDuration2,
+    );
+    const timeout = delay + duration;
+    // If the timeout is zero, there's no animation or transition, either
+    // because they weren't defined in the CSS or the duration was explicitly
+    // set to zero. In this scenario, we can halt the animation right away
+    // and, if we're entering, we can set the animatedRef to false to bypass
+    // the leave animation.
+    if (!timeout) {
+      if (transition === "enter") {
+        store.setState("animated", false);
+      }
+      stopAnimation();
+      return;
+    }
+    // Since setTimeout may be delayed by a few milliseconds, we need to
+    // subtract a frame duration from the timeout to make sure the animation is
+    // stopped right after it ends, preventing flickering.
+    const frameRate = 1000 / 60;
+    const maxTimeout = Math.max(timeout - frameRate, 0);
+    return afterTimeout(maxTimeout, stopAnimationSync);
+  }, [store, animated, contentElement, otherElement, open, transition]);
 
   props = useWrapElement(
     props,
@@ -152,6 +209,7 @@ export const useDisclosureContent = createHook<
 
   props = {
     id,
+    "data-open": open || undefined,
     "data-enter": transition === "enter" || undefined,
     "data-leave": transition === "leave" || undefined,
     hidden,

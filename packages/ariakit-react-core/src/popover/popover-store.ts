@@ -15,9 +15,8 @@ export function usePopoverStoreProps<T extends Core.PopoverStore>(
   props: PopoverStoreProps,
 ) {
   useUpdateEffect(update, [props.popover]);
-  store = useDialogStoreProps(store, update, props);
   useStoreProps(store, props, "placement");
-  return store;
+  return useDialogStoreProps(store, update, props);
 }
 
 /**
@@ -41,17 +40,17 @@ export interface PopoverStoreState
     DialogStoreState {}
 
 export interface PopoverStoreFunctions
-  extends Core.PopoverStoreFunctions,
+  extends Omit<Core.PopoverStoreFunctions, "disclosure">,
     DialogStoreFunctions {}
 
 export interface PopoverStoreOptions
-  extends Core.PopoverStoreOptions,
+  extends Omit<Core.PopoverStoreOptions, "disclosure">,
     DialogStoreOptions {}
 
 export interface PopoverStoreProps
   extends PopoverStoreOptions,
-    Core.PopoverStoreProps {}
+    Omit<Core.PopoverStoreProps, "disclosure"> {}
 
 export interface PopoverStore
   extends PopoverStoreFunctions,
-    Store<Core.PopoverStore> {}
+    Omit<Store<Core.PopoverStore>, "disclosure"> {}
