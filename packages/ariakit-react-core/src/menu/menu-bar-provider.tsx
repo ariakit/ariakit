@@ -31,10 +31,12 @@ import type { MenubarProviderProps } from "../menubar/menubar-provider.js";
  */
 export function MenuBarProvider(props: MenuBarProviderProps = {}) {
   useEffect(() => {
-    console.warn(
-      "MenuBarProvider is deprecated. Use MenubarProvider instead.",
-      "See https://ariakit.org/reference/menubar-provider",
-    );
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "MenuBarProvider is deprecated. Use MenubarProvider instead.",
+        "See https://ariakit.org/reference/menubar-provider",
+      );
+    }
   }, []);
   return <MenubarProvider {...props} />;
 }

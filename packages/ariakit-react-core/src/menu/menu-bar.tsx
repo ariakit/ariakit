@@ -31,10 +31,12 @@ type TagName = typeof TagName;
 export const useMenuBar = createHook<TagName, MenuBarOptions>(
   function useMenuBar(props) {
     useEffect(() => {
-      console.warn(
-        "MenuBar is deprecated. Use Menubar instead.",
-        "See https://ariakit.org/reference/menubar",
-      );
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          "MenuBar is deprecated. Use Menubar instead.",
+          "See https://ariakit.org/reference/menubar",
+        );
+      }
     }, []);
     return useMenubar(props);
   },
