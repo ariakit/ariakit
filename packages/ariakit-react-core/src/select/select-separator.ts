@@ -1,12 +1,17 @@
+import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useSelectContext } from "./select-context.js";
 import type { SelectStore } from "./select-store.js";
 
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
+
 /**
  * Returns props to create a `SelectSeparator` component.
+ * @deprecated Use `useSelectGroup` with CSS borders instead.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx
@@ -20,8 +25,8 @@ import type { SelectStore } from "./select-store.js";
  * </SelectPopover>
  * ```
  */
-export const useSelectSeparator = createHook<SelectSeparatorOptions>(
-  ({ store, ...props }) => {
+export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
+  function useSelectSeparator({ store, ...props }) {
     const context = useSelectContext();
     store = store || context;
     props = useCompositeSeparator({ store, ...props });
@@ -32,6 +37,8 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
 /**
  * Renders a divider between
  * [`SelectItem`](https://ariakit.org/reference/select-item) elements.
+ * @deprecated Use [`SelectGroup`](https://ariakit.org/reference/select-group)
+ * with CSS borders instead.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {5}
@@ -46,18 +53,14 @@ export const useSelectSeparator = createHook<SelectSeparatorOptions>(
  * </SelectProvider>
  * ```
  */
-export const SelectSeparator = createComponent<SelectSeparatorOptions>(
-  (props) => {
-    const htmlProps = useSelectSeparator(props);
-    return createElement("hr", htmlProps);
-  },
-);
+export const SelectSeparator = forwardRef(function SelectSeparator(
+  props: SelectSeparatorProps,
+) {
+  const htmlProps = useSelectSeparator(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  SelectSeparator.displayName = "SelectSeparator";
-}
-
-export interface SelectSeparatorOptions<T extends As = "hr">
+export interface SelectSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -70,6 +73,7 @@ export interface SelectSeparatorOptions<T extends As = "hr">
   store?: SelectStore;
 }
 
-export type SelectSeparatorProps<T extends As = "hr"> = Props<
+export type SelectSeparatorProps<T extends ElementType = TagName> = Props<
+  T,
   SelectSeparatorOptions<T>
 >;

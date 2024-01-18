@@ -1,12 +1,16 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 const children = (
   <svg
@@ -39,8 +43,8 @@ const children = (
  * <Role {...props} />
  * ```
  */
-export const useComboboxCancel = createHook<ComboboxCancelOptions>(
-  ({ store, ...props }) => {
+export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
+  function useComboboxCancel({ store, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -52,7 +56,7 @@ export const useComboboxCancel = createHook<ComboboxCancelOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.setValue("");
@@ -96,18 +100,14 @@ export const useComboboxCancel = createHook<ComboboxCancelOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxCancel = createComponent<ComboboxCancelOptions>(
-  (props) => {
-    const htmlProps = useComboboxCancel(props);
-    return createElement("button", htmlProps);
-  },
-);
+export const ComboboxCancel = forwardRef(function ComboboxCancel(
+  props: ComboboxCancelProps,
+) {
+  const htmlProps = useComboboxCancel(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxCancel.displayName = "ComboboxCancel";
-}
-
-export interface ComboboxCancelOptions<T extends As = "button">
+export interface ComboboxCancelOptions<T extends ElementType = TagName>
   extends ButtonOptions<T> {
   /**
    * Object returned by the
@@ -119,6 +119,7 @@ export interface ComboboxCancelOptions<T extends As = "button">
   store?: ComboboxStore;
 }
 
-export type ComboboxCancelProps<T extends As = "button"> = Props<
+export type ComboboxCancelProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxCancelOptions<T>
 >;

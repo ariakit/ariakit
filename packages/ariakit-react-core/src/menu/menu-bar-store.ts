@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type * as Core from "@ariakit/core/menu/menu-bar-store";
 import {
   useMenubarStore,
@@ -31,6 +32,14 @@ export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
  * ```
  */
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "useMenuBarStore is deprecated. Use useMenubarStore instead.",
+        "See https://ariakit.org/reference/use-menubar-store",
+      );
+    }
+  }, []);
   return useMenubarStore(props);
 }
 

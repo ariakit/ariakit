@@ -1,5 +1,9 @@
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `VisuallyHidden` component. When applying the props
@@ -14,24 +18,26 @@ import type { As, Options, Props } from "../utils/types.js";
  * </a>
  * ```
  */
-export const useVisuallyHidden = createHook<VisuallyHiddenOptions>((props) => {
-  props = {
-    ...props,
-    style: {
-      border: 0,
-      clip: "rect(0 0 0 0)",
-      height: "1px",
-      margin: "-1px",
-      overflow: "hidden",
-      padding: 0,
-      position: "absolute",
-      whiteSpace: "nowrap",
-      width: "1px",
-      ...props.style,
-    },
-  };
-  return props;
-});
+export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
+  function useVisuallyHidden(props) {
+    props = {
+      ...props,
+      style: {
+        border: 0,
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: 0,
+        position: "absolute",
+        whiteSpace: "nowrap",
+        width: "1px",
+        ...props.style,
+      },
+    };
+    return props;
+  },
+);
 
 /**
  * Renders an element that's visually hidden, but still accessible to screen
@@ -44,19 +50,17 @@ export const useVisuallyHidden = createHook<VisuallyHiddenOptions>((props) => {
  * </a>
  * ```
  */
-export const VisuallyHidden = createComponent<VisuallyHiddenOptions>(
-  (props) => {
-    const htmlProps = useVisuallyHidden(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const VisuallyHidden = forwardRef(function VisuallyHidden(
+  props: VisuallyHiddenProps,
+) {
+  const htmlProps = useVisuallyHidden(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  VisuallyHidden.displayName = "VisuallyHidden";
-}
+export interface VisuallyHiddenOptions<_T extends ElementType = TagName>
+  extends Options {}
 
-export type VisuallyHiddenOptions<T extends As = "span"> = Options<T>;
-
-export type VisuallyHiddenProps<T extends As = "span"> = Props<
+export type VisuallyHiddenProps<T extends ElementType = TagName> = Props<
+  T,
   VisuallyHiddenOptions<T>
 >;

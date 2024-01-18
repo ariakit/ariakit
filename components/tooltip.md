@@ -7,7 +7,7 @@ tags:
 
 <div data-description>
 
-Display information related to an anchor element when the element receives keyboard focus or the mouse hovers over it. This component is based on the [WAI-ARIA Tooltip Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/).
+Display visual information related to an anchor element when the element receives keyboard focus or the mouse hovers over it.
 
 </div>
 
@@ -39,7 +39,7 @@ useTooltipContext()
 
 ## Tooltip anchors must have accessible names
 
-By default, tooltips serve as non-critical descriptions and shouldn't be used as accessible labels for the anchor element. You should ensure the anchor element has an accessible name, either by:
+By default, tooltips serve as non-critical visual descriptions and shouldn't be used as accessible labels for the anchor element. You must ensure the anchor element has an accessible name, either by:
 
 - Rendering a visible label or [VisuallyHidden](/components/visually-hidden) text within the anchor element.
 - Using the [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label) or [`aria-labelledby`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby) attributes on the anchor element.

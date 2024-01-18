@@ -1,8 +1,12 @@
+import type { ElementType } from "react";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.js";
 import { usePopoverDescription } from "../popover/popover-description.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import type { HovercardStore } from "./hovercard-store.js";
+
+const TagName = "p" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardDescription` component. This hook must be
@@ -16,12 +20,13 @@ import type { HovercardStore } from "./hovercard-store.js";
  * <Role {...props}>Description</Role>
  * ```
  */
-export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
-  (props) => {
-    props = usePopoverDescription(props);
-    return props;
-  },
-);
+export const useHovercardDescription = createHook<
+  TagName,
+  HovercardDescriptionOptions
+>(function useHovercardDescription(props) {
+  props = usePopoverDescription(props);
+  return props;
+});
 
 /**
  * Renders a description in a hovercard. This component must be wrapped within
@@ -37,17 +42,14 @@ export const useHovercardDescription = createHook<HovercardDescriptionOptions>(
  * </HovercardProvider>
  * ```
  */
-export const HovercardDescription =
-  createComponent<HovercardDescriptionOptions>((props) => {
-    const htmlProps = useHovercardDescription(props);
-    return createElement("p", htmlProps);
-  });
+export const HovercardDescription = forwardRef(function HovercardDescription(
+  props: HovercardDescriptionProps,
+) {
+  const htmlProps = useHovercardDescription(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  HovercardDescription.displayName = "HovercardDescription";
-}
-
-export interface HovercardDescriptionOptions<T extends As = "p">
+export interface HovercardDescriptionOptions<T extends ElementType = TagName>
   extends PopoverDescriptionOptions<T> {
   /**
    * Object returned by the
@@ -60,6 +62,7 @@ export interface HovercardDescriptionOptions<T extends As = "p">
   store?: HovercardStore;
 }
 
-export type HovercardDescriptionProps<T extends As = "p"> = Props<
+export type HovercardDescriptionProps<T extends ElementType = TagName> = Props<
+  T,
   HovercardDescriptionOptions<T>
 >;

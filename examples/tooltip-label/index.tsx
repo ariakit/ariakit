@@ -16,8 +16,9 @@ const icon = (
 
 export default function Example() {
   return (
-    <Ariakit.TooltipProvider type="label">
+    <Ariakit.TooltipProvider>
       <Ariakit.TooltipAnchor className="button" render={<Ariakit.Button />}>
+        <Ariakit.VisuallyHidden>Bold</Ariakit.VisuallyHidden>
         {icon}
       </Ariakit.TooltipAnchor>
       <Ariakit.Tooltip className="tooltip">Bold</Ariakit.Tooltip>

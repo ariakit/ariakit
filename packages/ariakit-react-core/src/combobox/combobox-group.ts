@@ -1,11 +1,15 @@
+import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeGroupOptions } from "../composite/composite-group.js";
 import { useCompositeGroup } from "../composite/composite-group.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxScopedContext } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxGroup` component.
@@ -24,8 +28,8 @@ import type { ComboboxStore } from "./combobox-store.js";
  * </ComboboxPopover>
  * ```
  */
-export const useComboboxGroup = createHook<ComboboxGroupOptions>(
-  ({ store, ...props }) => {
+export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
+  function useComboboxGroup({ store, ...props }) {
     const context = useComboboxScopedContext();
     store = store || context;
 
@@ -69,16 +73,14 @@ export const useComboboxGroup = createHook<ComboboxGroupOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const ComboboxGroup = createComponent<ComboboxGroupOptions>((props) => {
+export const ComboboxGroup = forwardRef(function ComboboxGroup(
+  props: ComboboxGroupProps,
+) {
   const htmlProps = useComboboxGroup(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxGroup.displayName = "ComboboxGroup";
-}
-
-export interface ComboboxGroupOptions<T extends As = "div">
+export interface ComboboxGroupOptions<T extends ElementType = TagName>
   extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
@@ -91,6 +93,7 @@ export interface ComboboxGroupOptions<T extends As = "div">
   store?: ComboboxStore;
 }
 
-export type ComboboxGroupProps<T extends As = "div"> = Props<
+export type ComboboxGroupProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxGroupOptions<T>
 >;

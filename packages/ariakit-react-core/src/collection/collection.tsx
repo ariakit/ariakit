@@ -1,11 +1,16 @@
+import type { ElementType } from "react";
+import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   CollectionScopedContextProvider,
   useCollectionProviderContext,
 } from "./collection-context.js";
 import type { CollectionStore } from "./collection-store.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Collection` component. It receives the collection
@@ -23,8 +28,8 @@ import type { CollectionStore } from "./collection-store.js";
  * </Role>
  * ```
  */
-export const useCollection = createHook<CollectionOptions>(
-  ({ store, ...props }) => {
+export const useCollection = createHook<TagName, CollectionOptions>(
+  function useCollection({ store, ...props }) {
     const context = useCollectionProviderContext();
     store = store || context;
 
@@ -37,7 +42,8 @@ export const useCollection = createHook<CollectionOptions>(
       ),
       [store],
     );
-    return props;
+
+    return removeUndefinedValues(props);
   },
 );
 
@@ -57,16 +63,15 @@ export const useCollection = createHook<CollectionOptions>(
  * </Collection>
  * ```
  */
-export const Collection = createComponent<CollectionOptions>((props) => {
+export const Collection = forwardRef(function Collection(
+  props: CollectionProps,
+) {
   const htmlProps = useCollection(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Collection.displayName = "Collection";
-}
-
-export interface CollectionOptions<T extends As = "div"> extends Options<T> {
+export interface CollectionOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -77,4 +82,7 @@ export interface CollectionOptions<T extends As = "div"> extends Options<T> {
   store?: CollectionStore;
 }
 
-export type CollectionProps<T extends As = "div"> = Props<CollectionOptions<T>>;
+export type CollectionProps<T extends ElementType = TagName> = Props<
+  T,
+  CollectionOptions<T>
+>;

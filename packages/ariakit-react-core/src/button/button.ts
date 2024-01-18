@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import type { ElementType } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import type { CommandOptions } from "../command/command.js";
 import { useCommand } from "../command/command.js";
 import { useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Button` component. If the element is not a native
@@ -16,28 +21,30 @@ import type { As, Props } from "../utils/types.js";
  * <Role {...props}>Accessible button</Role>
  * ```
  */
-export const useButton = createHook<ButtonOptions>((props) => {
-  const ref = useRef<HTMLButtonElement>(null);
-  const tagName = useTagName(ref, props.as || "button");
-  const [isNativeButton, setIsNativeButton] = useState(
-    () => !!tagName && isButton({ tagName, type: props.type }),
-  );
+export const useButton = createHook<TagName, ButtonOptions>(
+  function useButton(props) {
+    const ref = useRef<HTMLType>(null);
+    const tagName = useTagName(ref, TagName);
+    const [isNativeButton, setIsNativeButton] = useState(
+      () => !!tagName && isButton({ tagName, type: props.type }),
+    );
 
-  useEffect(() => {
-    if (!ref.current) return;
-    setIsNativeButton(isButton(ref.current));
-  }, []);
+    useEffect(() => {
+      if (!ref.current) return;
+      setIsNativeButton(isButton(ref.current));
+    }, []);
 
-  props = {
-    role: !isNativeButton && tagName !== "a" ? "button" : undefined,
-    ...props,
-    ref: useMergeRefs(ref, props.ref),
-  };
+    props = {
+      role: !isNativeButton && tagName !== "a" ? "button" : undefined,
+      ...props,
+      ref: useMergeRefs(ref, props.ref),
+    };
 
-  props = useCommand(props);
+    props = useCommand(props);
 
-  return props;
-});
+    return props;
+  },
+);
 
 /**
  * Renders an accessible button element. If the underlying element is not a
@@ -49,15 +56,15 @@ export const useButton = createHook<ButtonOptions>((props) => {
  * <Button>Button</Button>
  * ```
  */
-export const Button = createComponent<ButtonOptions>((props) => {
+export const Button = forwardRef(function Button(props: ButtonProps) {
   const htmlProps = useButton(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Button.displayName = "Button";
-}
+export interface ButtonOptions<T extends ElementType = TagName>
+  extends CommandOptions<T> {}
 
-export type ButtonOptions<T extends As = "button"> = CommandOptions<T>;
-
-export type ButtonProps<T extends As = "button"> = Props<ButtonOptions<T>>;
+export type ButtonProps<T extends ElementType = TagName> = Props<
+  T,
+  ButtonOptions<T>
+>;

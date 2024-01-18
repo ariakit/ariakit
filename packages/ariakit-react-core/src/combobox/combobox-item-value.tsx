@@ -1,13 +1,20 @@
 import { useContext, useMemo } from "react";
-import type { ReactElement } from "react";
-import { invariant, normalizeString } from "@ariakit/core/utils/misc";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import type { ElementType, ReactElement } from "react";
+import {
+  invariant,
+  normalizeString,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import {
   ComboboxItemValueContext,
   useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
+
+const TagName = "span" satisfies ElementType;
+type TagName = typeof TagName;
 
 function normalizeValue(value: string) {
   return normalizeString(value).toLowerCase();
@@ -64,38 +71,39 @@ function splitValue(itemValue: string, userValue: string) {
  * </span>
  * ```
  */
-export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
-  ({ store, value, ...props }) => {
-    const context = useComboboxScopedContext();
-    store = store || context;
+export const useComboboxItemValue = createHook<
+  TagName,
+  ComboboxItemValueOptions
+>(function useComboboxItemValue({ store, value, ...props }) {
+  const context = useComboboxScopedContext();
+  store = store || context;
 
-    const itemContext = useContext(ComboboxItemValueContext);
-    const itemValue = value ?? itemContext;
+  const itemContext = useContext(ComboboxItemValueContext);
+  const itemValue = value ?? itemContext;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "ComboboxItemValue must be wrapped in a ComboboxItem component.",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "ComboboxItemValue must be wrapped in a ComboboxItem component.",
+  );
 
-    const stateValue = store.useState((state) =>
-      itemValue && state.value ? state.value : undefined,
-    );
+  const stateValue = store.useState((state) =>
+    itemValue && state.value ? state.value : undefined,
+  );
 
-    const children = useMemo(
-      () =>
-        itemValue && stateValue ? splitValue(itemValue, stateValue) : itemValue,
-      [itemValue, stateValue],
-    );
+  const children = useMemo(
+    () =>
+      itemValue && stateValue ? splitValue(itemValue, stateValue) : itemValue,
+    [itemValue, stateValue],
+  );
 
-    props = {
-      children,
-      ...props,
-    };
+  props = {
+    children,
+    ...props,
+  };
 
-    return props;
-  },
-);
+  return removeUndefinedValues(props);
+});
 
 /**
  * Renders a value element inside a
@@ -126,19 +134,15 @@ export const useComboboxItemValue = createHook<ComboboxItemValueOptions>(
  * </span>
  * ```
  */
-export const ComboboxItemValue = createComponent<ComboboxItemValueOptions>(
-  (props) => {
-    const htmlProps = useComboboxItemValue(props);
-    return createElement("span", htmlProps);
-  },
-);
+export const ComboboxItemValue = forwardRef(function ComboboxItemValue(
+  props: ComboboxItemValueProps,
+) {
+  const htmlProps = useComboboxItemValue(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ComboboxItemValue.displayName = "ComboboxItemValue";
-}
-
-export interface ComboboxItemValueOptions<T extends As = "span">
-  extends Options<T> {
+export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
@@ -157,6 +161,7 @@ export interface ComboboxItemValueOptions<T extends As = "span">
   value?: string;
 }
 
-export type ComboboxItemValueProps<T extends As = "span"> = Props<
+export type ComboboxItemValueProps<T extends ElementType = TagName> = Props<
+  T,
   ComboboxItemValueOptions<T>
 >;

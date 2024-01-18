@@ -32,11 +32,11 @@ export function HeadingLevel({ level, children }: HeadingLevelProps) {
   );
 }
 
-export type HeadingLevelProps = {
+export interface HeadingLevelProps {
   /**
    * The heading level. By default, it'll increase the level by 1 based on the
    * context.
    */
   level?: HeadingLevels;
   children?: ReactNode;
-};
+}

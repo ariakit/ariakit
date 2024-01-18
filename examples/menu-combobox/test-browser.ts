@@ -20,8 +20,5 @@ test("auto select first option", async ({ page }) => {
   await getMenuButton(page).click();
   await expect(getMenu(page)).toBeVisible();
   await getCombobox(page).type("a");
-  await expect(getOption(page, "Audio")).toHaveAttribute(
-    "data-active-item",
-    "",
-  );
+  await expect(getOption(page, "Audio")).toHaveAttribute("data-active-item");
 });

@@ -1,9 +1,13 @@
+import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
 import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useToolbarContext } from "./toolbar-context.js";
 import type { ToolbarStore } from "./toolbar-store.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarSeparator` component.
@@ -19,8 +23,8 @@ import type { ToolbarStore } from "./toolbar-store.js";
  * </Toolbar>
  * ```
  */
-export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
-  ({ store, ...props }) => {
+export const useToolbarSeparator = createHook<TagName, ToolbarSeparatorOptions>(
+  function useToolbarSeparator({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeSeparator({ store, ...props });
@@ -41,18 +45,14 @@ export const useToolbarSeparator = createHook<ToolbarSeparatorOptions>(
  * </Toolbar>
  * ```
  */
-export const ToolbarSeparator = createComponent<ToolbarSeparatorOptions>(
-  (props) => {
-    const htmlProps = useToolbarSeparator(props);
-    return createElement("hr", htmlProps);
-  },
-);
+export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
+  props: ToolbarSeparatorProps,
+) {
+  const htmlProps = useToolbarSeparator(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  ToolbarSeparator.displayName = "ToolbarSeparator";
-}
-
-export interface ToolbarSeparatorOptions<T extends As = "hr">
+export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
   extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
@@ -64,6 +64,7 @@ export interface ToolbarSeparatorOptions<T extends As = "hr">
   store?: ToolbarStore;
 }
 
-export type ToolbarSeparatorProps<T extends As = "hr"> = Props<
+export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<
+  T,
   ToolbarSeparatorOptions<T>
 >;

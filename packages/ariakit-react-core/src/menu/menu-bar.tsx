@@ -1,7 +1,12 @@
+import { useEffect } from "react";
+import type { ElementType } from "react";
 import { useMenubar } from "../menubar/menubar.js";
 import type { MenubarOptions } from "../menubar/menubar.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuBar` component.
@@ -23,9 +28,19 @@ import type { As, Props } from "../utils/types.js";
  * </Role>
  * ```
  */
-export const useMenuBar = createHook<MenuBarOptions>((props) => {
-  return useMenubar(props);
-});
+export const useMenuBar = createHook<TagName, MenuBarOptions>(
+  function useMenuBar(props) {
+    useEffect(() => {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          "MenuBar is deprecated. Use Menubar instead.",
+          "See https://ariakit.org/reference/menubar",
+        );
+      }
+    }, []);
+    return useMenubar(props);
+  },
+);
 
 /**
  * Renders a menu bar that may contain a group of menu items that control other
@@ -54,16 +69,15 @@ export const useMenuBar = createHook<MenuBarOptions>((props) => {
  * </MenuBarProvider>
  * ```
  */
-export const MenuBar = createComponent<MenuBarOptions>((props) => {
+export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   const htmlProps = useMenuBar(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  MenuBar.displayName = "MenuBar";
-}
-
-export interface MenuBarOptions<T extends As = "div">
+export interface MenuBarOptions<T extends ElementType = TagName>
   extends MenubarOptions<T> {}
 
-export type MenuBarProps<T extends As = "div"> = Props<MenuBarOptions<T>>;
+export type MenuBarProps<T extends ElementType = TagName> = Props<
+  T,
+  MenuBarOptions<T>
+>;

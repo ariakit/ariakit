@@ -204,6 +204,7 @@ function getProps(node) {
     const decl = prop.getDeclarations().at(0);
     if (!decl) continue;
     if (isPrivate(decl)) continue;
+    if (prop.getEscapedName() === "wrapElement") continue;
     if (prop.getEscapedName() === "children") continue;
     props.push({
       name: prop.getEscapedName(),

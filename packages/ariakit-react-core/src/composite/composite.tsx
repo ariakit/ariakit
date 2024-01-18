@@ -1,4 +1,5 @@
 import type {
+  ElementType,
   FocusEvent,
   KeyboardEventHandler,
   KeyboardEvent as ReactKeyboardEvent,
@@ -24,8 +25,8 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import {
   CompositeContextProvider,
   useCompositeProviderContext,
@@ -38,6 +39,10 @@ import {
   isItem,
   silentlyFocused,
 } from "./utils.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);
@@ -128,14 +133,14 @@ function useScheduleFocus(store: CompositeStore) {
  * </Role>
  * ```
  */
-export const useComposite = createHook<CompositeOptions>(
-  ({
+export const useComposite = createHook<TagName, CompositeOptions>(
+  function useComposite({
     store,
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
     ...props
-  }) => {
+  }) {
     const context = useCompositeProviderContext();
     store = store || context;
 
@@ -221,7 +226,7 @@ export const useComposite = createHook<CompositeOptions>(
 
     const onFocusCaptureProp = props.onFocusCapture;
 
-    const onFocusCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onFocusCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -244,7 +249,7 @@ export const useComposite = createHook<CompositeOptions>(
 
     const onFocusProp = props.onFocus;
 
-    const onFocus = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
       if (!composite) return;
@@ -277,7 +282,7 @@ export const useComposite = createHook<CompositeOptions>(
 
     const onBlurCaptureProp = props.onBlurCapture;
 
-    const onBlurCapture = useEvent((event: FocusEvent<HTMLDivElement>) => {
+    const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -318,6 +323,7 @@ export const useComposite = createHook<CompositeOptions>(
             fireBlurEvent(previousElement, event);
           }
         }
+
         // This will be true when the next active element is not the active
         // element, but there's an active item. This will only happen when
         // clicking with a pointer on a different item, when there's already an
@@ -327,6 +333,7 @@ export const useComposite = createHook<CompositeOptions>(
         else if (activeElement) {
           fireBlurEvent(activeElement, event);
         }
+
         // Finally, if we still have a previousElement, this means that the
         // store is being composed with another composite store and we're moving
         // with keyboard. In this case, the state won't be updated before the
@@ -353,7 +360,7 @@ export const useComposite = createHook<CompositeOptions>(
     const onKeyDownProp = props.onKeyDown;
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
-    const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -452,16 +459,12 @@ export const useComposite = createHook<CompositeOptions>(
  * </Composite>
  * ```
  */
-export const Composite = createComponent<CompositeOptions>((props) => {
+export const Composite = forwardRef(function Composite(props: CompositeProps) {
   const htmlProps = useComposite(props);
-  return createElement("div", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Composite.displayName = "Composite";
-}
-
-export interface CompositeOptions<T extends As = "div">
+export interface CompositeOptions<T extends ElementType = TagName>
   extends FocusableOptions<T> {
   /**
    * Object returned by the
@@ -543,4 +546,7 @@ export interface CompositeOptions<T extends As = "div">
   focusOnMove?: boolean;
 }
 
-export type CompositeProps<T extends As = "div"> = Props<CompositeOptions<T>>;
+export type CompositeProps<T extends ElementType = TagName> = Props<
+  T,
+  CompositeOptions<T>
+>;

@@ -1,7 +1,11 @@
+import type { ElementType } from "react";
 import { useWrapElement } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Options, Props } from "../utils/types.js";
 import { FocusableContext } from "./focusable-context.js";
+
+const TagName = "div" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FocusableContainer` component.
@@ -12,21 +16,22 @@ import { FocusableContext } from "./focusable-context.js";
  * <Role {...props} />
  * ```
  */
-export const useFocusableContainer = createHook<FocusableContainerOptions>(
-  ({ autoFocusOnShow = true, ...props }) => {
-    props = useWrapElement(
-      props,
-      (element) => (
-        <FocusableContext.Provider value={autoFocusOnShow}>
-          {element}
-        </FocusableContext.Provider>
-      ),
-      [autoFocusOnShow],
-    );
+export const useFocusableContainer = createHook<
+  TagName,
+  FocusableContainerOptions
+>(function useFocusableContainer({ autoFocusOnShow = true, ...props }) {
+  props = useWrapElement(
+    props,
+    (element) => (
+      <FocusableContext.Provider value={autoFocusOnShow}>
+        {element}
+      </FocusableContext.Provider>
+    ),
+    [autoFocusOnShow],
+  );
 
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a div that wraps
@@ -40,18 +45,15 @@ export const useFocusableContainer = createHook<FocusableContainerOptions>(
  * </FocusableContainer>
  * ```
  */
-export const FocusableContainer = createComponent<FocusableContainerOptions>(
-  (props) => {
-    const htmlProps = useFocusableContainer(props);
-    return createElement("div", htmlProps);
-  },
-);
+export const FocusableContainer = forwardRef(function FocusableContainer(
+  props: FocusableContainerProps,
+) {
+  const htmlProps = useFocusableContainer(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  FocusableContainer.displayName = "FocusableContainer";
-}
-
-export type FocusableContainerOptions<T extends As = "div"> = Options<T> & {
+export interface FocusableContainerOptions<_T extends ElementType = TagName>
+  extends Options {
   /**
    * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
    * elements inside the container should be automatically focused when the
@@ -60,8 +62,9 @@ export type FocusableContainerOptions<T extends As = "div"> = Options<T> & {
    * @default true
    */
   autoFocusOnShow?: boolean;
-};
+}
 
-export type FocusableContainerProps<T extends As = "div"> = Props<
+export type FocusableContainerProps<T extends ElementType = TagName> = Props<
+  T,
   FocusableContainerOptions<T>
 >;

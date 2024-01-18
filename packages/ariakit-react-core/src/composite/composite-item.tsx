@@ -1,4 +1,5 @@
 import type {
+  ElementType,
   FocusEvent,
   KeyboardEvent,
   RefObject,
@@ -11,7 +12,10 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
-import { disabledFromProps } from "@ariakit/core/utils/misc";
+import {
+  disabledFromProps,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
@@ -29,9 +33,10 @@ import { useStoreState } from "../utils/store.js";
 import {
   createElement,
   createHook,
-  createMemoComponent,
+  forwardRef,
+  memo,
 } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import type { Props } from "../utils/types.js";
 import {
   CompositeItemContext,
   CompositeRowContext,
@@ -39,6 +44,10 @@ import {
 } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
 import { focusSilently, getEnabledItem, isItem } from "./utils.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;
@@ -159,8 +168,8 @@ function supportsAriaSelected(role?: string) {
  * <Role {...props}>Item 1</Role>
  * ```
  */
-export const useCompositeItem = createHook<CompositeItemOptions>(
-  ({
+export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
+  function useCompositeItem({
     store,
     rowId: rowIdProp,
     preventScrollOnKeyDown = false,
@@ -170,12 +179,12 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
     ...props
-  }) => {
+  }) {
     const context = useCompositeContext();
     store = store || context;
 
     const id = useId(props.id);
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLType>(null);
     const row = useContext(CompositeRowContext);
     const rowId = useStoreState(store, (state) => {
       if (rowIdProp) return rowIdProp;
@@ -206,7 +215,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
 
-    const onFocus = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
       if (isPortalEvent(event)) return;
@@ -245,6 +254,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
       if (fromComposite) {
         focusSilently(baseElement);
       }
+
       // Otherwise, the composite element is likely not focused, so we need this
       // focus event to propagate so consumers can use the onFocus prop on
       // <Composite>.
@@ -255,7 +265,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
 
     const onBlurCaptureProp = props.onBlurCapture;
 
-    const onBlurCapture = useEvent((event: FocusEvent<HTMLButtonElement>) => {
+    const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurCaptureProp?.(event);
       if (event.defaultPrevented) return;
       const state = store?.getState();
@@ -273,7 +283,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     const preventScrollOnKeyDownProp = useBooleanEvent(preventScrollOnKeyDown);
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!isSelfTarget(event)) return;
@@ -402,7 +412,7 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     props = {
       id,
       "aria-selected": ariaSelected,
-      "data-active-item": isActiveItem ? "" : undefined,
+      "data-active-item": isActiveItem || undefined,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
@@ -412,18 +422,18 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
     };
 
     props = useCommand(props);
-    props = useCollectionItem({
+    props = useCollectionItem<TagName>({
       store,
       ...props,
       getItem,
       shouldRegisterItem: !!id ? props.shouldRegisterItem : false,
     });
 
-    return {
+    return removeUndefinedValues({
       ...props,
       "aria-setsize": ariaSetSize,
       "aria-posinset": ariaPosInSet,
-    };
+    });
   },
 );
 
@@ -451,18 +461,14 @@ export const useCompositeItem = createHook<CompositeItemOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeItem = createMemoComponent<CompositeItemOptions>(
-  (props) => {
+export const CompositeItem = memo(
+  forwardRef(function CompositeItem(props: CompositeItemProps) {
     const htmlProps = useCompositeItem(props);
-    return createElement("button", htmlProps);
-  },
+    return createElement(TagName, htmlProps);
+  }),
 );
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeItem.displayName = "CompositeItem";
-}
-
-export interface CompositeItemOptions<T extends As = "button">
+export interface CompositeItemOptions<T extends ElementType = TagName>
   extends CommandOptions<T>,
     CollectionItemOptions<T> {
   /**
@@ -555,6 +561,7 @@ export interface CompositeItemOptions<T extends As = "button">
   tabbable?: boolean;
 }
 
-export type CompositeItemProps<T extends As = "button"> = Props<
+export type CompositeItemProps<T extends ElementType = TagName> = Props<
+  T,
   CompositeItemOptions<T>
 >;

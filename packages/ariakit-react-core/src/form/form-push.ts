@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -7,10 +7,14 @@ import { useButton } from "../button/button.js";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
 import { useCollectionItem } from "../collection/collection-item.js";
 import { useEvent } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useFormContext } from "./form-context.js";
 import type { FormStore, FormStoreState } from "./form-store.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getFirstFieldsByName(
   items: FormStoreState["items"] | undefined,
@@ -55,15 +59,15 @@ function getFirstFieldsByName(
  * </Form>
  * ```
  */
-export const useFormPush = createHook<FormPushOptions>(
-  ({
+export const useFormPush = createHook<TagName, FormPushOptions>(
+  function useFormPush({
     store,
     value,
     name: nameProp,
     getItem: getItemProp,
     autoFocusOnClick = true,
     ...props
-  }) => {
+  }) {
     const context = useFormContext();
     store = store || context;
 
@@ -98,7 +102,7 @@ export const useFormPush = createHook<FormPushOptions>(
 
     const onClickProp = props.onClick;
 
-    const onClick = useEvent((event: MouseEvent<HTMLButtonElement>) => {
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
       store?.pushValue(name, value);
@@ -112,7 +116,7 @@ export const useFormPush = createHook<FormPushOptions>(
     };
 
     props = useButton(props);
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store, ...props, getItem });
 
     return props;
   },
@@ -152,16 +156,12 @@ export const useFormPush = createHook<FormPushOptions>(
  * </Form>
  * ```
  */
-export const FormPush = createComponent<FormPushOptions>((props) => {
+export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
   const htmlProps = useFormPush(props);
-  return createElement("button", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  FormPush.displayName = "FormPush";
-}
-
-export interface FormPushOptions<T extends As = "button">
+export interface FormPushOptions<T extends ElementType = TagName>
   extends ButtonOptions<T>,
     CollectionItemOptions<T> {
   /**
@@ -191,4 +191,7 @@ export interface FormPushOptions<T extends As = "button">
   autoFocusOnClick?: boolean;
 }
 
-export type FormPushProps<T extends As = "button"> = Props<FormPushOptions<T>>;
+export type FormPushProps<T extends ElementType = TagName> = Props<
+  T,
+  FormPushOptions<T>
+>;

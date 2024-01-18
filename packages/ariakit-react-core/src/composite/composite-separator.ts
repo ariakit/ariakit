@@ -1,10 +1,14 @@
+import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { SeparatorOptions } from "../separator/separator.js";
 import { useSeparator } from "../separator/separator.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useCompositeContext } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
+
+const TagName = "hr" satisfies ElementType;
+type TagName = typeof TagName;
 
 /**
  * Returns props to create a `CompositeSeparator` component.
@@ -20,26 +24,27 @@ import type { CompositeStore } from "./composite-store.js";
  * </Composite>
  * ```
  */
-export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
-  ({ store, ...props }) => {
-    const context = useCompositeContext();
-    store = store || context;
+export const useCompositeSeparator = createHook<
+  TagName,
+  CompositeSeparatorOptions
+>(function useCompositeSeparator({ store, ...props }) {
+  const context = useCompositeContext();
+  store = store || context;
 
-    invariant(
-      store,
-      process.env.NODE_ENV !== "production" &&
-        "CompositeSeparator must be wrapped in a Composite component.",
-    );
+  invariant(
+    store,
+    process.env.NODE_ENV !== "production" &&
+      "CompositeSeparator must be wrapped in a Composite component.",
+  );
 
-    const orientation = store.useState((state) =>
-      state.orientation === "horizontal" ? "vertical" : "horizontal",
-    );
+  const orientation = store.useState((state) =>
+    state.orientation === "horizontal" ? "vertical" : "horizontal",
+  );
 
-    props = useSeparator({ ...props, orientation });
+  props = useSeparator({ ...props, orientation });
 
-    return props;
-  },
-);
+  return props;
+});
 
 /**
  * Renders a divider between
@@ -56,18 +61,14 @@ export const useCompositeSeparator = createHook<CompositeSeparatorOptions>(
  * </CompositeProvider>
  * ```
  */
-export const CompositeSeparator = createComponent<CompositeSeparatorOptions>(
-  (props) => {
-    const htmlProps = useCompositeSeparator(props);
-    return createElement("hr", htmlProps);
-  },
-);
+export const CompositeSeparator = forwardRef(function CompositeSeparator(
+  props: CompositeSeparatorProps,
+) {
+  const htmlProps = useCompositeSeparator(props);
+  return createElement(TagName, htmlProps);
+});
 
-if (process.env.NODE_ENV !== "production") {
-  CompositeSeparator.displayName = "CompositeSeparator";
-}
-
-export interface CompositeSeparatorOptions<T extends As = "hr">
+export interface CompositeSeparatorOptions<T extends ElementType = TagName>
   extends SeparatorOptions<T> {
   /**
    * Object returned by the
@@ -87,6 +88,7 @@ export interface CompositeSeparatorOptions<T extends As = "hr">
   orientation?: SeparatorOptions<T>["orientation"];
 }
 
-export type CompositeSeparatorProps<T extends As = "hr"> = Props<
+export type CompositeSeparatorProps<T extends ElementType = TagName> = Props<
+  T,
   CompositeSeparatorOptions<T>
 >;

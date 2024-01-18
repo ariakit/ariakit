@@ -3,6 +3,7 @@ import type {
   AriaAttributes,
   ChangeEvent,
   CompositionEvent,
+  ElementType,
   MouseEvent,
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
@@ -41,10 +42,14 @@ import {
   useUpdateEffect,
   useUpdateLayoutEffect,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
+
+const TagName = "input" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isFirstItemAutoSelected(
   items: ComboboxStoreState["items"],
@@ -96,8 +101,8 @@ function isAriaAutoCompleteValue(
  * </ComboboxPopover>
  * ```
  */
-export const useCombobox = createHook<ComboboxOptions>(
-  ({
+export const useCombobox = createHook<TagName, ComboboxOptions>(
+  function useCombobox({
     store,
     focusable = true,
     autoSelect: autoSelectProp = false,
@@ -110,7 +115,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     moveOnKeyPress = true,
     autoComplete = "list",
     ...props
-  }) => {
+  }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -120,7 +125,7 @@ export const useCombobox = createHook<ComboboxOptions>(
         "Combobox must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLType>(null);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
@@ -347,7 +352,7 @@ export const useCombobox = createHook<ComboboxOptions>(
     const showOnChangeProp = useBooleanEvent(showOnChange);
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
-    const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -407,22 +412,20 @@ export const useCombobox = createHook<ComboboxOptions>(
     // true when the composition ends. This is because the native input event
     // that's passed to the change event above will not produce a consistent
     // inputType value across browsers, so we can't rely on that there.
-    const onCompositionEnd = useEvent(
-      (event: CompositionEvent<HTMLInputElement>) => {
-        canAutoSelectRef.current = true;
-        composingRef.current = false;
-        onCompositionEndProp?.(event);
-        if (event.defaultPrevented) return;
-        if (!autoSelect) return;
-        forceValueUpdate();
-      },
-    );
+    const onCompositionEnd = useEvent((event: CompositionEvent<HTMLType>) => {
+      canAutoSelectRef.current = true;
+      composingRef.current = false;
+      onCompositionEndProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!autoSelect) return;
+      forceValueUpdate();
+    });
 
     const onMouseDownProp = props.onMouseDown;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
 
-    const onMouseDown = useEvent((event: MouseEvent<HTMLInputElement>) => {
+    const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.button) return;
@@ -440,35 +443,33 @@ export const useCombobox = createHook<ComboboxOptions>(
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
-    const onKeyDown = useEvent(
-      (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        onKeyDownProp?.(event);
-        if (!event.repeat) {
-          // Run combobox-tabs and combobox-group (browser) tests.
-          canAutoSelectRef.current = false;
+    const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      if (!event.repeat) {
+        // Run combobox-tabs and combobox-group (browser) tests.
+        canAutoSelectRef.current = false;
+      }
+      if (event.defaultPrevented) return;
+      if (event.ctrlKey) return;
+      if (event.altKey) return;
+      if (event.shiftKey) return;
+      if (event.metaKey) return;
+      if (!store) return;
+      const { open, activeId } = store.getState();
+      if (open) return;
+      if (activeId !== null) return;
+      // Up and Down arrow keys should open the combobox popover.
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        if (showOnKeyDownProp(event)) {
+          event.preventDefault();
+          store.show();
         }
-        if (event.defaultPrevented) return;
-        if (event.ctrlKey) return;
-        if (event.altKey) return;
-        if (event.shiftKey) return;
-        if (event.metaKey) return;
-        if (!store) return;
-        const { open, activeId } = store.getState();
-        if (open) return;
-        if (activeId !== null) return;
-        // Up and Down arrow keys should open the combobox popover.
-        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-          if (showOnKeyDownProp(event)) {
-            event.preventDefault();
-            store.show();
-          }
-        }
-      },
-    );
+      }
+    });
 
     const onBlurProp = props.onBlur;
 
-    const onBlur = useEvent((event: ReactFocusEvent<HTMLInputElement>) => {
+    const onBlur = useEvent((event: ReactFocusEvent<HTMLType>) => {
       // If we don't reset the canAutoSelectRef here, the combobox will keep the
       // first item selected when the combobox loses focus and its value gets
       // cleared. See combobox-cancel tests.
@@ -506,7 +507,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       onBlur,
     };
 
-    props = useComposite({
+    props = useComposite<TagName>({
       store,
       focusable,
       ...props,
@@ -519,7 +520,7 @@ export const useCombobox = createHook<ComboboxOptions>(
       },
     });
 
-    props = usePopoverAnchor({ store, ...props });
+    props = usePopoverAnchor<TagName>({ store, ...props });
 
     return { autoComplete: "off", ...props };
   },
@@ -540,16 +541,12 @@ export const useCombobox = createHook<ComboboxOptions>(
  * </ComboboxProvider>
  * ```
  */
-export const Combobox = createComponent<ComboboxOptions>((props) => {
+export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   const htmlProps = useCombobox(props);
-  return createElement("input", htmlProps);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Combobox.displayName = "Combobox";
-}
-
-export interface ComboboxOptions<T extends As = "input">
+export interface ComboboxOptions<T extends ElementType = TagName>
   extends CompositeOptions<T>,
     PopoverAnchorOptions<T> {
   /**
@@ -724,4 +721,7 @@ export interface ComboboxOptions<T extends As = "input">
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
-export type ComboboxProps<T extends As = "input"> = Props<ComboboxOptions<T>>;
+export type ComboboxProps<T extends ElementType = TagName> = Props<
+  T,
+  ComboboxOptions<T>
+>;

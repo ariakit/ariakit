@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import {
@@ -16,8 +16,12 @@ import {
   useMetadataProps,
   useTagName,
 } from "../utils/hooks.js";
-import { createComponent, createElement, createHook } from "../utils/system.js";
-import type { As, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.js";
+import type { Props } from "../utils/types.js";
+
+const TagName = "button" satisfies ElementType;
+type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isNativeClick(event: KeyboardEvent) {
   if (!event.isTrusted) return false;
@@ -54,10 +58,10 @@ const symbol = Symbol("command");
  * <Role {...props}>Accessible button</Role>
  * ```
  */
-export const useCommand = createHook<CommandOptions>(
-  ({ clickOnEnter = true, clickOnSpace = true, ...props }) => {
-    const ref = useRef<HTMLButtonElement>(null);
-    const tagName = useTagName(ref, props.as);
+export const useCommand = createHook<TagName, CommandOptions>(
+  function useCommand({ clickOnEnter = true, clickOnSpace = true, ...props }) {
+    const ref = useRef<HTMLType>(null);
+    const tagName = useTagName(ref);
     const type = props.type;
     const [isNativeButton, setIsNativeButton] = useState(
       () => !!tagName && isButton({ tagName, type }),
@@ -75,7 +79,7 @@ export const useCommand = createHook<CommandOptions>(
 
     const onKeyDownProp = props.onKeyDown;
 
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       const element = event.currentTarget;
 
@@ -102,8 +106,8 @@ export const useCommand = createHook<CommandOptions>(
           if (!nativeClick) {
             event.preventDefault();
             const { view, ...eventInit } = event;
-            // Fire a click event instead of calling element.click() directly
-            // so we can pass along the modifier state.
+            // Fire a click event instead of calling element.click() directly so
+            // we can pass along the modifier state.
             const click = () => fireClickEvent(element, eventInit);
             // If this element is a link with target="_blank", Firefox will
             // block the "popup" if the click event is dispatched synchronously
@@ -126,7 +130,7 @@ export const useCommand = createHook<CommandOptions>(
 
     const onKeyUpProp = props.onKeyUp;
 
-    const onKeyUp = useEvent((event: KeyboardEvent<HTMLButtonElement>) => {
+    const onKeyUp = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyUpProp?.(event);
 
       if (event.defaultPrevented) return;
@@ -149,7 +153,7 @@ export const useCommand = createHook<CommandOptions>(
     });
 
     props = {
-      "data-active": active ? "" : undefined,
+      "data-active": active || undefined,
       type: isNativeButton ? "button" : undefined,
       ...metadataProps,
       ...props,
@@ -158,7 +162,7 @@ export const useCommand = createHook<CommandOptions>(
       onKeyUp,
     };
 
-    props = useFocusable(props);
+    props = useFocusable<TagName>(props);
 
     return props;
   },
@@ -181,16 +185,12 @@ export const useCommand = createHook<CommandOptions>(
  * <Command>Button</Command>
  * ```
  */
-export const Command = createComponent<CommandOptions>((props) => {
-  props = useCommand(props);
-  return createElement("button", props);
+export const Command = forwardRef(function Command(props: CommandProps) {
+  const htmlProps = useCommand(props);
+  return createElement(TagName, htmlProps);
 });
 
-if (process.env.NODE_ENV !== "production") {
-  Command.displayName = "Command";
-}
-
-export interface CommandOptions<T extends As = "button">
+export interface CommandOptions<T extends ElementType = TagName>
   extends FocusableOptions<T> {
   /**
    * If set to `true`, pressing the enter key while this element is focused will
@@ -210,4 +210,7 @@ export interface CommandOptions<T extends As = "button">
   clickOnSpace?: boolean;
 }
 
-export type CommandProps<T extends As = "button"> = Props<CommandOptions<T>>;
+export type CommandProps<T extends ElementType = TagName> = Props<
+  T,
+  CommandOptions<T>
+>;
