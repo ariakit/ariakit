@@ -1,5 +1,134 @@
 # @ariakit/react-core
 
+## 0.4.0
+
+This version introduces enhanced support for CSS animations and transitions, along with a few breaking changes for quite specific cases. The majority of users won't be impacted by these.
+
+Please review the brief notes following the **BREAKING** labels on each update to determine if any changes are needed in your code.
+
+### Improved animation support
+
+This version enhances support for CSS animations and transitions on Ariakit components that use [Disclosure](https://ariakit.org/component/disclosure). This includes [Dialog](https://ariakit.org/components/dialog), [Popover](https://ariakit.org/components/popover), [Combobox](https://ariakit.org/components/combobox), [Select](https://ariakit.org/components/select), [Hovercard](https://ariakit.org/components/hovercard), [Menu](https://ariakit.org/components/menu), and [Tooltip](https://ariakit.org/components/tooltip).
+
+These components now support _enter_ and _leave_ transitions and animations right out of the box, eliminating the need to provide an explicit `animated` prop. If an enter animation is detected, the component will automatically wait for a leave animation to complete before unmounting or hiding itself.
+
+Use the [`[data-enter]`](https://ariakit.org/guide/styling#data-enter) selector for CSS transitions. For CSS animations, use the newly introduced [`[data-open]`](https://ariakit.org/guide/styling#data-open) selector. The [`[data-leave]`](https://ariakit.org/guide/styling#data-leave) selector can be used for both transitions and animations.
+
+### `ComboboxList` is no longer focusable
+
+**BREAKING** if you're using the [`ComboboxList`](https://ariakit.org/reference/combobox-list) component directly with [`Focusable`](https://ariakit.org/reference/focusable) props.
+
+The [`ComboboxList`](https://ariakit.org/reference/combobox-list) component is no longer focusable and doesn't accept [`Focusable`](https://ariakit.org/reference/focusable) props such as [`autoFocus`](https://ariakit.org/reference/focusable#autofocus), [`disabled`](https://ariakit.org/reference/focusable#disabled), and [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) anymore. If you need [Focusable](https://ariakit.org/components/focusable) features specifically on the [`ComboboxList`](https://ariakit.org/reference/combobox-list) component, you can use [composition](https://ariakit.org/guide/composition) to render it as a [`Focusable`](https://ariakit.org/reference/focusable) component.
+
+Before:
+
+```jsx
+<ComboboxList disabled />
+```
+
+After:
+
+```jsx
+<ComboboxList render={<Focusable disabled />} />
+```
+
+### Composite widgets with `grid` role
+
+**BREAKING** if you're manually setting the `role="grid"` prop on a composite widget.
+
+Ariakit automatically assigns the `role` prop to all composite items to align with the container `role`. For example, if [`SelectPopover`](https://ariakit.org/reference/select-popover) has its role set to `listbox` (which is the default value), its owned [`SelectItem`](https://ariakit.org/reference/select-item) elements will automatically get their role set to `option`.
+
+In previous versions, this was also valid for composite widgets with a `grid` role, where the composite item element would automatically be given `role="gridcell"`. This is no longer the case, and you're now required to manually pass `role="gridcell"` to the composite item element if you're rendering a container with `role="grid"`.
+
+Before:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow> {/* Automatically gets role="row" */}
+    <SelectItem> {/* Automatically gets role="gridcell" */}
+```
+
+After:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow> {/* Still gets role="row" */}
+    <SelectItem role="gridcell">
+```
+
+This change is due to the possibility of rendering a composite item element with a different role as a child of a static `div` with `role="gridcell"`, which is a valid and frequently used practice when using the `grid` role. As a result, you no longer have to manually adjust the `role` prop on the composite item:
+
+```jsx
+<SelectPopover role="grid">
+  <SelectRow>
+    <div role="gridcell">
+      <SelectItem render={<button />}>
+```
+
+Previously, you had to explicitly pass `role="button"` to the [`SelectItem`](https://ariakit.org/reference/select-item) component above, otherwise it would automatically receive `role="gridcell"`, leading to an invalid accessibility tree.
+
+### Radio types have improved
+
+**BREAKING** if you're using TypeScript and the [`onChange`](https://ariakit.org/reference/radio#onchange) prop on [`Radio`](https://ariakit.org/reference/radio), [`FormRadio`](https://ariakit.org/reference/form-radio), or [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio).
+
+The [`onChange`](https://ariakit.org/reference/radio#onchange) callback argument type has changed from `React.SyntheticEvent` to `React.ChangeEvent`.
+
+Before:
+
+```tsx
+<Radio onChange={(event: React.SyntheticEvent) => {}} />
+```
+
+After:
+
+```tsx
+<Radio onChange={(event: React.ChangeEvent) => {}} />
+```
+
+### Public data attributes have now boolean values
+
+**BREAKING** if you're depending on [data attributes](https://ariakit.org/guide/styling#data-active) to carry an empty string (`""`) value.
+
+In previous versions, data attributes such as [`data-active`](https://ariakit.org/guide/styling#data-active), [`data-active-item`](https://ariakit.org/guide/styling#data-active-item), [`data-enter`](https://ariakit.org/guide/styling#data-enter), [`data-leave`](https://ariakit.org/guide/styling#data-leave), and [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) would carry an empty string (`""`) value when active, and `undefined` when inactive. Now, they have a `true` value when active, but remain `undefined` when inactive.
+
+Their use as CSS selectors remains unchanged. You should continue to select them with the attribute selector with no value (e.g., `[data-enter]`). However, if you're employing them in different ways or have snapshot tests that depend on their value, you might need to update your code.
+
+### Removed deprecated features
+
+**BREAKING** if you haven't addressed the deprecation warnings from previous releases.
+
+This version eliminates features that were deprecated in previous releases: the `backdropProps` and `as` props, as well as the ability to use a render function for the `children` prop across all components.
+
+Before:
+
+```jsx
+<Dialog backdropProps={{ className: "backdrop" }} />
+<Combobox as="textarea" />
+<Combobox>
+  {(props) => <textarea {...props} />}
+</Combobox>
+```
+
+After:
+
+```jsx
+<Dialog backdrop={<div className="backdrop" />} />
+<Combobox render={<textarea />} />
+<Combobox render={(props) => <textarea {...props} />} />
+```
+
+You can learn more about these new features in the [Composition guide](https://ariakit.org/guide/composition).
+
+### Other updates
+
+- Deprecated `MenuBar` in favor of [Menubar](https://ariakit.org/components/menubar) components.
+- Revamped utilities for creating Ariakit components.
+- The `type` prop for the [Tooltip](https://ariakit.org/components/tooltip) has been deprecated. See [Tooltip anchors must have accessible names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names).
+- Removed the ancestors of open, nested modals from the accessibility tree.
+- Tooltips no longer use `aria-describedby` to associate the tooltip content with the anchor.
+- Added new [`disclosure`](https://ariakit.org/reference/use-disclosure-store#disclosure-1) property to disclosure stores.
+- Updated dependencies: `@ariakit/core@0.4.0`
+
 ## 0.3.14
 
 - Fixed a regression introduced in `v0.3.13` where dialogs wouldn't close when clicking outside on iOS.
