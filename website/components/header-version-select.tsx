@@ -86,6 +86,9 @@ function getIcon(name: string) {
 }
 
 function getChangeLogUrl(pkg: { name: string; version: string }) {
+  if (pkg.name === "@ariakit/react") {
+    return "/changelog";
+  }
   const packageName = pkg.name.replace("@ariakit/", "ariakit-");
   return `https://github.com/ariakit/ariakit/blob/main/packages/${packageName}/CHANGELOG.md`;
 }
@@ -118,6 +121,8 @@ export function HeaderVersionSelect({ versions }: Props) {
   const selectValue = select.useState("value");
   const selectMounted = select.useState("mounted");
   const selectedPkg = getPkgFromValue(selectValue);
+  const changelogUrl = getChangeLogUrl(selectedPkg);
+  const isChangelogExternal = !changelogUrl.startsWith("/");
 
   return (
     <>
@@ -158,15 +163,15 @@ export function HeaderVersionSelect({ versions }: Props) {
             hideOnClick
             className={cx(style.item, "justify-between pl-[26px] font-normal")}
             render={
-              <a
-                href={getChangeLogUrl(selectedPkg)}
-                target="_blank"
-                rel="noreferrer"
-              />
+              isChangelogExternal ? (
+                <a href={changelogUrl} target="_blank" rel="noreferrer" />
+              ) : (
+                <Link href={changelogUrl} />
+              )
             }
           >
             Changelog
-            <NewWindow className={style.itemIcon} />
+            {isChangelogExternal && <NewWindow className={style.itemIcon} />}
           </SelectItem>
         </SelectPopover>
       )}

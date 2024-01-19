@@ -34,11 +34,8 @@ const links = [
     links: [
       // { title: "Blog", href: "/blog" },
       { title: "All updates", href: "/updates" },
+      { title: "Changelog", href: "/changelog" },
       { title: "Newsletter", href: "https://newsletter.ariakit.org" },
-      {
-        title: "Changelog",
-        href: "https://github.com/ariakit/ariakit/blob/main/CHANGELOG.md",
-      },
     ],
   },
   {

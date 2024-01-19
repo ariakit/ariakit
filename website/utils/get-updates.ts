@@ -23,9 +23,12 @@ function getReleaseUpdates() {
     delete time["0.0.1"];
     releasesCache = Object.entries(time).map(([version, dateTime]) => ({
       type: "release",
-      title: `New release: @ariakit/react v${version}`,
+      title: `New release: ${version}`,
       dateTime: `${dateTime}`,
-      href: `https://github.com/ariakit/ariakit/releases/tag/@ariakit/react@${version}`,
+      href:
+        new Date(`${dateTime}`) < new Date("2023-11-18")
+          ? `https://github.com/ariakit/ariakit/releases/tag/@ariakit/react@${version}`
+          : `/changelog#${version.replace(/\./g, "")}`,
     }));
   } catch {
     releasesCache = [];

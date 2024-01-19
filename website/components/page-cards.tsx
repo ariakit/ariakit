@@ -22,8 +22,8 @@ function findCardLinks(children: ReactNode): string[] {
 
 export interface PageCardsProps extends ComponentProps<"div"> {
   node?: Element;
-  category: string;
-  page: string;
+  category?: string;
+  page?: string;
   title?: string;
   // eslint-disable-next-line @typescript-eslint/ban-types
   type?: "components" | "examples" | (string & {});
@@ -76,7 +76,9 @@ export function PageCards({
         <div className="flex justify-center">
           <InlineLink
             render={
-              <Link href={`/examples${isComponentPage ? `#${page}` : ""}`} />
+              <Link
+                href={`/examples${isComponentPage && page ? `#${page}` : ""}`}
+              />
             }
           >
             View all
