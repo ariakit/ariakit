@@ -388,8 +388,8 @@ export interface PageDivProps extends ComponentPropsWithoutRef<"div"> {
   node?: Element;
   tags?: string[];
   media?: PageIndexDetail["media"];
-  category: string;
-  page: string;
+  category?: string;
+  page?: string;
   title?: string;
   tableOfContents?: TableOfContents;
 }
@@ -464,7 +464,13 @@ export interface PageStrongProps extends ComponentPropsWithoutRef<"strong"> {
 }
 
 export function PageStrong({ node, ...props }: PageStrongProps) {
-  const className = twJoin("font-semibold dark:text-white", props.className);
+  const isBreaking = Children.toArray(props.children).at(0) === "BREAKING";
+  const className = twJoin(
+    "font-semibold dark:text-white",
+    isBreaking &&
+      "px-[0.2667em] p-[0.1334em] text-white bg-red-700 rounded-[0.2667em] text-sm mx-[0.1334em]",
+    props.className,
+  );
   return <strong {...props} className={className} />;
 }
 

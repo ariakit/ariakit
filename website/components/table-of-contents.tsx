@@ -6,36 +6,19 @@ import { getScrollingElement } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
 import { Popup } from "components/popup.js";
 import { List } from "icons/list.js";
-import { tw } from "utils/tw.js";
 import { useMedia } from "utils/use-media.js";
 
-interface Props {
+interface TableOfContentsProps {
   ids: string[];
   children?: ReactNode;
   popoverContents?: ReactNode;
 }
 
-const style = {
-  stickyWrapper: tw`
-    sticky top-14 z-30 mt-8 flex h-0 w-full justify-end px-3
-    md:hidden
-  `,
-  disclosure: tw`
-    flex h-10 w-10 items-center justify-center
-    bg-transparent rounded-lg
-    hover:bg-black/5 dark:hover:bg-white/5
-    aria-expanded:bg-black/10 dark:aria-expanded:bg-white/10
-    [&:focus-visible]:ariakit-outline-input
-  `,
-  popover: tw`
-    min-w-[280px] max-w-[calc(100vw-96px)]
-  `,
-  popoverHeading: tw`
-    font-medium text-black/60 dark:text-white/50 px-2 pt-2
-  `,
-};
-
-export function TableOfContents({ ids, children, popoverContents }: Props) {
+export function TableOfContents({
+  ids,
+  children,
+  popoverContents,
+}: TableOfContentsProps) {
   const isLarge = useMedia("(min-width: 768px)", true);
   const popover = Ariakit.usePopoverStore();
   const mounted = popover.useState("mounted");
@@ -74,8 +57,11 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
   return (
     <>
       {isLarge && children}
-      <div className={style.stickyWrapper}>
-        <Ariakit.PopoverDisclosure store={popover} className={style.disclosure}>
+      <div className="sticky top-14 z-30 mt-8 flex h-0 w-full justify-end px-3 md:hidden">
+        <Ariakit.PopoverDisclosure
+          store={popover}
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent hover:bg-black/5 aria-expanded:bg-black/10 dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:ariakit-outline-input"
+        >
           <List className="h-6 w-6" />
           <Ariakit.VisuallyHidden>Table of Contents</Ariakit.VisuallyHidden>
         </Ariakit.PopoverDisclosure>
@@ -88,10 +74,10 @@ export function TableOfContents({ ids, children, popoverContents }: Props) {
             tabIndex={0}
             gutter={8}
             overflowPadding={12}
-            className={style.popover}
+            className="min-w-[280px] max-w-[calc(100vw-96px)]"
             render={<Popup />}
           >
-            <Ariakit.PopoverHeading className={style.popoverHeading}>
+            <Ariakit.PopoverHeading className="px-2 pt-2 font-medium text-black/60 dark:text-white/50">
               Table of Contents
             </Ariakit.PopoverHeading>
             {popoverContents}

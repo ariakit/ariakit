@@ -12,6 +12,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import invariant from "tiny-invariant";
 import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
 import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
 import { AuthEnabled } from "./auth.jsx";
@@ -55,8 +56,8 @@ export const getContent = cache((config: Page, file: string, page: string) => {
 });
 
 export interface PageMarkdownProps {
-  category: string;
-  page: string;
+  category?: string;
+  page?: string;
   section?: string;
   content?: string;
   file?: string;
@@ -75,6 +76,7 @@ export function PageMarkdown({
   const hovercards = new Set<Promise<string | Iterable<string>>>();
 
   if (!content || !file) {
+    invariant(category && page);
     const config = pagesConfig.pages.find((page) => page.slug === category);
     if (!config) return null;
     file = file ?? getFile(config, page);
@@ -83,7 +85,9 @@ export function PageMarkdown({
     if (!content) return null;
   }
 
-  const pageDetail = pageIndex[category]?.find((item) => item.slug === page);
+  const pageDetail = category
+    ? pageIndex[category]?.find((item) => item.slug === page)
+    : null;
 
   const { content: contentWithoutMatter } = matter(content);
 

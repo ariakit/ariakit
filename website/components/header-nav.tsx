@@ -641,6 +641,10 @@ export function HeaderNav() {
       <>
         {categoryElements}
         <HeaderMenuSeparator />
+        <HeaderMenuItem value="changelog" href="/changelog">
+          Changelog
+        </HeaderMenuItem>
+        <HeaderMenuSeparator />
         <HeaderMenuItem href="https://github.com/ariakit/ariakit">
           GitHub
         </HeaderMenuItem>
