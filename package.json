@@ -109,7 +109,7 @@
     "@types/use-sync-external-store": "0.0.6",
     "@typescript-eslint/eslint-plugin": "6.17.0",
     "@typescript-eslint/parser": "6.17.0",
-    "@vercel/analytics": "1.1.1",
+    "@vercel/analytics": "1.1.2",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "25.14.0",
     "autoprefixer": "10.4.16",
