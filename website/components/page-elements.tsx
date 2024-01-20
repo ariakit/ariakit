@@ -245,7 +245,7 @@ export function PageListItem({
           {index + 1}
         </span>
       ) : (
-        <ArrowRight className="absolute w-7 -translate-x-8 p-1 text-black/50 dark:text-white/50" />
+        <ArrowRight className="absolute w-7 -translate-x-8 p-1.5 text-black/50 dark:text-white/50" />
       )}
       {isMultiline ? (
         props.children
