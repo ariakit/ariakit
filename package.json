@@ -112,7 +112,7 @@
     "@vercel/analytics": "1.1.1",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "25.15.0",
-    "autoprefixer": "10.4.16",
+    "autoprefixer": "10.4.17",
     "babylon": "6.18.0",
     "chalk": "5.3.0",
     "chokidar": "3.5.3",
