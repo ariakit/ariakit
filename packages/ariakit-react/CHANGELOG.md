@@ -18,7 +18,7 @@ Use the [`[data-enter]`](https://ariakit.org/guide/styling#data-enter) selector 
 
 **BREAKING** if you're using the [`ComboboxList`](https://ariakit.org/reference/combobox-list) component directly with [`Focusable`](https://ariakit.org/reference/focusable) props.
 
-The [`ComboboxList`](https://ariakit.org/reference/combobox-list) component is no longer focusable and doesn't accept [`Focusable`](https://ariakit.org/reference/focusable) props such as [`autoFocus`](https://ariakit.org/reference/focusable#autofocus), [`disabled`](https://ariakit.org/reference/focusable#disabled), and [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) anymore. If you need [Focusable](https://ariakit.org/components/focusable) features specifically on the [`ComboboxList`](https://ariakit.org/reference/combobox-list) component, you can use [composition](https://ariakit.org/guide/composition) to render it as a [`Focusable`](https://ariakit.org/reference/focusable) component.
+The [`ComboboxList`](https://ariakit.org/reference/combobox-list) component is no longer focusable and doesn't accept focusable props such as [`autoFocus`](https://ariakit.org/reference/focusable#autofocus), [`disabled`](https://ariakit.org/reference/focusable#disabled), and [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible) anymore. If you need focusable features specifically on the [`ComboboxList`](https://ariakit.org/reference/combobox-list) component, you can use [composition](https://ariakit.org/guide/composition) to render it as a [`Focusable`](https://ariakit.org/reference/focusable) component.
 
 Before:
 
