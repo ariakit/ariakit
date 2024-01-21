@@ -27,14 +27,14 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('package-lock.json') }}
           restore-keys: npm-
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-node-modules
         with:
           path: |
@@ -48,7 +48,7 @@ jobs:
 
       - name: Cache playwright
         id: cache-playwright
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ hashFiles('package-lock.json') }}
@@ -59,7 +59,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Cache Next.js
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}

@@ -20,14 +20,14 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('package-lock.json') }}
           restore-keys: npm-
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-node-modules
         with:
           path: |
@@ -54,7 +54,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -87,7 +87,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -117,7 +117,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -151,7 +151,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -185,7 +185,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -218,7 +218,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -231,7 +231,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Cache Next.js
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
@@ -269,7 +269,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -283,7 +283,7 @@ jobs:
 
       - name: Cache playwright
         id: cache-playwright
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json') }}
@@ -294,7 +294,7 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.engine }}
 
       - name: Restore website
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
@@ -331,7 +331,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-node-modules
         with:
           path: |
@@ -344,7 +344,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Cache playwright
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ms-playwright
           key: playwright-macos-${{ hashFiles('package-lock.json') }}
@@ -354,7 +354,7 @@ jobs:
         run: npx playwright install --with-deps webkit
 
       - name: Restore website
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}

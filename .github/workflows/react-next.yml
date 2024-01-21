@@ -24,14 +24,14 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ hashFiles('package-lock.json') }}
           restore-keys: npm-
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-node-modules
         with:
           path: |
@@ -62,7 +62,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-node-modules
         with:
           path: |
