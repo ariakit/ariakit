@@ -431,6 +431,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (event.button) return;
       if (event.ctrlKey) return;
       if (!store) return;
+      // TODO: Add prop to configure this. Maybe use includesBaseElement?
       store.setActiveId(null);
       if (setValueOnClickProp(event)) {
         store.setValue(value);

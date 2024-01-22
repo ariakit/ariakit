@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { flushSync } from "react-dom";
@@ -207,6 +207,14 @@ export const useDisclosureContent = createHook<
   const hidden = isHidden(mounted, props.hidden, alwaysVisible);
   const style = hidden ? { ...props.style, display: "none" } : props.style;
 
+  // TODO: Refactor
+  const ref = useRef<HTMLDivElement>(null);
+
+  useSafeLayoutEffect(() => {
+    if (!ref.current) return;
+    store?.setContentElement(ref.current);
+  }, [store]);
+
   props = {
     id,
     "data-open": open || undefined,
@@ -214,7 +222,7 @@ export const useDisclosureContent = createHook<
     "data-leave": transition === "leave" || undefined,
     hidden,
     ...props,
-    ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
+    ref: useMergeRefs(ref, id ? store.setContentElement : null, props.ref),
     style,
   };
 

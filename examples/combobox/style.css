@@ -70,8 +70,8 @@
     rounded
     hover:bg-blue-200/40
     dark:hover:bg-blue-600/25
-    active-item:bg-blue-600
-    active-item:text-white
-    active-item:dark:bg-blue-600
+    data-[active-item]:bg-blue-600
+    data-[active-item]:text-white
+    data-[active-item]:dark:bg-blue-600
   ;
 }

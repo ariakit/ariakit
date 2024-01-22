@@ -187,8 +187,6 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
     PopoverStoreState {
   /** @default true */
   virtualFocus: CompositeStoreState<SelectStoreItem>["virtualFocus"];
-  /** @default false */
-  includesBaseElement: CompositeStoreState<SelectStoreItem>["includesBaseElement"];
   /** @default null */
   activeId: CompositeStoreState<SelectStoreItem>["activeId"];
   /** @default "vertical" */
@@ -259,18 +257,17 @@ export interface SelectStoreFunctions<
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends CompositeStoreOptions<SelectStoreItem>,
-    PopoverStoreOptions,
-    StoreOptions<
+> extends StoreOptions<
       SelectStoreState<T>,
       | "virtualFocus"
-      | "includesBaseElement"
       | "activeId"
       | "orientation"
       | "placement"
       | "value"
       | "setValueOnMove"
-    > {
+    >,
+    CompositeStoreOptions<SelectStoreItem>,
+    PopoverStoreOptions {
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a select (e.g., select with a search input). The stores will share the
