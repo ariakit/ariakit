@@ -129,7 +129,7 @@
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-vitest": "0.3.20",
     "fast-fuzzy": "1.12.0",
-    "framer-motion": "9.1.7",
+    "framer-motion": "11.0.2",
     "fs-extra": "11.2.0",
     "geist": "1.2.1",
     "glob": "10.3.10",
