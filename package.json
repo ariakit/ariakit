@@ -121,7 +121,7 @@
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "date-fns": "3.3.1",
-    "dotenv": "16.4.0",
+    "dotenv": "16.4.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.29.1",
