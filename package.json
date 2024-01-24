@@ -197,7 +197,7 @@
     "use-local-storage-state": "19.1.0",
     "vitest": "1.2.1",
     "vitest-fail-on-console": "0.5.0",
-    "webpack": "5.89.0",
+    "webpack": "5.90.0",
     "zod": "3.22.4"
   }
 }
