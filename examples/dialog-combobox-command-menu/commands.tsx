@@ -56,6 +56,12 @@ export const extensions: Extension[] = [
     ],
   },
   {
+    name: "ext-contacts",
+    title: "Contacts",
+    icon: <ContactsIcon />,
+    commands: [{ name: "cmd-contacts-search", title: "Search Contacts" }],
+  },
+  {
     name: "ext-developer",
     title: "Developer",
     icon: <DeveloperIcon />,
@@ -98,12 +104,12 @@ export const commands = extensions.flatMap(({ commands, ...extension }) =>
 
 export const allItems = [...applications, ...commands];
 
-export const suggestions = allItems.filter((item) =>
-  [
-    "cmd-ai-improve-writing",
-    "cmd-ai-fix-spelling-and-grammar",
-    "app-calendar",
-    "app-app-store",
-    "app-books",
-  ].includes(item.name),
-);
+export const suggestions = [
+  "cmd-contacts-search",
+  "cmd-ai-improve-writing",
+  "app-calendar",
+  "app-app-store",
+  "app-books",
+]
+  .map((name) => allItems.find((item) => item.name === name))
+  .filter((item): item is NonNullable<typeof item> => !!item);

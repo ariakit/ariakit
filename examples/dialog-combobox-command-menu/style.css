@@ -1,8 +1,15 @@
 @import url("../dialog/style.css");
 
+.button {
+  @apply
+    text-[15px]
+  ;
+}
+
 .dialog {
   @apply
     p-0
+    sm:p-0
     gap-0
     sm:max-h-[480px]
     sm:w-[540px]
@@ -11,6 +18,24 @@
     bg-white/90
     dark:bg-gray-800/90
     opacity-0
+    [scale:0.97]
+    transition-[opacity,scale]
+    data-[enter]:opacity-100
+    data-[enter]:[scale:1]
+    [box-shadow:0_0_0_1px_rgb(0_0_0/0.1),0_25px_50px_-12px_rgb(0_0_0/0.25)]
+    dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_25px_50px_-12px_rgb(0_0_0/0.35)]
+  ;
+}
+
+.menu {
+  @apply
+    z-50
+    rounded-lg
+    sm:rounded-2xl
+    bg-white
+    dark:bg-gray-750
+    opacity-0
+    origin-bottom-right
     [scale:0.95]
     transition-[opacity,scale]
     data-[enter]:opacity-100
@@ -32,7 +57,15 @@
 
 .combobox-wrapper {
   @apply
-    relative
+    flex
+    px-4
+    gap-4
+    items-center
+    border-b
+    border-black/10
+    dark:border-white/10
+    last-of-type:border-b-0
+    last-of-type:border-t
   ;
 }
 
@@ -41,12 +74,9 @@
     appearance-none
     bg-transparent
     w-full
-    p-4
-    px-5
-    text-lg
-    border-b
-    border-black/10
-    dark:border-white/10
+    h-16
+    px-1
+    text-[17px]
     placeholder-black/60
     dark:placeholder-white/[46%]
     ![outline:none]
@@ -55,14 +85,17 @@
 
 .escape {
   @apply
-    absolute
-    right-3
-    top-3
-    px-2
+    px-4
+    -mr-1
+    sm:px-2
+    sm:mr-0
+    rounded-md
     font-normal
+    sm:text-sm
     text-black/70
     dark:text-white/70
-    h-9
+    h-10
+    sm:h-8
     border
     border-solid
     -outline-offset-1
@@ -71,20 +104,21 @@
   ;
 }
 
-.listbox {
+.list {
   @apply
     overflow-y-auto
     p-2
   ;
 }
 
-.combobox-item {
+.list-item {
   @apply
     ![outline:none]
     flex
     gap-3
     px-3
     p-2
+    text-[15px]
     active:pt-[9px]
     active:pb-[7px]
     scroll-m-2
@@ -104,14 +138,12 @@
 
 .item-group {
   @apply
-    /* font-light */
     opacity-50
   ;
 }
 
 .item-type {
   @apply
-    /* font-light */
     opacity-50
     ml-auto
   ;

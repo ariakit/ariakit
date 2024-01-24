@@ -22,18 +22,11 @@ export const CommandMenu = forwardRef<
       {...props}
       store={dialog}
       className={clsx("dialog", props.className)}
-      autoFocusOnShow={() => {
-        const selector = '[data-command-menu-item]:not([aria-disabled="true"])';
-        const item = document.querySelector<HTMLElement>(selector);
-        if (!item) return true;
-        item.focus();
-        return false;
-      }}
     >
       <Ariakit.ComboboxProvider
         disclosure={dialog}
-        includesBaseElement={false}
         focusLoop={false}
+        includesBaseElement={false}
         resetValueOnHide
         setValue={(value) => {
           startTransition(() => {
@@ -57,7 +50,7 @@ export const CommandMenuInput = forwardRef<
     <div className="combobox-wrapper">
       <Ariakit.Combobox
         ref={ref}
-        autoSelect
+        autoSelect="always"
         {...props}
         className={clsx("combobox", props.className)}
       />
@@ -77,9 +70,8 @@ export const CommandMenuList = forwardRef<
   return (
     <Ariakit.ComboboxList
       ref={ref}
-      alwaysVisible
       {...props}
-      className={clsx("listbox", props.className)}
+      className={clsx("list", props.className)}
     />
   );
 });
@@ -108,11 +100,7 @@ export const CommandMenuGroup = forwardRef<
   );
 });
 
-export interface CommandMenuItemProps extends Ariakit.ComboboxItemProps {
-  icon?: ReactNode;
-  type?: ReactNode;
-  group?: ReactNode;
-}
+export interface CommandMenuItemProps extends Ariakit.ComboboxItemProps {}
 
 export const CommandMenuItem = forwardRef<
   ElementRef<typeof Ariakit.ComboboxItem>,
@@ -121,29 +109,11 @@ export const CommandMenuItem = forwardRef<
   return (
     <Ariakit.ComboboxItem
       ref={ref}
+      hideOnClick
       focusOnHover
       blurOnHoverEnd={false}
-      hideOnClick
       {...props}
-      data-command-menu-item
-      className={clsx("combobox-item", props.className)}
-    >
-      {props.icon && (
-        <span className="item-icon" aria-hidden>
-          {props.icon}
-        </span>
-      )}
-      {props.children}
-      {props.group && (
-        <span className="item-group" aria-hidden>
-          {props.group}
-        </span>
-      )}
-      {props.type && (
-        <span className="item-type" aria-hidden>
-          {props.type}
-        </span>
-      )}
-    </Ariakit.ComboboxItem>
+      className={clsx("list-item", props.className)}
+    />
   );
 });

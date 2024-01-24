@@ -46,14 +46,21 @@ export default function Example() {
           {Object.entries(matches).map(([group, items]) => (
             <CommandMenuGroup key={group} label={group}>
               {items.map((item) => (
-                <CommandMenuItem
-                  key={item.name}
-                  id={item.name}
-                  icon={item.icon}
-                  group={item.extension?.title}
-                  type={item.extension ? "Command" : "Application"}
-                >
+                <CommandMenuItem key={item.name} id={item.name}>
+                  {item.icon && (
+                    <span className="item-icon" aria-hidden>
+                      {item.icon}
+                    </span>
+                  )}
                   {item.title}
+                  {item.extension?.title && (
+                    <span className="item-group" aria-hidden>
+                      {item.extension?.title}
+                    </span>
+                  )}
+                  <span className="item-type" aria-hidden>
+                    {item.extension ? "Command" : "Application"}
+                  </span>
                 </CommandMenuItem>
               ))}
             </CommandMenuGroup>
