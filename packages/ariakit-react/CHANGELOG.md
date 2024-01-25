@@ -10,9 +10,17 @@ Please review the brief notes following the **BREAKING** labels on each update t
 
 This version enhances support for CSS animations and transitions on Ariakit components that use [Disclosure](https://ariakit.org/components/disclosure). This includes [Dialog](https://ariakit.org/components/dialog), [Popover](https://ariakit.org/components/popover), [Combobox](https://ariakit.org/components/combobox), [Select](https://ariakit.org/components/select), [Hovercard](https://ariakit.org/components/hovercard), [Menu](https://ariakit.org/components/menu), and [Tooltip](https://ariakit.org/components/tooltip).
 
-These components now support _enter_ and _leave_ transitions and animations right out of the box, eliminating the need to provide an explicit `animated` prop. If an enter animation is detected, the component will automatically wait for a leave animation to complete before unmounting or hiding itself.
+These components now support _enter_ and _leave_ transitions and animations right out of the box, eliminating the need to provide an explicit [`animated`](https://ariakit.org/reference/disclosure-provider#animated) prop. If an enter animation is detected, the component will automatically wait for a leave animation to complete before unmounting or hiding itself.
 
 Use the [`[data-enter]`](https://ariakit.org/guide/styling#data-enter) selector for CSS transitions. For CSS animations, use the newly introduced [`[data-open]`](https://ariakit.org/guide/styling#data-open) selector. The [`[data-leave]`](https://ariakit.org/guide/styling#data-leave) selector can be used for both transitions and animations.
+
+Note that Ariakit will now automatically wait for any pending transition to finish before it hides or unmounts the component. This means that if you've set any CSS animation/transition property on a dialog and didn't previously specify the [`animated`](https://ariakit.org/reference/disclosure-provider#animated) prop, you might notice a delay when closing the dialog. To fix this, you should turn off the CSS transition using the [`[data-leave]`](https://ariakit.org/guide/styling#data-leave) selector:
+
+```css
+.dialog[data-leave] {
+  transition: unset;
+}
+```
 
 ### `ComboboxList` is no longer focusable
 
