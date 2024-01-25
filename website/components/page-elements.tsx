@@ -567,7 +567,7 @@ export function PageA({
           <Hashtag className="mb-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
           &#x2060;
         </span>
-        ⁠{props.children}
+        {props.children}
       </InlineLink>
     );
   }
