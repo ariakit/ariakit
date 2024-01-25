@@ -550,7 +550,10 @@ export function PageA({
         rel="nofollow noopener noreferrer"
       >
         {props.children}
-        <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+        <span className="whitespace-nowrap">
+          &#x2060;
+          <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+        </span>
       </InlineLink>
     );
   }
@@ -560,8 +563,11 @@ export function PageA({
   if (href?.startsWith("#")) {
     return (
       <InlineLink {...props} href={href}>
-        <Hashtag className="mb-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
-        {props.children}
+        <span className="whitespace-nowrap">
+          <Hashtag className="mb-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+          &#x2060;
+        </span>
+        ⁠{props.children}
       </InlineLink>
     );
   }
