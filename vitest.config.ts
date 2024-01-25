@@ -7,7 +7,10 @@ const excludeFromReact17 = [
   "examples/dialog-animated-various",
 ];
 
-const includeWithStyles = [/dialog-animated-various/];
+const includeWithStyles = [
+  /dialog-animated-various/,
+  /dialog-combobox-command-menu/,
+];
 
 const isReact17 = version.startsWith("17");
 

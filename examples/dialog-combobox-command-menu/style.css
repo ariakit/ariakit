@@ -160,3 +160,14 @@
     [&+*]:scroll-mt-11
   ;
 }
+
+.no-results {
+  @apply
+    h-20
+    flex
+    flex-col
+    justify-center
+    items-center
+    opacity-80
+  ;
+}

@@ -1,4 +1,4 @@
-import type { ElementRef, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { forwardRef, startTransition } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
@@ -9,41 +9,40 @@ export interface CommandMenuProps extends Ariakit.DialogProps {
   onSearch?: Ariakit.ComboboxProviderProps["setValue"];
 }
 
-export const CommandMenu = forwardRef<
-  ElementRef<typeof Ariakit.Dialog>,
-  CommandMenuProps
->(function CommandMenu({ open, onOpenChange, onSearch, ...props }, ref) {
-  const dialog = Ariakit.useDialogStore({ open, setOpen: onOpenChange });
-  return (
-    <Ariakit.Dialog
-      ref={ref}
-      unmountOnHide
-      backdrop={<div className="backdrop" />}
-      {...props}
-      store={dialog}
-      className={clsx("dialog", props.className)}
-    >
-      <Ariakit.ComboboxProvider
-        disclosure={dialog}
-        focusLoop={false}
-        includesBaseElement={false}
-        resetValueOnHide
-        setValue={(value) => {
-          startTransition(() => {
-            onSearch?.(value);
-          });
-        }}
+export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
+  function CommandMenu({ open, onOpenChange, onSearch, ...props }, ref) {
+    const dialog = Ariakit.useDialogStore({ open, setOpen: onOpenChange });
+    return (
+      <Ariakit.Dialog
+        ref={ref}
+        unmountOnHide
+        backdrop={<div className="backdrop" />}
+        {...props}
+        store={dialog}
+        className={clsx("dialog", props.className)}
       >
-        {props.children}
-      </Ariakit.ComboboxProvider>
-    </Ariakit.Dialog>
-  );
-});
+        <Ariakit.ComboboxProvider
+          disclosure={dialog}
+          focusLoop={false}
+          includesBaseElement={false}
+          resetValueOnHide
+          setValue={(value) => {
+            startTransition(() => {
+              onSearch?.(value);
+            });
+          }}
+        >
+          {props.children}
+        </Ariakit.ComboboxProvider>
+      </Ariakit.Dialog>
+    );
+  },
+);
 
 export interface CommandMenuInputProps extends Ariakit.ComboboxProps {}
 
 export const CommandMenuInput = forwardRef<
-  ElementRef<typeof Ariakit.Combobox>,
+  HTMLInputElement,
   CommandMenuInputProps
 >(function CommandMenuInput(props, ref) {
   return (
@@ -63,25 +62,24 @@ export const CommandMenuInput = forwardRef<
 
 export interface CommandMenuListProps extends Ariakit.ComboboxListProps {}
 
-export const CommandMenuList = forwardRef<
-  ElementRef<typeof Ariakit.ComboboxList>,
-  CommandMenuListProps
->(function CommandMenuList(props, ref) {
-  return (
-    <Ariakit.ComboboxList
-      ref={ref}
-      {...props}
-      className={clsx("list", props.className)}
-    />
-  );
-});
+export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
+  function CommandMenuList(props, ref) {
+    return (
+      <Ariakit.ComboboxList
+        ref={ref}
+        {...props}
+        className={clsx("list", props.className)}
+      />
+    );
+  },
+);
 
 export interface CommandMenuGroupProps extends Ariakit.ComboboxGroupProps {
   label?: ReactNode;
 }
 
 export const CommandMenuGroup = forwardRef<
-  ElementRef<typeof Ariakit.ComboboxGroup>,
+  HTMLDivElement,
   CommandMenuGroupProps
 >(function CommandMenuGroup({ label, ...props }, ref) {
   return (
@@ -102,18 +100,17 @@ export const CommandMenuGroup = forwardRef<
 
 export interface CommandMenuItemProps extends Ariakit.ComboboxItemProps {}
 
-export const CommandMenuItem = forwardRef<
-  ElementRef<typeof Ariakit.ComboboxItem>,
-  CommandMenuItemProps
->(function CommandMenuItem(props, ref) {
-  return (
-    <Ariakit.ComboboxItem
-      ref={ref}
-      hideOnClick
-      focusOnHover
-      blurOnHoverEnd={false}
-      {...props}
-      className={clsx("list-item", props.className)}
-    />
-  );
-});
+export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
+  function CommandMenuItem(props, ref) {
+    return (
+      <Ariakit.ComboboxItem
+        ref={ref}
+        hideOnClick
+        focusOnHover
+        blurOnHoverEnd={false}
+        {...props}
+        className={clsx("list-item", props.className)}
+      />
+    );
+  },
+);
