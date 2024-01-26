@@ -2,16 +2,20 @@
 tags:
   - New
   - Dialog
+  - Combobox
   - Button
-  - Focusable
-  - VisuallyHidden
+  - Animated
+  - CSS transitions
+  - Concurrent React
+  - Search
+  - Abstracted examples
 ---
 
 # Command Menu
 
 <div data-description>
 
-Preventing users from accidentally closing a [`modal`](/reference/dialog#modal) [Dialog](/components/dialog) component with unsaved changes by displaying a nested confirmation dialog.
+Combining [Dialog](/components/dialog) and [Combobox](/components/combobox) to enable users to search a command list in a [Raycast](https://www.raycast.com/)-style modal.
 
 </div>
 
@@ -24,74 +28,90 @@ Preventing users from accidentally closing a [`modal`](/reference/dialog#modal) 
 <div data-cards="components">
 
 - [](/components/dialog)
+- [](/components/combobox)
 - [](/components/button)
-- [](/components/focusable)
-- [](/components/visually-hidden)
 
 </div>
 
-## Preventing Dialog from closing
+## Understanding the basic structure
 
-By passing the [`open`](/reference/dialog#open) and [`onClose`](/reference/dialog#onclose) props to the [`Dialog`](/reference/dialog) component, we can control exactly when the dialog is open and closed.
-
-When there are unsaved changes, instead of setting our `open` state within the [`onClose`](/reference/dialog#onclose) callback, we just open the nested warning dialog and prevent the default close behavior:
-
-```jsx {7,8,10}
-const [open, setOpen] = useState(false);
-
-<Dialog
-  open={open}
-  onClose={(event) => {
-    if (hasUnsavedChanges) {
-      event.preventDefault();
-      setWarningOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }}
->
-```
-
-Within the warning dialog, the parent dialog can be closed when the user clicks on the [`DialogDismiss`](/reference/dialog-dismiss) component. This component will automatically hide its own dialog, namely the warning dialog, but we need to manually set the `open` state of the parent dialog:
-
-```jsx {2-5}
-<DialogDismiss
-  onClick={() => {
-    saveChanges();
-    setOpen(false);
-  }}
->
-  Save
-</DialogDismiss>
-```
-
-## Auto focus
-
-The [Dialog](/components/dialog) component will automatically focus on the first tabbable element when it's open. This element, known as the "initial focus", can be managed either by the [`initialFocus`](/reference/dialog#initialfocus) prop on the [`Dialog`](/reference/dialog) component or the [`autoFocus`](/reference/focusable#autofocus) prop on a component that uses [`Focusable`](/reference/focusable). Essentially, every Ariakit component that can receive focus can use this feature.
-
-In this example, we use a [Focusable](/components/focusable) component to render the textarea element, allowing us to pass the [`autoFocus`](/reference/focusable#autofocus) prop to it:
+This example creates a custom `CommandMenu` component with the following API structure:
 
 ```jsx
-<Focusable autoFocus render={<textarea />} />
+<CommandMenu>
+  <CommandMenuInput />
+  <CommandMenuList>
+    <CommandMenuGroup>
+      <CommandMenuItem />
+    </CommandMenuGroup>
+  </CommandMenuList>
+</CommandMenu>
 ```
 
-## Re-triggering auto focus
-
-We can re-trigger the auto focus behavior on the [Dialog](/components/dialog) component even when it's already open by toggling the [`autoFocusOnShow`](/reference/dialog#autofocusonshow) prop. In this example, we toggle the prop whenever the nested dialog closes, so the focus is always moved back to the input field:
+Under the hood, we render a set of [Dialog](/components/dialog) and [Combobox](/components/combobox) components structured as follows:
 
 ```jsx
-<Dialog autoFocusOnShow={!warningOpen}>
+<Dialog>
+  <ComboboxProvider>
+    <Combobox />
+    <DialogDismiss />
+    <ComboboxList>
+      <ComboboxGroup>
+        <ComboboxGroupLabel />
+        <ComboboxItem />
+      </ComboboxGroup>
+    </ComboboxList>
+  </ComboboxProvider>
+</Dialog>
 ```
+
+## Syncing the state between Dialog and Combobox
+
+We need to synchronize the visibility state between the [Dialog](/components/dialog) and [Combobox](/components/combobox) components. This can be done by passing the dialog store, obtained from the [`useDialogStore`](/reference/use-dialog-store) hook, to the [`disclosure`](/reference/combobox-provider#disclosure) prop of the [`ComboboxProvider`](/reference/combobox-provider) component:
+
+```jsx
+const dialog = useDialogStore();
+
+<Dialog store={dialog}>
+  <ComboboxProvider disclosure={dialog}>
+```
+
+## Focusing on the first item by default
+
+By default, the [Combobox](/components/combobox) component doesn't focus on the first option when the list opens. However, in this example, the combobox input and options are displayed simultaneously when the dialog appears. To improve usability, we focus on the first item immediately, allowing the user to choose the first suggestion with minimal effort.
+
+To achieve this, we use the [`autoSelect`](/reference/combobox#autoselect) prop of the [`Combobox`](/reference/combobox) component, setting the value to `"always"`:
+
+```jsx
+<Combobox autoSelect="always" />
+```
+
+## Preventing items from losing focus
+
+In this example, we've decided to maintain the highlight state on the currently active item, even if the user moves the mouse cursor away or interacts with the combobox input.
+
+1. First, to ensure the active item doesn't lose focus when the user clicks or presses arrow keys to move focus to the combobox input, we set the [`includesBaseElement`](/reference/combobox-provider#includesbaseelement) state to `false` on the [`ComboboxProvider`](/reference/combobox-provider) component:
+
+   ```jsx
+   <ComboboxProvider includesBaseElement={false}>
+   ```
+
+2. Then, to avoid blurring the active item when the user moves the mouse cursor away, we set the [`blurOnHoverEnd`](/reference/combobox-item#bluronhoverend) prop of the [`ComboboxItem`](/reference/combobox-item) component to `false`. Coupled with [`focusOnHover`](/reference/combobox-item#focusonhover), this ensures the item stays focused when the user hovers over it and until they hover over another item:
+
+   ```jsx
+   <ComboboxItem focusOnHover blurOnHoverEnd={false} />
+   ```
 
 ## Related examples
 
 <div data-cards="examples">
 
-- [](/examples/dialog-nested)
-- [](/examples/dialog-animated)
+- [](/examples/combobox-links)
+- [](/examples/combobox-filtering)
+- [](/examples/combobox-tabs)
 - [](/examples/dialog-menu)
-- [](/examples/dialog-backdrop-scrollable)
-- [](/examples/dialog-next-router)
-- [](/examples/combobox-textarea)
+- [](/examples/dialog-nested)
+- [](/examples/menu-combobox)
+- [](/examples/select-combobox)
 
 </div>
