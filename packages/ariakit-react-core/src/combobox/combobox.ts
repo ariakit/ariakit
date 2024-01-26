@@ -291,6 +291,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     useUpdateEffect(() => {
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
+      if (!open) return;
       if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
@@ -323,6 +324,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       return;
     }, [
       store,
+      open,
       valueUpdated,
       storeValue,
       autoSelect,
