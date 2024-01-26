@@ -1,11 +1,10 @@
-import type { ElementType, KeyboardEvent } from "react";
+import type { ElementType } from "react";
 import { useRef } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
 import {
   useAttribute,
-  useEvent,
   useId,
   useMergeRefs,
   useWrapElement,
@@ -50,16 +49,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
 
-    const onKeyDownProp = props.onKeyDown;
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (event.key === "Escape") {
-        store?.move(null);
-      }
-    });
-
     props = useWrapElement(
       props,
       (element) => (
@@ -92,7 +81,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       ...props,
       ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
       style,
-      onKeyDown,
     };
 
     return removeUndefinedValues(props);
