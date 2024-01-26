@@ -39,5 +39,6 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

@@ -82,8 +82,8 @@ However, Ariakit will make sure the dialog is not closed when users interact wit
 - [](/examples/combobox-radix)
 - [](/examples/combobox-radix-select)
 - [](/examples/dialog-backdrop-scrollable)
+- [](/examples/dialog-combobox-command-menu)
 - [](/examples/dialog-menu)
-- [](/examples/dialog-hide-warning)
 - [](/examples/dialog-react-toastify)
 
 </div>

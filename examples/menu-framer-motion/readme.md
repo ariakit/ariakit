@@ -73,5 +73,6 @@ You can learn more about reading state from the store on the [Component stores](
 - [](/examples/menu-nested)
 - [](/examples/menu-item-checkbox)
 - [](/examples/menubar-navigation)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

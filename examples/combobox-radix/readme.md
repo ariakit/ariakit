@@ -118,10 +118,10 @@ Here are a few things to keep in mind when assembling these components:
 - [](/examples/combobox-radix-select)
 - [](/examples/dialog-radix)
 - [](/examples/combobox-group)
-- [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-links)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

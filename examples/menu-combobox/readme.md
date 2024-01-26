@@ -27,5 +27,6 @@ Combining [Menu](/components/menu) and [Combobox](/components/combobox) to creat
 - [](/examples/select-combobox)
 - [](/examples/menubar-navigation)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

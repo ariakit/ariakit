@@ -64,6 +64,9 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * `disclosureElement` won't be synced. For that, use the
    * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
    * instead.
+   *
+   * Live examples:
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    */
   disclosure?: DisclosureStore | null;
 }

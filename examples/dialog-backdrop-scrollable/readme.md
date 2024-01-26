@@ -60,5 +60,6 @@ However, Ariakit will make sure the dialog is not closed when users interact wit
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

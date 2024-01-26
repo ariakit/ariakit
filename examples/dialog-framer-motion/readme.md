@@ -73,7 +73,8 @@ You can learn more about reading state from the store on the [Component stores](
 - [](/examples/tooltip-framer-motion)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
-- [](/examples/menubar-navigation)
 - [](/examples/dialog-hide-warning)
+- [](/examples/dialog-combobox-command-menu)
+- [](/examples/menubar-navigation)
 
 </div>
