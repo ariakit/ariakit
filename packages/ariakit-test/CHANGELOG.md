@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.3.10
+
+- Updated dependencies: `@ariakit/core@0.4.1`
+
 ## 0.3.9
 
 - Queries no longer match `inert` elements.
