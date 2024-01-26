@@ -27,24 +27,6 @@
   ;
 }
 
-.menu {
-  @apply
-    z-50
-    rounded-lg
-    sm:rounded-2xl
-    bg-white
-    dark:bg-gray-750
-    opacity-0
-    origin-bottom-right
-    [scale:0.95]
-    transition-[opacity,scale]
-    data-[enter]:opacity-100
-    data-[enter]:[scale:1]
-    [box-shadow:0_0_0_1px_rgb(0_0_0/0.1),0_25px_50px_-12px_rgb(0_0_0/0.25)]
-    dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_25px_50px_-12px_rgb(0_0_0/0.35)]
-  ;
-}
-
 .backdrop {
   @apply
     [backdrop-filter:blur(8px)]
