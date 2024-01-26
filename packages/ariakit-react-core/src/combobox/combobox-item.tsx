@@ -111,10 +111,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         }
       }
       if (hideOnClickProp(event)) {
-        // When ComboboxList is used instead of ComboboxPopover, store.hide()
-        // does nothing. The focus will not be moved over to the combobox
-        // input automatically. So we need to move manually here.
-        store?.move(null);
         store?.hide();
       }
     });
