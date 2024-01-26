@@ -51,7 +51,7 @@
     "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
     "clean": "npm run clean -ws --if-present",
     "changeset": "changeset",
-    "prepare": "husky install",
+    "prepare": "husky",
     "postinstall": "patch-package"
   },
   "workspaces": [
@@ -136,7 +136,7 @@
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
-    "husky": "8.0.3",
+    "husky": "9.0.6",
     "jsdom": "24.0.0",
     "lerna": "8.0.2",
     "lint-staged": "15.2.0",
