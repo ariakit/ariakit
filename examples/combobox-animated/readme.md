@@ -48,7 +48,7 @@ Learn more on the [Styling](/guide/styling) guide.
 
 <div data-cards="examples">
 
-- [](/examples/combobox-filtering-integrated)
+- [](/examples/dialog-combobox-command-menu)
 - [](/examples/menubar-navigation)
 - [](/examples/dialog-animated)
 - [](/examples/dialog-framer-motion)

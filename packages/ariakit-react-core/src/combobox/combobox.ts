@@ -589,8 +589,7 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    *
    *
    * Live examples:
-   * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Textarea with inline

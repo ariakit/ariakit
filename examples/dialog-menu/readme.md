@@ -36,6 +36,7 @@ Showing a nested dropdown [Menu](/components/menu) component inside a modal [Dia
 - [](/examples/dialog-hide-warning)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-react-toastify)
+- [](/examples/dialog-combobox-command-menu)
 - [](/examples/menu-nested)
 - [](/examples/menu-tooltip)
 

@@ -46,9 +46,7 @@ export function createHovercardStore(
 }
 
 export interface HovercardStoreState extends PopoverStoreState {
-  /**
-   * @default "bottom"
-   */
+  /** @default "bottom" */
   placement: PopoverStoreState["placement"];
   /**
    * The amount of time in milliseconds to wait before showing and hiding the
@@ -100,11 +98,11 @@ export interface HovercardStoreFunctions extends PopoverStoreFunctions {
 }
 
 export interface HovercardStoreOptions
-  extends PopoverStoreOptions,
-    StoreOptions<
+  extends StoreOptions<
       HovercardStoreState,
       "placement" | "timeout" | "showTimeout" | "hideTimeout"
-    > {}
+    >,
+    PopoverStoreOptions {}
 
 export interface HovercardStoreProps
   extends HovercardStoreOptions,

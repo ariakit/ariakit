@@ -64,10 +64,10 @@ matches.map((value) => <ComboboxItem key={value} value={value} />);
 - [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-animated)
 - [](/examples/combobox-cancel)
-- [](/examples/combobox-group)
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-command-menu)
 - [](/examples/menu-nested-combobox)
 
 </div>

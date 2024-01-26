@@ -1,0 +1,155 @@
+@import url("../dialog/style.css");
+
+.button {
+  @apply
+    text-[15px]
+  ;
+}
+
+.dialog {
+  @apply
+    p-0
+    sm:p-0
+    gap-0
+    sm:max-h-[480px]
+    sm:w-[540px]
+    md:w-[640px]
+    dark:border-0
+    bg-white/90
+    dark:bg-gray-800/90
+    opacity-0
+    [scale:0.97]
+    transition-[opacity,scale]
+    data-[enter]:opacity-100
+    data-[enter]:[scale:1]
+    [box-shadow:0_0_0_1px_rgb(0_0_0/0.1),0_25px_50px_-12px_rgb(0_0_0/0.25)]
+    dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_25px_50px_-12px_rgb(0_0_0/0.35)]
+  ;
+}
+
+.backdrop {
+  @apply
+    [backdrop-filter:blur(8px)]
+    [-webkit-backdrop-filter:blur(8px)]
+    opacity-0
+    transition-opacity
+    data-[enter]:opacity-100
+  ;
+}
+
+.combobox-wrapper {
+  @apply
+    flex
+    px-4
+    gap-4
+    items-center
+    border-b
+    border-black/10
+    dark:border-white/10
+    last-of-type:border-b-0
+    last-of-type:border-t
+  ;
+}
+
+.combobox {
+  @apply
+    appearance-none
+    bg-transparent
+    w-full
+    h-16
+    px-1
+    text-[17px]
+    placeholder-black/60
+    dark:placeholder-white/[46%]
+    ![outline:none]
+  ;
+}
+
+.escape {
+  @apply
+    px-4
+    -mr-1
+    sm:px-2
+    sm:mr-0
+    rounded-md
+    font-normal
+    sm:text-sm
+    text-black/70
+    dark:text-white/70
+    h-10
+    sm:h-8
+    border
+    border-solid
+    -outline-offset-1
+    border-black/10
+    dark:border-white/10
+  ;
+}
+
+.list {
+  @apply
+    overflow-y-auto
+    p-2
+  ;
+}
+
+.list-item {
+  @apply
+    ![outline:none]
+    flex
+    gap-3
+    px-3
+    p-2
+    text-[15px]
+    active:pt-[9px]
+    active:pb-[7px]
+    scroll-m-2
+    cursor-default
+    items-center
+    rounded-lg
+    data-[active-item]:bg-black/10
+    data-[active-item]:dark:bg-white/10
+  ;
+}
+
+.item-icon {
+  @apply
+    [&>svg]:size-4
+  ;
+}
+
+.item-group {
+  @apply
+    opacity-50
+  ;
+}
+
+.item-type {
+  @apply
+    opacity-50
+    ml-auto
+  ;
+}
+
+.group-label {
+  @apply
+    text-sm
+    p-2
+    px-3
+    font-medium
+    opacity-50
+    cursor-default
+    [&+*]:scroll-mt-11
+  ;
+}
+
+.no-results {
+  @apply
+    h-20
+    flex
+    flex-col
+    justify-center
+    items-center
+    opacity-80
+  ;
+}

@@ -48,6 +48,7 @@ You can learn more about these `data-*` attributes on the [Styling](/guide/styli
 
 <div data-cards="examples">
 
+- [](/examples/dialog-combobox-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>

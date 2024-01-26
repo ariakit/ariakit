@@ -48,13 +48,13 @@ function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);
 }
 
-function isPrintableKey(event: ReactKeyboardEvent): boolean {
+function isPrintableKey(event: KeyboardEvent | ReactKeyboardEvent): boolean {
   const target = event.target as Element | null;
   if (target && !isTextField(target)) return false;
   return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
 }
 
-function isModifierKey(event: ReactKeyboardEvent) {
+function isModifierKey(event: KeyboardEvent | ReactKeyboardEvent) {
   return (
     event.key === "Shift" ||
     event.key === "Control" ||

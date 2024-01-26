@@ -36,8 +36,8 @@ export interface ToolbarStoreState extends CompositeStoreState {
 export interface ToolbarStoreFunctions extends CompositeStoreFunctions {}
 
 export interface ToolbarStoreOptions
-  extends CompositeStoreOptions,
-    StoreOptions<ToolbarStoreState, "orientation" | "focusLoop"> {}
+  extends StoreOptions<ToolbarStoreState, "orientation" | "focusLoop">,
+    CompositeStoreOptions {}
 
 export interface ToolbarStoreProps
   extends ToolbarStoreOptions,

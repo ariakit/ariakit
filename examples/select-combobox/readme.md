@@ -27,5 +27,6 @@ Combining [Select](/components/select) and [Combobox](/components/combobox) to c
 - [](/examples/menu-combobox)
 - [](/examples/menu-nested-combobox)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

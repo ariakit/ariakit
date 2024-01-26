@@ -155,6 +155,12 @@ export type MenuStoreValues = Record<
 export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   extends CompositeStoreState,
     HovercardStoreState {
+  /** @default "vertical" */
+  orientation: CompositeStoreState["orientation"];
+  /** @default "bottom-start" */
+  placement: HovercardStoreState["placement"];
+  /** @default 0 */
+  hideTimeout?: HovercardStoreState["hideTimeout"];
   /**
    * Determines the element that should be focused when the menu is opened.
    */
@@ -171,12 +177,6 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    */
   values: T;
-  /** @default "vertical" */
-  orientation: CompositeStoreState["orientation"];
-  /** @default "bottom-start" */
-  placement: HovercardStoreState["placement"];
-  /** @default 0 */
-  hideTimeout?: HovercardStoreState["hideTimeout"];
 }
 
 export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
@@ -222,12 +222,12 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
-  extends CompositeStoreOptions,
-    HovercardStoreOptions,
-    StoreOptions<
+  extends StoreOptions<
       MenuStoreState<T>,
       "orientation" | "placement" | "hideTimeout" | "values"
-    > {
+    >,
+    CompositeStoreOptions,
+    HovercardStoreOptions {
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a menu (e.g., dropdown menu with a search input). The stores will

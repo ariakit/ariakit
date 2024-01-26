@@ -216,6 +216,7 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    */
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }

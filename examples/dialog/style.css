@@ -9,6 +9,7 @@
 .backdrop {
   @apply
     [backdrop-filter:blur(4px)]
+    [-webkit-backdrop-filter:blur(4px)]
     bg-black/10
     dark:bg-black/50
   ;
@@ -22,7 +23,7 @@
     m-auto
     sm:mt-0
     h-fit
-    max-h-[calc(100vh-2*theme(spacing.3))]
+    max-h-[calc(100dvh-2*theme(spacing.3))]
     sm:max-h-[80vh]
     sm:w-[420px]
     overflow-auto

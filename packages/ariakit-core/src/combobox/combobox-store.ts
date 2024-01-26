@@ -189,10 +189,16 @@ export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > extends CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {
-  /**
-   * @default true
-   */
-  includesBaseElement: boolean;
+  /** @default true */
+  includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
+  /** @default true */
+  focusLoop: CompositeStoreState<ComboboxStoreItem>["focusLoop"];
+  /** @default true */
+  focusWrap: CompositeStoreState<ComboboxStoreItem>["focusWrap"];
+  /** @default "vertical" */
+  orientation: CompositeStoreState<ComboboxStoreItem>["orientation"];
+  /** @default true */
+  virtualFocus: CompositeStoreState<ComboboxStoreItem>["virtualFocus"];
   /**
    * The combobox input value.
    *
@@ -239,6 +245,7 @@ export interface ComboboxStoreState<
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    */
   resetValueOnHide: boolean;
   /**
@@ -283,19 +290,21 @@ export interface ComboboxStoreFunctions<
 
 export interface ComboboxStoreOptions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends CompositeStoreOptions<ComboboxStoreItem>,
-    PopoverStoreOptions,
-    StoreOptions<
+> extends StoreOptions<
       ComboboxStoreState<T>,
       | "includesBaseElement"
+      | "focusLoop"
+      | "focusWrap"
+      | "orientation"
+      | "virtualFocus"
       | "value"
       | "selectedValue"
       | "resetValueOnHide"
       | "resetValueOnSelect"
-    > {
-  /**
-   * @default null
-   */
+    >,
+    CompositeStoreOptions<ComboboxStoreItem>,
+    PopoverStoreOptions {
+  /** @default null */
   defaultActiveId?: CompositeStoreOptions<ComboboxStoreItem>["activeId"];
   /**
    * The initial value of the combobox input.

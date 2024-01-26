@@ -132,9 +132,13 @@ export interface TooltipOptions<T extends ElementType = TagName>
    * component's context will be used.
    */
   store?: TooltipStore;
-  /** @default true */
+  /**
+   * @default true
+   */
   portal?: HovercardOptions<T>["portal"];
-  /** @default 8 */
+  /**
+   * @default 8
+   */
   gutter?: HovercardOptions<T>["gutter"];
 }
 

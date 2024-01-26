@@ -35,5 +35,6 @@ Opening and closing a [Combobox](/components/combobox) with the help of a button
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-animated)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

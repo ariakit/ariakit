@@ -95,9 +95,9 @@ export default function Example() {
           value={value}
           // We'll overwrite how the combobox popover is shown, so we disable
           // the default behaviors.
+          showOnClick={false}
           showOnChange={false}
-          showOnKeyDown={false}
-          showOnMouseDown={false}
+          showOnKeyPress={false}
           // To the combobox state, we'll only set the value after the trigger
           // character (the search value), so we disable the default behavior.
           setValueOnChange={false}

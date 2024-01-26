@@ -467,6 +467,9 @@ export interface CompositeStoreState<
    *   matches the value of `focusLoop`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
+   *
+   * Live examples:
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -512,6 +515,7 @@ export interface CompositeStoreState<
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    * @default false
    */
   includesBaseElement: boolean;

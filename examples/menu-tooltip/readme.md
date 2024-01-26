@@ -42,5 +42,6 @@ You can learn more about this pattern on the [Composition](/guide/composition) g
 
 - [](/examples/menu-item-checkbox)
 - [](/examples/dialog-menu)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

@@ -216,5 +216,6 @@ It might not be clear that pressing <kbd>←</kbd> and <kbd>→</kbd> while an `
 - [](/examples/combobox-links)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

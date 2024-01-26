@@ -43,5 +43,6 @@ Note that the elements returned by this function **must be present in the DOM** 
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
 - [](/examples/dialog-backdrop-scrollable)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>
