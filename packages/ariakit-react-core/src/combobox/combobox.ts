@@ -568,25 +568,26 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    */
   store?: ComboboxStore;
   /**
-   * Whether the first enabled item will be automatically selected when the
-   * combobox input value changes. When it's set to `true` or `"always"`, the
-   * exact behavior will depend on the value of the
+   * Determines if the first enabled item will be automatically focused when the
+   * combobox input value changes. If set to `true` or `"always"`, the exact
+   * behavior hinges on the value of the
    * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop:
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
-   *   is `both` or `inline`, the first item is automatically focused when the
-   *   popup opens, and the input value changes to reflect this. The inline
-   *   completion string will be highlighted and will have a selected state.
+   *   is `both` or `inline`, the first enabled item is automatically focused as
+   *   the user types in the input. The value gets appended with the completion
+   *   string if it matches. The inline completion string will be highlighted
+   *   and selected.
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
-   *   is `list` or `none`, the first item is automatically focused when the
-   *   popup opens, but the input value doesn't change.
+   *   is `list` or `none`, the first enabled item is automatically focused as
+   *   the user types in the input, but the input value is not appended with the
+   *   item value.
    *
-   * When it's set to `"always"`, the first enabled item will be automatically
-   * highlighted when the combobox list opens.
+   * If set to `"always"`, the first enabled item is auto-highlighted when the
+   * combobox list opens, not just when the input value changes.
    *
-   * To change which item is auto selected, use the
+   * To change which item gets auto-selected, use the
    * [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid)
    * prop.
-   *
    *
    * Live examples:
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
