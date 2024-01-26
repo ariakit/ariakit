@@ -110,8 +110,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     showOnChange = true,
     setValueOnChange = true,
     showOnMouseDown = true,
+    showOnClick = showOnMouseDown,
+    blurActiveItemOnClick,
     setValueOnClick = true,
     showOnKeyDown = true,
+    showOnKeyPress = showOnKeyDown,
     moveOnKeyPress = true,
     autoComplete = "list",
     ...props
@@ -134,7 +137,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
     // first item on every keypress.
     const autoSelect = store.useState(
-      (state) => !!autoSelectProp && state.virtualFocus,
+      (state) => state.virtualFocus && autoSelectProp,
     );
 
     const inline = autoComplete === "inline" || autoComplete === "both";
@@ -277,9 +280,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // auto select an item after the popover closes (for example, in the middle
     // of an animation).
     useSafeLayoutEffect(() => {
-      if (open) return;
-      canAutoSelectRef.current = false;
-    }, [open]);
+      if (autoSelect !== "always" && open) return;
+      canAutoSelectRef.current = open;
+    }, [autoSelect, open]);
 
     const resetValueOnSelect = store.useState("resetValueOnSelect");
 
@@ -422,8 +425,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const onMouseDownProp = props.onMouseDown;
+    const blurActiveItemOnClickProp = useBooleanEvent(
+      blurActiveItemOnClick ?? (() => !!store?.getState().includesBaseElement),
+    );
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
-    const showOnMouseDownProp = useBooleanEvent(showOnMouseDown);
+    const showOnClickProp = useBooleanEvent(showOnClick);
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
@@ -431,17 +437,19 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (event.button) return;
       if (event.ctrlKey) return;
       if (!store) return;
-      store.setActiveId(null);
+      if (blurActiveItemOnClickProp(event)) {
+        store.setActiveId(null);
+      }
       if (setValueOnClickProp(event)) {
         store.setValue(value);
       }
-      if (showOnMouseDownProp(event)) {
+      if (showOnClickProp(event)) {
         queueBeforeEvent(event.currentTarget, "mouseup", store.show);
       }
     });
 
     const onKeyDownProp = props.onKeyDown;
-    const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
+    const showOnKeyPressProp = useBooleanEvent(showOnKeyPress);
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -460,7 +468,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (activeId !== null) return;
       // Up and Down arrow keys should open the combobox popover.
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-        if (showOnKeyDownProp(event)) {
+        if (showOnKeyPressProp(event)) {
           event.preventDefault();
           store.show();
         }
@@ -559,8 +567,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
   /**
    * Whether the first enabled item will be automatically selected when the
-   * combobox input value changes. When it's set to `true`, the exact behavior
-   * will depend on the value of the
+   * combobox input value changes. When it's set to `true` or `"always"`, the
+   * exact behavior will depend on the value of the
    * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop:
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
    *   is `both` or `inline`, the first item is automatically focused when the
@@ -570,9 +578,13 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    *   is `list` or `none`, the first item is automatically focused when the
    *   popup opens, but the input value doesn't change.
    *
+   * When it's set to `"always"`, the first enabled item will be automatically
+   * highlighted when the combobox list opens.
+   *
    * To change which item is auto selected, use the
    * [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid)
    * prop.
+   *
    *
    * Live examples:
    * - [Combobox with integrated
@@ -585,7 +597,7 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * @default false
    */
-  autoSelect?: boolean;
+  autoSelect?: boolean | "always";
   /**
    * Function that takes the currently rendered items and returns the id of the
    * item to be auto selected when the
@@ -647,6 +659,14 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    */
   autoComplete?: StringWithValue<Required<AriaAttributes>["aria-autocomplete"]>;
   /**
+   * Determines if the highlighted item should lose focus when the user clicks
+   * on the combobox input element. By default, this prop's value is set
+   * according to the
+   * [`includesBaseElement`](https://ariakit.org/reference/combobox-provider#includesbaseelement)
+   * value.
+   */
+  blurActiveItemOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components should be shown when the input value changes.
@@ -665,6 +685,16 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components should be shown when the input is clicked.
+   * @deprecated Use
+   * [`showOnClick`](https://ariakit.org/reference/combobox#showonclick)
+   * instead.
+   * @default true
+   */
+  showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
+   * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components should be shown when the input is clicked.
    *
    * Live examples:
    * - [Textarea with inline
@@ -672,10 +702,21 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * @default true
    * @example
    * ```jsx
-   * <Combobox showOnMouseDown={value.length > 1} />
+   * <Combobox showOnClick={value.length > 1} />
    * ```
    */
-  showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  showOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
+   * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components should be shown when the user presses the arrow up or down keys
+   * while focusing on the combobox input element.
+   * @deprecated Use
+   * [`showOnKeyPress`](https://ariakit.org/reference/combobox#showonkeypress)
+   * instead.
+   * @default true
+   */
+  showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
   /**
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
@@ -688,10 +729,10 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * @default true
    * @example
    * ```jsx
-   * <Combobox showOnKeyDown={value.length > 1} />
+   * <Combobox showOnKeyPress={value.length > 1} />
    * ```
    */
-  showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
+  showOnKeyPress?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
   /**
    * Whether the combobox
    * [`value`](https://ariakit.org/reference/combobox-provider#value) state
