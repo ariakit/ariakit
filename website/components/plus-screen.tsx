@@ -39,7 +39,7 @@ export function PlusScreen() {
       <PlusProvider defaultFeature={defaultFeature}>
         <div className="grid grid-cols-1 gap-y-8 md:grid-cols-2">
           <div>
-            <div className="top-20 flex flex-col gap-8 rounded-xl bg-gray-100 p-3 py-8 sm:p-8 md:sticky dark:bg-gray-700 [[role=dialog]_&]:top-0 [[role=dialog]_&]:bg-white dark:[[role=dialog]_&]:bg-gray-700">
+            <div className="top-20 flex flex-col gap-8 rounded-xl bg-gray-100 p-3 py-8 dark:bg-gray-700 sm:p-8 md:sticky [[role=dialog]_&]:top-0 [[role=dialog]_&]:bg-white dark:[[role=dialog]_&]:bg-gray-700">
               {parentDialog && (
                 <Button
                   className="-mb-6 -ml-4 -mt-4 self-start text-sm text-black/80 dark:text-white/80"

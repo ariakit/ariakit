@@ -69,7 +69,7 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
     });
 
   const navList = (
-    <ul className="flex flex-col p-2 text-black/90 md:p-0 md:text-sm md:text-black/80 dark:text-white/80 md:dark:text-white/70">
+    <ul className="flex flex-col p-2 text-black/90 dark:text-white/80 md:p-0 md:text-sm md:text-black/80 md:dark:text-white/70">
       {renderTableOfContents(tableOfContents)}
     </ul>
   );
@@ -84,7 +84,7 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
         </div>
       }
     >
-      <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 md:flex dark:border-white/10">
+      <div className="sticky top-32 m-4 hidden h-screen max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
         <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
           {navList}
         </nav>

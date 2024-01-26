@@ -11,7 +11,7 @@ export function PageContainer({ title, children }: PageContainerProps) {
   if (!title) return children;
   return (
     <HeadingLevel>
-      <Heading className="scroll-mt-[120px] text-3xl font-extrabold tracking-[-0.035em] sm:text-4xl md:text-5xl dark:font-bold dark:tracking-[-0.015em]">
+      <Heading className="scroll-mt-[120px] text-3xl font-extrabold tracking-[-0.035em] dark:font-bold dark:tracking-[-0.015em] sm:text-4xl md:text-5xl">
         {title}
       </Heading>
       {children}

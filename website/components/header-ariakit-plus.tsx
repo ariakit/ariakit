@@ -33,7 +33,7 @@ export function HeaderAriakitPlus() {
   return (
     <>
       <ClerkLoading>
-        <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 sm:w-28 dark:bg-white/10" />
+        <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 dark:bg-white/10 sm:w-28" />
       </ClerkLoading>
       <SignedOut>
         {!segments.includes("plus") && (

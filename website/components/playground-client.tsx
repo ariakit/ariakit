@@ -247,7 +247,7 @@ export function PlaygroundClient({
           </AuthEnabled>
         </div>
       )}
-      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] md:rounded-xl dark:border-gray-650">
+      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
         <div className="relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
           <TabList
             store={tab}
@@ -257,7 +257,7 @@ export function PlaygroundClient({
               <Tab
                 key={file}
                 id={getTabId(file)}
-                className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 aria-selected:text-black data-[focus-visible]:ariakit-outline-input sm:h-8 dark:text-white/75 dark:hover:bg-white/5 dark:aria-selected:text-white"
+                className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 aria-selected:text-black data-[focus-visible]:ariakit-outline-input dark:text-white/75 dark:hover:bg-white/5 dark:aria-selected:text-white sm:h-8"
               >
                 <span>{isJS ? tsToJsFilename(file) : file}</span>
                 <div className="pointer-events-none absolute left-0 top-full h-[3px] w-full translate-y-[5px] bg-transparent group-hover:bg-gray-250 group-aria-selected:bg-blue-600 dark:group-hover:bg-gray-650 dark:group-aria-selected:bg-blue-600" />
