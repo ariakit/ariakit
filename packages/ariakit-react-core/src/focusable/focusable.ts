@@ -397,12 +397,13 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
 
+    const styleProp = props.style;
     const style = useMemo(() => {
       if (trulyDisabled) {
-        return { pointerEvents: "none" as const, ...props.style };
+        return { pointerEvents: "none" as const, ...styleProp };
       }
-      return props.style;
-    }, [trulyDisabled, props.style]);
+      return styleProp;
+    }, [trulyDisabled, styleProp]);
 
     props = {
       "data-focus-visible": (focusable && focusVisible) || undefined,

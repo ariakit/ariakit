@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { flushSync } from "react-dom";
@@ -17,6 +17,7 @@ import type { DisclosureStore } from "./disclosure-store.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 type TransitionState = "enter" | "leave" | null;
 
 function afterTimeout(timeoutMs: number, cb: () => void) {
@@ -77,6 +78,7 @@ export const useDisclosureContent = createHook<
       "DisclosureContent must receive a `store` prop or be wrapped in a DisclosureProvider component.",
   );
 
+  const ref = useRef<HTMLType>(null);
   const id = useId(props.id);
   const [transition, setTransition] = useState<TransitionState>(null);
   const open = store.useState("open");
@@ -84,6 +86,13 @@ export const useDisclosureContent = createHook<
   const animated = store.useState("animated");
   const contentElement = store.useState("contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
+
+  // This is a workaround to avoid the content element from being reset to null
+  // on fast refresh.
+  useSafeLayoutEffect(() => {
+    if (!ref.current) return;
+    store?.setContentElement(ref.current);
+  }, [store]);
 
   // When the disclosure content element is rendered, we automatically set the
   // animated state to true. If there's no enter animation, the animated state
@@ -205,15 +214,11 @@ export const useDisclosureContent = createHook<
   );
 
   const hidden = isHidden(mounted, props.hidden, alwaysVisible);
-  const style = hidden ? { ...props.style, display: "none" } : props.style;
-
-  // TODO: Refactor
-  const ref = useRef<HTMLDivElement>(null);
-
-  useSafeLayoutEffect(() => {
-    if (!ref.current) return;
-    store?.setContentElement(ref.current);
-  }, [store]);
+  const styleProp = props.style;
+  const style = useMemo(() => {
+    if (hidden) return { ...styleProp, display: "none" };
+    return styleProp;
+  }, [hidden, styleProp]);
 
   props = {
     id,
@@ -222,7 +227,7 @@ export const useDisclosureContent = createHook<
     "data-leave": transition === "leave" || undefined,
     hidden,
     ...props,
-    ref: useMergeRefs(ref, id ? store.setContentElement : null, props.ref),
+    ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
     style,
   };
 

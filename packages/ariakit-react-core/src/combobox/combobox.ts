@@ -567,8 +567,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
   store?: ComboboxStore;
   /**
    * Whether the first enabled item will be automatically selected when the
-   * combobox input value changes. When it's set to `true`, the exact behavior
-   * will depend on the value of the
+   * combobox input value changes. When it's set to `true` or `"always"`, the
+   * exact behavior will depend on the value of the
    * [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop:
    * - If [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
    *   is `both` or `inline`, the first item is automatically focused when the
@@ -578,11 +578,13 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    *   is `list` or `none`, the first item is automatically focused when the
    *   popup opens, but the input value doesn't change.
    *
+   * When it's set to `"always"`, the first enabled item will be automatically
+   * highlighted when the combobox list opens.
+   *
    * To change which item is auto selected, use the
    * [`getAutoSelectId`](https://ariakit.org/reference/combobox#getautoselectid)
    * prop.
    *
-   * TODO: Comment about "always"
    *
    * Live examples:
    * - [Combobox with integrated
