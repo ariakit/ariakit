@@ -1,21 +1,10 @@
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
-import type { Highlighter, IShikiTheme, IThemedToken } from "shiki";
-import { BUNDLED_LANGUAGES, FontStyle, getHighlighter } from "shiki";
-import css from "shiki/languages/css.tmLanguage.json";
-import diff from "shiki/languages/diff.tmLanguage.json";
-import html from "shiki/languages/html.tmLanguage.json";
-import javascript from "shiki/languages/javascript.tmLanguage.json";
-import jsx from "shiki/languages/jsx.tmLanguage.json";
-import sh from "shiki/languages/shellscript.tmLanguage.json";
-import tsx from "shiki/languages/tsx.tmLanguage.json";
-import typescript from "shiki/languages/typescript.tmLanguage.json";
-import darkPlus from "shiki/themes/dark-plus.json";
-import lightPlus from "shiki/themes/light-plus.json";
+import { FontStyle, codeToThemedTokens } from "shiki";
+import type { BundledLanguage, ThemedToken } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
-import type { IGrammar } from "vscode-textmate";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
 import { PageHovercardAnchor } from "./page-hovercard.jsx";
 
@@ -52,31 +41,7 @@ function parseFontStyle(fontStyle?: FontStyle) {
   );
 }
 
-function getLanguage(lang: string, grammar: any) {
-  const language = BUNDLED_LANGUAGES.find((l) => l.id === lang);
-  if (!language) throw new Error(`Language not found: ${lang}`);
-  return { ...language, grammar: grammar as IGrammar };
-}
-
-function loadLanguages(highlighter: Highlighter) {
-  if (highlighter.getLoadedLanguages().length) {
-    return Promise.resolve();
-  }
-  return Promise.all([
-    highlighter.loadLanguage(getLanguage("javascript", javascript)),
-    highlighter.loadLanguage(getLanguage("typescript", typescript)),
-    highlighter.loadLanguage(getLanguage("tsx", tsx)),
-    highlighter.loadLanguage(getLanguage("jsx", jsx)),
-    highlighter.loadLanguage(getLanguage("shellscript", sh)),
-    highlighter.loadLanguage(getLanguage("css", css)),
-    highlighter.loadLanguage(getLanguage("html", html)),
-    highlighter.loadLanguage(getLanguage("diff", diff)),
-    highlighter.loadTheme(lightPlus as unknown as IShikiTheme),
-    highlighter.loadTheme(darkPlus as unknown as IShikiTheme),
-  ]);
-}
-
-function getLinkableType(token: IThemedToken) {
+function getLinkableType(token: ThemedToken) {
   if (!token.explanation) return null;
 
   for (const { scopes } of token.explanation) {
@@ -139,8 +104,8 @@ interface TokenContext {
 }
 
 function getTokenHref(
-  token: IThemedToken,
-  line: IThemedToken[],
+  token: ThemedToken,
+  line: ThemedToken[],
   context: TokenContext,
 ) {
   if (/^\s{2,}$/.test(token.content)) {
@@ -172,9 +137,9 @@ function getTokenHref(
   return href;
 }
 
-let highlighter: Highlighter | undefined;
-const lightCache = new Map<string, IThemedToken[][]>();
-const darkCache = new Map<string, IThemedToken[][]>();
+// let highlighter: Highlighter | undefined;
+// const lightCache = new Map<string, ThemedToken[][]>();
+// const darkCache = new Map<string, ThemedToken[][]>();
 
 export async function CodeBlock({
   code,
@@ -196,42 +161,24 @@ export async function CodeBlock({
     return null;
   }
 
-  let lightTokens: IThemedToken[][] = [];
-  let darkTokens: IThemedToken[][] = [];
+  const lightTokens = await codeToThemedTokens(code, {
+    lang: (lang as BundledLanguage) || "plaintext",
+    theme: "light-plus",
+    includeExplanation: true,
+  });
 
-  if (!highlighter) {
-    try {
-      highlighter = await getHighlighter({ themes: [], langs: [] });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
-  try {
-    await loadLanguages(highlighter);
-    if (lightCache.has(code)) {
-      lightTokens = lightCache.get(code)!;
-    } else {
-      lightTokens = highlighter.codeToThemedTokens(code, lang, lightPlus.name);
-      lightCache.set(code, lightTokens);
-    }
-    if (darkCache.has(code)) {
-      darkTokens = darkCache.get(code)!;
-    } else {
-      darkTokens = highlighter.codeToThemedTokens(code, lang, darkPlus.name);
-      darkCache.set(code, darkTokens);
-    }
-  } catch (error) {
-    console.error(error);
-  }
+  const darkTokens = await codeToThemedTokens(code, {
+    lang: (lang as BundledLanguage) || "plaintext",
+    theme: "dark-plus",
+    includeExplanation: true,
+  });
 
   const oneLiner = darkTokens.length === 1;
 
   const renderLine = (className = "") => {
     const tokensSeen: Record<string, number> = {};
     const context: TokenContext = { contextId: "", contextTabLevel: 0 };
-    return (line: IThemedToken[], i: number) => {
+    return (line: ThemedToken[], i: number) => {
       const highlightLine = highlightLines?.includes(i + 1);
       return (
         <div

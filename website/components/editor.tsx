@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type * as monaco from "monaco-editor";
+import { bundledLanguages } from "shiki";
 import { tw } from "utils/tw.js";
 import { useMedia } from "utils/use-media.js";
 
@@ -19,31 +20,31 @@ const languages = [
     name: "typescript",
     pattern: /\.tsx?$/,
     scopeName: "source.tsx",
-    get: () => import("shiki/languages/tsx.tmLanguage.json"),
+    get: bundledLanguages.typescript,
   },
   {
     name: "javascript",
     pattern: /\.jsx?$/,
     scopeName: "source.js",
-    get: () => import("shiki/languages/jsx.tmLanguage.json"),
+    get: bundledLanguages.jsx,
   },
   {
     name: "css",
     pattern: /\.css$/,
     scopeName: "source.css",
-    get: () => import("shiki/languages/css.tmLanguage.json"),
+    get: bundledLanguages.css,
   },
   {
     name: "json",
     pattern: /\.json$/,
     scopeName: "source.json",
-    get: () => import("shiki/languages/json.tmLanguage.json"),
+    get: bundledLanguages.json,
   },
   {
     name: "html",
     pattern: /\.html?$/,
     scopeName: "text.html.basic",
-    get: () => import("shiki/languages/html.tmLanguage.json"),
+    get: bundledLanguages.html,
   },
 ];
 
