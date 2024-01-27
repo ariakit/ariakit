@@ -217,7 +217,7 @@ export interface PageListProps extends ComponentPropsWithoutRef<"ol"> {
 
 export function PageList({ node, ordered, ...props }: PageListProps) {
   const className = twJoin(
-    "flex flex-col gap-4 pl-10 list-none",
+    "flex flex-col gap-4 pl-8 list-none",
     props.className,
   );
   const Element = ordered ? "ol" : "ul";
@@ -236,12 +236,19 @@ export function PageListItem({
   ordered,
   ...props
 }: PageListItemProps) {
-  const className = twJoin("relative flex flex-col gap-2", props.className);
   const isMultiline = Children.toArray(props.children).at(0) === "\n";
+  const className = twJoin(
+    "relative flex flex-col",
+    ordered ? "gap-4" : "gap-2",
+    ordered &&
+      isMultiline &&
+      "before:absolute before:top-9 before:-left-5 before:w-px before:h-[calc(100%-theme(spacing.7))] before:bg-black/10 dark:before:bg-white/10",
+    props.className,
+  );
   return (
     <li {...props} className={className}>
       {ordered ? (
-        <span className="absolute flex h-6 w-6 -translate-x-8 translate-y-0.5 items-center justify-center rounded-full bg-blue-600 text-sm text-white">
+        <span className="absolute flex size-6 -translate-x-8 translate-y-0.5 items-center justify-center rounded-full bg-blue-600 text-sm text-white">
           {index + 1}
         </span>
       ) : (

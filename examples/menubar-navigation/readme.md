@@ -38,6 +38,14 @@ Using [Menubar](/components/menubar), [Menu](/components/menu), and [Portal](/co
 
 </div>
 
+<aside data-type="note" title="This is an advanced example">
+
+This example employs sophisticated methods to ensure maximum accessibility across different browsers, devices, and assistive technologies. You can easily copy and paste the provided code into your project and use it as a foundation.
+
+Refer to the documentation below for a deeper understanding of the implementation details. As time progresses, we may introduce additional features to the Ariakit library to further simplify the implementation of this example.
+
+</aside>
+
 ## Focusing on menubar items with <kbd>Tab</kbd>
 
 [Menubar](/components/menubar) widgets typically represent a single tab stop on the page. In other words, users can navigate to the first item _within_ the menubar by pressing <kbd>Tab</kbd>, and then move to the next tabbable element _outside_ the menubar by pressing <kbd>Tab</kbd> again. The arrow keys allow navigation through items within the menubar.
