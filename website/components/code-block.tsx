@@ -1,8 +1,9 @@
+import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
-import { FontStyle, codeToThemedTokens } from "shiki";
-import type { BundledLanguage, ThemedToken } from "shiki";
+import { FontStyle, bundledLanguages, codeToThemedTokens } from "shiki";
+import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
 import { CopyToClipboard } from "./copy-to-clipboard.js";
@@ -137,9 +138,25 @@ function getTokenHref(
   return href;
 }
 
-// let highlighter: Highlighter | undefined;
-// const lightCache = new Map<string, ThemedToken[][]>();
-// const darkCache = new Map<string, ThemedToken[][]>();
+const lightCache = new Map<string, ThemedToken[][]>();
+const darkCache = new Map<string, ThemedToken[][]>();
+
+async function getTokensFromCache(
+  code: string,
+  lang: BundledLanguage | SpecialLanguage,
+  dark = false,
+) {
+  const cache = dark ? darkCache : lightCache;
+  const cached = cache.get(code);
+  if (cached) return cached;
+  const tokens = await codeToThemedTokens(code, {
+    lang,
+    theme: dark ? "dark-plus" : "light-plus",
+    includeExplanation: true,
+  });
+  cache.set(code, tokens);
+  return tokens;
+}
 
 export async function CodeBlock({
   code,
@@ -161,18 +178,13 @@ export async function CodeBlock({
     return null;
   }
 
-  const lightTokens = await codeToThemedTokens(code, {
-    lang: (lang as BundledLanguage) || "plaintext",
-    theme: "light-plus",
-    includeExplanation: true,
-  });
+  const shikiLang =
+    lang && hasOwnProperty(bundledLanguages, lang)
+      ? (lang as BundledLanguage)
+      : "plaintext";
 
-  const darkTokens = await codeToThemedTokens(code, {
-    lang: (lang as BundledLanguage) || "plaintext",
-    theme: "dark-plus",
-    includeExplanation: true,
-  });
-
+  const lightTokens = await getTokensFromCache(code, shikiLang);
+  const darkTokens = await getTokensFromCache(code, shikiLang, true);
   const oneLiner = darkTokens.length === 1;
 
   const renderLine = (className = "") => {
