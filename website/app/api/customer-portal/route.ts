@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
   if (priceId) {
     const subscriptions = await getActiveSubscriptions(stripeId);
-    const subscription = subscriptions?.data[0];
+    const subscription = subscriptions?.[0];
     const item = subscription?.items.data[0];
 
     if (subscription && item) {

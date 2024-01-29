@@ -2,18 +2,22 @@ import { authMiddleware } from "@clerk/nextjs";
 import { NextResponse } from "next/server.js";
 import type { NextFetchEvent, NextRequest } from "next/server.js";
 import {
-  getActiveSubscriptions,
   getClerkClient,
   getPrimaryEmailAddress,
   getStripeId,
   updateUserWithStripeId,
 } from "utils/clerk.js";
 import {
+  cancelSubscription,
   createCustomerWithClerkId,
-  getActiveCustomerByEmailWithoutClerkId,
+  getActiveSubscriptions,
   getCheckout,
   getCustomer,
+  getPlusCustomerByEmailWithoutClerkId,
+  getPlusSubscriptions,
+  getPurchasedPrices,
   getStripeClient,
+  isPlusCustomer,
   updateCustomerWithClerkId,
 } from "utils/stripe.js";
 
@@ -97,15 +101,30 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
           typeof session?.customer === "string"
         ) {
           const customer = await getCustomer(session.customer);
+          const prices = await getPurchasedPrices(session.customer);
+
+          if (prices?.length) {
+            console.log("After auth: customer purchased plus price");
+            const subscriptions = getPlusSubscriptions(
+              await getActiveSubscriptions(session.customer),
+            );
+            if (subscriptions?.length) {
+              console.log("After auth: customer already has plus subscription");
+              await Promise.all(
+                subscriptions.map((s) => cancelSubscription(s.id)),
+              );
+            }
+          }
+
           if (customer?.metadata.clerkId) {
             console.log("After auth: customer already has clerkId");
             response.cookies.set("stripe-session-id", "");
           } else {
             console.log("After auth: customer has no clerkId");
-            const activeSubscriptions = await getActiveSubscriptions(user);
-            if (!activeSubscriptions?.data.length) {
+            const price = await isPlusCustomer({ customerId: stripeId });
+            if (!price) {
               console.log(
-                "After auth: user has no active subscriptions, connecting customer to user",
+                "After auth: user is not a plus customer, connecting customer to user",
               );
               await updateCustomerWithClerkId(session.customer, userId);
               await updateUserWithStripeId(userId, session.customer);
@@ -129,7 +148,7 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         return NextResponse.error();
       }
 
-      let customer = await getActiveCustomerByEmailWithoutClerkId(email);
+      let customer = await getPlusCustomerByEmailWithoutClerkId(email);
 
       if (customer) {
         console.log(

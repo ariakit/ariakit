@@ -370,10 +370,7 @@ export function PageSection({
                       variant="plus"
                       className="h-14 text-lg focus-visible:!ariakit-outline"
                       render={
-                        <Link
-                          href="/plus?feature=new-examples"
-                          scroll={false}
-                        />
+                        <Link href="/plus?feature=examples" scroll={false} />
                       }
                     >
                       Unlock Ariakit Plus

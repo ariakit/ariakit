@@ -1,6 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/api";
 import type { User } from "@clerk/nextjs/api";
-import * as Stripe from "./stripe.js";
 
 const clerk = process.env.CLERK_SECRET_KEY ? clerkClient : null;
 
@@ -20,12 +19,6 @@ export async function updateUserWithStripeId(userId: string, stripeId: string) {
     publicMetadata: { stripeId },
   });
   return user;
-}
-
-export async function getActiveSubscriptions(user?: User | null) {
-  const stripeId = getStripeId(user);
-  if (!stripeId) return;
-  return Stripe.getActiveSubscriptions(stripeId);
 }
 
 export function getPrimaryEmailAddress(user: User) {

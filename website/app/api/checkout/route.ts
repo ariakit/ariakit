@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   const session = await createCheckout({
     priceId,
     returnUrl: req.nextUrl.origin,
+    mode: "payment",
   });
 
   return Response.json(session?.client_secret);

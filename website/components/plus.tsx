@@ -18,6 +18,7 @@ import {
   HovercardAnchor,
   HovercardProvider,
   Role,
+  VisuallyHidden,
 } from "@ariakit/react";
 import type {
   ButtonProps,
@@ -32,12 +33,13 @@ import {
   EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure.js";
+import { formatDistanceToNow } from "date-fns";
 import { Check } from "icons/check.jsx";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { Heart } from "icons/heart.jsx";
-import { twMerge } from "tailwind-merge";
+import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import type { Price } from "utils/stripe.js";
+import type { PlusPrice } from "utils/stripe.js";
 import { useMedia } from "utils/use-media.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
@@ -219,14 +221,13 @@ export const PlusFeaturePreview = forwardRef<
 });
 
 export interface PlusCheckoutButtonProps extends ButtonProps {
-  price?: Price;
-  monthlyPrice?: Price;
+  price?: PlusPrice;
 }
 
 export const PlusCheckoutButton = forwardRef<
   HTMLButtonElement,
   PlusCheckoutButtonProps
->(function PlusCheckoutButton({ price, monthlyPrice, ...props }, ref) {
+>(function PlusCheckoutButton({ price, ...props }, ref) {
   const store = useContext(PlusContext);
   invariant(store);
 
@@ -238,11 +239,22 @@ export const PlusCheckoutButton = forwardRef<
 
   if (!price || subscription.isLoading) {
     return (
-      <div className="h-24 animate-pulse rounded-lg border-2 border-transparent bg-black/5 dark:bg-white/5" />
+      <div className="h-[162px] animate-pulse rounded-lg border-2 border-transparent bg-black/5 dark:bg-white/5" />
     );
   }
 
-  const isCurrentSubscription = subscription.data === price?.id;
+  const purchased = subscription.data === price?.id;
+
+  if (purchased) {
+    return (
+      <div className="flex h-[162px] flex-col items-center justify-center gap-4 rounded-lg bg-black/5 text-emerald-800 dark:bg-white/5 dark:text-emerald-400">
+        <div className="rounded-full border-[3px] border-current p-2">
+          <Check className="size-10" />
+        </div>
+        <div className="text-xl">Purchased</div>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -250,8 +262,13 @@ export const PlusCheckoutButton = forwardRef<
       method="post"
       target="_blank"
       onSubmit={async (event) => {
-        if (subscription.data) return;
         event.preventDefault();
+        if (selected) {
+          store.setState("priceId", "");
+          store.setState("feature", "examples");
+          store.setState("clientSecret", "");
+          return;
+        }
         store.setState("priceId", price.id);
         store.setState("feature", "");
         store.setState("clientSecret", "");
@@ -266,50 +283,61 @@ export const PlusCheckoutButton = forwardRef<
         store.setState("clientSecret", clientSecret);
       }}
     >
-      <Button
-        type="submit"
-        name="priceId"
-        value={price.id}
-        ref={ref}
-        data-selected={selected || isCurrentSubscription || undefined}
-        accessibleWhenDisabled
-        disabled={selected || isCurrentSubscription}
-        {...props}
-        render={
-          <Command
-            flat
-            render={props.render}
-            className="group flex h-24 w-full justify-between border-2 border-solid border-black/10 px-8 text-lg hover:cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-100 data-[selected]:border-blue-600 dark:border-white/10 dark:data-[selected]:border-blue-500"
-          />
-        }
-      >
-        {isCurrentSubscription ? (
-          <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
-            <Check strokeWidth={3} className="h-3 w-3" /> Current plan
-          </span>
-        ) : (
-          !!price.difference && (
-            <span className="absolute left-1 top-1 rounded bg-blue-600 p-1 text-xs text-white">
-              {price.difference * 100}%
+      <div className="relative flex flex-col items-center gap-4 rounded-xl bg-black/5 p-4 pt-8 dark:bg-white/5">
+        {price.expiresAt && (
+          <div className="-mt-11 flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-1 text-[13px] leading-[18px] text-black/80 dark:border-white/10 dark:bg-gray-700 dark:text-white/80">
+            <div className="-ml-1.5 size-2 flex-none animate-pulse rounded-full bg-yellow-800 dark:bg-amber-400" />
+            <span className="line-clamp-1">
+              Promotion ends on{" "}
+              {new Date(price.expiresAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}{" "}
+              ({formatDistanceToNow(price.expiresAt)} left)
             </span>
-          )
+          </div>
         )}
-        <span className="font-medium">
-          {price.yearly ? "Yearly" : "Monthly"}
-        </span>
-        <span className="text-end font-light text-black/70 dark:text-white/70">
-          <span className="text-2xl tracking-wide text-black dark:text-white">
-            $<span className="font-semibold">{price.amountByMonth / 100}</span>
-          </span>{" "}
-          / month
-        </span>
-        {price.yearly && monthlyPrice && (
-          <span className="absolute bottom-3 text-xs font-medium tracking-wider group-active:bottom-[11px]">
-            <del className="opacity-70">${monthlyPrice.amountByYear / 100}</del>{" "}
-            ${price.amountByYear / 100} / year
-          </span>
-        )}
-      </Button>
+        <div className="flex items-center gap-4 px-6">
+          <div className="relative flex items-center text-[42px] font-semibold leading-[42px] tracking-wide">
+            <span className="absolute -left-6 top-0.5 text-base font-normal opacity-60">
+              US
+            </span>
+            <span className="text-[36px] font-extralight">$</span>
+            {Math.ceil(price.amount / 100)}
+          </div>
+          {price.percentOff && (
+            <div className="text-sm text-black/80 dark:text-white/80">
+              <del className="tracking-wider opacity-70">
+                <VisuallyHidden>Original price: </VisuallyHidden>$
+                {Math.ceil(price.originalAmount / 100)}
+              </del>
+              <div className="font-semibold text-yellow-800 dark:text-amber-400">
+                Save {price.percentOff}%
+              </div>
+            </div>
+          )}
+        </div>
+        <Button
+          ref={ref}
+          type="submit"
+          name="priceId"
+          value={price.id}
+          className={twJoin(
+            "h-14 w-full text-lg font-medium",
+            selected && "bg-black/5 dark:bg-white/5",
+          )}
+          {...props}
+          render={
+            <Command
+              flat={selected}
+              variant={selected ? "secondary" : "primary"}
+              render={props.render}
+            />
+          }
+        >
+          {selected ? "Cancel" : "Buy now"}
+        </Button>
+      </div>
     </form>
   );
 });
@@ -335,7 +363,10 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
     const onLoad = () => {
       setVisibility("visible");
       if (iframe) {
-        scrollIntoViewIfNeeded(iframe, { behavior: "smooth" });
+        scrollIntoViewIfNeeded(iframe, {
+          block: "nearest",
+          behavior: "smooth",
+        });
       }
     };
 
@@ -363,7 +394,11 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
   return (
     <Role.div
       {...props}
-      className={twMerge("relative h-full", props.className)}
+      className={twMerge(
+        "relative",
+        visibility === "hidden" && "h-full",
+        props.className,
+      )}
     >
       {visibility === "hidden" && (
         <div className="h-full w-full animate-pulse bg-gray-100 dark:bg-black/20" />
