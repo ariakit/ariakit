@@ -1,19 +1,12 @@
 "use client";
-import {
-  Button,
-  Heading,
-  HeadingLevel,
-  useDialogContext,
-} from "@ariakit/react";
-import { ArrowLeft } from "icons/arrow-left.jsx";
+import { Heading, HeadingLevel } from "@ariakit/react";
 import { Heart } from "icons/heart.jsx";
 import { Nextjs } from "icons/nextjs.jsx";
 import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
-import { useRouter, useSearchParams } from "next/navigation.js";
+import { useSearchParams } from "next/navigation.js";
 import { usePrice } from "utils/use-price.js";
 import { CodePlaceholder } from "./code-placeholder.jsx";
-import { Command } from "./command.jsx";
 import { Focusable } from "./focusable.jsx";
 import { InlineLink } from "./inline-link.jsx";
 import { PlusBordered } from "./plus-bordered.jsx";
@@ -27,12 +20,9 @@ import {
 } from "./plus.jsx";
 
 export function PlusScreen() {
-  const router = useRouter();
-  const parentDialog = useDialogContext();
   const searchParams = useSearchParams();
   const query = usePrice();
   const defaultFeature = searchParams.get("feature") ?? "examples";
-
   return (
     <HeadingLevel>
       <PlusProvider defaultFeature={defaultFeature}>
@@ -54,16 +44,6 @@ export function PlusScreen() {
           <div className="grid w-[1024px] max-w-full grid-cols-1 gap-y-8 md:grid-cols-2">
             <div>
               <div className="top-20 flex w-full flex-col gap-8 rounded-2xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)] md:sticky">
-                {parentDialog && (
-                  <Button
-                    className="-mb-6 -ml-4 -mt-4 self-start text-sm text-black/80 dark:text-white/80"
-                    onClick={router.back}
-                    render={<Command variant="secondary" flat />}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to page
-                  </Button>
-                )}
                 <Heading className="text-2xl font-medium">All included</Heading>
                 <ul className="mb-8 flex cursor-default flex-col gap-2">
                   <PlusFeature
@@ -103,7 +83,7 @@ export function PlusScreen() {
                 <div className="mt-6 flex items-center justify-between border-t border-black/10 pt-4 text-sm font-light text-black/70 dark:border-white/10 dark:text-white/70">
                   <InlineLink
                     className="text-inherit hover:text-black dark:text-inherit dark:hover:text-white"
-                    render={<Link href="/plus/license" scroll={false} />}
+                    render={<Link href="/plus/license" />}
                   >
                     License Agreement
                   </InlineLink>
@@ -267,17 +247,6 @@ export function PlusScreen() {
               </PlusFeaturePreviewContainer>
             </div>
           </div>
-          {/* <SignedOut>
-            <p className="mt-4 self-end text-sm">
-              Already a member?{" "}
-              <InlineLink
-                className="no-underline hover:underline"
-                render={<Link href="/sign-in" />}
-              >
-                Sign In
-              </InlineLink>
-            </p>
-          </SignedOut> */}
         </div>
       </PlusProvider>
     </HeadingLevel>

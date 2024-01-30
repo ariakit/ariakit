@@ -64,10 +64,11 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
         return;
       }
 
-      const res = NextResponse.next();
-      res.cookies.set("stripe-session-id", sessionId);
+      const response = NextResponse.next();
+      request.cookies.set("stripe-session-id", sessionId);
+      response.cookies.set("stripe-session-id", sessionId);
       console.log("Before auth: session-id cookie set");
-      return res;
+      return response;
     },
 
     async afterAuth(auth) {

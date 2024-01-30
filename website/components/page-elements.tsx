@@ -143,7 +143,7 @@ export function PageDescription({
   children,
   ...props
 }: PageDescriptionProps) {
-  const [, paragraph] = Children.toArray(children);
+  const [p, paragraph = p] = Children.toArray(children);
 
   invariant(
     isValidElement<ComponentPropsWithoutRef<"p">>(paragraph),
@@ -212,7 +212,7 @@ export function PageBlockquote({ node, ...props }: PageBlockquoteProps) {
 
 export interface PageListProps extends ComponentPropsWithoutRef<"ol"> {
   node?: Element;
-  ordered: boolean;
+  ordered?: boolean;
 }
 
 export function PageList({ node, ordered, ...props }: PageListProps) {
@@ -226,8 +226,8 @@ export function PageList({ node, ordered, ...props }: PageListProps) {
 
 export interface PageListItemProps extends ComponentPropsWithoutRef<"li"> {
   node?: Element;
-  index: number;
-  ordered: boolean;
+  ordered?: boolean;
+  index?: number;
 }
 
 export function PageListItem({
@@ -249,7 +249,7 @@ export function PageListItem({
     <li {...props} className={className}>
       {ordered ? (
         <span className="absolute flex size-6 -translate-x-8 translate-y-0.5 items-center justify-center rounded-full bg-blue-600 text-sm text-white">
-          {index + 1}
+          {(index || 0) + 1}
         </span>
       ) : (
         <ArrowRight className="absolute w-7 -translate-x-8 p-1.5 text-black/50 dark:text-white/50" />

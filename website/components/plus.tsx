@@ -5,6 +5,7 @@ import {
   forwardRef,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import type { CSSProperties } from "react";
@@ -38,7 +39,6 @@ import { Check } from "icons/check.jsx";
 import { ChevronRight } from "icons/chevron-right.jsx";
 import { Heart } from "icons/heart.jsx";
 import { twJoin, twMerge } from "tailwind-merge";
-import invariant from "tiny-invariant";
 import type { PlusPrice } from "utils/stripe.js";
 import { useMedia } from "utils/use-media.js";
 import { useSubscription } from "utils/use-subscription.js";
@@ -111,9 +111,7 @@ export interface PlusFeatureProps extends HovercardAnchorProps<"div"> {
 
 export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
   function PlusFeature({ icon = "check", feature, ...props }, ref) {
-    const store = useContext(PlusContext);
-    invariant(store);
-
+    const store = useContext(PlusContext)!;
     const isActive = store.useState(
       (state) => !state.priceId && state.feature === feature,
     );
@@ -196,8 +194,7 @@ export const PlusFeaturePreview = forwardRef<
   HTMLDivElement,
   PlusFeaturePreviewProps
 >(function PlusFeaturePreview({ feature, heading, children, ...props }, ref) {
-  const store = useContext(PlusContext);
-  invariant(store);
+  const store = useContext(PlusContext)!;
   const isActive = store.useState(
     (state) => !state.priceId && state.feature === feature,
   );
@@ -228,13 +225,13 @@ export const PlusCheckoutButton = forwardRef<
   HTMLButtonElement,
   PlusCheckoutButtonProps
 >(function PlusCheckoutButton({ price, ...props }, ref) {
-  const store = useContext(PlusContext);
-  invariant(store);
-
+  const store = useContext(PlusContext)!;
+  const clientSecret = store.useState("clientSecret");
   const selected = store.useState(
     (state) => !!state.priceId && state.priceId === price?.id,
   );
 
+  const previousFeatureRef = useRef("");
   const subscription = useSubscription();
 
   if (!price || subscription.isLoading) {
@@ -243,7 +240,7 @@ export const PlusCheckoutButton = forwardRef<
     );
   }
 
-  const purchased = subscription.data === price?.id;
+  const purchased = subscription.data === price.id;
 
   if (purchased) {
     return (
@@ -265,10 +262,11 @@ export const PlusCheckoutButton = forwardRef<
         event.preventDefault();
         if (selected) {
           store.setState("priceId", "");
-          store.setState("feature", "examples");
+          store.setState("feature", previousFeatureRef.current || "examples");
           store.setState("clientSecret", "");
           return;
         }
+        previousFeatureRef.current = store.getState().feature;
         store.setState("priceId", price.id);
         store.setState("feature", "");
         store.setState("clientSecret", "");
@@ -322,6 +320,7 @@ export const PlusCheckoutButton = forwardRef<
           type="submit"
           name="priceId"
           value={price.id}
+          disabled={selected && !clientSecret}
           className={twJoin(
             "h-14 w-full text-lg font-medium",
             selected && "bg-black/5 dark:bg-white/5",
@@ -345,9 +344,7 @@ export const PlusCheckoutButton = forwardRef<
 export interface PlusCheckoutFrameProps extends RoleProps<"div"> {}
 
 export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
-  const store = useContext(PlusContext);
-  invariant(store);
-
+  const store = useContext(PlusContext)!;
   const hasPriceId = store.useState((state) => !!state.priceId);
   const clientSecret = store.useState("clientSecret");
 

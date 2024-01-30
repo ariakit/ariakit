@@ -36,7 +36,15 @@ export function HeaderAriakitPlus() {
         <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 dark:bg-white/10 sm:w-28" />
       </ClerkLoading>
       <SignedOut>
-        {!segments.includes("plus") && (
+        {segments.length === 1 && segments.includes("plus") ? (
+          <Command
+            variant="plus"
+            className="px-3"
+            render={<Link href="/sign-in" />}
+          >
+            Sign in
+          </Command>
+        ) : (
           <Button
             className="text-sm max-sm:px-3"
             aria-label="Unlock Ariakit Plus"
@@ -67,7 +75,7 @@ export function HeaderAriakitPlus() {
             gutter={4}
             shift={-8}
             unmountOnHide
-            className="origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
+            className="min-w-40 origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
             render={<Popup />}
           >
             <MenuItem
@@ -102,10 +110,11 @@ export function HeaderAriakitPlus() {
                   action="/api/customer-portal"
                 >
                   <MenuItem
+                    className="w-full"
                     render={<DropdownItem render={<button type="submit" />} />}
                   >
-                    <span className="pr-4">Subscription</span>
-                    <NewWindow className="h-4 w-4 opacity-75" />
+                    <span className="flex-1 pr-4 text-left">Billing</span>
+                    <NewWindow className="size-4 opacity-75" />
                   </MenuItem>
                 </form>
               </>

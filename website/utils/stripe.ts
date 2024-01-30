@@ -117,6 +117,16 @@ export async function cancelSubscription(subscriptionId: string) {
   return canceledSubscription;
 }
 
+export async function getDefaultPrice(productId?: string) {
+  if (!stripe) return;
+  if (!productId) return;
+  const product = await stripe.products.retrieve(productId);
+  const defaultPriceId = product.default_price?.toString();
+  if (!defaultPriceId) return;
+  const price = await stripe.prices.retrieve(defaultPriceId);
+  return price;
+}
+
 export async function getPurchasedPrices(customerId?: string) {
   if (!stripe) return;
   if (!customerId) return [];
@@ -157,7 +167,12 @@ export async function isPlusCustomer({
   const prices = purchasedPrices || (await getPurchasedPrices(customerId));
   const plusPrices = getPlusPrices(prices);
   if (plusPrices.length) {
-    return plusPrices[0];
+    const price = plusPrices[0];
+    const oneTimeConvertPrices = [PLUS_ONE_TIME_MONTHLY, PLUS_ONE_TIME_YEARLY];
+    if (price?.lookup_key && oneTimeConvertPrices.includes(price.lookup_key)) {
+      return getDefaultPrice(plusPrices[0]?.product.toString());
+    }
+    return price;
   }
   const subscriptions = getPlusSubscriptions(
     activeSubscriptions || (await getActiveSubscriptions(customerId)),
@@ -256,7 +271,7 @@ export async function createCheckout({
 
   const url = new URL(returnUrl);
   const customer = customerId ?? getStripeId(await currentUser());
-  const pathname = customer ? url.pathname : "/sign-up";
+  const pathname = "/sign-up";
 
   const activeSubscriptions = customer
     ? await getActiveSubscriptions(customer)
@@ -280,6 +295,7 @@ export async function createCheckout({
     customer,
     line_items: [{ price: priceId, quantity: 1 }],
     ui_mode: "embedded",
+    invoice_creation: { enabled: true },
     return_url: `${url.origin}${pathname}?session-id={CHECKOUT_SESSION_ID}`,
     discounts: discount ? [{ promotion_code: discount.id }] : [],
   });
