@@ -1,19 +1,15 @@
-import { getCheckout } from "utils/stripe.js";
-import SignUpClient from "./sign-up-client.jsx";
+"use client";
+import { SignUp } from "@clerk/clerk-react";
+import { useSearchParams } from "next/navigation.js";
 
-interface PageProps {
-  searchParams: { "session-id": string | null };
-}
-
-export default async function Page({ searchParams }: PageProps) {
-  const sessionId = searchParams["session-id"];
-  if (!sessionId) return <SignUpClient />;
-
-  const session = await getCheckout(sessionId);
-
+export default function Page() {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url");
   return (
-    <SignUpClient
-      emailAddress={session?.customer_details?.email || undefined}
+    <SignUp
+      routing="hash"
+      redirectUrl={redirectUrl}
+      appearance={{ layout: { showOptionalFields: false } }}
     />
   );
 }

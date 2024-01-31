@@ -5,6 +5,16 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: new URL("../.env.local", import.meta.url) });
 
+function query(locator: Pick<Page, "getByRole">) {
+  return {
+    button: (name: string | RegExp) => locator.getByRole("button", { name }),
+    link: (name: string | RegExp) => locator.getByRole("link", { name }),
+    textbox: (name: string | RegExp) => locator.getByRole("textbox", { name }),
+    menuitem: (name: string | RegExp) =>
+      locator.getByRole("menuitem", { name }),
+  };
+}
+
 function button(locator: Pick<Page, "getByRole">, name: string | RegExp) {
   return locator.getByRole("button", { name });
 }
@@ -91,6 +101,26 @@ test.afterAll(async () => {
     Array.from(users).map((user) => clerk.users.deleteUser(user)),
   );
 });
+
+for (const plan of ["Monthly", "Yearly"]) {
+  test(`sign in as legacy ${plan} subscriber, then purchase Plus`, async ({
+    page,
+  }) => {
+    // TODO: test this
+    // Should cancel plan and use purchased item.
+    // Test clicking on Buy now before signing in.
+  });
+}
+
+test("puschase Plus from /plus", async ({ page }) => {});
+
+test("puschase Plus from /components/button", async ({ page }) => {});
+
+test("sign up, sign out, then purchase Plus with the same account", async ({
+  page,
+}) => {});
+
+// Remove below here
 
 for (const plan of ["Monthly", "Yearly"]) {
   test(`subscribe to ${plan} plan without login, then switch plans`, async ({

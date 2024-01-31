@@ -43,7 +43,7 @@ export function PlusScreen() {
           </p>
           <div className="grid w-[1024px] max-w-full grid-cols-1 gap-y-8 md:grid-cols-2">
             <div>
-              <div className="top-20 flex w-full flex-col gap-8 rounded-2xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)] md:sticky">
+              <div className="top-20 flex w-full flex-col gap-8 rounded-xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)] sm:rounded-2xl md:sticky">
                 <Heading className="text-2xl font-medium">All included</Heading>
                 <ul className="mb-8 flex cursor-default flex-col gap-2">
                   <PlusFeature
@@ -116,7 +116,7 @@ export function PlusScreen() {
               </div>
             </div>
             <div>
-              <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 md:mx-8" />
+              <PlusCheckoutFrame className="overflow-hidden rounded-xl bg-gray-50 sm:rounded-2xl md:mx-8" />
               <PlusFeaturePreviewContainer className="text-pretty p-8">
                 <PlusFeaturePreview
                   feature="examples"

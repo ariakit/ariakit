@@ -7,12 +7,14 @@ import { PlusScreen } from "components/plus-screen.jsx";
 import { useRootPathname } from "components/root-pathname.jsx";
 import { ArrowLeft } from "icons/arrow-left.jsx";
 import Link from "next/link.js";
-import { usePathname, useRouter } from "next/navigation.js";
+import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 
 export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
   const rootPathname = useRootPathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
   return (
     <AuthEnabled>
       <Dialog
@@ -51,7 +53,11 @@ export default function Page() {
                 flat
                 variant="secondary"
                 className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
-                render={<Link href="/sign-in" />}
+                render={
+                  <Link
+                    href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
+                  />
+                }
               >
                 Sign in
               </Command>

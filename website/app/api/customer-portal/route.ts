@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 import type { NextRequest } from "next/server.js";
 import { getStripeId } from "utils/clerk.js";
-import { getActiveSubscriptions, getStripeClient } from "utils/stripe.js";
+import { getStripeClient, listActiveSubscriptions } from "utils/stripe.js";
 import { z } from "zod";
 
 const schema = z
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
   const { priceId } = parsed.data || {};
 
   if (priceId) {
-    const subscriptions = await getActiveSubscriptions(stripeId);
+    const subscriptions = await listActiveSubscriptions(stripeId);
     const subscription = subscriptions?.[0];
     const item = subscription?.items.data[0];
 

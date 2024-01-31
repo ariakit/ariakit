@@ -16,7 +16,11 @@ import {
 } from "@clerk/clerk-react";
 import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
-import { useSelectedLayoutSegments } from "next/navigation.js";
+import {
+  usePathname,
+  useSearchParams,
+  useSelectedLayoutSegments,
+} from "next/navigation.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 import { DropdownItem } from "./dropdown-item.jsx";
@@ -26,6 +30,9 @@ export function HeaderAriakitPlus() {
   const clerk = useClerk();
   const subscription = useSubscription();
   const segments = useSelectedLayoutSegments();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
 
   const isFree = subscription.isFetched && !subscription.data;
   const isPlus = subscription.isFetched && !!subscription.data;
@@ -40,7 +47,11 @@ export function HeaderAriakitPlus() {
           <Command
             variant="plus"
             className="px-3"
-            render={<Link href="/sign-in" />}
+            render={
+              <Link
+                href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
+              />
+            }
           >
             Sign in
           </Command>
