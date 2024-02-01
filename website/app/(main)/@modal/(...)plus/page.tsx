@@ -1,4 +1,6 @@
 "use client";
+import { Suspense, forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import { Button, Dialog } from "@ariakit/react";
 import { SignedOut } from "@clerk/clerk-react";
 import { AuthEnabled } from "components/auth.jsx";
@@ -9,12 +11,26 @@ import { ArrowLeft } from "icons/arrow-left.jsx";
 import Link from "next/link.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 
+const SignInLink = forwardRef<
+  ElementRef<typeof Link>,
+  Omit<ComponentPropsWithoutRef<typeof Link>, "href">
+>(function SignInLink(props, ref) {
+  const rootPathname = useRootPathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
+  return (
+    <Link
+      ref={ref}
+      href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
+      {...props}
+    />
+  );
+});
+
 export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
   const rootPathname = useRootPathname();
-  const searchParams = useSearchParams();
-  const search = searchParams.size ? `?${searchParams}` : "";
   return (
     <AuthEnabled>
       <Dialog
@@ -47,24 +63,24 @@ export default function Page() {
             </div>
           </Button>
           <SignedOut>
-            <div className="flex items-center gap-2">
-              Already purchased?{" "}
-              <Command
-                flat
-                variant="secondary"
-                className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
-                render={
-                  <Link
-                    href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
-                  />
-                }
-              >
-                Sign in
-              </Command>
-            </div>
+            <Suspense>
+              <div className="flex items-center gap-2">
+                Already purchased?{" "}
+                <Command
+                  flat
+                  variant="secondary"
+                  className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
+                  render={<SignInLink />}
+                >
+                  Sign in
+                </Command>
+              </div>
+            </Suspense>
           </SignedOut>
         </header>
-        <PlusScreen />
+        <Suspense>
+          <PlusScreen />
+        </Suspense>
       </Dialog>
     </AuthEnabled>
   );

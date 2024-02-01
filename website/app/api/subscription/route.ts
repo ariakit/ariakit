@@ -5,12 +5,12 @@ import { getCustomerPlusPrice } from "utils/stripe.js";
 export async function GET() {
   const stripeId = getStripeId(await currentUser());
   if (!stripeId) {
-    return Response.json("");
+    return Response.json("User not found", { status: 404 });
   }
   const price = await getCustomerPlusPrice(stripeId);
 
   if (!price) {
-    return Response.json("");
+    return Response.json("Subscription not found", { status: 404 });
   }
 
   return Response.json(price.id);

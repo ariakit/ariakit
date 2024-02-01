@@ -238,7 +238,7 @@ export const PlusCheckoutButton = forwardRef<
     );
   }
 
-  const purchased = subscription.data === price.id;
+  const purchased = !!subscription.data && subscription.data === price.id;
 
   if (purchased) {
     return (
@@ -404,8 +404,10 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
     };
   }, [wrapper]);
 
-  const onCheckoutComplete = useEvent(() => {
+  const onCheckoutComplete = useEvent(async () => {
     queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    if (!session?.id) return;
+    await fetch(`/api/checkout-success?session_id=${session.id}`);
   });
 
   const stripePromise = getStripe();

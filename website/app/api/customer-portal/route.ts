@@ -23,10 +23,10 @@ async function getRequestBody(request: Request) {
 
 export async function POST(request: NextRequest) {
   const stripeId = getStripeId(await currentUser());
-  if (!stripeId) return new Response("Unauthorized", { status: 401 });
+  if (!stripeId) return Response.json("Unauthorized", { status: 401 });
 
   const stripe = getStripeClient();
-  if (!stripe) return new Response("Server error", { status: 500 });
+  if (!stripe) return Response.json("Server error", { status: 500 });
 
   const parsed = schema.safeParse(await getRequestBody(request));
 

@@ -1,4 +1,6 @@
 "use client";
+import { Suspense, forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import {
   Button,
   Menu,
@@ -26,13 +28,26 @@ import { Command } from "./command.jsx";
 import { DropdownItem } from "./dropdown-item.jsx";
 import { Popup } from "./popup.jsx";
 
+const SignInLink = forwardRef<
+  ElementRef<typeof Link>,
+  Omit<ComponentPropsWithoutRef<typeof Link>, "href">
+>(function SignInLink(props, ref) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
+  return (
+    <Link
+      ref={ref}
+      href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
+      {...props}
+    />
+  );
+});
+
 export function HeaderAriakitPlus() {
   const clerk = useClerk();
   const subscription = useSubscription();
   const segments = useSelectedLayoutSegments();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const search = searchParams.size ? `?${searchParams}` : "";
 
   const isFree = subscription.isFetched && !subscription.data;
   const isPlus = subscription.isFetched && !!subscription.data;
@@ -44,17 +59,11 @@ export function HeaderAriakitPlus() {
       </ClerkLoading>
       <SignedOut>
         {segments.length === 1 && segments.includes("plus") ? (
-          <Command
-            variant="plus"
-            className="px-3"
-            render={
-              <Link
-                href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
-              />
-            }
-          >
-            Sign in
-          </Command>
+          <Suspense>
+            <Command variant="plus" className="px-3" render={<SignInLink />}>
+              Sign in
+            </Command>
+          </Suspense>
         ) : (
           <Button
             className="text-sm max-sm:px-3"

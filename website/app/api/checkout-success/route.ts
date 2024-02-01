@@ -4,7 +4,7 @@ import { getStripeId } from "utils/clerk.js";
 import {
   cancelSubscription,
   filterPlusSubscriptions,
-  getStripeClient,
+  getCheckout,
   listActiveSubscriptions,
 } from "utils/stripe.js";
 import { z } from "zod";
@@ -21,10 +21,7 @@ const paramsSchema = z
 
 export async function GET(req: NextRequest) {
   const stripeId = getStripeId(await currentUser());
-  if (!stripeId) return new Response("Unauthorized", { status: 401 });
-
-  const stripe = getStripeClient();
-  if (!stripe) return new Response("Server error", { status: 500 });
+  if (!stripeId) return Response.json("Unauthorized", { status: 401 });
 
   const parsed = paramsSchema.safeParse(
     Object.fromEntries(req.nextUrl.searchParams.entries()),
@@ -35,17 +32,21 @@ export async function GET(req: NextRequest) {
   }
 
   const { sessionId, redirectUrl } = parsed.data;
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const session = await getCheckout(sessionId);
+
+  if (!session) {
+    return Response.json("Not found", { status: 404 });
+  }
 
   if (session.customer !== stripeId) {
-    return new Response("Unauthorized", { status: 401 });
+    return Response.json("Unauthorized", { status: 401 });
   }
 
   if (session.mode === "payment" && session.payment_status === "paid") {
     const subscriptions = filterPlusSubscriptions(
       await listActiveSubscriptions(stripeId),
     );
-    if (subscriptions?.length) {
+    if (subscriptions.length) {
       await Promise.all(subscriptions.map((s) => cancelSubscription(s.id)));
     }
   }

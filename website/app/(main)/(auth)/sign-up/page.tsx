@@ -1,8 +1,9 @@
 "use client";
+import { Suspense } from "react";
 import { SignUp } from "@clerk/clerk-react";
 import { useSearchParams } from "next/navigation.js";
 
-export default function Page() {
+function ClientPage() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect_url");
   return (
@@ -11,5 +12,13 @@ export default function Page() {
       redirectUrl={redirectUrl}
       appearance={{ layout: { showOptionalFields: false } }}
     />
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <ClientPage />
+    </Suspense>
   );
 }

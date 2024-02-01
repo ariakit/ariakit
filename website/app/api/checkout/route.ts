@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   });
 
   return Response.json({
-    checkoutSessionId: session?.id || null,
+    id: session?.id || null,
     clientSecret: session?.client_secret || null,
   });
 }

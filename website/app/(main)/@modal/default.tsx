@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 
-export default function Default() {
+function ClientDefault() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -25,4 +25,12 @@ export default function Default() {
   }, [searchParams, pathname, router]);
 
   return null;
+}
+
+export default function Default() {
+  return (
+    <Suspense>
+      <ClientDefault />
+    </Suspense>
+  );
 }
