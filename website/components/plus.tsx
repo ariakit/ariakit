@@ -251,7 +251,7 @@ export const PlusCheckoutButton = forwardRef<
 
   return (
     <div className="relative flex flex-col items-center gap-4 rounded-xl bg-black/5 p-4 pt-8 dark:bg-white/5">
-      {price.expiresAt && (
+      {!!price.expiresAt && (
         <div className="-mt-11 flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-1 text-[13px] leading-[18px] text-black/80 dark:border-white/10 dark:bg-gray-700 dark:text-white/80">
           <div className="-ml-1.5 size-2 flex-none animate-pulse rounded-full bg-yellow-800 dark:bg-amber-400" />
           <span className="line-clamp-1">
@@ -272,7 +272,7 @@ export const PlusCheckoutButton = forwardRef<
           <span className="text-[36px] font-extralight">$</span>
           {Math.ceil(price.amount / 100)}
         </div>
-        {price.percentOff && (
+        {!!price.percentOff && (
           <div className="text-sm text-black/80 dark:text-white/80">
             <del className="tracking-wider opacity-70">
               <VisuallyHidden>Original price: </VisuallyHidden>$

@@ -60,7 +60,7 @@ function getPercentOff(originalAmount: number, amount: number) {
   const percentOff = Math.round(
     ((originalAmount - amount) / originalAmount) * 100,
   );
-  return Math.max(Math.min(percentOff, 100), 0);
+  return Math.max(Math.min(percentOff, 80), 0);
 }
 
 function isPlusPrice(price: Stripe.Price) {
