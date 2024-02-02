@@ -111,6 +111,7 @@ async function createCustomerWithSubscription(
     customer: customer.id,
     items: [{ price: price.id, quantity: 1 }],
     coupon: coupon.id,
+    backdate_start_date: Math.round(new Date("2023-11-01").getTime() / 1000),
   });
 
   await stripe.coupons.del(coupon.id);

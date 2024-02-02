@@ -2,13 +2,19 @@ import { useAuth } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
 
-export function useSubscription(): UseQueryResult<string> & {
+interface Subscription {
+  price: string;
+  product: string;
+  recurring: boolean;
+}
+
+export function useSubscription(): UseQueryResult<Subscription> & {
   userId?: string | null;
   isLoaded: boolean;
 } {
   const { isLoaded, userId } = useAuth();
 
-  const query = useQuery<string>({
+  const query = useQuery<Subscription>({
     enabled: isLoaded && !!userId,
     queryKey: ["subscription", userId],
     refetchOnMount: false,

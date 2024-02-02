@@ -238,7 +238,10 @@ export const PlusCheckoutButton = forwardRef<
     );
   }
 
-  const purchased = !!subscription.data && subscription.data === price.id;
+  const purchased =
+    !!subscription.data &&
+    !subscription.data.recurring &&
+    subscription.data.product === price.product;
 
   if (purchased) {
     return (
@@ -331,6 +334,8 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
 
   useEffect(() => {
     if (!userId) return;
+    if (!priceId) return;
+
     const controller = new AbortController();
     const onAbort = () => {
       setSession(null);

@@ -1,4 +1,7 @@
+import { differenceInMonths } from "date-fns";
+import get from "lodash-es/get.js";
 import { Stripe } from "stripe";
+import invariant from "tiny-invariant";
 import {
   getCurrentUser,
   getPrimaryEmailAddress,
@@ -7,36 +10,29 @@ import {
 } from "./clerk.js";
 import type { User, UserResource } from "./clerk.js";
 
+type Discount = Stripe.Coupon | Stripe.PromotionCode;
+
 const PLUS_MONTHLY = "ariakit-plus-monthly";
 const PLUS_YEARLY = "ariakit-plus-yearly";
 const PLUS_ONE_TIME = "ariakit-plus-one-time";
 const PLUS_PRICES = [PLUS_MONTHLY, PLUS_YEARLY, PLUS_ONE_TIME];
-const COUPON_10 = "discount-10";
-const COUPON_20 = "discount-20";
-const COUPON_30 = "discount-30";
-const COUPON_50 = "discount-50";
-const promotionCoupons = [COUPON_10, COUPON_20, COUPON_30, COUPON_50];
 
 const key = process.env.STRIPE_SECRET_KEY;
 const stripe = key ? new Stripe(key) : null;
 
-function getDiscountCoupon(
-  discount: Stripe.Coupon | Stripe.PromotionCode,
-): Stripe.Coupon;
+export function getStripeClient() {
+  return stripe;
+}
 
-function getDiscountCoupon(
-  discount?: Stripe.Coupon | Stripe.PromotionCode,
-): Stripe.Coupon | undefined;
-
-function getDiscountCoupon(discount?: Stripe.Coupon | Stripe.PromotionCode) {
+function getDiscountCoupon(discount: Discount): Stripe.Coupon;
+function getDiscountCoupon(discount?: Discount): Stripe.Coupon | undefined;
+function getDiscountCoupon(discount?: Discount) {
   if (!discount) return;
   if (discount.object === "coupon") return discount;
   return discount.coupon;
 }
 
-function getDiscountExpiration(
-  discount?: Stripe.Coupon | Stripe.PromotionCode,
-) {
+function getDiscountExpirationDateMs(discount?: Discount) {
   if (!discount) return null;
   const date =
     discount.object === "promotion_code"
@@ -44,6 +40,19 @@ function getDiscountExpiration(
       : discount.redeem_by;
   if (!date) return null;
   return date * 1000;
+}
+
+function getHighestDiscount(discounts?: Discount[]) {
+  if (!discounts?.length) return;
+  const highestDiscount = discounts.reduce((highest, discount) => {
+    const highestCoupon = getDiscountCoupon(highest);
+    const coupon = getDiscountCoupon(discount);
+    const percent = coupon.percent_off ?? 0;
+    if (!highestCoupon.percent_off) return discount;
+    if (percent > highestCoupon.percent_off) return discount;
+    return highest;
+  });
+  return highestDiscount;
 }
 
 function applyDiscount(
@@ -56,27 +65,44 @@ function applyDiscount(
   return value - amount - value * (percent / 100);
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(Math.min(value, max), min);
+}
+
 function getPercentOff(originalAmount: number, amount: number) {
   const percentOff = Math.round(
     ((originalAmount - amount) / originalAmount) * 100,
   );
-  return Math.max(Math.min(percentOff, 80), 0);
+  return clamp(percentOff, 0, 100);
 }
 
 function isPlusPrice(price: Stripe.Price) {
   return !!price.lookup_key && PLUS_PRICES.includes(price.lookup_key);
 }
 
-export function getStripeClient() {
-  return stripe;
+async function expand<T extends { id: string }>(
+  resource: {
+    retrieve: (
+      id: string,
+      params: { expand?: string[] },
+    ) => Promise<Stripe.Response<T>>;
+  },
+  object: T | string,
+  expand?: string[],
+) {
+  if (expand?.some((e) => typeof get(object, e) !== "object")) {
+    if (typeof object !== "string") {
+      object = object.id;
+    }
+  }
+  if (typeof object === "string") {
+    return resource.retrieve(object, { expand });
+  }
+  return object;
 }
 
-export function getClerkIdFromCustomer(
-  customer: Stripe.Customer | Stripe.DeletedCustomer,
-) {
-  if (!stripe) return;
-  if (customer.deleted) return;
-  return customer.metadata.clerkId;
+function getObjectId(object: string | { id: string }) {
+  return typeof object === "string" ? object : object.id;
 }
 
 export async function createCustomerWithClerkUser(
@@ -133,44 +159,48 @@ export function findSubscriptionPlusPrice(
   return plusPrices[0];
 }
 
-export async function cancelSubscription(subscriptionId: string) {
+export async function cancelSubscription(
+  subscription: Stripe.Subscription | string,
+) {
   if (!stripe) return;
-  const canceledSubscription = await stripe.subscriptions.cancel(
-    subscriptionId,
-    { prorate: false },
-  );
-  return canceledSubscription;
+  return stripe.subscriptions.cancel(getObjectId(subscription), {
+    prorate: false,
+  });
 }
 
 export async function listPlusPrices(type?: "one_time" | "recurring") {
   if (!stripe) return;
   const prices = await stripe.prices.list({
     type,
-    limit: 100,
     active: true,
     lookup_keys: PLUS_PRICES,
+    expand: ["data.product"],
   });
   return prices.data;
 }
 
-export async function getDefaultPrice(productId?: string) {
+export async function getPlusProduct(plusPrices?: Stripe.Price[]) {
   if (!stripe) return;
-  if (!productId) return;
-  const expand = ["default_price"];
-  const product = await stripe.products.retrieve(productId, { expand });
-  const defaultPrice = product.default_price;
-  if (!defaultPrice) return;
-  if (typeof defaultPrice !== "object") return;
-  return defaultPrice;
+
+  plusPrices = plusPrices || (await listPlusPrices("one_time"));
+  const price = plusPrices?.at(0);
+  invariant(price, "Price not found");
+
+  return expand(stripe.products, price.product);
 }
 
-export async function getPurchasedPlusPrice(customerId?: string) {
+export async function getActivePlusPrice(customer?: string) {
   if (!stripe) return;
-  if (!customerId) return;
-  const plusPrices = await listPlusPrices("one_time");
+  if (!customer) return;
+
+  const plusPrices = await listPlusPrices();
+  invariant(plusPrices, "Prices not found");
+
+  const product = await getPlusProduct(plusPrices);
+  invariant(product, "Product not found");
 
   for await (const invoice of stripe.invoices.list({
-    customer: customerId,
+    customer,
     expand: ["data.charge"],
     status: "paid",
     limit: 100,
@@ -180,16 +210,16 @@ export async function getPurchasedPlusPrice(customerId?: string) {
       if (invoice.charge.refunded) continue;
     }
     for (const line of invoice.lines.data) {
-      if (!line.price?.id) continue;
+      if (!line.price?.product) continue;
       if (line.price?.type !== "one_time") continue;
-      const plusPrice = plusPrices?.find((p) => p.id === line.price?.id);
-      if (!plusPrice) continue;
-      return plusPrice;
+      if (line.price.product !== product.id) continue;
+      const price = line.price;
+      return Object.assign(price, { product });
     }
   }
 
   for await (const charge of stripe.charges.list({
-    customer: customerId,
+    customer,
     expand: ["data.payment_intent"],
     limit: 100,
   })) {
@@ -199,17 +229,14 @@ export async function getPurchasedPlusPrice(customerId?: string) {
     if (typeof charge.payment_intent !== "object") continue;
     const priceId = charge.payment_intent.metadata.price;
     if (!priceId) continue;
-    const plusPrice = plusPrices?.find((p) => p.id === priceId);
-    if (!plusPrice) continue;
-    return plusPrice;
+    const priceProduct = charge.payment_intent.metadata.product;
+    if (priceProduct !== product.id) continue;
+    const price = plusPrices.find((price) => price.id === priceId);
+    if (!price) continue;
+    return Object.assign(price, { product });
   }
 
   return;
-}
-
-export function filterPlusPrices(prices?: Stripe.Price[]) {
-  if (!prices?.length) return [];
-  return prices.filter(isPlusPrice);
 }
 
 export async function getCustomerPlusPrice(
@@ -219,7 +246,7 @@ export async function getCustomerPlusPrice(
   if (!stripe) return;
   const customer = customerId ?? getStripeId(await getCurrentUser());
   if (!customer) return;
-  const price = await getPurchasedPlusPrice(customer);
+  const price = await getActivePlusPrice(customer);
   if (price) return price;
 
   return findSubscriptionPlusPrice(
@@ -227,31 +254,18 @@ export async function getCustomerPlusPrice(
   );
 }
 
-function getHighestDiscount(
-  discounts?: Array<Stripe.Coupon | Stripe.PromotionCode>,
-) {
-  if (!discounts?.length) return;
-  const highestDiscount = discounts.reduce((highest, discount) => {
-    const highestCoupon = getDiscountCoupon(highest);
-    const coupon = getDiscountCoupon(discount);
-    const percent = coupon.percent_off ?? 0;
-    if (!highestCoupon.percent_off) return discount;
-    if (percent > highestCoupon.percent_off) return discount;
-    return highest;
-  });
-  return highestDiscount;
-}
-
 interface GetDiscountParams {
   amount?: number | null;
-  customerId?: string;
-  productId?: string;
+  product?: string;
+  customer?: string;
+  discount?: Discount;
 }
 
 export async function getDiscount({
   amount,
-  customerId,
-  productId,
+  product,
+  customer,
+  discount: discountParam,
 }: GetDiscountParams) {
   if (!stripe) return;
   const promises: Stripe.ApiListPromise<Stripe.PromotionCode>[] = [];
@@ -260,52 +274,65 @@ export async function getDiscount({
   for await (const coupon of stripe.coupons.list({ limit: 100 })) {
     if (coupon.deleted) continue;
     if (!coupon.valid) continue;
-    if (productId) {
+    if (product) {
       if (coupon.applies_to?.products.length) {
-        if (!coupon.applies_to.products.includes(productId)) continue;
+        if (!coupon.applies_to.products.includes(product)) continue;
       }
     }
     coupons.push(coupon);
-    if (!promotionCoupons.includes(coupon.id)) continue;
+    if (coupon.metadata?.type !== "sale") continue;
     promises.push(
       stripe.promotionCodes.list({
-        active: true,
         coupon: coupon.id,
+        active: true,
         limit: 100,
       }),
     );
   }
 
   const codes = (await Promise.all(promises)).flatMap((c) => c.data);
-  const highestDiscount = getHighestDiscount(codes);
+  const highestDiscount = getHighestDiscount(
+    discountParam ? [...codes, discountParam] : codes,
+  );
 
-  if (!customerId) return highestDiscount;
+  if (!customer) return highestDiscount;
   if (!amount) return highestDiscount;
 
-  const subscriptions = await listActiveSubscriptions(customerId);
-  const price = findSubscriptionPlusPrice(subscriptions);
+  const subscription = filterPlusSubscriptions(
+    await listActiveSubscriptions(customer),
+  ).at(0);
+  if (!subscription) return highestDiscount;
+
+  const price = findSubscriptionPlusPrice([subscription]);
   if (!price?.unit_amount) return highestDiscount;
 
   const coupon = getDiscountCoupon(highestDiscount);
+  const months = differenceInMonths(new Date(), subscription.start_date * 1000);
+  const amountOff =
+    price.recurring?.interval === "month"
+      ? price.unit_amount * clamp(months + 1, 1, 3)
+      : price.unit_amount;
 
   const finalAmount = applyDiscount(amount, {
     percent_off: coupon?.percent_off || null,
-    amount_off: price.unit_amount,
+    amount_off: amountOff,
   });
 
   const percentOff = getPercentOff(amount, finalAmount);
-  const discount = coupons.find((coupon) => coupon.percent_off === percentOff);
+  const discount = coupons.find(
+    (coupon) =>
+      coupon.percent_off === percentOff &&
+      coupon.metadata?.auto_generated === "true",
+  );
   if (discount) return discount;
 
   const couponId = `discount-${percentOff}`;
 
   const nextCoupon = await stripe.coupons.create(
     {
-      id: couponId,
       name: `${percentOff}% off`,
       percent_off: percentOff,
       duration: "once",
-      applies_to: productId ? { products: [productId] } : {},
       metadata: { auto_generated: "true" },
     },
     { idempotencyKey: couponId },
@@ -315,21 +342,21 @@ export async function getDiscount({
 }
 
 export interface CreateCheckoutParams {
-  priceId: string;
+  price: Stripe.Price | string;
+  customer?: string;
   redirectUrl: string | URL;
-  customerId?: string;
+  promotionCode?: string;
 }
 
 export async function createCheckout({
-  priceId,
+  price,
+  customer,
   redirectUrl,
-  customerId,
+  promotionCode,
 }: CreateCheckoutParams) {
   if (!stripe) return;
-
   const user = await getCurrentUser();
-
-  let customer = customerId ?? getStripeId(user);
+  customer = customer ?? getStripeId(user);
 
   if (!customer) {
     const object = await createCustomerWithClerkUser(user);
@@ -337,7 +364,7 @@ export async function createCheckout({
     customer = object.id;
   }
 
-  const price = await stripe.prices.retrieve(priceId);
+  price = await expand(stripe.prices, price);
 
   for await (const session of stripe.checkout.sessions.list({
     customer,
@@ -351,10 +378,23 @@ export async function createCheckout({
     return session;
   }
 
+  let externalDiscount: Discount | undefined;
+
+  if (promotionCode) {
+    const code = await stripe.promotionCodes.list({
+      active: true,
+      code: promotionCode,
+    });
+    externalDiscount = code.data.find(
+      (c) => !c.customer || c.customer === customer,
+    );
+  }
+
   const discount = await getDiscount({
+    customer,
     amount: price.unit_amount,
-    customerId: customer,
-    productId: price.product.toString(),
+    product: getObjectId(price.product),
+    discount: externalDiscount,
   });
 
   const url = new URL(redirectUrl);
@@ -362,17 +402,22 @@ export async function createCheckout({
   returnUrl.searchParams.set("session_id", "_CHECKOUT_SESSION_ID_");
   returnUrl.searchParams.set("redirect_url", url.toString());
 
-  // TODO: Try creating one-off coupons after testing.
   const session = await stripe.checkout.sessions.create({
     customer,
     line_items: [{ price: price.id, quantity: 1 }],
     mode: "payment",
     ui_mode: "embedded",
     invoice_creation: { enabled: true },
+    redirect_on_completion: "if_required",
     return_url: returnUrl
       .toString()
       .replace("_CHECKOUT_SESSION_ID_", "{CHECKOUT_SESSION_ID}"),
-    redirect_on_completion: "if_required",
+    payment_intent_data: {
+      metadata: {
+        price: price.id,
+        product: getObjectId(price.product),
+      },
+    },
     discounts: discount
       ? [
           discount.object === "coupon"
@@ -380,17 +425,15 @@ export async function createCheckout({
             : { promotion_code: discount.id },
         ]
       : [],
-    payment_intent_data: { metadata: { price: price.id } },
   });
 
   return session;
 }
 
-export async function getCheckout(sessionId: string) {
+export async function getCheckout(session: Stripe.Checkout.Session | string) {
   if (!stripe) return;
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    return session;
+    return expand(stripe.checkout.sessions, session);
   } catch (error) {
     console.error(error);
     return;
@@ -407,9 +450,9 @@ export interface PlusPrice {
   expiresAt: number | null;
 }
 
-export async function getPlusPrice(customerId?: string) {
+export async function getPlusPrice(customer?: string) {
   if (!stripe) return;
-  const customer = customerId ?? getStripeId(await getCurrentUser());
+  customer = customer ?? getStripeId(await getCurrentUser());
 
   const prices = await listPlusPrices("one_time");
   if (!prices) return;
@@ -419,13 +462,13 @@ export async function getPlusPrice(customerId?: string) {
   if (!price) return null;
   if (!price.unit_amount) return null;
 
-  const productId = price.product.toString();
+  const productId = getObjectId(price.product);
   const discount = await getDiscount({
+    product: productId,
     amount: price.unit_amount,
-    customerId: customer,
-    productId,
+    customer: customer,
   });
-  const expiresAt = getDiscountExpiration(discount);
+  const expiresAt = getDiscountExpirationDateMs(discount);
   const amount = applyDiscount(price.unit_amount, getDiscountCoupon(discount));
   const percentOff = getPercentOff(price.unit_amount, amount);
 
