@@ -82,7 +82,7 @@
     "@clerk/clerk-react": "4.30.3",
     "@clerk/nextjs": "4.29.5",
     "@guidepup/guidepup": "0.22.2",
-    "@guidepup/playwright": "0.13.1",
+    "@guidepup/playwright": "0.13.2",
     "@playwright/test": "1.41.2",
     "@radix-ui/react-popover": "1.0.7",
     "@radix-ui/react-select": "2.0.0",
