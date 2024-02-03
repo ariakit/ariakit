@@ -37,6 +37,15 @@ function getCurrentUser(page: Page) {
   return page.evaluate(() => window.Clerk?.user || null);
 }
 
+const users = new Set<string>();
+
+async function addCurrentUser(page: Page) {
+  const user = await getCurrentUser(page);
+  if (!user) return;
+  users.add(user.id);
+  return user;
+}
+
 interface AuthOptions {
   email?: string;
   password?: string;
@@ -53,7 +62,7 @@ async function fillAuth(page: Page, options: AuthOptions = {}) {
 async function fillSignIn(page: Page, options: AuthOptions = {}) {
   await fillAuth(page, options);
   await page.waitForURL(options.redirectUrl || "/");
-  return getCurrentUser(page);
+  return addCurrentUser(page);
 }
 
 async function fillSignUp(page: Page, options: AuthOptions = {}) {
@@ -62,7 +71,7 @@ async function fillSignUp(page: Page, options: AuthOptions = {}) {
   await q.textbox("Verification code").click();
   await page.keyboard.type("424242424242424242424242", { delay: 250 });
   await page.waitForURL(options.redirectUrl || "/");
-  return getCurrentUser(page);
+  return addCurrentUser(page);
 }
 
 async function createCustomerWithSubscription(
@@ -147,14 +156,6 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   return frame;
 }
 
-const users = new Set<string>();
-
-async function addCurrentUser(page: Page) {
-  const id = await page.evaluate(() => window.Clerk?.user?.id);
-  if (!id) return;
-  users.add(id);
-}
-
 test.skip(() => !process.env.CLERK_SECRET_KEY);
 
 test.afterEach(async ({ page }) => {
@@ -175,11 +176,10 @@ test.afterAll(async () => {
   );
 });
 
-test.describe.configure({ retries: 0 });
-
 for (const plan of ["month", "year"] as const) {
   test(`${plan}ly subscriber purchasing Plus`, async ({ page }) => {
-    test.setTimeout(80_000);
+    test.setTimeout(60_000);
+
     const q = query(page);
     await page.goto("/components", { waitUntil: "networkidle" });
 
@@ -205,7 +205,6 @@ for (const plan of ["month", "year"] as const) {
 
     await fillCheckout(page, email);
     await fq.button("Pay").click();
-
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
     const stripe = getStripeClient();
@@ -220,255 +219,97 @@ for (const plan of ["month", "year"] as const) {
   });
 }
 
-// test("puschase Plus from /plus", async ({ page }) => {});
+test("puschase Plus from /plus, sign out, sign in again, and access the billing page", async ({
+  page,
+}) => {
+  test.setTimeout(80_000);
 
-// test("puschase Plus from /components/button", async ({ page }) => {});
+  const q = query(page);
+  await page.goto("/plus", { waitUntil: "networkidle" });
 
-// test("sign up, sign out, then purchase Plus with the same account", async ({
-//   page,
-// }) => {});
+  await q.link("Buy now").click();
+  const email = generateUserEmail();
+  await fillSignUp(page, { email, redirectUrl: /\/plus/ });
 
-// Remove below here
+  const frame = await fillCheckout(page, email);
+  const fq = query(frame);
 
-// for (const plan of ["Monthly", "Yearly"]) {
-//   test(`subscribe to ${plan} plan without login, then switch plans`, async ({
-//     page,
-//     context,
-//   }) => {
-//     test.setTimeout(100_000);
+  await fq.button("Pay").click();
+  await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
-//     await page.goto("/plus", { waitUntil: "networkidle" });
-//     await button(page, plan).click();
-//     const email = generateUserEmail();
-//     const frame = await fillCheckout(page);
-//     await textbox(frame, "Email").fill(email);
-//     await page.keyboard.press("Enter");
+  await page.goto("/", { waitUntil: "networkidle" });
 
-//     await page.waitForURL(/\/sign-up\?session\-id/);
-//     await expect(textbox(page, "Email address")).toHaveValue(email);
-//     await signUpWithPassword(page);
-//     await button(page, "Plus").click();
-//     await expect(menuitem(page, "Subscription")).toBeVisible();
+  await q.button("Plus").click();
+  await q.menuitem("Benefits").click();
+  await page.waitForURL("/plus");
+  await expect(q.text("Purchased")).toBeVisible();
 
-//     const alternatePlan = plan === "Monthly" ? "Yearly" : "Monthly";
-//     await updatePlanOnSite(page, context, plan, alternatePlan);
+  await page.keyboard.press("Escape");
+  await page.waitForURL("/");
+  await q.button("Plus").click();
+  await q.menuitem("Sign out").click();
 
-//     await page.goto("/components/button");
-//     const pagePromise = context.waitForEvent("page");
-//     await button(page, "Vite").click();
-//     await pagePromise;
-//   });
-// }
+  await q.link("Unlock Ariakit Plus").click();
+  await q.link("Sign in").click();
+  await page.waitForURL(/\/sign\-in/);
+  await fillSignIn(page, { email, redirectUrl: "/" });
 
-// test("sign up, then subscribe to Monthly plan", async ({ page }) => {
-//   test.setTimeout(80_000);
+  await q.button("Plus").click();
+  const pagePromise = page.context().waitForEvent("page");
+  await q.menuitem("Billing").click();
+  const newPage = await pagePromise;
+  const nq = query(newPage);
 
-//   await page.goto("/sign-up", { waitUntil: "networkidle" });
-//   const email = generateUserEmail();
-//   await textbox(page, "Email address").fill(email);
-//   await signUpWithPassword(page);
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
+  await expect(nq.text(email)).toBeVisible();
+  await expect(nq.text("Paid")).toBeVisible();
+  await expect(nq.text("Ariakit Plus")).toBeVisible();
+});
 
-//   await page.goto("/components/button", { waitUntil: "networkidle" });
-//   await link(page, "Vite").click();
+test("puschase Plus from /components, sign out, sign in again, and access the billing page", async ({
+  page,
+}) => {
+  test.setTimeout(80_000);
 
-//   await page.waitForURL("/plus?feature=edit-examples");
-//   await button(page, "Monthly").click();
-//   await fillCheckout(page, email);
-//   await page.keyboard.press("Enter");
+  const q = query(page);
+  await page.goto("/components", { waitUntil: "networkidle" });
 
-//   await page.waitForURL(/\/\?session\-id/);
-//   const sessionId = new URL(page.url()).searchParams.get("session-id");
+  await q.link("Unlock Ariakit Plus").click();
+  await page.waitForURL("/plus");
 
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-//   await addCurrentUser(page);
-//   await menuitem(page, "Sign out").click();
+  await q.link("Buy now").click();
+  const email = generateUserEmail();
+  await fillSignUp(page, { email, redirectUrl: /\/plus/ });
 
-//   await page.goto(`/sign-up?session-id=${sessionId}`);
-//   await expect(textbox(page, "Email address")).toHaveValue(email);
-//   await textbox(page, "Email address").fill(generateUserEmail());
-//   await signUpWithPassword(page);
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
-// });
+  const frame = await fillCheckout(page, email);
+  const fq = query(frame);
 
-// test("subscribe, then sign in with free account", async ({ page }) => {
-//   test.setTimeout(80_000);
+  await fq.button("Pay").click();
+  await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
-//   await page.goto("/sign-up", { waitUntil: "networkidle" });
-//   const email = generateUserEmail();
-//   await textbox(page, "Email address").fill(email);
-//   await signUpWithPassword(page);
+  await q.button("Back to page").click();
+  await page.waitForURL("/components");
 
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
-//   await menuitem(page, "Sign out").click();
+  await q.button("Plus").click();
+  await q.menuitem("Benefits").click();
+  await page.waitForURL("/plus");
+  await expect(q.text("Purchased")).toBeVisible();
 
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Monthly").click();
-//   await textbox(await fillCheckout(page), "Email").fill(email);
-//   await page.keyboard.press("Enter");
+  await page.keyboard.press("Escape");
+  await q.button("Plus").click();
+  await q.menuitem("Sign out").click();
 
-//   await page.waitForURL(/\/sign-up/);
-//   await link(page, "Sign in").click();
+  await q.link("Unlock Ariakit Plus").click();
+  await q.link("Sign in").click();
+  await page.waitForURL(/\/sign\-in/);
+  await fillSignIn(page, { email, redirectUrl: "/components" });
 
-//   await page.waitForURL(/\/sign-in/);
-//   await textbox(page, "Email address").fill(email);
-//   await textbox(page, "Password").fill("password");
-//   await page.keyboard.press("Enter");
+  await q.button("Plus").click();
+  const pagePromise = page.context().waitForEvent("page");
+  await q.menuitem("Billing").click();
+  const newPage = await pagePromise;
+  const nq = query(newPage);
 
-//   await page.waitForURL("/");
-//   await page.goto("/plus");
-//   await expect(button(page, "Current plan Monthly")).toBeDisabled();
-// });
-
-// test("subscribe, then sign in with paid account", async ({ page }) => {
-//   test.setTimeout(80_000);
-
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Monthly").click();
-//   const email = generateUserEmail();
-//   await textbox(await fillCheckout(page), "Email").fill(email);
-//   await page.keyboard.press("Enter");
-//   await signUpWithPassword(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-//   await menuitem(page, "Sign out").click();
-
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Yearly").click();
-//   await textbox(await fillCheckout(page), "Email").fill(email);
-//   await page.keyboard.press("Enter");
-
-//   await page.waitForURL(/\/sign-up/);
-//   await link(page, "Sign in").click();
-
-//   await page.waitForURL(/\/sign-in/);
-//   await textbox(page, "Email address").fill(email);
-//   await textbox(page, "Password").fill("password");
-//   await page.keyboard.press("Enter");
-
-//   await page.waitForURL("/");
-//   await page.goto("/plus");
-//   await expect(button(page, "Current plan Monthly")).toBeDisabled();
-// });
-
-// test("subscribe, sign out, then subscribe again with a different account", async ({
-//   page,
-// }) => {
-//   test.setTimeout(80_000);
-
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Monthly").click();
-//   await textbox(await fillCheckout(page), "Email").fill(generateUserEmail());
-//   await page.keyboard.press("Enter");
-//   await signUpWithPassword(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-//   await addCurrentUser(page);
-//   await menuitem(page, "Sign out").click();
-
-//   await link(page, "Unlock Ariakit Plus").click();
-//   await button(page, "Yearly").click();
-//   await textbox(await fillCheckout(page), "Email").fill(generateUserEmail());
-//   await page.keyboard.press("Enter");
-//   await signUpWithPassword(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-// });
-
-// test("subscribe, clear cookies, then sign up with the same email", async ({
-//   page,
-// }) => {
-//   test.setTimeout(80_000);
-
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Yearly").click();
-//   const email = generateUserEmail();
-//   await textbox(await fillCheckout(page), "Email").fill(email);
-//   await page.keyboard.press("Enter");
-
-//   await page.waitForURL(/\/sign-up/);
-//   await page.context().clearCookies();
-
-//   await page.goto("/sign-up", { waitUntil: "networkidle" });
-//   await textbox(page, "Email address").fill(email);
-//   await signUpWithPassword(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-// });
-
-// test("subscribe with email a, sign up with email b, then sign up with email a", async ({
-//   page,
-// }) => {
-//   test.setTimeout(80_000);
-//   const emailA = generateUserEmail();
-//   const emailB = generateUserEmail();
-
-//   await page.goto("/plus", { waitUntil: "networkidle" });
-//   await button(page, "Monthly").click();
-//   await textbox(await fillCheckout(page), "Email").fill(emailA);
-//   await page.keyboard.press("Enter");
-//   await textbox(page, "Email address").fill(emailB);
-//   await signUpWithPassword(page);
-//   await addCurrentUser(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Subscription")).toBeVisible();
-//   await menuitem(page, "Sign out").click();
-
-//   await page.goto("/sign-up", { waitUntil: "networkidle" });
-//   await textbox(page, "Email address").fill(emailA);
-//   await signUpWithPassword(page);
-//   await addCurrentUser(page);
-
-//   await button(page, "Plus").click();
-//   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
-//   await menuitem(page, "Sign out").click();
-
-//   await page.goto("/sign-in", { waitUntil: "networkidle" });
-//   await textbox(page, "Email address").fill(emailB);
-//   await textbox(page, "Password").fill("password");
-//   await page.keyboard.press("Enter");
-
-//   await page.waitForURL("/");
-//   await page.goto("/plus");
-//   await expect(button(page, "Current plan Monthly")).toBeDisabled();
-// });
-
-// // test.skip("subscribe, clear cookies, then sign in with the same email", async ({
-// //   page,
-// // }) => {
-// //   test.setTimeout(80_000);
-
-// //   await page.goto("/sign-up", { waitUntil: "networkidle" });
-// //   const email = generateUserEmail();
-// //   await textbox(page, "Email address").fill(email);
-// //   await signUpWithPassword(page);
-// //   await button(page, "Plus").click();
-// //   await expect(menuitem(page, "Unlock Ariakit Plus")).toBeVisible();
-// //   await menuitem(page, "Sign out").click();
-
-// //   await link(page, "Unlock Ariakit Plus").click();
-// //   await button(page, "Yearly").click();
-// //   await textbox(await fillCheckout(page), "Email").fill(email);
-// //   await page.keyboard.press("Enter");
-
-// //   await page.waitForURL(/\/sign-up/);
-// //   await page.context().clearCookies();
-
-// //   await page.goto("/sign-in", { waitUntil: "networkidle" });
-// //   await textbox(page, "Email address").fill(email);
-// //   await textbox(page, "Password").fill("password");
-// //   await page.keyboard.press("Enter");
-
-// //   await page.waitForURL("/");
-// //   await page.goto("/plus");
-// //   await expect(button(page, "Current plan Yearly")).toBeDisabled();
-// // });
+  await expect(nq.text(email)).toBeVisible();
+  await expect(nq.text("Paid")).toBeVisible();
+  await expect(nq.text("Ariakit Plus")).toBeVisible();
+});
