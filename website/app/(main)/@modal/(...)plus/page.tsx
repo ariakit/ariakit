@@ -1,9 +1,31 @@
 "use client";
-import { Dialog } from "@ariakit/react";
+import { Suspense, forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { Button, Dialog } from "@ariakit/react";
+import { SignedOut } from "@clerk/clerk-react";
 import { AuthEnabled } from "components/auth.jsx";
+import { Command } from "components/command.jsx";
 import { PlusScreen } from "components/plus-screen.jsx";
 import { useRootPathname } from "components/root-pathname.jsx";
-import { usePathname, useRouter } from "next/navigation.js";
+import { ArrowLeft } from "icons/arrow-left.jsx";
+import Link from "next/link.js";
+import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
+
+const SignInLink = forwardRef<
+  ElementRef<typeof Link>,
+  Omit<ComponentPropsWithoutRef<typeof Link>, "href">
+>(function SignInLink(props, ref) {
+  const rootPathname = useRootPathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
+  return (
+    <Link
+      ref={ref}
+      href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
+      {...props}
+    />
+  );
+});
 
 export default function Page() {
   const router = useRouter();
@@ -12,17 +34,53 @@ export default function Page() {
   return (
     <AuthEnabled>
       <Dialog
-        open={pathname.includes("/plus") && !rootPathname.includes("/plus")}
+        open={pathname === "/plus" && rootPathname !== "/plus"}
+        backdrop={false}
         onClose={(event) => {
           event.preventDefault();
           router.back();
         }}
-        className="fixed inset-3 z-50 mx-auto mb-8 mt-16 h-min max-h-[calc(100vh-2*theme(spacing.16))] overflow-auto rounded-xl border border-gray-250 bg-white text-black outline-none ease-in-out animate-in fade-in zoom-in-95 shadow-xl dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:shadow-xl-dark sm:rounded-2xl md:rounded-3xl lg:max-w-[952px]"
-        backdrop={
-          <div className="fixed inset-0 bg-black/10 backdrop-blur-sm animate-in fade-in dark:bg-black/50" />
-        }
+        className="mx-auto mb-20 mt-0 flex flex-col gap-[76px] outline-none ease-in-out animate-in fade-in zoom-in-95 lg:max-w-[952px]"
+        render={(props) => (
+          <div
+            hidden={props.hidden}
+            className="fixed inset-0 z-50 overflow-auto bg-gray-50/70 px-3 animate-in fade-in [-webkit-backdrop-filter:blur(16px)] [backdrop-filter:blur(16px)] dark:bg-gray-800/80"
+          >
+            <div {...props} />
+          </div>
+        )}
       >
-        <PlusScreen />
+        <header className="flex w-full flex-none items-center justify-between py-2 md:py-4">
+          <Button
+            className="px-3"
+            onClick={router.back}
+            render={<Command variant="secondary" flat />}
+          >
+            <ArrowLeft className="size-4" />
+            Back to page
+            <div className="-mr-1.5 hidden rounded-md border border-black/10 px-1.5 py-0.5 text-black/80 dark:border-white/10 dark:text-white/80 sm:block">
+              esc
+            </div>
+          </Button>
+          <SignedOut>
+            <Suspense>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:block">Already purchased? </span>
+                <Command
+                  flat
+                  variant="secondary"
+                  className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
+                  render={<SignInLink />}
+                >
+                  Sign in
+                </Command>
+              </div>
+            </Suspense>
+          </SignedOut>
+        </header>
+        <Suspense>
+          <PlusScreen />
+        </Suspense>
       </Dialog>
     </AuthEnabled>
   );

@@ -313,7 +313,7 @@ export function PlaygroundClient({
                             variant="plus"
                             render={
                               <Link
-                                href="/plus?feature=new-examples"
+                                href="/plus?feature=examples"
                                 scroll={false}
                               />
                             }

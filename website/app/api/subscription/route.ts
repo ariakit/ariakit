@@ -1,19 +1,21 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { getStripeId } from "utils/clerk.js";
-import { getActiveSubscriptions } from "utils/stripe.js";
+import { getActivePlusPrice } from "utils/stripe.js";
 
 export async function GET() {
   const stripeId = getStripeId(await currentUser());
   if (!stripeId) {
-    return Response.json("");
+    return Response.json(null, { status: 404 });
   }
-  const subscriptions = await getActiveSubscriptions(stripeId);
-  const subscription = subscriptions?.data[0];
-  const item = subscription?.items.data[0];
+  const price = await getActivePlusPrice(stripeId);
 
-  if (!subscription || !item) {
-    return Response.json("");
+  if (!price) {
+    return Response.json(null, { status: 404 });
   }
 
-  return Response.json(item.price.id);
+  return Response.json({
+    price: price.id,
+    product: price.product.id,
+    recurring: !!price.recurring,
+  });
 }

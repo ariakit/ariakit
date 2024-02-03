@@ -15,8 +15,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
       afterSignInUrl="/"
       afterSignUpUrl="/"
       appearance={{
+        layout: { logoPlacement: "none" },
         variables: {
           colorPrimary: "#007acc",
+          colorBackground: "hsl(204 20% 99%)",
+        },
+        elements: {
+          card: {
+            boxShadow: "none",
+          },
         },
       }}
     >

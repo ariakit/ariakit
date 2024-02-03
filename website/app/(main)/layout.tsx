@@ -2,9 +2,9 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { AuthProvider } from "components/auth.jsx";
 import { Footer } from "components/footer.js";
 import { Header } from "components/header.js";
+import { QueryProvider } from "components/query-provider.jsx";
 import { RootPathnameProvider } from "components/root-pathname.jsx";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { QueryProvider } from "./query-provider.jsx";
 
 export function generateMetadata() {
   return getNextPageMetadata();

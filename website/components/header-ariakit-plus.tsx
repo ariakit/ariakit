@@ -1,4 +1,6 @@
 "use client";
+import { Suspense, forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import {
   Button,
   Menu,
@@ -16,11 +18,31 @@ import {
 } from "@clerk/clerk-react";
 import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
-import { useSelectedLayoutSegments } from "next/navigation.js";
+import {
+  usePathname,
+  useSearchParams,
+  useSelectedLayoutSegments,
+} from "next/navigation.js";
 import { useSubscription } from "utils/use-subscription.js";
 import { Command } from "./command.jsx";
 import { DropdownItem } from "./dropdown-item.jsx";
 import { Popup } from "./popup.jsx";
+
+const SignInLink = forwardRef<
+  ElementRef<typeof Link>,
+  Omit<ComponentPropsWithoutRef<typeof Link>, "href">
+>(function SignInLink(props, ref) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
+  return (
+    <Link
+      ref={ref}
+      href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
+      {...props}
+    />
+  );
+});
 
 export function HeaderAriakitPlus() {
   const clerk = useClerk();
@@ -36,7 +58,13 @@ export function HeaderAriakitPlus() {
         <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 dark:bg-white/10 sm:w-28" />
       </ClerkLoading>
       <SignedOut>
-        {!segments.includes("plus") && (
+        {segments.length === 1 && segments.includes("plus") ? (
+          <Suspense>
+            <Command variant="plus" className="px-3" render={<SignInLink />}>
+              Sign in
+            </Command>
+          </Suspense>
+        ) : (
           <Button
             className="text-sm max-sm:px-3"
             aria-label="Unlock Ariakit Plus"
@@ -67,7 +95,7 @@ export function HeaderAriakitPlus() {
             gutter={4}
             shift={-8}
             unmountOnHide
-            className="origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
+            className="min-w-40 origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
             render={<Popup />}
           >
             <MenuItem
@@ -102,10 +130,11 @@ export function HeaderAriakitPlus() {
                   action="/api/customer-portal"
                 >
                   <MenuItem
+                    className="w-full"
                     render={<DropdownItem render={<button type="submit" />} />}
                   >
-                    <span className="pr-4">Subscription</span>
-                    <NewWindow className="h-4 w-4 opacity-75" />
+                    <span className="flex-1 pr-4 text-left">Billing</span>
+                    <NewWindow className="size-4 opacity-75" />
                   </MenuItem>
                 </form>
               </>
