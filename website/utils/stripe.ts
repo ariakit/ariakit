@@ -101,7 +101,7 @@ async function expand<T extends { id: string }>(
   return object;
 }
 
-function getObjectId(object: string | { id: string }) {
+export function getObjectId(object: string | { id: string }) {
   return typeof object === "string" ? object : object.id;
 }
 
@@ -309,10 +309,15 @@ export async function getDiscount({
       coupon.percent_off === percentOff &&
       coupon.metadata?.auto_generated === "true",
   );
-  if (discount) return discount;
 
-  const couponId = `discount-${percentOff}`;
+  const expirationDateMs = getDiscountExpirationDateMs(highestDiscount);
+  const redeemBy = expirationDateMs
+    ? Math.round(expirationDateMs / 1000)
+    : null;
 
+  if (discount) return Object.assign(discount, { redeem_by: redeemBy });
+
+  const key = `discount-${percentOff}`;
   const nextCoupon = await stripe.coupons.create(
     {
       name: `${percentOff}% off`,
@@ -320,10 +325,10 @@ export async function getDiscount({
       duration: "once",
       metadata: { auto_generated: "true" },
     },
-    { idempotencyKey: couponId },
+    { idempotencyKey: key },
   );
 
-  return nextCoupon;
+  return Object.assign(nextCoupon, { redeem_by: redeemBy });
 }
 
 export interface CreateCheckoutParams {

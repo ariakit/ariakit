@@ -177,6 +177,21 @@ test.afterAll(async () => {
 });
 
 for (const plan of ["month", "year"] as const) {
+  test(`${plan}ly subscriber still has access to Plus`, async ({ page }) => {
+    test.setTimeout(60_000);
+
+    const q = query(page);
+    await page.goto("/sign-in", { waitUntil: "networkidle" });
+
+    const email = generateUserEmail();
+    await createCustomerWithSubscription(plan, { email });
+    await fillSignIn(page, { email, redirectUrl: "/" });
+
+    await q.button("Plus").click();
+    await expect(q.menuitem("Benefits")).toBeVisible();
+    await expect(q.menuitem("Billing")).toBeVisible();
+  });
+
   test(`${plan}ly subscriber purchasing Plus`, async ({ page }) => {
     test.setTimeout(60_000);
 
