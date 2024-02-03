@@ -58,14 +58,14 @@ export default function Page() {
           >
             <ArrowLeft className="size-4" />
             Back to page
-            <div className="-mr-1.5 rounded-md border border-black/10 px-1.5 py-0.5 text-black/80 dark:border-white/10 dark:text-white/80">
+            <div className="-mr-1.5 hidden rounded-md border border-black/10 px-1.5 py-0.5 text-black/80 dark:border-white/10 dark:text-white/80 sm:block">
               esc
             </div>
           </Button>
           <SignedOut>
             <Suspense>
               <div className="flex items-center gap-2">
-                Already purchased?{" "}
+                <span className="hidden sm:block">Already purchased? </span>
                 <Command
                   flat
                   variant="secondary"

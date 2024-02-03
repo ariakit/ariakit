@@ -239,21 +239,6 @@ export async function getActivePlusPrice(customer?: string) {
   return;
 }
 
-export async function getCustomerPlusPrice(
-  customerId?: string,
-  activeSubscriptions?: Stripe.Subscription[],
-) {
-  if (!stripe) return;
-  const customer = customerId ?? getStripeId(await getCurrentUser());
-  if (!customer) return;
-  const price = await getActivePlusPrice(customer);
-  if (price) return price;
-
-  return findSubscriptionPlusPrice(
-    activeSubscriptions || (await listActiveSubscriptions(customer)),
-  );
-}
-
 interface GetDiscountParams {
   amount?: number | null;
   product?: string;
