@@ -127,7 +127,8 @@ export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
         {...props}
         data-active={isActive || undefined}
         className={twMerge(
-          "group relative flex gap-2 rounded-md p-2 data-[active]:bg-black/5 dark:data-[active]:bg-white/5",
+          "group relative flex gap-2 rounded-md p-2",
+          "before:absolute before:inset-4 before:rounded-[inherit] before:transition-[background-color,inset] data-[active]:before:inset-0 data-[active]:before:bg-black/5 dark:data-[active]:before:bg-white/5",
           props.className,
         )}
         render={
@@ -147,7 +148,7 @@ export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
           <Heart className="h-4 w-4 flex-none translate-y-1 fill-pink-600 dark:fill-pink-500" />
         ) : null}
         <p>{props.children}</p>
-        <ChevronRight className="ml-auto hidden h-4 w-4 flex-none translate-y-1 opacity-60 group-data-[active]:block" />
+        <ChevronRight className="ml-auto h-4 w-4 flex-none translate-y-1 opacity-0 transition-opacity group-data-[active]:opacity-60" />
       </Role.div>
     );
   },
