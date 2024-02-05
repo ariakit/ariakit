@@ -140,7 +140,7 @@
     "husky": "9.0.7",
     "jsdom": "24.0.0",
     "lerna": "8.1.2",
-    "lint-staged": "15.2.1",
+    "lint-staged": "15.2.2",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
     "match-sorter": "6.3.3",
