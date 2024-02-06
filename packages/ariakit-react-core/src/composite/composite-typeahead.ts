@@ -52,7 +52,8 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 }
 
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
-  const itemText = item.element?.textContent || item.children;
+  const itemText =
+    item.textContent || item.element?.textContent || item.children;
   if (!itemText) return false;
   return normalizeString(itemText)
     .trim()
@@ -194,8 +195,14 @@ export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
    */
   store?: CompositeStore;
   /**
-   * When enabled, pressing printable character keys will move focus to the next
-   * composite item that starts with the entered characters.
+   * When enabled, pressing printable character keys shifts focus to the next
+   * composite item that begins with the input characters.
+   *
+   * This feature uses the
+   * [`textContent`](https://ariakit.org/reference/composite-item#textcontent)
+   * prop of the items to match the characters. If the items lack a
+   * [`textContent`](https://ariakit.org/reference/composite-item#textcontent)
+   * prop, the HTML element's `textContent` is used.
    * @default true
    */
   typeahead?: boolean;

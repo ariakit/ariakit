@@ -145,7 +145,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       id,
       role: getPopupItemRole(contentElement),
       "aria-selected": selected,
-      children: value,
+      children: props.textContent || value,
       ...props,
       autoFocus: props.autoFocus ?? autoFocus,
       onClick,

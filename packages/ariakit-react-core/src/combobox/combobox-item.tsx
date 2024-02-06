@@ -168,7 +168,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
 
     props = {
       role: getPopupItemRole(contentElement),
-      children: value,
+      children: props.textContent || value,
       ...props,
       onClick,
       onKeyDown,

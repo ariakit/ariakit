@@ -176,6 +176,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     moveOnKeyPress = true,
     tabbable = false,
     getItem: getItemProp,
+    textContent,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
     ...props
@@ -203,13 +204,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           id: id || item.id,
           rowId,
           disabled: !!trulyDisabled,
+          textContent,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, rowId, trulyDisabled, getItemProp],
+      [id, rowId, trulyDisabled, textContent, getItemProp],
     );
 
     const onFocusProp = props.onFocus;
@@ -413,6 +415,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       id,
       "aria-selected": ariaSelected,
       "data-active-item": isActiveItem || undefined,
+      children: textContent,
       ...props,
       ref: useMergeRefs(ref, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
@@ -559,6 +562,16 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   tabbable?: boolean;
+  /**
+   * The text content representing the item. Mainly, it's used for features
+   * needing a textual depiction of the item, like typeahead. It's also employed
+   * by components such as
+   * [`SelectTextContent`](https://ariakit.org/reference/select-text-content) in
+   * [Select](https://ariakit.org/components/select) components.
+   *
+   * Also, if `children` aren't provided, this value will be displayed instead.
+   */
+  textContent?: string;
 }
 
 export type CompositeItemProps<T extends ElementType = TagName> = Props<

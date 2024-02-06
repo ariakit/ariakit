@@ -372,7 +372,16 @@ export interface CompositeStoreItem extends CollectionStoreItem {
    */
   disabled?: boolean;
   /**
+   * The text content representing the item. Mainly, it's used for features
+   * needing a textual depiction of the item, like typeahead. It's also employed
+   * by components such as
+   * [`SelectTextContent`](https://ariakit.org/reference/select-text-content) in
+   * [Select](https://ariakit.org/components/select) components.
+   */
+  textContent?: string;
+  /**
    * The item children. This can be used for typeahead purposes.
+   * @deprecated Use `textContent` instead.
    */
   children?: string;
 }

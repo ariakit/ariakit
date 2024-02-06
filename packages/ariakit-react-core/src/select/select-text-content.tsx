@@ -1,0 +1,125 @@
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.js";
+import { useSelectContext } from "./select-context.js";
+import type { SelectStore, SelectStoreItem } from "./select-store.js";
+
+function getTextContent(item?: SelectStoreItem, fallback?: string) {
+  return item?.textContent ?? item?.element?.textContent ?? fallback ?? "";
+}
+
+/**
+ * Renders the current
+ * [`value`](https://ariakit.org/reference/use-select-store#value) state in the
+ * [select store](https://ariakit.org/reference/use-select-store).
+ *
+ * As a headless value component, it doesn't render any DOM elements and
+ * therefore doesn't accept HTML props. It can optionally accept a
+ * [`fallback`](https://ariakit.org/reference/select-value#fallback) prop to use
+ * as a default value if the store's
+ * [`value`](https://ariakit.org/reference/use-select-store#value) is
+ * `undefined`.
+ *
+ * Additionally, it takes a `children` function that gets called with the
+ * current value as an argument. This feature is handy for renderind the value
+ * in a custom way.
+ * @see https://ariakit.org/components/select
+ * @example
+ * ```jsx {3}
+ * <SelectProvider>
+ *   <Select>
+ *     <SelectTextContent fallback="Select a value" />
+ *     <SelectArrow />
+ *   </Select>
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Banana" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
+ * ```
+ * @example
+ * ```jsx {1-3,7}
+ * function renderValue(value) {
+ *   // render custom JSX
+ * }
+ *
+ * <SelectProvider>
+ *   <Select>
+ *     <SelectTextContent>{renderValue}</SelectTextContent>
+ *     <SelectArrow />
+ *   </Select>
+ *   <SelectPopover>
+ *     <SelectItem value="Apple" />
+ *     <SelectItem value="Banana" />
+ *     <SelectItem value="Orange" />
+ *   </SelectPopover>
+ * </SelectProvider>
+ * ```
+ */
+export function SelectTextContent({
+  store,
+  fallback,
+  children,
+}: SelectTextContentProps = {}) {
+  const context = useSelectContext();
+  store = store || context;
+
+  const selectedItem = useStoreState(store, (state) => {
+    // Use rendered items if available, as the items state may contain multiple
+    // items within virtualized lists, potentially slowing down the code.
+    const items = state?.renderedItems.length
+      ? state?.renderedItems
+      : state?.items;
+    return items?.find((item) => item.value && item.value === state?.value);
+  });
+
+  const [textContent, setTextContent] = useState(
+    getTextContent(selectedItem, fallback),
+  );
+
+  useEffect(() => {
+    if (!selectedItem?.element) return;
+    setTextContent(getTextContent(selectedItem, fallback));
+    const observer = new MutationObserver(() => {
+      setTextContent(getTextContent(selectedItem, fallback));
+    });
+    observer.observe(selectedItem.element, {
+      attributes: false,
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+    return () => observer.disconnect();
+  }, [selectedItem, fallback]);
+
+  if (children) {
+    return children(textContent);
+  }
+
+  return textContent;
+}
+
+export interface SelectTextContentProps {
+  /**
+   * Object returned by the
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * not provided, the parent
+   * [`SelectList`](https://ariakit.org/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * context will be used.
+   */
+  store?: SelectStore;
+  /**
+   * The value to use as a default if the store's
+   * [`value`](https://ariakit.org/reference/use-select-store#value) is
+   * `undefined`.
+   * @default ""
+   */
+  fallback?: string;
+  /**
+   * A function that gets called with the current value as an argument. This
+   * feature is handy for renderind the value in a custom way.
+   */
+  children?: (textContent: string) => ReactNode;
+}
