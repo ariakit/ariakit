@@ -1,6 +1,6 @@
 ---
 tags:
-  - New
+  - Plus
   - Menubar
   - Menu
   - Portal

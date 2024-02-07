@@ -228,15 +228,18 @@ export interface PageListItemProps extends ComponentPropsWithoutRef<"li"> {
   node?: Element;
   ordered?: boolean;
   index?: number;
+  multiline?: boolean;
 }
 
 export function PageListItem({
   node,
   index,
   ordered,
+  multiline,
   ...props
 }: PageListItemProps) {
-  const isMultiline = Children.toArray(props.children).at(0) === "\n";
+  const isMultiline =
+    multiline ?? Children.toArray(props.children).at(0) === "\n";
   const className = twJoin(
     "relative flex flex-col",
     ordered ? "gap-4" : "gap-2",
@@ -413,7 +416,7 @@ export function PageDiv({
       <PageSection
         {...props}
         media={media}
-        plus={tags.includes("New")}
+        plus={tags.includes("Plus")}
         tableOfContents={tableOfContents}
       />
     );
@@ -540,7 +543,7 @@ export function PageA({
         {...props}
         type={props.type as any}
         abstracted={tags?.includes("Abstracted examples")}
-        plus={tags?.includes("New")}
+        plus={tags?.includes("Plus")}
       />
     );
   }

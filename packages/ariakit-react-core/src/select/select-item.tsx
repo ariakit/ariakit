@@ -261,6 +261,10 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    * item is clicked. By default, it's `true` when the
    * [`value`](https://ariakit.org/reference/select-item#value) prop is also
    * provided.
+   *
+   * Live examples:
+   * - [Select with Next.js App
+   *   Router](https://ariakit.org/examples/select-next-router)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }

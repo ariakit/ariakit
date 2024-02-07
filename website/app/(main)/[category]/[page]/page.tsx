@@ -127,7 +127,7 @@ export default async function Page({ params }: PageProps) {
     nextPage = sortedIndex?.[index + 1];
   }
 
-  const isNextPageNew = nextPage?.tags.includes("New");
+  const isNextPagePlus = nextPage?.tags.includes("Plus");
 
   const nextPageLink = nextPage && (
     <Link
@@ -135,10 +135,10 @@ export default async function Page({ params }: PageProps) {
       className="group flex w-auto items-center gap-3 rounded-lg p-2 pr-4 active:bg-blue-200/70 focus-visible:ariakit-outline-input dark:active:!bg-blue-800/25 md:ml-3 [@media(any-hover:hover)]:hover:bg-blue-200/40 [@media(any-hover:hover)]:dark:hover:bg-blue-600/25"
     >
       <PlusBordered
-        plus={isNextPageNew}
+        plus={isNextPagePlus}
         className={twJoin(
           "flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-150 dark:bg-gray-850",
-          !isNextPageNew &&
+          !isNextPagePlus &&
             "group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80",
         )}
       >

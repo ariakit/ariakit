@@ -12,7 +12,7 @@ export function generateMetadata() {
 
 export default async function Page() {
   const updates = await getUpdates();
-  const newPages = getPagesByTag("New").map(
+  const plusPages = getPagesByTag("Plus").map(
     (page) => `/${page.category}/${page.slug}`,
   );
   return (
@@ -32,7 +32,7 @@ export default async function Page() {
                   <UpdateLink
                     {...item}
                     connected={index !== 0}
-                    plus={newPages.some((page) => item.href.startsWith(page))}
+                    plus={plusPages.some((page) => item.href.startsWith(page))}
                   />
                 </li>
               ))}

@@ -231,7 +231,7 @@ const HeaderNavItem = memo(
         path={path}
         nested={nested}
         thumbnail={getPageIcon(category, item.slug) || <span />}
-        plus={item.tags.includes("New")}
+        plus={item.tags.includes("Plus")}
         {...props}
       />
     );

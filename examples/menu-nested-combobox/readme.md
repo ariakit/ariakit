@@ -1,6 +1,6 @@
 ---
 tags:
-  - New
+  - Plus
   - Menu
   - Combobox
   - VisuallyHidden

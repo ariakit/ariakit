@@ -1,6 +1,6 @@
 ---
 tags:
-  - New
+  - Plus
   - Combobox
   - Concurrent React
   - Search

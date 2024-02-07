@@ -203,6 +203,8 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    *   items](https://ariakit.org/examples/select-item-custom)
    * - [Multi-Select](https://ariakit.org/examples/select-multiple)
    * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
+   * - [Select with Next.js App
+   *   Router](https://ariakit.org/examples/select-next-router)
    */
   value: MutableValue<T>;
   /**
@@ -282,6 +284,8 @@ export interface SelectStoreOptions<
    * - [Animated Select](https://ariakit.org/examples/select-animated)
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * - [SelectGroup](https://ariakit.org/examples/select-group)
+   * - [Select with Next.js App
+   *   Router](https://ariakit.org/examples/select-next-router)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }

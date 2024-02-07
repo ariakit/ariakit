@@ -21,12 +21,12 @@ import { UpdateLink } from "./update-link.jsx";
 
 export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
   updates: UpdateItem[];
-  newPages: string[];
+  plusPages: string[];
 }
 
 export function HeaderUpdates({
   updates,
-  newPages,
+  plusPages,
   ...props
 }: HeaderUpdatesProps) {
   const id = useId();
@@ -170,7 +170,7 @@ export function HeaderUpdates({
                         layer="popup"
                         unread
                         connected={index !== 0}
-                        plus={newPages.some((page) =>
+                        plus={plusPages.some((page) =>
                           item.href.startsWith(page),
                         )}
                         {...item}
@@ -197,7 +197,7 @@ export function HeaderUpdates({
                         dateStyle="fromNow"
                         layer="popup"
                         connected={index !== 0}
-                        plus={newPages.some((page) =>
+                        plus={plusPages.some((page) =>
                           item.href.startsWith(page),
                         )}
                         {...item}

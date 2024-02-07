@@ -12,7 +12,7 @@ export interface PageTagProps
 export function PageTag({ tag, className, ...props }: PageTagProps) {
   return (
     <PlusBordered
-      plus={tag === "New"}
+      plus={tag === "Plus"}
       thickerOnLight
       render={<Link href={`/tags/${getTagSlug(tag)}`} {...props} />}
       className={twJoin(
