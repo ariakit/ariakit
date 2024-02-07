@@ -53,7 +53,7 @@ export default function Page({ params }: Props) {
                     thumbnail={
                       getPageIcon(page.category, page.slug) || <span />
                     }
-                    plus={page.tags.includes("New")}
+                    plus={page.tags.includes("Plus")}
                   />
                 ))}
               </div>

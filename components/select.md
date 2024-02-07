@@ -22,6 +22,8 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 <div data-cards="examples">
 
 - [](/examples/select-animated)
+- [](/examples/select-combobox)
+- [](/examples/select-next-router)
 
 </div>
 

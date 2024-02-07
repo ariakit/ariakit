@@ -68,7 +68,7 @@ export function PageCards({
             title={page.title}
             description={page.content}
             thumbnail={getPageIcon(page.category, page.slug) || <span />}
-            plus={page.tags.includes("New")}
+            plus={page.tags.includes("Plus")}
           />
         ))}
       </div>

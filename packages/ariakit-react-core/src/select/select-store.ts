@@ -99,9 +99,12 @@ export interface SelectStoreOptions<
    * Live examples:
    * - [Form with Select](https://ariakit.org/examples/form-select)
    * - [Select Grid](https://ariakit.org/examples/select-grid)
-   * - [Select with custom items](https://ariakit.org/examples/select-item-custom)
+   * - [Select with custom
+   *   items](https://ariakit.org/examples/select-item-custom)
    * - [Multi-Select](https://ariakit.org/examples/select-multiple)
    * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
+   * - [Select with Next.js App
+   *   Router](https://ariakit.org/examples/select-next-router)
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**

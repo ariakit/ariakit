@@ -222,7 +222,7 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "13.5.4",
+      next: "14.1.0",
     },
     devDependencies: {
       "@types/node": "latest",
@@ -242,20 +242,16 @@ function getNextProject(props: StackblitzProps) {
   const nextConfig = `/** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    extensionAlias: {
+      ".js": [".js", ".ts", ".tsx"],
+      ".jsx": [".jsx", ".tsx"],
+    },
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  webpack: (config) => {
-    config.resolve.extensionAlias = {
-      ".js": [".js", ".ts", ".tsx"],
-      ".jsx": [".jsx", ".tsx"],
-    };
-    return config;
   },
 };
 

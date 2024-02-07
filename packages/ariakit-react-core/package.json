@@ -68,6 +68,7 @@
     "./tab/tab-context": "./src/tab/tab-context.tsx",
     "./separator/separator": "./src/separator/separator.ts",
     "./select/select": "./src/select/select.tsx",
+    "./select/select-value": "./src/select/select-value.tsx",
     "./select/select-store": "./src/select/select-store.ts",
     "./select/select-separator": "./src/select/select-separator.ts",
     "./select/select-row": "./src/select/select-row.ts",

@@ -48,7 +48,7 @@ async function fetchVersions() {
 export async function Header() {
   const versions = await fetchVersions();
   const updates = await getUpdates();
-  const newPages = getPagesByTag("New").map(
+  const plusPages = getPagesByTag("Plus").map(
     (page) => `/${page.category}/${page.slug}`,
   );
   return (
@@ -69,7 +69,7 @@ export async function Header() {
         <AuthEnabled>
           <HeaderAriakitPlus />
         </AuthEnabled>
-        <HeaderUpdates updates={updates.slice(0, 15)} newPages={newPages} />
+        <HeaderUpdates updates={updates.slice(0, 15)} plusPages={plusPages} />
         <HeaderThemeSwitch />
       </div>
     </div>

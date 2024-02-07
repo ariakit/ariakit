@@ -8,6 +8,10 @@ const nextConfig = {
   redirects,
   experimental: {
     webpackBuildWorker: true,
+    extensionAlias: {
+      ".js": [".js", ".ts", ".tsx"],
+      ".jsx": [".jsx", ".tsx"],
+    },
     serverComponentsExternalPackages: [
       "@babel/core",
       "@babel/types",
@@ -75,10 +79,6 @@ const nextConfig = {
     };
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
-    config.resolve.extensionAlias = {
-      ".js": [".js", ".ts", ".tsx"],
-      ".jsx": [".jsx", ".tsx"],
-    };
 
     return config;
   },

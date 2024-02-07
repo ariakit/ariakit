@@ -146,8 +146,8 @@ export function PlusScreen() {
                   </div>
                   <p>
                     Get lifetime access to a{" "}
-                    <InlineLink render={<Link href="/tags/new" />}>
-                      growing list of exclusive examples
+                    <InlineLink render={<Link href="/tags/plus" />}>
+                      growing collection of exclusive examples
                     </InlineLink>
                     , including their complete source code and documentation.
                   </p>
