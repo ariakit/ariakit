@@ -4,7 +4,7 @@ export default function Icon() {
   return (
     <svg viewBox="0 0 128 128" width={128} height={128}>
       <foreignObject width={128} height={128}>
-        <div className="ml-[83px] mt-20">
+        <div className="pl-[83px] pt-20">
           <Nextjs height={56} />
         </div>
       </foreignObject>
