@@ -33,10 +33,14 @@
     "@testing-library/dom": "^8.0.0 || ^9.0.0"
   },
   "peerDependencies": {
+    "@playwright/test": "^1.27.0",
     "@testing-library/react": "^12.0.0 || ^13.0.0 || ^14.0.0",
     "react": "^17.0.0 || ^18.0.0"
   },
   "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    },
     "@testing-library/react": {
       "optional": true
     },
@@ -54,6 +58,7 @@
     "./react": "./src/react.tsx",
     "./query": "./src/query.ts",
     "./press": "./src/press.ts",
+    "./playwright": "./src/playwright.ts",
     "./mouse-up": "./src/mouse-up.ts",
     "./mouse-down": "./src/mouse-down.ts",
     "./hover": "./src/hover.ts",
