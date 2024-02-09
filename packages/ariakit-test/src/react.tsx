@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactNode } from "react";
 import { StrictMode } from "react";
 import * as ReactTestingLibrary from "@testing-library/react";
 import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.js";
@@ -10,8 +10,8 @@ export interface RenderOptions
   strictMode?: boolean;
 }
 
-export async function render(ui: ReactElement, options?: RenderOptions) {
-  const wrapper = (props: { children: ReactElement }) => {
+export async function render(ui: ReactNode, options?: RenderOptions) {
+  const wrapper = (props: { children: ReactNode }) => {
     const Wrapper = options?.wrapper;
     const element = Wrapper ? <Wrapper {...props} /> : props.children;
     if (!options?.strictMode) return element;
