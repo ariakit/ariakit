@@ -2,7 +2,7 @@ import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import pageLinks from "build-pages/links.js";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
-import { FontStyle, bundledLanguages, codeToThemedTokens } from "shiki";
+import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
 import { isValidHref } from "utils/is-valid-href.js";
@@ -149,7 +149,7 @@ async function getTokensFromCache(
   const cache = dark ? darkCache : lightCache;
   const cached = cache.get(code);
   if (cached) return cached;
-  const tokens = await codeToThemedTokens(code, {
+  const tokens = await codeToTokensBase(code, {
     lang,
     theme: dark ? "dark-plus" : "light-plus",
     includeExplanation: true,
