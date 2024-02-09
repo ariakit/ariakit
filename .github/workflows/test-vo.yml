@@ -12,7 +12,7 @@ concurrency:
 jobs:
   test-vo:
     name: Test VoiceOver
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout repository
