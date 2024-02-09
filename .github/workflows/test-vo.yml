@@ -32,9 +32,9 @@ jobs:
             ~/.npm
             website/.next/cache
           key: |
-            test-vo-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+            test-vo-14-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            test-vo-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            test-vo-14-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install dependencies
         run: npm ci --no-audit
