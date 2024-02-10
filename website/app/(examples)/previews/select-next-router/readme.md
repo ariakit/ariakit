@@ -15,7 +15,7 @@ tags:
 
 <div data-description>
 
-Controlling the value of a [Select](/components/select) component through the URL with the [Next.js App Router](https://nextjs.org/docs/app), [`React.useTransition`](https://react.dev/reference/react/startTransition) and [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic), ensuring a responsive and accessible UI.
+Controlling the value of a [Select](/components/select) component via the URL using the [Next.js App Router](https://nextjs.org/docs/app) and [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic) to ensure a responsive and accessible UI.
 
 </div>
 
