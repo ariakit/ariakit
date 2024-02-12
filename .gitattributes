@@ -1,0 +1,7 @@
+examples/combobox-filtering-integrated/** filter=git-crypt diff=git-crypt
+examples/combobox-tabs/** filter=git-crypt diff=git-crypt
+examples/dialog-combobox-command-menu/** filter=git-crypt diff=git-crypt
+examples/dialog-hide-warning/** filter=git-crypt diff=git-crypt
+examples/menu-nested-combobox/** filter=git-crypt diff=git-crypt
+examples/menubar-navigation/** filter=git-crypt diff=git-crypt
+previews/select-next-router/** filter=git-crypt diff=git-crypt

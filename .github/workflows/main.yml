@@ -81,6 +81,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Decrypt
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -145,6 +150,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Decrypt
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -179,6 +189,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Decrypt
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -211,6 +226,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Decrypt
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
