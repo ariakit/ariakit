@@ -3,7 +3,7 @@ import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
   return (
-    <Ariakit.ComboboxProvider animated>
+    <Ariakit.ComboboxProvider>
       <Ariakit.ComboboxLabel className="label">
         Your favorite fruit
       </Ariakit.ComboboxLabel>

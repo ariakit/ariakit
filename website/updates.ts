@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved example: Animated Combobox",
+    type: "page",
+    href: "/examples/combobox-animated",
+    dateTime: "2024-02-13T21:18Z",
+  },
+  {
     title: "New example: Select with Next.js App Router",
     type: "page",
     href: "/examples/select-next-router",

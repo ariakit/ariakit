@@ -11,7 +11,7 @@ tags:
 
 <div data-description>
 
-Animating a [Combobox](/components/combobox) using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover using the [`animated`](/reference/combobox-provider#animated) prop.
+Animating a [Combobox](/components/combobox) using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
 
 </div>
 
@@ -29,7 +29,7 @@ Animating a [Combobox](/components/combobox) using CSS transitions in React. The
 
 ## Styling
 
-When the [`animated`](/reference/combobox-provider#animated) prop is set to `true` on the [`ComboboxProvider`](/reference/combobox-provider) component, Ariakit will assign the `data-enter` and `data-leave` attributes to the popover. You can use these attributes as selectors to add CSS transitions to the popover.
+Ariakit will automatically assign the `data-enter` and `data-leave` attributes to the popover element when it opens and closes. You can use these attributes as selectors to add CSS transitions to the popover.
 
 ```css
 .popover {
@@ -42,7 +42,7 @@ When the [`animated`](/reference/combobox-provider#animated) prop is set to `tru
 }
 ```
 
-Learn more on the [Styling](/guide/styling) guide.
+For more information, refer to the [Styling](/guide/styling) guide.
 
 ## Related examples
 

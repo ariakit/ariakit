@@ -22,7 +22,8 @@
     hover:bg-gray-50
     dark:bg-black/70
     dark:hover:bg-black
-    outline-2
+    outline-1
+    data-[active-item]:outline-2
     outline-offset-[-1px]
     outline-blue-600
     data-[focus-visible]:outline
