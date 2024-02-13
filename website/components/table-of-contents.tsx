@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { getScrollingElement } from "@ariakit/core/utils/dom";
+import {
+  getScrollingElement,
+  scrollIntoViewIfNeeded,
+} from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
 import { Popup } from "components/popup.js";
 import { List } from "icons/list.js";
@@ -48,7 +51,7 @@ export function TableOfContents({
         anchor.setAttribute("aria-current", "true");
         const scroller = getScrollingElement(anchor);
         if (scroller?.tagName !== "HTML") {
-          anchor.scrollIntoView({ block: "nearest" });
+          scrollIntoViewIfNeeded(anchor, { block: "nearest" });
         }
       }
     });
