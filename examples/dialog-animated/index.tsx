@@ -1,8 +1,8 @@
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
+import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
-  const dialog = Ariakit.useDialogStore({ animated: true });
+  const dialog = Ariakit.useDialogStore();
   return (
     <>
       <Ariakit.Button onClick={dialog.show} className="button">
