@@ -173,7 +173,7 @@ export function createStore<S extends State>(
     listener,
   ) => {
     disposables.set(listener, listener(props, props));
-    return sub(keys, listener, propListeners);
+    return sub(keys as (keyof S)[], listener, propListeners);
   };
 
   const storeSync: StoreSync<S> = (keys, listener) => {
@@ -216,7 +216,7 @@ export function createStore<S extends State>(
     const nextControlledValue =
       props[key] !== undefined ? (props[key] as S[K]) : nextValue;
 
-    if (nextValue === state[key] && nextControlledValue === state) return;
+    if (nextValue === state[key]) return;
 
     if (!fromStores) {
       stores.forEach((store) => {
