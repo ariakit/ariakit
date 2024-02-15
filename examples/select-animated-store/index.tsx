@@ -2,10 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({
-    defaultValue: "Apple",
-    animated: true,
-  });
+  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
   const mounted = select.useState("mounted");
   return (
     <div className="wrapper">

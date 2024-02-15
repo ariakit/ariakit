@@ -4,7 +4,7 @@ import * as Ariakit from "@ariakit/react";
 export default function Example() {
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider animated defaultValue="Apple">
+      <Ariakit.SelectProvider defaultValue="Apple">
         <Ariakit.SelectLabel className="label">
           Favorite fruit
         </Ariakit.SelectLabel>

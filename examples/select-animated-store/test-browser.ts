@@ -1,20 +1,5 @@
-import type { Page } from "@playwright/test";
+import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
-
-const getButton = (page: Page) =>
-  page.getByRole("combobox", { name: "Favorite fruit" });
-
-const getPopover = (page: Page) =>
-  page.getByRole("listbox", { name: "Favorite fruit" });
-
-const getOption = (page: Page, name: string) =>
-  page.getByRole("option", { name });
-
-const expectActiveOption = (page: Page, name: string) =>
-  expect(getOption(page, name)).toHaveAttribute("data-active-item");
-
-const expectSelectedOption = (page: Page, name: string) =>
-  expect(getOption(page, name)).toHaveAttribute("aria-selected", "true");
 
 const createTransition = (duration = 100) => {
   const then = performance.now();
@@ -26,49 +11,54 @@ const createTransition = (duration = 100) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-animated");
+  await page.goto("/previews/select-animated-store", {
+    waitUntil: "networkidle",
+  });
 });
 
 test("show/hide", async ({ page }) => {
-  await expect(getPopover(page)).not.toBeVisible();
-  await getButton(page).click();
-  await expect(getPopover(page)).toBeVisible();
-  await expect(getPopover(page)).toBeFocused();
-  await expectSelectedOption(page, "Apple");
-  await expectActiveOption(page, "Apple");
+  const q = query(page);
+  await expect(q.listbox("Favorite fruit")).not.toBeVisible();
+  await q.combobox("Favorite fruit").click();
+  await expect(q.listbox("Favorite fruit")).toBeVisible();
+  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  await expect(q.option("Apple")).toHaveAttribute("data-active-item");
   const isLeaving = createTransition();
   await page.keyboard.press("Escape");
-  await expect(getButton(page)).toBeFocused();
+  await expect(q.combobox("Favorite fruit")).toBeFocused();
   if (isLeaving()) {
-    await expect(getPopover(page)).toBeVisible();
+    await expect(q.listbox("Favorite fruit")).toBeVisible();
   }
-  await expect(getPopover(page)).not.toBeVisible();
+  await expect(q.listbox("Favorite fruit")).not.toBeVisible();
   await page.keyboard.press("Enter");
-  await expect(getPopover(page)).toBeFocused();
-  await expectSelectedOption(page, "Apple");
-  await expectActiveOption(page, "Apple");
+  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  await expect(q.option("Apple")).toHaveAttribute("data-active-item");
   await page.keyboard.press("ArrowDown");
-  await expectSelectedOption(page, "Apple");
-  await expectActiveOption(page, "Banana");
+  await expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  await expect(q.option("Banana")).toHaveAttribute("data-active-item");
   await page.keyboard.press("Enter");
-  await expect(getPopover(page)).not.toBeVisible();
+  await expect(q.listbox("Favorite fruit")).not.toBeVisible();
   await page.keyboard.press("Enter");
-  await expect(getPopover(page)).toBeFocused();
-  await expectSelectedOption(page, "Banana");
-  await expectActiveOption(page, "Banana");
+  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.option("Banana")).toHaveAttribute("aria-selected", "true");
+  await expect(q.option("Banana")).toHaveAttribute("data-active-item");
 });
 
 test("do not scroll when opening the select popover", async ({ page }) => {
-  await getButton(page).focus();
+  const q = query(page);
+  await q.combobox("Favorite fruit").focus();
   await page.evaluate(() => window.scrollTo({ top: 100 }));
   await page.keyboard.press("Enter");
-  await expect(getPopover(page)).toBeVisible();
+  await expect(q.listbox("Favorite fruit")).toBeVisible();
   expect(await page.evaluate(() => window.scrollY)).toBe(100);
 });
 
 test("https://github.com/ariakit/ariakit/issues/1684", async ({ page }) => {
-  await getButton(page).focus();
+  const q = query(page);
+  await q.combobox("Favorite fruit").focus();
   await page.keyboard.press("Enter");
   await page.mouse.click(1, 1);
-  await expect(getPopover(page)).not.toBeVisible();
+  await expect(q.listbox("Favorite fruit")).not.toBeVisible();
 });

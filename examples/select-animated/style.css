@@ -3,9 +3,12 @@
 .popover {
   @apply
     opacity-0
-    [transform:translateY(-16px)]
-    transition-[opacity,transform]
+    origin-top
+    [scale:0.95]
+    [translate:0_-0.5rem]
+    transition-[opacity,scale,translate]
     data-[enter]:opacity-100
-    data-[enter]:[transform:translateY(0)]
+    data-[enter]:[scale:1]
+    data-[enter]:[translate:0]
   ;
 }
