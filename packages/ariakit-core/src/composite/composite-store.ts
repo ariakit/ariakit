@@ -540,7 +540,8 @@ export interface CompositeStoreState<
    */
   activeId: string | null | undefined;
   /**
-   * TODO: Comment
+   * TODO: Comment TODO: Rename to movedId? It's not updated when the composite
+   * item receives focus.
    */
   focusedId: string | null | undefined;
 }

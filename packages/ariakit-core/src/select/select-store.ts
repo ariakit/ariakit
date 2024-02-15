@@ -151,7 +151,8 @@ export function createSelectStore({
   );
 
   // Sets the select value when the active item changes by moving (which usually
-  // happens when moving to an item using the keyboard).
+  // happens when moving to an item using the keyboard). Must be batched because
+  // of Select with moveOnKeyDown and showOnKeyDown.
   setup(select, () =>
     batch(select, ["setValueOnMove", "focusedId"], (state) => {
       const { mounted, value } = select.getState();
@@ -159,7 +160,9 @@ export function createSelectStore({
       if (Array.isArray(value)) return;
       if (!state.focusedId) return;
       const item = composite.item(state.focusedId);
-      if (!item || item.disabled || item.value == null) return;
+      if (!item) return;
+      if (item.disabled) return;
+      if (item.value == null) return;
       select.setState("value", item.value);
     }),
   );

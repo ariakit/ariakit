@@ -7,7 +7,11 @@ import type {
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
-import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
+import {
+  getActiveElement,
+  isPartiallyHidden,
+  isTextField,
+} from "@ariakit/core/utils/dom";
 import {
   fireBlurEvent,
   fireKeyboardEvent,
@@ -152,18 +156,20 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
+    const moves = store.useState("moves");
     const focusedId = store.useState("focusedId");
 
     // Focus on the active item element.
     useEffect(() => {
       if (!store) return;
+      if (!moves) return;
       if (!composite) return;
       if (!focusOnMove) return;
       const itemElement = getEnabledItem(store, focusedId)?.element;
       if (!itemElement) return;
-      if (hasFocus(itemElement)) return;
+      if (hasFocus(itemElement) && !isPartiallyHidden(itemElement)) return;
       focusIntoView(itemElement);
-    }, [store, focusedId, composite, focusOnMove]);
+    }, [store, moves, focusedId, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
     // element) should receive focus.
