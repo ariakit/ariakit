@@ -3,7 +3,12 @@ import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.js";
 import { isBackdrop } from "./is-backdrop.js";
-import { assignStyle, setAttribute, setProperty } from "./orchestrate.js";
+import {
+  assignStyle,
+  orchestrate,
+  setAttribute,
+  setProperty,
+} from "./orchestrate.js";
 import { supportsInert } from "./supports-inert.js";
 import { walkTreeOutside } from "./walk-tree-outside.js";
 
@@ -22,7 +27,14 @@ export function disableTree(
   const tabbableElements = getAllTabbableIn(element, true);
   const enableElements = tabbableElements.map((element) => {
     if (ignoredElements?.some((el) => el && contains(el, element))) return noop;
-    return setAttribute(element, "tabindex", "-1");
+    const restoreFocusMethod = orchestrate(element, "focus", () => {
+      element.focus = noop;
+      return () => {
+        // @ts-expect-error Delete focus method to restore original behavior
+        delete element.focus;
+      };
+    });
+    return chain(setAttribute(element, "tabindex", "-1"), restoreFocusMethod);
   });
 
   return chain(

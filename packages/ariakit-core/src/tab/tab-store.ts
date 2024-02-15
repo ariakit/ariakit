@@ -52,10 +52,10 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
   // using the keyboard.
   setup(tab, () =>
     sync(tab, ["moves"], () => {
-      const { activeId, selectOnMove } = tab.getState();
+      const { focusedId, selectOnMove } = tab.getState();
       if (!selectOnMove) return;
-      if (!activeId) return;
-      const tabItem = composite.item(activeId);
+      if (!focusedId) return;
+      const tabItem = composite.item(focusedId);
       if (!tabItem) return;
       if (tabItem.dimmed) return;
       if (tabItem.disabled) return;
@@ -65,9 +65,9 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
 
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
-    batch(tab, ["selectedId"], (state) =>
-      tab.setState("activeId", state.selectedId),
-    ),
+    batch(tab, ["selectedId"], (state) => {
+      tab.setState("activeId", state.selectedId);
+    }),
   );
 
   // Automatically set selectedId if it's undefined.

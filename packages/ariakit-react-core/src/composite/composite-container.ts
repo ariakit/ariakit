@@ -121,10 +121,6 @@ export const useCompositeContainer = createHook<
       // has been opened.
       isOpenRef.current = true;
       restoreFocusIn(event.currentTarget);
-      // Resets the moves in the store so the composite item will not be
-      // focused right after the focusable element inside the container gets
-      // focus.
-      store?.setState("moves", 0);
     }
   });
 

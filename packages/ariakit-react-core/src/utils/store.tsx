@@ -1,6 +1,11 @@
 import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
+import {
+  init,
+  internalSync,
+  setProp,
+  subscribe,
+} from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
@@ -123,7 +128,8 @@ export function useStoreProps<
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    return sync(store, [key], (state, prev) => {
+    if (!propsRef.current.setValue) return;
+    return internalSync(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
       if (state[key] === prev[key]) return;
@@ -135,12 +141,8 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
-    store.setState(key, value);
-    return batch(store, [key], () => {
-      if (value === undefined) return;
-      store.setState(key, value);
-    });
-  });
+    setProp(store, key, value);
+  }, [store, key, value]);
 }
 
 /**

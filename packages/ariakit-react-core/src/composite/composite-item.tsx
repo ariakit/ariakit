@@ -230,6 +230,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (activeId !== id) {
         store.setActiveId(id);
       }
+      store.setState("focusedId", id);
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
       if (!virtualFocus) return;
@@ -276,6 +277,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         hasFocusedComposite.current = false;
         event.preventDefault();
         event.stopPropagation();
+      } else {
+        store?.setState("focusedId", undefined);
       }
     });
 

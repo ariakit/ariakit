@@ -34,8 +34,12 @@ type StoreOmit<
 interface StoreInternals<S = State> {
   setup: StoreSetup;
   init: StoreInit;
+  getProps: () => Record<keyof any, unknown>;
+  setProp: (key: keyof any, value: unknown) => void;
+  propSync: StoreSync<Record<keyof any, unknown>>;
   subscribe: StoreSubscribe<S>;
   sync: StoreSync<S>;
+  internalSync: StoreSync<S>;
   batch: StoreBatch<S>;
   pick: StorePick<S>;
   omit: StoreOmit<S>;
@@ -60,6 +64,8 @@ export function createStore<S extends State>(
   ...stores: Array<Store<Partial<S>> | undefined>
 ): Store<S> {
   let state = initialState;
+  const props = Object.create(null) as Record<keyof any, unknown>;
+
   let prevStateBatch = state;
   let lastUpdate = Symbol();
   let destroy = noop;
@@ -67,6 +73,8 @@ export function createStore<S extends State>(
   const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
+  const propListeners = new Set<Listener<Record<keyof any, unknown>>>();
+  const internalListeners = new Set<Listener<S>>();
   const listeners = new Set<Listener<S>>();
   const batchListeners = new Set<Listener<S>>();
   const disposables = new WeakMap<Listener<S>, void | (() => void)>();
@@ -100,15 +108,15 @@ export function createStore<S extends State>(
           const storeState = store?.getState?.();
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
-          return sync(store, [key], (state) => {
-            setState(
-              key,
-              state[key]!,
-              // @ts-expect-error - Not public API. This is just to prevent
-              // infinite loops.
-              true,
-            );
-          });
+          return chain(
+            propSync(store, [key], (state) => {
+              if (state[key] === undefined) return;
+              storeSetProp(key, state[key]!, true);
+            }),
+            internalSync(store, [key], (state) => {
+              storeSetState(key, state[key]!, true);
+            }),
+          );
         }),
       ),
     );
@@ -121,6 +129,25 @@ export function createStore<S extends State>(
     destroy = chain(...desyncs, ...teardowns, ...cleanups);
 
     return maybeDestroy;
+  };
+
+  const storeGetProps = () => props;
+
+  const storeSetProp = (key: keyof any, value: unknown, fromStores = false) => {
+    const same = props[key] === value;
+    props[key] = value;
+    if (!hasOwnProperty(state, key)) return;
+    if (!fromStores) {
+      stores.forEach((store) => {
+        setProp(store, key, value);
+      });
+    }
+    storeSetState(key, value as SetStateAction<S[keyof S]>, fromStores, true);
+    if (same) return;
+    propListeners.forEach((listener) => {
+      disposables.get(listener)?.();
+      disposables.set(listener, listener(props, props));
+    });
   };
 
   const sub = (
@@ -141,9 +168,26 @@ export function createStore<S extends State>(
   const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
     sub(keys, listener);
 
+  const storePropSync: StoreSync<Record<keyof any, unknown>> = (
+    keys,
+    listener,
+  ) => {
+    disposables.set(listener, listener(props, props));
+    return sub(keys, listener, propListeners);
+  };
+
   const storeSync: StoreSync<S> = (keys, listener) => {
     disposables.set(listener, listener(state, state));
     return sub(keys, listener);
+  };
+
+  const storeInternalSync: StoreSync<S> = (keys, listener) => {
+    internalListeners.add(listener);
+    const unsub = storeSync(keys, listener);
+    return () => {
+      unsub();
+      internalListeners.delete(listener);
+    };
   };
 
   const storeBatch: StoreBatch<S> = (keys, listener) => {
@@ -159,12 +203,20 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const setState: Store<S>["setState"] = (key, value, fromStores = false) => {
+  const storeSetState = <K extends keyof S>(
+    key: K,
+    value: SetStateAction<S[K]>,
+    fromStores = false,
+    fromProps = false,
+  ) => {
     if (!hasOwnProperty(state, key)) return;
 
     const nextValue = applyState(value, state[key]);
 
-    if (nextValue === state[key]) return;
+    const nextControlledValue =
+      props[key] !== undefined ? (props[key] as S[K]) : nextValue;
+
+    if (nextValue === state[key] && nextControlledValue === state) return;
 
     if (!fromStores) {
       stores.forEach((store) => {
@@ -172,24 +224,43 @@ export function createStore<S extends State>(
       });
     }
 
+    const isSame = nextControlledValue === state[key];
     const prevState = state;
-    state = { ...state, [key]: nextValue };
+
+    state = {
+      ...state,
+      [key]: nextControlledValue,
+    };
 
     const thisUpdate = Symbol();
     lastUpdate = thisUpdate;
     updatedKeys.add(key);
 
-    const run = (listener: Listener<S>, prev: S, uKeys?: Set<keyof S>) => {
+    const run = (
+      listener: Listener<S>,
+      prev: S,
+      nextState = state,
+      uKeys?: Set<keyof S>,
+    ) => {
       const keys = listenerKeys.get(listener);
       const updated = (k: keyof S) => (uKeys ? uKeys.has(k) : k === key);
       if (!keys || keys.some(updated)) {
         disposables.get(listener)?.();
-        disposables.set(listener, listener(state, prev));
+        disposables.set(listener, listener(nextState, prev));
       }
     };
 
     listeners.forEach((listener) => {
-      run(listener, prevState);
+      if (internalListeners.has(listener)) {
+        if (fromProps) return;
+        run(listener, props[key] !== undefined ? state : prevState, {
+          ...state,
+          [key]: nextValue,
+        });
+        return;
+      }
+      if (isSame) return;
+      run(listener, prevState, state);
     });
 
     queueMicrotask(() => {
@@ -201,11 +272,15 @@ export function createStore<S extends State>(
       // necessary because batch listeners can setState.
       const snapshot = state;
       batchListeners.forEach((listener) => {
-        run(listener, prevStateBatch, updatedKeys);
+        run(listener, prevStateBatch, state, updatedKeys);
       });
       prevStateBatch = snapshot;
       updatedKeys.clear();
     });
+  };
+
+  const setState: Store<S>["setState"] = (key, value) => {
+    return storeSetState(key, value);
   };
 
   const finalStore = {
@@ -214,8 +289,12 @@ export function createStore<S extends State>(
     __unstableInternals: {
       setup: storeSetup,
       init: storeInit,
+      getProps: storeGetProps,
+      setProp: storeSetProp,
+      propSync: storePropSync,
       subscribe: storeSubscribe,
       sync: storeSync,
+      internalSync: storeInternalSync,
       batch: storeBatch,
       pick: storePick,
       omit: storeOmit,
@@ -251,6 +330,46 @@ export function init(store?: Store, ...args: Parameters<StoreInit>) {
   return getInternal(store, "init")(...args);
 }
 
+export function getProps<T extends Store>(
+  store?: T | null,
+): T extends Store ? ReturnType<StoreInternals<T>["getProps"]> : void;
+
+/**
+ * Returns the store props.
+ */
+export function getProps(store?: Store) {
+  if (!store) return;
+  return getInternal(store, "getProps")();
+}
+
+/**
+ * Sets a store prop.
+ */
+export function setProp(
+  store?: Store | null,
+  ...args: Parameters<StoreInternals["setProp"]>
+) {
+  if (!store) return;
+  return getInternal(store, "setProp")(...args);
+}
+
+export function propSync<T extends Store>(
+  store?: T | null,
+  ...args: Parameters<StoreInternals["propSync"]>
+): T extends Store ? ReturnType<StoreInternals["propSync"]> : void;
+
+/**
+ * Registers a listener function that's called immediately and synchronously
+ * whenever the prop store state changes.
+ */
+export function propSync(
+  store?: Store,
+  ...args: Parameters<StoreInternals["propSync"]>
+) {
+  if (!store) return;
+  return getInternal(store, "propSync")(...args);
+}
+
 export function subscribe<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
@@ -276,6 +395,20 @@ export function sync<T extends Store, K extends keyof StoreState<T>>(
 export function sync(store?: Store, ...args: Parameters<StoreSync>) {
   if (!store) return;
   return getInternal(store, "sync")(...args);
+}
+
+export function internalSync<T extends Store, K extends keyof StoreState<T>>(
+  store?: T | null,
+  ...args: Parameters<StoreSync<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
+
+/**
+ * Registers a listener function that's called immediately and synchronously
+ * whenever the internal store state changes.
+ */
+export function internalSync(store?: Store, ...args: Parameters<StoreSync>) {
+  if (!store) return;
+  return getInternal(store, "internalSync")(...args);
 }
 
 export function batch<T extends Store, K extends keyof StoreState<T>>(
