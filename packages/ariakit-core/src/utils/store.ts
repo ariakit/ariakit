@@ -19,6 +19,7 @@ type Sync<S, K extends keyof S> = (
 
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 type StoreInit = () => () => void;
+type StoreSetProp<S = State> = <K extends keyof S>(key: K, value: S[K]) => void;
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
@@ -34,9 +35,8 @@ type StoreOmit<
 interface StoreInternals<S = State> {
   setup: StoreSetup;
   init: StoreInit;
-  getProps: () => Record<keyof any, unknown>;
-  setProp: (key: keyof any, value: unknown) => void;
-  propSync: StoreSync<Record<keyof any, unknown>>;
+  setProp: StoreSetProp<S>;
+  propSync: StoreSync<S>;
   subscribe: StoreSubscribe<S>;
   sync: StoreSync<S>;
   internalSync: StoreSync<S>;
@@ -64,7 +64,7 @@ export function createStore<S extends State>(
   ...stores: Array<Store<Partial<S>> | undefined>
 ): Store<S> {
   let state = initialState;
-  const props = Object.create(null) as Record<keyof any, unknown>;
+  const props = Object.create(null) as S;
 
   let prevStateBatch = state;
   let lastUpdate = Symbol();
@@ -73,7 +73,7 @@ export function createStore<S extends State>(
   const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
-  const propListeners = new Set<Listener<Record<keyof any, unknown>>>();
+  const propListeners = new Set<Listener<S>>();
   const internalListeners = new Set<Listener<S>>();
   const listeners = new Set<Listener<S>>();
   const batchListeners = new Set<Listener<S>>();
@@ -109,9 +109,11 @@ export function createStore<S extends State>(
           if (!storeState) return;
           if (!hasOwnProperty(storeState, key)) return;
           return chain(
-            propSync(store, [key], (state) => {
-              if (state[key] === undefined) return;
-              storeSetProp(key, state[key]!, true);
+            propSync(store, [key], (storeProps) => {
+              if (props[key] === undefined && storeProps[key] === undefined) {
+                return;
+              }
+              storeSetProp(key, storeProps[key]!, true);
             }),
             internalSync(store, [key], (state) => {
               storeSetState(key, state[key]!, true);
@@ -131,19 +133,25 @@ export function createStore<S extends State>(
     return maybeDestroy;
   };
 
-  const storeGetProps = () => props;
-
-  const storeSetProp = (key: keyof any, value: unknown, fromStores = false) => {
-    const same = props[key] === value;
-    props[key] = value;
+  const storeSetProp = <K extends keyof S>(
+    key: K,
+    value: S[K],
+    fromStores = false,
+  ) => {
     if (!hasOwnProperty(state, key)) return;
+
+    const isSameValue = props[key] === value;
+    props[key] = value;
+
     if (!fromStores) {
       stores.forEach((store) => {
         setProp(store, key, value);
       });
     }
-    storeSetState(key, value as SetStateAction<S[keyof S]>, fromStores, true);
-    if (same) return;
+
+    storeSetState(key, value, fromStores, true);
+    if (isSameValue) return;
+
     propListeners.forEach((listener) => {
       disposables.get(listener)?.();
       disposables.set(listener, listener(props, props));
@@ -213,9 +221,6 @@ export function createStore<S extends State>(
 
     const nextValue = applyState(value, state[key]);
 
-    const nextControlledValue =
-      props[key] !== undefined ? (props[key] as S[K]) : nextValue;
-
     if (nextValue === state[key]) return;
 
     if (!fromStores) {
@@ -224,43 +229,44 @@ export function createStore<S extends State>(
       });
     }
 
-    const isSame = nextControlledValue === state[key];
+    const isControlled = props[key] !== undefined;
+    const finalValue = isControlled ? props[key] : nextValue;
+    const isSameValue = finalValue === state[key];
     const prevState = state;
 
-    state = {
-      ...state,
-      [key]: nextControlledValue,
-    };
+    state = { ...state, [key]: finalValue };
 
     const thisUpdate = Symbol();
     lastUpdate = thisUpdate;
     updatedKeys.add(key);
 
-    const run = (
+    const runListener = (
       listener: Listener<S>,
-      prev: S,
-      nextState = state,
-      uKeys?: Set<keyof S>,
+      prevState: S,
+      nextState: S,
+      updatedKeys?: Set<keyof S>,
     ) => {
       const keys = listenerKeys.get(listener);
-      const updated = (k: keyof S) => (uKeys ? uKeys.has(k) : k === key);
-      if (!keys || keys.some(updated)) {
+      const hasKey = (k: keyof S) =>
+        updatedKeys ? updatedKeys.has(k) : k === key;
+      if (!keys || keys.some(hasKey)) {
         disposables.get(listener)?.();
-        disposables.set(listener, listener(nextState, prev));
+        disposables.set(listener, listener(nextState, prevState));
       }
     };
+
+    const internalPrevState = isControlled ? state : prevState;
+    const internalNextState = isControlled
+      ? { ...state, [key]: nextValue }
+      : state;
 
     listeners.forEach((listener) => {
       if (internalListeners.has(listener)) {
         if (fromProps) return;
-        run(listener, props[key] !== undefined ? state : prevState, {
-          ...state,
-          [key]: nextValue,
-        });
-        return;
+        return runListener(listener, internalPrevState, internalNextState);
       }
-      if (isSame) return;
-      run(listener, prevState, state);
+      if (isSameValue) return;
+      runListener(listener, prevState, state);
     });
 
     queueMicrotask(() => {
@@ -272,7 +278,7 @@ export function createStore<S extends State>(
       // necessary because batch listeners can setState.
       const snapshot = state;
       batchListeners.forEach((listener) => {
-        run(listener, prevStateBatch, state, updatedKeys);
+        runListener(listener, prevStateBatch, state, updatedKeys);
       });
       prevStateBatch = snapshot;
       updatedKeys.clear();
@@ -289,7 +295,6 @@ export function createStore<S extends State>(
     __unstableInternals: {
       setup: storeSetup,
       init: storeInit,
-      getProps: storeGetProps,
       setProp: storeSetProp,
       propSync: storePropSync,
       subscribe: storeSubscribe,
@@ -330,42 +335,28 @@ export function init(store?: Store, ...args: Parameters<StoreInit>) {
   return getInternal(store, "init")(...args);
 }
 
-export function getProps<T extends Store>(
-  store?: T | null,
-): T extends Store ? ReturnType<StoreInternals<T>["getProps"]> : void;
-
-/**
- * Returns the store props.
- */
-export function getProps(store?: Store) {
-  if (!store) return;
-  return getInternal(store, "getProps")();
-}
-
 /**
  * Sets a store prop.
  */
-export function setProp(
-  store?: Store | null,
-  ...args: Parameters<StoreInternals["setProp"]>
+export function setProp<T extends Store, K extends keyof StoreState<T>>(
+  store: T | null | undefined,
+  key: K,
+  value: StoreState<T>[K],
 ) {
   if (!store) return;
-  return getInternal(store, "setProp")(...args);
+  return getInternal(store, "setProp")(key as string, value);
 }
 
-export function propSync<T extends Store>(
+export function propSync<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
-  ...args: Parameters<StoreInternals["propSync"]>
-): T extends Store ? ReturnType<StoreInternals["propSync"]> : void;
+  ...args: Parameters<StoreSync<StoreState<T>, K>>
+): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
 
 /**
  * Registers a listener function that's called immediately and synchronously
- * whenever the prop store state changes.
+ * whenever setProp is called on the store.
  */
-export function propSync(
-  store?: Store,
-  ...args: Parameters<StoreInternals["propSync"]>
-) {
+export function propSync(store?: Store, ...args: Parameters<StoreSync>) {
   if (!store) return;
   return getInternal(store, "propSync")(...args);
 }
