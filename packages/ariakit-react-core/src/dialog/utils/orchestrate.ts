@@ -1,6 +1,10 @@
 const cleanups = new WeakMap<Element, Map<string, () => void>>();
 
-function orchestrate(element: Element, key: string, setup: () => () => void) {
+export function orchestrate(
+  element: Element,
+  key: string,
+  setup: () => () => void,
+) {
   if (!cleanups.has(element)) {
     cleanups.set(element, new Map());
   }
