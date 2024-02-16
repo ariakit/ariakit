@@ -79,7 +79,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   // the same state. In this way, we can control the parent menu store from
   // within this component.
   const context = Ariakit.useMenuContext();
-  // TODO: Degraded performance
   const menu = Ariakit.useMenuStore({ store: context });
   // Get the menu element rendered by the parent component (contentElement) and
   // use it as the portal element for this menu's contents.

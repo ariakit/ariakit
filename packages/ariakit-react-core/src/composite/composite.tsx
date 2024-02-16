@@ -7,11 +7,7 @@ import type {
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
-import {
-  getActiveElement,
-  isPartiallyHidden,
-  isTextField,
-} from "@ariakit/core/utils/dom";
+import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import {
   fireBlurEvent,
   fireKeyboardEvent,
@@ -167,7 +163,6 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!focusOnMove) return;
       const itemElement = getEnabledItem(store, focusedId)?.element;
       if (!itemElement) return;
-      if (hasFocus(itemElement) && !isPartiallyHidden(itemElement)) return;
       focusIntoView(itemElement);
     }, [store, moves, focusedId, composite, focusOnMove]);
 
