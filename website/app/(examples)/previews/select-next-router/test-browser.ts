@@ -40,6 +40,7 @@ test("select a language from the dropdown using the keyboard", async ({
   page,
 }) => {
   const q = query(page);
+  await page.click("body", { position: { x: 1, y: 1 } });
   await page.keyboard.press("Tab");
   await expect(q.combobox("Language")).toBeFocused();
   await page.keyboard.press("Enter");
@@ -126,6 +127,7 @@ test("select statuses by opening link in a new tab with the keyboard", async ({
   const q = query(page);
   const modifier = await getNewTabModifier(page);
 
+  await page.click("body", { position: { x: 1, y: 1 } });
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await expect(q.combobox("Status")).toBeFocused();
