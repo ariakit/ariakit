@@ -164,6 +164,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   tabId?: string | null;
 }

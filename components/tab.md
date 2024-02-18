@@ -21,6 +21,7 @@ Display one panel of content at a time with a tabbed interface. This component i
 
 - [](/examples/tab-react-router)
 - [](/examples/tab-next-router)
+- [](/examples/tab-panel-animated)
 
 </div>
 

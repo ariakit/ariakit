@@ -177,6 +177,9 @@ export interface TabStoreFunctions
   setSelectedId: SetState<TabStoreState["selectedId"]>;
   /**
    * A collection store containing the tab panels.
+   *
+   * Live examples:
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
   /**
@@ -211,6 +214,7 @@ export interface TabStoreOptions
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }

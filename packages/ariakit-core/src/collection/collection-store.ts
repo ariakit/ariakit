@@ -290,6 +290,9 @@ export interface CollectionStoreFunctions<
   renderItem: BivariantCallback<(item: T) => () => void>;
   /**
    * Gets an item by its id.
+   *
+   * Live examples:
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    * @example
    * const item = store.item("item-1");
    */
