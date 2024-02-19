@@ -68,17 +68,28 @@ This can be implemented inside our custom `TabPanel` component by following thes
 
 ## Setting up the CSS transition
 
+<aside data-type="note" title="CSS nesting">
+
+For clarity, the following code examples use [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting), which is currently supported in all modern browsers.
+
+</aside>
+
 We apply transitions to both the [`opacity`](https://developer.mozilla.org/en-US/docs/Web/CSS/opacity) and the [`translate`](https://developer.mozilla.org/en-US/docs/Web/CSS/translate) properties.
 
-Instead of directly applying the transition to `.tab-panel`, which would trigger the transition when the tab panel is first rendered, we target the tab panels only when a tab panel with the `data-was-open` attribute already exists. This attribute is only assigned when the active tab changes, thereby effectively ignoring the initial render:
+Instead of directly applying the transition effects to `.tab-panel`, which would trigger the transition when the tab panel is first rendered, we target the tab panels only when a tab panel with the `data-was-open` attribute already exists. This attribute is only assigned when the active tab changes, thereby effectively ignoring the initial render:
 
-```css
-:has(> [data-was-open]) > .tab-panel {
+```css {3-5,8-11}
+.tab-panel {
+  /* Transition setup */
   transition-property: opacity, translate;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
-  opacity: 0;
-  translate: -100%;
+
+  /* Default opacity/sliding effect (from/to the left) */
+  :has(> [data-was-open]) > & {
+    opacity: 0;
+    translate: -100%;
+  }
 }
 ```
 
@@ -86,9 +97,23 @@ Instead of directly applying the transition to `.tab-panel`, which would trigger
 
 We can use the [subsequent-sibling combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Subsequent-sibling_combinator) (`~`) to select tab panels that come after the most recently opened tab panel. This lets us slide the tab panels from or to the right side:
 
-```css
-:is([data-was-open], [data-open]) ~ .tab-panel {
-  translate: 100%;
+```css {14-16}
+.tab-panel {
+  /* Transition setup */
+  transition-property: opacity, translate;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+
+  /* Default opacity/sliding effect (from/to the left) */
+  :has(> [data-was-open]) > & {
+    opacity: 0;
+    translate: -100%;
+  }
+
+  /* Sliding from/to the right */
+  :is([data-was-open], [data-open]) ~ & {
+    translate: 100%;
+  }
 }
 ```
 
@@ -96,12 +121,31 @@ The `data-open` attribute is automatically assigned to the active tab panel by A
 
 ## Defining the enter transition
 
-With the [`[data-enter]`](/guide/styling#data-enter) selector, we can establish the final state of the tab panel as it enters the viewport. Using the `!important` keyword might be necessary to override previous rules that have higher specificity:
+With the [`[data-enter]`](/guide/styling#data-enter) selector, we can establish the final state of the tab panel as it enters the viewport:
 
-```css
-.tab-panel[data-enter] {
-  opacity: 100% !important;
-  translate: 0 !important;
+```css {19-22}
+.tab-panel {
+  /* Transition setup */
+  transition-property: opacity, translate;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+
+  /* Default opacity/sliding effect (from/to the left) */
+  :has(> [data-was-open]) > & {
+    opacity: 0;
+    translate: -100%;
+  }
+
+  /* Sliding from/to the right */
+  :is([data-was-open], [data-open]) ~ & {
+    translate: 100%;
+  }
+
+  /* Enter state */
+  &[data-enter] {
+    opacity: 100%;
+    translate: 0;
+  }
 }
 ```
 
@@ -109,10 +153,78 @@ With the [`[data-enter]`](/guide/styling#data-enter) selector, we can establish 
 
 Finally, we need to adjust the tab panels' position to prevent them from stacking on top of each other when they're exiting. We can use the `:not()` pseudo-class in combination with the [`[data-open]`](/guide/styling#data-open) selector to _synchronously_ style the exiting tab panel with an absolute position:
 
-```css
-.tab-panel:not([data-open]) {
-  position: absolute;
-  top: 0px;
+```css {25-28}
+.tab-panel {
+  /* Transition setup */
+  transition-property: opacity, translate;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+
+  /* Default opacity/sliding effect (from/to the left) */
+  :has(> [data-was-open]) > & {
+    opacity: 0;
+    translate: -100%;
+  }
+
+  /* Sliding from/to the right */
+  :is([data-was-open], [data-open]) ~ & {
+    translate: 100%;
+  }
+
+  /* Enter state */
+  &[data-enter] {
+    opacity: 100%;
+    translate: 0;
+  }
+
+  /* Prevent stacking */
+  &:not([data-open]) {
+    position: absolute;
+    top: 0px;
+  }
+}
+```
+
+## Supporting reduced motion
+
+The [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media feature is used to figure out if the user has requested the system to lessen the animation or motion it uses. This might be helpful for users with motion sensitivity or those who prefer a more static user interface.
+
+We can completely disable the transition when the `prefers-reduced-motion` media feature is set:
+
+```css {31-33}
+.tab-panel {
+  /* Transition setup */
+  transition-property: opacity, translate;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+
+  /* Default opacity/sliding effect (from/to the left) */
+  :has(> [data-was-open]) > & {
+    opacity: 0;
+    translate: -100%;
+  }
+
+  /* Sliding from/to the right */
+  :is([data-was-open], [data-open]) ~ & {
+    translate: 100%;
+  }
+
+  /* Enter state */
+  &[data-enter] {
+    opacity: 100%;
+    translate: 0;
+  }
+
+  /* Prevent stacking */
+  &:not([data-open]) {
+    position: absolute;
+    top: 0px;
+  }
+
+  /* Respect user's preference */
+  @media (prefers-reduced-motion) {
+    transition: none;
+  }
 }
 ```
 

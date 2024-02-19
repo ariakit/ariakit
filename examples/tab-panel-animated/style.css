@@ -43,6 +43,8 @@
     /* transition setup */
     transition-[opacity,translate]
     duration-300
+    /* prefers-reduced-motion */
+    motion-reduce:[transition:none]
     /* initial transition state, ignores initial render */
     [:has(>[data-was-open])>&]:opacity-0
     [:has(>[data-was-open])>&]:[translate:-100%]
