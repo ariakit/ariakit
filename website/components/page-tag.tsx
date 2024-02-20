@@ -17,7 +17,7 @@ export function PageTag({ tag, className, ...props }: PageTagProps) {
       render={<Link href={`/tags/${getTagSlug(tag)}`} {...props} />}
       className={twJoin(
         "whitespace-nowrap rounded-full border-2 border-transparent bg-gray-150 p-1.5 px-3.5 text-sm font-medium text-black/90 hover:bg-gray-250",
-        "dark:border dark:border-gray-650 dark:bg-gray-850 dark:p-2 dark:px-4 dark:text-white/90 dark:hover:border-gray-550 hover:dark:bg-gray-750",
+        "dark:border dark:border-gray-650 dark:bg-gray-850 dark:p-2 dark:px-4 dark:text-white/80 dark:hover:border-gray-550 hover:dark:bg-gray-750",
         "focus-visible:ariakit-outline-input",
         className,
       )}
