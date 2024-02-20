@@ -470,9 +470,9 @@ export const HeaderMenuItem = forwardRef<HTMLDivElement, HeaderMenuItemProps>(
                 "flex h-16 w-16 flex-none items-center justify-center rounded-sm",
                 "bg-gray-150 dark:bg-gray-800",
                 !plus &&
-                  "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/70",
+                  "group-active-item:bg-black/[7.5%] dark:group-active-item:bg-black/45",
                 !plus &&
-                  "group-active:bg-black/[7.5%] dark:group-active:bg-black/70",
+                  "group-active:bg-black/[7.5%] dark:group-active:bg-black/45",
               )}
             >
               {thumbnail}

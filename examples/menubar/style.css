@@ -21,7 +21,7 @@
     [.menubar:not(:focus-within)_&]:text-inherit
     [.menubar:not(:focus-within)_&]:hover:bg-blue-200/40
     [.menubar:not(:focus-within)_&]:hover:dark:bg-blue-600/40
-    [.menubar:not(:focus-within)_&]:aria-expanded:bg-black/10
+    [.menubar:not(:focus-within)_&]:aria-expanded:bg-black/[7.5%]
     [.menubar:not(:focus-within)_&]:aria-expanded:dark:bg-white/10
     focus:text-white
     focus:bg-blue-600
@@ -41,7 +41,7 @@
 .menu-item {
   @apply
     [.menu:not(:focus-within)_&]:aria-expanded:text-current
-    [.menu:not(:focus-within)_&]:aria-expanded:bg-black/10
+    [.menu:not(:focus-within)_&]:aria-expanded:bg-black/[7.5%]
     [.menu:not(:focus-within)_&]:aria-expanded:dark:bg-white/10
   ;
 }

@@ -52,7 +52,7 @@ const style = {
     text-xs text-black/70 dark:text-white/70
     rounded-full
     bg-gray-150 dark:bg-gray-850
-    group-active-item:bg-black/5 dark:group-active-item:bg-black/70
+    group-active-item:bg-black/5 dark:group-active-item:bg-black/45
   `,
   separator: tw`
     w-full my-1.5 h-0

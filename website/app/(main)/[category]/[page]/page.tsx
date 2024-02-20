@@ -139,7 +139,7 @@ export default async function Page({ params }: PageProps) {
         className={twJoin(
           "flex h-14 w-14 items-center justify-center overflow-hidden rounded bg-gray-150 dark:bg-gray-850",
           !isNextPagePlus &&
-            "group-hover:bg-black/[7.5%] dark:group-hover:bg-black/80",
+            "group-hover:bg-black/[7.5%] dark:group-hover:bg-black/45",
         )}
       >
         {getPageIcon(nextPage.category, nextPage.slug) || <span />}

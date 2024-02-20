@@ -15,6 +15,7 @@
     h-auto
     gap-3
     p-4
+    active:p-4
   ;
 }
 

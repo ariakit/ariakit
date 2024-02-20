@@ -20,8 +20,8 @@
     dark:text-white
     bg-white
     hover:bg-gray-50
-    dark:bg-black/70
-    dark:hover:bg-black
+    dark:bg-gray-900
+    dark:hover:bg-gray-950
     outline-1
     data-[active-item]:outline-2
     outline-offset-[-1px]

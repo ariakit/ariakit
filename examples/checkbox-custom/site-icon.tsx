@@ -14,7 +14,7 @@ export default function Icon() {
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </div>
-            <div className="h-2 w-16 bg-black/50 dark:bg-white/50" />
+            <div className="h-2 w-16 rounded-sm bg-black/40 dark:bg-white/50" />
           </div>
         </div>
       </foreignObject>

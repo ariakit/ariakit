@@ -107,7 +107,7 @@
     cursor-default
     items-center
     rounded-lg
-    data-[active-item]:bg-black/10
+    data-[active-item]:bg-black/[7.5%]
     data-[active-item]:dark:bg-white/10
   ;
 }

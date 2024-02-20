@@ -1,6 +1,6 @@
 .DialogOverlay {
   @apply
-    bg-black/[44%]
+    bg-black/40
     fixed
     inset-0
     z-50

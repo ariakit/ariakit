@@ -46,7 +46,10 @@ export function generateMetadata() {
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning className={GeistSans.className}>
-      <body suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className="m-0 bg-gray-50 p-0 text-black antialiased dark:bg-gray-800 dark:text-white"
+      >
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         <script dangerouslySetInnerHTML={{ __html: dblClickWorkaround }} />
         {children}

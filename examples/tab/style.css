@@ -35,7 +35,7 @@
     whitespace-nowrap
     aria-disabled:opacity-50
     active:pt-0.5
-    hover:bg-black/10
+    hover:bg-black/[7.5%]
     dark:hover:bg-white/10
     aria-selected:bg-blue-600
     aria-selected:text-white

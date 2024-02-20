@@ -28,7 +28,7 @@
     outline-none
     whitespace-nowrap
     transition-[background-color]
-    aria-expanded:bg-black/10
+    aria-expanded:bg-black/[7.5%]
     dark:aria-expanded:bg-white/10
     hover:bg-black/5
     dark:hover:bg-white/5
