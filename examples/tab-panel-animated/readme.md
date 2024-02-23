@@ -232,6 +232,7 @@ We can completely disable the transition when the `prefers-reduced-motion` media
 
 <div data-cards="examples">
 
+- [](/examples/disclosure-animated)
 - [](/examples/combobox-animated)
 - [](/examples/dialog-animated)
 - [](/examples/select-animated)

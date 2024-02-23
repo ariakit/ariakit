@@ -8,7 +8,6 @@
     dark:bg-gray-700
     [box-shadow:0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_-1px_rgb(0_0_0/0.1)]
     dark:[box-shadow:0_1px_3px_0_rgb(0_0_0/0.25),0_1px_2px_-1px_rgb(0_0_0_/0.1)]
-  ;
 }
 
 .button {
@@ -29,15 +28,24 @@
     outline-2
     -outline-offset-2
     outline-blue-600
-  ;
+    justify-between
+    [&>svg]:transition-[rotate]
+    [&>svg]:aria-expanded:[rotate:180deg]
+}
+
+.content-wrapper {
+  @apply
+    grid
+    grid-rows-[0fr]
+    transition-[grid-template-rows]
+    duration-200
+    data-[enter]:grid-rows-[1fr]
+    *:overflow-hidden
+    *:p-0
 }
 
 .content {
   @apply
-    flex
-    flex-col
     p-4
     pt-0
-    gap-4
-  ;
 }
