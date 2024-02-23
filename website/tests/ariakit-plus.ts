@@ -234,13 +234,13 @@ for (const plan of ["month", "year"] as const) {
   });
 }
 
-test("puschase Plus from /plus, sign out, sign in again, and access the billing page", async ({
+test("purchase Plus from /plus, sign out, sign in again, and access the billing page", async ({
   page,
 }) => {
   test.setTimeout(80_000);
 
   const q = query(page);
-  await page.goto("/plus", { waitUntil: "networkidle" });
+  await page.goto("/plus");
 
   await q.link("Buy now").click();
   const email = generateUserEmail();
@@ -280,7 +280,7 @@ test("puschase Plus from /plus, sign out, sign in again, and access the billing 
   await expect(nq.text("Ariakit Plus")).toBeVisible();
 });
 
-test("puschase Plus from /components, sign out, sign in again, and access the billing page", async ({
+test("purchase Plus from /components, sign out, sign in again, and access the billing page", async ({
   page,
 }) => {
   test.setTimeout(80_000);

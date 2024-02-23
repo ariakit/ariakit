@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Animated Disclosure",
+    type: "page",
+    href: "/examples/disclosure-animated",
+    dateTime: "2024-02-23T12:36Z",
+  },
+  {
     title: "New example: Animated TabPanel",
     type: "page",
     href: "/examples/tab-panel-animated",
