@@ -51,8 +51,8 @@ For more information, refer to the [Styling](/guide/styling) guide.
 - [](/examples/combobox-filtering)
 - [](/examples/dialog-combobox-command-menu)
 - [](/examples/dialog-animated)
-- [](/examples/dialog-framer-motion)
-- [](/examples/menu-framer-motion)
-- [](/examples/tooltip-framer-motion)
+- [](/examples/disclosure-animated)
+- [](/examples/select-animated)
+- [](/examples/tab-panel-animated)
 
 </div>

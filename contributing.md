@@ -213,7 +213,6 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
     bg-red-600
     text-white
     dark:bg-red-800
-  ;
 }
 ```
 
@@ -302,7 +301,6 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 .my-component {
   @apply
     p-4
-  ;
 }
 ```
 

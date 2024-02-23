@@ -15,6 +15,14 @@ Click a button to either [`show`](/reference/use-disclosure-store#show) (expand,
 
 <a href="../examples/disclosure/index.tsx" data-playground>Example</a>
 
+## Examples
+
+<div data-cards="examples">
+
+- [](/examples/disclosure-animated)
+
+</div>
+
 ## API
 
 ```jsx

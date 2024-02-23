@@ -8,8 +8,8 @@ export default function Icon() {
               <div className="h-full w-px bg-black/70 dark:bg-white/70" />
             </div>
             <div className="mx-auto flex justify-center gap-1.5">
-              <div className="-mt-2 h-16 w-px bg-black/[55%] dark:bg-white/30" />
-              <div className="h-20 w-px bg-black/[55%] dark:bg-white/30" />
+              <div className="-mt-2 h-16 w-px bg-black/55 dark:bg-white/30" />
+              <div className="h-20 w-px bg-black/55 dark:bg-white/30" />
               <div className="mx-auto flex w-20 flex-col gap-2 rounded-sm border border-black/25 bg-white p-3 shadow dark:border-white/[15%] dark:bg-gray-600 dark:shadow-dark">
                 <div className="h-1.5 w-12 bg-black/[45%] dark:bg-white/60" />
                 <div className="h-1.5 w-8 bg-blue-600 dark:bg-blue-500" />
@@ -17,8 +17,8 @@ export default function Icon() {
                 <div className="h-1.5 w-6 bg-black/[45%] dark:bg-white/60" />
                 <div className="h-1.5 w-8 bg-black/[45%] dark:bg-white/60" />
               </div>
-              <div className="h-20 w-px bg-black/[55%] dark:bg-white/30" />
-              <div className="-mt-2 h-16 w-px bg-black/[55%] dark:bg-white/30" />
+              <div className="h-20 w-px bg-black/55 dark:bg-white/30" />
+              <div className="-mt-2 h-16 w-px bg-black/55 dark:bg-white/30" />
             </div>
           </div>
         </div>
