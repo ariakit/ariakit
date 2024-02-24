@@ -85,10 +85,10 @@ export function HeaderAriakitPlus() {
       <SignedIn>
         <MenuProvider placement="bottom-end">
           <MenuButton
-            className="px-3 text-sm"
-            render={<Command variant="plus" />}
+            className="px-3"
+            render={<Command flat variant="secondary" />}
           >
-            <span className="font-semibold">Plus</span>
+            Plus
             <MenuButtonArrow className="hidden md:block" />
           </MenuButton>
           <Menu
