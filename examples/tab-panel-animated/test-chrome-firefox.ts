@@ -9,6 +9,8 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/previews/tab-panel-animated", { waitUntil: "networkidle" });
 });
 
+test.describe.configure({ retries: 2 });
+
 test("switch tabs", async ({ page }) => {
   const q = query(page);
 

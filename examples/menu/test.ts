@@ -239,3 +239,10 @@ test("typeahead", async () => {
   await type("re");
   expect(q.menuitem("Report")).toHaveFocus();
 });
+
+test("https://github.com/ariakit/ariakit/issues/3342", async () => {
+  const button = q.button.ensure("Actions");
+  await click(button);
+  const nextSibling = button.nextElementSibling;
+  expect(nextSibling).toBe(q.menu()?.parentElement);
+});

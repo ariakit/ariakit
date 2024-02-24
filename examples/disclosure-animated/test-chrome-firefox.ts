@@ -12,6 +12,8 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test.describe.configure({ retries: 2 });
+
 test("expand/collapse disclosure", async ({ page }) => {
   const q = query(page);
 

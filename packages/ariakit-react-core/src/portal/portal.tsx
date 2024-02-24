@@ -122,6 +122,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
 
   // Create the anchor portal node and attach it to the DOM.
   useSafeLayoutEffect(() => {
+    if (!portal) return;
     if (!preserveTabOrder) return;
     if (!preserveTabOrderAnchor) return;
     const doc = getDocument(preserveTabOrderAnchor);
@@ -133,7 +134,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       element.remove();
       setAnchorPortalNode(null);
     };
-  }, [preserveTabOrder, preserveTabOrderAnchor]);
+  }, [portal, preserveTabOrder, preserveTabOrderAnchor]);
 
   // When preserveTabOrder is true, make sure elements inside the portal
   // element are tabbable only when the portal has already been focused,
