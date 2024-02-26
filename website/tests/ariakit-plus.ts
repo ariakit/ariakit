@@ -15,7 +15,8 @@ function query(locator: Pick<Page, "getByRole" | "getByText">) {
       locator.getByRole("combobox", { name }),
     button: (name: string | RegExp) => locator.getByRole("button", { name }),
     link: (name: string | RegExp) => locator.getByRole("link", { name }),
-    textbox: (name: string | RegExp) => locator.getByRole("textbox", { name }),
+    textbox: (name: string | RegExp, exact = false) =>
+      locator.getByRole("textbox", { name, exact }),
     menuitem: (name: string | RegExp) =>
       locator.getByRole("menuitem", { name }),
   };
@@ -54,7 +55,9 @@ interface AuthOptions {
 
 async function fillAuth(page: Page, options: AuthOptions = {}) {
   const q = query(page);
-  await q.textbox("Email address").fill(options.email || generateUserEmail());
+  await q
+    .textbox("Email address", true)
+    .fill(options.email || generateUserEmail());
   await q.textbox("Password").fill(options.password || DEFAULT_PASSWORD);
   await page.keyboard.press("Enter");
 }
@@ -203,7 +206,7 @@ for (const plan of ["month", "year"] as const) {
     const price = await getDisplayedPrice(page);
 
     await q.link("Buy now").click();
-    await q.textbox("Email address").click();
+    await q.textbox("Email address", true).click();
     await q.link("Sign in").first().click();
 
     const email = generateUserEmail();

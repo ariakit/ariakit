@@ -55,30 +55,36 @@ export function HeaderAriakitPlus() {
   return (
     <>
       <ClerkLoading>
-        <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 dark:bg-white/10 sm:w-28" />
+        <div className="mx-2 h-6 w-10 animate-pulse rounded bg-black/10 dark:bg-white/10 sm:mx-3 sm:w-28" />
       </ClerkLoading>
       <SignedOut>
         {segments.length === 1 && segments.includes("plus") ? (
           <Suspense>
-            <Command variant="plus" className="px-3" render={<SignInLink />}>
+            <Command
+              flat
+              variant="secondary"
+              className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
+              render={<SignInLink />}
+            >
               Sign in
             </Command>
           </Suspense>
         ) : (
           <Button
-            className="text-sm max-sm:px-3"
+            className="max-sm:px-3"
             aria-label="Unlock Ariakit Plus"
             render={
               <Command
-                variant="plus"
+                flat
+                variant="secondary"
                 render={<Link href="/plus" scroll={false} />}
               />
             }
           >
             <span className="hidden sm:inline">
-              Unlock <span className="font-semibold">Ariakit Plus</span>
+              Unlock <span className="font-medium">Ariakit Plus</span>
             </span>
-            <span className="inline font-semibold sm:hidden">Plus</span>
+            <span className="inline font-medium sm:hidden">Plus</span>
           </Button>
         )}
       </SignedOut>
@@ -89,7 +95,7 @@ export function HeaderAriakitPlus() {
             render={<Command flat variant="secondary" />}
           >
             Plus
-            <MenuButtonArrow className="hidden md:block" />
+            <MenuButtonArrow className="hidden md:block [&>svg]:stroke-[1pt]" />
           </MenuButton>
           <Menu
             gutter={4}
