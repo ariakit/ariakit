@@ -17,7 +17,7 @@ function Button(props: DefaultProps & { colored?: boolean }) {
     <span
       className={twMerge(
         "flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-white px-4 py-2 text-base text-black",
-        "dark:bg-gray-750 dark:text-white",
+        "dark:bg-white/5 dark:text-white",
         "[--border:rgba(0,0,0,0.1)] [--highlight:rgba(255,255,255,0.2)] [--shadow:rgba(0,0,0,0.1)]",
         "dark:[--border:rgba(255,255,255,0.1)] dark:[--highlight:rgba(255,255,255,0.05)] dark:[--shadow:rgba(0,0,0,0.25)]",
         "[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--highlight),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]",
@@ -150,6 +150,7 @@ function LinkBox(
           {props.children}
         </div>
 
+        <span className="absolute inset-0 block bg-gray-150/10 dark:bg-gray-850/15" />
         <span className="absolute inset-0 block text-gray-150 [background:linear-gradient(-172deg,transparent_calc(100%-7rem),currentColor_calc(100%-4rem))] [box-shadow:inset_0_-1rem_2rem_0.25rem_currentColor,inset_0_0_1rem_1rem_currentColor] dark:text-gray-850" />
       </span>
       <span className="isolate mt-auto">
@@ -204,7 +205,7 @@ function Dialogs() {
         </Popup>
         <Popup
           layer={3}
-          className="absolute top-[136px] w-[calc(100%-5rem)] gap-2 p-4"
+          className="absolute top-[136px] w-[calc(100%-5rem)] gap-2 p-4 dark:[--border-color:rgb(255_255_255/0.18)]"
         >
           <span className="font-medium">Delete user</span>
           <span className="text-sm">
@@ -242,7 +243,7 @@ function Dropdowns() {
           <ChevronDown className="size-5" />
         </Button>
         <Popup>
-          <MenuItem className="grid grid-cols-[max-content,1fr] items-center gap-4 py-3">
+          <MenuItem className="grid grid-cols-[max-content_1fr_max-content] items-center gap-4 py-3">
             <Avatar color="pink">H</Avatar>
             <span className="grid text-sm">
               <span>Harry Poe</span>
@@ -251,15 +252,18 @@ function Dropdowns() {
           </MenuItem>
           <MenuItem
             active
-            className="grid grid-cols-[max-content,1fr] items-center gap-4 py-3"
+            className="grid grid-cols-[max-content_1fr_max-content] items-center gap-4 py-3"
           >
             <Avatar color="teal">J</Avatar>
             <span className="grid text-sm">
               <span>John Doe</span>
               <span className="opacity-60">john@email.com</span>
             </span>
+            <span className="grid size-5 place-items-center">
+              <Check className="size-4" />
+            </span>
           </MenuItem>
-          <MenuItem className="grid grid-cols-[max-content,1fr] items-center gap-4 py-3">
+          <MenuItem className="grid grid-cols-[max-content_1fr_max-content] items-center gap-4 py-3">
             <Avatar color="blue">J</Avatar>
             <span className="grid text-sm">
               <span>Jane Doe</span>
@@ -334,7 +338,7 @@ function Search() {
           <Close className="mx-1 size-4" />
         </Input>
         <Popup className="">
-          <span className="relative mb-1 flex gap-2 overflow-hidden *:whitespace-nowrap">
+          <span className="relative mb-0.5 flex gap-2 overflow-hidden *:whitespace-nowrap">
             <MenuItem className="bg-gray-150 ring-1 ring-inset ring-black/15 dark:bg-gray-800 dark:ring-white/15">
               All
             </MenuItem>
@@ -489,7 +493,7 @@ function More() {
 
 export function HomeTagsGrid() {
   return (
-    <div className="mx-auto mb-16 grid max-w-6xl auto-rows-[minmax(380px,1fr)] grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-2 px-3 *:rounded-2xl max-sm:snap-x max-sm:snap-mandatory max-sm:auto-cols-[minmax(320px,1fr)] max-sm:grid-flow-col max-sm:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-sm:overflow-x-auto max-sm:*:snap-center sm:justify-center">
+    <div className="mx-auto grid max-w-6xl auto-rows-[minmax(380px,1fr)] grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-2 px-3 *:rounded-2xl max-sm:snap-x max-sm:snap-mandatory max-sm:auto-cols-[minmax(320px,1fr)] max-sm:grid-flow-col max-sm:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-sm:overflow-x-auto max-sm:*:snap-center sm:justify-center sm:gap-4">
       <Dialogs />
       <FormControls />
       <Dropdowns />
