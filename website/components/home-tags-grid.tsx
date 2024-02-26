@@ -1,7 +1,9 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
+import pageIndex from "build-pages/index.js";
 import { Check } from "icons/check.jsx";
 import { ChevronDown } from "icons/chevron-down.jsx";
+import { Close } from "icons/close.jsx";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 
@@ -83,6 +85,19 @@ function MenuItem(props: DefaultProps & { active?: boolean }) {
   );
 }
 
+function Highlight(props: DefaultProps) {
+  return (
+    <span
+      className={twMerge(
+        "-m-px rounded-sm bg-yellow-300 p-px dark:bg-yellow-900",
+        props.className,
+      )}
+    >
+      {props.children}
+    </span>
+  );
+}
+
 function Separator(props: DefaultProps) {
   return (
     <span
@@ -131,14 +146,17 @@ function LinkBox(
         aria-hidden
         className="absolute inset-0 bottom-6 select-none overflow-hidden"
       >
-        <div className="absolute inset-0 flex origin-center scale-[0.8] place-items-start gap-4 transition-[transform] duration-1000 group-hover:scale-90 max-sm:group-hover:scale-[0.8]">
+        <div className="absolute inset-0 flex origin-center scale-[0.8] place-items-start gap-4 transition-[transform] duration-700 sm:group-hover:scale-90">
           {props.children}
         </div>
 
         <span className="absolute inset-0 block text-gray-150 [background:linear-gradient(-172deg,transparent_calc(100%-7rem),currentColor_calc(100%-4rem))] [box-shadow:inset_0_-1rem_2rem_0.25rem_currentColor,inset_0_0_1rem_1rem_currentColor] dark:text-gray-850" />
       </span>
       <span className="isolate mt-auto">
-        <span id={titleId} className="text-xl font-semibold">
+        <span
+          id={titleId}
+          className="text-xl font-semibold decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] sm:group-hover:underline"
+        >
           {props.title}
         </span>
         <span
@@ -163,7 +181,7 @@ function Dialogs() {
       <span className="relative grid h-full w-full items-start justify-items-center">
         <Popup
           layer={2}
-          className="flex w-full scale-95 flex-col p-0 opacity-40 blur-[1px]"
+          className="flex w-full origin-bottom scale-95 flex-col p-0 opacity-40 blur-[1px] transition-[transform,filter] duration-700 sm:group-hover:scale-[0.8] sm:group-hover:blur-[4px]"
         >
           <span className="grid grid-cols-[1fr,max-content] items-center gap-4 border-b border-black/10 py-3 pl-5 pr-3 text-black/80 dark:border-white/10 dark:text-white/80">
             <span className="truncate">Search for users</span>
@@ -309,16 +327,163 @@ function Search() {
       title="Search"
       description="Combobox, filtering, useTransition"
     >
-      <span className="h-full">
-        <Input className="min-w-[200px] pr-2">
-          10 Downing St
+      <span className="mx-auto grid h-full auto-rows-max items-start gap-2">
+        <Input className="mx-1 pr-2">
+          mar
           <span className="mr-auto h-5 w-px -translate-x-2 bg-current" />
-          <span className="grid size-6 place-items-center rounded bg-black/10 dark:bg-white/10">
-            <ChevronDown className="size-5" />
-          </span>
+          <Close className="mx-1 size-4" />
         </Input>
+        <Popup className="">
+          <span className="relative mb-1 flex gap-2 overflow-hidden *:whitespace-nowrap">
+            <MenuItem className="bg-gray-150 ring-1 ring-inset ring-black/15 dark:bg-gray-800 dark:ring-white/15">
+              All
+            </MenuItem>
+            <MenuItem>Customers</MenuItem>
+            <MenuItem>Invoices</MenuItem>
+          </span>
+          <span className="grid">
+            <span className="px-2 py-2 opacity-60">Customers</span>
+            <MenuItem
+              active
+              className="grid grid-cols-[max-content,1fr] gap-2 px-2"
+            >
+              <Avatar color="teal" className="size-6 text-sm">
+                M
+              </Avatar>
+              <span>
+                <Highlight>Mar</Highlight>
+                ianne Jones
+              </span>
+            </MenuItem>
+            <MenuItem className="grid grid-cols-[max-content,1fr] gap-2 px-2">
+              <Avatar color="blue" className="size-6 text-sm">
+                M
+              </Avatar>
+              <span>
+                <Highlight>Mar</Highlight>
+                tin Prince
+              </span>
+            </MenuItem>
+            <MenuItem className="grid grid-cols-[max-content,1fr] gap-2 px-2">
+              <Avatar color="pink" className="size-6 text-sm">
+                C
+              </Avatar>
+              <span>
+                Carlos <Highlight>Mar</Highlight>x
+              </span>
+            </MenuItem>
+          </span>
+          <Separator />
+          <span className="grid">
+            <span className="px-2 py-2 opacity-60">Invoices</span>
+            <MenuItem className="px-2">
+              347F32B8-008{" "}
+              <span className="rounded bg-green-100 px-1.5 py-0.5 text-sm dark:bg-green-700/30">
+                Paid
+              </span>
+            </MenuItem>
+            <MenuItem className="px-2">
+              217F22B7-0096{" "}
+              <span className="rounded bg-green-100 px-1.5 py-0.5 text-sm dark:bg-green-700/30">
+                Paid
+              </span>
+            </MenuItem>
+            <MenuItem className="px-2">
+              657F21B2-0026{" "}
+              <span className="rounded bg-green-100 px-1.5 py-0.5 text-sm dark:bg-green-700/30">
+                Paid
+              </span>
+            </MenuItem>
+          </span>
+        </Popup>
       </span>
     </LinkBox>
+  );
+}
+
+function NextAppRouter() {
+  return (
+    <LinkBox
+      href="/tags/next-js-app-router"
+      title="Next.js App Router"
+      description="URL state, search params, optimistic updates"
+    >
+      <span className="h-full w-full">
+        <Input className="-ml-44 mt-10 w-max gap-0 rounded-full pr-12 text-black/60 dark:text-white/60">
+          https://ariakit.org/?
+          <span className="text-black dark:text-white">lang</span>=
+          <span className="font-medium text-blue-700 dark:font-normal dark:text-blue-300">
+            en
+          </span>
+          &amp;
+          <span className="text-black dark:text-white">status</span>=
+          <span className="font-medium text-blue-700 dark:font-normal dark:text-blue-300">
+            published
+          </span>
+          &amp;
+          <span className="text-black dark:text-white">status</span>=
+          <span className="font-medium text-blue-700 dark:font-normal dark:text-blue-300">
+            archived
+          </span>
+        </Input>
+        <span className="ml-8 mt-8 flex w-max gap-4">
+          <span className="grid w-max auto-rows-max justify-start gap-2">
+            <Button className="mx-1 w-max pr-3">
+              English <ChevronDown className="size-6" />
+            </Button>
+            <Popup className="w-[180px] *:grid *:grid-cols-[1rem,1fr] *:gap-2 *:px-2">
+              <MenuItem active>
+                <Check className="size-4" />
+                English
+              </MenuItem>
+              <MenuItem>
+                <span />
+                French
+              </MenuItem>
+              <MenuItem>
+                <span />
+                German
+              </MenuItem>
+            </Popup>
+          </span>
+          <span className="mt-8 grid w-max auto-rows-max justify-start gap-2">
+            <Button className="mx-1 w-max pr-3">
+              2 selected <ChevronDown className="size-6" />
+            </Button>
+            <Popup className="w-[200px] *:grid *:grid-cols-[1rem,1fr] *:gap-2 *:px-2">
+              <MenuItem>
+                <span />
+                Draft
+              </MenuItem>
+              <MenuItem active>
+                <Check className="size-4" />
+                Published
+              </MenuItem>
+              <MenuItem>
+                <Check className="size-4" />
+                Archived
+              </MenuItem>
+            </Popup>
+          </span>
+        </span>
+      </span>
+    </LinkBox>
+  );
+}
+
+const examplesCount = pageIndex.examples!.length;
+
+function More() {
+  return (
+    <Link
+      href="/examples"
+      className="group relative flex flex-col items-center justify-center gap-1 overflow-hidden bg-gray-150 p-8 text-xl outline-2 outline-blue-600 focus-visible:outline dark:bg-gray-850"
+    >
+      <span className="text-5xl">{examplesCount}+</span>{" "}
+      <span className="decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] sm:group-hover:underline">
+        examples
+      </span>
+    </Link>
   );
 }
 
@@ -328,14 +493,9 @@ export function HomeTagsGrid() {
       <Dialogs />
       <FormControls />
       <Dropdowns />
-
       <Search />
-
-      <LinkBox
-        href="/tags/next-js-app-router"
-        title="Next.js App Router"
-        description="URL state, search params, optimistic updates"
-      ></LinkBox>
+      <NextAppRouter />
+      <More />
     </div>
   );
 }
