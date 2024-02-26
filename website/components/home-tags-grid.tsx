@@ -18,12 +18,22 @@ function Button(props: DefaultProps & { colored?: boolean }) {
       className={twMerge(
         "flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-white px-4 py-2 text-base text-black",
         "dark:bg-white/5 dark:text-white",
-        "[--border:rgba(0,0,0,0.1)] [--highlight:rgba(255,255,255,0.2)] [--shadow:rgba(0,0,0,0.1)]",
-        "dark:[--border:rgba(255,255,255,0.1)] dark:[--highlight:rgba(255,255,255,0.05)] dark:[--shadow:rgba(0,0,0,0.25)]",
+        "[--border:rgba(0,0,0,0.1)]",
+        "[--highlight:rgba(255,255,255,0.2)]",
+        "[--shadow:rgba(0,0,0,0.1)]",
+        "dark:[--shadow:rgba(0,0,0,0.25)]",
+        "dark:[--border:rgba(255,255,255,0.1)]",
+        "dark:[--highlight:rgba(255,255,255,0.05)]",
         "[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--highlight),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]",
         "dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--highlight)]",
-        props.colored &&
-          "[--border:rgba(0,0,0,0.15)] [--highlight:rgba(255,255,255,0.25)] [--shadow:rgba(0,0,0,0.15)] dark:[--shadow:rgba(0,0,0,0.25)] dark:[--border:rgba(255,255,255,0.25)] dark:[--highlight:rgba(255,255,255,0.1)]",
+        props.colored && [
+          "[--border:rgba(0,0,0,0.15)]",
+          "[--highlight:rgba(255,255,255,0.25)]",
+          "[--shadow:rgba(0,0,0,0.15)]",
+          "dark:[--border:rgba(255,255,255,0.25)]",
+          "dark:[--highlight:rgba(255,255,255,0.1)]",
+          "dark:[--shadow:rgba(0,0,0,0.25)]",
+        ],
         props.className,
       )}
     >
