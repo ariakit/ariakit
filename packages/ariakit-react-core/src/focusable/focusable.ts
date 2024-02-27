@@ -90,6 +90,7 @@ function isNativeTabbable(tagName?: string) {
   if (!tagName) return true;
   return (
     tagName === "button" ||
+    tagName === "summary" ||
     tagName === "input" ||
     tagName === "select" ||
     tagName === "textarea" ||

@@ -1,9 +1,10 @@
 import type { ElementType, MouseEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
+import { Role } from "../role/role.js";
 import {
   useBooleanEvent,
   useEvent,
@@ -12,7 +13,10 @@ import {
 } from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
-import { useDisclosureProviderContext } from "./disclosure-context.js";
+import {
+  DisclosureDetailsContext,
+  useDisclosureProviderContext,
+} from "./disclosure-context.js";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 const TagName = "button" satisfies ElementType;
@@ -44,6 +48,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
+    const inDetails = useContext(DisclosureDetailsContext);
     const [expanded, setExpanded] = useState(false);
     const disclosureElement = store.useState("disclosureElement");
     const open = store.useState("open");
@@ -54,12 +59,12 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     // content is open.
     useEffect(() => {
       let isCurrentDisclosure = disclosureElement === ref.current;
-      if (!disclosureElement?.isConnected) {
+      if (!disclosureElement?.isConnected || inDetails) {
         store?.setDisclosureElement(ref.current);
         isCurrentDisclosure = true;
       }
       setExpanded(open && isCurrentDisclosure);
-    }, [disclosureElement, store, open]);
+    }, [disclosureElement, inDetails, store, open]);
 
     const onClickProp = props.onClick;
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
@@ -70,6 +75,9 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
       if (!toggleOnClickProp(event)) return;
+      if (inDetails) {
+        event.preventDefault();
+      }
       store?.setDisclosureElement(event.currentTarget);
       store?.toggle();
     });
@@ -82,6 +90,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
       ...metadataProps,
       ...props,
       ref: useMergeRefs(ref, props.ref),
+      render: inDetails ? <Role.summary render={props.render} /> : props.render,
       onClick,
     };
 

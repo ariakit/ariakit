@@ -1,5 +1,8 @@
+import { createContext } from "react";
 import { createStoreContext } from "../utils/system.js";
 import type { DisclosureStore } from "./disclosure-store.js";
+
+export const DisclosureDetailsContext = createContext(false);
 
 const ctx = createStoreContext<DisclosureStore>();
 

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { flushSync } from "react-dom";
@@ -12,7 +12,10 @@ import {
 import { useStoreState } from "../utils/store.js";
 import { createElement, createHook, forwardRef } from "../utils/system.jsx";
 import type { Options, Props } from "../utils/types.js";
-import { useDisclosureProviderContext } from "./disclosure-context.jsx";
+import {
+  DisclosureDetailsContext,
+  useDisclosureProviderContext,
+} from "./disclosure-context.jsx";
 import type { DisclosureStore } from "./disclosure-store.js";
 
 const TagName = "div" satisfies ElementType;
@@ -80,6 +83,7 @@ export const useDisclosureContent = createHook<
 
   const ref = useRef<HTMLType>(null);
   const id = useId(props.id);
+  const inDetails = useContext(DisclosureDetailsContext);
   const [transition, setTransition] = useState<TransitionState>(null);
   const open = store.useState("open");
   const mounted = store.useState("mounted");
@@ -206,14 +210,17 @@ export const useDisclosureContent = createHook<
   props = useWrapElement(
     props,
     (element) => (
-      <DialogScopedContextProvider value={store}>
-        {element}
-      </DialogScopedContextProvider>
+      // Reset details context in case there are nested details elements
+      <DisclosureDetailsContext.Provider value={false}>
+        <DialogScopedContextProvider value={store}>
+          {element}
+        </DialogScopedContextProvider>
+      </DisclosureDetailsContext.Provider>
     ),
     [store],
   );
 
-  const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+  const hidden = isHidden(mounted, props.hidden, alwaysVisible || inDetails);
   const styleProp = props.style;
   const style = useMemo(() => {
     if (hidden) return { ...styleProp, display: "none" };

@@ -34,8 +34,13 @@ export const useButton = createHook<TagName, ButtonOptions>(
       setIsNativeButton(isButton(ref.current));
     }, []);
 
+    const role =
+      !isNativeButton && tagName !== "a" && tagName !== "summary"
+        ? "button"
+        : undefined;
+
     props = {
-      role: !isNativeButton && tagName !== "a" ? "button" : undefined,
+      role,
       ...props,
       ref: useMergeRefs(ref, props.ref),
     };
