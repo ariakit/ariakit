@@ -52,7 +52,8 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 }
 
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
-  const itemText = item.element?.textContent || item.children;
+  const itemText =
+    item.typeaheadText ?? item.element?.textContent ?? item.children;
   if (!itemText) return false;
   return normalizeString(itemText)
     .trim()

@@ -375,6 +375,14 @@ export interface CompositeStoreItem extends CollectionStoreItem {
    * The item children. This can be used for typeahead purposes.
    */
   children?: string;
+  /**
+   * The text that should be used for typeahead.
+   * This is useful when the text of an item is not the same as the text that should be matched.
+   *
+   * For example, if the text of an item includes an emoji, you may want the typeahead text to
+   * not include the emoji.
+   */
+  typeaheadText?: string;
 }
 
 export interface CompositeStoreState<
