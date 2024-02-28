@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { flushSync } from "react-dom";
@@ -86,6 +86,36 @@ export const useDisclosureContent = createHook<
   const animated = store.useState("animated");
   const contentElement = store.useState("contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
+  // At this time, we will only allow the hidden="until-found" feature on plain
+  // disclosure content elements. Dialogs, menus, popovers, listboxes, and so on
+  // will be disregarded.
+  const hiddenUntilFound = !props.role;
+
+  // React doesn't support string values on the hidden attribute, so we need to
+  // do this imperatively. See https://github.com/facebook/react/issues/24740
+  useSafeLayoutEffect(() => {
+    if (!hiddenUntilFound) return;
+    const element = ref.current;
+    if (!element) return;
+    if (mounted) {
+      element.removeAttribute("hidden");
+    } else {
+      element.setAttribute("hidden", "until-found");
+    }
+  }, [hiddenUntilFound, mounted]);
+
+  useEffect(() => {
+    if (!hiddenUntilFound) return;
+    const element = ref.current;
+    if (!element) return;
+    const onBeforeMatch = () => {
+      store?.show();
+    };
+    element.addEventListener("beforematch", onBeforeMatch);
+    return () => {
+      element.removeEventListener("beforematch", onBeforeMatch);
+    };
+  }, [hiddenUntilFound, store]);
 
   // This is a workaround to avoid the content element from being reset to null
   // on fast refresh.
@@ -216,9 +246,14 @@ export const useDisclosureContent = createHook<
   const hidden = isHidden(mounted, props.hidden, alwaysVisible);
   const styleProp = props.style;
   const style = useMemo(() => {
+    // Unlike the boolean 'hidden', which is typically implemented by browsers
+    // with an overridable display: none property, hidden="until-found" uses
+    // content-visibility: hidden. We can't use display: none because it would
+    // prevent the element from being discovered by the browser.
+    if (hiddenUntilFound) return styleProp;
     if (hidden) return { ...styleProp, display: "none" };
     return styleProp;
-  }, [hidden, styleProp]);
+  }, [hiddenUntilFound, hidden, styleProp]);
 
   props = {
     id,
