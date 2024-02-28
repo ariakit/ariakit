@@ -21,7 +21,7 @@ export function NewsletterSection() {
             on new Ariakit content.
           </p>
           <p>
-            No Spam. Unsubscribe anytime.{" "}
+            No spam. Unsubscribe anytime.{" "}
             <InlineLink
               href="https://newsletter.ariakit.org/latest"
               target="_blank"
