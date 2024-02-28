@@ -26,7 +26,9 @@ test("expand/collapse disclosure", async ({ page }) => {
   const height = await page
     .locator(".content")
     .evaluate((el) => el.clientHeight);
+
   const hpx = `${height}px`;
+  const zero = /^0(px|fr)$/;
 
   await expect(getWrapper(page)).not.toHaveCSS("grid-template-rows", hpx);
   await expect(getWrapper(page)).toHaveCSS("grid-template-rows", hpx);
@@ -36,7 +38,7 @@ test("expand/collapse disclosure", async ({ page }) => {
   await expect(getWrapper(page)).toBeVisible();
   await expect(getWrapper(page)).not.toHaveCSS("grid-template-rows", hpx);
   await expect(getWrapper(page)).toBeVisible();
-  await expect(getWrapper(page)).toHaveCSS("grid-template-rows", "0fr");
+  await expect(getWrapper(page)).toHaveCSS("grid-template-rows", zero);
   await expect(getWrapper(page)).not.toBeVisible();
 
   // Expand
@@ -48,8 +50,8 @@ test("expand/collapse disclosure", async ({ page }) => {
   // Collapse
   await page.keyboard.press("Enter");
   await expect(getWrapper(page)).toBeVisible();
-  await expect(getWrapper(page)).not.toHaveCSS("grid-template-rows", "0fr");
+  await expect(getWrapper(page)).not.toHaveCSS("grid-template-rows", zero);
   await expect(getWrapper(page)).toBeVisible();
-  await expect(getWrapper(page)).toHaveCSS("grid-template-rows", "0fr");
+  await expect(getWrapper(page)).toHaveCSS("grid-template-rows", zero);
   await expect(getWrapper(page)).not.toBeVisible();
 });
