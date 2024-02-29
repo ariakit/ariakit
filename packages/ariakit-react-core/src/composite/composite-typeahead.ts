@@ -52,7 +52,14 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 }
 
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
-  const itemText = item.element?.textContent || item.children;
+  const itemText =
+    item.element?.textContent ||
+    item.children ||
+    // The composite item object itself doesn't include a value property, but
+    // other components like Select do. Since CompositeTypeahead is a generic
+    // component that can be used with those as well, we also consider the value
+    // property as a fallback for the typeahead text content.
+    ("value" in item && (item.value as string | undefined));
   if (!itemText) return false;
   return normalizeString(itemText)
     .trim()
@@ -120,9 +127,14 @@ export const useCompositeTypeahead = createHook<
     if (event.defaultPrevented) return;
     if (!typeahead) return;
     if (!store) return;
-    const { items, activeId } = store.getState();
+    const { renderedItems, items, activeId } = store.getState();
     if (!isValidTypeaheadEvent(event)) return clearChars();
-    let enabledItems = getEnabledItems(items);
+    // We typically want to use the rendered items, as they're already sorted.
+    // However, the composite list might be unmounted or virtualized, in which
+    // case we'll use the original items.
+    let enabledItems = getEnabledItems(
+      renderedItems.length ? renderedItems : items,
+    );
     if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
     event.preventDefault();
     // We need to clear the previous cleanup timeout so we can append the
