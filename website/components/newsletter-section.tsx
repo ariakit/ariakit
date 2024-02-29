@@ -50,7 +50,7 @@ export function NewsletterSection() {
             type="submit"
             flat
             variant="primary"
-            className="cursor-pointer rounded-md"
+            className="cursor-pointer rounded-md focus-visible:!ariakit-outline"
           >
             Subscribe
           </Command>
