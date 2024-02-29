@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Improved typeahead functionality on unmounted composite items
+Improved typeahead functionality on unmounted composite items.
