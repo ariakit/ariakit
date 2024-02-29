@@ -102,6 +102,18 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
       }
     });
 
+    const onClickProp = props.onClick;
+
+    const onClick = useEvent((event: ReactMouseEvent<HTMLType>) => {
+      onClickProp?.(event);
+      if (!store) return;
+      // Resets showOnHover when the anchor is clicked so the consumer (for
+      // example, TooltipAnchor) has the chance to prevent the hovercard from
+      // showing on mousemove after a click.
+      window.clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = 0;
+    });
+
     const ref = useCallback(
       (element: HTMLElement | null) => {
         if (!store) return;
@@ -120,6 +132,7 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
       ...props,
       ref: useMergeRefs(ref, props.ref),
       onMouseMove,
+      onClick,
     };
 
     props = useFocusable<TagName>(props);
