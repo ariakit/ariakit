@@ -63,7 +63,7 @@ export function HeaderAriakitPlus() {
             <Command
               flat
               variant="secondary"
-              className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
+              className="border border-solid border-black/60 px-3 font-medium outline-offset-2 focus-visible:![outline:2px_solid_theme(colors.blue.600)] dark:border-white/60 sm:h-9"
               render={<SignInLink />}
             >
               Sign in

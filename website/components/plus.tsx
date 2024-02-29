@@ -294,7 +294,7 @@ export const PlusCheckoutButton = forwardRef<
         variant={selected ? "secondary" : "primary"}
         {...props}
         className={twJoin(
-          "h-14 w-full text-lg font-medium",
+          "h-14 w-full text-lg font-medium focus-visible:!ariakit-outline",
           selected && "bg-black/5 dark:bg-white/5",
         )}
         render={
