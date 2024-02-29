@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import type { ElementType, FocusEvent, MouseEvent } from "react";
-import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import {
+  chain,
+  invariant,
+  isFalsyBooleanCallback,
+} from "@ariakit/core/utils/misc";
 import { createStore, sync } from "@ariakit/core/utils/store";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
@@ -19,6 +23,14 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const globalStore = createStore<{ activeStore: TooltipStore | null }>({
   activeStore: null,
 });
+
+function createRemoveStoreCallback(store: TooltipStore) {
+  return () => {
+    const { activeStore } = globalStore.getState();
+    if (activeStore !== store) return;
+    globalStore.setState("activeStore", null);
+  };
+}
 
 /**
  * Returns props to create a `TooltipAnchor` component.
@@ -56,28 +68,34 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
     }, [store]);
 
     useEffect(() => {
-      return sync(store, ["mounted", "skipTimeout"], (state) => {
-        if (!store) return;
-        // If the current tooltip is open, we should immediately hide the
-        // active one and set the current one as the active tooltip.
-        if (state.mounted) {
-          const { activeStore } = globalStore.getState();
-          if (activeStore !== store) {
-            activeStore?.hide();
+      if (!store) return;
+      return chain(
+        // Immediately remove the current store from the global store when
+        // the component unmounts. This is useful, for example, to avoid
+        // showing tooltips immediately on serial tests.
+        createRemoveStoreCallback(store),
+        sync(store, ["mounted", "skipTimeout"], (state) => {
+          if (!store) return;
+          // If the current tooltip is open, we should immediately hide the
+          // active one and set the current one as the active tooltip.
+          if (state.mounted) {
+            const { activeStore } = globalStore.getState();
+            if (activeStore !== store) {
+              activeStore?.hide();
+            }
+            return globalStore.setState("activeStore", store);
           }
-          return globalStore.setState("activeStore", store);
-        }
-        // Otherwise, if the current tooltip is closed, we should set a
-        // timeout to hide the active tooltip in the global store. This is so
-        // we can show other tooltips without a delay when there's already an
-        // active tooltip (see the showOnHover method below).
-        const id = setTimeout(() => {
-          const { activeStore } = globalStore.getState();
-          if (activeStore !== store) return;
-          globalStore.setState("activeStore", null);
-        }, state.skipTimeout);
-        return () => clearTimeout(id);
-      });
+          // Otherwise, if the current tooltip is closed, we should set a
+          // timeout to hide the active tooltip in the global store. This is so
+          // we can show other tooltips without a delay when there's already an
+          // active tooltip (see the showOnHover method below).
+          const id = setTimeout(
+            createRemoveStoreCallback(store),
+            state.skipTimeout,
+          );
+          return () => clearTimeout(id);
+        }),
+      );
     }, [store]);
 
     const onMouseEnterProp = props.onMouseEnter;
@@ -102,6 +120,10 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       const { activeStore } = globalStore.getState();
+      // Sets canShowOnHover to false so moving the mouse over the anchor after
+      // it loses focus (for example, clicking on a menu button) doesn't show
+      // the tooltip until the mouse leaves and re-enters the anchor.
+      canShowOnHoverRef.current = false;
       // If the current tooltip is the active tooltip and the anchor loses focus
       // (for example, if the anchor is a menu button, clicking on the menu
       // button will automatically focus on the menu), we don't want to show
@@ -130,8 +152,8 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
         const { activeStore } = globalStore.getState();
         if (!activeStore) return true;
-        // Show the tooltip immediately if the current tooltip is the active
-        // tooltip instead of waiting for the showTimeout delay.
+        // Show the tooltip immediately if there's an active tooltip instead of
+        // waiting for the showTimeout delay.
         store?.show();
         return false;
       },
