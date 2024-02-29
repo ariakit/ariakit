@@ -105,9 +105,11 @@ export interface ComboboxStoreOptions<
    */
   setValue?: (value: ComboboxStoreState<T>["value"]) => void;
   /**
-   * A callback that gets called when the
+   * A callback that's invoked when the
    * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
-   * state changes.
+   * state changes, typically when the user selects an item.
+   *
+   * This can be used to implement behavior like `onSelect` or `onItemSelect`.
    *
    * Live examples:
    * - [Multi-selectable
