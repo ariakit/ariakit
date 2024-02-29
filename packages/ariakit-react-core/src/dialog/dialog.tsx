@@ -544,6 +544,24 @@ export function createDialogComponent<T extends DialogOptions>(
   });
 }
 
+export function createDialogComponentWithStore<T extends DialogOptions>(
+  Component: FC<T>,
+  useStore = useDialogStore,
+  useProviderContext = useDialogProviderContext,
+) {
+  return forwardRef(function DialogComponent(props: T) {
+    const context = useProviderContext();
+    const storeProp = props.store || context;
+    const store = useStore({ store: storeProp, open: props.open });
+    const mounted = useStoreState(
+      store,
+      (state) => !props.unmountOnHide || state?.mounted || !!props.open,
+    );
+    if (!mounted) return null;
+    return <Component {...props} store={store} />;
+  });
+}
+
 /**
  * Renders a dialog similar to the native `dialog` element that's rendered in a
  * [`portal`](https://ariakit.org/reference/dialog#portal) by default.
@@ -564,11 +582,12 @@ export function createDialogComponent<T extends DialogOptions>(
  * </Dialog>
  * ```
  */
-export const Dialog = createDialogComponent(
+export const Dialog = createDialogComponentWithStore(
   forwardRef(function Dialog(props: DialogProps) {
     const htmlProps = useDialog(props);
     return createElement(TagName, htmlProps);
   }),
+  useDialogStore,
   useDialogProviderContext,
 );
 

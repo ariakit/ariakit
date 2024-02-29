@@ -48,25 +48,23 @@ export default function Example() {
         <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
 
-      <Ariakit.DialogProvider
-        open={transitionUnmount}
-        setOpen={setTransitionUnmount}
+      <Ariakit.Button
+        onClick={() => setTransitionUnmount(true)}
+        className="button"
       >
-        <Ariakit.Button
-          onClick={() => setTransitionUnmount(true)}
-          className="button"
-        >
+        TransitionUnmount
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        unmountOnHide
+        open={transitionUnmount}
+        onClose={() => setTransitionUnmount(false)}
+        className="dialog dialog-transition"
+      >
+        <Ariakit.DialogHeading className="heading">
           TransitionUnmount
-        </Ariakit.Button>
-        <Ariakit.Dialog unmountOnHide className="dialog dialog-transition">
-          <Ariakit.DialogHeading className="heading">
-            TransitionUnmount
-          </Ariakit.DialogHeading>
-          <Ariakit.DialogDismiss className="button">
-            Close
-          </Ariakit.DialogDismiss>
-        </Ariakit.Dialog>
-      </Ariakit.DialogProvider>
+        </Ariakit.DialogHeading>
+        <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
 
       <Ariakit.Button
         onClick={() => setTransitionNoModal(true)}
@@ -188,25 +186,23 @@ export default function Example() {
         <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
 
-      <Ariakit.DialogProvider
-        open={animationUnmountLeave}
-        setOpen={setAnimationUnmountLeave}
+      <Ariakit.Button
+        onClick={() => setAnimationUnmountLeave(true)}
+        className="button"
       >
-        <Ariakit.Button
-          onClick={() => setAnimationUnmountLeave(true)}
-          className="button"
-        >
+        AnimationUnmountLeave
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        unmountOnHide
+        open={animationUnmountLeave}
+        onClose={() => setAnimationUnmountLeave(false)}
+        className="dialog dialog-animation-leave"
+      >
+        <Ariakit.DialogHeading className="heading">
           AnimationUnmountLeave
-        </Ariakit.Button>
-        <Ariakit.Dialog unmountOnHide className="dialog dialog-animation-leave">
-          <Ariakit.DialogHeading className="heading">
-            AnimationUnmountLeave
-          </Ariakit.DialogHeading>
-          <Ariakit.DialogDismiss className="button">
-            Close
-          </Ariakit.DialogDismiss>
-        </Ariakit.Dialog>
-      </Ariakit.DialogProvider>
+        </Ariakit.DialogHeading>
+        <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
     </div>
   );
 }
