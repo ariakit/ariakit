@@ -179,7 +179,7 @@
     "resolve-from": "5.0.0",
     "rimraf": "5.0.5",
     "sharp": "0.33.2",
-    "shiki": "1.1.6",
+    "shiki": "1.1.7",
     "stripe": "14.18.0",
     "stylelint": "16.2.1",
     "stylelint-config-standard": "36.0.0",
