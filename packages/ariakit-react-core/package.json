@@ -60,7 +60,7 @@
     "./toolbar/toolbar-input": "./src/toolbar/toolbar-input.ts",
     "./toolbar/toolbar-context": "./src/toolbar/toolbar-context.tsx",
     "./toolbar/toolbar-container": "./src/toolbar/toolbar-container.ts",
-    "./tab/tab": "./src/tab/tab.ts",
+    "./tab/tab": "./src/tab/tab.tsx",
     "./tab/tab-store": "./src/tab/tab-store.ts",
     "./tab/tab-provider": "./src/tab/tab-provider.tsx",
     "./tab/tab-panel": "./src/tab/tab-panel.tsx",

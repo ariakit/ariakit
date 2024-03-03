@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import * as Core from "@ariakit/core/tab/tab-store";
+import { useComboboxProviderContext } from "../combobox/combobox-context.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -15,6 +17,8 @@ export function useTabStoreProps<T extends Core.TabStore>(
   update: () => void,
   props: TabStoreProps,
 ) {
+  useUpdateEffect(update, [props.combobox]);
+
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "selectedId", "setSelectedId");
   useStoreProps(store, props, "selectOnMove");
@@ -22,7 +26,10 @@ export function useTabStoreProps<T extends Core.TabStore>(
   const [panels, updatePanels] = useStore(() => store.panels, {});
   useUpdateEffect(updatePanels, [store, updatePanels]);
 
-  return useMemo(() => ({ ...store, panels }), [store, panels]);
+  return Object.assign(
+    useMemo(() => ({ ...store, panels }), [store, panels]),
+    { combobox: props.combobox },
+  );
 }
 
 /**
@@ -42,6 +49,11 @@ export function useTabStoreProps<T extends Core.TabStore>(
  * ```
  */
 export function useTabStore(props: TabStoreProps = {}): TabStore {
+  const combobox = useComboboxProviderContext();
+  props = {
+    ...props,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
+  };
   const [store, update] = useStore(Core.createTabStore, props);
   return useTabStoreProps(store, update, props);
 }
@@ -53,13 +65,14 @@ export interface TabStoreState
     CompositeStoreState<TabStoreItem> {}
 
 export interface TabStoreFunctions
-  extends Core.TabStoreFunctions,
+  extends Pick<TabStoreOptions, "combobox">,
+    Omit<Core.TabStoreFunctions, "panels" | "combobox">,
     CompositeStoreFunctions<TabStoreItem> {
   panels: Store<Core.TabStoreFunctions["panels"]>;
 }
 
 export interface TabStoreOptions
-  extends Core.TabStoreOptions,
+  extends Omit<Core.TabStoreOptions, "combobox">,
     CompositeStoreOptions<TabStoreItem> {
   /**
    * Function that will be called when the
@@ -70,10 +83,19 @@ export interface TabStoreOptions
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
+  /**
+   * A reference to a [combobox
+   * store](https://ariakit.org/reference/use-combobox-store). It's
+   * automatically set when composing [Combobox with
+   * Tab](https://ariakit.org/examples/combobox-tabs).
+   */
+  combobox?: ComboboxStore | null;
 }
 
-export interface TabStoreProps extends TabStoreOptions, Core.TabStoreProps {}
+export interface TabStoreProps
+  extends TabStoreOptions,
+    Omit<Core.TabStoreProps, "combobox"> {}
 
 export interface TabStore
   extends TabStoreFunctions,
-    Omit<Store<Core.TabStore>, "panels"> {}
+    Omit<Store<Core.TabStore>, "panels" | "combobox"> {}

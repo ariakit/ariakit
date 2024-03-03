@@ -54,6 +54,13 @@ export const useTabList = createHook<TagName, TabListOptions>(
       [store],
     );
 
+    if (store.combobox) {
+      props = {
+        focusable: false,
+        ...props,
+      };
+    }
+
     props = {
       role: "tablist",
       "aria-orientation": orientation,

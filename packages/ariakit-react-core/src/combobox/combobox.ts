@@ -86,6 +86,14 @@ function isAriaAutoCompleteValue(
   );
 }
 
+function getDefaultAutoSelectId(items: ComboboxStoreState["items"]) {
+  const item = items.find((item) => {
+    if (item.disabled) return false;
+    return item.element?.getAttribute("role") !== "tab";
+  });
+  return item?.id;
+}
+
 /**
  * Returns props to create a `Combobox` component.
  * @see https://ariakit.org/components/combobox
@@ -308,7 +316,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (autoSelect && canAutoSelect) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
-          userAutoSelectId !== undefined ? userAutoSelectId : store.first();
+          userAutoSelectId !== undefined
+            ? userAutoSelectId
+            : getDefaultAutoSelectId(items) ?? store.first();
         autoSelectIdRef.current = autoSelectId;
         // If there's no first item (that is, there are no items or all items
         // are disabled), we should move the focus to the input (null),

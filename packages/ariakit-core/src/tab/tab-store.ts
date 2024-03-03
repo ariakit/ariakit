@@ -3,6 +3,7 @@ import type {
   CollectionStoreItem,
 } from "../collection/collection-store.js";
 import { createCollectionStore } from "../collection/collection-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -12,11 +13,34 @@ import type {
 import { createCompositeStore } from "../composite/composite-store.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { batch, createStore, setup, sync } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+} from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
-export function createTabStore(props: TabStoreProps = {}): TabStore {
-  const syncState = props.store?.getState();
+export function createTabStore({
+  combobox,
+  ...props
+}: TabStoreProps = {}): TabStore {
+  const store = mergeStore(
+    props.store,
+    omit(combobox, [
+      "items",
+      "renderedItems",
+      "moves",
+      "orientation",
+      "baseElement",
+      "focusLoop",
+      "focusShift",
+      "focusWrap",
+    ]),
+  );
+  const syncState = store?.getState();
 
   const composite = createCompositeStore({
     ...props,
@@ -44,7 +68,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
       true,
     ),
   };
-  const tab = createStore(initialState, composite, props.store);
+  const tab = createStore(initialState, composite, store);
 
   // Selects the active tab when selectOnMove is true. Since we're listening to
   // the moves state, but not the activeId state, this callback will run only
@@ -208,6 +232,11 @@ export interface TabStoreOptions
       "orientation" | "focusLoop" | "selectedId" | "selectOnMove"
     >,
     CompositeStoreOptions<TabStoreItem> {
+  /**
+   * A reference to a combobox store. This is used when combining the combobox
+   * with tabs. The stores will share the same state.
+   */
+  combobox?: ComboboxStore | null;
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.

@@ -1,17 +1,18 @@
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
-import { useEvent, useId } from "../utils/hooks.js";
+import { ComboboxItem } from "../combobox/combobox-item.js";
+import type { CompositeItemOptions } from "../composite/composite-item.jsx";
+import { useCompositeItem } from "../composite/composite-item.jsx";
+import { useEvent, useId, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
+} from "../utils/system.jsx";
 import type { Props } from "../utils/types.js";
-import { useTabScopedContext } from "./tab-context.js";
+import { useTabScopedContext } from "./tab-context.jsx";
 import type { TabStore } from "./tab-store.js";
 
 const TagName = "button" satisfies ElementType;
@@ -76,6 +77,22 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     (state) => state.items.find((item) => item.tabId === id)?.id,
   );
   const selected = store.useState((state) => !!id && state.selectedId === id);
+  const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
+
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!store?.combobox) return element;
+      return (
+        <ComboboxItem
+          id={id}
+          shouldRegisterItem={selected && shouldRegisterItem}
+          render={element}
+        />
+      );
+    },
+    [store, id, selected, shouldRegisterItem],
+  );
 
   props = {
     id,
@@ -91,7 +108,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     ...props,
     accessibleWhenDisabled,
     getItem,
-    shouldRegisterItem: !!defaultId ? props.shouldRegisterItem : false,
+    shouldRegisterItem,
   });
 
   return props;

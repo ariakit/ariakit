@@ -1,5 +1,5 @@
 import type { ElementType } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.js";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
@@ -7,13 +7,15 @@ import {
   useAttribute,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Options, Props } from "../utils/types.js";
 import {
   ComboboxScopedContextProvider,
-  useComboboxProviderContext,
+  useComboboxContext,
+  useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
@@ -37,8 +39,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
   function useComboboxList({ store, alwaysVisible, ...props }) {
-    const context = useComboboxProviderContext();
+    const scopedContext = useComboboxScopedContext(true);
+    const context = useComboboxContext();
     store = store || context;
+    const scopedContextSameStore = !!store && store === scopedContext;
 
     invariant(
       store,
@@ -48,17 +52,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
-
-    props = useWrapElement(
-      props,
-      (element) => (
-        <ComboboxScopedContextProvider value={store}>
-          {element}
-        </ComboboxScopedContextProvider>
-      ),
-      [store],
-    );
-
     const mounted = store.useState("mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
@@ -73,13 +66,61 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       ? multiSelectable || undefined
       : undefined;
 
+    const [hasListboxInside, setHasListboxInside] = useState(false);
+    const contentElement = store.useState("contentElement");
+
+    // We support nested <ComboboxList> elements (usually in the form of
+    // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
+    // we check here if there's already a listbox element inside the current
+    // element.
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
+      const element = ref.current;
+      if (!element) return;
+      if (contentElement !== element) return;
+      const callback = () => {
+        setHasListboxInside(!!element.querySelector("[role='listbox']"));
+      };
+      const observer = new MutationObserver(callback);
+      observer.observe(element, {
+        subtree: true,
+        childList: true,
+        attributeFilter: ["role"],
+      });
+      callback();
+      return () => observer.disconnect();
+    }, [mounted, contentElement]);
+
+    if (!hasListboxInside) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": ariaMultiSelectable,
+        ...props,
+      };
+    }
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <ComboboxScopedContextProvider value={store}>
+          {element}
+        </ComboboxScopedContextProvider>
+      ),
+      [store],
+    );
+
+    // When nesting ComboboxList elements, the content element should be
+    // assigned to the topmost ComboboxList element.
+    const setContentElement =
+      id && (!scopedContext || !scopedContextSameStore)
+        ? store.setContentElement
+        : null;
+
     props = {
       id,
       hidden,
-      role: "listbox",
-      "aria-multiselectable": ariaMultiSelectable,
       ...props,
-      ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
+      ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
     };
 

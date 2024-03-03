@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ElementType } from "react";
+import type { ElementType, KeyboardEvent } from "react";
+import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -9,7 +10,12 @@ import { useDisclosureContent } from "../disclosure/disclosure-content.jsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.jsx";
 import type { Props } from "../utils/types.js";
 import {
@@ -74,6 +80,29 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       [id, tabIdProp, getItemProp],
     );
 
+    const onKeyDownProp = props.onKeyDown;
+
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!store?.combobox) return;
+      const { items, renderedItems, selectedId } = store.getState();
+      const tab = createTabStore({ items, activeId: selectedId });
+      tab.setState("renderedItems", renderedItems);
+      const keyMap = {
+        ArrowLeft: tab.previous,
+        ArrowRight: tab.next,
+        Home: tab.first,
+        End: tab.last,
+      };
+      const action = keyMap[event.key as keyof typeof keyMap];
+      if (!action) return;
+      const nextId = action();
+      if (!nextId) return;
+      event.preventDefault();
+      store.select(nextId);
+    });
+
     props = useWrapElement(
       props,
       (element) => (
@@ -97,11 +126,15 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       "aria-labelledby": tabId || undefined,
       ...props,
       ref: useMergeRefs(ref, props.ref),
+      onKeyDown,
     };
 
     const disclosure = useDisclosureStore({ open });
 
-    props = useFocusable({ focusable: !hasTabbableChildren, ...props });
+    props = useFocusable({
+      focusable: !store.combobox && !hasTabbableChildren,
+      ...props,
+    });
     props = useDisclosureContent({ store: disclosure, ...props });
     props = useCollectionItem({ store: store.panels, ...props, getItem });
 
