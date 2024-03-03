@@ -14,11 +14,6 @@ media:
     alt: A snippet of JSX code highlighting the use of React.startTransition on ComboboxProvider and TabProvider
     width: 960
     height: 720
-  - type: image
-    src: /media/combobox-tabs-2.jpg
-    alt: A snippet of JavaScript code highlighting the use of setActiveId, select and next methods from the Ariakit tab store
-    width: 960
-    height: 720
 ---
 
 # Combobox with tabs
@@ -42,23 +37,26 @@ Organizing [Combobox](/components/combobox) with [Tab](/components/tab) componen
 
 </div>
 
-<aside data-type="note" title="This is an advanced example">
+## Basic structure
 
-This example employs sophisticated methods to ensure maximum accessibility across different browsers, devices, and assistive technologies. You can easily copy and paste the provided code into your project and use it as a foundation.
+By rendering [Tab](/components/tab) components within [`ComboboxProvider`](/reference/combobox-provider), the [`combobox`](/reference/tab-provider#combobox) prop is automatically assigned on the tab store. This enables both modules to function together seamlessly:
 
-Refer to the documentation below for a deeper understanding of the implementation details. As time progresses, we may introduce additional features to the Ariakit library to further simplify the implementation of this example.
-
-</aside>
-
-## Syncing Combobox and Tab state
-
-To prevent the selected tab from remaining in a focused state when moving from the tab to a combobox option, we need to sync the [`activeId`](/reference/combobox-provider#activeid) state of both components. This can be achieved by [controlling the state](/guide/component-providers#controlled-state):
-
-```jsx
-const [activeId, setActiveId] = React.useState(null);
-
-<ComboboxProvider activeId={activeId} setActiveId={setActiveId}>
-  <TabProvider activeId={activeId} setActiveId={setActiveId}>
+```jsx "TabProvider" "TabList" "Tab" "TabPanel"
+<ComboboxProvider>
+  <Combobox />
+  <ComboboxPopover>
+    <TabProvider>
+      <TabList>
+        <Tab />
+      </TabList>
+      <TabPanel>
+        <ComboboxList>
+          <ComboboxItem />
+        </ComboboxList>
+      </TabPanel>
+    </TabProvider>
+  </ComboboxPopover>
+</ComboboxProvider>
 ```
 
 ## Improving performance with Concurrent React
@@ -94,67 +92,6 @@ const mounted = React.useDeferredValue(combobox.useState("mounted"));
 </Ariakit.ComboboxPopover>;
 ```
 
-## Custom auto-select behavior
-
-By default, the [`autoSelect`](/reference/combobox#autoselect) prop on [`Combobox`](/reference/combobox) will automatically select the first [`ComboboxItem`](/reference/combobox-item) when the user types in the input.
-
-We can customize this behavior with the [`getAutoSelectId`](/reference/combobox#getautoselectid) prop. In this example, we use it to bypass the tab items:
-
-```jsx
-<Ariakit.Combobox
-  autoSelect
-  getAutoSelectId={(items) => {
-    const firstNonTabEnabledItem = items.find((item) => {
-      if (item.disabled) return false;
-      return item.element?.getAttribute("role") !== "tab";
-    });
-    return firstNonTabEnabledItem?.id;
-  }}
->
-```
-
-## Rendering `ComboboxCancel` conditionally
-
-We use [the callback version of the store's `useState` hook](/guide/component-stores#computed-values) to check if the combobox input isn't empty. If it's not, we can then render the [`ComboboxCancel`](/reference/combobox-cancel) component:
-
-```jsx
-const hasValue = combobox.useState((state) => state.value !== "");
-
-hasValue && <Ariakit.ComboboxCancel />;
-```
-
-## Rendering a listbox inside `TabPanel`
-
-Elements with `role="listbox"` can only include elements with `role="group"` and `role="option"` as their accessibility children. That's why we override the default `role` of the [`ComboboxPopover`](/reference/combobox-popover) component, allowing us to display tabs and tab panels within it.
-
-Consequently, we place the listbox element inside the [`TabPanel`](/reference/tab-panel) component:
-
-```jsx
-<Ariakit.ComboboxPopover role="dialog">
-  <Ariakit.TabPanel>
-    <div role="listbox">
-      <Ariakit.ComboboxItem />
-```
-
-## Rendering `ComboboxItem` as `Tab`
-
-By taking advantage of [composition](/guide/composition), we can get the [`Tab`](/reference/tab) component to function as a [`ComboboxItem`](/reference/combobox-item). This enables us to navigate between the selected tab and the combobox input using arrow keys.
-
-To ensure a vertical list of items, we only register the _selected_ tab as a combobox item using the [`shouldRegisterItem`](/reference/combobox-item#shouldregisteritem) prop:
-
-```jsx
-const id = React.useId();
-const isSelected = tab.useState((state) => state.selectedId === id);
-
-<Ariakit.ComboboxItem
-  id={id}
-  shouldRegisterItem={isSelected}
-  render={<Ariakit.Tab />}
-/>;
-```
-
-Since the [`Tab`](/reference/tab) component is registered with the tab store, pressing <kbd>←</kbd> and <kbd>→</kbd> will continue to navigate between tabs when the selected tab is in focus.
-
 ## Rendering a single `TabPanel`
 
 Typically, we have one [`TabPanel`](/reference/tab-panel) for each [`Tab`](/reference/tab) component. But in this case, we want to render only one panel that contains the list of options for the selected tab. This ensures optimal React concurrent transitions and that [`ComboboxItem`](/reference/combobox-item) components are rendered only when necessary.
@@ -168,25 +105,6 @@ const selectedId = tab.useState("selectedId");
 ```
 
 This ensures that the tab panel is always visible, and the `aria-controls` and `aria-labelledby` attributes are correctly assigned.
-
-## Allowing horizontal arrow keys to navigate tabs
-
-We permit users to navigate between tabs using <kbd>←</kbd> and <kbd>→</kbd> on the [`ComboboxItem`](/reference/combobox-item) component, even when it's not displayed as a [`Tab`](/reference/tab). To accomplish this, we must write a custom `onKeyDown` handler and use methods from the [tab store](/reference/use-tab-store):
-
-```jsx "setActiveId" "select" "next"
-const tab = Ariakit.useTabContext();
-
-<Ariakit.ComboboxItem
-  onKeyDown={(event) => {
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      const { selectedId } = tab.getState();
-      tab.setActiveId(selectedId);
-      tab.select(tab.next());
-    }
-  }}
-/>;
-```
 
 ## Testing with screen readers
 

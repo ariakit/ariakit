@@ -1,8 +1,9 @@
+import { Fragment } from "react";
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ButtonOptions } from "../button/button.js";
 import { useButton } from "../button/button.js";
-import { useEvent } from "../utils/hooks.js";
+import { useEvent, useWrapElement } from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
@@ -44,7 +45,7 @@ const children = (
  * ```
  */
 export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
-  function useComboboxCancel({ store, ...props }) {
+  function useComboboxCancel({ store, hideWhenEmpty, ...props }) {
     const context = useComboboxProviderContext();
     store = store || context;
 
@@ -65,6 +66,17 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
     });
 
     const comboboxId = store.useState((state) => state.baseElement?.id);
+    const empty = store.useState((state) => state.value === "");
+
+    props = useWrapElement(
+      props,
+      (element) => {
+        if (!hideWhenEmpty) return element;
+        if (empty) return <Fragment />;
+        return element;
+      },
+      [hideWhenEmpty, empty],
+    );
 
     props = {
       children,
@@ -117,6 +129,14 @@ export interface ComboboxCancelOptions<T extends ElementType = TagName>
    * component's context will be used.
    */
   store?: ComboboxStore;
+  /**
+   * When enabled, the button won't be rendered when the combobox input value is
+   * empty.
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   */
+  hideWhenEmpty?: boolean;
 }
 
 export type ComboboxCancelProps<T extends ElementType = TagName> = Props<

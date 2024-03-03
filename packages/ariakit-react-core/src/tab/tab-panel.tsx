@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { ElementType, KeyboardEvent } from "react";
 import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
@@ -44,6 +44,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useTabPanel = createHook<TagName, TabPanelOptions>(
   function useTabPanel({
     store,
+    unmountOnHide,
     tabId: tabIdProp,
     getItem: getItemProp,
     ...props
@@ -130,6 +131,17 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     };
 
     const disclosure = useDisclosureStore({ open });
+    const mounted = disclosure.useState("mounted");
+
+    props = useWrapElement(
+      props,
+      (element) => {
+        if (!unmountOnHide) return element;
+        if (!mounted) return <Fragment />;
+        return element;
+      },
+      [unmountOnHide, mounted],
+    );
 
     props = useFocusable({
       focusable: !store.combobox && !hasTabbableChildren,
@@ -173,7 +185,7 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
 export interface TabPanelOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,
-    Omit<DisclosureContentOptions<T>, "store" | "unmountOnHide"> {
+    Omit<DisclosureContentOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not

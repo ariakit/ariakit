@@ -514,7 +514,6 @@ export interface CompositeStoreState<
    * Live examples:
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
    * @default false
    */
@@ -552,9 +551,6 @@ export interface CompositeStoreFunctions<
    * state _without moving focus_. If you want to move focus, use the
    * [`move`](https://ariakit.org/reference/use-composite-store#move) function
    * instead.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * // Sets the composite element as the active item
    * store.setActiveId(null);
@@ -588,9 +584,6 @@ export interface CompositeStoreFunctions<
    * Returns the id of the next enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * const nextId = store.next();
    * const nextNextId = store.next(2);
@@ -600,9 +593,6 @@ export interface CompositeStoreFunctions<
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * const previousId = store.previous();
    * const previousPreviousId = store.previous(2);
@@ -628,16 +618,10 @@ export interface CompositeStoreFunctions<
   down: (skip?: number) => string | null | undefined;
   /**
    * Returns the id of the first enabled item.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   first: () => string | null | undefined;
   /**
    * Returns the id of the last enabled item.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   last: () => string | null | undefined;
 }

@@ -13,6 +13,7 @@ import {
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Options, Props } from "../utils/types.js";
 import {
+  ComboboxListRoleContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
   useComboboxScopedContext,
@@ -103,10 +104,12 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       props,
       (element) => (
         <ComboboxScopedContextProvider value={store}>
-          {element}
+          <ComboboxListRoleContext.Provider value={role}>
+            {element}
+          </ComboboxListRoleContext.Provider>
         </ComboboxScopedContextProvider>
       ),
-      [store],
+      [store, role],
     );
 
     // When nesting ComboboxList elements, the content element should be

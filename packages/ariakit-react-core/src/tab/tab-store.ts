@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as Core from "@ariakit/core/tab/tab-store";
-import { useComboboxProviderContext } from "../combobox/combobox-context.js";
+import { useComboboxContext } from "../combobox/combobox-context.js";
 import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStoreFunctions,
@@ -49,7 +49,7 @@ export function useTabStoreProps<T extends Core.TabStore>(
  * ```
  */
 export function useTabStore(props: TabStoreProps = {}): TabStore {
-  const combobox = useComboboxProviderContext();
+  const combobox = useComboboxContext();
   props = {
     ...props,
     combobox: props.combobox !== undefined ? props.combobox : combobox,

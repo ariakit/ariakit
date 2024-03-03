@@ -212,9 +212,6 @@ export interface TabStoreFunctions
    * state without moving focus, use the
    * [`setSelectedId`](https://ariakit.org/reference/use-tab-store#setselectedid-1)
    * function instead.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * // Selects the tab with id "tab-1"
    * store.select("tab-1");
