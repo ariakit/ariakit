@@ -49,7 +49,7 @@ By rendering [Tab](/components/tab) components within [`ComboboxProvider`](/refe
       <TabList>
         <Tab />
       </TabList>
-      <TabPanel>
+      <TabPanel unmountOnHide>
         <ComboboxList>
           <ComboboxItem />
         </ComboboxList>
