@@ -3,8 +3,8 @@ import type {
   CollectionStoreItem,
 } from "../collection/collection-store.js";
 import { createCollectionStore } from "../collection/collection-store.js";
-import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
+  CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
@@ -24,12 +24,12 @@ import {
 import type { SetState } from "../utils/types.js";
 
 export function createTabStore({
-  combobox,
+  composite: parentComposite,
   ...props
 }: TabStoreProps = {}): TabStore {
   const store = mergeStore(
     props.store,
-    omit(combobox, [
+    omit(parentComposite, [
       "items",
       "renderedItems",
       "moves",
@@ -233,7 +233,7 @@ export interface TabStoreOptions
    * A reference to a combobox store. This is used when combining the combobox
    * with tabs. The stores will share the same state.
    */
-  combobox?: ComboboxStore | null;
+  composite?: CompositeStore | null;
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.

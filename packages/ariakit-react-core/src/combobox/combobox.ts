@@ -89,6 +89,8 @@ function isAriaAutoCompleteValue(
 function getDefaultAutoSelectId(items: ComboboxStoreState["items"]) {
   const item = items.find((item) => {
     if (item.disabled) return false;
+    // When rendering tabs in a combobox widget, we ignore them and auto select
+    // the first item that's not a tab instead.
     return item.element?.getAttribute("role") !== "tab";
   });
   return item?.id;

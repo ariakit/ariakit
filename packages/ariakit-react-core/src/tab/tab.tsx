@@ -1,9 +1,11 @@
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import { ComboboxItem } from "../combobox/combobox-item.js";
 import type { CompositeItemOptions } from "../composite/composite-item.jsx";
-import { useCompositeItem } from "../composite/composite-item.jsx";
+import {
+  CompositeItem,
+  useCompositeItem,
+} from "../composite/composite-item.jsx";
 import { useEvent, useId, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
@@ -82,12 +84,19 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   props = useWrapElement(
     props,
     (element) => {
-      if (!store?.combobox) return element;
+      if (!store?.composite) return element;
+      // If the tab is rendered as part of another composite widget such as
+      // combobox, we need to render it as a composite item. This ensures it's
+      // recognized in the composite store and lets us manage arrow key
+      // navigation to move focus to other composite items that might be
+      // rendered in a tab panel. We only register the selected tab to maintain
+      // a vertical list orientation.
       return (
-        <ComboboxItem
+        <CompositeItem
           id={id}
-          shouldRegisterItem={selected && shouldRegisterItem}
           render={element}
+          store={store.composite}
+          shouldRegisterItem={selected && shouldRegisterItem}
         />
       );
     },

@@ -86,7 +86,12 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store?.combobox) return;
+      if (!store?.composite) return;
+      // If the tab panel is part of another composite widget like a combobox,
+      // keyboard navigation is managed here. We need to recreate a tab store
+      // and provide the selected id as the active id. This is necessary because
+      // the original tab store may have the same active id as the external
+      // composite store, which might not be a valid tab id.
       const { items, renderedItems, selectedId } = store.getState();
       const tab = createTabStore({ items, activeId: selectedId });
       tab.setState("renderedItems", renderedItems);
@@ -144,7 +149,9 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     );
 
     props = useFocusable({
-      focusable: !store.combobox && !hasTabbableChildren,
+      // If the tab panel is rendered as part of a combobox widget, it should
+      // not be focusable.
+      focusable: !store.composite && !hasTabbableChildren,
       ...props,
     });
     props = useDisclosureContent({ store: disclosure, ...props });

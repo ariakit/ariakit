@@ -135,6 +135,7 @@ export interface ComboboxCancelOptions<T extends ElementType = TagName>
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * @default false
    */
   hideWhenEmpty?: boolean;
 }
