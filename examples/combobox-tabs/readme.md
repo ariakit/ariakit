@@ -39,7 +39,7 @@ Organizing [Combobox](/components/combobox) with [Tab](/components/tab) componen
 
 ## Basic structure
 
-By rendering [Tab](/components/tab) components within [`ComboboxProvider`](/reference/combobox-provider), the [`combobox`](/reference/tab-provider#combobox) prop is automatically assigned on the tab store. This enables both modules to function together seamlessly:
+By rendering [Tab](/components/tab) components within [`ComboboxProvider`](/reference/combobox-provider), the [`composite`](/reference/tab-provider#composite) prop is automatically assigned on the tab store. This enables both modules to function together seamlessly:
 
 ```jsx "TabProvider" "TabList" "Tab" "TabPanel"
 <ComboboxProvider>

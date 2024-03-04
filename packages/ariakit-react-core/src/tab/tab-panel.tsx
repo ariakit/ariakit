@@ -149,8 +149,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     );
 
     props = useFocusable({
-      // If the tab panel is rendered as part of a combobox widget, it should
-      // not be focusable.
+      // If the tab panel is rendered as part of another composite widget such
+      // as combobox, it should not be focusable.
       focusable: !store.composite && !hasTabbableChildren,
       ...props,
     });
