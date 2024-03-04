@@ -90,7 +90,6 @@ test("filter items until there are no results and change tabs", async () => {
   await click(q.combobox());
   await click(await q.tab.wait("Guide 6"));
   await type("abc");
-  expect(q.tab("Guide 0")).not.toBeDisabled();
   expect(q.tab("Guide 0")).toHaveFocus();
   expect(q.tab("Guide 0")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Guide 0")).toHaveAttribute("data-active-item");

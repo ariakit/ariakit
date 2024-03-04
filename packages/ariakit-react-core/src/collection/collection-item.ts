@@ -107,9 +107,6 @@ export interface CollectionItemOptions<_T extends ElementType = TagName>
   id?: string;
   /**
    * Whether the item should be registered as part of the collection.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   shouldRegisterItem?: boolean;

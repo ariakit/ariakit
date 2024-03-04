@@ -54,6 +54,15 @@ export const useTabList = createHook<TagName, TabListOptions>(
       [store],
     );
 
+    // If the tab list is rendered as part of another composite widget such as
+    // combobox, it should not be focusable.
+    if (store.composite) {
+      props = {
+        focusable: false,
+        ...props,
+      };
+    }
+
     props = {
       role: "tablist",
       "aria-orientation": orientation,

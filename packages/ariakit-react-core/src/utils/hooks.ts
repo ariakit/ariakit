@@ -228,9 +228,16 @@ export function useAttribute(
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
-    const value = element?.getAttribute(attributeName);
-    if (value == null) return;
-    setAttribute(value);
+    if (!element) return;
+    const callback = () => {
+      const value = element.getAttribute(attributeName);
+      if (value == null) return;
+      setAttribute(value);
+    };
+    const observer = new MutationObserver(callback);
+    observer.observe(element, { attributeFilter: [attributeName] });
+    callback();
+    return () => observer.disconnect();
   }, [refOrElement, attributeName]);
 
   return attribute;

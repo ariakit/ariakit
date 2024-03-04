@@ -521,9 +521,6 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
    * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
    * etc.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   focusable?: boolean;

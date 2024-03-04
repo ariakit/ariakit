@@ -86,6 +86,16 @@ function isAriaAutoCompleteValue(
   );
 }
 
+function getDefaultAutoSelectId(items: ComboboxStoreState["items"]) {
+  const item = items.find((item) => {
+    if (item.disabled) return false;
+    // When rendering tabs in a combobox widget, we ignore them and auto select
+    // the first item that's not a tab instead.
+    return item.element?.getAttribute("role") !== "tab";
+  });
+  return item?.id;
+}
+
 /**
  * Returns props to create a `Combobox` component.
  * @see https://ariakit.org/components/combobox
@@ -308,7 +318,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (autoSelect && canAutoSelect) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
-          userAutoSelectId !== undefined ? userAutoSelectId : store.first();
+          userAutoSelectId !== undefined
+            ? userAutoSelectId
+            : getDefaultAutoSelectId(items) ?? store.first();
         autoSelectIdRef.current = autoSelectId;
         // If there's no first item (that is, there are no items or all items
         // are disabled), we should move the focus to the input (null),
@@ -608,9 +620,6 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    *
    * By default, the first enabled item is auto selected. This function is handy
    * if you prefer a different item to be auto selected.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * ```jsx
    * <Combobox

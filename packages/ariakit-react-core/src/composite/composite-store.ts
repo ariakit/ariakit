@@ -77,9 +77,6 @@ export interface CompositeStoreOptions<
    * A callback that gets called when the
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state changes.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
 }

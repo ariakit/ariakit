@@ -167,7 +167,7 @@
     dark:bg-white/10
     [[aria-selected=true]_&]:bg-black/10
     [[aria-selected=true]_&]:dark:bg-black/20
-    [[aria-selected=true][data-active-item]_&]:bg-black/20
+    [[data-active-item]_&]:bg-black/20
   ;
 }
 

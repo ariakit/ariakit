@@ -483,9 +483,6 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   shouldRegisterItem?: CollectionItemOptions<T>["shouldRegisterItem"];
   /**

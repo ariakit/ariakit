@@ -1,6 +1,6 @@
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
-import { useCallback } from "react";
-import { getPopupItemRole, isTextField } from "@ariakit/core/utils/dom";
+import { useCallback, useContext } from "react";
+import { isTextField } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
@@ -20,6 +20,7 @@ import type { Props } from "../utils/types.js";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
+  ComboboxListRoleContext,
   useComboboxScopedContext,
 } from "./combobox-context.js";
 import type { ComboboxStore } from "./combobox-store.js";
@@ -35,6 +36,16 @@ function isSelected(storeValue?: string | string[], itemValue?: string) {
     return storeValue.includes(itemValue);
   }
   return storeValue === itemValue;
+}
+
+function getItemRole(popupRole?: string) {
+  const itemRoleByPopupRole = {
+    menu: "menuitem",
+    listbox: "option",
+    tree: "treeitem",
+  };
+  const key = popupRole as keyof typeof itemRoleByPopupRole;
+  return itemRoleByPopupRole[key] ?? "option";
 }
 
 /**
@@ -164,10 +175,10 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const contentElement = store.useState("contentElement");
+    const popupRole = useContext(ComboboxListRoleContext);
 
     props = {
-      role: getPopupItemRole(contentElement),
+      role: getItemRole(popupRole),
       children: value,
       ...props,
       onClick,
