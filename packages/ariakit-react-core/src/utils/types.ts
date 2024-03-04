@@ -8,7 +8,7 @@ import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
  * const children: RenderProp = (props) => <div {...props} />;
  */
 export type RenderProp<
-  P = React.HTMLAttributes<any> & React.RefAttributes<any>,
+  P = React.HTMLAttributes<any> & { ref?: React.Ref<any> },
 > = (props: P) => React.ReactNode;
 
 /**
