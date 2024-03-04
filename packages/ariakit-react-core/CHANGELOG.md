@@ -1,5 +1,50 @@
 # @ariakit/react-core
 
+## 0.4.2
+
+### Tooltip behavior improvements
+
+When using [Tooltip](https://ariakit.org/components/tooltip) components alongside elements that move focus upon clicking (like [`MenuButton`](https://ariakit.org/reference/menu-button), which moves focus to its [`Menu`](https://ariakit.org/reference/menu) when clicked), the tooltip will now stop from appearing after the user clicks the anchor element. It will only show when the mouse leaves and re-enters the anchor element.
+
+This was already the case when tooltips had no [`timeout`](https://ariakit.org/reference/tooltip-provider#timeout). Now, the behavior is consistent regardless of the timeout value.
+
+### Combobox with tabs
+
+[Tab](https://ariakit.org/components/tab) components can now be rendered as part of other composite widgets, like [Combobox](https://ariakit.org/components/combobox). The following structure should work seamlessly:
+
+```jsx "TabProvider" "TabList" "Tab" "TabPanel"
+<ComboboxProvider>
+  <Combobox />
+  <ComboboxPopover>
+    <TabProvider>
+      <TabList>
+        <Tab />
+      </TabList>
+      <TabPanel unmountOnHide>
+        <ComboboxList>
+          <ComboboxItem />
+        </ComboboxList>
+      </TabPanel>
+    </TabProvider>
+  </ComboboxPopover>
+</ComboboxProvider>
+```
+
+### Other updates
+
+- Added `SelectValue` component to `@ariakit/react-core`.
+- Fixed `inert` behavior on older browsers.
+- Fixed [Portal](https://ariakit.org/components/portal) rendering extra `span` even when the [`portal`](https://ariakit.org/reference/portal#portal-1) prop is `false`.
+- Fixed [`Focusable`](https://ariakit.org/reference/focusable) to identify `summary` as a native tabbable element.
+- Added [`Role.summary`](https://ariakit.org/reference/role) component.
+- Improved typeahead functionality on unmounted composite items.
+- Added new [`composite`](https://ariakit.org/reference/tab-provider#composite) property to tab store.
+- Added new [`hideWhenEmpty`](https://ariakit.org/reference/combobox-cancel#hidewhenempty) prop to [`ComboboxCancel`](https://ariakit.org/reference/combobox-cancel).
+- Added support for nested [`ComboboxList`](https://ariakit.org/reference/combobox-list).
+- Added [`unmountOnHide`](https://ariakit.org/reference/tab-panel#unmountonhide) prop to [`TabPanel`](https://ariakit.org/reference/tab-panel).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.2`
+
 ## 0.4.1
 
 ### New `autoSelect` mode
