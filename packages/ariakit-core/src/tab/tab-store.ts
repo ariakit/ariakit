@@ -230,8 +230,12 @@ export interface TabStoreOptions
     >,
     CompositeStoreOptions<TabStoreItem> {
   /**
-   * A reference to a combobox store. This is used when combining the combobox
-   * with tabs. The stores will share the same state.
+   * A reference to another [composite
+   * store](https://ariakit.org/reference/composite-store). This is used when
+   * rendering tabs as part of another composite widget such as
+   * [Combobox](https://ariakit.org/components/combobox) or
+   * [Select](https://ariakit.org/components/select). The stores will share the
+   * same state.
    */
   composite?: CompositeStore | null;
   /**
