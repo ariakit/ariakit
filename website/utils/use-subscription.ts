@@ -20,6 +20,9 @@ export function useSubscription(): UseQueryResult<Subscription> & {
     refetchOnMount: false,
     async queryFn() {
       const res = await fetch("/api/subscription");
+      if (res.status === 401) {
+        throw new Error("Unauthorized");
+      }
       return res.json();
     },
   });
