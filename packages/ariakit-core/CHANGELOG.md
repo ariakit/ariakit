@@ -1,5 +1,11 @@
 # @ariakit/core
 
+## 0.4.2
+
+- Fixed [`Focusable`](https://ariakit.org/reference/focusable) to identify `summary` as a native tabbable element.
+- Added new [`composite`](https://ariakit.org/reference/tab-provider#composite) property to tab store.
+- Improved JSDocs.
+
 ## 0.4.1
 
 - Added [`disclosure`](https://ariakit.org/reference/use-disclosure-store#disclosure-1) property to disclosure stores.
