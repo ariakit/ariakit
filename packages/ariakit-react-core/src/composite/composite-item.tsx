@@ -221,15 +221,13 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (isPortalEvent(event)) return;
       if (!id) return;
       if (!store) return;
-      const { activeId, virtualFocus, baseElement } = store.getState();
       // If the target is another item, this probably means that composite items
       // are nested. This is okay when building, for example, tree or treegrid
       // elements. In this case, we just ignore the focus event on this parent
       // item.
       if (targetIsAnotherItem(event, store)) return;
-      if (activeId !== id) {
-        store.setActiveId(id);
-      }
+      const { virtualFocus, baseElement } = store.getState();
+      store.setActiveId(id);
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
       if (!virtualFocus) return;
