@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ElementType, KeyboardEvent } from "react";
 import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
@@ -126,27 +126,18 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       (state) => !!tabId && state.selectedId === tabId,
     );
 
+    const disclosure = useDisclosureStore({ open });
+    const mounted = disclosure.useState("mounted");
+
     props = {
       id,
       role: "tabpanel",
       "aria-labelledby": tabId || undefined,
       ...props,
+      children: unmountOnHide && !mounted ? null : props.children,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,
     };
-
-    const disclosure = useDisclosureStore({ open });
-    const mounted = disclosure.useState("mounted");
-
-    props = useWrapElement(
-      props,
-      (element) => {
-        if (!unmountOnHide) return element;
-        if (!mounted) return <Fragment />;
-        return element;
-      },
-      [unmountOnHide, mounted],
-    );
 
     props = useFocusable({
       // If the tab panel is rendered as part of another composite widget such
