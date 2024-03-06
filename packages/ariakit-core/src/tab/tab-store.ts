@@ -236,14 +236,18 @@ export interface TabStoreOptions
     CompositeStoreOptions<TabStoreItem> {
   /**
    * A reference to another [composite
-   * store](https://ariakit.org/reference/use-composite-store). This is used
-   * when rendering tabs as part of another composite widget.
+   * store](https://ariakit.org/reference/use-composite-store). This is used when
+   * rendering tabs as part of another composite widget such as
+   * [Combobox](https://ariakit.org/components/combobox) or
+   * [Select](https://ariakit.org/components/select). The stores will share the
+   * same state.
    */
   composite?: CompositeStore | null;
   /**
    * A reference to a [combobox
    * store](https://ariakit.org/reference/use-combobox-store). This is used when
-   * rendering tabs inside a combobox.
+   * rendering tabs inside a
+   * [Combobox](https://ariakit.org/components/combobox).
    */
   combobox?: ComboboxStore | null;
   /**
