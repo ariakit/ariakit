@@ -1,5 +1,12 @@
 # @ariakit/core
 
+## 0.4.3
+
+- Fixed regression in `v0.4.2` that caused nested tabs to stop working.
+- Added new [`combobox`](https://ariakit.org/reference/tab-provider#combobox) property to tab store.
+- Improved JSDocs.
+- Fixed TypeScript error on `defaultValue`.
+
 ## 0.4.2
 
 - Fixed [`Focusable`](https://ariakit.org/reference/focusable) to identify `summary` as a native tabbable element.
