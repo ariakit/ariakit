@@ -284,20 +284,24 @@ export function removeUndefinedValues<T extends AnyObject>(obj: T) {
 /**
  * Returns the first value that is not `undefined`.
  */
-export function defaultValue<T extends readonly any[]>(...values: T) {
+export function defaultValue<T extends readonly any[]>(
+  ...values: T
+): DefaultValue<T>;
+
+export function defaultValue(...values: unknown[]) {
   for (const value of values) {
-    if (value !== undefined) return value as DefaultValue<T>;
+    if (value !== undefined) return value;
   }
-  return undefined as DefaultValue<T>;
+  return undefined;
 }
 
-type DefinedArray<T extends readonly any[]> = {
-  [K in keyof T as undefined extends T[K] ? never : K]: undefined extends T[K]
-    ? [Exclude<T[K], undefined>, never]
-    : [T[K]];
-};
-
-type DefaultValue<T extends readonly any[]> =
-  DefinedArray<T>[keyof DefinedArray<T>] extends [any, never]
-    ? T[number]
-    : DefinedArray<T>[keyof DefinedArray<T>][0];
+type DefaultValue<T extends readonly any[], Other = never> = T extends [
+  infer Head,
+  ...infer Rest,
+]
+  ? Rest extends []
+    ? T[number] | Other
+    : undefined extends Head
+      ? DefaultValue<Rest, Exclude<Other | Head, undefined>>
+      : Exclude<T[number], undefined>
+  : never;

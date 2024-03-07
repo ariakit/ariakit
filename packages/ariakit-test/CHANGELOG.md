@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.3.12
+
+- Updated dependencies: `@ariakit/core@0.4.3`
+
 ## 0.3.11
 
 - Added `@ariakit/test/playwright` path with Playwright-specific query utilities.

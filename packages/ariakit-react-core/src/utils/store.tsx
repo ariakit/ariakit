@@ -135,6 +135,8 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
+    // @ts-expect-error This is probably a bug in TypeScript. If we duplicate
+    // the line above, it works.
     store.setState(key, value);
     return batch(store, [key], () => {
       if (value === undefined) return;

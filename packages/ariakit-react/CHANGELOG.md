@@ -1,5 +1,15 @@
 # @ariakit/react
 
+## 0.4.3
+
+- Fixed TypeScript types for `ref`.
+- Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) occasionally failing to set the [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) state on focus.
+- Fixed [`unmountOnHide`](https://ariakit.org/reference/tab-panel#unmountonhide) prop not working on [`TabPanel`](https://ariakit.org/reference/tab-panel) without [`tabId`](https://ariakit.org/reference/tab-panel#tabid).
+- Fixed regression in `v0.4.2` that caused nested tabs to stop working.
+- Added new [`combobox`](https://ariakit.org/reference/tab-provider#combobox) property to tab store.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.3`
+
 ## 0.4.2
 
 ### Tooltip behavior improvements
