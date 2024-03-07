@@ -85,6 +85,12 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     props,
     (element) => {
       if (!store?.composite) return element;
+      const defaultProps = {
+        id,
+        store: store.composite,
+        shouldRegisterItem: selected && shouldRegisterItem,
+        render: element,
+      } satisfies CompositeItemOptions;
       // If the tab is rendered as part of another composite widget such as
       // combobox, we need to render it as a composite item. This ensures it's
       // recognized in the composite store and lets us manage arrow key
@@ -93,10 +99,14 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
       // a vertical list orientation.
       return (
         <CompositeItem
-          id={id}
-          render={element}
-          store={store.composite}
-          shouldRegisterItem={selected && shouldRegisterItem}
+          {...defaultProps}
+          render={
+            store.combobox && store.composite !== store.combobox ? (
+              <CompositeItem {...defaultProps} store={store.combobox} />
+            ) : (
+              element
+            )
+          }
         />
       );
     },

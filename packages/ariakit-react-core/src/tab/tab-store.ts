@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import * as Core from "@ariakit/core/tab/tab-store";
-import { useCompositeContext } from "../composite/composite-context.js";
+import { useComboboxContext } from "../combobox/combobox-context.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStore,
   CompositeStoreFunctions,
@@ -8,6 +9,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { useCompositeStoreProps } from "../composite/composite-store.js";
+import { useSelectContext } from "../select/select-context.js";
 import { useUpdateEffect } from "../utils/hooks.js";
 import type { Store } from "../utils/store.js";
 import { useStore, useStoreProps } from "../utils/store.js";
@@ -17,7 +19,7 @@ export function useTabStoreProps<T extends Core.TabStore>(
   update: () => void,
   props: TabStoreProps,
 ) {
-  useUpdateEffect(update, [props.composite]);
+  useUpdateEffect(update, [props.composite, props.combobox]);
 
   store = useCompositeStoreProps(store, update, props);
   useStoreProps(store, props, "selectedId", "setSelectedId");
@@ -28,7 +30,7 @@ export function useTabStoreProps<T extends Core.TabStore>(
 
   return Object.assign(
     useMemo(() => ({ ...store, panels }), [store, panels]),
-    { composite: props.composite },
+    { composite: props.composite, combobox: props.combobox },
   );
 }
 
@@ -49,10 +51,12 @@ export function useTabStoreProps<T extends Core.TabStore>(
  * ```
  */
 export function useTabStore(props: TabStoreProps = {}): TabStore {
-  const composite = useCompositeContext();
+  const combobox = useComboboxContext();
+  const composite = useSelectContext() || combobox;
   props = {
     ...props,
     composite: props.composite !== undefined ? props.composite : composite,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
   const [store, update] = useStore(Core.createTabStore, props);
   return useTabStoreProps(store, update, props);
@@ -65,14 +69,14 @@ export interface TabStoreState
     CompositeStoreState<TabStoreItem> {}
 
 export interface TabStoreFunctions
-  extends Pick<TabStoreOptions, "composite">,
-    Omit<Core.TabStoreFunctions, "panels" | "composite">,
+  extends Pick<TabStoreOptions, "composite" | "combobox">,
+    Omit<Core.TabStoreFunctions, "panels" | "composite" | "combobox">,
     CompositeStoreFunctions<TabStoreItem> {
   panels: Store<Core.TabStoreFunctions["panels"]>;
 }
 
 export interface TabStoreOptions
-  extends Omit<Core.TabStoreOptions, "composite">,
+  extends Omit<Core.TabStoreOptions, "composite" | "combobox">,
     CompositeStoreOptions<TabStoreItem> {
   /**
    * Function that will be called when the
@@ -85,18 +89,31 @@ export interface TabStoreOptions
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
   /**
    * A reference to another [composite
-   * store](https://ariakit.org/reference/use-composite-store). It's
-   * automatically set when rendering tabs within another composite widget like
-   * [Combobox](https://ariakit.org/components/combobox) or
+   * store](https://ariakit.org/reference/use-composite-store). This is
+   * automatically set when rendering tabs as part of another composite widget,
+   * such as [Combobox](https://ariakit.org/components/combobox) or
    * [Select](https://ariakit.org/components/select).
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   composite?: CompositeStore | null;
+  /**
+   * A reference to a [combobox
+   * store](https://ariakit.org/reference/use-combobox-store). This is
+   * automatically set when rendering tabs inside a
+   * [Combobox](https://ariakit.org/components/combobox).
+   *
+   * Live examples:
+   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   */
+  combobox?: ComboboxStore | null;
 }
 
 export interface TabStoreProps
   extends TabStoreOptions,
-    Omit<Core.TabStoreProps, "composite"> {}
+    Omit<Core.TabStoreProps, "composite" | "combobox"> {}
 
 export interface TabStore
   extends TabStoreFunctions,
-    Omit<Store<Core.TabStore>, "panels" | "composite"> {}
+    Omit<Store<Core.TabStore>, "panels" | "composite" | "combobox"> {}

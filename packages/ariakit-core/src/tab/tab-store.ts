@@ -3,6 +3,7 @@ import type {
   CollectionStoreItem,
 } from "../collection/collection-store.js";
 import { createCollectionStore } from "../collection/collection-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
   CompositeStore,
   CompositeStoreFunctions,
@@ -25,20 +26,24 @@ import type { SetState } from "../utils/types.js";
 
 export function createTabStore({
   composite: parentComposite,
+  combobox,
   ...props
 }: TabStoreProps = {}): TabStore {
+  const independentKeys = [
+    "items",
+    "renderedItems",
+    "moves",
+    "orientation",
+    "baseElement",
+    "focusLoop",
+    "focusShift",
+    "focusWrap",
+  ] as const;
+
   const store = mergeStore(
     props.store,
-    omit(parentComposite, [
-      "items",
-      "renderedItems",
-      "moves",
-      "orientation",
-      "baseElement",
-      "focusLoop",
-      "focusShift",
-      "focusWrap",
-    ]),
+    omit(parentComposite, independentKeys),
+    omit(combobox, independentKeys),
   );
   const syncState = store?.getState();
 
@@ -231,13 +236,20 @@ export interface TabStoreOptions
     CompositeStoreOptions<TabStoreItem> {
   /**
    * A reference to another [composite
-   * store](https://ariakit.org/reference/composite-store). This is used when
+   * store](https://ariakit.org/reference/use-composite-store). This is used when
    * rendering tabs as part of another composite widget such as
    * [Combobox](https://ariakit.org/components/combobox) or
    * [Select](https://ariakit.org/components/select). The stores will share the
    * same state.
    */
   composite?: CompositeStore | null;
+  /**
+   * A reference to a [combobox
+   * store](https://ariakit.org/reference/use-combobox-store). This is used when
+   * rendering tabs inside a
+   * [Combobox](https://ariakit.org/components/combobox).
+   */
+  combobox?: ComboboxStore | null;
   /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
