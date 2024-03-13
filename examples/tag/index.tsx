@@ -36,6 +36,8 @@ export default function Example() {
           </Tag>
         ))}
         <Ariakit.ComboboxProvider
+          value={value}
+          setValue={setValue}
           selectedValue={values}
           setSelectedValue={setValues}
         >
@@ -49,7 +51,7 @@ export default function Example() {
                 key={value}
                 value={value}
                 className="combobox-item"
-                render={<Ariakit.ComboboxItem value={value} />}
+                render={<Ariakit.ComboboxItem hideOnClick value={value} />}
               >
                 <Ariakit.ComboboxItemCheck />
                 {value}

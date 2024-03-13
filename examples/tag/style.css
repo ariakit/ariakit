@@ -20,6 +20,7 @@
     outline-2
     outline-offset-[-1px]
     focus-within:outline
+    cursor-text
     outline-blue-600
     [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
     dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
