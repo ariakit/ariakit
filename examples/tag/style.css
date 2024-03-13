@@ -1,0 +1,73 @@
+@import url("../combobox/style.css");
+
+.tag-list {
+  @apply
+    flex
+    flex-wrap
+    [scrollbar-width:none]
+    [&::-webkit-scrollbar]:hidden
+    items-center
+    gap-1
+    p-[5px]
+    max-w-[560px]
+    w-[420px]
+    overflow-auto
+    rounded-lg
+    bg-white
+    hover:bg-gray-50
+    dark:bg-gray-900
+    dark:hover:bg-gray-950
+    outline-2
+    outline-offset-[-1px]
+    focus-within:outline
+    outline-blue-600
+    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
+    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
+  ;
+}
+
+.tag {
+  @apply
+    inline-flex
+    gap-1
+    items-center
+    px-2
+    cursor-default
+    rounded
+    whitespace-nowrap
+    bg-black/5
+    dark:bg-white/5
+    data-[active-item]:focus:bg-blue-600
+    [outline:none]
+  ;
+}
+
+.tag-remove {
+  @apply
+    grid
+    place-items-center
+    flex-none
+    text-lg
+    size-8
+    -mr-2
+    rounded-r-[inherit]
+    opacity-60
+    hover:opacity-100
+    hover:bg-black/10
+    hover:dark:bg-white/10
+    [[data-active-item]>&]:opacity-100
+    [:has(+input:focus[value=""])>&]:opacity-100
+  ;
+}
+
+.tag-input {
+  @apply
+    flex-1
+    h-8
+    bg-transparent
+    min-w-[200px]
+    px-2
+    ![outline:none]
+    [&[value=""]]:pl-0
+  ;
+}

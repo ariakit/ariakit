@@ -40,6 +40,7 @@
     "./utils/array": "./src/utils/array.ts",
     "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
     "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
+    "./tag/tag-store": "./src/tag/tag-store.ts",
     "./tab/tab-store": "./src/tab/tab-store.ts",
     "./select/select-store": "./src/select/select-store.ts",
     "./radio/radio-store": "./src/radio/radio-store.ts",
