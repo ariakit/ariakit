@@ -227,9 +227,11 @@ for (const plan of ["month", "year"] as const) {
 
     const stripe = getStripeClient();
     // Wait for stripe
-    await page.waitForTimeout(10000);
-    const subs = await stripe.subscriptions.list({ customer: customer.id });
-    expect(subs.data.length).toBe(0);
+    await page.waitForTimeout(1000);
+    await expect(async () => {
+      const subs = await stripe.subscriptions.list({ customer: customer.id });
+      expect(subs.data.length).toBe(0);
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
     await q.button("Back to page").click();
     await page.waitForURL("/components");
